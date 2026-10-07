@@ -1,0 +1,52 @@
+{
+  "record_id": "GEX20-CARL-001",
+  "captured_at": "2026-09-13T00:02:35+09:00",
+  "gex_revision": "2026-09-12-gex-r5",
+  "goal_set_ref": "GS-CARL-P2G50-001",
+  "goal_id": "GOAL-CARL-01",
+  "phase_id": "PHASE-CARL-01",
+  "goal_structure": "single_phase",
+  "target": {
+    "record_id": "ATR-CARL-R05-RESUME-001",
+    "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_TARGET_RESUME_001.json",
+    "sha256": "07788da1b3cd6cf33d6cf62fdc8f8bca61c5d67b08f76971c547ce992d93be0d"
+  },
+  "audit": {
+    "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/COMPLETION_AUDIT_RESUME_001.md",
+    "sha256": "9572906f649c5033e656f1af02b00cae0444bc79ed9a11ef264adc7c43b22936",
+    "reviewer": "/root/r05_independent_reviewer",
+    "independence": "implementation nonparticipant; same-model inherited context disclosed"
+  },
+  "closure": {
+    "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_CLOSURE_RESUME_001.json",
+    "sha256": "5753dc82f8816cfc57da6f1af110eb035ed18e0635e76e0830a3337734ad95d4",
+    "passed": true
+  },
+  "predecessor_restoration": {
+    "order": ["R01", "R02", "R03", "R04", "R05"],
+    "index": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_SUPPLEMENTS_001.json",
+    "all_current_verdicts": "Complete / High"
+  },
+  "target_currentness": {
+    "historical_anchor": "ATR-CARL-R05-003; immutable and stale as a direct target after governance replacement",
+    "anchor_manifest_members": 15685,
+    "inherited_unchanged": 15682,
+    "governance_replacements": 3,
+    "additions": 22,
+    "mismatches": [],
+    "disposition": "current successor target"
+  },
+  "validation_reuse": {
+    "source_input": "IMPLEMENTATION_INPUT_003.json; 349 members current / unchanged",
+    "owner_validation": "CORRECTION_VALIDATION_001.json; final130 1412 passed/0 failed/0 ignored and final131-143 passed",
+    "fresh_execution_by_auditor": "none; exact input, coverage, consumers, environment, raw outputs, and currentness were independently checked",
+    "historical_failures_preserved": ["F-R05-001 Not Complete audit", "panic reproductions119/120", "guard126 failure"]
+  },
+  "finding_disposition": {
+    "F-R05-001": "corrected on ATR-CARL-R05-RESUME-001; historical finding remains immutable",
+    "new_blocking_findings": []
+  },
+  "verdict": "Complete / High",
+  "confidence": "High",
+  "terminal": "Selected R05 single-R request complete. GEX-30 is not applicable to this single_phase Goal. R06 and later work require a new user request and were not started."
+}

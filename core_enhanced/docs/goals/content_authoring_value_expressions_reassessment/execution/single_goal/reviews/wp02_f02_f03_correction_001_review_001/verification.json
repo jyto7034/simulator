@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-09-26T02:55:19.475Z",
+  "target_sha256": "84a7b1a6f4d40973c5fbc148c00457911e966a20f046e4aa6afbeac609897b23",
+  "isolated": "/tmp/r06-f02-f03-review.5nvNWT",
+  "source_files_verified": 333,
+  "instrumentation_only_files": 1,
+  "original_probe_sha256": "6529e4093f290316749b2fe852589ab6360300d563bc6ab19747d8f52e5e18db",
+  "predecessor_archives_verified": true,
+  "currentness_command": [
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f02_f03_001/verification/verify_target.py"
+  ],
+  "currentness": {
+    "result": "FROZEN_TARGET_ARCHIVES_DELTA_AND_CURRENTNESS_VERIFIED",
+    "manifest_sha256": "84a7b1a6f4d40973c5fbc148c00457911e966a20f046e4aa6afbeac609897b23",
+    "source_files": 333,
+    "evidence_files": 37,
+    "modified_from_entry": [
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "added_from_entry": [],
+    "deleted_from_entry": [],
+    "predecessor_frozen_source_drift": [
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 7384,
+      "sha256": "006d066ed6b88b0f73f4b84474cb6ec95aecf17bd104153b2afe678f5d83281b"
+    },
+    {
+      "path": "adapter_regressions.json",
+      "bytes": 689,
+      "sha256": "a2b6eb35845c76cf5af525116349da7faca9541feb342088e3c3c9818fdbfa5b"
+    },
+    {
+      "path": "adapter_regressions.log",
+      "bytes": 2693,
+      "sha256": "a271ecf3c5633aaad4cf8563b18f27970538a86b7d4628dfdad7b39eb4e46604"
+    },
+    {
+      "path": "additional_probes.rs",
+      "bytes": 2877,
+      "sha256": "4c61e791150554df57a0a707507d2457b24a1da53d6fa6ab3a3fdadc6b18141d"
+    },
+    {
+      "path": "facts_regressions.json",
+      "bytes": 647,
+      "sha256": "5d266fef4cda286c1cf52fbe2ae030a261e356de313176319acad734cbc6e6cc"
+    },
+    {
+      "path": "facts_regressions.log",
+      "bytes": 2041,
+      "sha256": "e309e493aad1368cbe926b1125478be876af5d862276f0c1e405269c1feadd43"
+    },
+    {
+      "path": "kernel_regressions.json",
+      "bytes": 623,
+      "sha256": "1ab3fa49f4c6566cafc70d36e9d8eef82bb54b068964519ff14543f240903d92"
+    },
+    {
+      "path": "kernel_regressions.log",
+      "bytes": 4485,
+      "sha256": "15def5905223853719df68faf4340893934d4eda5d333b5cf62456823482748e"
+    },
+    {
+      "path": "original_and_cast_probes.json",
+      "bytes": 624,
+      "sha256": "c22f123d105fbfd28605dced37a81b8ab95b432b88e39554b5466efcbc5cbd55"
+    },
+    {
+      "path": "original_and_cast_probes.log",
+      "bytes": 7511,
+      "sha256": "97837928f5d91aba25af7a6ff2bc88e36ec1dcb78dbe739ff97218078d9f39c6"
+    },
+    {
+      "path": "original_probes.rs",
+      "bytes": 8123,
+      "sha256": "6529e4093f290316749b2fe852589ab6360300d563bc6ab19747d8f52e5e18db"
+    },
+    {
+      "path": "resource_regressions.json",
+      "bytes": 621,
+      "sha256": "f7beea72e7a3acafa217028e4939efb8d08c6a0f555de84d4fb9c082d3387953"
+    },
+    {
+      "path": "resource_regressions.log",
+      "bytes": 3623,
+      "sha256": "a376f7563133ee34720c335046344ae8415046d74adeecd1ec75f2f8128b0cca"
+    },
+    {
+      "path": "run.mjs",
+      "bytes": 1375,
+      "sha256": "360415451bfa2143d45c2d18e8218d9962acf7fb660bf91842b33174c6ad3f0d"
+    },
+    {
+      "path": "verify.mjs",
+      "bytes": 2908,
+      "sha256": "c12353fa039b89cecf26c557fc8cf0df17e0da4743bbca6bbdeff93af494a43a"
+    }
+  ]
+}

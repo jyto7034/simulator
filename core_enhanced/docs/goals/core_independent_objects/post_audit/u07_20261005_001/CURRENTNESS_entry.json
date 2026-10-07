@@ -1,0 +1,34 @@
+{
+  "captured_at_utc": "2026-10-05T10:58:52.887239+00:00",
+  "target": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/target/u07_001",
+  "manifest_sha256": "44d34de0471d0a9c722da9eb0d6316ce66c75f84f070eefc6c8ae97675240e19",
+  "membership_count": 5275,
+  "source_count": 406,
+  "product_count": 388,
+  "records_count": 4795,
+  "errors": [],
+  "archives": {
+    "SOURCE_BEFORE.tar.gz": 393,
+    "SOURCE_AFTER.tar.gz": 406,
+    "RECORDS.tar.gz": 4795,
+    "REFERENCES.tar.gz": 82,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/SOURCE_BEFORE.tar.gz": 385,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/SOURCE_AFTER.tar.gz": 392,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/RECORDS.tar.gz": 2593,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/REFERENCES.tar.gz": 142
+  },
+  "restoration": [
+    {
+      "reverse": false,
+      "exit": 0,
+      "members": 406
+    },
+    {
+      "reverse": true,
+      "exit": 0,
+      "members": 393
+    }
+  ],
+  "status_sha256": "f1bd247a46075601cdbf879cce9b96f823a3db853cf35023cc7242a928718d2c",
+  "currentness": "current / unchanged"
+}

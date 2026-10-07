@@ -1,0 +1,134 @@
+{
+  "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+  "changes": [
+    {
+      "path": "Cargo.lock",
+      "impact": "Non-default feature and pinned optional host metrics dependencies; prior311 locked versions preserved."
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "impact": "Non-default feature and pinned optional host metrics dependencies; prior311 locked versions preserved."
+    },
+    {
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "impact": "Public attempt capture and staged/actual root commit seams; prepared discard separates observation from rollback."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "impact": "Existing O(1) insert/count/cache/budget/extent seam gets cfg observation hook; gameplay algorithms and accounting authorities preserved."
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "impact": "Public attempt capture and staged/actual root commit seams; prepared discard separates observation from rollback."
+    },
+    {
+      "path": "core_enhanced/src/lib.rs",
+      "impact": "Feature/exporter opt-in and new session attachment; native/host public boundary preserved."
+    },
+    {
+      "path": "core_enhanced/src/runtime_observation.rs",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/Cargo.toml",
+      "impact": "Non-default feature and pinned optional host metrics dependencies; prior311 locked versions preserved."
+    },
+    {
+      "path": "game_server/config/observability/README.md",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability/grafana/dashboards/core-runtime.json",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability/grafana/grafana.ini",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/dashboards/core-runtime.yml",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/datasources/core-runtime.yml",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability/prometheus.yml",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability/run_local.py",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/config/observability.ron",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/examples/observe_runtime.rs",
+      "impact": "Local public API verification driver only."
+    },
+    {
+      "path": "game_server/src/game/load_balance_actor/handlers.rs",
+      "impact": "Feature/exporter opt-in and new session attachment; native/host public boundary preserved."
+    },
+    {
+      "path": "game_server/src/game/load_balance_actor/mod.rs",
+      "impact": "Feature/exporter opt-in and new session attachment; native/host public boundary preserved."
+    },
+    {
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "impact": "Inspect scoped patch; revalidate affected Core/host selectors on final source."
+    },
+    {
+      "path": "game_server/src/lib.rs",
+      "impact": "Feature/exporter opt-in and new session attachment; native/host public boundary preserved."
+    },
+    {
+      "path": "game_server/src/main.rs",
+      "impact": "Feature/exporter opt-in and new session attachment; native/host public boundary preserved."
+    },
+    {
+      "path": "game_server/src/observability/mod.rs",
+      "impact": "New optional observer/collector/config; never safety authority."
+    },
+    {
+      "path": "game_server/src/observability/tests.rs",
+      "impact": "New optional observer/collector/config; never safety authority."
+    }
+  ],
+  "status": "Input-to-seam review; executions bind in final COVERAGE, independent applicability audit pending"
+}

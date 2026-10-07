@@ -1,0 +1,341 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CARF-P2G40-002",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CARF-P2G40-001",
+          "Content Digest": null
+        },
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CARF-P2G30-001",
+          "Content Digest": null
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARF-P2G20-001",
+            "Content Digest": null
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CARF-P2G30-001",
+            "Content Digest": null
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CARF-01",
+            "selectors": {
+              "implementation": [
+                "CARF-E01",
+                "CARF-E02",
+                "CARF-E04"
+              ],
+              "supporting": [
+                "CARF-E03",
+                "CARF-E05"
+              ]
+            },
+            "disposition": "member of AG-CARF-01",
+            "boundary": "BattleCore actual Damage/Heal/Cost/Death producers, predeath observation and mandatory death/wave vs optional dispatch; immutable current causal context through basic/skill/proc/buff/projectile/area; real equipment-copy binding through both player drafts/build constructors and stat/source consumers.",
+            "expected_change": "CRA P01/P02/P04: typed actual request/result and distinct preformula strike/component segment, actual resource pay and signed Heal preserved; source independent of logs; existing runtime ID/RNG/cooldown preserved; no fabricated copy/root.",
+            "prerequisites": "Current R01–R03 basis and WP02 action/attempt identity, finite ownership and transaction boundary; actual facts feed WP02 settlement and public observation. No future R05/R07/R10 implementation required.",
+            "validation_completion": "V01–V04/V07 producer-level tests and real public consumers: overkill/overheal/negative Heal, real Cost/failure, mandatory once, predeath own-source vs killer, segment/strike, delayed source/log caps, two equipment copies and actual constructors.",
+            "unknown": "KU30-01 exact Rust/source/predeath layout and safety ceilings owned by R04 GEX within P01/P02/P04/P06. New hit/root/shield/survival semantics return to P2G-10."
+          },
+          {
+            "id": "WP-CARF-02",
+            "selectors": {
+              "implementation": [
+                "CARF-E03",
+                "CARF-E05"
+              ],
+              "supporting": [
+                "CARF-E01",
+                "CARF-E02",
+                "CARF-E04"
+              ]
+            },
+            "disposition": "member of AG-CARF-01",
+            "boundary": "Fallible current request/action store, opaque attempt validity/epoch and Accepted/Released/FlowFinished/EffectsSettled with exactly-once control terminal; cause-specific cancellation and surviving released deliveries; public operation clone/commit, entry/result/retreat/reconnect/durable applicability, native/authoring bounds and public API/CLI projection.",
+            "expected_change": "CRA P03/P05/P06/P07: new state participates with resources/queue/RNG/IDs/logs in actual operation atomicity including bare BattleCore ports; preserve earlier successful timestamp prefix. Carry finite delivery settlement after control removal; reclaim attempts/invalidate stale handles and preserve current inventory save.",
+            "prerequisites": "WP01 actual mutation/source facts and real provider identity; same producer/carrier cutover and current R03 production API/CLI. Milestones and new fact projections cannot be complete with log-only or source-losing legacy branches.",
+            "validation_completion": "V05/V06/V08/V09/V10: typed no-target/limit failure, actual t0/100/300 and cancel50/150, duplicate/stale/UUID-reuse/rollback, finite carrier settlement and native bounds, save/live/store lifetime, determinism and real default-release consumers.",
+            "unknown": "KU30-01 carrier transition table/exact token and summary representation/safety numbers are GEX design+measurement obligations. Do not change current cancellation/refund/lifetime or invent sticky failure."
+          },
+          {
+            "id": "WP-CARF-03",
+            "selectors": {
+              "validation_only": [
+                "CARF-E01",
+                "CARF-E02",
+                "CARF-E03",
+                "CARF-E04",
+                "CARF-E05"
+              ]
+            },
+            "disposition": "standalone",
+            "boundary": "Durable focused/integration tests, isolated literal RON fixtures, actual public library/CLI consumers, lifecycle/determinism/native-bound/cost measurements and affected predecessor currentness for all frozen R04 acceptance.",
+            "expected_change": "Implement V01–V10 reproducible seams and evidence, validate current source with actual nonzero commands/results and core contracts, stop implementation before separate fresh GEX-20. Corrections return to AG owner and rerun affected verification.",
+            "prerequisites": "AG-CARF-01 coordinated producer/state/consumer implementation and detail-readiness check; current actual R01/R02/R03 proof or positive scoped non-impact reuse.",
+            "validation_completion": "All frozen acceptance mapped by IVA01–10 with exact source/toolchain/fixture/command/expected-actual/raw output; meaningful full core/all-target/default-release integration and relevant current predecessor evidence; no skip/0-test/runtime placeholder accepted.",
+            "unknown": "KU30-02 actual test selectors/results and new allocations/cost remain execution work; KU30-03 currentness restoration required after affecting changes, not inherited PASS."
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CARF-01",
+            "to": "WP-CARF-02",
+            "type": "producer_consumer / authority",
+            "evidence": "CRA B01/B02/B03/P01–03: actual mutation/source and carrier facts feed action settlement and truthful public result",
+            "broken": "Accepted/released or log-only state substitutes for actual effects, loses source or reports premature success"
+          },
+          {
+            "from": "WP-CARF-02",
+            "to": "WP-CARF-01",
+            "type": "transaction / persistence_lifetime / producer_consumer",
+            "evidence": "CRA B03/B05/P02/P03/P05/P06: facts require same action/attempt identity, finite state and commit/abort as current request/carriers",
+            "broken": "New facts have no valid owner/stale guard or remain committed on failed public operation; detached delivery lacks correct identity"
+          },
+          {
+            "from": "WP-CARF-01",
+            "to": "WP-CARF-03",
+            "type": "validation",
+            "evidence": "V01–04/V07 need actual converted mutation/source/equipment producers",
+            "broken": "Fixture or type existence substitutes for current actual behavior"
+          },
+          {
+            "from": "WP-CARF-02",
+            "to": "WP-CARF-03",
+            "type": "validation / migration_compatibility",
+            "evidence": "V05/V06/V08–10 need current request/state/public consumer plus preservation of predecessor runtime contracts",
+            "broken": "Unexecuted lifecycle/bounds or stale predecessor PASS cannot prove completion"
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CARF-01",
+            "members": [
+              "WP-CARF-01",
+              "WP-CARF-02"
+            ],
+            "evidence": "Minimal mutual fact/action/attempt transaction and producer-consumer cutover; AT03/04 closed within group. Same files alone do not justify group; bidirectional identity/actual-result dependence does."
+          }
+        ],
+        "standalone": [
+          "WP-CARF-03"
+        ],
+        "phases": [
+          {
+            "id": "PHASE-CARF-01",
+            "primary": [
+              "CARF-E01",
+              "CARF-E02",
+              "CARF-E03",
+              "CARF-E04",
+              "CARF-E05"
+            ],
+            "supporting_relations": "No separate supporting Phase; WP role selectors distinguish implementation/support/validation-only",
+            "nodes": [
+              "AG-CARF-01",
+              "WP-CARF-03"
+            ],
+            "dependencies": "Current exact Freeze/review and actual R01–R03; coordinated AG before final durable acceptance/currentness",
+            "exit_acceptance": "All frozen R04 acceptance via IVA01–10, current direct producer-consumer/native-lifetime/rollback/save boundary and actual predecessor evidence; later R absent"
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CARF-01",
+            "state": "R05 and later absent: current core emits actual Damage/Heal/Cost/Death with real source/copy and distinct strike/segment; current request handles expose correct lifecycle/cancellation/settlement; native bounded attempt state commits/rolls back/reclaims correctly; public API/CLI and existing battle semantics remain usable.",
+            "checks": "Single actual mutation/death/resource authority; one producer-consumer cutover; existing formula/hit gates/RNG/cause-specific lifetimes; all constructors match paired equipment data; same operation state rollback, live snapshot and V6 inventory meaning; exact stale identity; finite retention; no log authority or fabricated source/fallback/full future executor.",
+            "evidence": "AG realization and WP03 IVA01–10 actual source-bound focused/public/release/lifecycle/bounds/cost/currentness evidence; separate fresh completion audit after source stabilization",
+            "limitation": "Design intermediate-state audit only; R04 implementation and all new acceptance execution remain outstanding; no external rollout or future R completion"
+          }
+        ],
+        "cyclic_sccs": [
+          {
+            "members": [
+              "WP-CARF-01",
+              "WP-CARF-02"
+            ],
+            "disposition": "coimplement_atomic",
+            "boundary": "AG-CARF-01",
+            "evidence": "Fact source/result needs action owner and same transaction; action settlement consumes real mutation/carrier facts. No current stable new API exists to split successful realization.",
+            "result": "Condensation AG-CARF-01 -> WP-CARF-03 is acyclic; both final nodes in PHASE-CARF-01"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CARF-01",
+            "source": "V01; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Same seed/input formula, existing basic-only OnAttack/OnHit/RNG/resonance and HP-loss step gate; overkill/overheal/negative Heal requested vs actual with unchanged old actual damage summary. Existing self-heal/repeat-barrage and basic snapshot regressions.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-02",
+            "source": "V02; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Current manual/auto resonance reset and deploy/relocation/swap actual tactical pay; insufficient/rejected requests typed fail/no successful receipt, resource and operation state unchanged. Negative resource modifiers remain explicit change rather than invented cost.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-03",
+            "source": "V03; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Lethal damage/stat-HP/direct summon Kill and separate Despawn; suppression of optional dispatch still mandatory death/wave once. Victim caster-A buff vs killer-B snapshot before cleanup, unchanged OnDeath/OnKill/sorted ally order, no invented proc.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-04",
+            "source": "V04; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Multiple component/effect segments of one direct strike vs distinct carrier iteration/target/cast; basic/skill/proc/buff tick/projectile/area after source death. Source/action/strike facts persist with logs off/evicted; real current public observer and truthful unsupported scope.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-05",
+            "source": "V05; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "No-target/invalid request and exact finite-limit rejection on bare BattleCore and public world ports; t0 Accepted/t100 Released/t300 hit with FlowFinished and EffectsSettled observed from actual current carrier, no later Flow adapter.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-06",
+            "source": "V06; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Existing cause cancel at t50/t150, unreleased steps absent and released projectile/GroundFixed continue; Follow area and HardCC/Silence/pending InterruptCast regression. Terminal once, late settlement distinct, stale/duplicate handles cannot overwrite new action.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-07",
+            "source": "V07; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Two actual owned copies with same definition through both player draft/build and deploy paths; source IDs equal inventory IDs and preserve runtime RNG/cooldown/stat. Scenario/fragment absence explicit; durable inventory identity remains compatible.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-08",
+            "source": "V08; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Failed request/advance state clone comparison includes new handle/source/receipt plus resource/queue/RNG/ID/log and prior successful timestamp prefix. Same-attempt live observation/reconnect, candidate rollback, retreat/reentry UUID reuse, result/drop/reclaim. Current V6 loader/writer proves attempt durable N/A; inventory ID roundtrip.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-09",
+            "source": "V09; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "Native and authoring work/cardinality/retained result/source/predeath/clone/fanout ceilings, inclusive cap/one-under and repeated failure/recovery. Same seed/input/pack/container order and log/diag retention comparisons; measured high-water/allocator/drop/retention and plain latency separated from allocator timing, no unbounded full-capacity scan.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          },
+          {
+            "id": "IVA-CARF-10",
+            "source": "V10; exact Freeze Binding Completeness Evidence / unchanged acceptance projection",
+            "disposition": "assigned_execution_node",
+            "locator": "T07/T23/T26/T28 applicable R04 with independent literal external RON through default-release public API/CLI, focused/full core/all-target/release and actual R01–R03 direct-consumer impact. Canonical contracts truthfully updated; unchanged predecessor evidence scoped or restored; stable target then separate fresh GEX-20.",
+            "nodes": [
+              "WP-CARF-03"
+            ],
+            "phases": [
+              "PHASE-CARF-01"
+            ],
+            "prerequisite": "AG-CARF-01 producer/action/state/consumer transition; V10 requires affected predecessor disposition",
+            "evidence": "Actual isolated fixture/public consumer/focused owner assertions with exact source/toolchain/workload/command/nonzero count/exit/expected-actual/raw receipt; source correction returns to AG, fresh audit is separate read-only pass"
+          }
+        ],
+        "Shared Contract Handoff": "| Contract | Review source | Meaning owner and producer/consumer | Implementing node | Validating node | Availability and boundary |\n| --- | --- | --- | --- | --- | --- |\n| SC01 facts/source | P01/P02 | E01/E02; mutation/basic/skill/proc/buff/delivery producer → current gate/mandatory bookkeeping/action summaries/public projection | AG-CARF-01 | WP-CARF-03 | Existing mutation semantics remain authority; new typed port only usable after all current producer/consumer paths converted. Strike/segment/source and actual outcome ownership fixed. |\n| SC02 action/attempt | P03/P05 | E03/E05; qualified public request → engine action store → carriers → terminal/settlement query | AG-CARF-01 | WP-CARF-03 | Current carriers exist; new handle does not. Control terminal and detached settlement remain distinct, cause-specific cancellation preserved; token validity independent of gameplay IDs/logs. |\n| SC03 equipment | P04 | E04; actual inventory/EquippedRef → both player drafts/builds → RuntimeItem/stat/source | AG-CARF-01 | WP-CARF-03 | Existing serialized inventory ID remains authority; paired runtime binding is proposed and must cover all constructors. Definition/runtime/copy identities remain distinct. |\n| SC04 operation/lifetime | P05/P06 | E05; bare BattleCore or outer CoreApplication operation → staged state → commit/live/result/drop; V6 inventory store | AG-CARF-01 | WP-CARF-03 | New native state must join clone/admission and transaction before public exposure. Prior accepted timestamps preserved; attempt state durable N/A tested, old handles cannot affect retry. |\n| SC05 bounds/consumer | P06/P07 | E02/E03/E05; bounded runtime state → mandatory observation/API/CLI/describe | AG-CARF-01 | WP-CARF-03 | Native and authoring finite faults apply at introduction. Exact cap values measured in GEX; optional log/diag retention cannot change fact meaning/RNG. No unsupported success. |\n| SC06 currentness | P07/V10 | E01–E05; source delta → predecessor/direct consumer tests/probes → current proof and fresh reviewer | WP-CARF-03 | separate applicable fresh GEX-20 | R01–R03 current now. Source changes require scoped current evidence or positive non-impact proof; no reusing stale all-pass claim. |",
+        "Known Unknown/Limitations": "Freeze KU30-01 exact types/carrier tables/budget values remain AG owner in reviewed P01–P07; KU30-02 actual verification/cost belongs WP03; KU30-03 impacted R01–R03 evidence must be current before completion. KU30-04 external host/deployment/personal-store content N/A. New material meaning or wrong reviewed premise returns to earliest P2G owner; no future R feature is declared complete.",
+        "Source Design": {
+          "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_DESIGN_002.ko.md",
+          "sha256": "38d936e9b13d5ab324a561ed12d85acc1b014c4778aeaac6091d56325f5620cb",
+          "inspection": "Same semantic design as candidate001; correct typed receipt reference before first current publication"
+        }
+      }
+    }
+  ],
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CARF-P2G40-002",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0"
+}

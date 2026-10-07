@@ -1,0 +1,26 @@
+{
+  "recorded_at_utc": "2026-10-06T11:38:01.422769+00:00",
+  "provenance": "Root transcribed actual exec_command result after user-requested require_escalated invocation; not a run.py receipt, not reconstructed historical raw file",
+  "request": "User changed permission settings and explicitly asked to try an approval request",
+  "sandbox_permissions": "require_escalated",
+  "justification": "이전에 EPERM으로 막힌 임시 Unix 소켓과 로컬 루프백 소켓의 생성·바인딩을 샌드박스 밖에서 확인하도록 허용하시겠습니까? 외부 통신이나 제품 파일 변경은 없습니다.",
+  "exit_code": 0,
+  "observed_stdout_json": {
+    "utc": "2026-10-06T11:35:26.098372+00:00",
+    "results": [
+      {
+        "family": "AF_UNIX",
+        "socket_and_bind": "PASS"
+      },
+      {
+        "family": "AF_INET",
+        "socket_and_bind": "PASS"
+      }
+    ],
+    "scope": "Temporary local socket creation and binding only; no listen, connect, or product tests."
+  },
+  "operation": "python3 stdlib tempfile.TemporaryDirectory under /tmp; AF_UNIX SOCK_STREAM bind to temp/probe.sock; AF_INET SOCK_STREAM bind to 127.0.0.1:0; immediately close both; cleanup tempdir",
+  "network_connect_or_listen": false,
+  "product_or_test_files_changed": false,
+  "limits": "Successful approved execution establishes local socket creation/bind availability outside sandbox only. Default workspace-write and restricted network remain. It is not a product/host/suite test PASS or blanket authorization for unapproved commands."
+}

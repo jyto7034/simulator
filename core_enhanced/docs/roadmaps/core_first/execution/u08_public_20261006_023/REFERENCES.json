@@ -1,0 +1,24 @@
+{
+  "references": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/MANIFEST.json",
+      "sha256": "bf519a16949f4d68151deb9af914510c572c9648439faedef55d0260f90f4bac"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/HANDOFF.json",
+      "sha256": "f95a616ff898054dad9b8bf7a24addd0212cf834ac8c36fcc82b189ab41ea7a3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/SELF_CHECKS.json",
+      "sha256": "e0e9e44a80b7ace14100df9edbfcf07a85c2f619b809e69cae36fa2af9d03722"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/CHANGES.diff",
+      "sha256": "ee339682eec984d7af63d0f3ebac4545e8d0c19a664f87aabb6bb2cd1cad08be"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/docs_checkpoint023/RECORD.json",
+      "sha256": "baf589132d52d888efe35ae25efa944e3d9abe716c612bd676ec20a25e0be623"
+    }
+  ]
+}

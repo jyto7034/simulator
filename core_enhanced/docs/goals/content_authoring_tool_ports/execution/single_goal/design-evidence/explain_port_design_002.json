@@ -1,0 +1,811 @@
+{
+  "schema": "readonly_explain_port_design_v2",
+  "status": "bounded_source_design_helper_only",
+  "not_completion_audit": true,
+  "workspace": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "captured_at_utc": "2026-09-10T01:54:26.510938+00:00",
+  "written_files": [
+    "/tmp/r03_explain_port_design_002.md",
+    "/tmp/r03_explain_port_design_002.json"
+  ],
+  "production_docs_tests_build_mutations": [],
+  "tests_builds_runtime_tool_probes_executed": [],
+  "source_snapshot_limit": "Final raw hashes only; root changing other implementation concurrently; no full before/after or atomic multi-file currentness assertion.",
+  "sources": [
+    {
+      "id": "GOAL",
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_50_GOAL_SET_001.ko.md",
+      "sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "bytes": 33683,
+      "observed_spans_or_selectors": [
+        "35–40",
+        "44–72",
+        "97–99",
+        "123–131"
+      ],
+      "read_method": "current Goal direct sed and targeted describe/explain grep"
+    },
+    {
+      "id": "PLAN",
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+      "sha256": "7ec3f77b53122658d919d6b8b65b0fad19ab575e32053501e866851047c6bf13",
+      "bytes": 22600,
+      "observed_spans_or_selectors": [
+        "current opening and GEX10 sections; describe/explain/source clauses at46–78,127–143"
+      ],
+      "read_method": "cat + targeted rg; long tool output truncated, exact relied clauses re-read separately"
+    },
+    {
+      "id": "AUTHORING",
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "sha256": "c449691eeecabf5ee4f3093005e9fe1d2db377f17b0d04a27e1c1ee213f0a5fb",
+      "bytes": 4138,
+      "observed_spans_or_selectors": [
+        "1–141"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "CONTENT",
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "sha256": "cdca9db0f33f6590406162db40c8a238fe195f55c5e4754383fb86065fa03fab",
+      "bytes": 7931,
+      "observed_spans_or_selectors": [
+        "1–145"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "RAW",
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "sha256": "72c6fa4917831d76c87c0f9a0cd58c8be3c8e5342235c8ef01a80a94c94852e7",
+      "bytes": 49105,
+      "observed_spans_or_selectors": [
+        "48–232",
+        "560–616",
+        "905–940",
+        "assemble match symbols743–890"
+      ],
+      "read_method": "direct sed/targeted rg; macro mechanically enumerated for report only"
+    },
+    {
+      "id": "SCHEMA",
+      "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+      "sha256": "3c44c1cb3fc4df3ef5ebea29cfbdb939a3614735ec77e2391f2ee4b4a1fd0616",
+      "bytes": 6993,
+      "observed_spans_or_selectors": [
+        "1–210"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "WRITERS",
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399",
+      "bytes": 17994,
+      "observed_spans_or_selectors": [
+        "1–69",
+        "452–476"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "RECEIPT",
+      "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "sha256": "2cbcf06e0efebf64ad8ca58df22f2b38de078945954b5073d890d285c43f826b",
+      "bytes": 26257,
+      "observed_spans_or_selectors": [
+        "1–44"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "DATA",
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "sha256": "84d12f3cd0a9d3bbe7df5910ce4e83964fd3152a7409b1f0bbcb23b46cae4644",
+      "bytes": 53138,
+      "observed_spans_or_selectors": [
+        "174–268",
+        "1038–1062",
+        "index initialization940–961 targeted rg"
+      ],
+      "read_method": "direct sed/rg"
+    },
+    {
+      "id": "EFFECT",
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "bytes": 6247,
+      "observed_spans_or_selectors": [
+        "1–243"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "SKILL",
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5",
+      "bytes": 65786,
+      "observed_spans_or_selectors": [
+        "1–330",
+        "697–731"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "ABILITY",
+      "path": "core_enhanced/src/game/ability.rs",
+      "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195",
+      "bytes": 38098,
+      "observed_spans_or_selectors": [
+        "709–790"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "BOSS",
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "sha256": "e75f62fbe07326411ac2625f1285b2dd7551592f29850976616c48fed6ab1cdf",
+      "bytes": 159741,
+      "observed_spans_or_selectors": [
+        "55–91",
+        "409–449",
+        "521–646",
+        "676–869",
+        "1872–1962",
+        "2235–2260",
+        "2555–2615",
+        "2685–2730",
+        "compiled actor binding sort3037 targeted rg"
+      ],
+      "read_method": "direct sed/rg"
+    },
+    {
+      "id": "SUMMON",
+      "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+      "sha256": "7454218b1fc382c52d61773ef8a75817b05aea1f506a4104a08795bb8043f0b0",
+      "bytes": 12464,
+      "observed_spans_or_selectors": [
+        "48–111"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "PROFILE",
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f",
+      "bytes": 36600,
+      "observed_spans_or_selectors": [
+        "387–438"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "SHOP",
+      "path": "core_enhanced/src/game/data/shop_data.rs",
+      "sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001",
+      "bytes": 20073,
+      "observed_spans_or_selectors": [
+        "111–122",
+        "preset/get lookup symbols176–193"
+      ],
+      "read_method": "direct sed/targeted rg"
+    },
+    {
+      "id": "REWARD",
+      "path": "core_enhanced/src/game/data/reward_data.rs",
+      "sha256": "8c9c74caee02c1c3006ad41fb532b65db8f9666ec154cd0f19d60dbe96c00c49",
+      "bytes": 10304,
+      "observed_spans_or_selectors": [
+        "Database collections71–74; get_by_id263+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "EVENT",
+      "path": "core_enhanced/src/game/data/event_data.rs",
+      "sha256": "11ac2223f2587e5149a78ab14793e172e55b13cc97bdbecbbc6ad6007e4f8409",
+      "bytes": 22957,
+      "observed_spans_or_selectors": [
+        "Database events163–164; get_by_id203+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "VN",
+      "path": "core_enhanced/src/game/data/visual_novel_data.rs",
+      "sha256": "93303a188777146bec027ce2c7c5d0a9d6499ea64858f1855dbb9f5f5aac4b37",
+      "bytes": 21541,
+      "observed_spans_or_selectors": [
+        "Database visual_novels168–169; get_by_id216+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "VNTRIGGER",
+      "path": "core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "sha256": "4abe1bb5cfed1ead3d5fd528c8fe33e3470edae6b4cd0ceeab27694138c082fe",
+      "bytes": 14020,
+      "observed_spans_or_selectors": [
+        "Database triggers78–79; get_by_id123+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "OMEN",
+      "path": "core_enhanced/src/game/data/boss_omen_data.rs",
+      "sha256": "b1bf3d19ea2712c4028a5113eabd343066a4251cfc0de5ec37b585de37467412",
+      "bytes": 13260,
+      "observed_spans_or_selectors": [
+        "Database chains89–90; get_by_id198+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "ABNORMALITY",
+      "path": "core_enhanced/src/game/data/abnormality_data.rs",
+      "sha256": "bbda968e58c0bcfdeae09f7796ae4ed1fa92893fd89f8c250e4014a6e3275828",
+      "bytes": 18532,
+      "observed_spans_or_selectors": [
+        "Database items316–317; get_by_id466+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "CORRODED",
+      "path": "core_enhanced/src/game/data/corroded_employee_data.rs",
+      "sha256": "0027a9e242ce687d62ff61d5071fbab633576192c45fd42512f6faf952276d67",
+      "bytes": 22922,
+      "observed_spans_or_selectors": [
+        "Database range_presets/profiles97–100; get_by_id229+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "WAVE",
+      "path": "core_enhanced/src/game/data/corroded_wave_data.rs",
+      "sha256": "d36af93ad12d0dc95e5d3d28fd692678ac29a13032eb88909d5a4df193cf3833",
+      "bytes": 7000,
+      "observed_spans_or_selectors": [
+        "Database presets44–45; get_by_id151+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "EMPLOYEE",
+      "path": "core_enhanced/src/game/data/employee_data.rs",
+      "sha256": "bed7d6f4bebf981a2bab274f323e6cd53d89feec39507fc95c4fcc939f3a25d4",
+      "bytes": 8633,
+      "observed_spans_or_selectors": [
+        "1–44; get_by_id120+"
+      ],
+      "read_method": "direct sed/targeted rg"
+    },
+    {
+      "id": "EQUIPMENT",
+      "path": "core_enhanced/src/game/data/equipment_data.rs",
+      "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "bytes": 37726,
+      "observed_spans_or_selectors": [
+        "261–279; lookup methods530–560"
+      ],
+      "read_method": "direct sed/targeted rg"
+    },
+    {
+      "id": "CONSUMABLE",
+      "path": "core_enhanced/src/game/data/consumable_data.rs",
+      "sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114",
+      "bytes": 13860,
+      "observed_spans_or_selectors": [
+        "Database items118–119; get_by_id158+"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "BUFF",
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "sha256": "4b501650a51b5835814fa3a2e689ba19e8de1780144f1c29ddf07f4b28ec783b",
+      "bytes": 8734,
+      "observed_spans_or_selectors": [
+        "69–88; runtime get177+"
+      ],
+      "read_method": "direct sed/targeted rg"
+    },
+    {
+      "id": "FRAGMENT",
+      "path": "core_enhanced/src/game/data/skill_fragment_data.rs",
+      "sha256": "5fd2772af7d0dc8ff5c0abee5cb7b05bdcb0996ce55a67e1a717d34dff5bc9ad",
+      "bytes": 24280,
+      "observed_spans_or_selectors": [
+        "Database fragments454–455; get_by_id542–554"
+      ],
+      "read_method": "targeted rg only"
+    },
+    {
+      "id": "PVE",
+      "path": "core_enhanced/src/game/data/pve_data.rs",
+      "sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19",
+      "bytes": 88720,
+      "observed_spans_or_selectors": [
+        "558–574",
+        "729–744"
+      ],
+      "read_method": "direct sed/targeted rg"
+    },
+    {
+      "id": "MAP",
+      "path": "core_enhanced/src/game/map/types.rs",
+      "sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f",
+      "bytes": 24289,
+      "observed_spans_or_selectors": [
+        "240–262"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "FACILITY",
+      "path": "core_enhanced/src/game/map/facility.rs",
+      "sha256": "0122d19e7e146ca6b3a8e94bad29416a4c8fd06a1e8f4a6a02076ab16fb2f6cd",
+      "bytes": 38869,
+      "observed_spans_or_selectors": [
+        "1–154",
+        "184–210"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "BATTLEFIELD",
+      "path": "core_enhanced/src/game/combat_preview/mod.rs",
+      "sha256": "9e184b5ca43efa0e46f669e4d46c47d898943454185033ec903f8851fba37dfc",
+      "bytes": 100486,
+      "observed_spans_or_selectors": [
+        "1–99"
+      ],
+      "read_method": "direct sed"
+    },
+    {
+      "id": "LIVE",
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "sha256": "36a6fdcaa3542f552a6d9746b250c35170a023762e2ce54d2cba619947308529",
+      "bytes": 209236,
+      "observed_spans_or_selectors": [
+        "GameplayMapCatalogs296–301 field selectors"
+      ],
+      "read_method": "targeted rg only"
+    }
+  ],
+  "definition_kind_count": 42,
+  "definition_mapping": [
+    {
+      "kind": "ShopPreset",
+      "raw_type": "ShopMerchandisePreset",
+      "catalog": "Shops",
+      "collection": "merchandise_presets",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &ShopMerchandisePreset| value.id.as_str().to_owned()",
+      "lookup": "db.shop_data.preset_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "Shop",
+      "raw_type": "ShopMetadata",
+      "catalog": "Shops",
+      "collection": "shops",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &ShopMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.shop_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "ShopPool",
+      "raw_type": "ShopPoolMetadata",
+      "catalog": "Shops",
+      "collection": "pools",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &ShopPoolMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.shop_data.pools; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "Reward",
+      "raw_type": "RewardMetadata",
+      "catalog": "Rewards",
+      "collection": "rewards",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &RewardMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.reward_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "RewardPool",
+      "raw_type": "RewardPoolMetadata",
+      "catalog": "Rewards",
+      "collection": "pools",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &RewardPoolMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.reward_data.pools; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "EquipmentRewardPool",
+      "raw_type": "EquipmentRewardPoolMetadata",
+      "catalog": "Rewards",
+      "collection": "equipment_pools",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &EquipmentRewardPoolMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.reward_data.equipment_pools; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "Event",
+      "raw_type": "EventDefinition",
+      "catalog": "Events",
+      "collection": "events",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &EventDefinition| value.id.as_str().to_owned()",
+      "lookup": "db.event_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "VisualNovel",
+      "raw_type": "VisualNovelDefinition",
+      "catalog": "VisualNovels",
+      "collection": "visual_novels",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &VisualNovelDefinition| value.id.as_str().to_owned()",
+      "lookup": "db.visual_novel_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "VisualNovelTrigger",
+      "raw_type": "VisualNovelTrigger",
+      "catalog": "VisualNovelTriggers",
+      "collection": "triggers",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &VisualNovelTrigger| value.id.as_str().to_owned()",
+      "lookup": "db.visual_novel_trigger_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "BossOmenChain",
+      "raw_type": "BossOmenChain",
+      "catalog": "BossOmenChains",
+      "collection": "chains",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BossOmenChain| value.id.as_str().to_owned()",
+      "lookup": "db.boss_omen_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "BossPattern",
+      "raw_type": "BossPatternDefinitionData",
+      "catalog": "BossRuntime",
+      "collection": "patterns",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BossPatternDefinitionData| value.id.as_str().to_owned()",
+      "lookup": "db.boss_runtime_data.get_pattern(&BossPatternId::new(id))",
+      "representation": "compiled graph DTO"
+    },
+    {
+      "kind": "BossActorBehavior",
+      "raw_type": "BossActorBehaviorDefinitionData",
+      "catalog": "BossRuntime",
+      "collection": "actor_behaviors",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BossActorBehaviorDefinitionData| value.id.as_str().to_owned()",
+      "lookup": "db.boss_runtime_data.get_actor_behavior(&BossActorBehaviorId::new(id))",
+      "representation": "compiled graph DTO"
+    },
+    {
+      "kind": "BossEncounter",
+      "raw_type": "BossEncounterDefinitionData",
+      "catalog": "BossRuntime",
+      "collection": "encounters",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BossEncounterDefinitionData| value.id.as_str().to_owned()",
+      "lookup": "db.boss_runtime_data.get_encounter(&BossEncounterRuntimeId::new(id))",
+      "representation": "compiled graph DTO"
+    },
+    {
+      "kind": "BossSignal",
+      "raw_type": "BossSignalDefinitionData",
+      "catalog": "BossRuntime",
+      "collection": "signals",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BossSignalDefinitionData| value.id.as_str().to_owned()",
+      "lookup": "db.boss_runtime_data.declares_signal(&BossSignalId::new(id))",
+      "representation": "declared ID; authored signal has only id"
+    },
+    {
+      "kind": "SummonedUnit",
+      "raw_type": "SummonedUnitDefinitionData",
+      "catalog": "SummonedUnits",
+      "collection": "definitions",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &SummonedUnitDefinitionData| value.id.as_str().to_owned()",
+      "lookup": "db.boss_runtime_data.get_summoned_unit(&SummonedUnitDefinitionId::new(id))",
+      "representation": "compiled definition DTO"
+    },
+    {
+      "kind": "Abnormality",
+      "raw_type": "RawAbnormalityMetadata",
+      "catalog": "Abnormalities",
+      "collection": "items",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &RawAbnormalityMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.abnormality_data.get_by_id(id)",
+      "representation": "resolved record; raw conversion already applied"
+    },
+    {
+      "kind": "CorrodedRangePreset",
+      "raw_type": "CorrodedEmployeeBasicAttackRangePresetDef",
+      "catalog": "CorrodedEmployees",
+      "collection": "range_presets",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &CorrodedEmployeeBasicAttackRangePresetDef| value.id.as_str().to_owned()",
+      "lookup": "db.corroded_employee_data.range_presets; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "CorrodedProfile",
+      "raw_type": "RawCorrodedEmployeeProfileMetadata",
+      "catalog": "CorrodedEmployees",
+      "collection": "profiles",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &RawCorrodedEmployeeProfileMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.corroded_employee_data.get_by_id(id)",
+      "representation": "resolved record; raw conversion already applied"
+    },
+    {
+      "kind": "CorrodedWavePreset",
+      "raw_type": "CorrodedWavePreset",
+      "catalog": "CorrodedWavePresets",
+      "collection": "presets",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &CorrodedWavePreset| value.id.as_str().to_owned()",
+      "lookup": "db.corroded_wave_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "Employee",
+      "raw_type": "EmployeeDefinition",
+      "catalog": "Employees",
+      "collection": "definitions",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &EmployeeDefinition| value.employee_definition_id.as_str().to_owned()",
+      "lookup": "db.employee_definition_data.get_by_id(id)",
+      "representation": "resolved record; key is employee_definition_id"
+    },
+    {
+      "kind": "Equipment",
+      "raw_type": "EquipmentMetadata",
+      "catalog": "Equipment",
+      "collection": "items",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &EquipmentMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.equipment_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "EquipmentMaterial",
+      "raw_type": "EquipmentMaterialMetadata",
+      "catalog": "Equipment",
+      "collection": "materials",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &EquipmentMaterialMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.equipment_data.get_material_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "DismantleRecipe",
+      "raw_type": "EquipmentDismantleRecipeMetadata",
+      "catalog": "Equipment",
+      "collection": "dismantle_recipes",
+      "key_scope": "ReferenceKey",
+      "key_extractor_source": "|value: &EquipmentDismantleRecipeMetadata| value.equipment_id.as_str().to_owned()",
+      "lookup": "db.equipment_data.get_dismantle_recipe_by_equipment_id(id)",
+      "representation": "resolved record; reference key"
+    },
+    {
+      "kind": "EnhancementRecipe",
+      "raw_type": "EquipmentEnhancementRecipeMetadata",
+      "catalog": "Equipment",
+      "collection": "enhancement_recipes",
+      "key_scope": "ReferenceKey",
+      "key_extractor_source": "|value: &EquipmentEnhancementRecipeMetadata| value.equipment_id.as_str().to_owned()",
+      "lookup": "db.equipment_data.get_enhancement_recipe_by_equipment_id(id)",
+      "representation": "resolved record; reference key"
+    },
+    {
+      "kind": "Consumable",
+      "raw_type": "ConsumableMetadata",
+      "catalog": "Consumables",
+      "collection": "items",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &ConsumableMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.consumable_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "Buff",
+      "raw_type": "BuffMetadata",
+      "catalog": "Buffs",
+      "collection": "buffs",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BuffMetadata| value.name.as_str().to_owned()",
+      "lookup": "db.buff_data.buffs; find .name == id",
+      "representation": "metadata record; avoid BuffId runtime get for authored key"
+    },
+    {
+      "kind": "SkillRangePreset",
+      "raw_type": "SkillRangePresetDef",
+      "catalog": "Skills",
+      "collection": "range_presets",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &SkillRangePresetDef| value.id.as_str().to_owned()",
+      "lookup": "db.skill_data.range_presets; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "Skill",
+      "raw_type": "RawSkillDef",
+      "catalog": "Skills",
+      "collection": "skills",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &RawSkillDef| value.id.as_str().to_owned()",
+      "lookup": "db.skill_data.get_by_id(id)",
+      "representation": "resolved SkillDef; effect source requires explicit sidecar"
+    },
+    {
+      "kind": "SkillFragment",
+      "raw_type": "SkillFragmentMetadata",
+      "catalog": "SkillFragments",
+      "collection": "fragments",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &SkillFragmentMetadata| value.id.as_str().to_owned()",
+      "lookup": "db.skill_fragment_data.get_by_id_str(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "PveEncounter",
+      "raw_type": "PveEncounter",
+      "catalog": "PveEncounters",
+      "collection": "encounters",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &PveEncounter| value.id.as_str().to_owned()",
+      "lookup": "db.pve_data.get_by_id(id)",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "PveRewardSource",
+      "raw_type": "PveEncounterRewardSource",
+      "catalog": "PveEncounters",
+      "collection": "reward_sources",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &PveEncounterRewardSource| value.reward_source_id.as_str().to_owned()",
+      "lookup": "db.pve_data.reward_sources; find .reward_source_id == id",
+      "representation": "resolved record; encounter lookup uses a different key"
+    },
+    {
+      "kind": "RunPolicy",
+      "raw_type": "RunPolicyData",
+      "catalog": "RunPolicy",
+      "collection": "",
+      "key_scope": "FixedKey",
+      "key_extractor_source": "|_value: &RunPolicyData| \"run_policy\".to_owned()",
+      "lookup": "db.run_policy.as_ref(); require exact key run_policy",
+      "representation": "resolved singleton"
+    },
+    {
+      "kind": "MapNode",
+      "raw_type": "MapNodeDefinition",
+      "catalog": "MapNodes",
+      "collection": "nodes",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &MapNodeDefinition| value.kind_id.as_str().to_owned()",
+      "lookup": "db.map_node_definitions().nodes; find .kind_id.as_str() == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "FacilityTags",
+      "raw_type": "Vec<String>",
+      "catalog": "FacilityTemplates",
+      "collection": "tag_catalog",
+      "key_scope": "FixedKey",
+      "key_extractor_source": "|_value: &Vec<String>| \"tag_catalog\".to_owned()",
+      "lookup": "db.facility_templates().tag_catalog; require exact key tag_catalog",
+      "representation": "resolved singleton list"
+    },
+    {
+      "kind": "FacilityTemplate",
+      "raw_type": "FacilityTemplate",
+      "catalog": "FacilityTemplates",
+      "collection": "templates",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &FacilityTemplate| value.id.as_str().to_owned()",
+      "lookup": "db.facility_templates().templates; find .id.as_str() == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "FacilityPool",
+      "raw_type": "FacilityTemplatePool",
+      "catalog": "FacilityTemplates",
+      "collection": "pools",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &FacilityTemplatePool| value.id.as_str().to_owned()",
+      "lookup": "db.facility_templates().pools; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "NodeAssignmentProfile",
+      "raw_type": "NodeAssignmentProfile",
+      "catalog": "NodeAssignmentProfiles",
+      "collection": "profiles",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &NodeAssignmentProfile| value.id.as_str().to_owned()",
+      "lookup": "db.node_assignment_profiles().profiles; find .id == id",
+      "representation": "resolved record"
+    },
+    {
+      "kind": "StandardSchedule",
+      "raw_type": "StandardFacilityScheduleEntry",
+      "catalog": "NodeAssignmentProfiles",
+      "collection": "standard_schedule",
+      "key_scope": "FixedKey",
+      "key_extractor_source": "|value: &StandardFacilityScheduleEntry| value.floor.to_string()",
+      "lookup": "db.node_assignment_profiles().standard_schedule; find .floor.to_string() == id",
+      "representation": "resolved record; exact canonical floor-string key"
+    },
+    {
+      "kind": "EndlessSchedule",
+      "raw_type": "Vec<EndlessFacilityScheduleStage>",
+      "catalog": "NodeAssignmentProfiles",
+      "collection": "endless_stages",
+      "key_scope": "FixedKey",
+      "key_extractor_source": "|_value: &Vec<EndlessFacilityScheduleStage>| \"endless_stages\".to_owned()",
+      "lookup": "db.node_assignment_profiles().endless_stages; require exact key endless_stages",
+      "representation": "resolved singleton list"
+    },
+    {
+      "kind": "BattlefieldSize",
+      "raw_type": "BattlefieldSizeClassDefinition",
+      "catalog": "BattlefieldArchetypes",
+      "collection": "size_classes",
+      "key_scope": "FixedKey",
+      "key_extractor_source": "|value: &BattlefieldSizeClassDefinition| format!(\"{:?}\", value.size_class)",
+      "lookup": "db.map_catalogs.battlefield_archetypes.size_classes; match format!(Debug, .size_class) to id",
+      "representation": "crate-private borrowed serializable record; use same key extraction as raw"
+    },
+    {
+      "kind": "BattlefieldArchetype",
+      "raw_type": "BattlefieldArchetypeGenerationDefinition",
+      "catalog": "BattlefieldArchetypes",
+      "collection": "archetypes",
+      "key_scope": "FixedKey",
+      "key_extractor_source": "|value: &BattlefieldArchetypeGenerationDefinition| format!(\"{:?}\", value.archetype)",
+      "lookup": "db.map_catalogs.battlefield_archetypes.archetypes; match format!(Debug, .archetype) to id",
+      "representation": "crate-private borrowed serializable record; use same key extraction as raw"
+    },
+    {
+      "kind": "BattlefieldTemplate",
+      "raw_type": "BattlefieldTemplateDefinition",
+      "catalog": "BattlefieldTemplates",
+      "collection": "",
+      "key_scope": "IndependentString",
+      "key_extractor_source": "|value: &BattlefieldTemplateDefinition| value.id.as_str().to_owned()",
+      "lookup": "db.map_catalogs.battlefield_templates.templates; find .id == id",
+      "representation": "crate-private borrowed serializable record"
+    }
+  ],
+  "actual_support_source": "ability::authoring::EFFECT_SUPPORT; Instant Damage/Heal only; no support expansion",
+  "known_information_gaps": [
+    "nonwinning or removed writer source_file/field_path/manifest operation ordinal/payload",
+    "exact authored compiled child source ordinal/line/column",
+    "origin action/effect lineage beyond source_definition_id",
+    "queryable full selected manifest",
+    "forecasts or future selector semantics"
+  ],
+  "retention_design": "same immutable generation references plus bounded transient DTO/output; no rawtext copy, second DB, recompile, filesystem reopen or new cache",
+  "report_sha256": "082375d8d9feb61de0a8bda48d278430eca83f74ac1358adac8c2172e3f64ffe"
+}

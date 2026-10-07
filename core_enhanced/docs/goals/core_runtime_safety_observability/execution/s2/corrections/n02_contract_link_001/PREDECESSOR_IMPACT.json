@@ -1,0 +1,362 @@
+{
+  "source_sha256": "32a04b7e28631de2387a056e80a6116ca7e22b65d780c91c8cf365804eb101f2",
+  "changed": [
+    "core_enhanced/docs/core_runtime_contract.md"
+  ],
+  "conditions": [
+    {
+      "id": "A08-01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A08-02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A08-03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A08-04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A08-05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A08-06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A08-07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A09-10",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A10-09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A11-09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "A12-10",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "X10",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-10",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-11",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-12",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-13",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-14",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-15",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-16",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-17",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-18",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-19",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-20",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "IVA-CAVER-21",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F01",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F02",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F03",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F04",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F05",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F06",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F07",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F08",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F09",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F10",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F11",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    },
+    {
+      "id": "F12",
+      "disposition": "current via exact prior executable-input and semantic-review reuse"
+    }
+  ],
+  "prior_independent_review_sha256": "fd7470740e90ae0a6ace3adac8035c577b413914ae2a972338cd5df5edd98121",
+  "independent_audit": "pending N02 documentation delta/currentness assessment"
+}

@@ -1,0 +1,23 @@
+{
+  "published_at_utc": "2026-10-06T05:36:42.245276+00:00",
+  "record_sha256": "d2961b96a391ed28925ccbf20bbe832f0223586847c0661e55358ecb5bfe1151",
+  "before_archive_sha256": "bf533da8dfb8718df1d125745baf8c8e6c32b5483db27626c10b947c6f56f06b",
+  "diff_sha256": "8c8a79662a53bb204594e9e2df6ce76643db16dc893321fd1de37a384497fe96",
+  "evidence_sha256": "7ab0d775f8a573a215a9f2089cc6a6aecd46a0f6ecc62fc0556107ad801d7d91",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "before_sha256": "72fe1f5ae08534e0effd9279c50fc19c3327d5c6e9a03948e73778ec34d89f5e",
+      "after_sha256": "578945add1e836b950dac5f9138b7a210b5bee1fd52cf7928810148e9dda0666"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before_sha256": "e5693e301596957f0f6c0a3d25aca2d8692b11c9475ec3c243907427845116ba",
+      "after_sha256": "c6cc2c9e0c429a949eff27f6d0bd097c324450a2ea3110b49fcba2b1d74e3e14"
+    }
+  ],
+  "last_verified_source": "2cfcdfe0555274844b85382ac1672c3315b3ca71c0f2701ba24271e64fef26ca",
+  "live_source_status": "D test writer active; last verified source is not a claim of live identity",
+  "whole_goal_complete": false,
+  "source_changes_by_root": false
+}

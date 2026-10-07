@@ -1,0 +1,1396 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E01-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "제작자는 공통 library의 검증·지원 설명·해설·시험 실행과 같은 의미의 얇은 CLI를 사용한다. 현재 지원 어휘만 공개하며 같은 production 검증·실행을 거친다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CATP-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CATP-E01",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "제작자는 공통 library의 검증·지원 설명·해설·시험 실행과 같은 의미의 얇은 CLI를 사용한다. 현재 지원 어휘만 공개하며 같은 production 검증·실행을 거친다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CATP-E01": [
+            "독립 외부 RON 입력이 API와 CLI에서 같은 production 로딩·컴파일·실행에 연결된다.",
+            "지원 설명은 실제 지원과 일치하고 미지원 조합은 명시적으로 거부된다. fixture-only 생성이나 콘텐츠 이름별 전용 runner로 성공을 대신하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U01",
+                "U02",
+                "U13"
+              ],
+              "spans": [
+                {
+                  "line": 9,
+                  "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |"
+                },
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                },
+                {
+                  "line": 21,
+                  "exact_text": "| U13 | game_server와 Unity 구현·계약 전환은 이번 범위 밖이다. 코어 API와 headless 호스트로 검증하며 실제 클라이언트·네트워크 통합 성공을 주장하지 않는다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "제작자는 공통 library의 검증·지원 설명·해설·시험 실행과 같은 의미의 얇은 CLI를 사용한다. 현재 지원 어휘만 공개하며 같은 production 검증·실행을 거친다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CATP-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "독립 외부 RON 입력이 API와 CLI에서 같은 production 로딩·컴파일·실행에 연결된다.",
+          "지원 설명은 실제 지원과 일치하고 미지원 조합은 명시적으로 거부된다. fixture-only 생성이나 콘텐츠 이름별 전용 runner로 성공을 대신하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-01",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U01",
+                "U02",
+                "U13"
+              ],
+              "spans": [
+                {
+                  "line": 9,
+                  "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |"
+                },
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                },
+                {
+                  "line": 21,
+                  "exact_text": "| U13 | game_server와 Unity 구현·계약 전환은 이번 범위 밖이다. 코어 API와 headless 호스트로 검증하며 실제 클라이언트·네트워크 통합 성공을 주장하지 않는다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CATP-E01",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "현재 사용자 채택이 요구한 R03 기능·완료 의미와 기존 U/PG 경계를 결속한다. 새 gameplay·공식 수치·개인 저장 손실·호환 예외는 결정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E02-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "진단은 오류의 의미·생산 단계와 실제 pack/file/definition/action/effect/field 및 관련 source를 구조화한다. 알려진 capability와 수정할 위치를 알 수 있으며 확보하지 못한 정밀도를 만들어내지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CATP-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CATP-E02",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "진단은 오류의 의미·생산 단계와 실제 pack/file/definition/action/effect/field 및 관련 source를 구조화한다. 알려진 capability와 수정할 위치를 알 수 있으며 확보하지 못한 정밀도를 만들어내지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CATP-E02": [
+            "같은 잘못된 입력에 API와 CLI가 동일 의미의 code/phase/source 진단을 제공한다.",
+            "구문·구조·최종 조합·컴파일·generated setup·시험 준비 실패는 알려진 실제 출처와 관련 입력을 보존하며 잘못된 후보를 성공으로 게시하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U02"
+              ],
+              "spans": [
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "진단은 오류의 의미·생산 단계와 실제 pack/file/definition/action/effect/field 및 관련 source를 구조화한다. 알려진 capability와 수정할 위치를 알 수 있으며 확보하지 못한 정밀도를 만들어내지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CATP-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 잘못된 입력에 API와 CLI가 동일 의미의 code/phase/source 진단을 제공한다.",
+          "구문·구조·최종 조합·컴파일·generated setup·시험 준비 실패는 알려진 실제 출처와 관련 입력을 보존하며 잘못된 후보를 성공으로 게시하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-02",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U02"
+              ],
+              "spans": [
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CATP-E02",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "현재 사용자 채택이 요구한 R03 기능·완료 의미와 기존 U/PG 경계를 결속한다. 새 gameplay·공식 수치·개인 저장 손실·호환 예외는 결정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E03-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "일반 공개 코어 포트의 시나리오는 선택 콘텐츠로 실제 실행하고 초기 상태의 출처·seed·입력·clock·content fingerprint·결과·오류·semantic trace·실행 관찰을 재현 가능한 receipt에 남긴다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CATP-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CATP-E03",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "일반 공개 코어 포트의 시나리오는 선택 콘텐츠로 실제 실행하고 초기 상태의 출처·seed·입력·clock·content fingerprint·결과·오류·semantic trace·실행 관찰을 재현 가능한 receipt에 남긴다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CATP-E03": [
+            "독립 외부 RON의 변경이 공통 공개 코어를 거친 실제 전투 실행과 관찰 결과에 반영된다. 문서·컴파일 성공만을 실행으로 세지 않는다.",
+            "같은 초기 authority·콘텐츠·seed·입력·clock은 적용 가능한 semantic 결과와 출처를 재현하고 trace 수집 여부가 gameplay 결과와 RNG를 바꾸지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U01",
+                "U02",
+                "U13"
+              ],
+              "spans": [
+                {
+                  "line": 9,
+                  "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |"
+                },
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                },
+                {
+                  "line": 21,
+                  "exact_text": "| U13 | game_server와 Unity 구현·계약 전환은 이번 범위 밖이다. 코어 API와 headless 호스트로 검증하며 실제 클라이언트·네트워크 통합 성공을 주장하지 않는다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "일반 공개 코어 포트의 시나리오는 선택 콘텐츠로 실제 실행하고 초기 상태의 출처·seed·입력·clock·content fingerprint·결과·오류·semantic trace·실행 관찰을 재현 가능한 receipt에 남긴다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CATP-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "독립 외부 RON의 변경이 공통 공개 코어를 거친 실제 전투 실행과 관찰 결과에 반영된다. 문서·컴파일 성공만을 실행으로 세지 않는다.",
+          "같은 초기 authority·콘텐츠·seed·입력·clock은 적용 가능한 semantic 결과와 출처를 재현하고 trace 수집 여부가 gameplay 결과와 RNG를 바꾸지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-03",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U01",
+                "U02",
+                "U13"
+              ],
+              "spans": [
+                {
+                  "line": 9,
+                  "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |"
+                },
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                },
+                {
+                  "line": 21,
+                  "exact_text": "| U13 | game_server와 Unity 구현·계약 전환은 이번 범위 밖이다. 코어 API와 headless 호스트로 검증하며 실제 클라이언트·네트워크 통합 성공을 주장하지 않는다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CATP-E03",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "현재 사용자 채택이 요구한 R03 기능·완료 의미와 기존 U/PG 경계를 결속한다. 새 gameplay·공식 수치·개인 저장 손실·호환 예외는 결정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E04-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "Explain/Preview는 현재 불변 세대와 실제 시험 관찰을 읽고 state·RNG·revision을 바꾸지 않는다. 실제 정의·효과 출처와 현재 설명 가능한 결과를 제공한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CATP-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CATP-E04",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "Explain/Preview는 현재 불변 세대와 실제 시험 관찰을 읽고 state·RNG·revision을 바꾸지 않는다. 실제 정의·효과 출처와 현재 설명 가능한 결과를 제공한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CATP-E04": [
+            "Explain/Preview의 반복 전후 state·authority·revision과 이어지는 결정론적 실행이 유지된다.",
+            "실제 선택 정의·효과 origin과 관찰을 설명하며 미구현 후속 기능의 의미를 실행된 결과처럼 꾸미지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U02"
+              ],
+              "spans": [
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "Explain/Preview는 현재 불변 세대와 실제 시험 관찰을 읽고 state·RNG·revision을 바꾸지 않는다. 실제 정의·효과 출처와 현재 설명 가능한 결과를 제공한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CATP-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "Explain/Preview의 반복 전후 state·authority·revision과 이어지는 결정론적 실행이 유지된다.",
+          "실제 선택 정의·효과 origin과 관찰을 설명하며 미구현 후속 기능의 의미를 실행된 결과처럼 꾸미지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-04",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U02"
+              ],
+              "spans": [
+                {
+                  "line": 10,
+                  "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CATP-E04",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "현재 사용자 채택이 요구한 R03 기능·완료 의미와 기존 U/PG 경계를 결속한다. 새 gameplay·공식 수치·개인 저장 손실·호환 예외는 결정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E05-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "시험 reload는 새 콘텐츠의 검증과 요청된 새 시험 전투/session 준비가 모두 성공한 뒤 기존 session을 교체한다. 실패는 실제 오류를 반환하고 기존 시험 session을 보존한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CATP-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CATP-E05",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "시험 reload는 새 콘텐츠의 검증과 요청된 새 시험 전투/session 준비가 모두 성공한 뒤 기존 session을 교체한다. 실패는 실제 오류를 반환하고 기존 시험 session을 보존한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CATP-E05": [
+            "정상 A→B reload는 B의 실제 시험 준비 뒤 교체되고 새 state·token·입력·receipt가 B와 일치한다.",
+            "잘못된 B와 검증은 성공했으나 시험 준비가 실패한 B는 A state·token·seed·입력·receipt를 반복 시도에서도 보존하며 이후 정상 B로 복구할 수 있다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U05"
+              ],
+              "spans": [
+                {
+                  "line": 13,
+                  "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "시험 reload는 새 콘텐츠의 검증과 요청된 새 시험 전투/session 준비가 모두 성공한 뒤 기존 session을 교체한다. 실패는 실제 오류를 반환하고 기존 시험 session을 보존한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CATP-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "정상 A→B reload는 B의 실제 시험 준비 뒤 교체되고 새 state·token·입력·receipt가 B와 일치한다.",
+          "잘못된 B와 검증은 성공했으나 시험 준비가 실패한 B는 A state·token·seed·입력·receipt를 반복 시도에서도 보존하며 이후 정상 B로 복구할 수 있다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-05",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U05"
+              ],
+              "spans": [
+                {
+                  "line": 13,
+                  "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CATP-E05",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "현재 사용자 채택이 요구한 R03 기능·완료 의미와 기존 U/PG 경계를 결속한다. 새 gameplay·공식 수치·개인 저장 손실·호환 예외는 결정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E06-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "도입하는 제작 입력·시험 진행·trace·receipt는 근거 있는 유한 한계와 소유 수명, 명시적 실패를 갖는다. 콘텐츠는 외부 코드 실행 권한이 아니며 개인 파일·기존 저장 계약과 공식 밸런스 의미를 임의 변경하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CATP-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CATP-E06",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "도입하는 제작 입력·시험 진행·trace·receipt는 근거 있는 유한 한계와 소유 수명, 명시적 실패를 갖는다. 콘텐츠는 외부 코드 실행 권한이 아니며 개인 파일·기존 저장 계약과 공식 밸런스 의미를 임의 변경하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CATP-E06": [
+            "빈값·경계·초과·손상 요청의 결과가 실제 한계와 일치하고 실패가 유효한 시험 session을 교체하지 않는다.",
+            "시험 취소·교체 때 더 이상 참조하지 않는 도입 상태를 회수하며 기존 publication·pin·save·profile·공개 API 계약은 current로 유지된다.",
+            "실제 source·toolchain·workload·명령·nonzero 실행·receipt가 실행·재사용·남은 한계를 구별하고 prototype 수치는 공식 정책과 분리한다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U04",
+                "U07",
+                "PG00",
+                "PG08"
+              ],
+              "spans": [
+                {
+                  "line": 12,
+                  "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+                },
+                {
+                  "line": 15,
+                  "exact_text": "| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |"
+                },
+                {
+                  "line": 29,
+                  "exact_text": "| PG00 | 시험용 수치·문서 상태·요구 baseline | 합의 구조는 그대로 쓰고 미정 수치는 별도 prototype profile에서 시험용으로 기입한다. 시험값 선택은 공식 밸런스 승인이 아니다. 동작 의미가 미정이면 숫자로 덮지 않는다. | CA00, CA20 전. 콘텐츠 정책은 사용자, 근거 추적과 시험 분리는 구현/검토자. |"
+                },
+                {
+                  "line": 37,
+                  "exact_text": "| PG08 | 실행 예산·성능·전투력 | 안전 한계는 실제 환경과 workload로 정한다. 입력 크기·event fan-out·instance 수·메모리/시간 계측을 포함한다. 피해 증폭 밸런스 상한과 구분한다. Certified 가중·Endless 효과는 수치 정책과 model version을 승인받고 적용한다. | CA17과 CA22의 완료 전. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CATP-E06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "도입하는 제작 입력·시험 진행·trace·receipt는 근거 있는 유한 한계와 소유 수명, 명시적 실패를 갖는다. 콘텐츠는 외부 코드 실행 권한이 아니며 개인 파일·기존 저장 계약과 공식 밸런스 의미를 임의 변경하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CATP-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "빈값·경계·초과·손상 요청의 결과가 실제 한계와 일치하고 실패가 유효한 시험 session을 교체하지 않는다.",
+          "시험 취소·교체 때 더 이상 참조하지 않는 도입 상태를 회수하며 기존 publication·pin·save·profile·공개 API 계약은 current로 유지된다.",
+          "실제 source·toolchain·workload·명령·nonzero 실행·receipt가 실행·재사용·남은 한계를 구별하고 prototype 수치는 공식 정책과 분리한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-06",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "exact_policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+              "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+              "selector": "R03 §§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+              "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+              "selector": "CA03 §§1,4,6–9"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+              "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+              "selector": "A06 §§4,6–7; technical field names remain realization proposals"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+              "selectors": [
+                "U04",
+                "U07",
+                "PG00",
+                "PG08"
+              ],
+              "spans": [
+                {
+                  "line": 12,
+                  "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+                },
+                {
+                  "line": 15,
+                  "exact_text": "| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |"
+                },
+                {
+                  "line": 29,
+                  "exact_text": "| PG00 | 시험용 수치·문서 상태·요구 baseline | 합의 구조는 그대로 쓰고 미정 수치는 별도 prototype profile에서 시험용으로 기입한다. 시험값 선택은 공식 밸런스 승인이 아니다. 동작 의미가 미정이면 숫자로 덮지 않는다. | CA00, CA20 전. 콘텐츠 정책은 사용자, 근거 추적과 시험 분리는 구현/검토자. |"
+                },
+                {
+                  "line": 37,
+                  "exact_text": "| PG08 | 실행 예산·성능·전투력 | 안전 한계는 실제 환경과 workload로 정한다. 입력 크기·event fan-out·instance 수·메모리/시간 계측을 포함한다. 피해 증폭 밸런스 상한과 구분한다. Certified 가중·Endless 효과는 수치 정책과 model version을 승인받고 적용한다. | CA17과 CA22의 완료 전. |"
+                }
+              ]
+            }
+          ],
+          "provenance_limit": "current adopted AUTORUN requires the selected R03 scope and linked acceptance. Historical user conversations are not independently retrieved. Recommended exact schema/type/port names and future gameplay are not wholesale approved."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CATP-E06",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CATP-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "현재 사용자 채택이 요구한 R03 기능·완료 의미와 기존 U/PG 경계를 결속한다. 새 gameplay·공식 수치·개인 저장 손실·호환 예외는 결정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-07",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+          "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+          "selector": "R03 §§3–7; initial scope and adopted AUTORUN §§1,3,5–9"
+        },
+        "Disposition": "not_a_policy_element",
+        "Stable Element ID": null,
+        "Initial open Policy Element Revision Ref": null,
+        "Reason": "승인된 의미 안의 P2G-20/GEX 상세 설계. 실제 코드·소유·실패·수명·workload 근거가 필요하며 공개 gameplay 의미를 변경하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CATP-08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CATP-08",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CATP-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CATP-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005",
+          "IN-007"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+          "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+          "selector": "R03 §§3–7; initial scope and adopted AUTORUN §§1,3,5–9"
+        },
+        "Disposition": "out_of_scope",
+        "Stable Element ID": null,
+        "Initial open Policy Element Revision Ref": null,
+        "Reason": "Initial scope O01–06와 AUTORUN §§1,3,5,7–9. 후속 owner에 요구를 유지하며 R03의 실제 실행·진단·readonly·reload·도입 예산은 제외하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CATP-P2G10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CATP-P2G00-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CATP-20260910",
+          "Policy Topic": "R03 공통 제작 API·CLI·설명·실제 headless 시험 포트",
+          "Requested Result": "bounded_pipeline: minimum necessary P2G through complete P2G-60 Handoff for R03",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+            "boundary": "R03 minimal bounded P2G through Handoff; separate eligible child GEX remains authorized by parent AUTORUN, not these artifacts."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "R03 common library validate/describe/explain/simulate and thin explicitly registered default-release CLI, consuming current R01/R02 contracts",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "R03 source-addressed structured diagnostics, current supported vocabulary, real generic public-core headless execution and seed/input/clock/content-fingerprint/semantic trace receipt",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "R03 test reload validates and successfully prepares a new trial battle/session before replacement; failed reload retains previous session; readonly Explain/Preview preserves state/RNG/revision",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "R03 introduced session/trace/input/receipt lifetime and finite-budget/determinism verification, independent external RON direct API/CLI parity, relevant current predecessors/regression/contracts and actual validation",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "minimum necessary P2G-00 through P2G-60 artifacts and structural/semantic checks; no production mutation during P2G",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "server, Unity/client, external service deployment and RON editor UI",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "new material gameplay/balance/UX/lifetime/compatibility/data-loss decisions without user decision; arbitrary external gameplay script or OS execution",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "private fixture construction presented as production, character/content-ID-specific runner, placeholder executor or silent unsupported success",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "personal save deletion, automatic old-save conversion, automatic overwrite between authoring source and user live_data",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "pipeline/validator/AGENTS/global runner/Codex configuration changes, remote publication or installation",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            },
+            {
+              "Scope Item ID": "O06",
+              "Approved Disposition": "out",
+              "Statement": "unrelated R04–R24 new gameplay primitives; their actual later owners retain requirements without marking them complete or deferring necessary R03 behavior",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R03/CA03 card"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CATP-P2G00-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {
+          "CATP-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CATP-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "CATP-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CATP-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "CATP-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CATP-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "CATP-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CATP-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "CATP-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CATP-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "CATP-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CATP-E06-DECIDED-001",
+            "Content Digest": null
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CATP-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CATP-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CATP-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CATP-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CATP-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CATP-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

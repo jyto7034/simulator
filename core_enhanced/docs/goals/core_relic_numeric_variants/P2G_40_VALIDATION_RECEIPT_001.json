@@ -1,0 +1,299 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CRNV-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CRNV-001",
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "2d5646b0225af42a53f0f5a3380f2e75f9176b12c62fb882597d4efec9b91e32"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CRNV-001",
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_30_FREEZE_001.json",
+    "sha256": "151365250111d56904013887cc816bc7d7c3e55eb56c38dfec47a4d01a253899"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CRNV-003",
+    "review_batch_ref": "RB-CRNV-001",
+    "reviewed_source_basis_ref": "RSB-CRNV-001",
+    "code_review_binding_count": 16,
+    "bound_final_policy_freeze_ref": "FPF-CRNV-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 16,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CRNV-01",
+        "policy_element_revision_ref": "PER-CRNV-01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-02",
+        "policy_element_revision_ref": "PER-CRNV-02-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-03",
+        "policy_element_revision_ref": "PER-CRNV-03-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-04",
+        "policy_element_revision_ref": "PER-CRNV-04-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-05",
+        "policy_element_revision_ref": "PER-CRNV-05-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-06",
+        "policy_element_revision_ref": "PER-CRNV-06-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-07",
+        "policy_element_revision_ref": "PER-CRNV-07-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-08",
+        "policy_element_revision_ref": "PER-CRNV-08-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-09",
+        "policy_element_revision_ref": "PER-CRNV-09-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-10",
+        "policy_element_revision_ref": "PER-CRNV-10-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-11",
+        "policy_element_revision_ref": "PER-CRNV-11-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-12",
+        "policy_element_revision_ref": "PER-CRNV-12-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-13",
+        "policy_element_revision_ref": "PER-CRNV-13-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-14",
+        "policy_element_revision_ref": "PER-CRNV-14-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-15",
+        "policy_element_revision_ref": "PER-CRNV-15-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRNV-16",
+        "policy_element_revision_ref": "PER-CRNV-16-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 16,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CRNV-01",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-02",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-03",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-04",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-05",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-06",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-07",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-08",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-09",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-10",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-11",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-12",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-13",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-14",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-15",
+        "phase_id": "PHASE-CRNV-01"
+      },
+      {
+        "element_id": "PE-CRNV-16",
+        "phase_id": "PHASE-CRNV-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 6,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 4,
+    "standalone_work_package_count": 2,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CRNV-RUNTIME": [
+        "WP-CRNV-DEFINITIONS",
+        "WP-CRNV-OWNERS",
+        "WP-CRNV-NUMERIC",
+        "WP-CRNV-PERSISTENCE"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CRNV-PUBLIC",
+      "WP-CRNV-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 6,
+    "edge_count": 17,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CRNV-NUMERIC",
+        "WP-CRNV-OWNERS",
+        "WP-CRNV-PERSISTENCE"
+      ]
+    ],
+    "final_execution_node_count": 3,
+    "condensation_edge_count": 3,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 3,
+    "assigned_once_count": 3,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CRNV-RUNTIME": "PHASE-CRNV-01",
+      "WP-CRNV-PUBLIC": "PHASE-CRNV-01",
+      "WP-CRNV-VERIFY": "PHASE-CRNV-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 16,
+    "mapped_count": 16,
+    "assigned_execution_node_count": 16,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRNV-001",
+      "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRNV-001",
+      "Content Digest": "sha256:1c06b2d9ceeabf7571e8812658120ee84b2d13d733e4ea8c858d41d980694894"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_00_INITIAL_001.json",
+        "sha256": "daec9420dde9b30aa8b7e5bc896b8acf40369d5a9225a24e2c0cfdce412a868d"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_10_POLICY_001.json",
+        "sha256": "1b4c460ebad8a4ee7aa29ccadee5a6c4db834cddfd80c01328b1ce9d5a2bf92b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_20_REVIEW_001.json",
+        "sha256": "f5167b9b552ef4a9664dffbf763ccf5f53acca395daf129e272da5fb76c28a70"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_20_SOURCE_PLAN_003.json",
+        "sha256": "8bb8370359e572c48d099712c8593f44f1c2072e81ac2de8e5df487826c813bc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_30_FREEZE_001.json",
+        "sha256": "151365250111d56904013887cc816bc7d7c3e55eb56c38dfec47a4d01a253899"
+      }
+    ]
+  }
+}

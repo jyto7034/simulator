@@ -1,0 +1,227 @@
+{
+  "review_id": "R03-PRIVATE-TRIAL-BOUNDARY-REVIEW-020",
+  "completion_audit": false,
+  "root_sole_repository_writer": true,
+  "tests_builds_executed": false,
+  "repository_mutations": false,
+  "initial_capture_utc": "2026-09-10T11:13:04.563658+00:00",
+  "scope": "Private TrialState initialize/advance and direct control/output/resolve/public-port sources; no full visitor or public readiness audit.",
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "sha256": "2603eb5c2a05b141529f2c570f309b50bfa089771f430a3be959c1c62d474faa",
+      "bytes": 22597,
+      "read_spans": [
+        [
+          1,
+          575
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/14",
+      "closing_sha256": "137623967c802c2819ff861722630e18260c0a8e3c62cdfa2db65d01786d35c3",
+      "closing_bytes": 22597,
+      "drift": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "1a15e8bdd7618572950ddc69ad25b5cda674eebfecd0f544010abb3477b2fed8",
+      "bytes": 21661,
+      "read_spans": [
+        [
+          1,
+          489
+        ],
+        [
+          490,
+          572
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/6",
+      "closing_sha256": "1a15e8bdd7618572950ddc69ad25b5cda674eebfecd0f544010abb3477b2fed8",
+      "closing_bytes": 21661,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/scenario.rs",
+      "sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "bytes": 29210,
+      "read_spans": [
+        [
+          1,
+          302
+        ],
+        [
+          399,
+          455
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/12",
+      "closing_sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "closing_bytes": 29210,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/resolve.rs",
+      "sha256": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+      "bytes": 40841,
+      "read_spans": [
+        [
+          1,
+          325
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/11",
+      "closing_sha256": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+      "closing_bytes": 40841,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/output.rs",
+      "sha256": "d56c244833316a3049409cdd85bc8a203748f79d57b15788ebe484ed2b588e5e",
+      "bytes": 12541,
+      "read_spans": [
+        [
+          1,
+          346
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/9",
+      "closing_sha256": "d56c244833316a3049409cdd85bc8a203748f79d57b15788ebe484ed2b588e5e",
+      "closing_bytes": 12541,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "sha256": "ac6470f58ad965e6ba7b0c6e10202b362a44a8b7bcb573997616dd646ce5bad2",
+      "bytes": 4638,
+      "read_spans": [
+        [
+          1,
+          130
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/8",
+      "closing_sha256": "ac6470f58ad965e6ba7b0c6e10202b362a44a8b7bcb573997616dd646ce5bad2",
+      "closing_bytes": 4638,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "6e77a86f121fd092c83b68a6021e86a99c2d24d657fd8a7d18247f5c81e54f8e",
+      "bytes": 45262,
+      "read_spans": [
+        [
+          1,
+          45
+        ],
+        [
+          317,
+          443
+        ],
+        [
+          765,
+          970
+        ]
+      ],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": "/files/3",
+      "closing_sha256": "6e77a86f121fd092c83b68a6021e86a99c2d24d657fd8a7d18247f5c81e54f8e",
+      "closing_bytes": 45262,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INPUTS_061.json",
+      "sha256": "0a4fd2b56a8a1ffa23242cf0383600682c5f0ae1c47594528597400231ed4d89",
+      "bytes": 39354,
+      "read_spans": [],
+      "capture_utc": "2026-09-10T11:13:04.563658+00:00",
+      "input061_pointer": null,
+      "closing_sha256": "0a4fd2b56a8a1ffa23242cf0383600682c5f0ae1c47594528597400231ed4d89",
+      "closing_bytes": 39354,
+      "drift": false
+    },
+    {
+      "captured_at_utc": "2026-09-10T11:17:20.563532+00:00",
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "bytes": 41036,
+      "read_spans": [
+        [
+          1,
+          174
+        ]
+      ],
+      "input061_pointer": "/files/4",
+      "closing_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "closing_bytes": 41036,
+      "drift": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "PT020-F01",
+      "severity": "medium",
+      "classification": "integration_gap",
+      "title": "First owned public projection precedes trial output admission",
+      "locations": [
+        {
+          "path": "core_enhanced/src/authoring/trial.rs",
+          "spans": [
+            [
+              255,
+              261
+            ],
+            [
+              368,
+              379
+            ]
+          ]
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "spans": [
+            [
+              355,
+              385
+            ],
+            [
+              418,
+              430
+            ],
+            [
+              887,
+              923
+            ]
+          ]
+        },
+        {
+          "path": "core_enhanced/src/authoring/output.rs",
+          "spans": [
+            [
+              32,
+              60
+            ]
+          ]
+        }
+      ],
+      "impact": "Secondary encoding/Value parse is bounded; this does not preadmit first serde_json::to_value producer allocation. Atomic candidate discard is not disproved.",
+      "minimal_followup": "Connect active-scope producer preflight/counting/bounded writer before first owned projection while preserving ordinary public API and domain disposition."
+    }
+  ],
+  "test_oracle_gaps": [
+    "Positive binding copy quota commit/rollback absent",
+    "Changed native-storage provenance commit/discard absent",
+    "Successful HostTick(None) slot not exercised",
+    "Preparation transition/finished/initial full usage/positive clipped total-work exact boundaries absent at trial level"
+  ],
+  "root_reported_execution": "focused080 test helper lifetime compile fix and focused081 underway; not independently executed",
+  "missing_search_path": "core_enhanced/src/authoring/receipt.rs (actual receipt implementation in output.rs)",
+  "closing_capture_utc": "2026-09-10T11:20:47.119925+00:00",
+  "drift_count": 1
+}

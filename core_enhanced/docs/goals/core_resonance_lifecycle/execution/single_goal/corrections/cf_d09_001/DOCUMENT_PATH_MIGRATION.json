@@ -1,0 +1,512 @@
+{
+  "recorded_at_utc": "2026-10-04T13:58:38.284397+00:00",
+  "finding": "U05 audit001 F01; eleven current canonical bindings changed during external CF-D09 migration.",
+  "authority": "Existing continuous request plus external CF-D09/USER18 record; preserve migrated user documents and all original Goal/Freeze/audit bytes.",
+  "external_migration": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/rulebook_path_migration_20261004_001",
+    "record_sha256": "039c9574b007eb8a5213d4a7822b9a248240006f0a1c4b1144073a33ce69e404",
+    "evidence_sha256": "d3aabf889c045bbe79dc2761b3aacecffbdb22680e4e8fc5c3a93d888f7755c9",
+    "before_archive_sha256": "0a78f13e4d735f7c982eab35c611e42e95bae3e6f8f15641de978286d8d13e8b",
+    "documents": [
+      {
+        "before_path": "core_enhanced/docs/game_rulebook.md",
+        "after_path": "core_enhanced/docs/archive/game_rulebook_legacy_2026-10-04.md",
+        "before_sha256": "033dc5f4be0fd98759f3d92b44f56afe23485323c1b3a378ddf54dbdb8f421b4",
+        "after_sha256": "c72c7d8f8b7a6a6f32a8a199cb37a78c997eedb76d81092c93b0889e5c7fa54c"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rulebook_next.md",
+        "after_path": "core_enhanced/docs/game_rulebook.md",
+        "before_sha256": "a5b97a3c6d3e5774298aede8e211051c5fa758c2145ce71d346240cdaf5d9576",
+        "after_sha256": "668a54159339de58ae5ca865432a4a322482eec0c207c31478a8d85cc9ec5cdd"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_intro_ppt_brief.ko.md",
+        "after_path": "core_enhanced/docs/game_intro_ppt_brief.ko.md",
+        "before_sha256": "b969981ad2ee2ae84f9f2a3f36ce96462800a725cc23f81a62c1020dac512c6f",
+        "after_sha256": "e85a83543db23bb108b51918135946a1f09c239887edbb8630e73ede8c6e881a"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/skill_activation_and_resonance_rework_notes_2026-08-17.ko.md",
+        "after_path": "core_enhanced/docs/tmp/skill_activation_and_resonance_rework_notes_2026-08-17.ko.md",
+        "before_sha256": "cd9d5753e9892566011242123d777f53207610640ff8742adae704379e50f5e7",
+        "after_sha256": "dd19de4bbe43d723ba8d5042f9d3920f7c7ad492545d41484e68ed0568d08f15"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/run-and-map.md",
+        "after_path": "core_enhanced/docs/game_rules/run-and-map.md",
+        "before_sha256": "b819a1a960ebc78a992b5b6fc44c35c012fad43e1d5cd30341ca6cc785a5f9d1",
+        "after_sha256": "6a670fa58441f8ec850bf5710dd322633e7a58778a26de45f6eea3f5002c5025"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/expedition-and-deterrence.md",
+        "after_path": "core_enhanced/docs/game_rules/expedition-and-deterrence.md",
+        "before_sha256": "e1bceebb41dfe231b221f7263042f7e20e7408ade6cff4539f16101ec6e266e1",
+        "after_sha256": "b187416fa8b813088d6bb3b72d49bf8e91a92aa2da4b2f8f5efe296e67727473"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/equipment-and-fragments.md",
+        "after_path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+        "before_sha256": "feeabe57d13c939f63dea14aa411ce3a22c13323669d21d2e69347d30f3eb168",
+        "after_sha256": "4e8e0ad573216d008ff2978801bc9bc7f571cc996752ecd17f7a6a08cb1fe8f0"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/results-and-save.md",
+        "after_path": "core_enhanced/docs/game_rules/results-and-save.md",
+        "before_sha256": "b113f6928c3f9c5edc7ce86afa9df9e161303bed6374604e7b7015a95902b9eb",
+        "after_sha256": "22f98e114f0d3047b62be582520de069678ea5c4ce2f396a8cc8ed1b4cc01aee"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/run_structure_integrated_design_2026-09-12.ko.md",
+        "after_path": "core_enhanced/docs/tmp/run_structure_integrated_design_2026-09-12.ko.md",
+        "before_sha256": "8c3125f6b0e8e5bf27f01e13bd6f00821ebe300fa452569acc5e6c2c96b39d73",
+        "after_sha256": "60c412fa5b70b680ef7404ea805fa113a5ec0a9b22f177476663baefaf9560ad"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/save_point_trauma_recovery_policy_draft_2026-07-25.md",
+        "after_path": "core_enhanced/docs/decisions/save_point_trauma_recovery_policy_draft_2026-07-25.md",
+        "before_sha256": "94b26293acce2378260c3c02e807f919ab0d27da32d075748d9bec7beb071746",
+        "after_sha256": "1aaeb568435d0b66ef8e1bf595640bb8c9431710ca42867b09e4d16cb4bfd23d"
+      },
+      {
+        "before_path": "core_enhanced/docs/README.md",
+        "after_path": "core_enhanced/docs/README.md",
+        "before_sha256": "3d8677ea4d32732a6c5101409e3f832b2e08d29cfca42f02ba79ab56d0f6a43b",
+        "after_sha256": "8bddb2e8599f50b5e6e66faf0513313349c3fc5c660ca3f10755373b478ac426"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/combat.md",
+        "after_path": "core_enhanced/docs/game_rules/combat.md",
+        "before_sha256": "b6f91130194d6f7f50c5c7722be28393aecb388ec4aea21a7793bdb1844fa77a",
+        "after_sha256": "f7fd43b1b629b6da82ca548f8c5da9472b47c680a8753c56e75510863b3a5fbc"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/relics.md",
+        "after_path": "core_enhanced/docs/game_rules/relics.md",
+        "before_sha256": "ba9d5b9e24574ca5576a35de055b1a43130f42ac20559fcdb3628234d47ebf3e",
+        "after_sha256": "ce82c13193b709e58e9590bfb00d13d1243c24eb03a5c6bb5ec3ed56a11191ce"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/run_structure_design_proposal_2026-09-12.ko.md",
+        "after_path": "core_enhanced/docs/tmp/run_structure_design_proposal_2026-09-12.ko.md",
+        "before_sha256": "5cce503da63f9e2be32cb6d771bdd085d11baebe23e762041819536036135aa6",
+        "after_sha256": "9044d8e3310d727d2696d941cd15fc524a4bcc0eb5905c420471bb64a347b8be"
+      },
+      {
+        "before_path": "core_enhanced/docs/project_map.ko.md",
+        "after_path": "core_enhanced/docs/project_map.ko.md",
+        "before_sha256": "17bb4ca1911e98dfc5c3f57fb6b214ff5a22bb8bf282522c86735248e1025d1f",
+        "after_sha256": "98b03351d5173dd56697ec2b31fd1215a0adb16fbf1d38b3defd35361a864fe2"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/open-decisions.md",
+        "after_path": "core_enhanced/docs/game_rules/open-decisions.md",
+        "before_sha256": "dea7199184f7b8191293cbfe42946b5d6cca1d66daefbb360e439b3b402acb2b",
+        "after_sha256": "6ede1d4630daacb2ae5b58a884111a65dd43bb8d717ddb51b0ffe521a8c653aa"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/blocking-and-targeting.md",
+        "after_path": "core_enhanced/docs/game_rules/blocking-and-targeting.md",
+        "before_sha256": "a726916cdfbcbd6727249d4010829f5c42100e7323f26616a2ab5eaf183c9b3f",
+        "after_sha256": "e74ac54b99064786584df5aa1f30ec19b2c8afa39453644c9f068b2a013fd562"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/growth-and-rewards.md",
+        "after_path": "core_enhanced/docs/game_rules/growth-and-rewards.md",
+        "before_sha256": "eb61c2a4632f941c0b7ea43259b82ec91a67cf3f430927b0a188a146c05e2e4d",
+        "after_sha256": "c0a9039a31397e98fbb1206bde428e9fd2916d6378824ee6d38d7ce36f6efeca"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/local_encounter_compendium_persistence_policy_draft_2026-07-25.md",
+        "after_path": "core_enhanced/docs/decisions/local_encounter_compendium_persistence_policy_draft_2026-07-25.md",
+        "before_sha256": "4cd9c1c212cf8127830c1c65c5ffb36940c5978fa8c11f655c5b997dec137b95",
+        "after_sha256": "a129a99527fd6a6893cb41eb39939a4ea001018e895d4b9e12f7455b02940cee"
+      },
+      {
+        "before_path": "core_enhanced/docs/game_rules_next/battle-controls.md",
+        "after_path": "core_enhanced/docs/game_rules/battle-controls.md",
+        "before_sha256": "03059d96604a7367be6d09ac4d334cf50524a5e7c7392d37796a68dfc3d0bf55",
+        "after_sha256": "44b2292ee635268aaf55fcb172cfe1013b1cf791451ee9091cb1f44b36a41f91"
+      },
+      {
+        "before_path": "core_enhanced/docs/skills/skill_fragment_system.md",
+        "after_path": "core_enhanced/docs/skills/skill_fragment_system.md",
+        "before_sha256": "a6a67e792d5384bb1765ba587465de9bd1a6ca8b5a50f5ca6b07c8bda268751a",
+        "after_sha256": "a651708b8860b27ca37d7857dd18de02829a924fe8f13b5a18e85969fd85d3c2"
+      },
+      {
+        "before_path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+        "after_path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+        "before_sha256": "9daff2363f07b0780075a73b78041bc72fdb569aefef4ac592c4c31d6861f958",
+        "after_sha256": "f4f690bf4e6c5cab8b9d9c5a28d9989b17bf61353eeed90d4b81aa22a01af658"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/game_rulebook_next_restructure_2026-09-26.md",
+        "after_path": "core_enhanced/docs/decisions/game_rulebook_next_restructure_2026-09-26.md",
+        "before_sha256": "8f6ec07ce05542d1032e3da256150d9ba576dec32c785ba5a8ccab3d6f7008aa",
+        "after_sha256": "bcf393f002761214873e16d620e5709b7d6519911b92e733a4d6a6da1e4010fb"
+      },
+      {
+        "before_path": "core_enhanced/docs/ui-layout/battlefield-image-generation-guide.ko.md",
+        "after_path": "core_enhanced/docs/ui-layout/battlefield-image-generation-guide.ko.md",
+        "before_sha256": "a0145ac80d067d6ca516799cecd35d36f32bc9c95706dcc2d280e068f554fc51",
+        "after_sha256": "d1a0725cd74d55c4ce2c6720b72088672ffe2123889e4a98ecbd50987f43309f"
+      },
+      {
+        "before_path": "core_enhanced/docs/audit/current_runtime_architecture_deep_review_criteria.ko.md",
+        "after_path": "core_enhanced/docs/audit/current_runtime_architecture_deep_review_criteria.ko.md",
+        "before_sha256": "8542a31e041c7e8c6c6234bda1a205158490cef09cce5b984f29e7aa01c4412b",
+        "after_sha256": "1084bf5b8b43d76175d75ae79ac281a4de5ab4870e35fb2c2b3d58075a6b1f38"
+      },
+      {
+        "before_path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+        "after_path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+        "before_sha256": "a46bdc741cdfc6d90147314f6847a32c5937fa68911c1135ff9eefaf6751a726",
+        "after_sha256": "bf684f7149bd7a05c3c1e995cbfa9bf05bbe64850e320c79abfa0ebc7925f6aa"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/run_progression_relic_redesign_proposal_2026-09-07.ko.md",
+        "after_path": "core_enhanced/docs/tmp/run_progression_relic_redesign_proposal_2026-09-07.ko.md",
+        "before_sha256": "0738579194d7d1d70db90a1afdaaea3df8c7e9b1787a79c86df3e416d458e46a",
+        "after_sha256": "353cf259fb374c7846a7e68caa2944af8b0536b076f11c3ab7a1f3be3cc41863"
+      },
+      {
+        "before_path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+        "after_path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+        "before_sha256": "e2c089dea09d81f0e11be6b12f4681d08b3ae2d6d17a9463dc1b8d89a3b6349b",
+        "after_sha256": "f5620fc0a459a7ecf7e13b8c498bbc12bd7ac8bc9e6cc14f5a9ed56645d90108"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/game_rulebook_next_recovery_2026-09-27.md",
+        "after_path": "core_enhanced/docs/decisions/game_rulebook_next_recovery_2026-09-27.md",
+        "before_sha256": "8b492bec7c7b9f39758ff8c7c8e42a4be206cf0f632eeb731c1770e3002a412f",
+        "after_sha256": "97ec34ebe4529eaa4a82c0d85942e7b5eebfa87471c55667bbaad1569e56471f"
+      },
+      {
+        "before_path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+        "after_path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+        "before_sha256": "ccd8e26f3655324507eaed0f3d2e398ac3fa44ca8e46e3ed185371b8fd1b32c5",
+        "after_sha256": "72fb3834029c66e2dc0a5a7bf159aefe1fe7c7a0e96317e2fef3b818a1a38942"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/game_rulebook_next_expedition_2026-09-27.md",
+        "after_path": "core_enhanced/docs/decisions/game_rulebook_next_expedition_2026-09-27.md",
+        "before_sha256": "2257c33d1947bdbe654068ed3327ebce15f9da17fad267e2ff022c683deaea6d",
+        "after_sha256": "1562c788964a7ad1cb965215f6848ea752eb2a7111b537a88d0eb223b072d99f"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/elite_monolith_remanifestation_compendium_policy_draft_2026-07-26.md",
+        "after_path": "core_enhanced/docs/decisions/elite_monolith_remanifestation_compendium_policy_draft_2026-07-26.md",
+        "before_sha256": "254b64d3f78e307dce22dc58eff1c9a193bc0e228feeb92b22e1a1f7f6af62a1",
+        "after_sha256": "72a77d53f5f645db6e3b9ff4cc57b9be37c90cd44c8483177d236ff734645ab0"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/facility_map_and_node_manifestation_policy_2026-07-25_26.md",
+        "after_path": "core_enhanced/docs/decisions/facility_map_and_node_manifestation_policy_2026-07-25_26.md",
+        "before_sha256": "c10a83e7c4cbbc3028cc7284c201a40ff2d763665c01014c4553f1e50baca4f7",
+        "after_sha256": "1f5b4b1b36452c137abb36c7ba3216c2d2e814e256ce12fe094a0e39561c988c"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/defense_route_tactical_command_policy_2026-08-06.md",
+        "after_path": "core_enhanced/docs/decisions/defense_route_tactical_command_policy_2026-08-06.md",
+        "before_sha256": "0fdb41d6fb6e53e98d2e232c20fc18ef9f072b33b97808ec168c535c0be7f452",
+        "after_sha256": "11c6fea704cb8d0bb6cf82c167ecea597c93bb1d11b32b38a502e56da9ab0934"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/event_employee_check_dice_policy_2026-07-17.md",
+        "after_path": "core_enhanced/docs/decisions/event_employee_check_dice_policy_2026-07-17.md",
+        "before_sha256": "9e00cc0c860946f21130b2969b0c5300d671032610a4d6f42c2ff090795a9cc8",
+        "after_sha256": "6d89b3324b67c66c056c809898c1ebac9d20523772a00f88bd412e3c28e7047b"
+      },
+      {
+        "before_path": "core_enhanced/docs/decisions/employee_domain_policy_2026-07-17.md",
+        "after_path": "core_enhanced/docs/decisions/employee_domain_policy_2026-07-17.md",
+        "before_sha256": "fb3bcb9ecfd60fe2cddeb8d1f64453605db3be256c5b330bb34f45ae0fb3a6e5",
+        "after_sha256": "d5ec81dcf22504a8672a20938092bfe383542f23ce042b5f1ad7890d8cbd17fa"
+      },
+      {
+        "before_path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+        "after_path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+        "before_sha256": "b6f090b312496c5a5b67aa5d4e55796d853d785966778fa5c5c0a6c656b16e44",
+        "after_sha256": "32fd41d7bdfd2221f2c27898de998f1be4ee2167e4db95cd6507d06b2b59a180"
+      },
+      {
+        "before_path": "core_enhanced/docs/skills/abnormality_design_notes.ko.md",
+        "after_path": "core_enhanced/docs/skills/abnormality_design_notes.ko.md",
+        "before_sha256": "4b1d749c0b67503496fe6da640dca92f583395aad24d254f96ed49157d39f3fc",
+        "after_sha256": "ec89e9513596fdc648d848d0c3c45157352552d0c2ed91403eefc56cec7be673"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/defense_route_tactical_command_design_notes_2026-08-04.ko.md",
+        "after_path": "core_enhanced/docs/tmp/defense_route_tactical_command_design_notes_2026-08-04.ko.md",
+        "before_sha256": "b65b4ae113d1b0f611a927e0b14d16f9eb147d4d2115addc30560bf046f4b272",
+        "after_sha256": "6d9546bedb005cdc95d4596a7e04f297e3d4f53718d159aaf2b42263fb1119e8"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/core_content_readiness_assessment_2026-08-13.ko.md",
+        "after_path": "core_enhanced/docs/tmp/core_content_readiness_assessment_2026-08-13.ko.md",
+        "before_sha256": "c9ec2d05b9b2227aeb900af70d68c2dbc0edeecea1c211d78ca5465b446ad2e1",
+        "after_sha256": "aa3ce730ee5a0788b0d9cf40bd6865b2635bbaeae3e7dd74455c3f6e440668c5"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/conditional_wave_and_boss_summon_policy_notes_2026-08-13.ko.md",
+        "after_path": "core_enhanced/docs/tmp/conditional_wave_and_boss_summon_policy_notes_2026-08-13.ko.md",
+        "before_sha256": "80ca6a1ec917db3b1b9363e120d10fcd45f2c0042ebc2f34a21b8b22211b8f08",
+        "after_sha256": "1626245e7cfa586e09eb95414e370f0d497a339a048d70d3d9f4b89f4e7cc7d0"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/game_rulebook_followup_policy_notes_2026-09-10.ko.md",
+        "after_path": "core_enhanced/docs/tmp/game_rulebook_followup_policy_notes_2026-09-10.ko.md",
+        "before_sha256": "8a555fdb983b69269f7f7fb9a02706455619c00506cba7ffe284b46d9e50ac58",
+        "after_sha256": "8547afd370ed5805c9193a5ae86e6f5d44ca6a0644abf713284566fcdf845318"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/boss_behavior_state_machine_policy_notes_2026-08-07.ko.md",
+        "after_path": "core_enhanced/docs/tmp/boss_behavior_state_machine_policy_notes_2026-08-07.ko.md",
+        "before_sha256": "c539831d663eeb5be67ff2c309672a9bdf58ad1bfed9b76586e1ee068322236d",
+        "after_sha256": "759ebd51b5369fefd675c239eca80d926b2a4ac7a7016e4faf824e5d25e222fb"
+      },
+      {
+        "before_path": "core_enhanced/docs/tmp/ego_corrosion_system_design_notes_2026-08-19.ko.md",
+        "after_path": "core_enhanced/docs/tmp/ego_corrosion_system_design_notes_2026-08-19.ko.md",
+        "before_sha256": "ae1ee9a4eb0411f37506ec7589c50942d4fece93827db1fde8489200b9ba1269",
+        "after_sha256": "6379fd89b22301cd16a33c7df6db817cd393182cba3831372a5247dd38079794"
+      },
+      {
+        "before_path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+        "after_path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+        "before_sha256": "04f4588a03fa24794c7647351c8a0164b4f7b7757afc76aea79feca4b5152e4c",
+        "after_sha256": "8f27d9ec75f0807c3e88fe44413fa1b52803b6e555bd4c1453671202df5183d2"
+      },
+      {
+        "before_path": "core_enhanced/docs/architecture/runtime_feature_manifest.v1.json",
+        "after_path": "core_enhanced/docs/architecture/runtime_feature_manifest.v1.json",
+        "before_sha256": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+        "after_sha256": "d686c957fcde5fe2dd6a22b224e3b38800ec8c44a42a7d6b785f0f79680786e8"
+      }
+    ]
+  },
+  "affected_frozen_members": [
+    {
+      "path": "core_enhanced/docs/README.md",
+      "expected_sha256": "3d8677ea4d32732a6c5101409e3f832b2e08d29cfca42f02ba79ab56d0f6a43b",
+      "actual_sha256": "8bddb2e8599f50b5e6e66faf0513313349c3fc5c660ca3f10755373b478ac426",
+      "groups": [
+        "source"
+      ],
+      "mapped_current_path": "core_enhanced/docs/README.md",
+      "mapped_current_sha256": "8bddb2e8599f50b5e6e66faf0513313349c3fc5c660ca3f10755373b478ac426",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "expected_sha256": "033dc5f4be0fd98759f3d92b44f56afe23485323c1b3a378ddf54dbdb8f421b4",
+      "actual_sha256": "668a54159339de58ae5ca865432a4a322482eec0c207c31478a8d85cc9ec5cdd",
+      "groups": [
+        "source"
+      ],
+      "mapped_current_path": "core_enhanced/docs/archive/game_rulebook_legacy_2026-10-04.md",
+      "mapped_current_sha256": "c72c7d8f8b7a6a6f32a8a199cb37a78c997eedb76d81092c93b0889e5c7fa54c",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rulebook_next.md",
+      "expected_sha256": "a5b97a3c6d3e5774298aede8e211051c5fa758c2145ce71d346240cdaf5d9576",
+      "actual_sha256": null,
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/game_rulebook.md",
+      "mapped_current_sha256": "668a54159339de58ae5ca865432a4a322482eec0c207c31478a8d85cc9ec5cdd",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rules_next/battle-controls.md",
+      "expected_sha256": "03059d96604a7367be6d09ac4d334cf50524a5e7c7392d37796a68dfc3d0bf55",
+      "actual_sha256": null,
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/game_rules/battle-controls.md",
+      "mapped_current_sha256": "44b2292ee635268aaf55fcb172cfe1013b1cf791451ee9091cb1f44b36a41f91",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rules_next/combat.md",
+      "expected_sha256": "b6f91130194d6f7f50c5c7722be28393aecb388ec4aea21a7793bdb1844fa77a",
+      "actual_sha256": null,
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/game_rules/combat.md",
+      "mapped_current_sha256": "f7fd43b1b629b6da82ca548f8c5da9472b47c680a8753c56e75510863b3a5fbc",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rules_next/equipment-and-fragments.md",
+      "expected_sha256": "feeabe57d13c939f63dea14aa411ce3a22c13323669d21d2e69347d30f3eb168",
+      "actual_sha256": null,
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+      "mapped_current_sha256": "4e8e0ad573216d008ff2978801bc9bc7f571cc996752ecd17f7a6a08cb1fe8f0",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rules_next/open-decisions.md",
+      "expected_sha256": "dea7199184f7b8191293cbfe42946b5d6cca1d66daefbb360e439b3b402acb2b",
+      "actual_sha256": null,
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/game_rules/open-decisions.md",
+      "mapped_current_sha256": "6ede1d4630daacb2ae5b58a884111a65dd43bb8d717ddb51b0ffe521a8c653aa",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/game_rules_next/results-and-save.md",
+      "expected_sha256": "b113f6928c3f9c5edc7ce86afa9df9e161303bed6374604e7b7015a95902b9eb",
+      "actual_sha256": null,
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/game_rules/results-and-save.md",
+      "mapped_current_sha256": "22f98e114f0d3047b62be582520de069678ea5c4ce2f396a8cc8ed1b4cc01aee",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "expected_sha256": "e2c089dea09d81f0e11be6b12f4681d08b3ae2d6d17a9463dc1b8d89a3b6349b",
+      "actual_sha256": "f5620fc0a459a7ecf7e13b8c498bbc12bd7ac8bc9e6cc14f5a9ed56645d90108",
+      "groups": [
+        "source",
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "mapped_current_sha256": "f5620fc0a459a7ecf7e13b8c498bbc12bd7ac8bc9e6cc14f5a9ed56645d90108",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+      "expected_sha256": "04f4588a03fa24794c7647351c8a0164b4f7b7757afc76aea79feca4b5152e4c",
+      "actual_sha256": "8f27d9ec75f0807c3e88fe44413fa1b52803b6e555bd4c1453671202df5183d2",
+      "groups": [
+        "references"
+      ],
+      "mapped_current_path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+      "mapped_current_sha256": "8f27d9ec75f0807c3e88fe44413fa1b52803b6e555bd4c1453671202df5183d2",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+      "expected_sha256": "a46bdc741cdfc6d90147314f6847a32c5937fa68911c1135ff9eefaf6751a726",
+      "actual_sha256": "bf684f7149bd7a05c3c1e995cbfa9bf05bbe64850e320c79abfa0ebc7925f6aa",
+      "groups": [
+        "source"
+      ],
+      "mapped_current_path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+      "mapped_current_sha256": "bf684f7149bd7a05c3c1e995cbfa9bf05bbe64850e320c79abfa0ebc7925f6aa",
+      "disposition": "Explicit external locator/authority-label migration; policy body and product behavior unchanged."
+    }
+  ],
+  "body_checks": [
+    {
+      "before": "core_enhanced/docs/game_rules_next/run-and-map.md",
+      "after": "core_enhanced/docs/game_rules/run-and-map.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/expedition-and-deterrence.md",
+      "after": "core_enhanced/docs/game_rules/expedition-and-deterrence.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/equipment-and-fragments.md",
+      "after": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/results-and-save.md",
+      "after": "core_enhanced/docs/game_rules/results-and-save.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/combat.md",
+      "after": "core_enhanced/docs/game_rules/combat.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/relics.md",
+      "after": "core_enhanced/docs/game_rules/relics.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/open-decisions.md",
+      "after": "core_enhanced/docs/game_rules/open-decisions.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/blocking-and-targeting.md",
+      "after": "core_enhanced/docs/game_rules/blocking-and-targeting.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/growth-and-rewards.md",
+      "after": "core_enhanced/docs/game_rules/growth-and-rewards.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "core_enhanced/docs/game_rules_next/battle-controls.md",
+      "after": "core_enhanced/docs/game_rules/battle-controls.md",
+      "passed": true,
+      "allowed": "Exact parent-link relocation and named historical-comparison link/label changes only."
+    },
+    {
+      "before": "game_rulebook_next.md",
+      "after": "game_rulebook.md",
+      "passed": true,
+      "allowed": "Body from 어떤 게임인가 is identical after only detailed-rule directory relocation."
+    },
+    {
+      "before": "game_rulebook.md",
+      "after": "archive/game_rulebook_legacy_2026-10-04.md",
+      "passed": true,
+      "allowed": "Historical body is identical except Markdown link destinations rebased for archive location."
+    }
+  ],
+  "full_external_diff_sha256": "2cb8f2c4e5d62e75ffa142b1ff8657eafecc9ff62e3eea7041c13880d75424cc",
+  "source_sha256": "3129db450b14515564da3845313cf0ce1539e9f99c032c89788a3a5fe840d283",
+  "product_files": 368,
+  "product_delta": [],
+  "policy_acceptance_delta": [],
+  "preserved_original_execution_files": 2982,
+  "current_rulebook": "core_enhanced/docs/game_rulebook.md",
+  "current_details": "core_enhanced/docs/game_rules/",
+  "historical_rulebook": "core_enhanced/docs/archive/game_rulebook_legacy_2026-10-04.md",
+  "locator_rule": "Old frozen next paths refer to their archived original bytes. Current navigation uses this explicit map; no automatic fallback or duplicate old-path file is created.",
+  "predecessor_audit": {
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/AUDIT_CLOSURE.json": "346c732114040819387adf16b1f90d7dc03c93c5a30cc0822aa022fc9e81cdc4",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/AUDIT_REQUEST.md": "1481457b4198360d243cee6cfb68b5f358b4687b9391660346e8a780d99a2aa3",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/COMPLETION_AUDIT.md": "f89dd050d8343f911d4532ace8330a87d9035e66842a7129cc2f86e935ae994f",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/CONDITION_REVIEW.json": "8249542653342d410de7ce14910e100aefac62ecc53080d8401482da48178290",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/CURRENTNESS_ENTRY.json": "add0fe29c93c1c6b0beebf41d5a00de86e641cf8847ac0556c9a211fe5a6f88e",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/CURRENTNESS_EXIT_INTERRUPTED.json": "064586fead1bcd5b5da64055d82f60361a2db1a317d30ae4b8f1230707e1f350",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/DOCUMENT_BODY_CHECK.json": "321afaf92a168e637f412008d45ff5982803b36752a4402a3ecda0e7b31257fa",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/EVIDENCE_VERIFICATION.json": "3d2f25949c076e285911179fecd737324c60e51183ea376cf689178a15c59ad7",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/EVIDENCE_VERIFICATION_INITIAL_CHECKER_ERRORS.json": "e5a329d5519a98faf60d4cdc97a8a6f244340dd0b15b2b2527b5c3041e7a2b3b",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/PC_ACCOUNTING_RECHECK.json": "8bae9e26dc50765ff244f9d37a75939efdd33665429953e3ed8a4f3248f7b6e4",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/PRODUCT_EXIT.json": "93ec605f7d098e9cebb5d42e92352786549937d6bbbd9750e6df978e490393ab",
+    "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/verify_evidence.py": "14c90dc739f3c84b767f224fbf9b1a97cd723c50b348039df2f52f49922c34c3"
+  },
+  "verdict": "Documentation rebinding self-verification only; whole-Goal independent re-audit required."
+}

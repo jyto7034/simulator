@@ -1,0 +1,338 @@
+{
+  "schema": "r03-bounded-source-design-017",
+  "status": "design_helper_not_completion_audit",
+  "scope": "retained BossSummonTaskView Vec aggregate preflight and root-selected implementation pattern",
+  "root_decisions": [
+    "all-ref 7-field projection with explicit visit_owned_shape/into_owned",
+    "single macro field list generates projection/visitor/owned constructor",
+    "active preflight charges two scan units per visited actor/task; materialization polls only",
+    "no-scope original single-pass Vec::new/push and native stable sort",
+    "active stable insertion sort charges min String byte lengths +1 before each comparison"
+  ],
+  "source_reads": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 142360,
+      "sha256": "10c7899540c9efe2bc133994404de179fd9fad4508b558bea5d049188cfaed57",
+      "observed_at_utc": "2026-09-10T10:45:35.197125+00:00",
+      "spans": [
+        {
+          "start": 73,
+          "end": 209
+        },
+        {
+          "start": 260,
+          "end": 320
+        },
+        {
+          "start": 1467,
+          "end": 1583
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 41036,
+      "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "observed_at_utc": "2026-09-10T10:45:35.218536+00:00",
+      "spans": [
+        {
+          "start": 17,
+          "end": 35
+        },
+        {
+          "start": 66,
+          "end": 136
+        },
+        {
+          "start": 208,
+          "end": 280
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 21650,
+      "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "observed_at_utc": "2026-09-10T10:45:35.225519+00:00",
+      "spans": [
+        {
+          "start": 344,
+          "end": 413
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "bytes": 69774,
+      "sha256": "40bc34b9d1f0616c966a7b19bcb958356e91eec46ad91ed0600804d0c4585c2f",
+      "observed_at_utc": "2026-09-10T10:45:35.345797+00:00",
+      "spans": [
+        {
+          "start": 41,
+          "end": 57
+        },
+        {
+          "start": 152,
+          "end": 197
+        },
+        {
+          "start": 1271,
+          "end": 1332
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/ids.rs",
+      "bytes": 993,
+      "sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9",
+      "observed_at_utc": "2026-09-10T10:49:40.880350+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 20
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 21650,
+      "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "observed_at_utc": "2026-09-10T10:49:40.904887+00:00",
+      "spans": [
+        {
+          "start": 29,
+          "end": 58
+        },
+        {
+          "start": 90,
+          "end": 132
+        },
+        {
+          "start": 196,
+          "end": 248
+        },
+        {
+          "start": 473,
+          "end": 570
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 41036,
+      "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "observed_at_utc": "2026-09-10T10:49:40.917883+00:00",
+      "spans": [
+        {
+          "start": 657,
+          "end": 715
+        },
+        {
+          "start": 1010,
+          "end": 1064
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "bytes": 161189,
+      "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "observed_at_utc": "2026-09-10T10:49:40.939472+00:00",
+      "spans": [
+        {
+          "start": 230,
+          "end": 281
+        },
+        {
+          "start": 781,
+          "end": 815
+        }
+      ]
+    }
+  ],
+  "read_method": "rg discovery and Python read_bytes/full-file SHA256/numbered spans; final read-only rehash",
+  "close_rehash": {
+    "observed_at_utc": "2026-09-10T10:51:07.754452+00:00",
+    "sources": [
+      {
+        "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+        "bytes": 142360,
+        "sha256": "10c7899540c9efe2bc133994404de179fd9fad4508b558bea5d049188cfaed57"
+      },
+      {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "bytes": 41036,
+        "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b"
+      },
+      {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "bytes": 21650,
+        "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+        "bytes": 69774,
+        "sha256": "40bc34b9d1f0616c966a7b19bcb958356e91eec46ad91ed0600804d0c4585c2f"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/ids.rs",
+        "bytes": 993,
+        "sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9"
+      },
+      {
+        "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+        "bytes": 161189,
+        "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d"
+      }
+    ]
+  },
+  "drift": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "initial_sha256": "10c7899540c9efe2bc133994404de179fd9fad4508b558bea5d049188cfaed57",
+      "close_sha256": "10c7899540c9efe2bc133994404de179fd9fad4508b558bea5d049188cfaed57",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "initial_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "close_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "initial_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "close_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "initial_sha256": "40bc34b9d1f0616c966a7b19bcb958356e91eec46ad91ed0600804d0c4585c2f",
+      "close_sha256": "40bc34b9d1f0616c966a7b19bcb958356e91eec46ad91ed0600804d0c4585c2f",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/ids.rs",
+      "initial_sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9",
+      "close_sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "initial_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "close_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "changed": false
+    }
+  ],
+  "fields": [
+    {
+      "field": "actor_runtime_key",
+      "owned_type": "usize",
+      "projection_type": "&'a usize",
+      "source": "&actor.actor_slot_index"
+    },
+    {
+      "field": "summoner_unit_id",
+      "owned_type": "UnitInstanceId",
+      "projection_type": "&'a UnitInstanceId",
+      "source": "actor.unit_id.as_ref()?"
+    },
+    {
+      "field": "behavior_activation_id",
+      "owned_type": "u64",
+      "projection_type": "&'a u64",
+      "source": "actor.behavior_activation_id.as_ref()?"
+    },
+    {
+      "field": "pattern_activation_id",
+      "owned_type": "u64",
+      "projection_type": "&'a u64",
+      "source": "&pattern.activation_id"
+    },
+    {
+      "field": "state_activation_id",
+      "owned_type": "u64",
+      "projection_type": "&'a u64",
+      "source": "&pattern.state.activation_id"
+    },
+    {
+      "field": "task_activation_id",
+      "owned_type": "u64",
+      "projection_type": "&'a u64",
+      "source": "&task.activation_id"
+    },
+    {
+      "field": "task",
+      "owned_type": "ActiveBossSummonTask",
+      "projection_type": "&'a ActiveBossSummonTask",
+      "source": "summon from match &task.kind"
+    }
+  ],
+  "macro_sketch": "macro_rules! summon_view_projection {\n    ($($field:ident: $ty:ty),+ $(,)?) => {\n        struct BossSummonTaskProjection<'a> {\n            $($field: &'a $ty,)+\n        }\n\n        impl<'a> BossSummonTaskProjection<'a> {\n            fn visit_owned_shape(\n                &self, meter: &mut CloneMeter,\n            ) -> Result<(), GameError> {\n                let Self { $($field,)+ } = self;\n                meter.scan_storage(Some(1))?;\n                $(<$ty as CloneShape>::visit_clone_shape(*$field, meter)?;)+\n                Ok(())\n            }\n\n            fn into_owned(self) -> BossSummonTaskView {\n                let Self { $($field,)+ } = self;\n                BossSummonTaskView {\n                    $($field: <$ty as Clone>::clone($field),)+\n                }\n            }\n        }\n    };\n}\n\nsummon_view_projection! {\n    actor_runtime_key: usize,\n    summoner_unit_id: UnitInstanceId,\n    behavior_activation_id: u64,\n    pattern_activation_id: u64,\n    state_activation_id: u64,\n    task_activation_id: u64,\n    task: ActiveBossSummonTask,\n}",
+  "macro_execution": "proposed only; no compiler or test execution",
+  "projection_methods": {
+    "visit_owned_shape": "root slot + UFCS native owned-type visits; never CloneShape for borrowed projection",
+    "into_owned": "complete owned struct literal cloning original references only after whole Vec preflight"
+  },
+  "compile_guards": [
+    "typed one-list projection definition",
+    "exhaustive source projection literal, no update/default syntax",
+    "exhaustive projection destructuring in both methods",
+    "complete owned output literal catches new/missing fields",
+    "concrete type UFCS prevents reference-clone inference"
+  ],
+  "compile_guard_limit": "same-type semantic source miswiring needs distinct-value behavior tests",
+  "traversal": {
+    "signature": "for_each_summon_projection<'a>(&'a self, scan: impl FnMut()->Result<(),GameError>, selected: impl FnMut(BossSummonTaskProjection<'a>)->Result<(),GameError>) -> Result<(),GameError>",
+    "allocation": "none in traversal/projection measurement",
+    "eligibility": [
+      "actor unit_id Some",
+      "behavior_activation_id Some",
+      "control Some",
+      "control.pattern Some",
+      "task.kind Summon",
+      "task.result None"
+    ],
+    "order": "actors then each pattern.state.tasks native order; stable request_id sort afterward",
+    "first_pass_scan": "charge(2) before every visited actor/task inspection, including ineligible entries",
+    "second_pass_scan": "poll before every same actor/task inspection",
+    "aggregate": "Vec root 1 + N element slots + sum native owned-view shapes; exactly one CloneMeter.finish before first allocation/copy",
+    "count_proof": "increment only after successful cumulative CloneSlots admission; active max validated <= 2^20",
+    "no_scope": "single pass and unchanged stable native sort"
+  },
+  "sorting": {
+    "selected_by": "root",
+    "algorithm": "stable adjacent insertion sort",
+    "charge_before_each_comparison": "min(left.request_id.len(),right.request_id.len()) + 1",
+    "swap_condition": "Greater only; equal order preserved",
+    "allocation": "moves existing owners, no new clone or scratch vector",
+    "failure": "immediate typed Err; local Vec drop; usage retained",
+    "limitations": "quadratic worst-case comparison count; no latency or unmeasured performance claim"
+  },
+  "oracle": {
+    "independent_owner_impl": "existing Vec<BossSummonTaskView> CloneShape + existing manually listed BossSummonTaskView and ActiveBossSummonTask visitors",
+    "clone_slots": "aggregate projected peak equals independent owner peak",
+    "shape_work": "projected preflight successful work equals independent owner work + 2*(visited actors+visited tasks)",
+    "full_work": "add actual insertion-sort comparison charges; polling costs no charged units",
+    "tests_proposed_not_run": [
+      "aggregate insufficient although each view fits individually; zero into_owned calls before finish",
+      "exact and one-less full storage bounds",
+      "zero selected with many skipped actor/tasks",
+      "distinct ID mapping and equal-key stable ordering",
+      "deep optional task child payloads",
+      "entry/materialization/sort cancellation preserve source and no returned partial Vec"
+    ]
+  },
+  "restrictions": {
+    "repository_docs_source_mutation": false,
+    "git_commands": false,
+    "build_test_runtime_execution": false,
+    "optional_trace": "gap only; unrelated to mandatory view controls"
+  },
+  "limits": [
+    "Root future implementation not inspected",
+    "Later pending map/trigger copies outside this bounded copy slice",
+    "No complete runtime or Session acceptance audit"
+  ]
+}

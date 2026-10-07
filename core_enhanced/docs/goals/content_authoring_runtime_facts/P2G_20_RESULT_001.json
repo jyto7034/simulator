@@ -1,0 +1,56 @@
+{
+  "stage": "P2G-20",
+  "input": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARF-P2G10-001",
+    "Content Digest": null
+  },
+  "result": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARF-P2G20-001",
+    "Content Digest": null
+  },
+  "selected_plan": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CARF-P2G20-002",
+    "Content Digest": null
+  },
+  "review_batch": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CARF-P2G20-001",
+    "Content Digest": null
+  },
+  "static_review_complete": true,
+  "elements": 5,
+  "acceptance_members": 20,
+  "requirements": 9,
+  "required_confirmed": 7,
+  "scope_NA": 2,
+  "source_files": 49,
+  "new_runtime_tests": 0,
+  "source_evidence": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SOURCE_EVIDENCE_001.json",
+    "sha256": "31896ad740074ee2c4f1666804cc105efada8f23ea315f981c233d06bfbf3cf7"
+  },
+  "review_body": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/CODE_REVIEW_001.ko.md",
+    "sha256": "3f86179b5b0a3c9048ff58f4d80b66321b871087fa0033cd3c19e4bdc6d857b0"
+  },
+  "checks": [
+    "all typed refs resolve",
+    "exact input/current source plan coverage",
+    "all required claims mapped",
+    "policy statements/Decisions/20 acceptances preserved",
+    "one Result WR and 5 exact bindings",
+    "scope/PIS/Decision/obligation basis unchanged",
+    "no source hash drift"
+  ],
+  "limitations": [
+    "No new build/test/probe was run in P2G-10/20. Current test counts are explicit reuse of actually executed R03 baseline, not R04 implementation acceptance.",
+    "Workspace hashes identify entire files; semantic coverage is bounded to recorded read spans and source/caller searches.",
+    "No source claim for unselected server/Unity, external released/deployed builds or personal store contents.",
+    "No full future Flow, boss ActionHandle adapter, shield/HP cost, relic chain or fragment-copy implementation exists by this review.",
+    "Initial plan001 corrected source-location guesses in immutable plan002; raw reads are newly bound only to plan002 through formal observations.",
+    "Empty overrun read is excluded; combined output truncation was addressed for relevant support spans as recorded in raw read limitations."
+  ]
+}

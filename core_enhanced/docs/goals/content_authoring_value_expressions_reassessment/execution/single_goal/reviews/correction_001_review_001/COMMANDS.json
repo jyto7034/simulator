@@ -1,0 +1,53 @@
+{
+  "target": "R06_CHECKPOINT_001_CORRECTION_TARGET_001",
+  "manifest_sha256": "87feab8cdfc20b43d7c49c2f6238bd1e684cb7e1daf4f993efe2f193f01dc45e",
+  "cwd": "/mnt/f/work/simulator",
+  "executed": [
+    {
+      "command": "cargo build -p game_core --lib --offline --locked",
+      "exit_code": 0,
+      "note": "Actual current library rebuild; existing dead_code warnings. Output observed in tool transcript."
+    },
+    {
+      "command": "cargo test -p game_core game::value_expr::tests --lib --offline --locked",
+      "exit_code": 0,
+      "output": "UNIT_RERUN.log"
+    },
+    {
+      "command": "rustc --edition=2021 --test core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/correction_001_review_001/review_probes.rs --extern game_core=/mnt/f/work/simulator/target/debug/libgame_core.rlib -L dependency=/mnt/f/work/simulator/target/debug/deps -o /tmp/r06-correction-review-001.Eb34x4/review_probes",
+      "exit_code": 0
+    },
+    {
+      "command": "/tmp/r06-correction-review-001.Eb34x4/review_probes --test-threads=1 --nocapture",
+      "exit_code": 101,
+      "output": "REVIEW_PROBES_FINAL.log",
+      "result": "8 passed / 2 failed / 1 ignored"
+    },
+    {
+      "command": "ulimit -c 0; /tmp/r06-correction-review-001.Eb34x4/review_probes --ignored --exact deep_shape_on_normal_worker_stack --nocapture --test-threads=1",
+      "exit_code": 134,
+      "output": "DEEP_SHAPE_PROBE.log",
+      "result": "isolated diagnostic stack overflow; nondefault caller limits"
+    },
+    {
+      "command": "python3 core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/authoring_scripts/r06_verify_correction_target.py",
+      "exit_code": 0,
+      "output": "IMPLEMENTER_VERIFIER_RERUN.log"
+    },
+    {
+      "command": "python3 core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/correction_001_review_001/verify_target.py",
+      "exit_code": 1,
+      "output": "TARGET_CURRENTNESS_EXIT.json",
+      "result": "current target hashes pass; historical PLAN reference mismatch"
+    }
+  ],
+  "reused_not_rerun": [
+    "all-target test 1378 lib + 52 integration",
+    "all-target check",
+    "focused fmt",
+    "baseline-allow Clippy",
+    "3 before/after fingerprints"
+  ],
+  "source_mutations": false,
+  "next_implementation_started": false
+}

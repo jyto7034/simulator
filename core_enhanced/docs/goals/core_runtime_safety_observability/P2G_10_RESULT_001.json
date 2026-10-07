@@ -1,0 +1,121 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSO-001",
+    "Content Digest": "sha256:1263ab50cf899ff34fd0c673d28e2e5fc95748ed6c607b9994ca8d4c038d5b2a"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSO-002",
+    "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+  },
+  "Produced Candidate Disposition Ref Set": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-01-001",
+      "Content Digest": "sha256:9d37e641331d4cdca61af49163f7e528dbbe0668855f501003395e8066ae5602"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-02-001",
+      "Content Digest": "sha256:288016a52774f55b9c1df3cb9bec735952f3dfe9338212cbeb26dee260c73ff7"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-03-001",
+      "Content Digest": "sha256:d1ca4530d6376c584e8f19a88d06c0dbcfafb9a83d7f7f498c3f5b730a493f5d"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-04-001",
+      "Content Digest": "sha256:6f29d44101f9ea6fa53303052928ded4d88b6f03fd7203730489db17d6d8e57b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-05-001",
+      "Content Digest": "sha256:cfd92cf2d05f46ec1679609937ddccdc686ce001bdb2bfc365eb1c9a331e42e8"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-06-001",
+      "Content Digest": "sha256:c845dcbdc4c6b545fa525e7c1e5926fa8918b8e46d393b139302cf276d0b8921"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-07-001",
+      "Content Digest": "sha256:5c59e17222f7b56b800d1bc8e0e7abbdb51380589d20d07ae4915900f2806eff"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-08-001",
+      "Content Digest": "sha256:fb3cfc093dc46cc3effed9dacab1ac2cc8fba04f55f6c0c84103ba51e2b13b5e"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-09-001",
+      "Content Digest": "sha256:3c2067d00fc5b9c04d17dee2b0c79d55978ffbe44362015a53eb22331211fa2b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-10-001",
+      "Content Digest": "sha256:efc2398c8b41b598bcfedb274df9c5c09b19c01191dbea97640381b648770750"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-11-001",
+      "Content Digest": "sha256:7069fdd479e5245f3a3d60e0fef291a44c07a9947b836d7d0b8e627e125f2d73"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSO-12-001",
+      "Content Digest": "sha256:8f265125096ba84098a41fb308b69fb51737d7ac64980edbeed30e877ce3a1c2"
+    }
+  ],
+  "is_p2g10_complete": true,
+  "checks": {
+    "all_in_scope_candidates_disposed": true,
+    "all_elements_decided": true,
+    "decisions_current_single_leaf": true,
+    "acceptances_present_and_consistent": true,
+    "delegation_basis_per_decision": true,
+    "intake_unchanged": true,
+    "open_questions_empty": true,
+    "cross_references_valid": true
+  },
+  "Finding Triage": [
+    {
+      "classification": "material_policy",
+      "disposition": "delegated_decision",
+      "elements": [
+        "PE-CRSO-01",
+        "PE-CRSO-02",
+        "PE-CRSO-03",
+        "PE-CRSO-04",
+        "PE-CRSO-05",
+        "PE-CRSO-06",
+        "PE-CRSO-07",
+        "PE-CRSO-08",
+        "PE-CRSO-09",
+        "PE-CRSO-10",
+        "PE-CRSO-11",
+        "PE-CRSO-12"
+      ],
+      "evidence": "P2G_10_POLICY_001.json Decision Revision exact basis/reason/impact/criteria"
+    },
+    {
+      "classification": "implementation_finding",
+      "disposition": "P2G-20 source review required",
+      "statement": "G-03 host bootstrap·현재 defaults·expression/cache/history 경계와 exporter boundedness는 코드 근거로 확인해야 하며 아직 구현/검토 PASS 아님"
+    },
+    {
+      "classification": "out_of_scope",
+      "disposition": "original owners retained",
+      "statement": "U03 오류 세션 수명·U11 Lab 정책과 Unity는 해당 카드에서 수행; 20분 시험은 제외"
+    }
+  ],
+  "new_user_request_required": false,
+  "next": "P2G-20",
+  "production_mutation": false
+}

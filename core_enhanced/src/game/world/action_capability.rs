@@ -16,11 +16,65 @@ enum CommonActionEvaluation {
 }
 
 const MAINTENANCE_ACTIONS: [ActionKind; 5] = [
-    ActionKind::UpgradeSkillFragment,
+    ActionKind::SelectSkillFragmentForm,
     ActionKind::AwakenSkillFragment,
     ActionKind::DismantleSkillFragment,
     ActionKind::DismantleEquipment,
     ActionKind::EnhanceEquipment,
+];
+
+// This is observable projection order, not route ownership. ActionKind::descriptor owns
+// membership and the debug parity checks below prevent this ordered view from drifting.
+const COMMON_ACTION_PROJECTION_ORDER: [ActionKind; 49] = [
+    ActionKind::StartNewGame,
+    ActionKind::SelectStarterEmployees,
+    ActionKind::UseConsumableItem,
+    ActionKind::EquipItem,
+    ActionKind::UnEquipItem,
+    ActionKind::EquipSkillFragment,
+    ActionKind::UnequipSkillFragment,
+    ActionKind::TransferSkillFragment,
+    ActionKind::SelectSkillFragmentForm,
+    ActionKind::AwakenSkillFragment,
+    ActionKind::DismantleSkillFragment,
+    ActionKind::DismantleEquipment,
+    ActionKind::EnhanceEquipment,
+    ActionKind::EquipRelic,
+    ActionKind::UnequipRelic,
+    ActionKind::RequestRelicState,
+    ActionKind::RequestRelicNumericPlan,
+    ActionKind::RequestRelicEffectivePlan,
+    ActionKind::PreviewRelicCorruption,
+    ActionKind::CorruptRelic,
+    ActionKind::PreviewRelicDismantle,
+    ActionKind::DismantleRelic,
+    ActionKind::RequestMapData,
+    ActionKind::SelectMapNode,
+    ActionKind::ConvertMapNodeWithMonolith,
+    ActionKind::ConfirmEnterNode,
+    ActionKind::CancelSelectedNode,
+    ActionKind::CompleteNode,
+    ActionKind::LoadRunCheckpoint,
+    ActionKind::ConfirmRunFailure,
+    ActionKind::AbandonRun,
+    ActionKind::RecruitEmployee,
+    ActionKind::RequestEmergencySupplies,
+    ActionKind::OpenHeadquartersShop,
+    ActionKind::PurchaseItem,
+    ActionKind::SellItem,
+    ActionKind::RefreshShop,
+    ActionKind::ExitShop,
+    ActionKind::SelectReward,
+    ActionKind::ClaimReward,
+    ActionKind::ExitReward,
+    ActionKind::AdvanceEventScene,
+    ActionKind::ResolveEventChoiceCheck,
+    ActionKind::ChooseRelicCorruption,
+    ActionKind::AdvanceVisualNovel,
+    ActionKind::SelectVisualNovelChoice,
+    ActionKind::SweepMasteredElite,
+    ActionKind::CompleteMasteredEliteSweep,
+    ActionKind::CompleteCombatResult,
 ];
 
 impl GameCore {
@@ -28,47 +82,27 @@ impl GameCore {
         let maintenance_options = self
             .is_in_maintenance_node()
             .then(|| self.maintenance_options());
-        [
-            ActionKind::StartNewGame,
-            ActionKind::SelectStarterEmployees,
-            ActionKind::UseConsumableItem,
-            ActionKind::EquipItem,
-            ActionKind::UnEquipItem,
-            ActionKind::EquipSkillFragment,
-            ActionKind::UnequipSkillFragment,
-            ActionKind::UpgradeSkillFragment,
-            ActionKind::AwakenSkillFragment,
-            ActionKind::DismantleSkillFragment,
-            ActionKind::DismantleEquipment,
-            ActionKind::EnhanceEquipment,
-            ActionKind::RequestMapData,
-            ActionKind::SelectMapNode,
-            ActionKind::ConvertMapNodeWithMonolith,
-            ActionKind::ConfirmEnterNode,
-            ActionKind::CancelSelectedNode,
-            ActionKind::CompleteNode,
-            ActionKind::LoadRunCheckpoint,
-            ActionKind::ConfirmRunFailure,
-            ActionKind::AbandonRun,
-            ActionKind::RecruitEmployee,
-            ActionKind::RequestEmergencySupplies,
-            ActionKind::OpenHeadquartersShop,
-            ActionKind::PurchaseItem,
-            ActionKind::SellItem,
-            ActionKind::RefreshShop,
-            ActionKind::ExitShop,
-            ActionKind::SelectReward,
-            ActionKind::ClaimReward,
-            ActionKind::ExitReward,
-            ActionKind::AdvanceEventScene,
-            ActionKind::ResolveEventChoiceCheck,
-            ActionKind::AdvanceVisualNovel,
-            ActionKind::SelectVisualNovelChoice,
-            ActionKind::CompleteCombatResult,
-        ]
-        .into_iter()
-        .filter_map(|action| self.project_common_action(action, maintenance_options.as_ref()))
-        .collect()
+        let mut actions = ActionKind::ALL
+            .iter()
+            .copied()
+            .filter(|action| action.route().projects_common_capability())
+            .collect::<Vec<_>>();
+        actions.sort_by_key(|action| {
+            COMMON_ACTION_PROJECTION_ORDER
+                .iter()
+                .position(|candidate| candidate == action)
+                .unwrap_or(usize::MAX)
+        });
+        debug_assert!(COMMON_ACTION_PROJECTION_ORDER
+            .iter()
+            .all(|action| action.route().projects_common_capability()));
+        debug_assert!(actions
+            .iter()
+            .all(|action| COMMON_ACTION_PROJECTION_ORDER.contains(action)));
+        actions
+            .into_iter()
+            .filter_map(|action| self.project_common_action(action, maintenance_options.as_ref()))
+            .collect()
     }
 
     fn project_common_action(
@@ -101,7 +135,7 @@ impl GameCore {
         action: ActionKind,
         maintenance_options: Option<&MaintenanceOptionsDto>,
     ) -> CommonActionEvaluation {
-        if !matches!(self.state.game_state, GameState::InBattle { .. })
+        if !matches!(self.state.lifecycle.phase(), GameState::InBattle { .. })
             && self
                 .state
                 .visual_novel
@@ -117,14 +151,17 @@ impl GameCore {
         }
         match action {
             ActionKind::StartNewGame => {
-                if matches!(self.state.game_state, GameState::NotStarted) {
+                if matches!(self.state.lifecycle.phase(), GameState::NotStarted) {
                     CommonActionEvaluation::Enabled
                 } else {
                     CommonActionEvaluation::Irrelevant
                 }
             }
             ActionKind::SelectStarterEmployees => {
-                if !matches!(self.state.game_state, GameState::SelectingStarterEmployees) {
+                if !matches!(
+                    self.state.lifecycle.phase(),
+                    GameState::SelectingStarterEmployees
+                ) {
                     return CommonActionEvaluation::Irrelevant;
                 }
                 let required = self.run_policy().setup.starter_employee_count;
@@ -138,8 +175,9 @@ impl GameCore {
             | ActionKind::EquipItem
             | ActionKind::UnEquipItem
             | ActionKind::EquipSkillFragment
-            | ActionKind::UnequipSkillFragment => self.evaluate_safezone_inventory_action(action),
-            ActionKind::UpgradeSkillFragment
+            | ActionKind::UnequipSkillFragment
+            | ActionKind::TransferSkillFragment => self.evaluate_safezone_inventory_action(action),
+            ActionKind::SelectSkillFragmentForm
             | ActionKind::AwakenSkillFragment
             | ActionKind::DismantleSkillFragment
             | ActionKind::DismantleEquipment
@@ -155,9 +193,39 @@ impl GameCore {
                     CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
                 }
             }
+            ActionKind::RequestRelicState
+            | ActionKind::RequestRelicNumericPlan
+            | ActionKind::RequestRelicEffectivePlan => {
+                if self.state.run.is_some() {
+                    CommonActionEvaluation::Enabled
+                } else {
+                    CommonActionEvaluation::Irrelevant
+                }
+            }
+            ActionKind::EquipRelic
+            | ActionKind::UnequipRelic
+            | ActionKind::PreviewRelicCorruption
+            | ActionKind::CorruptRelic => {
+                if !self.is_loadout_action_context() {
+                    CommonActionEvaluation::Irrelevant
+                } else if self.state.relics.is_empty() {
+                    CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+                } else {
+                    CommonActionEvaluation::Enabled
+                }
+            }
+            ActionKind::PreviewRelicDismantle | ActionKind::DismantleRelic => {
+                if !self.is_in_maintenance_node() {
+                    CommonActionEvaluation::Irrelevant
+                } else if self.state.relics.is_empty() {
+                    CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+                } else {
+                    CommonActionEvaluation::Enabled
+                }
+            }
             ActionKind::RequestMapData => {
                 if !matches!(
-                    self.state.game_state,
+                    self.state.lifecycle.phase(),
                     GameState::ViewingMap
                         | GameState::NodeConfirm { .. }
                         | GameState::InNode { .. }
@@ -174,7 +242,7 @@ impl GameCore {
             }
             ActionKind::SelectMapNode => {
                 if !matches!(
-                    self.state.game_state,
+                    self.state.lifecycle.phase(),
                     GameState::ViewingMap | GameState::NodeConfirm { .. }
                 ) {
                     return CommonActionEvaluation::Irrelevant;
@@ -187,7 +255,7 @@ impl GameCore {
                 }
             }
             ActionKind::ConvertMapNodeWithMonolith => {
-                if !matches!(self.state.game_state, GameState::NodeConfirm { .. }) {
+                if !matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { .. }) {
                     return CommonActionEvaluation::Irrelevant;
                 }
                 if self
@@ -201,7 +269,7 @@ impl GameCore {
             }
             ActionKind::LoadRunCheckpoint => {
                 if !matches!(
-                    self.state.game_state,
+                    self.state.lifecycle.phase(),
                     GameState::ViewingMap
                         | GameState::NodeConfirm { .. }
                         | GameState::AwaitingRunFailureDecision { .. }
@@ -218,7 +286,7 @@ impl GameCore {
             }
             ActionKind::ConfirmRunFailure => {
                 if matches!(
-                    self.state.game_state,
+                    self.state.lifecycle.phase(),
                     GameState::AwaitingRunFailureDecision { .. }
                 ) {
                     CommonActionEvaluation::Enabled
@@ -229,7 +297,7 @@ impl GameCore {
             ActionKind::AbandonRun => {
                 if self.state.run.is_some()
                     && matches!(
-                        self.state.game_state,
+                        self.state.lifecycle.phase(),
                         GameState::ViewingMap | GameState::NodeConfirm { .. }
                     )
                 {
@@ -239,8 +307,14 @@ impl GameCore {
                 }
             }
             ActionKind::ConfirmEnterNode => {
-                if !matches!(self.state.game_state, GameState::NodeConfirm { .. }) {
+                if !matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { .. }) {
                     return CommonActionEvaluation::Irrelevant;
+                }
+                if let Some(evaluation) = self.mastered_elite_resolution_evaluation() {
+                    return match evaluation.dto.direct_battle.disabled_reason_code {
+                        None => CommonActionEvaluation::Enabled,
+                        Some(reason) => CommonActionEvaluation::Disabled(reason),
+                    };
                 }
                 if self.state.node_session.is_some() {
                     CommonActionEvaluation::Enabled
@@ -251,7 +325,7 @@ impl GameCore {
                 }
             }
             ActionKind::CancelSelectedNode => {
-                if matches!(self.state.game_state, GameState::NodeConfirm { .. }) {
+                if matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { .. }) {
                     CommonActionEvaluation::Enabled
                 } else {
                     CommonActionEvaluation::Irrelevant
@@ -268,14 +342,40 @@ impl GameCore {
             ActionKind::SelectReward | ActionKind::ClaimReward | ActionKind::ExitReward => {
                 self.evaluate_reward_action(action)
             }
-            ActionKind::AdvanceEventScene | ActionKind::ResolveEventChoiceCheck => {
-                self.evaluate_event_action(action)
-            }
+            ActionKind::AdvanceEventScene
+            | ActionKind::ResolveEventChoiceCheck
+            | ActionKind::ChooseRelicCorruption => self.evaluate_event_action(action),
             ActionKind::AdvanceVisualNovel | ActionKind::SelectVisualNovelChoice => {
                 self.evaluate_nonbattle_visual_novel_action(action)
             }
+            ActionKind::SweepMasteredElite => {
+                let Some(evaluation) = self.mastered_elite_resolution_evaluation() else {
+                    return CommonActionEvaluation::Irrelevant;
+                };
+                match evaluation.dto.sweep.disabled_reason_code {
+                    None => CommonActionEvaluation::Enabled,
+                    Some(reason) => CommonActionEvaluation::Disabled(reason),
+                }
+            }
+            ActionKind::CompleteMasteredEliteSweep => {
+                let GameState::MasteredEliteSweepResult { sweep_uuid } =
+                    self.state.lifecycle.phase()
+                else {
+                    return CommonActionEvaluation::Irrelevant;
+                };
+                if self
+                    .staged_mastered_elite_sweep_result()
+                    .is_some_and(|result| result.sweep_uuid == *sweep_uuid)
+                {
+                    CommonActionEvaluation::Enabled
+                } else {
+                    CommonActionEvaluation::Disabled(
+                        ActionDisabledReasonCode::CompletionUnavailable,
+                    )
+                }
+            }
             ActionKind::CompleteCombatResult => {
-                if !matches!(self.state.game_state, GameState::CombatResult { .. }) {
+                if !matches!(self.state.lifecycle.phase(), GameState::CombatResult { .. }) {
                     return CommonActionEvaluation::Irrelevant;
                 }
                 if self.can_complete_combat_result_locally() {
@@ -319,49 +419,25 @@ impl GameCore {
                         .is_ok()
                 })
             }),
-            ActionKind::EquipSkillFragment => {
-                self.state.skill_fragments.owned_ids().any(|fragment_id| {
-                    self.state.roster.iter().any(|employee| {
-                        if self
-                            .validate_equip_skill_fragment_payload(employee.uuid, fragment_id)
-                            .and_then(|_| {
-                                self.validate_skill_fragment_equip_limit(employee.uuid, fragment_id)
-                            })
-                            .is_err()
-                        {
-                            return false;
-                        }
-                        let mut projected_roster = self.state.roster.clone();
-                        projected_roster
-                            .equip_skill_fragment(
-                                employee.uuid,
-                                &self.state.skill_fragments,
-                                &self.game_data.skill_fragment_data,
-                                fragment_id,
-                            )
-                            .is_ok()
-                    })
+            ActionKind::EquipSkillFragment => self.state.skill_fragments.copies().any(|copy| {
+                self.state.roster.iter().any(|employee| {
+                    self.validate_equip_skill_fragment_payload(employee.uuid, copy.copy_uuid)
+                        .is_ok()
                 })
-            }
+            }),
             ActionKind::UnequipSkillFragment => self.state.roster.iter().any(|employee| {
                 employee
                     .skill_fragments
-                    .equipped_ids()
-                    .into_iter()
-                    .any(|fragment_id| {
-                        if self
-                            .validate_unequip_skill_fragment_payload(employee.uuid, &fragment_id)
-                            .is_err()
-                        {
-                            return false;
-                        }
-                        let mut projected_roster = self.state.roster.clone();
-                        projected_roster
-                            .unequip_skill_fragment(
-                                employee.uuid,
-                                &self.game_data.skill_fragment_data,
-                                &fragment_id,
-                            )
+                    .active_copy_uuid()
+                    .is_some_and(|id| {
+                        self.validate_unequip_skill_fragment_payload(employee.uuid, id)
+                            .is_ok()
+                    })
+            }),
+            ActionKind::TransferSkillFragment => self.state.skill_fragments.copies().any(|copy| {
+                copy.equipped_to.is_some()
+                    && self.state.roster.iter().any(|employee| {
+                        self.validate_transfer_skill_fragment_payload(copy.copy_uuid, employee.uuid)
                             .is_ok()
                     })
             }),
@@ -376,7 +452,7 @@ impl GameCore {
     }
 
     fn evaluate_complete_node(&self) -> CommonActionEvaluation {
-        if !matches!(self.state.game_state, GameState::InNode { .. }) {
+        if !matches!(self.state.lifecycle.phase(), GameState::InNode { .. }) {
             return CommonActionEvaluation::Irrelevant;
         }
         match self.state.active_node_content.as_ref() {
@@ -417,7 +493,10 @@ impl GameCore {
                 session.node_id == headquarters.node_id
                     && !session.employee_definition_ids.is_empty()
             });
-        if action == ActionKind::RecruitEmployee && !has_recruitment_candidates {
+        if action == ActionKind::RecruitEmployee
+            && (!has_recruitment_candidates
+                || self.state.roster.len() >= crate::game::employee::MAX_EMPLOYEE_ROSTER_SIZE)
+        {
             CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
         } else {
             CommonActionEvaluation::Enabled
@@ -425,7 +504,7 @@ impl GameCore {
     }
 
     fn evaluate_shop_action(&self, action: ActionKind) -> CommonActionEvaluation {
-        if !matches!(self.state.game_state, GameState::InShop { .. }) {
+        if !matches!(self.state.lifecycle.phase(), GameState::InShop { .. }) {
             return CommonActionEvaluation::Irrelevant;
         }
         let Some(ActiveNodeContent::Shop(shop)) = self.state.active_node_content.as_ref() else {
@@ -452,14 +531,17 @@ impl GameCore {
     }
 
     fn evaluate_reward_action(&self, action: ActionKind) -> CommonActionEvaluation {
-        if matches!(self.state.game_state, GameState::InRewardClaimed { .. }) {
+        if matches!(
+            self.state.lifecycle.phase(),
+            GameState::InRewardClaimed { .. }
+        ) {
             return if action == ActionKind::ExitReward {
                 CommonActionEvaluation::Enabled
             } else {
                 CommonActionEvaluation::Irrelevant
             };
         }
-        if !matches!(self.state.game_state, GameState::InReward { .. }) {
+        if !matches!(self.state.lifecycle.phase(), GameState::InReward { .. }) {
             return CommonActionEvaluation::Irrelevant;
         }
         let Some(ActiveNodeContent::Reward(reward)) = self.state.active_node_content.as_ref()
@@ -498,7 +580,7 @@ impl GameCore {
     }
 
     fn evaluate_nonbattle_visual_novel_action(&self, action: ActionKind) -> CommonActionEvaluation {
-        if matches!(self.state.game_state, GameState::InBattle { .. }) {
+        if matches!(self.state.lifecycle.phase(), GameState::InBattle { .. }) {
             return CommonActionEvaluation::Irrelevant;
         }
         let Some(session) = self.state.visual_novel.active.as_ref() else {
@@ -543,7 +625,7 @@ impl GameCore {
         behavior: &PlayerBehavior,
     ) -> Result<bool, GameError> {
         let action = behavior.kind();
-        if matches!(self.state.game_state, GameState::InBattle { .. })
+        if matches!(self.state.lifecycle.phase(), GameState::InBattle { .. })
             && matches!(
                 action,
                 ActionKind::AdvanceVisualNovel | ActionKind::SelectVisualNovelChoice
@@ -552,36 +634,7 @@ impl GameCore {
             return Ok(false);
         }
 
-        let common_owned = matches!(
-            action,
-            ActionKind::RequestMapData
-                | ActionKind::SelectMapNode
-                | ActionKind::LoadRunCheckpoint
-                | ActionKind::ConfirmRunFailure
-                | ActionKind::AbandonRun
-                | ActionKind::StartNewGame
-                | ActionKind::SelectStarterEmployees
-                | ActionKind::ConfirmEnterNode
-                | ActionKind::CancelSelectedNode
-                | ActionKind::CompleteNode
-                | ActionKind::RecruitEmployee
-                | ActionKind::RequestEmergencySupplies
-                | ActionKind::OpenHeadquartersShop
-                | ActionKind::SelectReward
-                | ActionKind::ClaimReward
-                | ActionKind::ExitReward
-                | ActionKind::AdvanceEventScene
-                | ActionKind::ResolveEventChoiceCheck
-                | ActionKind::AdvanceVisualNovel
-                | ActionKind::SelectVisualNovelChoice
-                | ActionKind::CompleteCombatResult
-                | ActionKind::UpgradeSkillFragment
-                | ActionKind::AwakenSkillFragment
-                | ActionKind::DismantleSkillFragment
-                | ActionKind::DismantleEquipment
-                | ActionKind::EnhanceEquipment
-        );
-        if !common_owned {
+        if !action.route().uses_common_preflight() {
             return Ok(false);
         }
 
@@ -600,6 +653,23 @@ impl GameCore {
                 choice_id,
                 *employee_uuid,
             ) {
+                return Ok(true);
+            }
+        }
+
+        if let PlayerBehavior::ChooseRelicCorruption {
+            node_id,
+            event_id,
+            current_scene_id,
+            copy_uuid,
+        } = behavior
+        {
+            if self.is_exact_committed_relic_corruption(
+                *node_id,
+                event_id,
+                current_scene_id,
+                *copy_uuid,
+            )? {
                 return Ok(true);
             }
         }
@@ -649,6 +719,21 @@ impl GameCore {
                     *employee_uuid,
                 )
                 .map_err(|reason| GameError::ActionUnavailable { action, reason })?;
+            }
+            PlayerBehavior::ChooseRelicCorruption {
+                node_id,
+                event_id,
+                current_scene_id,
+                copy_uuid,
+            } => {
+                let eligibility = self.validate_relic_corruption_payload(
+                    *node_id,
+                    event_id,
+                    current_scene_id,
+                    *copy_uuid,
+                );
+                crate::authoring::control::poll("relic_event_payload_preflight")?;
+                eligibility.map_err(|reason| GameError::ActionUnavailable { action, reason })?;
             }
             _ => {}
         }

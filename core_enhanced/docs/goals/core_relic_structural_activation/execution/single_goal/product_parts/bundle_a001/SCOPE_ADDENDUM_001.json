@@ -1,0 +1,25 @@
+{
+  "recorded_at_utc": "2026-10-07T10:18:21.734519+00:00",
+  "authorization": "Parent explicit declaration-dispatch scope extension after check001; PLAN tail GEX-10 bundle A",
+  "added_owned_existing_files": [
+    "core_enhanced/src/authoring/amount.rs",
+    "core_enhanced/src/game/battle/core/target_usefulness.rs"
+  ],
+  "extra_preimage": {
+    "path": "core_enhanced/src/authoring/amount.rs",
+    "bytes": 19856,
+    "sha256": "dfd357edc0f5d0ad57d11723b3e8ec39bb499e72689b0ccad78489a151351efd"
+  },
+  "captured_by": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/u09_product_bundle_a_check001.json",
+    "bytes": 176040,
+    "sha256": "0adb1af2fb89a9b5d3132a8e748dbffff68bf1ac1d1669e7a80b0ca11cd5931b"
+  },
+  "reusable_preimage": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/source_versions/4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac.tar.gz",
+    "bytes": 1927348,
+    "sha256": "97380cccb229b8b34244511717c547068ba325b6b81403bb0e0b1f928c6fd733"
+  },
+  "cfg_test_edit_authority": false,
+  "note": "This is a present addendum, not a retrodated before snapshot."
+}

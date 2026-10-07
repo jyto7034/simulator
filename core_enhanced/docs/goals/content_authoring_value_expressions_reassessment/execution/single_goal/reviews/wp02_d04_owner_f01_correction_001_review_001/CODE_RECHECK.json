@@ -1,0 +1,9 @@
+{
+  "source": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+  "sha256": "8fbea162ef67d4ba5aa29d6b36253a56d544814a0fcc4b59b6eb9334174f6cd1",
+  "function": "resolved_slot_binding",
+  "global_item_values_or_iter_calls": 0,
+  "exact_item_get_calls": 1,
+  "all_four_identity_comparisons_present": true,
+  "review_scope": "This mechanical check supplements the manual review; it is not a whole-program complexity proof."
+}

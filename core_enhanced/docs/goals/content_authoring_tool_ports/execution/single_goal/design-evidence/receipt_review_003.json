@@ -1,0 +1,153 @@
+{
+  "report_id": "R03-RECEIPT-READONLY-003",
+  "role": "bounded source/design helper, not completion auditor",
+  "authorization": "Root task under AUTORUN section 8; root sole implementation/artifact writer",
+  "scope": [
+    "authoring/output.rs encode_receipt/Writer/usage_prefix",
+    "authoring/control.rs usage_snapshot and direct run/admit/charge/phase semantics",
+    "PLAN detailed009"
+  ],
+  "workspace": "/mnt/f/work/simulator",
+  "observed_at": "2026-09-10T07:58:52.895872+00:00",
+  "source_execution": [],
+  "test_execution": [],
+  "build_execution": [],
+  "git_mutations": [],
+  "production_mutations": [],
+  "outputs": [
+    "/tmp/r03_receipt_review_003.md",
+    "/tmp/r03_receipt_review_003.json"
+  ],
+  "open_concrete_findings": [],
+  "precision_notes": [
+    {
+      "id": "RR03-N01",
+      "title": "result_bytes_peak is the maximum encoded result length within the attempt",
+      "classification": "design/test precision, not source defect",
+      "status": "root corrected PLAN009 wording and added focused source oracle during review",
+      "formula": "max(previous_attempt_peak, current_receipt_document_length)",
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/authoring/control.rs",
+          "span": [
+            366,
+            425
+          ]
+        },
+        {
+          "path": "core_enhanced/src/authoring/output.rs",
+          "span": [
+            241,
+            257
+          ]
+        },
+        {
+          "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+          "span": [
+            270,
+            271
+          ]
+        }
+      ]
+    }
+  ],
+  "confirmed_properties": [
+    "Initial fixed-width usage prefix is admitted and charged through the same Writer before payload/closing JSON.",
+    "Same-length prefix replacement occurs only after all writer bytes and rewrite work have been admitted.",
+    "Current unsigned counters fit in 20 decimal characters; trailing spaces are JSON whitespace, not leading-zero numbers.",
+    "Successful receipt usage matches final scope usage if no later charged/admitted work occurs and final poll succeeds.",
+    "Cumulative byte arithmetic remains within validated 64MiB ceiling; Writer append preserves remaining-length invariant.",
+    "Encoding and quota errors return no PreparedReceipt; sticky control errors are authoritative at outer run acceptance.",
+    "Usage snapshot returns an owned fixed scalar copy, exposes no mutable accounting and does not itself consume work."
+  ],
+  "follow_up_obligations": [
+    {
+      "id": "RR03-O01",
+      "owner": "session caller",
+      "text": "Make encode_receipt the last mandatory charged/admitted operation; accept both nested payload result and outer run control result; only then infallibly commit candidate aggregate."
+    },
+    {
+      "id": "RR03-O02",
+      "owner": "session receipt owner",
+      "text": "Supply actual committed receipt byte count and pure mandatory payload with real provenance; preserve old quota/documents on any mandatory failure. PreparedReceipt is not proof of accepted session."
+    },
+    {
+      "id": "RR03-O03",
+      "owner": "session optional observation",
+      "text": "Keep optional trace out of Writer, payload counted here, control work, mandatory result quota and binding sources; optional overflow gap only."
+    },
+    {
+      "id": "RR03-O04",
+      "owner": "validation/cost owner",
+      "text": "Current source test definitions are not helper executions; perform required focused and integration validation. Encoded-byte peak and logical work do not prove allocator peak or interruption wall-time bounds."
+    }
+  ],
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/output.rs",
+      "bytes": 12499,
+      "sha256": "e1797e0fabf632e1300149b52b45bc22a9dbd040345e5212c4765e9cf82c34bf",
+      "reviewed_spans": [
+        [
+          1,
+          345
+        ]
+      ],
+      "method": "sed/rg source reads, then single-read bytes+SHA256 in-memory snapshot; later output.rs added-test delta read from snapshots",
+      "final_hash_observed": "e1797e0fabf632e1300149b52b45bc22a9dbd040345e5212c4765e9cf82c34bf"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 16562,
+      "sha256": "fe69b34d3303d4d465d94c999dc750fa8eaf33a6f34982957f3c5a93ff976bc5",
+      "reviewed_spans": [
+        [
+          1,
+          110
+        ],
+        [
+          159,
+          286
+        ],
+        [
+          338,
+          425
+        ]
+      ],
+      "method": "sed/rg source reads, then single-read bytes+SHA256 in-memory snapshot; later output.rs added-test delta read from snapshots",
+      "final_hash_observed": "fe69b34d3303d4d465d94c999dc750fa8eaf33a6f34982957f3c5a93ff976bc5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+      "bytes": 28876,
+      "sha256": "e74128f0fe05f2d4770538dad27e7c28e75e4bee520c41ac6302dfaaad29c62e",
+      "reviewed_spans": [
+        [
+          265,
+          275
+        ]
+      ],
+      "method": "sed/rg source reads, then single-read bytes+SHA256 in-memory snapshot; later output.rs added-test delta read from snapshots",
+      "final_hash_observed": "e74128f0fe05f2d4770538dad27e7c28e75e4bee520c41ac6302dfaaad29c62e"
+    }
+  ],
+  "drift": [
+    {
+      "path": "core_enhanced/src/authoring/output.rs",
+      "initial_sha256": "5c45ebf80c728033142c154e847b4ee8d8292201a07e616c2d7f5e122f9a0f01",
+      "final_sha256": "e1797e0fabf632e1300149b52b45bc22a9dbd040345e5212c4765e9cf82c34bf",
+      "change": "During review root added only the larger-earlier-result-peak test at new lines241–257 (plus following test annotation); production snapshot content unchanged."
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+      "initial_sha256": "f9ba43cc441a53aac338c7463eb19601b989ce4866bef7ac081f38640125f017",
+      "final_sha256": "e74128f0fe05f2d4770538dad27e7c28e75e4bee520c41ac6302dfaaad29c62e",
+      "change": "Root clarified attempt-wide peak meaning in PLAN009 during review."
+    }
+  ],
+  "limitations": [
+    "Individual snapshots are not an atomic repository snapshot.",
+    "Root's tests were not run or recertified by this helper.",
+    "No claim of full receipt schema, actual session acceptance, API/CLI parity, R03 completion or fresh independent audit."
+  ]
+}

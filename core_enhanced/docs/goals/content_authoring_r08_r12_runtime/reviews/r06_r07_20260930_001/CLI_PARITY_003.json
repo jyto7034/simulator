@@ -1,0 +1,30 @@
+{
+  "result": "passed semantic comparison; exact array order limitation preserved",
+  "cases": [
+    {
+      "case": "r06",
+      "amount_documents_equal": 4,
+      "gameplay_result_lifecycle_observation_equal": true,
+      "normalization": "only trauma recovery preview employee set keyed by explicit employee_uuid; wire array order difference retained as OBS001"
+    },
+    {
+      "case": "r07_snapshot",
+      "amount_documents_equal": 4,
+      "gameplay_result_lifecycle_observation_equal": true,
+      "normalization": "only trauma recovery preview employee set keyed by explicit employee_uuid; wire array order difference retained as OBS001"
+    },
+    {
+      "case": "r07_live",
+      "amount_documents_equal": 4,
+      "gameplay_result_lifecycle_observation_equal": true,
+      "normalization": "only trauma recovery preview employee set keyed by explicit employee_uuid; wire array order difference retained as OBS001"
+    }
+  ],
+  "OBS001": {
+    "path": "core_enhanced/src/game/world/facility.rs",
+    "function": "trauma_recovery_preview_for_category",
+    "function_sha256": "0538ba512823778129e233ebe752aae4c33b90410e8f99abb61e47dd0afe66fa",
+    "same_before_r06_and_r07": true,
+    "impact": "Preview employee order only; values/identities/save/amount/gameplay equal; not caused by tracing or R06/R07 delta"
+  }
+}

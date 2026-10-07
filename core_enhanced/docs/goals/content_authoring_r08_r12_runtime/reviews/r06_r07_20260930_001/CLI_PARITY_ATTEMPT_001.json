@@ -1,0 +1,143 @@
+{
+  "result": "failed exact public_result comparison; diagnosis pending",
+  "exit_code": 1,
+  "cases": [
+    {
+      "case": "r06",
+      "amount_documents_equal": true,
+      "delta": []
+    },
+    {
+      "case": "r07_snapshot",
+      "amount_documents_equal": true,
+      "delta": [
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/0/employee_name",
+          "off": "이서연",
+          "on": "한유진"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/0/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a136-2eee6f3b6d16",
+          "on": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/1/employee_name",
+          "off": "강민재",
+          "on": "이서연"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/1/employee_uuid",
+          "off": "40215cb9-05e1-47a9-ba06-3008692313ed",
+          "on": "40215cb9-05e1-47a9-a136-2eee6f3b6d16"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/2/employee_name",
+          "off": "한유진",
+          "on": "강민재"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/2/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918",
+          "on": "40215cb9-05e1-47a9-ba06-3008692313ed"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/0/employee_name",
+          "off": "이서연",
+          "on": "한유진"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/0/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a136-2eee6f3b6d16",
+          "on": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/1/employee_name",
+          "off": "강민재",
+          "on": "이서연"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/1/employee_uuid",
+          "off": "40215cb9-05e1-47a9-ba06-3008692313ed",
+          "on": "40215cb9-05e1-47a9-a136-2eee6f3b6d16"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/2/employee_name",
+          "off": "한유진",
+          "on": "강민재"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/2/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918",
+          "on": "40215cb9-05e1-47a9-ba06-3008692313ed"
+        }
+      ]
+    },
+    {
+      "case": "r07_live",
+      "amount_documents_equal": true,
+      "delta": [
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/0/employee_name",
+          "off": "한유진",
+          "on": "이서연"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/0/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918",
+          "on": "40215cb9-05e1-47a9-a136-2eee6f3b6d16"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/1/employee_name",
+          "off": "강민재",
+          "on": "한유진"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/1/employee_uuid",
+          "off": "40215cb9-05e1-47a9-ba06-3008692313ed",
+          "on": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/2/employee_name",
+          "off": "이서연",
+          "on": "강민재"
+        },
+        {
+          "path": "/22/public_result/payload/trauma_recovery_preview/employees/2/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a136-2eee6f3b6d16",
+          "on": "40215cb9-05e1-47a9-ba06-3008692313ed"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/0/employee_name",
+          "off": "한유진",
+          "on": "이서연"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/0/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918",
+          "on": "40215cb9-05e1-47a9-a136-2eee6f3b6d16"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/1/employee_name",
+          "off": "강민재",
+          "on": "한유진"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/1/employee_uuid",
+          "off": "40215cb9-05e1-47a9-ba06-3008692313ed",
+          "on": "40215cb9-05e1-47a9-a4b1-f3b4dbb3a918"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/2/employee_name",
+          "off": "이서연",
+          "on": "강민재"
+        },
+        {
+          "path": "/23/public_result/payload/recovery_preview/employees/2/employee_uuid",
+          "off": "40215cb9-05e1-47a9-a136-2eee6f3b6d16",
+          "on": "40215cb9-05e1-47a9-ba06-3008692313ed"
+        }
+      ]
+    }
+  ]
+}

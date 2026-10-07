@@ -1,0 +1,830 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CRSL-001",
+        "Content Digest": "sha256:38cbca407bacafdce0cacae9c1f5c484c2eace778a88c003b0b9641c6ed41c9e"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSL-002",
+          "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-01-DECIDED-001",
+                "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-02-DECIDED-001",
+                "Content Digest": "sha256:c31896f7939f7bd3d89d4c48ba295140545bf99faa6d25bc8b4598db8987f306"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-03-DECIDED-001",
+                "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+              }
+            ],
+            "Required claim/boundary": "deployment and all positive resonance writers/readers",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core/build.rs",
+                "core_enhanced/src/game/battle/core/commands.rs",
+                "core_enhanced/src/game/battle/core/resonance_runtime.rs",
+                "core_enhanced/src/game/battle/core/damage_runtime.rs",
+                "core_enhanced/src/game/battle/core/tactical_stance.rs",
+                "core_enhanced/src/game/battle/core/field_work.rs",
+                "core_enhanced/src/game/battle/core/sim.rs",
+                "core_enhanced/src/game/battle/core/types.rs",
+                "core_enhanced/src/game/battle/core/mod.rs",
+                "core_enhanced/src/game/battle/core/movement/engine.rs",
+                "core_enhanced/src/game/battle/types.rs",
+                "core_enhanced/src/game/employee.rs",
+                "core_enhanced/src/game/ability.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "trace actual spawn/regen/attack/damage/Rest/effect dispatch and gate; floor, cadence, cap, CC and no bank seams"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-06-DECIDED-001",
+                "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-07-DECIDED-001",
+                "Content Digest": "sha256:85ea8f3c86ccd9d65c2f179bc5cb6ca71f6db4c8717896e067909241f37c797d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-08-DECIDED-001",
+                "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-09-DECIDED-001",
+                "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-10-DECIDED-001",
+                "Content Digest": "sha256:c302d785e196a30e06b9a769f5bb03f4adb1e0b37a9baade0364d248b185c9c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-11-DECIDED-001",
+                "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+              }
+            ],
+            "Required claim/boundary": "normal input→validation→pending start→cancel/corrosion and target ownership",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core/commands.rs",
+                "core_enhanced/src/game/battle/core/corrosion.rs",
+                "core_enhanced/src/game/battle/core/targeting.rs",
+                "core_enhanced/src/game/battle/core/target_usefulness.rs",
+                "core_enhanced/src/game/battle/core/death_runtime.rs",
+                "core_enhanced/src/game/battle/core/queue.rs",
+                "core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+                "core_enhanced/src/game/battle/core/tactical_relocation.rs",
+                "core_enhanced/src/game/battle/core/tactical_swap.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/game/world/battle_capability.rs",
+                "core_enhanced/src/game/behavior.rs",
+                "core_enhanced/src/application.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "follow public manual/corrosion commands, preview/focus, paused acceptance, consume/full recheck, CC/target cancellation and accepted tile"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-03-DECIDED-001",
+                "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-05-DECIDED-001",
+                "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-06-DECIDED-001",
+                "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-07-DECIDED-001",
+                "Content Digest": "sha256:85ea8f3c86ccd9d65c2f179bc5cb6ca71f6db4c8717896e067909241f37c797d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-11-DECIDED-001",
+                "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              }
+            ],
+            "Required claim/boundary": "cast/control/Flow/buff/channel/native carrier/action facts versus actual use lifetime",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+                "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+                "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+                "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+                "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+                "core_enhanced/src/game/battle/core/sustained.rs",
+                "core_enhanced/src/game/battle/core/summon_runtime.rs",
+                "core_enhanced/src/game/battle/core/triggers.rs",
+                "core_enhanced/src/game/battle/core/resource_runtime.rs",
+                "core_enhanced/src/game/battle/core/authoring_observation.rs",
+                "core_enhanced/src/game/battle/core/runtime_facts.rs",
+                "core_enhanced/src/game/battle/buffs.rs",
+                "core_enhanced/src/game/battle/runtime_facts.rs",
+                "core_enhanced/src/game/battle/runtime_control.rs",
+                "core_enhanced/src/game/battle/event_log.rs",
+                "core_enhanced/src/game/events/combat.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "map separate control terminal/effects settled/buff removal and cleanup; all release/interrupt/death/withdrawal completion paths"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-01-DECIDED-001",
+                "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-02-DECIDED-001",
+                "Content Digest": "sha256:c31896f7939f7bd3d89d4c48ba295140545bf99faa6d25bc8b4598db8987f306"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-03-DECIDED-001",
+                "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-05-DECIDED-001",
+                "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-08-DECIDED-001",
+                "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-10-DECIDED-001",
+                "Content Digest": "sha256:c302d785e196a30e06b9a769f5bb03f4adb1e0b37a9baade0364d248b185c9c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              }
+            ],
+            "Required claim/boundary": "public authored/compiled schema→strict publication→all current definitions",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/data/skill_data.rs",
+                "core_enhanced/src/game/data/skill_fragment_data.rs",
+                "core_enhanced/src/game/data/live_ron.rs",
+                "core_enhanced/src/game/data/mod.rs",
+                "core_enhanced/src/game/data/validation.rs",
+                "core_enhanced/src/game/data/corroded_employee_data.rs",
+                "core_enhanced/src/game/data/summoned_unit_data.rs",
+                "core_enhanced/src/authoring/view.rs",
+                "core_enhanced/src/authoring/amount.rs",
+                "game_resources/data/abnormalities/base.ron",
+                "game_resources/data/boss_omen/chains.ron",
+                "game_resources/data/boss_runtime/base.ron",
+                "game_resources/data/buffs/base.ron",
+                "game_resources/data/bundle.ron",
+                "game_resources/data/consumables/base.ron",
+                "game_resources/data/employees/definitions.ron",
+                "game_resources/data/enemies/corroded_employees.ron",
+                "game_resources/data/enemies/corroded_wave_presets.ron",
+                "game_resources/data/equipments/base.ron",
+                "game_resources/data/events/rewards/base.ron",
+                "game_resources/data/events/shops/base.ron",
+                "game_resources/data/events/story/base.ron",
+                "game_resources/data/map/battlefield_archetypes.ron",
+                "game_resources/data/map/battlefield_templates.ron",
+                "game_resources/data/map/facility_templates.ron",
+                "game_resources/data/map/node_assignment_profiles.ron",
+                "game_resources/data/map/node_definitions.ron",
+                "game_resources/data/pve/encounters.ron",
+                "game_resources/data/resources/base.ron",
+                "game_resources/data/run/policy.ron",
+                "game_resources/data/skill_fragments/base.ron",
+                "game_resources/data/skills/base.ron",
+                "game_resources/data/summoned_units/base.ron",
+                "game_resources/data/visual_novel_triggers/base.ron",
+                "game_resources/data/visual_novels/base.ron"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "inventory all skills and legacy gain/lock fields; Flow/UseBuff/channel/creation shapes; public loader errors and effect dependency seams"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-08-DECIDED-001",
+                "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-09-DECIDED-001",
+                "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-13-DECIDED-001",
+                "Content Digest": "sha256:a15beb2b0d0f71b7010c16ba0b62a4b7dad8be28f731f76addf30ed68f8c60dc"
+              }
+            ],
+            "Required claim/boundary": "public query/serialization and host command/tick/reconnect consumer",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/world/snapshot.rs",
+                "core_enhanced/src/game/world/state.rs",
+                "core_enhanced/src/game/world/action_capability.rs",
+                "core_enhanced/src/game/world/battle_capability.rs",
+                "core_enhanced/src/game/world/application.rs",
+                "core_enhanced/src/game/combat_preview/mod.rs",
+                "core_enhanced/src/application.rs",
+                "game_server/src/game/player_game_actor/mod.rs",
+                "game_server/src/game/player_game_actor/handlers.rs",
+                "game_server/src/game/player_game_actor/messages.rs",
+                "game_server/src/game/player_game_actor/state.rs",
+                "game_server/src/game/player_game_actor/session.rs",
+                "game_server/docs/unity_bridge_protocol.md",
+                "core_enhanced/docs/skill_target_contract.md",
+                "core_enhanced/docs/core_runtime_contract.md",
+                "core_enhanced/docs/data_loading_contract.md"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "normal public input/query→host serialization/reconnect; observably distinguish no resonance/hardCC/use lock/pending without client rule reconstruction"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-01-DECIDED-001",
+                "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-05-DECIDED-001",
+                "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-06-DECIDED-001",
+                "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-09-DECIDED-001",
+                "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-11-DECIDED-001",
+                "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-13-DECIDED-001",
+                "Content Digest": "sha256:a15beb2b0d0f71b7010c16ba0b62a4b7dad8be28f731f76addf30ed68f8c60dc"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-14-DECIDED-001",
+                "Content Digest": "sha256:cd98201ee1e9dc4856a562ec9b3a61187e4a34132cdbec4c836b4a779f0280b0"
+              }
+            ],
+            "Required claim/boundary": "U04 battle snapshot/Continue/checkpoint actual persistence",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/world/active_run.rs",
+                "core_enhanced/src/game/world/active_run/continuation.rs",
+                "core_enhanced/src/game/world/node_flow.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "game_server/src/persistence/active_run_store.rs",
+                "game_server/src/persistence/player_profile_store.rs",
+                "game_server/src/persistence/mod.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "find actual save format and validation; private battle snapshot graph; unsupported original preservation and U04 rollback boundary"
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-01-DECIDED-001",
+                "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-02-DECIDED-001",
+                "Content Digest": "sha256:c31896f7939f7bd3d89d4c48ba295140545bf99faa6d25bc8b4598db8987f306"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-03-DECIDED-001",
+                "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-05-DECIDED-001",
+                "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-06-DECIDED-001",
+                "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-07-DECIDED-001",
+                "Content Digest": "sha256:85ea8f3c86ccd9d65c2f179bc5cb6ca71f6db4c8717896e067909241f37c797d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-08-DECIDED-001",
+                "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-09-DECIDED-001",
+                "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-10-DECIDED-001",
+                "Content Digest": "sha256:c302d785e196a30e06b9a769f5bb03f4adb1e0b37a9baade0364d248b185c9c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-11-DECIDED-001",
+                "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-13-DECIDED-001",
+                "Content Digest": "sha256:a15beb2b0d0f71b7010c16ba0b62a4b7dad8be28f731f76addf30ed68f8c60dc"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-14-DECIDED-001",
+                "Content Digest": "sha256:cd98201ee1e9dc4856a562ec9b3a61187e4a34132cdbec4c836b4a779f0280b0"
+              }
+            ],
+            "Required claim/boundary": "current acceptance tests/public RON/host verification and inherited proof",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/tests/author_content_cli_arguments.rs",
+                "core_enhanced/tests/battle_showcase.rs",
+                "core_enhanced/tests/common/mod.rs",
+                "core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+                "core_enhanced/tests/fixtures/r08/boss.ron",
+                "core_enhanced/tests/fixtures/r08/skills.ron",
+                "core_enhanced/tests/fixtures/r09/death_reactions.ron",
+                "core_enhanced/tests/fixtures/r09/fragments.ron",
+                "core_enhanced/tests/fixtures/r10/skills.ron",
+                "core_enhanced/tests/fixtures/r10/world_result.ron",
+                "core_enhanced/tests/fixtures/r11/hello_world_result.ron",
+                "core_enhanced/tests/fixtures/r11/world_result.ron",
+                "core_enhanced/tests/fixtures/r12/passive_guard.ron",
+                "core_enhanced/tests/fixtures/r12/world_corrosion.ron",
+                "core_enhanced/tests/fixtures/r12/world_protection.ron",
+                "core_enhanced/tests/live_item_skill_activation.rs",
+                "core_enhanced/tests/live_skill_catalog_audit.rs",
+                "core_enhanced/tests/ron_loading.rs",
+                "core_enhanced/tests/skill_runtime_contract.rs",
+                "core_enhanced/tests/skill_test/common/board.rs",
+                "core_enhanced/tests/skill_test/common/mod.rs",
+                "core_enhanced/tests/skill_test/common/query.rs",
+                "core_enhanced/tests/skill_test/common/run.rs",
+                "core_enhanced/tests/skill_test/common/scenario.rs",
+                "core_enhanced/tests/skill_test/common/types.rs",
+                "core_enhanced/tests/skill_test/little_red.rs",
+                "core_enhanced/tests/skill_test/melting_love.rs",
+                "core_enhanced/tests/skill_test/mod.rs",
+                "core_enhanced/tests/skill_test/nothing_there.rs",
+                "core_enhanced/tests/skill_test/white_night.rs",
+                "core_enhanced/tests/skill_test_suite.rs",
+                "core_enhanced/src/game/world/tests/combat.rs",
+                "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+                "core_enhanced/src/game/battle/core/boss_action_cancellation_tests.rs",
+                "game_server/src/test_support.rs",
+                "Cargo.toml",
+                "Cargo.lock",
+                "core_enhanced/Cargo.toml",
+                "game_server/Cargo.toml",
+                "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/COMPLETION_AUDIT.md",
+                "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/EXIT_CURRENTNESS.json",
+                "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/AUDIT_ARTIFACTS.json",
+                "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/target/u04_003/MANIFEST.json"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve pre-existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05",
+                "I06",
+                "I07"
+              ]
+            },
+            "Validation requirement": "reuse exact prerequisite evidence under impact classification; identify existing normal public and deterministic lifecycle regression seams"
+          },
+          {
+            "Requirement ID": "RQ08",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-01-DECIDED-001",
+                "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-02-DECIDED-001",
+                "Content Digest": "sha256:c31896f7939f7bd3d89d4c48ba295140545bf99faa6d25bc8b4598db8987f306"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-03-DECIDED-001",
+                "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-05-DECIDED-001",
+                "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-06-DECIDED-001",
+                "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-07-DECIDED-001",
+                "Content Digest": "sha256:85ea8f3c86ccd9d65c2f179bc5cb6ca71f6db4c8717896e067909241f37c797d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-08-DECIDED-001",
+                "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-09-DECIDED-001",
+                "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-10-DECIDED-001",
+                "Content Digest": "sha256:c302d785e196a30e06b9a769f5bb03f4adb1e0b37a9baade0364d248b185c9c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-11-DECIDED-001",
+                "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-13-DECIDED-001",
+                "Content Digest": "sha256:a15beb2b0d0f71b7010c16ba0b62a4b7dad8be28f731f76addf30ed68f8c60dc"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-14-DECIDED-001",
+                "Content Digest": "sha256:cd98201ee1e9dc4856a562ec9b3a61187e4a34132cdbec4c836b4a779f0280b0"
+              }
+            ],
+            "Required claim/boundary": "Released Actual",
+            "Source type/role": "Released Actual",
+            "Required identity/location constraint": null,
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "O03"
+              ]
+            },
+            "Validation requirement": "No external release/build compatibility target in U05; local release verification belongs to GEX"
+          },
+          {
+            "Requirement ID": "RQ09",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-01-DECIDED-001",
+                "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-02-DECIDED-001",
+                "Content Digest": "sha256:c31896f7939f7bd3d89d4c48ba295140545bf99faa6d25bc8b4598db8987f306"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-03-DECIDED-001",
+                "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-04-DECIDED-001",
+                "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-05-DECIDED-001",
+                "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-06-DECIDED-001",
+                "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-07-DECIDED-001",
+                "Content Digest": "sha256:85ea8f3c86ccd9d65c2f179bc5cb6ca71f6db4c8717896e067909241f37c797d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-08-DECIDED-001",
+                "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-09-DECIDED-001",
+                "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-10-DECIDED-001",
+                "Content Digest": "sha256:c302d785e196a30e06b9a769f5bb03f4adb1e0b37a9baade0364d248b185c9c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-11-DECIDED-001",
+                "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-12-DECIDED-001",
+                "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-13-DECIDED-001",
+                "Content Digest": "sha256:a15beb2b0d0f71b7010c16ba0b62a4b7dad8be28f731f76addf30ed68f8c60dc"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSL-14-DECIDED-001",
+                "Content Digest": "sha256:cd98201ee1e9dc4856a562ec9b3a61187e4a34132cdbec4c836b4a779f0280b0"
+              }
+            ],
+            "Required claim/boundary": "Deployed Actual",
+            "Source type/role": "Deployed Actual",
+            "Required identity/location constraint": null,
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSL-002",
+                "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+              },
+              "Scope selectors": [
+                "O03"
+              ]
+            },
+            "Validation requirement": "No remote deployment or Unity implementation scope; actual local host source is required in RQ05/06"
+          }
+        ],
+        "Currentness Boundary": "Local workspace and reachable Core/host normal routes. No remote/Unity/deployed claim. Candidate only until complete review batch."
+      }
+    }
+  ]
+}

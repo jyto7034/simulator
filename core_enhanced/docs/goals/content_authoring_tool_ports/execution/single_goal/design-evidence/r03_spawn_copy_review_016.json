@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "report_id": "r03_spawn_copy_review_016",
+  "kind": "bounded_readonly_source_review",
+  "completion_audit": false,
+  "scope": "Spawn kernel control-vs-domain normalization, identity move fallback, reservation/cache/trigger copies, final settlement snapshot lifetime and test oracles",
+  "capture_started_at_utc": "2026-09-10T10:36:20.317693+00:00",
+  "close_at_utc": "2026-09-10T10:40:13.295056+00:00",
+  "sources": [
+    {
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "sha256": "1de6d8a3449561bf1fe0798fb209055a43f7c2fb3ca36a903cf5967cd7dbe3a7",
+      "bytes": 52546,
+      "captured_at_utc": "2026-09-10T10:36:20.317693+00:00",
+      "inspected_spans": [
+        [
+          1,
+          307
+        ],
+        [
+          340,
+          575
+        ],
+        [
+          610,
+          728
+        ],
+        [
+          785,
+          913
+        ],
+        [
+          916,
+          1004
+        ],
+        [
+          1006,
+          1300
+        ],
+        [
+          1302,
+          1465
+        ]
+      ],
+      "close_sha256": "fab3d3c46f54e76281bf98f6e7430192a9599b5c6dd364190f6378b1ae2bd9a0",
+      "drift": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "bytes": 41036,
+      "captured_at_utc": "2026-09-10T10:36:20.317693+00:00",
+      "inspected_spans": [
+        [
+          17,
+          34
+        ]
+      ],
+      "close_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "bytes": 21650,
+      "captured_at_utc": "2026-09-10T10:36:20.317693+00:00",
+      "inspected_spans": [
+        [
+          309,
+          363
+        ],
+        [
+          473,
+          486
+        ]
+      ],
+      "close_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec",
+      "bytes": 361303,
+      "captured_at_utc": "2026-09-10T10:38:54.101344+00:00",
+      "inspected_spans": [
+        [
+          308,
+          320
+        ]
+      ],
+      "close_sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "sha256": "49ddbf7545b8939ab4ae2b3cd42a87e1b42fbe97c7dbdfec67201daf33b63619",
+      "bytes": 56409,
+      "captured_at_utc": "2026-09-10T10:38:54.101344+00:00",
+      "inspected_spans": [
+        [
+          438,
+          475
+        ]
+      ],
+      "close_sha256": "49ddbf7545b8939ab4ae2b3cd42a87e1b42fbe97c7dbdfec67201daf33b63619",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INPUTS_056.json",
+      "sha256": "0bbf3a24696e47f7941d83b4a3ecf501088a02197821f66c0be878f3a063c810",
+      "bytes": 39204,
+      "captured_at_utc": "2026-09-10T10:38:54.101344+00:00",
+      "inspected_json_pointers": [
+        "/at_utc",
+        "/files/55"
+      ],
+      "close_sha256": "0bbf3a24696e47f7941d83b4a3ecf501088a02197821f66c0be878f3a063c810",
+      "drift": false
+    }
+  ],
+  "drift_count": 1,
+  "input_pin": {
+    "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INPUTS_056.json",
+    "sha256": "0bbf3a24696e47f7941d83b4a3ecf501088a02197821f66c0be878f3a063c810",
+    "pointer": "/files/55",
+    "source_sha256": "1de6d8a3449561bf1fe0798fb209055a43f7c2fb3ca36a903cf5967cd7dbe3a7"
+  },
+  "findings": [
+    {
+      "id": "SP016-F01",
+      "severity": "build_blocker_in_initial_capture",
+      "title": "normalize_request calls nonexistent control::charge_work",
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "span": [
+        368,
+        373
+      ],
+      "initial_sha256": "1de6d8a3449561bf1fe0798fb209055a43f7c2fb3ca36a903cf5967cd7dbe3a7",
+      "origin": "Root-reported compile1/tests0, independently source-confirmed.",
+      "fix": "Use existing control::charge.",
+      "status": "Successor source correction inspected; subsequent build/tests not independently verified.",
+      "successor_sha256": "fab3d3c46f54e76281bf98f6e7430192a9599b5c6dd364190f6378b1ae2bd9a0"
+    }
+  ],
+  "successor_edit_proof": {
+    "replacement_count": 1,
+    "reverse_single_edit_sha256": "1de6d8a3449561bf1fe0798fb209055a43f7c2fb3ca36a903cf5967cd7dbe3a7"
+  },
+  "assessment": "No additional concrete defect found in bounded slice. Final copy failure restores snapshot and Pending for both successful callbacks and domain error callbacks.",
+  "test_oracle_assessment": {
+    "final_copy": "Two callbacks plus last owned_clone_copy failure site enforce the intended terminal-copy boundary for both branches.",
+    "limitations": [
+      "Final-copy fixture mutates skill_cast_seq, not event queue/log; those equality checks do not independently demonstrate mutated queue/log restoration at this exact boundary.",
+      "Trigger copy failure statuses are source-reviewed but lack a new direct per-copy boundary test.",
+      "No test execution by this reviewer."
+    ]
+  },
+  "performed": [
+    "read-only source and test inspection",
+    "input manifest hash match",
+    "initial/close SHA256 comparison",
+    "in-memory reverse one-token edit hash proof"
+  ],
+  "not_performed": [
+    "source/docs/Git mutation",
+    "cargo/build/test execution",
+    "completion audit",
+    "whole-goal approval"
+  ],
+  "report_path": "/tmp/r03_spawn_copy_review_016.md"
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/author_content",
+    "simulate",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/r07_public_cli_003/Snapshot/content",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/r07_public_cli_003/Snapshot/selection.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/r07_public_cli_003/Snapshot/scenario.json",
+    "--amount-observation"
+  ],
+  "cwd": "/mnt/f/work/simulator",
+  "exit_code": 0,
+  "elapsed_seconds": 0.9833343029022217,
+  "source_before": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
+  "source_after": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
+  "env": {
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+    "RUST_TEST_THREADS": null
+  },
+  "log_sha256": "2587b3a5a2cdf5b1da8cd6ee43d1564f572a863c7dc15d784fdc567f9e56626f"
+}

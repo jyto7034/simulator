@@ -1,0 +1,85 @@
+{
+  "status": "ROOT_EXACT_SUCCESSOR_INPUT_REVIEW_NOT_EXECUTED",
+  "recorded_at_utc": "2026-10-06T14:50:17.172621+00:00",
+  "source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "source_files": 438,
+  "regular_inputs": 1322,
+  "auxiliary_inputs": 115,
+  "handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe002/HANDOFF.json",
+    "bytes": 4710,
+    "sha256": "6678120efd375c8805b5ce9e84c1f434f9752044af27e4b682e35a49c104f007"
+  },
+  "input_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe002/INPUT_MANIFEST.json",
+    "bytes": 35022,
+    "sha256": "226517fe20c2e3d144c2b3f9049ff066ddbb390db2c4af2d42e7ca24cc5c1cc7"
+  },
+  "oracle": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe002/ORACLE.json",
+    "bytes": 60241,
+    "sha256": "de237e9771f727c74d56135b4d68d2c01fad75b5d553b9b094635ba029c9faf7"
+  },
+  "probe": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe002/probe.py",
+    "bytes": 13610,
+    "sha256": "76a9ce85e6452752942d3201ae74125a90bb5d933d21e60151712678544e262c"
+  },
+  "previous_probe_handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/HANDOFF.json",
+    "bytes": 4622,
+    "sha256": "df1686e5d6d37cc5722d0c76d6541ef8cc292fc36132ef6e9b8427b9762cb3c9"
+  },
+  "byte_identical_probe_program": true,
+  "byte_identical108copied_fixture_files": true,
+  "identical_case_expected_oracles": true,
+  "expected_exits": [
+    1,
+    0,
+    1,
+    0
+  ],
+  "prerequisite_changes": [
+    {
+      "id": "public_guards",
+      "before": {
+        "id": "public_guards",
+        "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards007.json",
+        "raw": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards007.log"
+      },
+      "after": {
+        "id": "public_guards",
+        "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards008.json",
+        "raw": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards008.log"
+      }
+    },
+    {
+      "id": "public_allocator_guards",
+      "before": {
+        "id": "public_allocator_guards",
+        "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator007.json",
+        "raw": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator007.log"
+      },
+      "after": {
+        "id": "public_allocator_guards",
+        "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator008.json",
+        "raw": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator008.log"
+      }
+    }
+  ],
+  "release_binding_preserved007": true,
+  "new_runner_label": "r06_resource_sum_publication008",
+  "old007_failed_interval": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/execution_harness_binding007/FAILED_INTERVAL.json",
+    "bytes": 4519,
+    "sha256": "635eac0bc90bf60cc782c12f48448d57b75808c2bb7cdacec0781276dde96b6b"
+  },
+  "failure_classification": "offline dependency cache resolution, no product guard assertion executed",
+  "old_successes_to_preserve": 17,
+  "old_failed_role_count": 1,
+  "not_started_original_functional": 31,
+  "not_started_optional": 1,
+  "performance_executions": 0,
+  "role_labeling_policy": "Stable role IDs bind actual receipt labels individually; no old successes rerun or failed007 relabeled PASS.",
+  "root_product_or_test_execution": false
+}

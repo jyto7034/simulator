@@ -1,0 +1,57 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CIOB-001",
+        "Content Digest": "sha256:f5ae7b1704eae0cdb8710e0ebb41d326b66fee9cdca0ec2c9be372a78c5261de"
+      },
+      "payload": {
+        "Predecessor Handoff Artifact Ref": null,
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CIOB-003",
+            "Content Digest": "sha256:b9f65c193e4cb512a5d6c41224896a65f3e4a0b12f8b66c2f6acafc457976f60"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CIOB-001",
+            "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CIOB-001",
+            "Content Digest": "sha256:b0dd7deb6894ec5e50bf71e72ee784227bed8de60f05044efc0db7eb8274cdad"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CIOB-001",
+            "Content Digest": "sha256:72b487261c9c23392315dfe7c3c5c4b88b2ad1ddb6a4cc9223cb08333fe4f368"
+          },
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CIOB-001",
+          "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CIOB-001",
+          "Content Digest": "sha256:b0dd7deb6894ec5e50bf71e72ee784227bed8de60f05044efc0db7eb8274cdad"
+        },
+        "Goal Set Ref": {
+          "Artifact Type": "Goal Set",
+          "Artifact ID": "GS-CIOB-001",
+          "Content Digest": "sha256:72b487261c9c23392315dfe7c3c5c4b88b2ad1ddb6a4cc9223cb08333fe4f368"
+        },
+        "Remaining Gap/Blocker/Limitation Summary": "No required policy/source blocker. TD01–08 exact object/schema/source/lease/contact/pool/cost/query/restore realization and V01–20 execution remain GEX work. U06 final002 exact baseline and progress-doc delta are inherited through PREDECESSOR_INTAKE_001;161 inherited+31 R06 impact remains required. Prior R05 raw101 peak-only warning and20-minute exclusion preserved. No remote/Unity/deployed proof.",
+        "Scope/Authorization Boundary": "P2G authoring only; no activation, implementation authorization, production mutation or completion verdict. Original IN-001 continuous request separately authorizes GEX implementation/self-validation, nonparticipant GPT-6 Astra High audit and corrections without renewed handoff approval.",
+        "Out-of-Scope Summary": "Unity, individual finalbosses, full relation/infection/corpse-ownership producers and spiderweb free programming, complete encounter/reward supply or dedicated equipment, new live-battle disk format, unrelated cleanup/remote deployment/20-minute stress, mandatory old-save conversion or original deletion.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "current_source": "230df584ea4e5481335038cd1b88850ce1e789f567a31e5afc95d46e3769a3ba",
+  "reused_library_receipt": "integrated_core_default004.json",
+  "raw_exit_code": 101,
+  "selected_result": "1731 passed; 0 failed; 0 ignored; library target only",
+  "delta": [
+    "core_enhanced/tests/ron_loading.rs",
+    "core_enhanced/docs/audit/live_skill_catalog_manifest.ron"
+  ],
+  "non_impact": "Both files are integration-only test inputs; production code, library test source and runtime RON are identical. All default integration targets rerun in integrated_core_integration006. The failed complete command is not relabeled as passed.",
+  "replacement_integration_receipt": "integrated_core_integration006.json",
+  "replacement_sha256": "bf4e2b19a8fe84aa9bef3a50d258b92263d7b84a4efc3e49edde527160b36654"
+}

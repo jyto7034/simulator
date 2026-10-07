@@ -1,0 +1,5 @@
+{
+  "source_files_verified": 333,
+  "instrumentation": "one private test-module hook and probes.rs",
+  "probe_sha256": "bd724f22b0f682cb9cc18fd079bbfbc9baad9003eeb3903b25a735aea82bf74a"
+}

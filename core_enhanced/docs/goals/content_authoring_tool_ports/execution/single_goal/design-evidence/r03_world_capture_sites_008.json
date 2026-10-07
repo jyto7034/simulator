@@ -1,0 +1,867 @@
+{
+  "schema": "r03-bounded-source-assistance-008",
+  "status": "design_source_helper_not_completion_audit",
+  "scope": "five world captured ownership projections and direct callers",
+  "restrictions": {
+    "repository_mutations": false,
+    "git_commands": false,
+    "builds_tests_runtime": false,
+    "authorized_outputs_only": [
+      "/tmp/r03_world_capture_sites_008.md",
+      "/tmp/r03_world_capture_sites_008.json"
+    ],
+    "optional_trace": "gap only; no mandatory/gameplay/accounting effect"
+  },
+  "read_method": "rg discovery; Python Path.read_bytes full-file hashes and decoded numbered spans from identical bytes; final read-only rehash",
+  "source_reads": [
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "bytes": 74166,
+      "sha256": "c267443c9146bfc7d14b9bc0d959c34ef333c4bf52867a20c52d77fae09c721d",
+      "observed_at_utc": "2026-09-10T10:07:28.693612+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 214
+        },
+        {
+          "start": 374,
+          "end": 468
+        },
+        {
+          "start": 523,
+          "end": 672
+        },
+        {
+          "start": 1908,
+          "end": 1935
+        },
+        {
+          "start": 1976,
+          "end": 1984
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34299,
+      "sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91",
+      "observed_at_utc": "2026-09-10T10:07:28.710282+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 108
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/mod.rs",
+      "bytes": 587,
+      "sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "observed_at_utc": "2026-09-10T10:07:28.726128+00:00",
+      "spans": [
+        {
+          "start": 24,
+          "end": 29
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/grant_state.rs",
+      "bytes": 3068,
+      "sha256": "db875605a3f13331488faab157a724ae9397e5e07ce703f1d80a43c478b06ed5",
+      "observed_at_utc": "2026-09-10T10:07:28.735997+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 99
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "bytes": 62790,
+      "sha256": "af2248eda5e4e18bfbcc0397db6d90f62b4d79b31cbdb4672f59d758cfc91475",
+      "observed_at_utc": "2026-09-10T10:10:13.510388+00:00",
+      "spans": [
+        {
+          "start": 593,
+          "end": 652
+        },
+        {
+          "start": 759,
+          "end": 828
+        },
+        {
+          "start": 1200,
+          "end": 1270
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129721,
+      "sha256": "f43f1b97501ef60207d4a316eaa09c8d157bd4af344c9f9d81a0d686d01a3bcb",
+      "observed_at_utc": "2026-09-10T10:10:13.531055+00:00",
+      "spans": [
+        {
+          "start": 250,
+          "end": 310
+        },
+        {
+          "start": 453,
+          "end": 541
+        },
+        {
+          "start": 610,
+          "end": 740
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "bytes": 74166,
+      "sha256": "c267443c9146bfc7d14b9bc0d959c34ef333c4bf52867a20c52d77fae09c721d",
+      "observed_at_utc": "2026-09-10T10:10:13.550467+00:00",
+      "spans": [
+        {
+          "start": 439,
+          "end": 523
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/reward.rs",
+      "bytes": 7791,
+      "sha256": "2b5d853e59c55cb809e1925b521a36dfef45703360a88c923391497e699e4ef7",
+      "observed_at_utc": "2026-09-10T10:10:25.854821+00:00",
+      "spans": [
+        {
+          "start": 61,
+          "end": 217
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "bytes": 18047,
+      "sha256": "ef0a7c99c29122c81e1d6426f74ad6244ddb45f5256afff845c9c2f6a74fa4e2",
+      "observed_at_utc": "2026-09-10T10:10:25.874658+00:00",
+      "spans": [
+        {
+          "start": 147,
+          "end": 267
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "bytes": 10681,
+      "sha256": "12fd89ebe68e4949de5ca4a04a1a52270b4ae058996dadae4da7eafb8f5dd18a",
+      "observed_at_utc": "2026-09-10T10:10:25.893619+00:00",
+      "spans": [
+        {
+          "start": 137,
+          "end": 211
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/event_node.rs",
+      "bytes": 35512,
+      "sha256": "947ceb5f2c4735846ef9df3ed9982da27884301284a7feb8c236515f73eeb861",
+      "observed_at_utc": "2026-09-10T10:10:25.905268+00:00",
+      "spans": [
+        {
+          "start": 511,
+          "end": 555
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/shop.rs",
+      "bytes": 43390,
+      "sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81",
+      "observed_at_utc": "2026-09-10T10:10:25.927733+00:00",
+      "spans": [
+        {
+          "start": 560,
+          "end": 615
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/grants.rs",
+      "bytes": 7066,
+      "sha256": "d89359a6b8c77dc902fb5f511adf20adb40863db1d82516f6d5a2f03cc02375b",
+      "observed_at_utc": "2026-09-10T10:10:25.967576+00:00",
+      "spans": [
+        {
+          "start": 145,
+          "end": 209
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 39031,
+      "sha256": "eda9a955a17dae517e3dbd5a6952cff78c65e9297d25af946b414e72b6f7481c",
+      "observed_at_utc": "2026-09-10T10:11:04.465867+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 45
+        },
+        {
+          "start": 196,
+          "end": 251
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 9657,
+      "sha256": "a13098c116e6db6f2e19f390306b8b8e8915d9b3d03e4d7a425675cef404731b",
+      "observed_at_utc": "2026-09-10T10:11:04.483806+00:00",
+      "spans": [
+        {
+          "start": 165,
+          "end": 218
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129721,
+      "sha256": "f43f1b97501ef60207d4a316eaa09c8d157bd4af344c9f9d81a0d686d01a3bcb",
+      "observed_at_utc": "2026-09-10T10:11:04.507810+00:00",
+      "spans": [
+        {
+          "start": 424,
+          "end": 456
+        },
+        {
+          "start": 2867,
+          "end": 2910
+        },
+        {
+          "start": 3092,
+          "end": 3180
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "bytes": 18047,
+      "sha256": "ef0a7c99c29122c81e1d6426f74ad6244ddb45f5256afff845c9c2f6a74fa4e2",
+      "observed_at_utc": "2026-09-10T10:11:04.521812+00:00",
+      "spans": [
+        {
+          "start": 301,
+          "end": 345
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/shop.rs",
+      "bytes": 43390,
+      "sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81",
+      "observed_at_utc": "2026-09-10T10:11:04.542241+00:00",
+      "spans": [
+        {
+          "start": 504,
+          "end": 541
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "bytes": 10330,
+      "sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+      "observed_at_utc": "2026-09-10T10:11:42.593234+00:00",
+      "spans": [
+        {
+          "start": 17,
+          "end": 62
+        },
+        {
+          "start": 115,
+          "end": 140
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 21650,
+      "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "observed_at_utc": "2026-09-10T10:11:42.603306+00:00",
+      "spans": [
+        {
+          "start": 365,
+          "end": 417
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129721,
+      "sha256": "f43f1b97501ef60207d4a316eaa09c8d157bd4af344c9f9d81a0d686d01a3bcb",
+      "observed_at_utc": "2026-09-10T10:11:42.620782+00:00",
+      "spans": [
+        {
+          "start": 2763,
+          "end": 2820
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "bytes": 62790,
+      "sha256": "af2248eda5e4e18bfbcc0397db6d90f62b4d79b31cbdb4672f59d758cfc91475",
+      "observed_at_utc": "2026-09-10T10:11:42.632795+00:00",
+      "spans": [
+        {
+          "start": 1263,
+          "end": 1298
+        }
+      ]
+    }
+  ],
+  "final_rehash": {
+    "observed_at_utc": "2026-09-10T10:12:23.996729+00:00",
+    "sources": [
+      {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "bytes": 74166,
+        "sha256": "c267443c9146bfc7d14b9bc0d959c34ef333c4bf52867a20c52d77fae09c721d"
+      },
+      {
+        "path": "core_enhanced/src/game/world.rs",
+        "bytes": 34299,
+        "sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91"
+      },
+      {
+        "path": "core_enhanced/src/game/mod.rs",
+        "bytes": 587,
+        "sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a"
+      },
+      {
+        "path": "core_enhanced/src/game/world/grant_state.rs",
+        "bytes": 3068,
+        "sha256": "db875605a3f13331488faab157a724ae9397e5e07ce703f1d80a43c478b06ed5"
+      },
+      {
+        "path": "core_enhanced/src/game/world/node_flow.rs",
+        "bytes": 62790,
+        "sha256": "af2248eda5e4e18bfbcc0397db6d90f62b4d79b31cbdb4672f59d758cfc91475"
+      },
+      {
+        "path": "core_enhanced/src/game/world/combat.rs",
+        "bytes": 129721,
+        "sha256": "f43f1b97501ef60207d4a316eaa09c8d157bd4af344c9f9d81a0d686d01a3bcb"
+      },
+      {
+        "path": "core_enhanced/src/game/world/reward.rs",
+        "bytes": 7791,
+        "sha256": "2b5d853e59c55cb809e1925b521a36dfef45703360a88c923391497e699e4ef7"
+      },
+      {
+        "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+        "bytes": 18047,
+        "sha256": "ef0a7c99c29122c81e1d6426f74ad6244ddb45f5256afff845c9c2f6a74fa4e2"
+      },
+      {
+        "path": "core_enhanced/src/game/world/active_run.rs",
+        "bytes": 10681,
+        "sha256": "12fd89ebe68e4949de5ca4a04a1a52270b4ae058996dadae4da7eafb8f5dd18a"
+      },
+      {
+        "path": "core_enhanced/src/game/world/event_node.rs",
+        "bytes": 35512,
+        "sha256": "947ceb5f2c4735846ef9df3ed9982da27884301284a7feb8c236515f73eeb861"
+      },
+      {
+        "path": "core_enhanced/src/game/world/shop.rs",
+        "bytes": 43390,
+        "sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin/grants.rs",
+        "bytes": 7066,
+        "sha256": "d89359a6b8c77dc902fb5f511adf20adb40863db1d82516f6d5a2f03cc02375b"
+      },
+      {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "bytes": 39031,
+        "sha256": "eda9a955a17dae517e3dbd5a6952cff78c65e9297d25af946b414e72b6f7481c"
+      },
+      {
+        "path": "core_enhanced/src/game/world/application.rs",
+        "bytes": 9657,
+        "sha256": "a13098c116e6db6f2e19f390306b8b8e8915d9b3d03e4d7a425675cef404731b"
+      },
+      {
+        "path": "core_enhanced/src/game/encounter_compendium.rs",
+        "bytes": 10330,
+        "sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c"
+      },
+      {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "bytes": 21650,
+        "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841"
+      }
+    ]
+  },
+  "source_drift": [
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "initial_sha256": "c267443c9146bfc7d14b9bc0d959c34ef333c4bf52867a20c52d77fae09c721d",
+      "final_sha256": "c267443c9146bfc7d14b9bc0d959c34ef333c4bf52867a20c52d77fae09c721d",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "initial_sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91",
+      "final_sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/mod.rs",
+      "initial_sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "final_sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/grant_state.rs",
+      "initial_sha256": "db875605a3f13331488faab157a724ae9397e5e07ce703f1d80a43c478b06ed5",
+      "final_sha256": "db875605a3f13331488faab157a724ae9397e5e07ce703f1d80a43c478b06ed5",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "initial_sha256": "af2248eda5e4e18bfbcc0397db6d90f62b4d79b31cbdb4672f59d758cfc91475",
+      "final_sha256": "af2248eda5e4e18bfbcc0397db6d90f62b4d79b31cbdb4672f59d758cfc91475",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "initial_sha256": "f43f1b97501ef60207d4a316eaa09c8d157bd4af344c9f9d81a0d686d01a3bcb",
+      "final_sha256": "f43f1b97501ef60207d4a316eaa09c8d157bd4af344c9f9d81a0d686d01a3bcb",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/reward.rs",
+      "initial_sha256": "2b5d853e59c55cb809e1925b521a36dfef45703360a88c923391497e699e4ef7",
+      "final_sha256": "2b5d853e59c55cb809e1925b521a36dfef45703360a88c923391497e699e4ef7",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "initial_sha256": "ef0a7c99c29122c81e1d6426f74ad6244ddb45f5256afff845c9c2f6a74fa4e2",
+      "final_sha256": "ef0a7c99c29122c81e1d6426f74ad6244ddb45f5256afff845c9c2f6a74fa4e2",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "initial_sha256": "12fd89ebe68e4949de5ca4a04a1a52270b4ae058996dadae4da7eafb8f5dd18a",
+      "final_sha256": "12fd89ebe68e4949de5ca4a04a1a52270b4ae058996dadae4da7eafb8f5dd18a",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/event_node.rs",
+      "initial_sha256": "947ceb5f2c4735846ef9df3ed9982da27884301284a7feb8c236515f73eeb861",
+      "final_sha256": "947ceb5f2c4735846ef9df3ed9982da27884301284a7feb8c236515f73eeb861",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/shop.rs",
+      "initial_sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81",
+      "final_sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/grants.rs",
+      "initial_sha256": "d89359a6b8c77dc902fb5f511adf20adb40863db1d82516f6d5a2f03cc02375b",
+      "final_sha256": "d89359a6b8c77dc902fb5f511adf20adb40863db1d82516f6d5a2f03cc02375b",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "initial_sha256": "eda9a955a17dae517e3dbd5a6952cff78c65e9297d25af946b414e72b6f7481c",
+      "final_sha256": "eda9a955a17dae517e3dbd5a6952cff78c65e9297d25af946b414e72b6f7481c",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "initial_sha256": "a13098c116e6db6f2e19f390306b8b8e8915d9b3d03e4d7a425675cef404731b",
+      "final_sha256": "a13098c116e6db6f2e19f390306b8b8e8915d9b3d03e4d7a425675cef404731b",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "initial_sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+      "final_sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "initial_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "final_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "changed": false
+    }
+  ],
+  "sites": [
+    {
+      "id": "C01",
+      "symbol": "BattleEntrySnapshot::capture",
+      "definition": {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "span": [
+          544,
+          615
+        ]
+      },
+      "visibility": "spelled pub; enclosing state private and world pub(crate); no external export",
+      "signature_current": "pub fn capture(state: &GameCoreState) -> Self",
+      "signature_proposed": "pub fn capture(state: &GameCoreState) -> Result<Self, GameError>",
+      "first_copy": "state.lifecycle.snapshot() (native GameState clone); meter state.lifecycle.phase() first",
+      "projected_clone_fields": [
+        "lifecycle.phase() -> game_state",
+        "active_node_content",
+        "node_session",
+        "run",
+        "visual_novel",
+        "visual_novel_triggers",
+        "uuid_manager",
+        "enkephalin",
+        "inventory",
+        "roster",
+        "starter_candidates",
+        "skill_fragments",
+        "run_checkpoint"
+      ],
+      "copy_fields": [
+        "pending_game_mode"
+      ],
+      "excluded_state_fields": [
+        "player",
+        "pending_mastered_elite_sweep",
+        "skill_fragment_policy",
+        "player_profile",
+        "active_battle",
+        "run_power_authority"
+      ],
+      "callers": [
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "line": 628,
+          "symbol": "handle_confirm_enter_node_inner",
+          "returns": "Result<BehaviorResult, GameError>",
+          "adapt": "conditional then produces Option<Result>; transpose()? or explicit conditional"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "line": 285,
+          "symbol": "handle_event_combat_node",
+          "returns": "Result<BehaviorResult, GameError>",
+          "adapt": "capture(...)?.as_event_combat_reentry(...)"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "line": 660,
+          "symbol": "commit_planned_live_battle_start",
+          "returns": "Result<BehaviorResult, GameError>",
+          "adapt": "capture(...)?.as_event_combat_reentry(...)"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "line": 667,
+          "symbol": "commit_planned_live_battle_start",
+          "returns": "Result<BehaviorResult, GameError>",
+          "adapt": "capture(...)?; before start_abnormality_attempt, UUID and active-session insertion"
+        }
+      ],
+      "ownership": "capture borrows state; restore consumes snapshot and moves exactly selected fields; clears active_battle. Event reentry transforms owned snapshot. Existing preprovided snapshot is moved, not copied."
+    },
+    {
+      "id": "C02",
+      "symbol": "RunCheckpointPayload::capture (define_run_checkpoint_payload!)",
+      "definition": {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "span": [
+          388,
+          490
+        ]
+      },
+      "visibility": "pub(super) function; generated type pub in private state module",
+      "signature_current": "pub(super) fn capture(state: &GameCoreState, run: &RunState, content_identity: &ContentIdentity) -> Self",
+      "signature_proposed": "same arguments -> Result<Self, GameError>",
+      "first_copy": "content_identity.clone()",
+      "projected_clone_fields": [
+        "content_identity",
+        "run.map",
+        "run.map_progression",
+        "run.run_progression",
+        "run.facility_run_state",
+        "run.encounter_progression",
+        "run.event_sessions",
+        "run.shop_sessions",
+        "run.combat_previews",
+        "run.abnormality_attempts",
+        "run.recruitment",
+        "run.record_progress",
+        "state.visual_novel_triggers.checkpoint_rewind_consumed -> visual_novel_trigger_checkpoint_consumed (native HashSet)",
+        "state.enkephalin",
+        "state.inventory",
+        "state.roster",
+        "state.skill_fragments",
+        "state.uuid_manager"
+      ],
+      "copy_fields": [
+        "state.run_power_authority.power_model_version",
+        "state.run_power_authority.current_floor_power_anchor"
+      ],
+      "callers": [
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "line": 1238,
+          "symbol": "save_run_checkpoint",
+          "returns": "Result<(), GameError>",
+          "adapt": "capture(...)? before encode; poll before replacing payload and encoded Arc pair"
+        }
+      ],
+      "test_callers_discovered_only": [
+        {
+          "path": "core_enhanced/src/game/world/tests/mod.rs",
+          "line": 139
+        },
+        {
+          "path": "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+          "line": 389
+        },
+        {
+          "path": "core_enhanced/src/game/world/tests/combat.rs",
+          "line": 3210
+        }
+      ],
+      "ownership": "capture must not recursively copy current checkpoint; it creates one payload from selected current roots. Encoding happens before payload/cache assignment. Restore consumes payload, preserves VN-session UUID counter and resets node/content/pending sweep/activebattle; no fallible interruption between restore moves."
+    },
+    {
+      "id": "C03",
+      "symbol": "GameCoreState::clone_non_battle_transaction_state",
+      "definition": {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "span": [
+          166,
+          197
+        ]
+      },
+      "visibility": "pub(super) in private state module",
+      "signature_current": "pub(super) fn clone_non_battle_transaction_state(&self) -> Option<Self>",
+      "signature_proposed": "same arguments -> Result<Option<Self>, GameError>",
+      "first_copy": "self.player.clone(), after active_battle early-return",
+      "projected_clone_fields": [
+        "player",
+        "lifecycle",
+        "active_node_content",
+        "pending_mastered_elite_sweep",
+        "node_session",
+        "run",
+        "visual_novel",
+        "visual_novel_triggers",
+        "uuid_manager",
+        "enkephalin",
+        "inventory",
+        "roster",
+        "starter_candidates",
+        "skill_fragments",
+        "skill_fragment_policy",
+        "run_checkpoint"
+      ],
+      "copy_fields": [
+        "pending_game_mode",
+        "run_power_authority"
+      ],
+      "synthesized_fields": [
+        "player_profile: PlayerProfileState::default()",
+        "active_battle: None"
+      ],
+      "callers": [
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "line": 789,
+          "symbol": "with_state_transaction<T>",
+          "returns": "Result<T, GameError>",
+          "adapt": "clone_non_battle_transaction_state()?.ok_or(GameError::InvalidAction)?"
+        },
+        {
+          "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+          "line": 171,
+          "symbol": "handle_sweep_mastered_elite_inner",
+          "returns": "Result<BehaviorResult, GameError>",
+          "adapt": "same Result<Option> propagation; meter earlier pristine_profile clone separately"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "line": 173,
+          "symbol": "capture_active_run_transaction_rollback",
+          "returns": "Option<ActiveRunTransactionRollback>",
+          "configuration": "#[cfg(test)] only",
+          "adapt": "test-only compatibility obligation; expose Result<Option<_>> internally or an explicit test-only wrapper, never map authoring failure to None"
+        }
+      ],
+      "ownership": "None means active battle only; meter failure must remain Err. On operation error with_state_transaction restores before but retains live monotonic profile. Proposed mem::take/live profile direct assignment removes rollback clone and BTreeSet merge allocations because before.profile is exactly Default."
+    },
+    {
+      "id": "C04",
+      "symbol": "EconomyGrantState::capture",
+      "definition": {
+        "path": "core_enhanced/src/game/world/grant_state.rs",
+        "span": [
+          15,
+          46
+        ]
+      },
+      "visibility": "pub(super) type and function, private grant_state module",
+      "signature_current": "pub(super) fn capture(state: &GameCoreState) -> Self",
+      "signature_proposed": "same arguments -> Result<Self, GameError>",
+      "first_copy": "state.inventory.clone()",
+      "projected_clone_fields": [
+        "inventory",
+        "skill_fragments",
+        "roster",
+        "uuid_manager",
+        "enkephalin"
+      ],
+      "callers": [
+        {
+          "path": "core_enhanced/src/game/world/reward.rs",
+          "line": 95,
+          "symbol": "apply_reward_session_with_context",
+          "returns": "Result<(u32, InventoryDiffDto, Vec<SkillFragmentGrantDiffDto>, Vec<EmployeeExperienceDiffDto>), GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/reward.rs",
+          "line": 174,
+          "symbol": "apply_grant_effects_with_context",
+          "returns": "Result<GrantExecutionResult, GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/reward.rs",
+          "line": 193,
+          "symbol": "preview_grant_effects",
+          "returns": "Result<GrantExecutionResult, GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+          "line": 226,
+          "symbol": "handle_sweep_mastered_elite_inner",
+          "returns": "Result<BehaviorResult, GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/event_node.rs",
+          "line": 529,
+          "symbol": "plan_event_grant",
+          "returns": "Result<EconomyGrantState, GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/shop.rs",
+          "line": 582,
+          "symbol": "purchase_offer",
+          "returns": "Result<BehaviorResult, GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/admin/grants.rs",
+          "line": 169,
+          "symbol": "admin_apply_grant_effects",
+          "returns": "Result<GrantExecutionResult, GameError>"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "line": 715,
+          "symbol": "staged_combat_result_state",
+          "returns": "StagedCombatResultState",
+          "adapt": "return Result<StagedCombatResultState, GameError>; two callers stage_committed_combat_resolution:707 and plan_player_victory_combat_result_completion:3169 already return Result"
+        }
+      ],
+      "ownership": "grant_state local plans mutate 5 copied roots only. commit_into consumes and moves five owners, infallible. Control poll must precede owner replacement, never split replacement. Outer transaction owns effects already applied outside capture."
+    },
+    {
+      "id": "C05",
+      "symbol": "BattleEmployeeAttemptState::new",
+      "definition": {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "span": [
+          618,
+          631
+        ]
+      },
+      "visibility": "spelled pub; type in private state module/world crate-private",
+      "signature_current": "pub fn new(entry_roster: &EmployeeRoster) -> Self",
+      "signature_proposed": "same arguments -> Result<Self, GameError>",
+      "first_copy": "entry_roster.clone()",
+      "projected_clone_fields": [
+        "entry_roster -> roster"
+      ],
+      "synthesized_fields": [
+        "processed_incapacitations: HashSet::new()"
+      ],
+      "callers": [
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "line": 515,
+          "symbol": "plan_explicit_combat_node_with_state",
+          "returns": "Result<PlannedLiveBattleStart, GameError>",
+          "adapt": "new(roster)? during ActiveBattleSession construction; already built battle/execution fields drop if failure"
+        }
+      ],
+      "ownership": "&self planner has not installed active session or consumed attempt/session UUID. Battle creation/setup earlier work remains charged; helper failure only drops local plan."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "kind": "required_capture_delta",
+      "text": "All five currently construct native clones without their own projected admission; admission must precede first field clone, not meter returned capture."
+    },
+    {
+      "id": "F02",
+      "kind": "signature_adapter",
+      "text": "EconomyGrantState staged_combat_result_state has two already-fallible direct callers; conditional BattleEntry capture needs transpose; clone_non_battle active-run helper is cfg(test)."
+    },
+    {
+      "id": "F03",
+      "kind": "rollback_hazard",
+      "text": "Never introduce fallible clone after operation failure and before restoration. Move current profile and assign after restoring default-profile snapshot; original merge equivalence grounded in Default and OR/max/BTreeSet extension."
+    },
+    {
+      "id": "F04",
+      "kind": "separate_remaining_seams",
+      "text": "Earlier pristine_profile/reward vector/shop offer+effect+session/map+progression/combat preview/checkpoint-load copies are not covered by capture admission; no global coverage claim."
+    }
+  ],
+  "proposed_common_protocol": [
+    "if inactive, preserve native original capture",
+    "active entry poll",
+    "one borrowed projected meter of every actually copied field, including hidden Arc/cache handles and proved native tables",
+    "finish whole projection before first native captured field clone",
+    "unchanged native construction",
+    "active post-copy poll; Err drops local result, usage remains",
+    "caller propagates typed error and owns enclosing transaction; no restoration interrupts"
+  ],
+  "validation_proposals": [
+    "pre-copy exact/insufficient slots+work and unchanged source",
+    "excluded-owner invariance",
+    "late cancellation/drop and rollback profile preservation",
+    "snapshot four branches and combat staging two callers",
+    "checkpoint payload/cache pair and attempt empty set",
+    "ordinary capture parity"
+  ],
+  "limitations": [
+    "No tests run by this helper",
+    "No production edits",
+    "No whole world copy or public Session completion audit",
+    "No proof of instantaneous Clone/drop interruption or broad imported-state provenance",
+    "Final hashes are a bounded observation; root concurrent changes may follow"
+  ]
+}

@@ -6,18 +6,17 @@ use uuid::Uuid;
 use super::state::ActiveBattleSession;
 use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
-use crate::game::combat_setup::player_spawns::{
-    effective_combat_profile_for_employee, effective_combat_profile_for_employee_with_item_slot,
-};
+use crate::game::combat_setup::player_spawns::skill_fragment_compatibility_profile_for_employee_with_item_slot;
 use crate::game::data::skill_fragment_data::{
-    SkillFragmentCompatibilityReport, SkillFragmentEquipLimit, SkillFragmentId,
+    SkillFragmentCompatibilityReport, SkillFragmentEquipLimit,
 };
 use crate::game::employee::{Employee, EmployeeRoster};
 use crate::game::enums::RewardMode;
 use crate::game::map::MapNodeId;
 use crate::game::resources::item_slot::{EquippedRef, ItemSlot};
 use crate::game::resources::{
-    EquippedItemDto, GameState, Inventory, InventoryItemDto, RewardSessionState,
+    EquipmentLoadoutEquipPlan, EquipmentLoadoutTransition, EquippedItemDto, GameState, Inventory,
+    InventoryItemDto, RewardSessionState, StarterEquipmentAssignment,
 };
 use crate::game::reward::{RewardEffect, RewardOption};
 
@@ -133,72 +132,27 @@ impl GameCore {
         item_uuid: Uuid,
         target_unit: Uuid,
     ) -> Result<(), GameError> {
+        self.plan_equip_item_payload(item_uuid, target_unit)
+            .map(|_| ())
+    }
+
+    pub(super) fn plan_equip_item_payload(
+        &self,
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    ) -> Result<EquipmentLoadoutEquipPlan, GameError> {
         if !self.is_loadout_action_context() {
             return Err(GameError::InvalidAction);
         }
         let inventory = self.inventory()?;
-
-        let owned_equipment = inventory
-            .equipments
-            .get_item(&item_uuid)
-            .ok_or(GameError::InventoryItemNotFound)?;
-
-        if owned_equipment.meta.bound {
-            return Err(GameError::InvalidAction);
-        }
-
         let roster = self.roster()?;
-        let target = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
-        if !target
-            .eligibility(crate::game::employee::EmployeeActivity::Loadout)
-            .eligible
-        {
-            return Err(GameError::InvalidAction);
-        }
-
-        let source_unit = owned_equipment.equipped_to;
-        if source_unit == Some(target_unit) {
-            return Err(GameError::InvalidAction);
-        }
-        if let Some(source_unit) = source_unit {
-            let source = roster.get(&source_unit).ok_or(GameError::UnitNotFound)?;
-            if !source
-                .eligibility(crate::game::employee::EmployeeActivity::Loadout)
-                .eligible
-                || !source.loadout.item_slot.contains_instance(item_uuid)
-            {
-                return Err(GameError::InvalidAction);
-            }
-        }
-
-        let incoming_ref = EquippedRef {
-            instance_uuid: item_uuid,
-            base_uuid: owned_equipment.meta.uuid,
-            equipment_type: owned_equipment.meta.equipment_type,
-        };
-        let replaced = target
-            .loadout
-            .item_slot
-            .iter()
-            .find(|equipped| equipped.equipment_type == owned_equipment.meta.equipment_type)
-            .copied();
-        let mut projected_target = target.loadout.item_slot.clone();
-        if let Some(replaced) = replaced {
-            let replaced_item = inventory
-                .equipments
-                .get_item(&replaced.instance_uuid)
-                .ok_or(GameError::InventoryItemNotFound)?;
-            if replaced_item.equipped_to != Some(target_unit) || replaced_item.meta.bound {
-                return Err(GameError::InvalidAction);
-            }
-            projected_target
-                .remove_by_instance(replaced.instance_uuid)
-                .ok_or(GameError::InvalidAction)?;
-        }
-        projected_target
-            .equip(incoming_ref, owned_equipment.meta.allow_duplicate_equip)
-            .map_err(|_| GameError::InvalidAction)?;
-        self.validate_active_skill_fragment_for_projected_item_slot(target_unit, &projected_target)
+        let plan =
+            EquipmentLoadoutTransition::plan_equip(inventory, roster, item_uuid, target_unit)?;
+        self.validate_active_skill_fragment_for_projected_item_slot(
+            target_unit,
+            plan.projected_target(),
+        )?;
+        Ok(plan)
     }
 
     pub(super) fn validate_unequip_item_payload(
@@ -209,76 +163,12 @@ impl GameCore {
         if !self.is_loadout_action_context() {
             return Err(GameError::InvalidAction);
         }
-        let inventory = self.inventory()?;
-        let owned_equipment = inventory
-            .equipments
-            .get_item(&item_uuid)
-            .ok_or(GameError::InventoryItemNotFound)?;
-        if owned_equipment.equipped_to != Some(target_unit) {
-            return Err(GameError::InvalidAction);
-        }
-        if owned_equipment.meta.bound {
-            return Err(GameError::InvalidAction);
-        }
-
-        let roster = self.roster()?;
-        let employee = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
-        if !employee
-            .eligibility(crate::game::employee::EmployeeActivity::Loadout)
-            .eligible
-        {
-            return Err(GameError::InvalidAction);
-        }
-        if employee
-            .loadout
-            .item_slot
-            .iter()
-            .any(|equipped| equipped.instance_uuid == item_uuid)
-        {
-            Ok(())
-        } else {
-            Err(GameError::InvalidAction)
-        }
-    }
-
-    pub(super) fn validate_skill_fragment_equip_limit(
-        &self,
-        employee_uuid: Uuid,
-        fragment_id: &SkillFragmentId,
-    ) -> Result<(), GameError> {
-        let metadata = self
-            .game_data
-            .skill_fragment_data
-            .get_by_id(fragment_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "employee loadout references missing skill fragment '{fragment_id}'"
-                ))
-            })?;
-        let roster = self.roster()?;
-        let current_other_equipped = roster
-            .iter()
-            .filter(|employee| employee.uuid != employee_uuid)
-            .filter(|employee| employee.skill_fragments.active_fragment_id() == Some(fragment_id))
-            .count();
-        match metadata.equip_limit {
-            SkillFragmentEquipLimit::GlobalExclusive => {
-                if current_other_equipped == 0 {
-                    Ok(())
-                } else {
-                    Err(GameError::InvalidAction)
-                }
-            }
-            SkillFragmentEquipLimit::OwnedCopies => {
-                let required_count = u32::try_from(current_other_equipped + 1)
-                    .map_err(|_| GameError::InvalidAction)?;
-                if self.state.skill_fragments.count(fragment_id) >= required_count {
-                    Ok(())
-                } else {
-                    Err(GameError::InvalidAction)
-                }
-            }
-        }
+        EquipmentLoadoutTransition::validate_unequip(
+            self.inventory()?,
+            self.roster()?,
+            item_uuid,
+            target_unit,
+        )
     }
 
     pub(super) fn validate_use_consumable_item_payload(
@@ -316,41 +206,54 @@ impl GameCore {
     pub(super) fn validate_equip_skill_fragment_payload(
         &self,
         employee_uuid: Uuid,
-        fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
     ) -> Result<(), GameError> {
         if !self.is_loadout_action_context() {
             return Err(GameError::InvalidAction);
         }
+        self.state
+            .skill_fragments
+            .validate_bindings(&self.state.roster, &self.game_data.skill_fragment_data)?;
         let employee = self
-            .roster()?
+            .state
+            .roster
             .get(&employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
+        let copy = self
+            .state
+            .skill_fragments
+            .get(&copy_uuid)
+            .ok_or(GameError::InvalidAction)?;
         if !employee
             .eligibility(crate::game::employee::EmployeeActivity::Loadout)
             .eligible
+            || copy.equipped_to.is_some_and(|id| id != employee_uuid)
+            || employee
+                .skill_fragments
+                .active_copy_uuid()
+                .is_some_and(|id| id != copy_uuid)
         {
             return Err(GameError::InvalidAction);
         }
-        if !self.state.skill_fragments.contains(fragment_id) {
+        let (_, metadata, _) = self
+            .state
+            .skill_fragments
+            .resolve(&copy_uuid, &self.game_data.skill_fragment_data)?;
+        if metadata.equip_limit == SkillFragmentEquipLimit::GlobalExclusive
+            && self.state.skill_fragments.copies().any(|other| {
+                other.copy_uuid != copy_uuid
+                    && other.definition_id == copy.definition_id
+                    && other.equipped_to.is_some()
+            })
+        {
             return Err(GameError::InvalidAction);
         }
-        if self
-            .game_data
-            .skill_fragment_data
-            .get_by_id(fragment_id)
-            .is_none()
-        {
-            return Err(GameError::InvalidStaticData(format!(
-                "skill fragment '{}' is owned by run but missing from static data",
-                fragment_id
-            )));
-        }
-        let compatibility =
-            self.skill_fragment_compatibility_report_for_employee(employee_uuid, fragment_id)?;
-        if !compatibility.is_compatible {
+        let report =
+            self.skill_fragment_compatibility_report_for_employee(employee_uuid, copy_uuid)?;
+        if !report.is_compatible {
             return Err(GameError::SkillFragmentIncompatible {
-                fragment_id: fragment_id.clone(),
-                failure_codes: compatibility.failure_codes,
+                fragment_id: copy.definition_id.clone(),
+                failure_codes: report.failure_codes,
             });
         }
         Ok(())
@@ -359,26 +262,26 @@ impl GameCore {
     pub(super) fn skill_fragment_compatibility_report_for_employee(
         &self,
         employee_uuid: Uuid,
-        fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
     ) -> Result<SkillFragmentCompatibilityReport, GameError> {
-        let profile = effective_combat_profile_for_employee(
-            self.roster()?,
+        let employee = self
+            .roster()?
+            .get(&employee_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+        let profile = skill_fragment_compatibility_profile_for_employee_with_item_slot(
+            employee,
             self.inventory()?,
             &self.state.skill_fragments,
             &self.game_data,
-            employee_uuid,
+            &employee.loadout.item_slot,
         )?;
-        let metadata = self
-            .game_data
-            .skill_fragment_data
-            .get_by_id(fragment_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "skill fragment '{}' is missing from static data",
-                    fragment_id
-                ))
-            })?;
-        Ok(metadata.compatibility_report(&profile))
+        let (copy, metadata, _) = self
+            .state
+            .skill_fragments
+            .resolve(&copy_uuid, &self.game_data.skill_fragment_data)?;
+        metadata
+            .form_compatibility_report(&copy.selected_form, &profile)
+            .ok_or(GameError::InvalidAction)
     }
 
     pub(super) fn validate_active_skill_fragment_for_projected_item_slot(
@@ -390,35 +293,29 @@ impl GameCore {
             .roster()?
             .get(&employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
-        let Some(active_fragment_id) = employee.skill_fragments.active_fragment_id() else {
+        let Some(copy_uuid) = employee.skill_fragments.active_copy_uuid() else {
             return Ok(());
         };
-
-        let profile = effective_combat_profile_for_employee_with_item_slot(
+        let profile = skill_fragment_compatibility_profile_for_employee_with_item_slot(
             employee,
             self.inventory()?,
             &self.state.skill_fragments,
             &self.game_data,
             projected_item_slot,
         )?;
-
-        let metadata = self
-            .game_data
-            .skill_fragment_data
-            .get_by_id(active_fragment_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "active skill fragment '{}' is missing from static data",
-                    active_fragment_id
-                ))
-            })?;
-        let compatibility = metadata.compatibility_report(&profile);
-        if compatibility.is_compatible {
+        let (copy, metadata, _) = self
+            .state
+            .skill_fragments
+            .resolve(&copy_uuid, &self.game_data.skill_fragment_data)?;
+        let report = metadata
+            .form_compatibility_report(&copy.selected_form, &profile)
+            .ok_or(GameError::InvalidAction)?;
+        if report.is_compatible {
             Ok(())
         } else {
             Err(GameError::SkillFragmentIncompatible {
-                fragment_id: active_fragment_id.clone(),
-                failure_codes: compatibility.failure_codes,
+                fragment_id: copy.definition_id.clone(),
+                failure_codes: report.failure_codes,
             })
         }
     }
@@ -426,35 +323,123 @@ impl GameCore {
     pub(super) fn validate_unequip_skill_fragment_payload(
         &self,
         employee_uuid: Uuid,
-        fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
     ) -> Result<(), GameError> {
         if !self.is_loadout_action_context() {
             return Err(GameError::InvalidAction);
         }
+        self.state
+            .skill_fragments
+            .validate_bindings(&self.state.roster, &self.game_data.skill_fragment_data)?;
         let employee = self
-            .roster()?
+            .state
+            .roster
             .get(&employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
         if !employee
             .eligibility(crate::game::employee::EmployeeActivity::Loadout)
             .eligible
-        {
-            return Err(GameError::InvalidAction);
-        }
-        if !employee
-            .skill_fragments
-            .equipped_ids()
-            .iter()
-            .any(|id| id == fragment_id)
+            || employee.skill_fragments.active_copy_uuid() != Some(copy_uuid)
         {
             return Err(GameError::InvalidAction);
         }
         Ok(())
     }
 
+    /// Read-only eligibility shared by command and form previews. An unlocked form costs zero.
+    pub(super) fn fragment_form_unavailable_reason(
+        &self,
+        copy_uuid: Uuid,
+        form_id: &str,
+        selecting: bool,
+    ) -> Option<String> {
+        let reason = || -> Result<(), &'static str> {
+            if !self.is_in_maintenance_node() {
+                return Err("maintenance_required");
+            }
+            self.state
+                .skill_fragments
+                .validate_bindings(&self.state.roster, &self.game_data.skill_fragment_data)
+                .map_err(|_| "invalid_fragment_binding")?;
+            let copy = self
+                .state
+                .skill_fragments
+                .get(&copy_uuid)
+                .ok_or("fragment_copy_not_owned")?;
+            let metadata = self
+                .game_data
+                .skill_fragment_data
+                .get_by_id(&copy.definition_id)
+                .ok_or("fragment_definition_missing")?;
+            let crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
+                forms,
+                ..
+            } = &metadata.effect
+            else {
+                return Err("fragment_active_skill_unavailable");
+            };
+            let form = forms.get(form_id).ok_or("fragment_form_unknown")?;
+            if selecting && !copy.unlocked_forms.contains(form_id) {
+                return Err("fragment_form_locked");
+            }
+            if let Some(owner) = copy.equipped_to {
+                let employee = self
+                    .state
+                    .roster
+                    .get(&owner)
+                    .ok_or("fragment_owner_missing")?;
+                if !employee
+                    .eligibility(crate::game::employee::EmployeeActivity::Loadout)
+                    .eligible
+                {
+                    return Err("employee_ineligible");
+                }
+                let profile = skill_fragment_compatibility_profile_for_employee_with_item_slot(
+                    employee,
+                    &self.state.inventory,
+                    &self.state.skill_fragments,
+                    &self.game_data,
+                    &employee.loadout.item_slot,
+                )
+                .map_err(|_| "fragment_profile_invalid")?;
+                let selected = if selecting {
+                    form_id
+                } else {
+                    &copy.selected_form
+                };
+                if !metadata
+                    .form_compatibility_report(selected, &profile)
+                    .is_some_and(|r| r.is_compatible)
+                {
+                    return Err("fragment_form_incompatible");
+                }
+            }
+            if selecting || copy.unlocked_forms.contains(form_id) {
+                return Ok(());
+            }
+            let recipe = form
+                .bloom_recipe
+                .as_ref()
+                .ok_or("fragment_recipe_unavailable")?;
+            let costs = recipe
+                .aggregated_materials()
+                .ok_or("fragment_recipe_invalid")?;
+            if self.state.enkephalin.amount < recipe.enkephalin {
+                return Err("insufficient_enkephalin");
+            }
+            for (id, amount) in costs {
+                if self.state.inventory.equipment_materials.amount(&id) < amount {
+                    return Err("insufficient_fragment_material");
+                }
+            }
+            Ok(())
+        };
+        reason().err().map(str::to_owned)
+    }
+
     pub(super) fn is_loadout_action_context(&self) -> bool {
         (matches!(
-            self.state.game_state,
+            self.state.lifecycle.phase(),
             GameState::ViewingMap | GameState::NodeConfirm { .. }
         ) && !self.has_combat_recovery_restriction())
             || self.is_in_maintenance_node()
@@ -462,63 +447,9 @@ impl GameCore {
 
     pub(super) fn is_consumable_use_context(&self) -> bool {
         matches!(
-            self.state.game_state,
+            self.state.lifecycle.phase(),
             GameState::ViewingMap | GameState::NodeConfirm { .. }
         )
-    }
-
-    pub(super) fn validate_upgrade_skill_fragment_payload(
-        &self,
-        target_fragment_id: &SkillFragmentId,
-    ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_node() {
-            return Err(GameError::InvalidAction);
-        }
-        self.state
-            .skill_fragment_policy
-            .composition
-            .validate_dust_upgrade(
-                &self.state.skill_fragments,
-                target_fragment_id,
-                &self.game_data.skill_fragment_data,
-            )
-            .map(|_| ())
-    }
-
-    pub(super) fn validate_awaken_skill_fragment_payload(
-        &self,
-        target_fragment_id: &SkillFragmentId,
-    ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_node() {
-            return Err(GameError::InvalidAction);
-        }
-        self.state
-            .skill_fragment_policy
-            .composition
-            .validate_dust_awakening(
-                &self.state.skill_fragments,
-                target_fragment_id,
-                &self.game_data.skill_fragment_data,
-            )
-            .map(|_| ())
-    }
-
-    pub(super) fn validate_dismantle_skill_fragment_payload(
-        &self,
-        fragment_id: &SkillFragmentId,
-    ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_node() {
-            return Err(GameError::InvalidAction);
-        }
-        self.state
-            .skill_fragment_policy
-            .dismantle
-            .validate_dismantle(
-                &self.state.skill_fragments,
-                fragment_id,
-                &self.game_data.skill_fragment_data,
-            )
-            .map(|_| ())
     }
 
     pub(super) fn validate_dismantle_equipment_payload(
@@ -590,7 +521,13 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
 
-        for cost in &recipe.costs_per_level {
+        let aggregated_costs = recipe.aggregated_costs().ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "equipment enhancement recipe for '{}' has aggregate cost amount overflow",
+                recipe.equipment_id
+            ))
+        })?;
+        for cost in &aggregated_costs {
             if inventory.equipment_materials.amount(&cost.material_id) < cost.amount {
                 return Err(GameError::InvalidAction);
             }
@@ -608,7 +545,7 @@ impl GameCore {
     /// 1. GameCoreState의 GameState 업데이트
     /// 2. Derived projections are recomputed on demand from the new state.
     pub(super) fn transition_to(&mut self, new_state: GameState) -> Result<(), GameError> {
-        let old_state = self.state.game_state.clone();
+        let old_state = self.state.lifecycle.snapshot();
         info!("Game state transition: {:?} -> {:?}", old_state, new_state);
 
         self.state.transition_to(new_state);
@@ -656,22 +593,41 @@ impl GameCore {
         employee_definition_ids: &[String],
     ) -> Result<Vec<Uuid>, GameError> {
         self.validate_starter_employee_selection(employee_definition_ids)?;
-        let starter_employee_count = self.run_policy().setup.starter_employee_count;
-        let mut candidate_plans = Vec::with_capacity(starter_employee_count);
-        let mut grant_effects = Vec::new();
-        let mut equipment_assignments = Vec::new();
-        let mut employee_uuids = Vec::with_capacity(starter_employee_count);
-        for employee_definition_id in employee_definition_ids {
+        let mut candidate_plans = Vec::with_capacity(employee_definition_ids.len());
+        for id in employee_definition_ids {
             let candidate = self
                 .state
                 .starter_candidates
                 .iter()
-                .find(|definition| definition.employee_definition_id == *employee_definition_id)
+                .find(|definition| &definition.employee_definition_id == id)
                 .ok_or(GameError::InvalidAction)?
                 .clone();
-            let employee_uuid = self.state.uuid_manager.next_employee();
-            employee_uuids.push(employee_uuid);
-            let mut projected_employee = Employee::from_definition(employee_uuid, &candidate);
+            candidate_plans.push((self.state.uuid_manager.next_employee(), candidate));
+        }
+        self.state.roster.clear();
+        self.initialize_employees_with_loadouts(&candidate_plans)?;
+        info!(
+            "Initialized selected starter employee roster with {} employees",
+            candidate_plans.len()
+        );
+        Ok(candidate_plans.into_iter().map(|(id, _)| id).collect())
+    }
+
+    /// Called within the start/recruit state transaction. Grants exact copies,
+    /// assigns equipment, then binds each active copy to its intended employee.
+    pub(super) fn initialize_employees_with_loadouts(
+        &mut self,
+        candidate_plans: &[(Uuid, crate::game::employee::EmployeeDefinition)],
+    ) -> Result<(), GameError> {
+        let mut grant_effects = Vec::new();
+        let mut equipment_assignments = Vec::new();
+        let mut fragment_assignments = Vec::new();
+        for (employee_uuid, candidate) in candidate_plans {
+            let employee_uuid = *employee_uuid;
+            if self.state.roster.get(&employee_uuid).is_some() {
+                return Err(GameError::InvalidAction);
+            }
+            let mut projected_employee = Employee::from_definition(employee_uuid, candidate);
             for equipment_id in &candidate.initial_loadout.equipment_ids {
                 let equipment = self
                     .game_data
@@ -710,7 +666,12 @@ impl GameCore {
                 });
                 equipment_assignments.push((employee_uuid, equipment_id.clone()));
             }
-            candidate_plans.push((employee_uuid, candidate));
+            if let Some(id) = &candidate.initial_loadout.active_skill_fragment_id {
+                grant_effects.push(RewardEffect::GrantSkillFragment {
+                    fragment_id: id.clone(),
+                });
+                fragment_assignments.push((employee_uuid, id.clone()));
+            }
         }
         self.preview_grant_effects(&grant_effects)?;
         let granted = self.apply_grant_effects(&grant_effects)?;
@@ -727,17 +688,11 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
 
-        let mut employees = Vec::with_capacity(starter_employee_count);
+        let mut employees = Vec::with_capacity(candidate_plans.len());
         for (employee_uuid, candidate) in candidate_plans {
-            employees.push(Employee::from_definition(employee_uuid, &candidate));
+            employees.push(Employee::from_definition(*employee_uuid, candidate));
         }
-
-        let roster = self.roster_mut()?;
-        roster.clear();
-        for employee in employees {
-            roster.add(employee);
-        }
-
+        let mut starter_assignments = Vec::with_capacity(equipment_assignments.len());
         for ((employee_uuid, expected_equipment_id), (instance_uuid, granted_equipment_id)) in
             equipment_assignments.into_iter().zip(granted_equipment)
         {
@@ -754,37 +709,51 @@ impl GameCore {
                         granted_equipment_id
                     ))
                 })?;
-            let base_uuid = equipment.uuid;
-            let equipment_type = equipment.equipment_type;
-            let allow_duplicate_equip = equipment.allow_duplicate_equip;
-            let roster = self.roster_mut()?;
-            let employee = roster
-                .get_mut(&employee_uuid)
-                .ok_or(GameError::UnitNotFound)?;
-            employee
-                .loadout
-                .item_slot
-                .equip(
-                    EquippedRef {
-                        instance_uuid,
-                        base_uuid,
-                        equipment_type,
-                    },
-                    allow_duplicate_equip,
-                )
-                .map_err(|_| GameError::InvalidAction)?;
-            let inventory = self.inventory_mut()?;
-            inventory
-                .equipments
-                .get_item_mut(&instance_uuid)
-                .ok_or(GameError::InventoryItemNotFound)?
-                .equipped_to = Some(employee_uuid);
+            starter_assignments.push(StarterEquipmentAssignment::new(
+                employee_uuid,
+                instance_uuid,
+                equipment.uuid,
+                equipment.equipment_type,
+                equipment.allow_duplicate_equip,
+            ));
         }
 
-        info!(
-            "Initialized selected starter employee roster with {} employees",
-            starter_employee_count
-        );
-        Ok(employee_uuids)
+        let roster = self.roster_mut()?;
+        for employee in employees {
+            roster.add(employee);
+        }
+        let state = &mut self.state;
+        EquipmentLoadoutTransition::new(&mut state.inventory, &mut state.roster)
+            .assign_starter_equipment(&starter_assignments)?;
+
+        if granted.skill_fragment_diffs.len() != fragment_assignments.len() {
+            return Err(GameError::InvalidAction);
+        }
+        for ((employee_uuid, expected_id), granted) in fragment_assignments
+            .into_iter()
+            .zip(granted.skill_fragment_diffs)
+        {
+            if expected_id != granted.fragment_id {
+                return Err(GameError::InvalidAction);
+            }
+            let report = self.skill_fragment_compatibility_report_for_employee(
+                employee_uuid,
+                granted.copy_uuid,
+            )?;
+            if !report.is_compatible {
+                return Err(GameError::SkillFragmentIncompatible {
+                    fragment_id: expected_id,
+                    failure_codes: report.failure_codes,
+                });
+            }
+            self.state.skill_fragments.equip_copy(
+                &mut self.state.roster,
+                &self.game_data.skill_fragment_data,
+                granted.copy_uuid,
+                employee_uuid,
+                false,
+            )?;
+        }
+        Ok(())
     }
 }

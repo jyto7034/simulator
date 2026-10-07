@@ -1,0 +1,42 @@
+{
+  "schema": "ROOT_U08_COMPOSITE_VALIDATOR_CORRECTION_AUTHORIZATION",
+  "created_at_utc": "2026-10-06T15:33:53.381260+00:00",
+  "finding": "U08-COMPOSITE-INPUT-TIME-001",
+  "design": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_actual_merge_draft001/COMPOSITE_BINDING_DESIGN_007.json",
+    "bytes": 11107,
+    "sha256": "b1ebf068add4457e3999df9d6befc9ec467b96dc9446bd63aeeb84e105560d2d"
+  },
+  "parent": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_033/RECORD.json",
+    "bytes": 6553,
+    "sha256": "e141f60ad87c488f67eea1814dad1eeea5f1108ace46a39ad998b192eb8aede3"
+  },
+  "reason": "Required successor Python input was introduced after original successful executions; existing single interval cannot mechanically verify its real introduction and per-role temporal membership. Do not decorate legacy flat fields to obtain a pass.",
+  "scope_owner": "/root/u08_harness_author_resume gpt-6-astra/high test/finalizer author; not independent auditor",
+  "editable": [
+    "core_enhanced/docs/goals/core_relic_numeric_variants/tools/select_evidence.py",
+    "core_enhanced/docs/goals/core_relic_numeric_variants/tools/execution_binding.py",
+    "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/composite_validator_review001"
+  ],
+  "support_change_boundary": "If another existing finalizer module genuinely needs change, return exact code reason first. Do not touch receipt(), product, original1322, focus inputs, or actual old before/after/receipts.",
+  "source_input_nonimpact": "Root directly checked select_evidence/evidence_common/coverage/finalization_paths absence from1322 andfocus001/002 input35; retain that boundary for new helper. Main continues focused local game test as sole execution runner.",
+  "required_contract": [
+    "Preserve original single-interval validation without weakening it; recognize new versioned composite explicitly and reject unknown/mixed shapes.",
+    "Actual immutable BEFORE/AFTER refs determine source, ordered input membership and UTC for each interval/input set; no unchecked caller duplicate can substitute.",
+    "Assign every selected role exactly once and match actual receipt ref and start/end. Input hashes and Python consumers must be covered by their actual interval pre/post set; optional Python too.",
+    "Keep union as exact membership summary with actual late creation UTC; never assign all union inputs an old global verified-before time.",
+    "Validate chronological gaps and unchanged common source/inputs; preserve failed containers and unselected attempts as history.",
+    "Keep original receipt/pass/artifact/binary/50functional/8performance/quiescence/caps/coverage gates unchanged.",
+    "New helper excluded from execution-input manifests and separately bound as finalizer tool input."
+  ],
+  "validation": "Author necessary positive/negative pure verifier tests per approved design. Code authoring allowed now, but no syntax/test/finalizer execution while Main owns focused runner. Root will transfer sole runner after Main closes. Preserve original tool bytes, diff, all check outputs and failure attempts. Actual finalizer stages remain unauthorized until all58/cfg review.",
+  "roles_and_status": "Root plans/reads/docs. Supplement authors test tools. Main sole focused product-test runner. Sol idle. No independent completion awarded.",
+  "before_files": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_033/composite_validator_review/select_evidence.py.before",
+      "bytes": 9083,
+      "sha256": "b38a2439b94111927b58389d5f1c75de2decd70b25c3aa901c4f37c79b6ca4c9"
+    }
+  ]
+}

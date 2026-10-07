@@ -81,6 +81,7 @@ impl CorrodedEmployeeProfileMetadata {
             movement: self.movement.clone(),
             resonance: self.resonance.clone(),
             skill_id: self.skill_id.clone(),
+            fragment_source: None,
             skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
             block_capacity: 0,
@@ -183,11 +184,11 @@ impl CorrodedEmployeeProfileDatabase {
             profile
                 .basic_attack
                 .try_validate_runtime_contract()
-                .map_err(|cause| {
+                .map_err(|error| {
                     crate::game::data::DataValidationError::at(
                         &profile.id,
-                        format!("{profile_path}.basic_attack"),
-                        cause,
+                        format!("{profile_path}.basic_attack.{}", error.field_suffix),
+                        error.cause,
                     )
                 })?;
             if profile.profile_role == CorrodedEmployeeProfileRole::Normal {
@@ -245,23 +246,24 @@ impl<'de> Deserialize<'de> for CorrodedEmployeeProfileDatabase {
         D: Deserializer<'de>,
     {
         let raw = RawCorrodedEmployeeProfileDatabase::deserialize(deserializer)?;
-        raw.try_into_database().map_err(D::Error::custom)
+        raw.try_into_database()
+            .map_err(|error| D::Error::custom(format!("{error:?}")))
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "CorrodedEmployeeProfileDatabase")]
 #[serde(deny_unknown_fields)]
-struct RawCorrodedEmployeeProfileDatabase {
+pub(crate) struct RawCorrodedEmployeeProfileDatabase {
     #[serde(default)]
-    range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
-    profiles: Vec<RawCorrodedEmployeeProfileMetadata>,
+    pub(crate) range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
+    pub(crate) profiles: Vec<RawCorrodedEmployeeProfileMetadata>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct RawCorrodedEmployeeProfileMetadata {
-    id: String,
+pub(crate) struct RawCorrodedEmployeeProfileMetadata {
+    pub(crate) id: String,
     uuid: Uuid,
     name: String,
     profile_role: CorrodedEmployeeProfileRole,
@@ -279,21 +281,29 @@ struct RawCorrodedEmployeeProfileMetadata {
 }
 
 impl RawCorrodedEmployeeProfileDatabase {
-    fn try_into_database(self) -> Result<CorrodedEmployeeProfileDatabase, String> {
+    pub(crate) fn try_into_database(
+        self,
+    ) -> Result<CorrodedEmployeeProfileDatabase, crate::game::data::DataValidationError> {
+        use crate::game::data::DataValidationError;
         let mut preset_index = HashMap::new();
         for (index, preset) in self.range_presets.iter().enumerate() {
             if preset_index.insert(preset.id.clone(), index).is_some() {
-                return Err(format!(
-                    "duplicate basic attack range preset id '{}'",
-                    preset.id
+                return Err(DataValidationError::at(
+                    &preset.id,
+                    format!("range_presets[{index}].id"),
+                    format!("duplicate basic attack range preset id '{}'", preset.id),
                 ));
             }
         }
-        for preset in &self.range_presets {
+        for (index, preset) in self.range_presets.iter().enumerate() {
             preset.range.validate().map_err(|error| {
-                format!(
-                    "basic attack range preset '{}' is invalid: {error}",
-                    preset.id
+                DataValidationError::at(
+                    &preset.id,
+                    format!("range_presets[{index}].range"),
+                    format!(
+                        "basic attack range preset '{}' is invalid: {error}",
+                        preset.id
+                    ),
                 )
             })?;
         }
@@ -301,7 +311,19 @@ impl RawCorrodedEmployeeProfileDatabase {
         let profiles = self
             .profiles
             .into_iter()
-            .map(|profile| profile.try_into_profile(&self.range_presets, &preset_index))
+            .enumerate()
+            .map(|(index, profile)| {
+                let id = profile.id.clone();
+                profile
+                    .try_into_profile(&self.range_presets, &preset_index)
+                    .map_err(|cause| {
+                        DataValidationError::at(
+                            id,
+                            format!("profiles[{index}].basic_attack_range_preset"),
+                            cause,
+                        )
+                    })
+            })
             .collect::<Result<Vec<_>, _>>()?;
         Ok(CorrodedEmployeeProfileDatabase::with_range_presets(
             self.range_presets,
@@ -368,7 +390,7 @@ mod tests {
                 max_health: 90,
                 attack: 11,
                 defense: 2,
-                basic_attack: (range_units: 1.0, interval_ms: 1400),
+                basic_attack: (interval_ms: 1400),
             )"#,
         )
         .expect("profile should deserialize");
@@ -417,7 +439,6 @@ mod tests {
                         magic_resist: 0,
                         movement: (speed_units_per_ms: 2500),
                         basic_attack: (
-                            range_units: 1.0,
                             range_policy: pattern,
                             defense_tile_range: None,
                             damage_type: Physical,
@@ -519,7 +540,6 @@ mod tests {
                         attack: 11,
                         defense: 2,
                         basic_attack: (
-                            range_units: 1.0,
                             range_policy: pattern,
                             defense_tile_range: None,
                             damage_type: Physical,

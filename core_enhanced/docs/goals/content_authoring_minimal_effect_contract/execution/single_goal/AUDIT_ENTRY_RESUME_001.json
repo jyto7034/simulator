@@ -1,0 +1,23 @@
+{
+  "record": "R01_AUDIT_ENTRY_RESUME_001",
+  "captured_at": "2026-09-12T23:32:27+09:00",
+  "reviewer": "/root/r05_independent_reviewer",
+  "goal": "GS-CAMEC-P2G50-001 / GOAL-CAMEC-01 / PHASE-CAMEC-01",
+  "target": {
+    "record_id": "ATR-CAMEC-R01-RESUME-001",
+    "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_RESUME_001.json",
+    "sha256": "1d554a0d19485f4a78af2cfd89a6f1bc835b84f66bf47c658583e764f59948be",
+    "bytes": 6416
+  },
+  "verification": {
+    "command": "node core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/AUDIT_SUCCESSOR_VERIFY_001.js core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_RESUME_001.json",
+    "exit_code": 0,
+    "anchor_manifest_count": 15685,
+    "inherited_unchanged": 15682,
+    "governance_replacements_current": 3,
+    "additions_current": 6,
+    "mismatches": [],
+    "passed": true
+  },
+  "entry_verdict": null
+}

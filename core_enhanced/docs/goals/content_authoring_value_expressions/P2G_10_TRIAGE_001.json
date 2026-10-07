@@ -1,0 +1,278 @@
+{
+  "kind": "derived Finding Triage/Decision/Disposition view, no independent Exact Ref",
+  "input": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CAVE-P2G00-001",
+    "Content Digest": null
+  },
+  "evaluation_basis": {
+    "Input Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CAVE-P2G00-001",
+      "Content Digest": null
+    },
+    "Exact user-approved target scope/change request": {
+      "locator": "current active thread goal, 2026-09-13",
+      "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를 complete로 표시하지 마",
+      "adopted_request": {
+        "repository": "/mnt/f/work/simulator",
+        "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+        "sha256": "0d4bc87b608e68d0af519381a152dbf8914d48a43c6b99ffbee6add8ceb42ee4",
+        "selector": "single-r-v3 §§1–10"
+      },
+      "selected_R": "R06",
+      "boundary": "R06 전체 완료 또는 실제 중단 조건. R07은 새 요청 필요. P2G와 적격 exact GEX 권한은 사용자 요청에서 각각 온다."
+    },
+    "Policy Intake Snapshot Ref": {
+      "Artifact Type": "Policy Intake Snapshot",
+      "Artifact ID": "PIS-CAVE-P2G00-001",
+      "Content Digest": null
+    }
+  },
+  "result_checkpoint": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CAVE-P2G10-001",
+    "Content Digest": null
+  },
+  "findings": [
+    {
+      "Finding ID": "F-CAVE-01",
+      "Affected elements": [
+        "CAVE-E01"
+      ],
+      "Finding": "typed value domain·unit·arithmetic",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E01-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CAVE-02",
+      "Affected elements": [
+        "CAVE-E02"
+      ],
+      "Finding": "snapshot/live evaluation moment",
+      "Primary classification": "material_policy",
+      "Disposition": "delegated ordinary policy",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E02-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": [
+        "기존 합의 유지: R06 카드의 typed·snapshot·단일 합산·명시적 거부와 R01/R04/R05의 current 의미를 변경하지 않는다.",
+        "기본 동작 도출: typed 단위, immutable action snapshot, R05 lease/result identity와 기존 stat/interval owner에서 동작을 직접 도출한다.",
+        "별도 게임 규칙 없음: 새 보상·비용·확률·공식 수치·gameplay cap·환불·상속·Replace 우선순위를 만들지 않는다.",
+        "해당 기능 안 영향: R06 expression/stat/AT06 입력과 직접 projection만 바꾸며 R07+ 객체·진행·획득 의미는 유지한다.",
+        "기존 사용자 데이터 보존: 기존 literal RON과 저장된 enhancement/growth를 재해석·삭제·일괄 변환하지 않고 동일 의미의 canonical constant/입력으로 수용한다."
+      ]
+    },
+    {
+      "Finding ID": "F-CAVE-03",
+      "Affected elements": [
+        "CAVE-E03"
+      ],
+      "Finding": "finite aggregate semantics",
+      "Primary classification": "material_policy",
+      "Disposition": "delegated ordinary policy",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E03-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": [
+        "기존 합의 유지: R06 카드의 typed·snapshot·단일 합산·명시적 거부와 R01/R04/R05의 current 의미를 변경하지 않는다.",
+        "기본 동작 도출: typed 단위, immutable action snapshot, R05 lease/result identity와 기존 stat/interval owner에서 동작을 직접 도출한다.",
+        "별도 게임 규칙 없음: 새 보상·비용·확률·공식 수치·gameplay cap·환불·상속·Replace 우선순위를 만들지 않는다.",
+        "해당 기능 안 영향: R06 expression/stat/AT06 입력과 직접 projection만 바꾸며 R07+ 객체·진행·획득 의미는 유지한다.",
+        "기존 사용자 데이터 보존: 기존 literal RON과 저장된 enhancement/growth를 재해석·삭제·일괄 변환하지 않고 동일 의미의 canonical constant/입력으로 수용한다."
+      ]
+    },
+    {
+      "Finding ID": "F-CAVE-04",
+      "Affected elements": [
+        "CAVE-E04"
+      ],
+      "Finding": "Attack·SpellPower·weapon growth authority",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E04-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CAVE-05",
+      "Affected elements": [
+        "CAVE-E05"
+      ],
+      "Finding": "HP·time·resource·result reference boundaries",
+      "Primary classification": "material_policy",
+      "Disposition": "delegated ordinary policy",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E05-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": [
+        "기존 합의 유지: R06 카드의 typed·snapshot·단일 합산·명시적 거부와 R01/R04/R05의 current 의미를 변경하지 않는다.",
+        "기본 동작 도출: typed 단위, immutable action snapshot, R05 lease/result identity와 기존 stat/interval owner에서 동작을 직접 도출한다.",
+        "별도 게임 규칙 없음: 새 보상·비용·확률·공식 수치·gameplay cap·환불·상속·Replace 우선순위를 만들지 않는다.",
+        "해당 기능 안 영향: R06 expression/stat/AT06 입력과 직접 projection만 바꾸며 R07+ 객체·진행·획득 의미는 유지한다.",
+        "기존 사용자 데이터 보존: 기존 literal RON과 저장된 enhancement/growth를 재해석·삭제·일괄 변환하지 않고 동일 의미의 canonical constant/입력으로 수용한다."
+      ]
+    },
+    {
+      "Finding ID": "F-CAVE-06",
+      "Affected elements": [
+        "CAVE-E06"
+      ],
+      "Finding": "attack-speed point to interval",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E06-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CAVE-07",
+      "Affected elements": [
+        "CAVE-E07"
+      ],
+      "Finding": "AT06 projection·save·cache·explain",
+      "Primary classification": "material_policy",
+      "Disposition": "delegated ordinary policy",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E07-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": [
+        "기존 합의 유지: R06 카드의 typed·snapshot·단일 합산·명시적 거부와 R01/R04/R05의 current 의미를 변경하지 않는다.",
+        "기본 동작 도출: typed 단위, immutable action snapshot, R05 lease/result identity와 기존 stat/interval owner에서 동작을 직접 도출한다.",
+        "별도 게임 규칙 없음: 새 보상·비용·확률·공식 수치·gameplay cap·환불·상속·Replace 우선순위를 만들지 않는다.",
+        "해당 기능 안 영향: R06 expression/stat/AT06 입력과 직접 projection만 바꾸며 R07+ 객체·진행·획득 의미는 유지한다.",
+        "기존 사용자 데이터 보존: 기존 literal RON과 저장된 enhancement/growth를 재해석·삭제·일괄 변환하지 않고 동일 의미의 canonical constant/입력으로 수용한다."
+      ]
+    },
+    {
+      "Finding ID": "F-CAVE-08",
+      "Affected elements": [
+        "CAVE-E08"
+      ],
+      "Finding": "public authoring·publication·budget·fault",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E08-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CAVE-09",
+      "Affected elements": [
+        "CAVE-E09"
+      ],
+      "Finding": "compatibility·acceptance·later-owner boundary",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVE-E09-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CAVE-10",
+      "Affected elements": [],
+      "Finding": "R07+ fragment/relic/boss/full Flow and R19 final Certified weights/official supply",
+      "Primary classification": "out_of_scope",
+      "Disposition": "O02/O03 preserve later-owner requirements; R06 implements only truthful quantitative input/cache seam",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVE-10-001",
+        "Content Digest": null
+      }
+    }
+  ],
+  "current_disposition_ref_set": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-01-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-02-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-03-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-04-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-05-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-06-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-07-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-08-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-09-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAVE-10-001",
+      "Content Digest": null
+    }
+  ],
+  "open_questions": [],
+  "technical_decisions": [
+    {
+      "id": "TD-CAVE-01",
+      "decision": "Exact Rust types, module/file layout, AST versus bytecode representation and cache structure remain P2G-20/P2G-40/GEX design choices as long as the typed observable policy is preserved."
+    },
+    {
+      "id": "TD-CAVE-02",
+      "decision": "Lossy integral division requires an authored rounding mode rather than choosing one global gameplay default; existing scale_attack_interval_ms keeps its existing ceil contract."
+    }
+  ],
+  "evidence_gaps": [],
+  "limitations": [
+    "Limited read-only source facts establish that ValueExpr and SpellPower are absent and identify current stat/snapshot/resource/result seams; full consumer coverage and implementation delta remain P2G-20.",
+    "No build, test, Source Observation, Review Batch, code_reviewed revision, Freeze, Plan, Goal, Handoff or GEX result is produced by P2G-10."
+  ]
+}

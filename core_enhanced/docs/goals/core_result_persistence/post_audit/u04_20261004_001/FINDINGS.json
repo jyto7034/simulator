@@ -1,0 +1,32 @@
+{
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "findings": [
+    {
+      "id": "F01",
+      "severity": "completion-blocking",
+      "confidence": "High",
+      "title": "Required canonical host protocol remains stale and omitted from the audit target",
+      "owner": "GOAL-CRRP-01 / PHASE-CRRP-01 correction GEX-10 (HOST / VERIFY canonical documentation)",
+      "requirement": "P2G_50_GOAL_SET.ko.md:82 Canonical Documentation Obligation; acceptance15; GEX-20 structural completion and complete audit target",
+      "locations": [
+        "game_server/docs/unity_bridge_protocol.md:109",
+        "game_server/docs/unity_bridge_protocol.md:115",
+        "game_server/docs/unity_bridge_protocol.md:119",
+        "game_server/docs/unity_bridge_protocol.md:123"
+      ],
+      "evidence": "HOST_PROTOCOL_AT_AUDIT.md and OMITTED_SURFACE.json preserve exact stale bytes; target membership check confirms omission. Source review shows V5/V10 paired intent, latest-generation backup and generic prepared acceptance.",
+      "impact": "Canonical host consumers are told superseded save versions, previous-payload backup behavior and universal independent profile writes. Required immediate result/receipt-choice, retreat, Continue/SavePoint and acceptance/recovery/conflict contract is missing. Runtime passing tests do not satisfy this explicitly assigned deliverable.",
+      "required_correction": "Update the canonical host protocol from actual current public DTO/capability/query/ack/fault/recovery behavior; distinguish paired active+profile mode from retained profile-only dirty/retry mode. Preserve original bytes, add this required surface to the successor target/restoration/evidence mapping, and seek a fresh independent audit. Do not rewrite this closed audit or prior evidence.",
+      "affected_acceptances": [
+        "PE15"
+      ],
+      "affected_validation_completion": [
+        "V12 canonical consumer contract",
+        "V14 complete required surface/membership"
+      ],
+      "audit_action": "Reported only; no product/docs/target edits.",
+      "runtime_regression_claim": false
+    }
+  ]
+}

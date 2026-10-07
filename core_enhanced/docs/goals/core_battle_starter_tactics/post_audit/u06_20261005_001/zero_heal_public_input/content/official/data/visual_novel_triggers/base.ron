@@ -1,0 +1,22 @@
+VisualNovelTriggerDatabase(
+    triggers: [
+        VisualNovelTrigger(
+            id: "run_start_standard_hq_briefing",
+            source: RunStart(game_mode: Standard),
+            vn_id: "hq_briefing_standard_intro",
+            repeat: OncePerRun,
+            checkpoint_policy: PersistAcrossCheckpointLoad,
+            priority: 100,
+            blocking: true,
+        ),
+        VisualNovelTrigger(
+            id: "run_start_endless_hq_briefing",
+            source: RunStart(game_mode: Endless),
+            vn_id: "hq_briefing_endless_intro",
+            repeat: OncePerRun,
+            checkpoint_policy: PersistAcrossCheckpointLoad,
+            priority: 100,
+            blocking: true,
+        ),
+    ],
+)

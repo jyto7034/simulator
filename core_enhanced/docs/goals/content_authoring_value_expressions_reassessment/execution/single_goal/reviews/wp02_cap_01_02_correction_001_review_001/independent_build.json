@@ -1,0 +1,21 @@
+{
+  "started": "2026-09-26T04:45:07.890Z",
+  "finished": "2026-09-26T04:47:10.431Z",
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "-p",
+    "game_core",
+    "--release",
+    "--lib",
+    "cap_review_probes",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "cwd": "/tmp/r06-cap-review.2Wuy7u",
+  "exit_code": 0,
+  "log_sha256": "48a3893c712dd33845db27462d3709de8049c51f6acf8e53870f843cf4f32dc5"
+}

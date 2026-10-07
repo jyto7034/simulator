@@ -1,0 +1,104 @@
+{
+  "schema": "u09_product_boundary_diagnosis_v1",
+  "actual_observed_at_utc": "2026-10-07T12:48:20.098443+00:00",
+  "status": "supersedes_classification_only_preserves_all_originals",
+  "classification_correction": "The lexical cfg-item collector crossed comma-terminated enum variants and match arms into production behavior_owner. The RequestRelicEffectivePlan match arm was production, not an established cfg(test) edit.",
+  "actual_source_boundary": {
+    "path": "core_enhanced/src/game/world/application.rs",
+    "cfg_enum_variant_lines": [
+      19,
+      36
+    ],
+    "cfg_match_arm_line": 55,
+    "production_function_line": 61,
+    "current_ref": {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 23137,
+      "sha256": "6231ba3c66462ac44158d4d71cbc150645a35bf2d94db5a730627fd0976438ec"
+    }
+  },
+  "invalid_as_final_cfg_proof": true,
+  "invalid_claim": "375 files / 354 cfg spans does not establish final test-byte preservation; these spans used the faulty classifier.",
+  "preserved_originals": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_COLLECTION_FAILURE_001.txt",
+      "bytes": 351,
+      "sha256": "e133e98218960a4e866538d21afbfddef466bdbbe52c21c34bb16a6b7daf2e76"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_RESTORATION_001.json",
+      "bytes": 1835,
+      "sha256": "1951a4d399ad3a5395193397bfca9ef264d19ce147b8040a10853c5bfa4024d5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_PRESERVATION.json",
+      "bytes": 263181,
+      "sha256": "0df5f5ed1b027b4882f5e5e4e43e5ec256fdc9d47697c2c5b9aa170e71421b7f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/collect_cfg_preservation.py",
+      "bytes": 3915,
+      "sha256": "991c9d036258f9dbc2e0f5e0456e99580ada15f51f487fd625502eddcfe5a3fe"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/execute_format.py",
+      "bytes": 5189,
+      "sha256": "f1ca0cd076204b91830a0ae24b08398bc2ebcf51cca1059e1edfa72037f144f7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_format001/RESULT.json",
+      "bytes": 50245,
+      "sha256": "fd9cc0e0d1933b039864a0ee9922809ab4f6c293cc5d5f3030a32fa7efdc8734"
+    }
+  ],
+  "chronology": [
+    {
+      "event": "check010 passed with production query arm",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check010.json",
+        "bytes": 179695,
+        "sha256": "b4f0284c8da36574f03332aa10f2f314ed3e183fb866754cb5e11e2cd28473f2"
+      }
+    },
+    {
+      "event": "Wrong lexical classification led to removal of the production query arm",
+      "record": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_RESTORATION_001.json",
+        "bytes": 1835,
+        "sha256": "1951a4d399ad3a5395193397bfca9ef264d19ce147b8040a10853c5bfa4024d5"
+      },
+      "actual_interval_retained_in_original": true
+    },
+    {
+      "event": "check011 failed E0004 because production behavior_owner lacked the new query arm",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check011.json",
+        "bytes": 179696,
+        "sha256": "898f5e06a6ab9c74ef84bfa152245abe33d8c142045c1a528b4c2957e75ea0b4"
+      },
+      "stderr": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check011.stderr",
+        "bytes": 1682,
+        "sha256": "22d71b745aeb664d7cffa153bb10bdd832d4646a222df6598960c353824ab7d5"
+      }
+    },
+    {
+      "event": "Root actual source inspection corrected classification; production arm and the typed explicit-selection guard were corrected. check012 passed.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check012.json",
+        "bytes": 179695,
+        "sha256": "6dc32e22cfa558855ee77c8e652607bb36231f38f23fc6e43f6169da182ddd07"
+      },
+      "stderr": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check012.stderr",
+        "bytes": 4410,
+        "sha256": "48146554bffddc6ddd9d48031942f189cf673b03ecd52c0575e47fa266e786a0"
+      }
+    }
+  ],
+  "historical_failed_collection_exact_execution_utc": "not captured; not reconstructed",
+  "final_cfg_preservation": "PENDING independent Astra successor verifier; no assertion of an actual test edit based on the invalid spans",
+  "final_format_currentness": "format001 predates the final selection guard; its cfg-classifier proof is invalid. No final cfg-safe format acceptance is claimed.",
+  "parser_verifier_correction_by_sol_after_stop": 0,
+  "further_format_or_compile_execution_after_check012": 0
+}

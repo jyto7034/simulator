@@ -1,0 +1,50 @@
+[
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_a001.json",
+    "sha256": "be688dbf9c3c424240340436555496e97a909101ac3bcab8aee1fc26a5013ff2",
+    "exit_code": 101,
+    "source_sha256": "6e145c8153df5c8d817d7cef8d2ef7a4bd737afc70db5f6bfb7489fcf82a27a8",
+    "source_unchanged": true,
+    "raw_sha256": "528b38932e74e40511759bf7d687d6c3c42f83eec4f9aa000037a3b1c94bd865"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_a002.json",
+    "sha256": "b824e34acc17176cfe50d9f17801d4e7359fad4a6d4a7f595ff68c237515e7dc",
+    "exit_code": 101,
+    "source_sha256": "ba271c2b67d4a464f532b95dcd6d07dd8553e23b90f0cc66c16fbd9aaf4e3e09",
+    "source_unchanged": true,
+    "raw_sha256": "d76df4eae8d47b6c331cfe41233e13d2a56a4f303c0d10e79f6952ee9424657c"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_a003.json",
+    "sha256": "597cc6cbbeb1a4b9b2ed5405412691c1ed3fd82dd5852c64f5798211e09794bd",
+    "exit_code": 0,
+    "source_sha256": "79ed7b5f89ee786507f2276392bdda95f3ea1559dd4d3458605716022f5b3e3a",
+    "source_unchanged": true,
+    "raw_sha256": "e1fc1c453d214229a9281ef183213f29308a4d20f53191cb3c0eb7935e9dba9b"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_numeric_focused005.json",
+    "sha256": "b679f89ed700080867e822a077028712d38be8b4b76d3fb9286f5a03d242c64c",
+    "exit_code": 0,
+    "source_sha256": "6076ed935e7e99fe26db51bb2bcbc883bdfe6ee63832ef118473d95d41827af1",
+    "source_unchanged": true,
+    "raw_sha256": "e4425dcf41716becfcf4f94f2188f4fae7d9254b8b2deb5d3af3023e42eb9439"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_numeric_off002.json",
+    "sha256": "be42160113c9b6be3ca75168601dea183d08955beca0a95ebd8d6d8e212b9301",
+    "exit_code": 0,
+    "source_sha256": "6076ed935e7e99fe26db51bb2bcbc883bdfe6ee63832ef118473d95d41827af1",
+    "source_unchanged": true,
+    "raw_sha256": "42ee88c2391b50275e43194aff2b09e168560b9964b96cde146a9168aa6b86c6"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_behavior001.json",
+    "sha256": "a17e5b9f896c37ef01264b250c1a701ead6b208a49c2feb9dad65dd88b75f33c",
+    "exit_code": 0,
+    "source_sha256": "6076ed935e7e99fe26db51bb2bcbc883bdfe6ee63832ef118473d95d41827af1",
+    "source_unchanged": true,
+    "raw_sha256": "cf8b0581fe77168706c82402b95dddcc8a24ece5fb70b4ad8366114e0efcbd50"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "result": "FROZEN_CAP_FORMAT_TARGET_AND_RESTORATION_VERIFIED",
+  "manifest_sha256": "6ee8ea5a889428eef4a0986cd83037ef8c51de6c751868ef9657adb11d3ce789",
+  "source_files": 333,
+  "evidence_files": 12,
+  "modified": [
+    "core_enhanced/src/authoring/control.rs",
+    "core_enhanced/src/game/battle/core/queue.rs",
+    "core_enhanced/src/game/battle/core/runtime_facts.rs",
+    "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+    "core_enhanced/src/game/battle/runtime_control.rs"
+  ]
+}

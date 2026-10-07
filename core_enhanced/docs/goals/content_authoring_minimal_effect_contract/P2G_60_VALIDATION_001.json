@@ -1,0 +1,75 @@
+{
+  "record_kind": "external P2G-60 validation evidence; not a Validation Receipt artifact or standard validator",
+  "request": "NEXT-0008",
+  "execution": {
+    "command": "python3 /tmp/ca01_next0008_check.py",
+    "exit_code": 0,
+    "stdout": {
+      "checked_at": "2026-09-09T07:53:07.498662+00:00",
+      "checks": {
+        "result": "passed",
+        "exact_current_result_basis": true,
+        "required_handoff_fields": 9,
+        "self_ref_in_payload": false,
+        "acyclic_typed_reference_graph": true,
+        "JSON_artifacts": 76,
+        "new_Handoff_Artifact": 1,
+        "unchanged_Goal_Set_markdown": true,
+        "policy_members": 6,
+        "decision_links": 6,
+        "acceptance_members": 12,
+        "phases": 1,
+        "goal_members": 1,
+        "final_execution_nodes": 2,
+        "integration_rows": 6,
+        "remaining_summary_rows": 8,
+        "freeze_known_unknowns_inherited": 5,
+        "authorization_boundary_preserved": true,
+        "applicable_P2G60_obligations": 0,
+        "upstream_P2G50_validation_reused": "original exit 0 / passed / failures []; exact inputs/tools/Node unchanged; not rerun",
+        "review_source_hashes_current": 31,
+        "previous_exit_paths_unchanged": 1704,
+        "pipeline_hashes_unchanged": true,
+        "new_GEX_execution_records": 0
+      },
+      "handoff": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_60_HANDOFF_001.json",
+        "sha256": "94152666bb17700a3bfe3620562e1782f85a7e1ed468519549be5de1785a9848"
+      },
+      "upstream_validation": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_VALIDATION_001.json",
+        "sha256": "72389b3789a9e160de1e9c24ac7ce74a1994df3ce05d3065e442e990568296c6"
+      },
+      "upstream_complete_result": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_RESULT_001.json",
+        "sha256": "c19e0d7ee8e3a9ba15bebfb394c771f86254ec787c32347fee588b498fbf1dc2"
+      },
+      "semantic_review": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_60_HANDOFF_REVIEW_001.ko.md",
+        "sha256": "701fcf0d76fc75f3766db4cbd696db074495dab48d53623036cfc3d45fe2ecff"
+      },
+      "runtime": {
+        "node": "v24.11.0"
+      },
+      "method": {
+        "command": "python3 /tmp/ca01_next0008_check.py",
+        "sha256": "4c9b426a12131babb3e5c59fa72b89d393457a3efa4bf9be50cbc8b8f06429aa",
+        "kind": "one-off read-only artifact diagnostic; not a repository standard validator or new protocol",
+        "does_not_prove": "runtime behavior, design completion, GEX eligibility or game-test success"
+      }
+    },
+    "tool_session_id": 58932,
+    "final_output_chunk": "b54313"
+  },
+  "not_executed": [
+    "P2G-40/50 CLI rerun or validator regression rerun",
+    "game build/test/probe",
+    "production/RON/store/canonical/rules/AGENTS changes",
+    "GEX-00/10/20, Goal activation or implementation authorization"
+  ],
+  "limitations": [
+    "one-off document relation/source checks and separate Handoff semantic review",
+    "reused P2G-50 pass remains bound to original exact inputs/tools/Node",
+    "no game behavior, GEX execution eligibility or deployment/runner success claim"
+  ]
+}

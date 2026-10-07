@@ -1,0 +1,361 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CAMEC-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "embedded/live loader → raw skill conversion → validation → opaque published database/application",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "src/game/data/live_ron.rs; data/skill_data.rs; data/mod.rs; application.rs",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "현재 parse/compile 오류와 publication 원자성, exact support inventory/descriptor 삽입 위치를 호출 경로로 확인"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "SkillStep/Effect, cast scheduling → command construction → Damage/Heal mutation and result",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "src/game/ability.rs; battle/core/sim.rs; commands.rs 및 그 직접 helper",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "상수 Damage/Heal/Instant와 target/delivery/source·조건·순서·취소의 actual 및 최소 delta. test 존재로 reachability 대체 금지"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "effect/source identity, tags/property, source-position diagnostics and consumer support",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "ability/stats/data error and source capture; compile call sites",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "효과 주소와 carrier 공유를 구분하는 제안; unsupported 조합 진단과 실제 executor coverage; 외부 eval 신규 경로 금지"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "direct consumers: equipment/fragment → runtime skill; boss compiled boundary; core/headless/test host",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "build pipeline, skill_fragment, boss_runtime_data; direct API/reference callers",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "최소 slice가 CA02/10/12/13/16 전체를 필요로 하는지 실제 연결로 판단; 후속 미구현은 actual 선행 완료로 쓰지 않음"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "definition/runtime/save ownership, authoritative snapshot and durable restore",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "world/state.rs; active_run.rs; battle snapshot/runtime skill serialization",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "새 정의 metadata/compiled references의 저장 영향과 필요한 동시 전환. latest-only/no automatic migration/no personal deletion 보존"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "validation and representative positive/negative test seams, live fixture/current wiring",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "tests/skill_runtime_contract.rs; live catalog/loader tests; representative embedded skill RON; Cargo wiring",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "실제 읽은 테스트와 미실행을 구분. F135–138의 공식 숫자/accepted hit 의미 대신 기존 상수 slice의 positive/negative recipe를 제안"
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "released/deployed/server/Unity compatibility or rollout",
+            "Source type/role": "Released/Deployed/External consumer",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "outside workspace core/headless review",
+              "dirty_basis": "request baseline and per-source content sha256"
+            },
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CAMEC-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I02",
+                "I03",
+                "O05"
+              ]
+            },
+            "Validation requirement": "선택 카드 O05/U13, 배포 또는 호환 성공 claim 없음. N/A는 외부 동작이 안전하다는 뜻이 아님"
+          }
+        ]
+      }
+    }
+  ]
+}

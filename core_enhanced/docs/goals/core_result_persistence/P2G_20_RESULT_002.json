@@ -1,0 +1,35 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRRP-004",
+    "Content Digest": "sha256:ecac1fe5bddf08375fe199499b87d1cf1111d2f4e3657232229c0ad163e0cd9b"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRRP-005",
+    "Content Digest": "sha256:6594f43116416406ba9a159653a2015234fd44668ab1a532895df91b4cb672d5"
+  },
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CRRP-002",
+    "Content Digest": "sha256:20ad8447ecd553e3b906be667aeded566447857574f0bf00cd64b7d50f28c456"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CRRP-003",
+    "Content Digest": "sha256:be5f95ce380e4ffb96b4e35fb403659cd81149ba435c4f1ca75f88211e0152c7"
+  },
+  "checks": {
+    "exact_reference_integrity": true,
+    "source_unchanged": true,
+    "input_acceptance_preserved": true,
+    "all_15_reviewed_and_bound": true,
+    "all_8_source_requirements_confirmed": true,
+    "material_policy_findings": 0,
+    "required_source_gaps": 0
+  },
+  "production_mutation": false,
+  "next": "P2G-30"
+}

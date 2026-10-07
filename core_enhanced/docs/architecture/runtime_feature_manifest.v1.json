@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "purpose": "IVA-CRAR-C2-01/09 historical preservation inventory; rulebook locator moved to archive by CF-D09; original hashes and evidence retained, not a current policy inventory or fresh validation",
+  "scope": {
+    "included": ["core_enhanced"],
+    "excluded": ["game_server", "Unity", "external client compatibility"]
+  },
+  "rulebook": {
+    "path": "docs/archive/game_rulebook_legacy_2026-10-04.md",
+    "sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+    "pre_p01_sha256": "8aa954cc215dccc63b736f884327ca03375f82895b5e86eb2252e597e8fcbf6f",
+    "heading_levels": [2, 3, 4]
+  },
+  "required_validation_dimensions": [
+    "success",
+    "invalid_input",
+    "failure_rollback",
+    "retry_idempotency",
+    "ordering_concurrency",
+    "boundary_empty_max",
+    "disconnect_restart_persistence",
+    "live_data",
+    "producer_consumer",
+    "legacy_fallback_absence"
+  ],
+  "performance_observation": {
+    "tool_path": "tools/runtime_architecture_preservation/src/main.rs",
+    "receipt_path": "evidence/P01_PERFORMANCE_BASELINE.json",
+    "command": "cargo run --release --manifest-path tools/runtime_architecture_preservation/Cargo.toml --bin preservation_baseline -- evidence/P01_PERFORMANCE_BASELINE.json",
+    "workload_version": "crar-preservation-baseline/2",
+    "sample_count": 5,
+    "required_metrics": [
+      "elapsed_ns",
+      "event_count",
+      "serialized_bytes",
+      "heap_allocation.allocation_count",
+      "heap_allocation.peak_delta_bytes",
+      "heap_allocation.retained_delta_bytes"
+    ]
+  },
+  "evidence_bundles": {
+    "documentation": {
+      "production_routes": [
+        { "path": "docs/archive/game_rulebook_legacy_2026-10-04.md", "contains": "Historical gameplay reference" }
+      ],
+      "executable_tests": [
+        {
+          "path": "tools/runtime_architecture_preservation/src/bin/verify_feature_manifest.rs",
+          "contains": "unknown_unmapped_duplicate_count",
+          "command": "cargo run --manifest-path tools/runtime_architecture_preservation/Cargo.toml --bin verify_feature_manifest -- docs/architecture/runtime_feature_manifest.v1.json"
+        }
+      ]
+    },
+    "start": {
+      "production_routes": [
+        { "path": "src/game/world.rs", "contains": "PlayerBehavior::StartNewGame" },
+        { "path": "src/game/world/helpers.rs", "contains": "starter_assignments" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/snapshots_and_start.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::world::tests::snapshots_and_start"
+        }
+      ]
+    },
+    "facility": {
+      "production_routes": [
+        { "path": "src/game/map/facility_generator.rs", "contains": "Facility" },
+        { "path": "src/game/world/map_content.rs", "contains": "MapNodePayload" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/map_flow.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::world::tests::map_flow"
+        }
+      ]
+    },
+    "safe_nodes": {
+      "production_routes": [
+        { "path": "src/game/world/event_node.rs", "contains": "Event" },
+        { "path": "src/game/world/shop.rs", "contains": "Shop" },
+        { "path": "src/game/world/maintenance.rs", "contains": "handle_equip_item" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/node_sessions.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::world::tests::node_sessions"
+        },
+        {
+          "path": "src/game/world/tests/facility.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::world::tests::facility"
+        }
+      ]
+    },
+    "combat": {
+      "production_routes": [
+        { "path": "src/game/battle/core/mod.rs", "contains": "pub struct BattleCore" },
+        { "path": "src/game/world/combat.rs", "contains": "Battle" }
+      ],
+      "executable_tests": [
+        {
+          "path": "tests/skill_runtime_contract.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core --test skill_runtime_contract"
+        },
+        {
+          "path": "src/game/battle/core/mod.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::battle::core"
+        }
+      ]
+    },
+    "boss_runtime": {
+      "production_routes": [
+        { "path": "src/game/battle/core/boss_runtime.rs", "contains": "Boss" },
+        { "path": "src/game/boss_omen.rs", "contains": "BossOmenRunState" }
+      ],
+      "executable_tests": [
+        {
+          "path": "tests/skill_test/little_red.rs",
+          "contains": "little_red_follows_marked_shot_with_two_finish_attacks_on_the_same_prey",
+          "command": "cargo test -p game_core --test skill_test_suite little_red"
+        },
+        {
+          "path": "src/game/battle/core/boss_runtime.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::battle::core::boss_runtime::tests"
+        }
+      ]
+    },
+    "transport": {
+      "production_routes": [
+        { "path": "src/application.rs", "contains": "pub struct ApplicationCommand" },
+        { "path": "src/application.rs", "contains": "pub struct ApplicationResult" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/application.rs",
+          "contains": "command_kind_is_exactly_bijective_with_all_domain_actions",
+          "command": "cargo test -p game_core --lib application::tests"
+        },
+        {
+          "path": "src/game/world/tests/combat.rs",
+          "contains": "battle_state_revision",
+          "command": "cargo test -p game_core game::world::tests::combat"
+        }
+      ]
+    },
+    "growth": {
+      "production_routes": [
+        { "path": "src/game/reward.rs", "contains": "Reward" },
+        { "path": "src/game/skill_fragment.rs", "contains": "SkillFragment" }
+      ],
+      "executable_tests": [
+        {
+          "path": "tests/live_item_skill_activation.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core --test live_item_skill_activation"
+        }
+      ]
+    },
+    "progression": {
+      "production_routes": [
+        { "path": "src/game/encounter_progression.rs", "contains": "EncounterProgression" },
+        { "path": "src/game/world/map_encounters.rs", "contains": "Encounter" },
+        { "path": "src/game/world/mastered_elite_sweep.rs", "contains": "MasteredElite" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/mastered_elite_sweep.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::world::tests::mastered_elite_sweep"
+        },
+        {
+          "path": "src/game/world/tests/map_flow.rs",
+          "contains": "encounter",
+          "command": "cargo test -p game_core game::world::tests::map_flow"
+        }
+      ]
+    },
+    "profile": {
+      "production_routes": [
+        { "path": "src/game/encounter_compendium.rs", "contains": "PlayerProfileState" },
+        { "path": "src/game/world.rs", "contains": "player_profile" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/encounter_compendium.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::encounter_compendium::tests"
+        }
+      ]
+    },
+    "equipment": {
+      "production_routes": [
+        { "path": "src/game/data/equipment_data.rs", "contains": "Equipment" },
+        { "path": "src/game/resources/equipment_loadout.rs", "contains": "Equipment" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/equipment.rs",
+          "contains": "#[test]",
+          "command": "cargo test -p game_core game::world::tests::equipment"
+        }
+      ]
+    },
+    "persistence": {
+      "production_routes": [
+        { "path": "src/game/world/active_run.rs", "contains": "ActiveRunCorePayloadV4" },
+        { "path": "src/game/world/tests/checkpoint_validation.rs", "contains": "CURRENT_V4_CHECKPOINT_KEYS" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/checkpoint_validation.rs",
+          "contains": "CURRENT_V4_CHECKPOINT_KEYS",
+          "command": "cargo test -p game_core game::world::tests::checkpoint_validation"
+        }
+      ]
+    },
+    "result_failure": {
+      "production_routes": [
+        { "path": "src/game/world/combat.rs", "contains": "StagedCombatResultState" },
+        { "path": "src/game/world/node_flow.rs", "contains": "AwaitingRunFailureDecision" }
+      ],
+      "executable_tests": [
+        {
+          "path": "src/game/world/tests/combat.rs",
+          "contains": "CompleteCombatResult",
+          "command": "cargo test -p game_core game::world::tests::combat"
+        }
+      ]
+    },
+    "legacy": {
+      "production_routes": [
+        { "path": "src/game/mod.rs", "contains": "pub(crate) mod world" },
+        { "path": "src/game/behavior.rs", "contains": "pub(crate) enum PlayerBehavior" }
+      ],
+      "executable_tests": [
+        {
+          "path": "tools/core_public_projection_api_audit/invalid/src/main.rs",
+          "contains": "GameCore",
+          "command": "cargo check --release --manifest-path tools/core_public_projection_api_audit/invalid/Cargo.toml # expected non-zero"
+        }
+      ]
+    }
+  },
+  "oracle_inputs": [
+    { "path": "docs/archive/game_rulebook_legacy_2026-10-04.md", "contains": "runtime_feature_manifest.v1.json" },
+    { "path": "src/game/world/tests/checkpoint_validation.rs", "contains": "CURRENT_V4_CHECKPOINT_KEYS" },
+    { "path": "src/game/world/tests/combat.rs", "contains": "battle_state_revision" },
+    { "path": "src/application.rs", "contains": "pub const PLAYER_RESULTS" },
+    { "path": "src/game/data/live_ron.rs", "contains": "skills => (\"data/skills/base.ron\"" },
+    { "path": "tests/ron_loading.rs", "contains": "#[test]" },
+    { "path": "tools/runtime_architecture_preservation/src/main.rs", "contains": "SESSION_COUNT: usize = 64" }
+  ],
+  "legacy_removal_targets": [
+    {
+      "id": "CRAR-LEGACY-001-PARALLEL-LIFECYCLE",
+      "source": "PE-CRAR-002",
+      "locator": { "path": "src/game/world/state.rs", "contains": "pub struct GameCoreState" }
+    },
+    {
+      "id": "CRAR-LEGACY-002-ROLLBACK-CLONE",
+      "source": "PE-CRAR-003",
+      "locator": { "path": "src/game/world/active_run.rs", "contains": "capture_active_run_transaction_rollback" }
+    },
+    {
+      "id": "CRAR-LEGACY-003-ROUTE-MULTI-OWNER",
+      "source": "PE-CRAR-004",
+      "locator": { "path": "src/game/world.rs", "contains": "pub fn execute" }
+    },
+    {
+      "id": "CRAR-LEGACY-004-BARE-DATA-BUILDER",
+      "source": "PE-CRAR-005",
+      "locator": { "path": "src/game/data/mod.rs", "contains": "pub struct GameDataBuilder" }
+    },
+    {
+      "id": "CRAR-LEGACY-005-PUBLIC-BATTLE-AUTHORITY",
+      "source": "PE-CRAR-006",
+      "locator": { "path": "src/game/battle/core/mod.rs", "contains": "pub struct BattleCore" }
+    },
+    {
+      "id": "CRAR-LEGACY-006-UNVERSIONED-WIRE",
+      "source": "PE-CRAR-007",
+      "locator": { "path": "src/game/behavior.rs", "contains": "pub enum BehaviorResult" },
+      "removed": true,
+      "replacement_locator": { "path": "src/application.rs", "contains": "pub struct ApplicationResult" }
+    },
+    {
+      "id": "CRAR-LEGACY-007-FULL-STATE-STAGING",
+      "source": "PE-CRAR-008",
+      "locator": { "path": "src/game/world/active_run.rs", "contains": "ActiveRunTransactionRollback" }
+    },
+    {
+      "id": "CRAR-LEGACY-008-UNBOUNDED-EVENT-LOG",
+      "source": "PE-CRAR-009",
+      "locator": { "path": "src/game/battle/event_log.rs", "contains": "pub entries: Vec<BattleEventLogEntry>" },
+      "removed": true,
+      "replacement_locator": { "path": "src/game/battle/event_log.rs", "contains": "pub struct BattleEventEntries" }
+    },
+    {
+      "id": "CRAR-LEGACY-009-BATTLE-SIDE-MESSAGE-HISTORY",
+      "source": "PE-CRAR-009",
+      "locator": { "path": "src/game/world/state.rs", "contains": "events: Vec<BattleEventLogEntry>" }
+    },
+    {
+      "id": "CRAR-LEGACY-010-V4-WRITER",
+      "source": "PE-CRAR-010",
+      "locator": { "path": "src/game/world/active_run.rs", "contains": "ActiveRunCorePayloadV4" }
+    }
+  ],
+  "features": [
+    { "id": "GRF-001", "heading": "문서 책임", "level": 2, "classification": "canonical_boundary", "evidence_bundle": "documentation" },
+    { "id": "GRF-002", "heading": "게임 개요", "level": 2, "classification": "feature_group", "evidence_bundle": "start" },
+    { "id": "GRF-003", "heading": "게임 정체성", "level": 3, "classification": "gameplay", "evidence_bundle": "start" },
+    { "id": "GRF-004", "heading": "게임 모드", "level": 3, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-005", "heading": "핵심 플레이 루프", "level": 3, "classification": "gameplay", "evidence_bundle": "start" },
+    { "id": "GRF-006", "heading": "시작 직원 선발", "level": 3, "classification": "gameplay", "evidence_bundle": "start" },
+    { "id": "GRF-007", "heading": "탐사와 노드", "level": 2, "classification": "feature_group", "evidence_bundle": "facility" },
+    { "id": "GRF-008", "heading": "Floor 맵과 노드 선택", "level": 3, "classification": "gameplay", "evidence_bundle": "facility" },
+    { "id": "GRF-009", "heading": "Certified 전투력과 Floor 난이도", "level": 3, "classification": "gameplay", "evidence_bundle": "facility" },
+    { "id": "GRF-010", "heading": "Safe Node와 Safezone", "level": 3, "classification": "gameplay", "evidence_bundle": "safe_nodes" },
+    { "id": "GRF-011", "heading": "Event Node", "level": 3, "classification": "gameplay", "evidence_bundle": "safe_nodes" },
+    { "id": "GRF-012", "heading": "일반 인벤토리", "level": 3, "classification": "gameplay", "evidence_bundle": "equipment" },
+    { "id": "GRF-013", "heading": "소비 아이템", "level": 3, "classification": "gameplay", "evidence_bundle": "equipment" },
+    { "id": "GRF-014", "heading": "상점", "level": 3, "classification": "gameplay", "evidence_bundle": "safe_nodes" },
+    { "id": "GRF-015", "heading": "노드 진입 전 브리핑", "level": 3, "classification": "gameplay", "evidence_bundle": "facility" },
+    { "id": "GRF-016", "heading": "전투", "level": 2, "classification": "feature_group", "evidence_bundle": "combat" },
+    { "id": "GRF-017", "heading": "전투 모드", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-018", "heading": "전술 포인트", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-019", "heading": "Hard CC와 Silence", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-020", "heading": "철수와 재배치", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-021", "heading": "Attack/Defense 태세와 타일 효과", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-022", "heading": "전술 이동과 아군 점유", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-023", "heading": "수동 지정 스킬", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-024", "heading": "현장 작업", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-025", "heading": "Pause와 직렬 전투 명령", "level": 3, "classification": "gameplay", "evidence_bundle": "transport" },
+    { "id": "GRF-026", "heading": "전투 시작과 Unity 경계", "level": 3, "classification": "producer_consumer", "evidence_bundle": "transport" },
+    { "id": "GRF-027", "heading": "전장과 배치", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-028", "heading": "적 구성과 웨이브", "level": 3, "classification": "gameplay", "evidence_bundle": "boss_runtime" },
+    { "id": "GRF-029", "heading": "Live Boss Runtime Reference", "level": 4, "classification": "runtime_reference", "evidence_bundle": "boss_runtime" },
+    { "id": "GRF-030", "heading": "기본 공격과 스킬 타겟팅", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-031", "heading": "피해 타입과 피드백", "level": 3, "classification": "gameplay", "evidence_bundle": "transport" },
+    { "id": "GRF-032", "heading": "Runtime 스탯·HP·사망 전이", "level": 3, "classification": "gameplay", "evidence_bundle": "combat" },
+    { "id": "GRF-033", "heading": "성장, 스킬 파편과 도감", "level": 2, "classification": "feature_group", "evidence_bundle": "growth" },
+    { "id": "GRF-034", "heading": "보상과 성장", "level": 3, "classification": "gameplay", "evidence_bundle": "growth" },
+    { "id": "GRF-035", "heading": "연구도 폐기와 스킬 파편 획득", "level": 3, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-036", "heading": "영구 도감, 튜토리얼 해금과 개인 기록", "level": 3, "classification": "gameplay", "evidence_bundle": "profile" },
+    { "id": "GRF-037", "heading": "Endless 환상체 격파와 반복 조우", "level": 3, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-038", "heading": "Elite assignment pool", "level": 4, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-039", "heading": "NormalBoss assignment pool", "level": 4, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-040", "heading": "Elite 모노리스와 강화 재현", "level": 3, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-041", "heading": "숙달 Elite 소탕", "level": 3, "classification": "gameplay", "evidence_bundle": "progression" },
+    { "id": "GRF-042", "heading": "장비", "level": 3, "classification": "gameplay", "evidence_bundle": "equipment" },
+    { "id": "GRF-043", "heading": "장비 전투 트리거", "level": 4, "classification": "gameplay", "evidence_bundle": "equipment" },
+    { "id": "GRF-044", "heading": "스킬 파편", "level": 3, "classification": "gameplay", "evidence_bundle": "growth" },
+    { "id": "GRF-045", "heading": "비전투 노드", "level": 2, "classification": "feature_group", "evidence_bundle": "safe_nodes" },
+    { "id": "GRF-046", "heading": "SavePoint 노드", "level": 3, "classification": "gameplay", "evidence_bundle": "persistence" },
+    { "id": "GRF-047", "heading": "Maintenance 노드", "level": 3, "classification": "gameplay", "evidence_bundle": "equipment" },
+    { "id": "GRF-048", "heading": "본사 연락 노드", "level": 3, "classification": "gameplay", "evidence_bundle": "safe_nodes" },
+    { "id": "GRF-049", "heading": "결과와 실패", "level": 2, "classification": "feature_group", "evidence_bundle": "result_failure" },
+    { "id": "GRF-050", "heading": "노드 결과 처리", "level": 3, "classification": "gameplay", "evidence_bundle": "result_failure" },
+    { "id": "GRF-051", "heading": "후퇴", "level": 3, "classification": "gameplay", "evidence_bundle": "result_failure" },
+    { "id": "GRF-052", "heading": "직원 condition, 전투 HP, 전투불능, 런 실패", "level": 3, "classification": "gameplay", "evidence_bundle": "result_failure" },
+    { "id": "GRF-053", "heading": "직원 Psychology", "level": 3, "classification": "gameplay", "evidence_bundle": "persistence" },
+    { "id": "GRF-054", "heading": "후속 콘텐츠·구현 authoring", "level": 2, "classification": "future_authoring_boundary", "evidence_bundle": "documentation" },
+    { "id": "GRF-055", "heading": "고급 정책과 레거시", "level": 2, "classification": "feature_group", "evidence_bundle": "boss_runtime" },
+    { "id": "GRF-056", "heading": "FinalBoss pool과 BossOmen Chain", "level": 3, "classification": "gameplay", "evidence_bundle": "boss_runtime" },
+    { "id": "GRF-057", "heading": "레거시 제거 원칙", "level": 3, "classification": "legacy_absence", "evidence_bundle": "legacy" }
+  ]
+}

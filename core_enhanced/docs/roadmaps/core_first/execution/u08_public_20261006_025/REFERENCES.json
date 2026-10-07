@@ -1,0 +1,105 @@
+{
+  "recorded_at_utc": "2026-10-06T10:59:49.321222+00:00",
+  "references": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default004.json",
+      "sha256": "b8c2065a6b0bb5faec01dbea3aa406a5b0d4195b60f446dfe44bd4b1dac2597f",
+      "bytes": 169864
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default004.log",
+      "sha256": "18b9e7530067dce3080d409b478bae2410e92b80a322d60d6007dcba1576a759",
+      "bytes": 225478
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_matrix004.json",
+      "sha256": "731efc65a1c19e4d57ddf7c6de748b9fe8ecbfad165164cac390ee1c83d865c4",
+      "bytes": 170054
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/execution_harness_binding004/ABORTED_INTERVAL.json",
+      "sha256": "e00789ab667c527626a24e028c75f4a6cba8777fa9350209014ff3c0d4d04140",
+      "bytes": 120354
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/env_socket_probe001/RESULT.json",
+      "sha256": "fc52efee8a391d0d1c2093384e8de39ab478a3c2cbab04d8050cf0d785f8fb1a",
+      "bytes": 6607
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_integrated_corrections001/RESULT.json",
+      "sha256": "2fd46eb2addd3afa3aae43743091f6286f7b6a2815ac09468e6293b0c7a851a0",
+      "bytes": 10435
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/product_catalog_doc001/RECORD.json",
+      "sha256": "cefe79cc946e903e5b7dabfd95cefdf8948201c828743823f95c2795c737bdbe",
+      "bytes": 2533
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/post_correction_fmt001.json",
+      "sha256": "7f94f59ae68dff8ed609d9c1347977070c9f69c28b6fe507be8011b4d3fb4b82",
+      "bytes": 169662
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/post_correction_fmt001.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/docs_checkpoint025/RECORD.json",
+      "sha256": "2e2583af44b59cc9204c7e5a300e2e82a8b58d910aaa36757b4c84ac6bb489be",
+      "bytes": 26331
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff003/MANIFEST.json",
+      "sha256": "975f39720e8089e99d6a74c1b4e1d54e22085f84869e21b74011c23a3ba16a58",
+      "bytes": 117874
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff003/HANDOFF.json",
+      "sha256": "9cb399d65c9af84ac8c96cf93cdbd929e6253e8d81669c203f5fddb392c29d39",
+      "bytes": 14166
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff003/SOURCE_REBIND.json",
+      "sha256": "e6f6775420c868a447d31691d82ebed51fe27c54cc84ef844b66d262eb5153d8",
+      "bytes": 12959
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff003/SELF_CHECKS.json",
+      "sha256": "06ba8949e0017193bccbd4aa3fa3abf7e56f34ce994b166b6b62467f40d795af",
+      "bytes": 1019
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/MANIFEST.json",
+      "sha256": "bf519a16949f4d68151deb9af914510c572c9648439faedef55d0260f90f4bac",
+      "bytes": 10349
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/HANDOFF.json",
+      "sha256": "f95a616ff898054dad9b8bf7a24addd0212cf834ac8c36fcc82b189ab41ea7a3",
+      "bytes": 7073
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/source_versions/8734111ce349bc36de5534aff831f89ccf8c9034b7e802e120d87cee5d0e248b.tar.gz",
+      "sha256": "9de94d559b6a92836f8167fe7b197d5890ad228d9018c5c538a37aa288960d6d",
+      "bytes": 1918784
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENTS.md",
+      "sha256": "9c3c58e8033e812fa3c6df4714d472a4fbedf88bc9d55a89aa9201ea004cab6f",
+      "bytes": 89409
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/STATE_INVENTORY.md",
+      "sha256": "a2cf69b07f939cf3e554836eaac430f4e04abafa028381dc5394d61470717306",
+      "bytes": 62929
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261006_001.ko.md",
+      "sha256": "6d65752fbbc3384a37d5f17a97b7e2c133a607a45581f42651cef30ae3cc2d22",
+      "bytes": 97
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "predecessor": "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_001",
+  "changes": [
+    "Rerun actual consumers against compact V10; isolated current_002 outputs and compat_*_003 receipts. All prior assertions retained.",
+    "Prepared observer consumer expects the two actual MergeProfile commits for command/Attach; verifies them separately from the discarded preparation."
+  ],
+  "files": [
+    {
+      "path": "boundary.py",
+      "before_sha256": "837a908a3e0b515ac2bb4e1f0e83587bf3b1b9817a5009b935fbb78790251525",
+      "after_sha256": "837a908a3e0b515ac2bb4e1f0e83587bf3b1b9817a5009b935fbb78790251525"
+    },
+    {
+      "path": "compare_pc.py",
+      "before_sha256": "d75ade59d4fbe85245a7a968244c57b7503eaeaaf3b5a0499e0d5d9449f43cf3",
+      "after_sha256": "d75ade59d4fbe85245a7a968244c57b7503eaeaaf3b5a0499e0d5d9449f43cf3"
+    },
+    {
+      "path": "default_parity.py",
+      "before_sha256": "9f46b75b3779bb96d6ec341f6d0ce3a4b5ac982cde0b59ac5d4e656066903ec1",
+      "after_sha256": "b7fe23a8c9a92c0f320b965b4e1d6e6d944b30b2cd708ec2432b1fe77cfa9fa4"
+    },
+    {
+      "path": "host_peak_failure_probe.rs",
+      "before_sha256": "671a92c07d8ac27a5d9674e13976278316677fe3e5f1a5508cf9a624a0295afc",
+      "after_sha256": "671a92c07d8ac27a5d9674e13976278316677fe3e5f1a5508cf9a624a0295afc"
+    },
+    {
+      "path": "prepare_pc.py",
+      "before_sha256": "538dea9895e07aaef1b4db8a239612edc68ff1b56f55f3c6219265c36a10f4b9",
+      "after_sha256": "b4d1e6cabd6e832ebc6cb71d870620ebe17dbb4850c57629e5065e9cf194d277"
+    },
+    {
+      "path": "probe.py",
+      "before_sha256": "561bcc0c2c39a5f004a2d1f7cf0f173aafdf71fd128d9cb13629836eebd5dde1",
+      "after_sha256": "561bcc0c2c39a5f004a2d1f7cf0f173aafdf71fd128d9cb13629836eebd5dde1"
+    },
+    {
+      "path": "public_boundary_probe.py",
+      "before_sha256": "764a15a972d7ea8c70da625413d78c8efd64a96b3a63d5f4745ce1754b474963",
+      "after_sha256": "4aa061efaf056a415cddb7b955c535b511a6acfb13e49c49c592bbc3af257291"
+    },
+    {
+      "path": "public_cli.py",
+      "before_sha256": "a117f9ee94dffe8301f9ceadf1b9011f8098b2d20e4688b3759202572d8378fc",
+      "after_sha256": "6c4e218482e84a80ad3e1d2c637c46c841b5d275f76808bd4ef6cb2e18b78770"
+    },
+    {
+      "path": "public_probe.py",
+      "before_sha256": "c376e95491710855d4e2ec2ed8fb91ab8965c144f266a66ebb7fbda098cdee2f",
+      "after_sha256": "d0131b1baa378f0a1963e21a2dd64c606885e7536ab353b366580fa9f5a4c2ea"
+    },
+    {
+      "path": "public_profile_probe.py",
+      "before_sha256": "f0f3ab658173d2655619436b79786fc44384fd2230308b416104221e91a0abba",
+      "after_sha256": "331cdca64a60b55532e1b6f266c7d85a14a37da7e66aaff811dc9adc48d0dc60"
+    },
+    {
+      "path": "public_trace_probe.py",
+      "before_sha256": "d84e9d01107052c6e5137eb914e5f644bd195e515afcaf0fe068ea8ba48f97ec",
+      "after_sha256": "263ea29046bf4fec3baa18a0364ab35b97b6769f16cabd1b0f1ee0ab81496765"
+    },
+    {
+      "path": "regressions.py",
+      "before_sha256": "83f98b9070556282a7d66920e48810e7c15f4c4674dc174d381b0c46ccfb1645",
+      "after_sha256": "664508eab7d45f448220ca552dc2d48c37ac639b5728f362f4b481c3ce45212f"
+    },
+    {
+      "path": "summarize_r05.py",
+      "before_sha256": "2ed301f6257e2ac36ebcb26d757783ae33867a4e916ef43a7e30baa30a5d6a2b",
+      "after_sha256": "030afb1681a7d24d62b6a44c52ef87e6089439338f807be439d7eb4dcc967033"
+    }
+  ]
+}

@@ -1,0 +1,570 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CMRP-001",
+        "Content Digest": "sha256:1a444d8472c0e5c1c240e229d61bc7d06ca886675ec9130af7d6ba8fb6fea6e3"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMRP-002",
+          "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-01-DECIDED-001",
+                "Content Digest": "sha256:ff3e73da28e49eb718d0058087053a1042a98a07e6d2f1d46f6ee0e48fd1aa5d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-02-DECIDED-001",
+                "Content Digest": "sha256:0e200f5c82c96b89be139b08eb11f1232a0d51236cc718a4d99db1bff2c5816a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-06-DECIDED-001",
+                "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-10-DECIDED-001",
+                "Content Digest": "sha256:99e5730fd446011d60a0e41e6a8bd1a90aebc965e32a44cd87d9c0f64f005427"
+              }
+            ],
+            "Required claim/boundary": "trusted profile parser, immutable identity and publication authority",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/runtime_safety.rs",
+                "core_enhanced/src/runtime_safety/tests.rs",
+                "core_enhanced/src/game/data/mod.rs",
+                "core_enhanced/src/game/data/validation.rs",
+                "core_enhanced/src/authoring/query.rs",
+                "core_enhanced/src/authoring/trial.rs",
+                "core_enhanced/src/authoring/mod.rs",
+                "core_enhanced/src/application.rs",
+                "game_server/src/bootstrap.rs",
+                "game_server/src/main.rs",
+                "config/runtime_safety.ron"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "strict omitted/default canonical compatibility; explicit finite dev selection; production identity consumer versus output-only hash; no content/save authority"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-01-DECIDED-001",
+                "Content Digest": "sha256:ff3e73da28e49eb718d0058087053a1042a98a07e6d2f1d46f6ee0e48fd1aa5d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-02-DECIDED-001",
+                "Content Digest": "sha256:0e200f5c82c96b89be139b08eb11f1232a0d51236cc718a4d99db1bff2c5816a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-03-DECIDED-001",
+                "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-04-DECIDED-001",
+                "Content Digest": "sha256:adfbf9a800de27d19ab594ecc9f965c1ca77973b1acd82b7b6cb1ba6f1991b77"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-06-DECIDED-001",
+                "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-08-DECIDED-001",
+                "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+              }
+            ],
+            "Required claim/boundary": "native operation owner, all retained admission/checks and nested/rollback boundaries",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/runtime_control.rs",
+                "core_enhanced/src/game/battle/runtime_facts.rs",
+                "core_enhanced/src/game/battle/core/runtime_facts.rs",
+                "core_enhanced/src/game/battle/core/sim.rs",
+                "core_enhanced/src/game/battle/core/mod.rs",
+                "core_enhanced/src/game/battle/core/types.rs",
+                "core_enhanced/src/game/battle/core/resource_runtime.rs",
+                "core_enhanced/src/game/battle/core/queue.rs",
+                "core_enhanced/src/game/battle/core/object_creation.rs",
+                "core_enhanced/src/game/battle/core/object_evolution.rs",
+                "core_enhanced/src/game/battle/core/movement/blocking.rs",
+                "core_enhanced/src/game/world/application.rs",
+                "core_enhanced/src/game/world/resource_runtime.rs",
+                "core_enhanced/src/game/world/node_flow.rs",
+                "core_enhanced/src/game/world/active_run.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/authoring/control.rs",
+                "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "default 8MiB validation remains; trusted policy only selects retained ceiling; direct owner/result checks agree; work/clone/expression unchanged; nonrefundable admission and sticky failure"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-03-DECIDED-001",
+                "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-04-DECIDED-001",
+                "Content Digest": "sha256:adfbf9a800de27d19ab594ecc9f965c1ca77973b1acd82b7b6cb1ba6f1991b77"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-05-DECIDED-001",
+                "Content Digest": "sha256:1bd001955bc81dfaacb4d1dfc80fa4a319212823c419033ec1b5c22eb7eaffa0"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-07-DECIDED-001",
+                "Content Digest": "sha256:bcb1ccfbb67670b22ce15922b19cdb3334a7734ba2b63ddd6c1404c887f15f27"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-08-DECIDED-001",
+                "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+              }
+            ],
+            "Required claim/boundary": "fixed operation metrics and bounded existing Core/host observation transport",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/runtime_observation.rs",
+                "core_enhanced/src/application/runtime_observation_tests.rs",
+                "game_server/src/observability/mod.rs",
+                "game_server/src/observability/tests.rs",
+                "game_server/src/lib.rs",
+                "game_server/src/game/load_balance_actor/handlers.rs",
+                "game_server/config/observability.ron",
+                "game_server/config/observability/README.md",
+                "core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "seed/request/accepted growth/extent distinction; ring/queue/drop bounds; allocator hook reuse limits and optional feature scope; host process RSS only; no gameplay feedback"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-01-DECIDED-001",
+                "Content Digest": "sha256:ff3e73da28e49eb718d0058087053a1042a98a07e6d2f1d46f6ee0e48fd1aa5d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-03-DECIDED-001",
+                "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-06-DECIDED-001",
+                "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-07-DECIDED-001",
+                "Content Digest": "sha256:bcb1ccfbb67670b22ce15922b19cdb3334a7734ba2b63ddd6c1404c887f15f27"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-08-DECIDED-001",
+                "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+              }
+            ],
+            "Required claim/boundary": "normal application, actual host session, clone, checkpoint/Continue and fault consumers",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/world/snapshot.rs",
+                "core_enhanced/src/game/world/active_run/continuation.rs",
+                "core_enhanced/src/authoring/scenario.rs",
+                "core_enhanced/src/authoring/resolve.rs",
+                "core_enhanced/src/bin/consume_content_pack.rs",
+                "core_enhanced/src/game/data/content_pack/mod.rs",
+                "game_server/src/game/player_game_actor/handlers.rs",
+                "game_server/src/game/player_game_actor/state.rs",
+                "game_server/src/game/player_game_actor/session.rs",
+                "game_server/src/game/player_game_actor/messages.rs",
+                "game_server/src/game/player_game_actor/mod.rs",
+                "game_server/src/game/player_game_actor/handlers/tests/fault.rs",
+                "game_server/src/game/player_game_actor/handlers/tests/durable.rs",
+                "game_server/src/persistence/active_run_store.rs",
+                "game_server/src/persistence/player_profile_store.rs",
+                "game_server/src/persistence/mod.rs"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "normal execution and current-host restore; immutable live profile clone; failure save protection; bounded measurement replay mismatch rejected before mutation"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-02-DECIDED-001",
+                "Content Digest": "sha256:0e200f5c82c96b89be139b08eb11f1232a0d51236cc718a4d99db1bff2c5816a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-03-DECIDED-001",
+                "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-04-DECIDED-001",
+                "Content Digest": "sha256:adfbf9a800de27d19ab594ecc9f965c1ca77973b1acd82b7b6cb1ba6f1991b77"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-05-DECIDED-001",
+                "Content Digest": "sha256:1bd001955bc81dfaacb4d1dfc80fa4a319212823c419033ec1b5c22eb7eaffa0"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-06-DECIDED-001",
+                "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-07-DECIDED-001",
+                "Content Digest": "sha256:bcb1ccfbb67670b22ce15922b19cdb3334a7734ba2b63ddd6c1404c887f15f27"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-08-DECIDED-001",
+                "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-09-DECIDED-001",
+                "Content Digest": "sha256:1eb2d9a4d5b36990dcf080d3f7fa358be7261b07bd8e4a7fc5eadd4652ff6e50"
+              }
+            ],
+            "Required claim/boundary": "existing normal fixtures, public measurement/probe seams and affected regressions",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/world/tests/combat.rs",
+                "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+                "core_enhanced/src/game/world/tests/u06_starter.rs",
+                "core_enhanced/src/game/world/tests/u04_continuation.inc.rs",
+                "core_enhanced/src/game/battle/core/tests/u07_block_lifecycle.inc.rs",
+                "core_enhanced/tools/authoring_trial_api_probe/examples/runtime_application.rs",
+                "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+                "core_enhanced/tools/runtime_architecture_preservation/src/main.rs",
+                "core_enhanced/tests/author_content_cli_arguments.rs",
+                "core_enhanced/tests/battle_showcase.rs",
+                "core_enhanced/tests/live_item_skill_activation.rs",
+                "core_enhanced/tests/live_skill_catalog_audit.rs",
+                "core_enhanced/tests/ron_loading.rs",
+                "core_enhanced/tests/skill_runtime_contract.rs",
+                "core_enhanced/tests/skill_test_suite.rs",
+                "Cargo.toml",
+                "Cargo.lock",
+                "core_enhanced/Cargo.toml",
+                "game_server/Cargo.toml"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "nonzero normal Core/host and U07 objects/lifecycle samples; compare default historical PC/R05 guards and separate development input; tests remain implementation owner work"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-09-DECIDED-001",
+                "Content Digest": "sha256:1eb2d9a4d5b36990dcf080d3f7fa358be7261b07bd8e4a7fc5eadd4652ff6e50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-10-DECIDED-001",
+                "Content Digest": "sha256:99e5730fd446011d60a0e41e6a8bd1a90aebc965e32a44cd87d9c0f64f005427"
+              }
+            ],
+            "Required claim/boundary": "exact predecessor closure, final evidence selectors and registered followup handoff",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/docs/goals/core_independent_objects/post_audit/u07_20261005_002/AUDIT_CLOSURE.json",
+                "core_enhanced/docs/goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md",
+                "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/target/u07_002/MANIFEST.json",
+                "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/PLAN.md",
+                "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+                "core_enhanced/docs/core_runtime_contract.md",
+                "core_enhanced/docs/data_loading_contract.md"
+              ],
+              "dirty_basis": "Exact actual bytes; preserve existing changes"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "181 predecessor plus31 R06 applicability and10 dimensions; historical failures immutable; whole-goal independent closure; U30-C/P own final tuning"
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-01-DECIDED-001",
+                "Content Digest": "sha256:ff3e73da28e49eb718d0058087053a1042a98a07e6d2f1d46f6ee0e48fd1aa5d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-02-DECIDED-001",
+                "Content Digest": "sha256:0e200f5c82c96b89be139b08eb11f1232a0d51236cc718a4d99db1bff2c5816a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-03-DECIDED-001",
+                "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-04-DECIDED-001",
+                "Content Digest": "sha256:adfbf9a800de27d19ab594ecc9f965c1ca77973b1acd82b7b6cb1ba6f1991b77"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-05-DECIDED-001",
+                "Content Digest": "sha256:1bd001955bc81dfaacb4d1dfc80fa4a319212823c419033ec1b5c22eb7eaffa0"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-06-DECIDED-001",
+                "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-07-DECIDED-001",
+                "Content Digest": "sha256:bcb1ccfbb67670b22ce15922b19cdb3334a7734ba2b63ddd6c1404c887f15f27"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-08-DECIDED-001",
+                "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-09-DECIDED-001",
+                "Content Digest": "sha256:1eb2d9a4d5b36990dcf080d3f7fa358be7261b07bd8e4a7fc5eadd4652ff6e50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-10-DECIDED-001",
+                "Content Digest": "sha256:99e5730fd446011d60a0e41e6a8bd1a90aebc965e32a44cd87d9c0f64f005427"
+              }
+            ],
+            "Required claim/boundary": "Released Actual",
+            "Source type/role": "Released Actual",
+            "Required identity/location constraint": null,
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "O02",
+                "O03"
+              ]
+            },
+            "Validation requirement": "No externally released-version compatibility target; local release/public validation is GEX work."
+          },
+          {
+            "Requirement ID": "RQ08",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-01-DECIDED-001",
+                "Content Digest": "sha256:ff3e73da28e49eb718d0058087053a1042a98a07e6d2f1d46f6ee0e48fd1aa5d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-02-DECIDED-001",
+                "Content Digest": "sha256:0e200f5c82c96b89be139b08eb11f1232a0d51236cc718a4d99db1bff2c5816a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-03-DECIDED-001",
+                "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-04-DECIDED-001",
+                "Content Digest": "sha256:adfbf9a800de27d19ab594ecc9f965c1ca77973b1acd82b7b6cb1ba6f1991b77"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-05-DECIDED-001",
+                "Content Digest": "sha256:1bd001955bc81dfaacb4d1dfc80fa4a319212823c419033ec1b5c22eb7eaffa0"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-06-DECIDED-001",
+                "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-07-DECIDED-001",
+                "Content Digest": "sha256:bcb1ccfbb67670b22ce15922b19cdb3334a7734ba2b63ddd6c1404c887f15f27"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-08-DECIDED-001",
+                "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-09-DECIDED-001",
+                "Content Digest": "sha256:1eb2d9a4d5b36990dcf080d3f7fa358be7261b07bd8e4a7fc5eadd4652ff6e50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMRP-10-DECIDED-001",
+                "Content Digest": "sha256:99e5730fd446011d60a0e41e6a8bd1a90aebc965e32a44cd87d9c0f64f005427"
+              }
+            ],
+            "Required claim/boundary": "Deployed Actual",
+            "Source type/role": "Deployed Actual",
+            "Required identity/location constraint": null,
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMRP-002",
+                "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+              },
+              "Scope selectors": [
+                "O02",
+                "O03"
+              ]
+            },
+            "Validation requirement": "No deployed-service/Unity scope. Actual local host is required in RQ03/04; later platform sampling belongs to U30-C/P."
+          }
+        ],
+        "Currentness Boundary": "Local actual dirty workspace. U07 immutable baseline remains exact except published two roadmap status documents. Capture is not a completed semantic review."
+      }
+    }
+  ]
+}

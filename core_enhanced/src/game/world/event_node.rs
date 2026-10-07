@@ -1,7 +1,7 @@
 use rand::{Rng, SeedableRng};
 use uuid::Uuid;
 
-use super::GameCore;
+use super::{grant_state::EconomyGrantState, GameCore};
 use crate::game::{
     behavior::{
         ActionDisabledReasonCode, ActionKind, BehaviorResult, EventChoiceEvaluationDto,
@@ -12,25 +12,15 @@ use crate::game::{
         EventCheckOutcome, EventChoiceDefinition, EventChoiceId, EventDefinition, EventId,
         EventSceneId, EventSceneNext, EventSuccessAction,
     },
-    employee::{Employee, EmployeeActivity, EmployeeRoster},
-    managers::uuid_manager::UuidManager,
+    employee::{Employee, EmployeeActivity},
     map::MapNodeId,
     resources::{
-        ActiveNodeContent, Enkephalin, EventCheckModifierComponent, EventChoiceKeyEvidence,
-        EventCommittedCheckState, EventEquipmentModifierEvidence, EventSessionState,
-        EventStartedCombatState, Inventory,
+        ActiveNodeContent, CommittedRelicCorruptionSelection, EventCheckModifierComponent,
+        EventChoiceKeyEvidence, EventCommittedCheckState, EventEquipmentModifierEvidence,
+        EventSessionState, EventStartedCombatState, Inventory,
     },
-    reward::{GrantExecutionContext, GrantExecutor, RewardEffect},
-    skill_fragment::SkillFragmentInventory,
+    reward::{GrantExecutionContext, RewardEffect},
 };
-
-struct PlannedEventGrant {
-    inventory: Inventory,
-    skill_fragments: SkillFragmentInventory,
-    roster: EmployeeRoster,
-    uuid_manager: UuidManager,
-    enkephalin: Enkephalin,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct EventEmployeeCheckEvaluation {
@@ -96,6 +86,9 @@ impl GameCore {
             None => return Some(Err(ActionDisabledReasonCode::ContentUnavailable)),
         };
         match (action, &scene.next) {
+            (ActionKind::ChooseRelicCorruption, EventSceneNext::RelicCorruption { .. }) => {
+                Some(Ok(()))
+            }
             (
                 ActionKind::ResolveEventChoiceCheck,
                 EventSceneNext::EmployeeCheckChoices { choices, .. },
@@ -211,12 +204,16 @@ impl GameCore {
             .run_state()?
             .event_sessions
             .get(&node_id)
-            .cloned()
+            .map(EventSessionState::clone_for_relic_transition)
+            .transpose()?
             .unwrap_or_else(|| {
                 EventSessionState::new(node_id, event_id.clone(), event.entry_scene_id.clone())
             });
         if session.event_id != event_id {
             return Err(GameError::InvalidAction);
+        }
+        if session.has_relic_history() && session.started_combat.is_some() {
+            session.preflight_relic_clone()?;
         }
         if let Some(started) = session.started_combat.clone() {
             self.run_state_mut()?
@@ -229,10 +226,7 @@ impl GameCore {
             );
         }
         let result = self.event_state_result(&session)?;
-        self.run_state_mut()?
-            .event_sessions
-            .insert(node_id, session.clone());
-        self.state.active_node_content = Some(ActiveNodeContent::Event(session));
+        self.commit_event_session_required_run(node_id, session)?;
         Ok(result)
     }
 
@@ -242,7 +236,7 @@ impl GameCore {
         event_id: EventId,
         current_scene_id: EventSceneId,
     ) -> Result<BehaviorResult, GameError> {
-        let session = self.current_event_session()?.clone();
+        let session = self.current_event_session()?.clone_for_relic_transition()?;
         if session.node_id != node_id
             || session.event_id != event_id
             || session.current_scene_id != current_scene_id
@@ -255,15 +249,19 @@ impl GameCore {
             EventSceneNext::Scene { scene_id } => {
                 let mut updated = session;
                 updated.current_scene_id = scene_id.clone();
-                self.commit_event_session(node_id, updated.clone())?;
+                self.commit_event_session_required_run(
+                    node_id,
+                    updated.clone_for_relic_transition()?,
+                )?;
                 self.event_state_result(&updated)
             }
             EventSceneNext::End => {
                 let completion = self.plan_complete_current_node(true)?;
-                self.commit_event_session(node_id, session)?;
+                self.commit_event_session_required_run(node_id, session)?;
                 self.commit_interactive_node_completion(completion)
             }
-            EventSceneNext::EmployeeCheckChoices { .. } => Err(GameError::InvalidAction),
+            EventSceneNext::EmployeeCheckChoices { .. }
+            | EventSceneNext::RelicCorruption { .. } => Err(GameError::InvalidAction),
         }
     }
 
@@ -275,7 +273,7 @@ impl GameCore {
         choice_id: EventChoiceId,
         employee_uuid: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        let session = self.current_event_session()?.clone();
+        let session = self.current_event_session()?.clone_for_relic_transition()?;
         if session.node_id != node_id || session.event_id != event_id {
             return Err(GameError::InvalidAction);
         }
@@ -392,12 +390,380 @@ impl GameCore {
                 encounter_id,
                 primary_abnormality_id,
             });
-            self.commit_event_session(node_id, updated)?;
+            self.commit_event_session_required_run(node_id, updated)?;
             return self.commit_planned_live_battle_start(node_id, planned);
         }
 
-        self.commit_event_session(node_id, updated.clone())?;
+        self.commit_event_session_required_run(node_id, updated.clone_for_relic_transition()?)?;
         self.event_state_result(&updated)
+    }
+
+    pub(super) fn is_exact_committed_relic_corruption(
+        &self,
+        node_id: MapNodeId,
+        event_id: &EventId,
+        source_scene_id: &EventSceneId,
+        copy_uuid: Option<Uuid>,
+    ) -> Result<bool, GameError> {
+        let Some(ActiveNodeContent::Event(session)) = &self.state.active_node_content else {
+            return Ok(false);
+        };
+        if session.node_id != node_id || session.event_id != *event_id {
+            return Ok(false);
+        }
+        let Some(history) = &session.relic_corruption_selections else {
+            return Ok(false);
+        };
+        crate::authoring::control::charge(history.len() as u64, "relic_event_history_retry")?;
+        Ok(history.iter().any(|receipt| {
+            receipt.source_scene_id == *source_scene_id && receipt.copy_uuid == copy_uuid
+        }))
+    }
+
+    pub(super) fn validate_relic_corruption_payload(
+        &self,
+        node_id: MapNodeId,
+        event_id: &EventId,
+        source_scene_id: &EventSceneId,
+        copy_uuid: Option<Uuid>,
+    ) -> Result<(), ActionDisabledReasonCode> {
+        let Some(ActiveNodeContent::Event(session)) = &self.state.active_node_content else {
+            return Err(ActionDisabledReasonCode::ContextIrrelevant);
+        };
+        if session.node_id != node_id
+            || session.event_id != *event_id
+            || session.current_scene_id != *source_scene_id
+        {
+            return Err(ActionDisabledReasonCode::NoEligiblePayload);
+        }
+        let event = self
+            .game_data
+            .event_data
+            .get_by_id(event_id.as_str())
+            .ok_or(ActionDisabledReasonCode::ContentUnavailable)?;
+        crate::authoring::control::charge(event.scenes.len() as u64, "relic_event_payload_scene")
+            .map_err(|_| ActionDisabledReasonCode::ContentUnavailable)?;
+        let scene = event
+            .scenes
+            .iter()
+            .find(|scene| scene.id == *source_scene_id)
+            .ok_or(ActionDisabledReasonCode::ContentUnavailable)?;
+        if !matches!(scene.next, EventSceneNext::RelicCorruption { .. }) {
+            return Err(ActionDisabledReasonCode::NoEligiblePayload);
+        }
+        if let Some(copy) = copy_uuid {
+            self.state
+                .relics
+                .validate_corruption_target(copy, &self.game_data.relic_data)
+                .map_err(|_| ActionDisabledReasonCode::NoEligiblePayload)?;
+            if let Some(history) = &session.relic_corruption_selections {
+                crate::authoring::control::charge(history.len() as u64, "relic_event_payload_copy")
+                    .map_err(|_| ActionDisabledReasonCode::ContentUnavailable)?;
+                if history
+                    .iter()
+                    .any(|receipt| receipt.copy_uuid == Some(copy))
+                {
+                    return Err(ActionDisabledReasonCode::NoEligiblePayload);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn handle_choose_relic_corruption(
+        &mut self,
+        node_id: MapNodeId,
+        event_id: EventId,
+        source_scene_id: EventSceneId,
+        copy_uuid: Option<Uuid>,
+    ) -> Result<BehaviorResult, GameError> {
+        // Exact retry uses the original scene receipt in this active session.
+        // It never re-targets a copy that may since have been dismantled.
+        if self.is_exact_committed_relic_corruption(
+            node_id,
+            &event_id,
+            &source_scene_id,
+            copy_uuid,
+        )? {
+            return self.event_state_result(self.current_event_session()?);
+        }
+        let eligibility =
+            self.validate_relic_corruption_payload(node_id, &event_id, &source_scene_id, copy_uuid);
+        crate::authoring::control::poll("relic_event_payload")?;
+        eligibility.map_err(|_| GameError::InvalidAction)?;
+        self.ensure_relic_operation()?;
+        let session = self.current_event_session()?;
+        session.preflight_relic_clone()?;
+        let mut updated = crate::authoring::clone_shape::controlled_clone(session)?;
+        let event = self.event_definition(&event_id)?;
+        let EventSceneNext::RelicCorruption { next_scene_id } =
+            &event_scene(event, source_scene_id.as_str())?.next
+        else {
+            return Err(GameError::InvalidAction);
+        };
+        let history_len = updated
+            .relic_corruption_selections
+            .as_ref()
+            .map_or(0, Vec::len);
+        crate::authoring::control::charge(event.scenes.len() as u64, "relic_event_scene_bound")?;
+        let max_selections = event
+            .scenes
+            .iter()
+            .filter(|scene| matches!(scene.next, EventSceneNext::RelicCorruption { .. }))
+            .count();
+        if history_len >= max_selections {
+            return Err(GameError::InvalidAction);
+        }
+        // Rebuild the exact-capacity destination, not unbounded Vec geometric
+        // growth. Old backing remains admitted and is never refunded.
+        let bytes = history_len
+            .checked_add(1)
+            .and_then(|n| n.checked_mul(std::mem::size_of::<CommittedRelicCorruptionSelection>()))
+            .and_then(|n| n.checked_add(source_scene_id.0.len()))
+            .and_then(|n| n.checked_add(next_scene_id.0.len()));
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            bytes,
+            "relic_event_selection_append",
+        )?;
+        crate::authoring::control::charge(history_len as u64 + 1, "relic_event_selection_append")?;
+        let mut history = Vec::with_capacity(history_len + 1);
+        if let Some(prior) = updated.relic_corruption_selections.take() {
+            history.extend(prior);
+        }
+        history.push(CommittedRelicCorruptionSelection {
+            source_scene_id,
+            copy_uuid,
+        });
+        updated.relic_corruption_selections = Some(history);
+        updated.current_scene_id = next_scene_id.clone();
+        if let Some(copy) = copy_uuid {
+            self.state
+                .relics
+                .corrupt(copy, &self.game_data.relic_data)?;
+        }
+        let result = self.event_state_result(&updated)?;
+        self.commit_event_session_required_run(node_id, updated)?;
+        Ok(result)
+    }
+
+    fn relic_corruption_candidates(
+        &self,
+    ) -> Result<Vec<crate::game::behavior::RelicCorruptionCandidateDto>, GameError> {
+        use crate::game::behavior::RelicCorruptionCandidateDto;
+        let len = self.state.relics.copy_count();
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            len.checked_mul(std::mem::size_of::<RelicCorruptionCandidateDto>()),
+            "relic_event_candidates",
+        )?;
+        crate::authoring::control::charge(len as u64, "relic_event_candidates")?;
+        let mut candidates = Vec::with_capacity(len);
+        for copy in self.state.relics.copies() {
+            match self
+                .state
+                .relics
+                .validate_corruption_target(copy.copy_uuid, &self.game_data.relic_data)
+            {
+                Ok(_) => (),
+                Err(GameError::InvalidAction) => continue,
+                Err(error) => return Err(error),
+            }
+            let corruption = self
+                .game_data
+                .relic_data
+                .get_by_id(&copy.definition_id)
+                .and_then(|definition| definition.corruption.as_ref())
+                .ok_or(GameError::InvalidAction)?;
+            crate::game::relic::allocation::admit_owned_projection(
+                &(copy, &corruption.effects, &corruption.penalties),
+                "relic_event_candidate_projection",
+            )?;
+            if !crate::authoring::control::is_active() {
+                crate::game::resource::store::preflight_resource_clone(copy)
+                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+                crate::game::resource::store::preflight_resource_clone(&corruption.effects)
+                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+                crate::game::resource::store::preflight_resource_clone(&corruption.penalties)
+                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+            }
+            candidates.push(RelicCorruptionCandidateDto {
+                copy: crate::authoring::clone_shape::controlled_clone(copy)?,
+                eligibility: PayloadEligibilityDto::enabled(),
+                effects: crate::authoring::clone_shape::controlled_clone(&corruption.effects)?,
+                penalties: crate::authoring::clone_shape::controlled_clone(&corruption.penalties)?,
+            });
+        }
+        // RelicInventory's BTreeMap key equals the validated copy UUID.
+        // Filtering preserves this canonical order without sort workspace.
+        Ok(candidates)
+    }
+
+    pub(super) fn validate_relic_event_session_history(
+        &self,
+        session: &EventSessionState,
+        relics: &crate::game::relic::RelicInventory,
+    ) -> Result<(), GameError> {
+        let Some(history) = &session.relic_corruption_selections else {
+            return Ok(());
+        };
+        let invalid =
+            || GameError::InvalidStaticData("relic Event selection history is inconsistent".into());
+        let event = self
+            .game_data
+            .event_data
+            .get_by_id(session.event_id.as_str())
+            .ok_or_else(invalid)?;
+        let n = history.len();
+        let m = event.scenes.len();
+        let work = n
+            .checked_mul(n)
+            .and_then(|a| m.checked_mul(m).and_then(|b| a.checked_add(b)))
+            .and_then(|a| n.checked_mul(m).and_then(|b| a.checked_add(b)))
+            .and_then(|a| a.checked_add(n))
+            .and_then(|a| u64::try_from(a).ok())
+            .ok_or_else(invalid)?;
+        crate::authoring::control::charge(work, "relic_event_history_validation")?;
+        if history.is_empty() || n > m {
+            return Err(invalid());
+        }
+        for (index, receipt) in history.iter().enumerate() {
+            if history[..index].iter().any(|prior| {
+                prior.source_scene_id == receipt.source_scene_id
+                    || receipt.copy_uuid.is_some() && prior.copy_uuid == receipt.copy_uuid
+            }) {
+                return Err(invalid());
+            }
+            if !event.scenes.iter().any(|scene| {
+                scene.id == receipt.source_scene_id
+                    && matches!(scene.next, EventSceneNext::RelicCorruption { .. })
+            }) {
+                return Err(invalid());
+            }
+            if receipt.copy_uuid.is_some_and(|id| id.is_nil()) {
+                return Err(invalid());
+            }
+            // A confirmed historical copy can legitimately have been dismantled.
+            // If still owned, it must retain the committed irreversible variant.
+            if let Some(copy) = receipt.copy_uuid.and_then(|id| relics.get(id)) {
+                if copy.variant != crate::game::relic::RelicVariant::Corrupt {
+                    return Err(invalid());
+                }
+            }
+        }
+        // Published Event graphs are acyclic. Follow their actual single path
+        // using the existing employee-check receipt, consuming selections in
+        // order. No temporary shadow map or invented branch is needed.
+        let mut current = &event.entry_scene_id;
+        let mut consumed = 0usize;
+        let mut check_seen = false;
+        for _ in 0..=m {
+            let scene = event
+                .scenes
+                .iter()
+                .find(|scene| scene.id == *current)
+                .ok_or_else(invalid)?;
+            if *current == session.current_scene_id {
+                if consumed != history.len() || session.committed_check.is_some() != check_seen {
+                    return Err(invalid());
+                }
+                return Ok(());
+            }
+            current = match &scene.next {
+                EventSceneNext::Scene { scene_id } => scene_id,
+                EventSceneNext::RelicCorruption { next_scene_id } => {
+                    let receipt = history.get(consumed).ok_or_else(invalid)?;
+                    if receipt.source_scene_id != *current {
+                        return Err(invalid());
+                    }
+                    consumed += 1;
+                    next_scene_id
+                }
+                EventSceneNext::EmployeeCheckChoices { choices } => {
+                    let check = session.committed_check.as_ref().ok_or_else(invalid)?;
+                    if check_seen || check.source_scene_id != *current {
+                        return Err(invalid());
+                    }
+                    let choice = choices
+                        .iter()
+                        .find(|choice| choice.id == check.choice_id)
+                        .ok_or_else(invalid)?;
+                    // New history branches may rely on the old roll receipt.
+                    // Check its internal arithmetic against the authored check;
+                    // do not re-evaluate employees/equipment after later changes.
+                    crate::authoring::control::charge(
+                        check.modifier_components.len() as u64,
+                        "relic_event_check_receipt",
+                    )?;
+                    if !(1..=20).contains(&check.raw_roll)
+                        || check.employee_uuid.is_nil()
+                        || check.aptitude != choice.check.aptitude
+                        || check.dc != choice.check.dc
+                        || check.modifier_components.len() > 2
+                    {
+                        return Err(invalid());
+                    }
+                    let mut modifier_total = 0u8;
+                    let mut aptitude_seen = false;
+                    let mut equipment_seen = false;
+                    for component in &check.modifier_components {
+                        let amount = match component {
+                            EventCheckModifierComponent::EmployeeAptitude { aptitude, amount } => {
+                                if aptitude_seen
+                                    || equipment_seen
+                                    || *aptitude != check.aptitude
+                                    || *amount != 3
+                                {
+                                    return Err(invalid());
+                                }
+                                aptitude_seen = true;
+                                *amount
+                            }
+                            EventCheckModifierComponent::Equipment {
+                                equipment_instance_uuid,
+                                equipment_definition_id,
+                                aptitude,
+                                amount,
+                            } => {
+                                if equipment_seen
+                                    || equipment_instance_uuid.is_nil()
+                                    || *aptitude != check.aptitude
+                                    || !matches!(*amount, 1 | 2)
+                                    || equipment_definition_id.is_empty()
+                                {
+                                    return Err(invalid());
+                                }
+                                equipment_seen = true;
+                                *amount
+                            }
+                        };
+                        modifier_total = modifier_total.checked_add(amount).ok_or_else(invalid)?;
+                    }
+                    let total_roll = check
+                        .raw_roll
+                        .checked_add(modifier_total)
+                        .ok_or_else(invalid)?;
+                    if check.modifier_total != modifier_total
+                        || check.total_roll != total_roll
+                        || check.outcome
+                            != classify_event_check(check.raw_roll, total_roll, choice.check.dc)
+                    {
+                        return Err(invalid());
+                    }
+                    check_seen = true;
+                    if matches!(
+                        check.outcome,
+                        EventCheckOutcome::Success | EventCheckOutcome::CriticalSuccess
+                    ) {
+                        &choice.success_scene_id
+                    } else {
+                        &choice.failure_scene_id
+                    }
+                }
+                EventSceneNext::End => return Err(invalid()),
+            };
+        }
+        Err(invalid())
     }
 
     fn current_event_session(&self) -> Result<&EventSessionState, GameError> {
@@ -428,7 +794,17 @@ impl GameCore {
     ) -> Result<EventSceneSnapshotDto, GameError> {
         let event = self.event_definition(&session.event_id)?;
         let scene = event_scene(event, session.current_scene_id.as_str())?;
+        if session.has_relic_history()
+            || matches!(scene.next, EventSceneNext::RelicCorruption { .. })
+        {
+            self.ensure_relic_operation()?;
+        }
         let interaction = match &scene.next {
+            EventSceneNext::RelicCorruption { .. } => EventInteractionDto::RelicCorruption {
+                candidates: self.relic_corruption_candidates()?,
+                can_decline: true,
+                catalyst_cost: 0,
+            },
             EventSceneNext::EmployeeCheckChoices { choices } => {
                 EventInteractionDto::EmployeeCheckChoices {
                     choices: choices
@@ -479,6 +855,7 @@ impl GameCore {
                 }
             }),
             interaction,
+            relic_corruption_selections: session.history_snapshot()?,
         })
     }
 
@@ -538,20 +915,10 @@ impl GameCore {
         &self,
         node_id: MapNodeId,
         effects: &[RewardEffect],
-    ) -> Result<PlannedEventGrant, GameError> {
-        let mut planned = PlannedEventGrant {
-            inventory: self.state.inventory.clone(),
-            skill_fragments: self.state.skill_fragments.clone(),
-            roster: self.state.roster.clone(),
-            uuid_manager: self.state.uuid_manager.clone(),
-            enkephalin: self.state.enkephalin.clone(),
-        };
-        GrantExecutor::grant_effects_with_state(
-            &mut planned.inventory,
-            &mut planned.skill_fragments,
-            &mut planned.roster,
-            &mut planned.uuid_manager,
-            &mut planned.enkephalin,
+    ) -> Result<EconomyGrantState, GameError> {
+        self.ensure_relic_grant(effects)?;
+        let mut planned = EconomyGrantState::capture(&self.state)?;
+        planned.grant_effects(
             self.game_data.as_ref(),
             &self.state.skill_fragment_policy,
             &GrantExecutionContext::default(),
@@ -561,22 +928,26 @@ impl GameCore {
         Ok(planned)
     }
 
-    fn commit_event_grant(&mut self, planned: PlannedEventGrant) {
-        self.state.inventory = planned.inventory;
-        self.state.skill_fragments = planned.skill_fragments;
-        self.state.roster = planned.roster;
-        self.state.uuid_manager = planned.uuid_manager;
-        self.state.enkephalin = planned.enkephalin;
+    fn commit_event_grant(&mut self, planned: EconomyGrantState) {
+        planned.commit_into(&mut self.state);
     }
 
-    fn commit_event_session(
+    fn commit_event_session_required_run(
         &mut self,
         node_id: MapNodeId,
         session: EventSessionState,
     ) -> Result<(), GameError> {
+        if session.has_relic_history() && !self.run_state()?.event_sessions.contains_key(&node_id) {
+            // A selection only replaces the key inserted by enter_event_node.
+            // Keep this new receipt scope independent of existing map backing.
+            return Err(crate::game::battle::runtime_control::invariant(
+                "relic_event_existing_session",
+            ));
+        }
+        let run_copy = session.clone_for_relic_transition()?;
         self.run_state_mut()?
             .event_sessions
-            .insert(node_id, session.clone());
+            .insert(node_id, run_copy);
         self.state.active_node_content = Some(ActiveNodeContent::Event(session));
         Ok(())
     }

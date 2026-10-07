@@ -1,0 +1,825 @@
+{
+  "at_utc": "2026-10-05T18:06:30.341368+00:00",
+  "exact_predecessor_meanings": 181,
+  "exact_r06_meanings": 31,
+  "r06_iva_current_nonzero": true,
+  "planning_artifacts_checked": [
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_00_INITIAL_001.json",
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CMRP-001",
+        "Content Digest": "sha256:3f5d8bb47b19192ee9ea8eb48057af486d32c9a026f75774a24406288c240ed7"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_00_INITIAL_001.json",
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMRP-001",
+        "Content Digest": "sha256:0a2b82d382c7807474f5f87cd33560dd697cf62cabf36e59e30939e1800bf31c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-01-OPEN-001",
+        "Content Digest": "sha256:7426e086d8c3528cf89a0da731edb659a07f8e713a96bd85826427c7e7b7a6b5"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-01-001",
+        "Content Digest": "sha256:3426911f4a8106890a7f05d261f85fd6d28568c690380edcb01d9d5ccb64e1ca"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-01-DECIDED-001",
+        "Content Digest": "sha256:ff3e73da28e49eb718d0058087053a1042a98a07e6d2f1d46f6ee0e48fd1aa5d"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-01-001",
+        "Content Digest": "sha256:3ded1e88ffeaef46e695e735e32b030b56c19aa0819bd7d2a575455db21f9f07"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-02-OPEN-001",
+        "Content Digest": "sha256:900e73509e46e110560855b31a3c6b346ee80327dc06b6c7decd72fa9e23c670"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-02-001",
+        "Content Digest": "sha256:f1870244def525841690721965bb6d59f38dc4e89474ba0d58aeb9b3d8f04a39"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-02-DECIDED-001",
+        "Content Digest": "sha256:0e200f5c82c96b89be139b08eb11f1232a0d51236cc718a4d99db1bff2c5816a"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-02-001",
+        "Content Digest": "sha256:880f4b9003ccbb7878495b2afe097e3893b8b3870889cd8392f1b9b85610b580"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-03-OPEN-001",
+        "Content Digest": "sha256:d11b4941c6b2b8bd92aee81d18db40cc4f621c07906261cb7c22a87b5a673e2c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-03-001",
+        "Content Digest": "sha256:c8e0b117356501a9752ae9677fd925cf64acbcd31a8bafc1b46137399e9a774b"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-03-DECIDED-001",
+        "Content Digest": "sha256:0fc17c7d5579e4de058f03f91bd10199ebfd266844a218d042064efaadf5af78"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-03-001",
+        "Content Digest": "sha256:8204d8dd984fed4d8ba25a81162acd4fd81d8040b0e4fbbbe16e9565d4a19a76"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-04-OPEN-001",
+        "Content Digest": "sha256:3786059212571cee281be68747b56a8cc65f4a328f386fbaf73c6c7e88f3569c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-04-001",
+        "Content Digest": "sha256:ec25f1ce0d97bf5ad74b0a5c1c461e45613dd3856a46ce547f2c980478aa8a85"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-04-DECIDED-001",
+        "Content Digest": "sha256:adfbf9a800de27d19ab594ecc9f965c1ca77973b1acd82b7b6cb1ba6f1991b77"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-04-001",
+        "Content Digest": "sha256:0f745b98b348364e1f4f2093dd9389f352369a617e8603f5f70cfba2afbae810"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-05-OPEN-001",
+        "Content Digest": "sha256:0b30ba712a9d4d505a85f8f02bd50e546bee001010603fef6dffa1bbb426a23a"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-05-001",
+        "Content Digest": "sha256:b2501a25497a5779832e8e07f5a2c7f1b72950b86d49ba3b972a0418be904472"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-05-DECIDED-001",
+        "Content Digest": "sha256:1bd001955bc81dfaacb4d1dfc80fa4a319212823c419033ec1b5c22eb7eaffa0"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-05-001",
+        "Content Digest": "sha256:be866c1a0ecb1e617defe005ecf0447a6036b11276eabbb539c2760321cdeb72"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-06-OPEN-001",
+        "Content Digest": "sha256:1351deb410ceecfa69964415d33ef5d80f6b51151009b1da4bf11d58e2e04a08"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-06-001",
+        "Content Digest": "sha256:1ae31f92a730fe51865ded9842fff51c6ec13436e395ff5d5f8b69e228d6117b"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-06-DECIDED-001",
+        "Content Digest": "sha256:3082dd69c62e1d6e58bb35e015737f1385df621262f7ff4ee3f2ee57de104464"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-06-001",
+        "Content Digest": "sha256:1ce698ae6fae66c67f518c6a889c6a98646cdd8dbd3f82a5d1085874bf07d10e"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-07-OPEN-001",
+        "Content Digest": "sha256:43ede8a96483cfbd5b9b0a881b27ddaaefdce6129ca0639f912b9fc535701aad"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-07-001",
+        "Content Digest": "sha256:62b1ac1af761aa3d4c31480c59e214b595178e86475ef47db31d653d439cb3f7"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-07-DECIDED-001",
+        "Content Digest": "sha256:bcb1ccfbb67670b22ce15922b19cdb3334a7734ba2b63ddd6c1404c887f15f27"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-07-001",
+        "Content Digest": "sha256:0e1349dbb0a576d1c35fd809f6316074e9a4038741cd1625df67eaf62e5833c7"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-08-OPEN-001",
+        "Content Digest": "sha256:f7d9d411b8b71b21064bd1fbc9f8409314045d2d6d10fdb4820f73c8bdbeb536"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-08-001",
+        "Content Digest": "sha256:f768970588901048a7650f67ccf73adf9c3e07c1098284281f261d5e364f78ac"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-08-DECIDED-001",
+        "Content Digest": "sha256:2b685013e04ad9a60cbc4288034cbbb108f4f40075cd77a98894ae872b378255"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-08-001",
+        "Content Digest": "sha256:a86c874e1831c6e8e40f321a9cc9e8d945304cf0545df8b88d840ce87a05c2cb"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-09-OPEN-001",
+        "Content Digest": "sha256:1eb96dff74400a017ba9a094f0e340d897c8af5e12fcc8f81ad689c3c3785e88"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-09-001",
+        "Content Digest": "sha256:2fbed9dfe548f611986698b7da82fba18b936e9eac03fc2e0691a705a69d040e"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-09-DECIDED-001",
+        "Content Digest": "sha256:1eb2d9a4d5b36990dcf080d3f7fa358be7261b07bd8e4a7fc5eadd4652ff6e50"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-09-001",
+        "Content Digest": "sha256:24f7d8e2990e407b2e2a5fdcf4a59cbbf62bb8d43807d0558cc5d6f1fe0be41b"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-10-OPEN-001",
+        "Content Digest": "sha256:bde0b50ec4f1a641086c746d0aa47c325e80636ce050d23a730009891665abc5"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMRP-10-001",
+        "Content Digest": "sha256:9a5255d64158339c7c834830809245be93346bc8e0f720004e70b5d03245987a"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-10-DECIDED-001",
+        "Content Digest": "sha256:99e5730fd446011d60a0e41e6a8bd1a90aebc965e32a44cd87d9c0f64f005427"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-10-001",
+        "Content Digest": "sha256:a53703ea8fbbc9430e103a8799499ada37f87a9d3a331e3850e102dec1bf4b2b"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-OUT-01-001",
+        "Content Digest": "sha256:505bb2f65345928e5ddfb466f0bb17ed2547c33bbc76d44f6ff6e1d03a9e27f7"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-OUT-02-001",
+        "Content Digest": "sha256:012058f311fc1f11668a55e023ccce1b89c24b3243138e07ec183b01a86d706c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CMRP-OUT-03-001",
+        "Content Digest": "sha256:2600a14af99f691f0bd4e5fee98b9cfdcd910858cde71db7f90518cfe265a005"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMRP-002",
+        "Content Digest": "sha256:0c8fb5ccd75921c73d9702f21524cc8db36373a995c5ae75cb60c99ca2bc5b02"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ01-001",
+        "Content Digest": "sha256:7234f0bb269852264a316f95c5ce153de29fe3ab0344a4570650d7b342ec222c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ01-001",
+        "Content Digest": "sha256:2f34a30740ff8a5837f464bbe619bfb6f6911cc8c2b090c2b91969201350a8c5"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ02-001",
+        "Content Digest": "sha256:b46abe282ae3aa4166e858902c92ff0451703fc6cce0274c4a61920358d332a6"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ02-001",
+        "Content Digest": "sha256:b8be34070986295f0e24bc72823b795245ed2be43df9c1f97f0a3c54bcdec869"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ03-001",
+        "Content Digest": "sha256:f8159694b319817541a43e79783fef025111bece9d4f452ac19b49096f585061"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ03-001",
+        "Content Digest": "sha256:f5d897eef20d6003becdf99b5a90275af7023cd3b22bb921f850f995c437ae68"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ04-001",
+        "Content Digest": "sha256:3b8a49102eef5d7ab32d456b3c116fe1c5dcab61e305d4e5779e467affe3b214"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ04-001",
+        "Content Digest": "sha256:7e4951c6cbcd3ba0ef3f13ad2820fc83c1ec510c98f1ed15e0871f37b7f70925"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ05-001",
+        "Content Digest": "sha256:d7345b2e60e5897c06880171efe3b19b39c727f9b2f8767dfee38269aad3f1b0"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ05-001",
+        "Content Digest": "sha256:e345160493198d7309f590b83910b75d3624c722ffa70143a6c31d806aa75851"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ06-001",
+        "Content Digest": "sha256:f3acae542df56fd4e389f3dd52d35ba9724ea8ef86d907b9779b47568414c4d0"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ06-001",
+        "Content Digest": "sha256:dbb7891edfc072b00f0faeb3f2661e9b21052a77d73b004aae0555f5d5e8531d"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ07-001",
+        "Content Digest": "sha256:44372ac1dabc1844fcc08058b713163bae8bc3ebdf035c421bc317b3b0d09f98"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ07-001",
+        "Content Digest": "sha256:2739fa618290d373b843f745f54fe19c786ded43d8037004b8b55e1cf168806e"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CMRP-RQ08-001",
+        "Content Digest": "sha256:c5d6d919a4004b0ccca7bf8f1e979e1e97394d3a946e9eeae368a336c3f5f10e"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CMRP-RQ08-001",
+        "Content Digest": "sha256:f6a38d7c518de2706a673e4d61ba6301a0b382ff9925dc0f9c629c2718866d99"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Reviewed Source Basis",
+        "Artifact ID": "RSB-CMRP-001",
+        "Content Digest": "sha256:508ef7fd85a17fde6060a2376b6ed2ab582c2525c13d25723a34fd26da75f304"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CMRP-001",
+        "Content Digest": "sha256:51d80a61438b1ce2bf90e3601bbaaf454c1a69602323fe1f10ad08a35811b2f2"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-01-001",
+        "Content Digest": "sha256:715eb4044ee57132cf7ee6af06e6007bbfb180bad00b7f85ac1a8469502a7d8b"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-02-001",
+        "Content Digest": "sha256:f2fbfd73578f19b982884551f9a6cc191acd50ddf7fe4440cdc81e67227126ad"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-03-001",
+        "Content Digest": "sha256:b437a6bf31fd891bd44453fe371a7da8e297bb63f9b1daa55f67f2c365ca434c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-04-001",
+        "Content Digest": "sha256:88afed8b5bcc7e18aa1d1d5fba87abb2ec9968f53728e16dee92fd23f4be39fd"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-05-001",
+        "Content Digest": "sha256:382a2094c6789df7deded5a80843ed270ddaf7ff125246686c0e38ac8a4875d3"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-06-001",
+        "Content Digest": "sha256:86e9606132427f008ce0b1169c26fc49dfef89a685649d31618a2dfe8449e458"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-07-001",
+        "Content Digest": "sha256:d75d13f46d62909707e0ba20a12dd7f7154eb1f3eb103ed7020531855c5718e5"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-08-001",
+        "Content Digest": "sha256:8704484baf384457a8b63783c2e498b0e47a02e5e00d60471e9dcfbeacff2d63"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-09-001",
+        "Content Digest": "sha256:8ce94014b085eea75e372d40add785db5f7fa0f4c2beee1750368e47b16806bd"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CMRP-10-001",
+        "Content Digest": "sha256:de7585c57bf0388e5b8b0fad99cbb3b8b944bfc4ae26ac9ef24efd73705016c4"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-01-REVIEWED-001",
+        "Content Digest": "sha256:dc2decccfa0ea4d4109c9f31e6c0d21490b4340c289681962bdf269a9542d66e"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-02-REVIEWED-001",
+        "Content Digest": "sha256:8d374fa38f5a704dc73ba7cebd5e18dc460023aae8fdf9979aa5bb87509a2bde"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-03-REVIEWED-001",
+        "Content Digest": "sha256:a78d17db8e096a2a2db3f0f496736ad455909422d40be75de843561b5cc4404c"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-04-REVIEWED-001",
+        "Content Digest": "sha256:9439e76f6f6987c178e53797420044c85ae7b9380c9d6d3a39a9114ba8a26668"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-05-REVIEWED-001",
+        "Content Digest": "sha256:521cf0a0ea9c3fec93dc4162b1b5d8c94451910b7bd6d7a8b5934e14348d3f32"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-06-REVIEWED-001",
+        "Content Digest": "sha256:0045c5ca37a3c0ddf0f634017f2e80ce580c28accab9c88d1168e5e57cfe256e"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-07-REVIEWED-001",
+        "Content Digest": "sha256:c55ad234b30b8f029f7046f92bdbefeb7d643f3370c2bd9c5040c0db3550bfc6"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-08-REVIEWED-001",
+        "Content Digest": "sha256:789bb49458a85dfc090f1c401eb794da25689fe97a1e66767c658a6e917b2384"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-09-REVIEWED-001",
+        "Content Digest": "sha256:cbe7936a6d033034ad4059bcc910dd7825ed45231baabca9def2bca36c6f2830"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMRP-10-REVIEWED-001",
+        "Content Digest": "sha256:a883733589fd900a4ffedef2e55e4102ede1cab6312573019c1749b6a49b8db8"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMRP-003",
+        "Content Digest": "sha256:fdfab0501d47b85ebb846c59e1041b707af332d0b7a33434bc0144b6ce2ec1d7"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-01-001",
+        "Content Digest": "sha256:f9e68b98b0badc42945991470902ea2f1de8312fec6608f8ea9118b9177f7dae"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-02-001",
+        "Content Digest": "sha256:ce4c8814aeb34321ee08af0344fee6c80c0868fa35ee6a6471338d649c3d01f9"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-03-001",
+        "Content Digest": "sha256:558e5277ee7bf0337f612b29ca3b5b8c609701623fabd4e5a361b669f41641c2"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-04-001",
+        "Content Digest": "sha256:cf089454a9846cd101d1274ef092bfc02a1e95f682658bf6654ffc6b7fd50b15"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-05-001",
+        "Content Digest": "sha256:dfb70907bfcb8ee01d3bead0fd8f7e8ee655f772c5603f1bcae4336c5a0db693"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-06-001",
+        "Content Digest": "sha256:4da8f6685d6744e6678323af00f4f814cd57155bc8a81726db6058997ff4ecc3"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-07-001",
+        "Content Digest": "sha256:4c53fe932967bb7388615e318a597a9ee4bc1f6d8b89ec633e4e7807842dcd79"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-08-001",
+        "Content Digest": "sha256:cd764054c9ea81d033b2e66b483ab49223d04ec9405d9a3678fc701e51f2b1da"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-09-001",
+        "Content Digest": "sha256:3ef286525d5a00e78ca21eee9274485e13c437a3f09718d84cd13ee6e6a6c507"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CMRP-10-001",
+        "Content Digest": "sha256:8585087517832c162d03604f28290004403664ada4ffe02b88fa7880026cf3bd"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+      "ref": {
+        "Artifact Type": "Review Batch",
+        "Artifact ID": "RB-CMRP-001",
+        "Content Digest": "sha256:ac11ac82b89c418ba0a8679d9223017e0e736083dbcd48da867068be5392f957"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_SOURCE_PLAN_001.json",
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CMRP-001",
+        "Content Digest": "sha256:1a444d8472c0e5c1c240e229d61bc7d06ca886675ec9130af7d6ba8fb6fea6e3"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_SOURCE_PLAN_002.json",
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CMRP-002",
+        "Content Digest": "sha256:0c48c7aba79c55ecadb798fc54cd846f27b9bad6453ee3c39d041d75c36ace27"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_30_FREEZE_001.json",
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMRP-001",
+        "Content Digest": "sha256:a694e6a5980ba75bfb4d1777084f11dcb61eecf780ef686d1aa08390349f2932"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_40_PHASE_PLAN_001.json",
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CMRP-001",
+        "Content Digest": "sha256:a9dc373cbd1ea21edf5c3ce13f81b0815488451327cad9fae1928476cc4654aa"
+      }
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_60_HANDOFF_001.json",
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CMRP-001",
+        "Content Digest": "sha256:9508c4529d1ea98c3f38443be380e79d963e8d320501be08746d66a2b55ab57b"
+      }
+    }
+  ],
+  "freeze_phase_goal_handoff_gex_exact": true,
+  "nodes": 5,
+  "integration_seams": 10,
+  "source_delta": {
+    "modified": 19,
+    "new": 10
+  },
+  "prior_complete_audit_sha256": "d371f43c1122826347261ed68f0817e66432bbc97e85fdb6759deaf686a59cb9",
+  "errors": []
+}

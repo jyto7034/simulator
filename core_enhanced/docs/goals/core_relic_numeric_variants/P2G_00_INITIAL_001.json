@@ -1,0 +1,360 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CRNV-001",
+        "Content Digest": "sha256:92280fd339d44fb14b140a3039238b27e67cee56c1b3b8dde8d5875ac58b0b0c"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CRNV-20261006",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "current user request excerpt",
+            "Exact Content or Content Reference": "기존 연속 요청의 계획·구현·자체 검증·독립 감사·finding 교정·재감사·후속 작업 권한을 유지한다.\n단계 전환이나 감사 인계마다 사용자 재승인을 요구하지 않는다.\nCore 우선, Unity 후속, 개별 최종보스 고유 구현 제외를 유지한다.\n위임된 정책 판단은 선택·이유·영향·위임 근거를 남긴다.",
+            "User-Provided Locator": "2026-10-05 current continuous resume request, autonomy paragraphs",
+            "User-Stated Constraint": "Separate root planning, designated Sol/xHigh implementation and nonparticipant Astra/High audit; preserve existing work and continuous authorization.",
+            "Capture Limitation": "Exact operative excerpt, not full conversational request. Whole request remains controlling."
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "sha256": "57f557b6c2f5ae8833ddeba83d9d6faf61c2e6ba5b24aeabdd7c545a4149b777"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+              "sha256": "e2afeffab42bd9be4fd4b7a3e97afe63c3e1b2377b319adf19b49b4456a4ca93"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rulebook.md",
+              "sha256": "668a54159339de58ae5ca865432a4a322482eec0c207c31478a8d85cc9ec5cdd"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/relics.md",
+              "sha256": "ce82c13193b709e58e9590bfb00d13d1243c24eb03a5c6bb5ec3ed56a11191ce"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/results-and-save.md",
+              "sha256": "22f98e114f0d3047b62be582520de069678ea5c4ce2f396a8cc8ed1b4cc01aee"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+              "sha256": "4e8e0ad573216d008ff2978801bc9bc7f571cc996752ecd17f7a6a08cb1fe8f0"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/open-decisions.md",
+              "sha256": "6ede1d4630daacb2ae5b58a884111a65dd43bb8d717ddb51b0ffe521a8c653aa"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R13_R16_CONTINUOUS_IMPLEMENTATION_REQUEST_20261002.ko.md",
+              "sha256": "2574adc5041ac71b3569737fc55d947737e3f2f97513af6bd38544590454a081"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07m_closure_20261006_001/RESULT.ko.md",
+              "sha256": "1615a44a68da8eaf3d5863302d23518a8a3f3bc6c39c1884eabd8bbc6bf35c6a"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07m_closure_20261006_001/PUBLICATION_RECORD.json",
+              "sha256": "d1821e022d447626d96dc958e99ae6c11d05f9770ae243764fe1c5d069f43ed6"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-012",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/workflow_efficiency_update_20261004_001/RECORD.ko.md",
+              "sha256": "5659725821cc301f3f6c625af82d0013193f5e8c6680a0753c73f462c98bde5b"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-013",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/core_runtime_contract.md",
+              "sha256": "aa33a42ba85048cbb917ab612a47d8da2dcbd6413629d7c33168e4d05b241499"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-014",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+              "sha256": "e070cc60b1b1225e8260bf463b98bcebfec3a16608f73de3a6d45f9b219d0ca7"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-015",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+              "sha256": "9ae04d15909bfe07652b58805a416adfd402e43ce1045405eb396b3094db79cc"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-016",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+              "sha256": "9626f374f6523f63dc89a9ea0a940f94733223c59a51144c420a5632fe74342c"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-017",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/AUDIT_CLOSURE.json",
+              "sha256": "a9fac11bb702a2e484daeb8c34ee04e39d3c30d553cb1c996611c1b7aca4dbb8"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-018",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/COMPLETION_AUDIT.md",
+              "sha256": "b17504222dd6e1edb06073fc51546ffddd734a49ae3727262b0e2e73e2f1a7d5"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          },
+          {
+            "Intake Item ID": "IN-019",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/target/u07m_001/MANIFEST.json",
+              "sha256": "50c3c228d2c8f0915ab6133014bcf7783bb44d3b8880a8ba7c784ffe130a5733"
+            },
+            "User-Provided Locator": "ROADMAP §5 U08 / P08 / H04 / applicable instructions and immediate prerequisite",
+            "User-Stated Constraint": "C02/C03/C04 normal path; immutable definitions, copies,3slots,numeric plan,corruption; preserve prior completed contracts.",
+            "Capture Limitation": "Raw capture only. Policy meaning and source necessity belong to subsequent owners."
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRNV-001",
+        "Content Digest": "sha256:9ae45ff1ae3ecb8d1531da8bd6f73ecc1654645e9ce665f08dbb8f3bd2601737"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRNV-20261006",
+          "Policy Topic": "U08 유물 사본·수치 계획·침식 변형의 정상 경로",
+          "Requested Result": "bounded_pipeline P2G00–60 then separately authorized GEX implementation/audit/correction and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 current continuous request and IN-003 continuous record",
+            "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+            "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Relic schema/validation/registration, immutable definition and copy/effect identity;normal grant,three slots,equip/transfer/release and query",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "ROADMAP U08/C02;relic rules ownership;H04§4.1/A14-01"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Same-effect damage flat then same-kind percent sums;individual immutable numeric plan used by actual cast/preview/queued/projectile/area and preserved raw source",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "ROADMAP U08/C04;relic rules combination;H04§4.2/A14-03,04"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Authored normal/corrupt variants;one-time per-copy catalyst/free Event transformation,disclosure,revalidation,atomic cost/result and save/entry/release persistence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "ROADMAP U08/C03;relic rules corruption/save;H04 C-01–03/X-02"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Representative external RON and normal expedition/trial path,applicable predecessor/fault/resource/performance regressions and independent completion",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "ROADMAP U08 acceptance;H04§5–7/X-03,04;current request"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Full shop/supply activities and UI;new slot/duplicate policy decisions;unagreed individual content penalty/frequency commitments",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "ROADMAP U08 explicit exclusions and remaining uncertainty;U16/U26-B/U21"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "U09 finite activation/structural recipes and U10 causal chains implementation;unsupported closure must never become unconditional-active fallback",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "ROADMAP U08 exclusion and U09/U10 cards"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Unity first,individual finalboss implementations,whole-roadmap advance detailed design,destructive cleanup or retroactive alteration of prior evidence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request and IN-003 continuous record",
+                "scope": "IN-002 ROADMAP §5 U08/C02–C04;IN-005 relic rules;IN-009 H04 adopted R14 scope",
+                "boundary": "U07 and U07-M independent Complete/High consumed. P2G00–60 then separately authorized GEX implementation, independent whole-goal audit/correction, subsequent eligible roadmap work.",
+                "specific_locator": "current request;ROADMAP scope"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRNV-001",
+          "Content Digest": "sha256:92280fd339d44fb14b140a3039238b27e67cee56c1b3b8dde8d5875ac58b0b0c"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

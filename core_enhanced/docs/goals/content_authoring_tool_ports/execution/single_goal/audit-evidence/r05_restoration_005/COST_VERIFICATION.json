@@ -1,0 +1,96 @@
+{
+  "passed": true,
+  "errors": [],
+  "fixtures": {
+    "two_resources": {
+      "plain_samples": 445,
+      "allocator_samples": 267,
+      "zero_allocation_reads": 36,
+      "verified_generation_drop_pairs": 12,
+      "retained_pair_bytes": [
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828,
+        1657828
+      ],
+      "accepted_steps": 13,
+      "accepted_work": 3136307,
+      "receipt_bytes": 480149,
+      "plain_latency": {
+        "validate": {
+          "count": 5,
+          "min": 278885028,
+          "median": 279710955,
+          "max": 283951528
+        },
+        "off/prepare": {
+          "count": 5,
+          "min": 2259790,
+          "median": 2281178,
+          "max": 2341259
+        },
+        "off/replace/success": {
+          "count": 5,
+          "min": 3051157,
+          "median": 3144908,
+          "max": 3202447
+        }
+      },
+      "limitation": "System allocator requested bytes not RSS; fact retained bound excludes full typed store; complete retains accepted receipts/output."
+    },
+    "256_resources_explicit_split": {
+      "plain_samples": 580,
+      "allocator_samples": 348,
+      "zero_allocation_reads": 63,
+      "verified_generation_drop_pairs": 12,
+      "retained_pair_bytes": [
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862,
+        1973862
+      ],
+      "accepted_steps": 16,
+      "accepted_work": 12566313,
+      "receipt_bytes": 1296341,
+      "plain_latency": {
+        "validate": {
+          "count": 5,
+          "min": 303890704,
+          "median": 309086258,
+          "max": 313034357
+        },
+        "off/prepare": {
+          "count": 5,
+          "min": 2924196,
+          "median": 2995540,
+          "max": 3237820
+        },
+        "off/replace/success": {
+          "count": 5,
+          "min": 4185257,
+          "median": 4226268,
+          "max": 4317196
+        }
+      },
+      "limitation": "System allocator requested bytes not RSS; fact retained bound excludes full typed store; complete retains accepted receipts/output."
+    }
+  },
+  "fresh_execution": false,
+  "method": "Recomputed current recorded samples, phase statistics, raw receipt equality across off/on/gap/repetitions/instrumentation, zero allocation counters and exact net generation drop pairs; no new benchmark."
+}

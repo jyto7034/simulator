@@ -1,0 +1,113 @@
+{
+  "owner_run": "resource_core_alltargets_103",
+  "source_349_matches": true,
+  "tests": [
+    {
+      "test": "source_addresses_and_queries_distinguish_effect_and_definition_identity",
+      "line": 108,
+      "text": "test game::ability::authoring::tests::source_addresses_and_queries_distinguish_effect_and_definition_identity ... ok"
+    },
+    {
+      "test": "scalar_edit_preserves_other_effects_and_rejects_shared_carrier_without_mutation",
+      "line": 106,
+      "text": "test game::ability::authoring::tests::scalar_edit_preserves_other_effects_and_rejects_shared_carrier_without_mutation ... ok"
+    },
+    {
+      "test": "invalid_authoring_has_source_object_action_effect_and_field",
+      "line": 111,
+      "text": "test game::ability::authoring::tests::invalid_authoring_has_source_object_action_effect_and_field ... ok"
+    },
+    {
+      "test": "reorder_and_failed_retry_preserve_stable_addresses_and_supported_operations",
+      "line": 107,
+      "text": "test game::ability::authoring::tests::reorder_and_failed_retry_preserve_stable_addresses_and_supported_operations ... ok"
+    },
+    {
+      "test": "authored_literal_ron_executes_recomposed_definitions_with_exact_effect_sources",
+      "line": 1509,
+      "text": "test authored_literal_ron_executes_recomposed_definitions_with_exact_effect_sources ... ok"
+    },
+    {
+      "test": "effect_authoring_failures_never_publish_or_change_an_existing_token",
+      "line": 1291,
+      "text": "test game::data::live_ron::tests::effect_authoring_failures_never_publish_or_change_an_existing_token ... ok"
+    },
+    {
+      "test": "repeated_valid_and_invalid_publication_attempts_are_idempotent",
+      "line": 1190,
+      "text": "test game::data::live_ron::tests::repeated_valid_and_invalid_publication_attempts_are_idempotent ... ok"
+    },
+    {
+      "test": "withdraw_cancels_queued_unreleased_skill_step",
+      "line": 478,
+      "text": "test game::battle::core::tests::withdraw_cancels_queued_unreleased_skill_step ... ok"
+    },
+    {
+      "test": "withdraw_preserves_released_skill_projectile_with_launch_snapshot",
+      "line": 489,
+      "text": "test game::battle::core::tests::withdraw_preserves_released_skill_projectile_with_launch_snapshot ... ok"
+    },
+    {
+      "test": "withdraw_preserves_ground_fixed_area_and_ends_follow_areas",
+      "line": 625,
+      "text": "test game::battle::core::tests::withdraw_preserves_ground_fixed_area_and_ends_follow_areas ... ok"
+    },
+    {
+      "test": "hit_gated_self_heal_and_buff_stack_repeat_attack_work_together",
+      "line": 1502,
+      "text": "test hit_gated_self_heal_and_buff_stack_repeat_attack_work_together ... ok"
+    },
+    {
+      "test": "conditional_followup_waits_for_projectile_damage_resolution",
+      "line": 1501,
+      "text": "test conditional_followup_waits_for_projectile_damage_resolution ... ok"
+    },
+    {
+      "test": "untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup",
+      "line": 1510,
+      "text": "test untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup ... ok"
+    },
+    {
+      "test": "runtime_facts_keep_overheal_zero_signed_heal_and_predeath_sources_separate",
+      "line": 208,
+      "text": "test game::battle::core::commands::tests::runtime_facts_keep_overheal_zero_signed_heal_and_predeath_sources_separate ... ok"
+    },
+    {
+      "test": "authored_skill_negative_tactical_resource_delta_clamps_at_zero",
+      "line": 1118,
+      "text": "test game::world::tests::combat::authored_skill_negative_tactical_resource_delta_clamps_at_zero ... ok"
+    },
+    {
+      "test": "current_v7_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+      "line": 1101,
+      "text": "test game::world::tests::checkpoint_validation::current_v7_checkpoint_document_has_exact_flat_semantic_field_set_and_values ... ok"
+    },
+    {
+      "test": "current_v7_continue_restores_rng_and_replays_the_same_next_gate",
+      "line": 1099,
+      "text": "test game::world::tests::checkpoint_validation::current_v7_continue_restores_rng_and_replays_the_same_next_gate ... ok"
+    },
+    {
+      "test": "current_v7_rejects_v4_and_v5_before_mutation_on_retry",
+      "line": 1110,
+      "text": "test game::world::tests::checkpoint_validation::current_v7_rejects_v4_and_v5_before_mutation_on_retry ... ok"
+    },
+    {
+      "test": "public_application_checkpoint_port_round_trips_into_a_fresh_application",
+      "line": 1112,
+      "text": "test game::world::tests::checkpoint_validation::public_application_checkpoint_port_round_trips_into_a_fresh_application ... ok"
+    },
+    {
+      "test": "employee_profile_pipeline_applies_skill_fragments_before_consumable_offense_boost",
+      "line": 551,
+      "text": "test game::battle::stat_pipeline::tests::employee_profile_pipeline_applies_skill_fragments_before_consumable_offense_boost ... ok"
+    },
+    {
+      "test": "effect_preview_matches_runtime_area_union_at_edges_and_all_facings_without_mutation",
+      "line": 473,
+      "text": "test game::battle::core::tests::effect_preview_matches_runtime_area_union_at_edges_and_all_facings_without_mutation ... ok"
+    }
+  ],
+  "all_found_nonzero": true,
+  "fresh_audit_test_executions": 0
+}

@@ -1,0 +1,2566 @@
+{
+  "receipts": [
+    {
+      "id": "integrated_core_default004",
+      "command": [
+        "cargo",
+        "test",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit": 0,
+      "receipt_sha256": "cbbc74184ae5cf98ed90592818f9380c42ab0cebf81513c85a2fdb50e95ca500",
+      "log_sha256": "9e23cde551280f37417e93d8725198a1f2383207e8385dfe84a46f4fe8f817a3",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        1734,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "integrated_core_fixtures004",
+      "command": [
+        "cargo",
+        "test",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "test-fixtures",
+        "--offline",
+        "--locked",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit": 0,
+      "receipt_sha256": "cb6029cbe876a120afb39dce422cf3662e3fb1af4b51cd7abe66729053dacd0b",
+      "log_sha256": "cc7aba55d08e8ae471713df4e272580fb2b8c5fe7112e7f27113ea7d72fe176e",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        1734,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "integrated_core_observation004",
+      "command": [
+        "cargo",
+        "test",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit": 0,
+      "receipt_sha256": "70eb9ac47ccc841c4e806df43a47d7cc55bf38d94d7960bb06c81829d18af4bb",
+      "log_sha256": "e441473e01f976c3bafc72a1fb9371b1cebef7b6fa40a51bcfad4aca7273877e",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        1743,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "integrated_host_default004",
+      "command": [
+        "cargo",
+        "test",
+        "--jobs=1",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit": 0,
+      "receipt_sha256": "c3a176fe9e5c7f214846ccfae142fcf7989d3853fe031bd57ba0b8414b0fd635",
+      "log_sha256": "bf80b7d94c35a60ee8a377a2d9ba74dca832b0402c3bad922f2ab88afaff3196",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        89,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "integrated_host_observation004",
+      "command": [
+        "cargo",
+        "test",
+        "--jobs=1",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit": 0,
+      "receipt_sha256": "c7b067a04de6fc75c5d9658feebfb93cc736a94528bbfba5c356ddbd20014192",
+      "log_sha256": "b24042f0344803cb9a8de3091bd2978edfebd571a2eba0e195da41d01c7d1d1f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        97,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "integrated_fmt004",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "receipt_sha256": "8ebd2e2dec645d7e8c7050542e84ee584b39173079dd0eb98697f9c13347096a",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "integrated_check004",
+      "command": [
+        "cargo",
+        "check",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "receipt_sha256": "515d86fb624f091affb97d97357cbfc9dcb4a5b6d5d00ac36a1571fda4910e56",
+      "log_sha256": "6e906bd94568b4a7ae55f768c4f00a7bf403a85fea5a2de9710d4e1a72daa9ee",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "integrated_event_log004",
+      "command": [
+        "cargo",
+        "check",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "event_log_checks,runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "receipt_sha256": "df8b93a37ab8df0720abfb0220210fa5888d7794ceb0f49c1d9d393343d26552",
+      "log_sha256": "50202a9093ebdbb4fd1b275067819c84168033125b8f9b04b4e9002010b151c3",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "integrated_clippy_core004",
+      "command": [
+        "cargo",
+        "clippy",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "exit": 0,
+      "receipt_sha256": "10b924b54afebd22ad3779406b0dfe8976b5227a82a14cef130f827758415e87",
+      "log_sha256": "9773cea59274522576a9d6d0658742860be6c2a398e366ea2dc9081ce05abc6f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "integrated_clippy_host004",
+      "command": [
+        "cargo",
+        "clippy",
+        "--jobs=1",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "exit": 0,
+      "receipt_sha256": "8be114c037c81977c54e710fe52abcac68c20f9b7ee9804c465ca36e87bb2c46",
+      "log_sha256": "777bd4bd0c44474890f6b5ef5bfb9f92284d05ef7c4457807ed92204c54b8d1e",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "integrated_heap004",
+      "command": [
+        "cargo",
+        "test",
+        "--jobs=1",
+        "-p",
+        "game_server",
+        "--lib",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "exporter_heap_is_bounded_without_scrapes_and_retires_on_idle",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "exit": 0,
+      "receipt_sha256": "947ce78e1a67c0e28a5fa5a096e934e304d9df29d23a47a54a83bfd817e8d0c4",
+      "log_sha256": "70fe814c0ba6d69124001fad31cafc201a6735a405a2c88042db95de452dc5d1",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "integrated_release003",
+      "command": [
+        "cargo",
+        "build",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "receipt_sha256": "24765c6264a9b734400700b691a86186a8a6c9bfb4b6dfc32bc4c641cca5ad4a",
+      "log_sha256": "4c137e88407410d58e7049d29cf06f9783000f5be9d92aa8f2e118a2b86b4d6a",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "public_guards003",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--jobs=1",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "public_guards",
+        "--release",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/public_guards003_raw.json"
+      ],
+      "exit": 0,
+      "receipt_sha256": "386e1671b18a481d80342cd45d460f931505d54549d47a5fc35c6a62bc9f7264",
+      "log_sha256": "996c800a6949bdf1a1dcd97d0a2e30f74837a2bdfe8eb3a87e2dc8adc2af75ef",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "public_guards_allocator002",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--jobs=1",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "public_guards",
+        "--release",
+        "--features",
+        "allocation-observer",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/public_guards_allocator002_raw.json"
+      ],
+      "exit": 0,
+      "receipt_sha256": "66e438876f630a4d8e3d6b1f8c4b4e3f5271f8591925691e6a73a24a97ad1fc9",
+      "log_sha256": "ccebe4c843dc26cf4fdcb5c328dd8868ae763e4bb91c5ef627b7d1172f489b65",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_prepared_public_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/probe.py",
+        "002"
+      ],
+      "exit": 0,
+      "receipt_sha256": "14a4f5c44ba581f7a9ca1168ab14a91438eea0edb3c2759169b47f38ebb068a5",
+      "log_sha256": "57be3097d995e4beea13a4a2138f92df58d1b3ef077af12d7f97e54c82d52df9",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_prepared_boundary_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/boundary.py",
+        "002"
+      ],
+      "exit": 0,
+      "receipt_sha256": "44be3476790c1e60d2ebd9f812c9b76ce4492efa561fe323322fb83f93ea04e7",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_observed_release_005",
+      "command": [
+        "cargo",
+        "build",
+        "--jobs=1",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "receipt_sha256": "c188c90458d6265be708b13580ba79b93739efda58b6a86050e97a247f639043",
+      "log_sha256": "6df99072867e85da6ec5da7dec0fef2125a8bbe42e3838fabc35625a864ffa05",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_default_parity_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/default_parity.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "a3db0ecef0e24002def1561db92bd8e2fc83d9dd97efff9a5210025ec499ba27",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_public_oracle_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/public_probe.py",
+        "after"
+      ],
+      "exit": 0,
+      "receipt_sha256": "8e39dd9b25a63678c8ee9b4984db2c4dbc14822aa993f3866b627b0613a6ec2d",
+      "log_sha256": "087d25e8e39f48663921e2839a5edfc3bb6a8d76685aa1dbaeb52d1886830050",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_public_trace_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/public_trace_probe.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "f4777a7c9daa15f06cd6bfa026f1ba834895bf887826e07fbcf36d31bb9abc8a",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_public_cli_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/public_cli.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "9299eded1ca0ce532ee0eb2bc1dc84993e4fcf2c6448fbb0d47ac1d6451e92ad",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_public_profile_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/public_profile_probe.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "9f50e81ae2d345c172835f17dd1e0e4eac62c8fc7cfbd97ccec935dd406b5223",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_public_boundary_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/public_boundary_probe.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "c820651ddb3f64cbe60879730e4aa19d6f8ed4ba254d6bbfc133ed968fe6813d",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_public_api_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_api_cli_probe.py",
+        "--repository",
+        "/mnt/f/work/simulator",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/evidence/public_api"
+      ],
+      "exit": 0,
+      "receipt_sha256": "b906b4f3de793f61effb2a4baa1482d04eafeac1cb1c46b756326a014878730b",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_pc_prepare_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/prepare_pc.py",
+        "001"
+      ],
+      "exit": 0,
+      "receipt_sha256": "2404fe3fdeb578081825ca1be6c04a740aba8e626a0c4d32da23109185186cba",
+      "log_sha256": "7458814a560c4c20af7752718e0b683d38f5168994ee0dfdf85201bf9d7e9986",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_pc_005",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-pc-target",
+        "R06_BASELINE_OUTPUT=/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/evidence/pc_raw_current_002.json",
+        "R06_BASELINE_SAMPLES=11",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "/tmp/r06-completion-pc-bcv6ig34/Cargo.toml",
+        "-p",
+        "game_core",
+        "--lib",
+        "--release",
+        "--offline",
+        "--locked",
+        "pc_load_baseline",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "exit": 0,
+      "receipt_sha256": "e1156cf6fcd90c138e4a95f73db743d95385419caff72b952d11ec457528eecc",
+      "log_sha256": "bf24265dd96f5d8f37517991ffa20a8548501462f1e4f6b5dd3e59fa30a2423d",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "compat_pc_compare_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/compare_pc_v32.py",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/evidence/pc_raw_current_002.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/evidence/PC_SUMMARY_CURRENT_002.json"
+      ],
+      "exit": 0,
+      "receipt_sha256": "60ac3ef79f4460143866eb38468bd6ab7da6c69452175ab2a95ac73ce1556ba5",
+      "log_sha256": "8a1ce5f6686ded0e623dcee115b8cd6a30bbfd148e471e934a1cdca19c72871f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_pc_immediate_005",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/compare_pc.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "1ef66c4dbc289c3240a4e74643f9b5e7a4df627dd4e9b7c2f93ddc2fc0473c64",
+      "log_sha256": "dd922373a87d778df0d888eaab7ceef39cae3cab57a27e5e188ff7361adf547f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_r05_005",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "final_performance",
+        "--release",
+        "--features",
+        "allocation-observer",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/evidence/r05_raw_current_002.json"
+      ],
+      "exit": 101,
+      "receipt_sha256": "7fbea9f2a0ae1de7ec053765e7e134a5bc9ec3448a5816c94100fd06e3ad7ea0",
+      "log_sha256": "bba0019c694060478b381c4c432f86e1ff509e65ca2077006aa7f1a48bef3bf6",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "compat_r05_compare_006",
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_003/summarize_r05_current.py"
+      ],
+      "exit": 0,
+      "receipt_sha256": "4d45ef60fd28e1f28d46b7684b9f886272d0ac7c9538579a9afced9125f2e2cd",
+      "log_sha256": "0fd94d07a2c3aba9ae858fe6682ec3d33ae42f2de2eca4c18efb4ea63a47b7ff",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_build_on",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "-p",
+        "game_server",
+        "--features",
+        "runtime-observation",
+        "--example",
+        "fault_runtime",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "receipt_sha256": "cb7a4d4e33ce06456c91183db003e9a28437e08693b565d0f61804f2a0eda93a",
+      "log_sha256": "3dc9c78978f53e82e6e742d47aecc4a2b82fff3bfa436210553442ec4aea8f1f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_none",
+      "command": [
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/content",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/selection.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/observation_fault_001.ron",
+        "none",
+        "1000"
+      ],
+      "exit": 0,
+      "receipt_sha256": "2c5a9a28edeb7b7f97c77fe543d0411812c180eeb4851cdf9e33679867f00709",
+      "log_sha256": "610b991843b37f713798cb679ba16ef64957057035bcabd32d58ba71ad36a6d0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_detached",
+      "command": [
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/content",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/selection.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/observation_fault_001.ron",
+        "detached",
+        "1000"
+      ],
+      "exit": 0,
+      "receipt_sha256": "da1c0fcacc9cca95c47e8b2007068d73012d95aae6fd75988be1affcec3644b6",
+      "log_sha256": "610b991843b37f713798cb679ba16ef64957057035bcabd32d58ba71ad36a6d0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_queue_full",
+      "command": [
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/content",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/selection.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/observation_fault_001.ron",
+        "queue_full",
+        "1000"
+      ],
+      "exit": 0,
+      "receipt_sha256": "67d839021e02b7ccd5760fd4ed15ac1219627ca484d050e41eb074c1bbe2a6fc",
+      "log_sha256": "fe7a8f123e6f52297bfe760c8890bdf6a9c1a050f2a476a9fa07f74a97b8f3c0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_on",
+      "command": [
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/content",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/selection.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/observation_fault_001.ron",
+        "on",
+        "1000"
+      ],
+      "exit": 0,
+      "receipt_sha256": "89153696a9a2735674857e432ef22ca9d8a56229821aff62ba2b428887b6cda5",
+      "log_sha256": "436129040b6336e97f4f15c9ef2a85ec87116be8002a7a76eefcc6bb8964eeff",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_websocket",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/tools/public_fault_probe.py",
+        "final_004",
+        "1000"
+      ],
+      "exit": 0,
+      "receipt_sha256": "ef66e2d1add3ace2642a3ce96f48f3b24420b1cc706d0e15edd44086faac578b",
+      "log_sha256": "ed4ac106c736e6a924efc641804168321db95de1ef5a2a4594fcd65a5f88e042",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_build_off",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "-p",
+        "game_server",
+        "--example",
+        "fault_runtime",
+        "--offline",
+        "--locked"
+      ],
+      "exit": 0,
+      "receipt_sha256": "6174d0f21df1bc19a3aa53401d8e2ab06aea1cf7e5e6c7e748f059efa32227fb",
+      "log_sha256": "4e32f65ebb6a796959461b155b5710c7fbdece126016b8a2fc9d36c89b546fc4",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "final_fault_004_off",
+      "command": [
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/content",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/evidence/public_profile_002/selection.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/evidence/observation_fault_001.ron",
+        "off",
+        "1000"
+      ],
+      "exit": 0,
+      "receipt_sha256": "f57f9aea9186304adf3e4a8cb3440623342032b1b5f9e9d9d29944311de86432",
+      "log_sha256": "610b991843b37f713798cb679ba16ef64957057035bcabd32d58ba71ad36a6d0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "public_continuation004",
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/tools/public_continuation_probe.py",
+        "004"
+      ],
+      "exit": 0,
+      "receipt_sha256": "199fdea495caf7e3e3eb76f23454d29f1808738c2bc94d29817bd928e75b9fd3",
+      "log_sha256": "ed6661ac23bb9bf3744db4d0ec2886bea7df7f34a83b460695906233d43f8c51",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    },
+    {
+      "id": "public_rewind004",
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_result_persistence/tools/public_rewind_probe.py",
+        "004"
+      ],
+      "exit": 0,
+      "receipt_sha256": "2b8ef1f6b30afbd0b0aa3bf469d5a8d7ae78c99957be70721863632be5f020fa",
+      "log_sha256": "39bb42d607bed3b47bfa6ff9370f6df2e5a17b47eda6f71ff606e74fc2c05cb9",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "test_totals": null
+    }
+  ],
+  "selectors": [
+    {
+      "selector": "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "application::fault_tests::trusted_reconciliation_origins_fault_once_and_preserve_complete_root",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "application::fault_tests::u04_prepared_command_and_host_tick_drop_preserve_roots_and_commit_matches_immediate_ports",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "application::fault_tests::u04_prepared_host_tick_fault_retains_first_origin_and_original_authority",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::data::run_policy_data::tests::trauma_recovery_supports_flat_and_ceil_current_percent",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::employee::tests::dead_employee_cannot_be_revived_by_physical_treatment",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::employee::tests::death_prevent_consumes_buff_and_keeps_employee_alive_once",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::employee::tests::repeated_incapacitation_increments_physical_damage_once_each_time",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_prepared_terminal_tick_observes_discard_and_commit_without_premature_end",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_protected_profile_exposes_retry_and_refuses_forced_reset_without_writing_originals",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fault::new_owner_continue_keeps_existing_missing_and_invalid_save_refusals",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::active_run::continuation::tests::u04_shared_savepoint_import_charges_fresh_monolith_buckets_before_clone",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::checkpoint_explicit_load_rejects_an_internally_consistent_foreign_seed",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::checkpoint_graph_rejects_one_edge_defects_before_explicit_load_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_continue_then_v10_capture_is_semantically_identical",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_envelope_and_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_round_trips_exact_inventory_reservation_boundary",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_round_trips_with_canonical_map_order_independent_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_continue_restores_rng_and_replays_the_same_next_gate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_load_count_and_active_lifecycle_boundaries_reject_without_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_rejects_v4_and_v5_before_mutation_on_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_strictly_rejects_missing_extra_research_and_pending_shapes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::external_generations_bind_save_continue_explicit_load_and_cached_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::public_application_checkpoint_port_round_trips_into_a_fresh_application",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::boss_kind_combat_defeat_consumes_node_on_first_defeat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::combat_defeat_commits_attempt_incapacitation_without_reapplying_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::consumable_modifier_survives_abandonment_and_expires_on_committed_result",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::failed_live_defense_battle_consumes_node_on_first_defeat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::final_boss_defeat_with_valid_checkpoint_requires_explicit_decision",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::final_boss_retreat_changes_only_its_budget",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_continuation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::two_retreats_consume_only_retreat_budget_and_third_entry_cannot_retreat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_choose_one_two_candidates_and_participant_context_survive_select_claim_restarts",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_choose_one_zero_candidates_has_explicit_empty_result_and_no_claim",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_confirmed_receipt_rejects_phase_outcome_ack_and_entitlement_inconsistency",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_continue_before_first_savepoint_restores_current_roster_and_map",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_continue_retains_active_visual_novel_and_queue_at_a_stable_boundary",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without_quit_charge",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_each_unfinished_interactive_node_restores_its_preentry_roots",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_live_terminal_commits_before_ack_and_continue_cannot_repeat_grants",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_pending_continue_rejects_tampered_entitlement_and_missing_option_fields_atomically",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_profile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_shared_savepoint_encoding_restores_independent_rewind_and_rejects_bad_references",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_terminal_choice_survives_ack_and_claim_restart_then_exit_invalidates_continue",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::combat::u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::facility::checkpoint_load_restores_floor_anchor_and_gate_replay_is_deterministic",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::facility::load_run_checkpoint_is_limited_to_three_uses_per_run",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::facility::save_point_reduces_living_trauma_and_saves_checkpoint",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::map_flow::event_success_action_starts_combat_and_retreat_preserves_committed_check",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::mastered_elite_sweep::u04_unfinished_sweep_continue_discards_plan_and_confirmed_sweep_remains_committed",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "game::world::tests::snapshots_and_start::run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ]
+    },
+    {
+      "selector": "observability::tests::actual_queue_batch_dedup_and_dead_lease_cleanup_do_not_depend_on_end_messages",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_conditional_intent_rejects_stale_choices_and_terminal_missing_aba",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_incompatible_current_backup_legacy_and_journal_originals_are_never_overwritten",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_intent_io_failure_before_and_after_acceptance_has_distinct_recovery",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_real_process_crash_at_every_intent_and_aggregate_publication_stage",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ]
+    }
+  ],
+  "selectors_without_exact_pass": []
+}

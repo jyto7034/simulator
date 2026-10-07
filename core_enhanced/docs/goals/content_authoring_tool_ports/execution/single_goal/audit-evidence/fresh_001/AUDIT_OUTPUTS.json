@@ -1,0 +1,371 @@
+{
+  "generated_at": "2026-09-10T17:51:19.960635+00:00",
+  "scope": "Closed R03 INITIAL GEX-20 outputs only; registry excludes itself. No implementation target mutation. Verdict Not Complete / finding R03-AUDIT-F01.",
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/COMPLETION_AUDIT.md",
+      "sha256": "186f2a627c884304af571810ff542b35bf81173da1ae7ee99f388f7a49aa1aa7",
+      "bytes": 28409
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/A_simulate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/A_simulate.stdout",
+      "sha256": "cd340b8bb9751e9ea83c53f58e6aceeeae106b75483fbcf7a49370a5134b34a1",
+      "bytes": 233372
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/A_validate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/A_validate.stdout",
+      "sha256": "e57098a9ec94ba6796384a703bfd5e75a8f828ff4e8707c43ce6be5e88bcf003",
+      "bytes": 4588
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/B_simulate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/B_simulate.stdout",
+      "sha256": "cd340b8bb9751e9ea83c53f58e6aceeeae106b75483fbcf7a49370a5134b34a1",
+      "bytes": 233372
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/B_validate.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/B_validate.stdout",
+      "sha256": "0cef6976cf634433e0efbb5473118841adb95287acc9a27944423b2f8c81b7da",
+      "bytes": 4588
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/audit_probe_history.md",
+      "sha256": "85b7f68c9469893fddd886fc3765043d11c3b40f6024f20dbcc65ee21a58bd05",
+      "bytes": 1985
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/currentness_closure.json",
+      "sha256": "dec08dc1ee3d5fc73bbb83113d5b22ca68bf586fa04bcdf84a0bceecd1ead9f9",
+      "bytes": 10564
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/currentness_entry.json",
+      "sha256": "4c9fe91c0132ab3e6742f427b43b610ab9190c05a7725eda93e4feeecef9301f",
+      "bytes": 10562
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/evidence_review.json",
+      "sha256": "327f48e55bdd9531e3a04106f61ed371036ad52a6edc6a7a51eb27abdb8f949d",
+      "bytes": 34565
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/probe_source_receipt.py",
+      "sha256": "3b0e93f278c4e0d4be646d7f6138dda1023d71fe0d7d59738c5e468b206692b0",
+      "bytes": 2987
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/abnormalities/base.ron",
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474",
+      "bytes": 33133
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/boss_omen/chains.ron",
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0",
+      "bytes": 799
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/boss_runtime/base.ron",
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04",
+      "bytes": 15863
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/buffs/base.ron",
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b",
+      "bytes": 917
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/consumables/base.ron",
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a",
+      "bytes": 4154
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/employees/definitions.ron",
+      "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01",
+      "bytes": 9193
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/enemies/corroded_employees.ron",
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154",
+      "bytes": 6332
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/enemies/corroded_wave_presets.ron",
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751",
+      "bytes": 3346
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/equipments/base.ron",
+      "sha256": "5a85ae412b62501f54bb05369158bb10eea26b7c6d7dcedb1cf979ce4163c59f",
+      "bytes": 71624
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/events/rewards/base.ron",
+      "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f",
+      "bytes": 4988
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/events/shops/base.ron",
+      "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297",
+      "bytes": 5446
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/events/story/base.ron",
+      "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242",
+      "bytes": 5693
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/map/battlefield_archetypes.ron",
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9",
+      "bytes": 1823
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/map/battlefield_templates.ron",
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f",
+      "bytes": 12299
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/map/facility_templates.ron",
+      "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c",
+      "bytes": 13884
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/map/node_assignment_profiles.ron",
+      "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3",
+      "bytes": 9857
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/map/node_definitions.ron",
+      "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7",
+      "bytes": 1990
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/pve/encounters.ron",
+      "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde",
+      "bytes": 114717
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/run/policy.ron",
+      "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31",
+      "bytes": 12287
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/skill_fragments/base.ron",
+      "sha256": "19d781da6675927931344c0bc5272ebd673cf59a3df94f5dbd577c1d667b3e74",
+      "bytes": 29554
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/skills/base.ron",
+      "sha256": "d8022bffed559897f6f48f39195b802e3a971cc9672bb58dd2c68bb136604510",
+      "bytes": 44933
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/summoned_units/base.ron",
+      "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0",
+      "bytes": 1132
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/visual_novel_triggers/base.ron",
+      "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875",
+      "bytes": 722
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/data/visual_novels/base.ron",
+      "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f",
+      "bytes": 4357
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/A/official/pack.ron",
+      "sha256": "8f7e58097af9dfb2e151d7c53fd1d02364d96cb9a66c807edeb6b01e92cad991",
+      "bytes": 1675
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/abnormalities/base.ron",
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474",
+      "bytes": 33133
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/boss_omen/chains.ron",
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0",
+      "bytes": 799
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/boss_runtime/base.ron",
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04",
+      "bytes": 15863
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/buffs/base.ron",
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b",
+      "bytes": 917
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/consumables/base.ron",
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a",
+      "bytes": 4154
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/employees/definitions.ron",
+      "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01",
+      "bytes": 9193
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/enemies/corroded_employees.ron",
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154",
+      "bytes": 6332
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/enemies/corroded_wave_presets.ron",
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751",
+      "bytes": 3346
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/equipments/base.ron",
+      "sha256": "5a85ae412b62501f54bb05369158bb10eea26b7c6d7dcedb1cf979ce4163c59f",
+      "bytes": 71624
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/events/rewards/base.ron",
+      "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f",
+      "bytes": 4988
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/events/shops/base.ron",
+      "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297",
+      "bytes": 5446
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/events/story/base.ron",
+      "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242",
+      "bytes": 5693
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/map/battlefield_archetypes.ron",
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9",
+      "bytes": 1823
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/map/battlefield_templates.ron",
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f",
+      "bytes": 12299
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/map/facility_templates.ron",
+      "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c",
+      "bytes": 13884
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/map/node_assignment_profiles.ron",
+      "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3",
+      "bytes": 9857
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/map/node_definitions.ron",
+      "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7",
+      "bytes": 1990
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/pve/encounters.ron",
+      "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde",
+      "bytes": 114717
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/run/policy.ron",
+      "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31",
+      "bytes": 12287
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/skill_fragments/base.ron",
+      "sha256": "19d781da6675927931344c0bc5272ebd673cf59a3df94f5dbd577c1d667b3e74",
+      "bytes": 29554
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/skills/base.ron",
+      "sha256": "208da9106a1f698ef1bf6c40ad2d8d0d32d52fdfb1b8be7a58d0508ffa5a3dcf",
+      "bytes": 44933
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/summoned_units/base.ron",
+      "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0",
+      "bytes": 1132
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/visual_novel_triggers/base.ron",
+      "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875",
+      "bytes": 722
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/data/visual_novels/base.ron",
+      "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f",
+      "bytes": 4357
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/B/official/pack.ron",
+      "sha256": "8f7e58097af9dfb2e151d7c53fd1d02364d96cb9a66c807edeb6b01e92cad991",
+      "bytes": 1675
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/scenario.json",
+      "sha256": "610160945e08714b7c7f054a51b371ea067635f4b23127dfc23f123067ee87db",
+      "bytes": 3121
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inputs/selection.json",
+      "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894",
+      "bytes": 35
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/reproduction_inventory.json",
+      "sha256": "7f88d72b99c7b6bb1da091f42db72ab3bbad91bca0ecbfe8090f26dfee8223d7",
+      "bytes": 15537
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/source_receipt_probe.json",
+      "sha256": "07c9f509b15110399791d7bfbccda4656c501b9233fce51c2b60ac4bca41be82",
+      "bytes": 11322
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/source_reuse_review.json",
+      "sha256": "b3f1e94e4af2cce3b9ba3e0d6f667ac8391b97a328420d0d147983e3043f9b7b",
+      "bytes": 1010
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/supplemental_review.json",
+      "sha256": "b173a882901d851c7049ad485bbdfa319ac9e09442608119eb74a375645956df",
+      "bytes": 4360
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/verify_currentness.py",
+      "sha256": "6f938465735b32e664f0fb30b78a0fb75f478660cddccfdd2da0235eee6bf8ec",
+      "bytes": 3521
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/verify_evidence.py",
+      "sha256": "fd4642c0ef64c959a2e299a5188dd57ecd89b5896fc1201e09d61d465a80682c",
+      "bytes": 6935
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/fresh_001/verify_supplemental.py",
+      "sha256": "0ab8054c6af5d77b336be69f2b78ec1f53157f464bdcf63c91387bb1a1d3dec4",
+      "bytes": 2211
+    }
+  ]
+}

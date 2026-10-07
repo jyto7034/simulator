@@ -216,7 +216,7 @@ impl PlayerGameSession {
         &mut self,
         ctx: &mut Ctx,
         request_id: String,
-        command: game_core::game::world::AdminCommand,
+        command: game_core::application::ApplicationAdminCommand,
         token: Option<String>,
     ) {
         if let Err(error) = admin_command_access_from_env(token.as_deref()) {

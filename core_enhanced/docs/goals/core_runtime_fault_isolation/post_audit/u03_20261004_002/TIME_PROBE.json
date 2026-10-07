@@ -1,0 +1,65 @@
+{
+  "base_manifest_sha256": "453c015f3bc19cb122356c4a99d1812c84229e3e030105d7456c087126193541",
+  "base_product_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+  "isolated_root": "/tmp/u03-successor-origin-probe",
+  "construction": "Extract exact SOURCE_AFTER; append the listed audit-only helper and test snippets. No existing production function changed. Earlier probe included only its two append files; later probe has cumulative three-file append delta. All other frozen source files match.",
+  "delta_files": [
+    {
+      "path": "core_enhanced/src/game/battle/core/sustained.rs",
+      "bytes": 69227,
+      "sha256": "fc98dffa11eab85e86cbd85af1e8c234e3dd9d9021ba367dbb8b398ba553e6a4",
+      "append_files": [
+        "goodbye_probe_helper.rs"
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 197389,
+      "sha256": "2a48b0b7e117d3641bc215be6b0622e1eae9ace7f4fcc0cf4d3c3c8b2fd998a6",
+      "append_files": [
+        "time_probe_helper.rs"
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "bytes": 479426,
+      "sha256": "513f2ff734e15045f1aaa349d426053e7b5eb0eac40589693fc282a84f57fbb8",
+      "append_files": [
+        "goodbye_probe.rs",
+        "time_probe.rs"
+      ]
+    }
+  ],
+  "snippet_hashes": {
+    "goodbye_probe_helper.rs": "1d59fd8e30dabab3dbffc7d99f73077b6772442bea40afd81b5f9925b0a09b7f",
+    "time_probe_helper.rs": "73af0dc35e368aa97f300ed8d387f92eabcf726dd05811741ce5ee46a21ff1c5",
+    "goodbye_probe.rs": "c375e0bfc0039e68da959aa71f23931ebc06c492d3968e16cfd0a8c5bf41d011",
+    "time_probe.rs": "7f115a835a1f4e86b9a74d4093dc1c39921b8b3363bb488c945231de5f0e7045"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "audit_u03_admitted_manual_cast_time_overflow_must_fault",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/tmp/u03-successor-origin-probe",
+  "env": {
+    "PATH_prefix": "/home/blast/.cargo/bin",
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target"
+  },
+  "raw_exit": 101,
+  "executed_tests": 1,
+  "failed_tests": 1,
+  "log_sha256": "710965270f88a2f7d3748b46d525918e8e61ddff07463a96af2dc3c12824bf04",
+  "actual": [
+    "focus=0 first=invalid_action second=invalid_action fault_present=false",
+    "focus=100 first=invalid_action second=invalid_action fault_present=false"
+  ],
+  "expected": "Trusted internal failure creates bounded first fault; second public command returns battle_faulted. Ordinary caller refusal remains nonterminal.",
+  "limitation": "Trusted state deliberately set to a missing internal reference or maximum internal clock in test-only helper; no claim that ordinary external inputs manufacture corruption or naturally reach u64::MAX. Tests evaluate the frozen explicit trusted-internal/checked-arithmetic failure contract."
+}

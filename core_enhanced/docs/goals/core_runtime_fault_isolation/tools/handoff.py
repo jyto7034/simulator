@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import json
+from initialize import HERE, artifact, write
+from run import sha
+v=json.loads((HERE/'P2G_50_VALIDATION_001.json').read_text())
+assert v['result']=='passed' and not v['failures']
+def first(name): return json.loads((HERE/name).read_text())['artifacts'][0]
+f=first('P2G_30_FREEZE_003.json');p=first('P2G_40_PHASE_PLAN_002.json')
+g={'Artifact Type':'Goal Set','Artifact ID':'GS-CRFI-001','Content Digest':'sha256:'+sha(HERE/'P2G_50_GOAL_SET.ko.md')}
+write('P2G_50_RESULT_001.json',{'stage':'P2G-50','status':'complete','Goal Set Ref':g,'member_ids':['GOAL-CRFI-01'],'validator':'P2G_50_VALIDATION_001.json','semantic_review':{'all12_frozen_acceptances':True,'atomic_Core_host_observation_delivery':True,'all12_integration_seams_assigned':True,'all10_validation_dimensions_required':True,'private_retry_and_nonterminal_error_distinctions':True,'actual_headless_host_and_file_protection_required':True,'100_inherited_conditions_and31_R06_mapping':True,'bounded_fault_and_explicit_existing_Continue':True,'no_implementation_or_audit_completion_claim':True},'P2G-50 Resolution Record Ref Set':[],'next':'P2G-60'})
+h=artifact('Handoff Artifact','HA-CRFI-001',{'Predecessor Handoff Artifact Ref':None,'Result Composite Basis':{'Working Revision Ref':f['payload']['Working Revision Ref'],'Final Policy Freeze Ref':f['ref'],'Phase Plan Ref':p['ref'],'Goal Set Ref':g,'Schema Change Closure':'P2G_40_RESULT_002.json resolves COD-CRFI-SCHEMA-001/002 owner obligations'},'Final Policy Freeze Ref':f['ref'],'Phase Plan Ref':p['ref'],'Goal Set Ref':g,'Remaining Gap/Blocker/Limitation Summary':'No material policy/source blocker. All implementation and V01–12 evidence remain GEX work. U02 exact source baseline reused only before mutation; R05 raw101 warning, OBS001 and20minute exclusion preserved. Concrete helper/fixtures refined in GEX-10.','Scope/Authorization Boundary':'P2G authoring only; no activation/implementation authorization/completion verdict. Original continuous user request separately authorizes GEX, independent Astra High audit and corrections.','Out-of-Scope Summary':'U04 normal results/SavePoint policy; full Run rollback, automatic skill cancel, save deletion/conversion,20minute tests, arbitrary gameplay/performance caps, Unity,mod registration.','Lifecycle Disposition':'current'})
+write('P2G_60_HANDOFF_001.json',{'artifacts':[h]})
+write('P2G_60_RESULT_001.json',{'stage':'P2G-60','status':'complete','Handoff Artifact Ref':h['ref'],'P2G-60 Resolution Record Ref Set':[],'checks':{'upstream_exact':True,'single_phase_single_goal':True,'all12_policy_elements_and12_seams':True,'schema_obligations_closed':True,'no_production_mutation':True,'known_gaps_preserved':True},'next':'separately user-authorized GEX-00 GOAL-CRFI-01'})
+print('P2G-50 semantic review / P2G-60 complete; no production mutation')

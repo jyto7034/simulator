@@ -1,0 +1,325 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CBST-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CBST-001",
+    "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "ad2c6b0b991981e89834c5519373d31063b892cd0828e7fb40ac16ec4ac80307"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CBST-001",
+    "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_30_FREEZE_001.json",
+    "sha256": "38d4b3164b137ddeba668d8f057f6d7eec6f846c90b8bdf7447fda9624fac888"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CBST-003",
+    "review_batch_ref": "RB-CBST-001",
+    "reviewed_source_basis_ref": "RSB-CBST-001",
+    "code_review_binding_count": 20,
+    "bound_final_policy_freeze_ref": "FPF-CBST-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 20,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CBST-01",
+        "policy_element_revision_ref": "PER-CBST-01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-02",
+        "policy_element_revision_ref": "PER-CBST-02-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-03",
+        "policy_element_revision_ref": "PER-CBST-03-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-04",
+        "policy_element_revision_ref": "PER-CBST-04-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-05",
+        "policy_element_revision_ref": "PER-CBST-05-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-06",
+        "policy_element_revision_ref": "PER-CBST-06-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-07",
+        "policy_element_revision_ref": "PER-CBST-07-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-08",
+        "policy_element_revision_ref": "PER-CBST-08-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-09",
+        "policy_element_revision_ref": "PER-CBST-09-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-10",
+        "policy_element_revision_ref": "PER-CBST-10-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-11",
+        "policy_element_revision_ref": "PER-CBST-11-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-12",
+        "policy_element_revision_ref": "PER-CBST-12-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-13",
+        "policy_element_revision_ref": "PER-CBST-13-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-14",
+        "policy_element_revision_ref": "PER-CBST-14-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-15",
+        "policy_element_revision_ref": "PER-CBST-15-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-16",
+        "policy_element_revision_ref": "PER-CBST-16-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-17",
+        "policy_element_revision_ref": "PER-CBST-17-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-18",
+        "policy_element_revision_ref": "PER-CBST-18-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-19",
+        "policy_element_revision_ref": "PER-CBST-19-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CBST-20",
+        "policy_element_revision_ref": "PER-CBST-20-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 20,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CBST-01",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-02",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-03",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-04",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-05",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-06",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-07",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-08",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-09",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-10",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-11",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-12",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-13",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-14",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-15",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-16",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-17",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-18",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-19",
+        "phase_id": "PHASE-CBST-01"
+      },
+      {
+        "element_id": "PE-CBST-20",
+        "phase_id": "PHASE-CBST-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 6,
+    "atomic_group_count": 0,
+    "atomic_group_member_count": 0,
+    "standalone_work_package_count": 6,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {},
+    "standalone_work_packages": [
+      "WP-CBST-BASIC",
+      "WP-CBST-STARTER",
+      "WP-CBST-TACTICS",
+      "WP-CBST-BLOCK",
+      "WP-CBST-TIME",
+      "WP-CBST-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 6,
+    "edge_count": 7,
+    "cyclic_scc_count": 0,
+    "cyclic_scc_disposition_count": 0,
+    "cyclic_sccs": [],
+    "final_execution_node_count": 6,
+    "condensation_edge_count": 7,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 6,
+    "assigned_once_count": 6,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "WP-CBST-BASIC": "PHASE-CBST-01",
+      "WP-CBST-STARTER": "PHASE-CBST-01",
+      "WP-CBST-TACTICS": "PHASE-CBST-01",
+      "WP-CBST-BLOCK": "PHASE-CBST-01",
+      "WP-CBST-TIME": "PHASE-CBST-01",
+      "WP-CBST-VERIFY": "PHASE-CBST-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 20,
+    "mapped_count": 20,
+    "assigned_execution_node_count": 20,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CBST-001",
+      "Content Digest": "sha256:0a12e5a36496383017f184fcb01523d94fffa078a367b5b5962071a1dd5d6885"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CBST-001",
+      "Content Digest": "sha256:5401a4eae88fa54670bf7d1ce888c1fe630389a9567639975b5f4a8c1fac47f7"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_00_INITIAL_001.json",
+        "sha256": "4f3bad391efc735bcdd43a8c411669c29e018caf7c8fa1d530c22a4836a42bdd"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_10_POLICY_001.json",
+        "sha256": "4b64a505ab1a8405ee7e8d77b72fa4b103ea353340b6a5a0bfd3e778d256d113"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_20_REVIEW_001.json",
+        "sha256": "c6066e5dd00d5741fbd1f30dd1dc2e0fe038bfec3028fc631ab1a3cb9e79fab3"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_20_SOURCE_PLAN_003.json",
+        "sha256": "3302f59d5322bf7e53b1450fa9eb9f59437869a938f06dbb0e844fc5c0ac6384"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_battle_starter_tactics/P2G_30_FREEZE_001.json",
+        "sha256": "38d4b3164b137ddeba668d8f057f6d7eec6f846c90b8bdf7447fda9624fac888"
+      }
+    ]
+  }
+}

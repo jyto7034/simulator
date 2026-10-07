@@ -1,0 +1,39 @@
+{
+  "kind": "external complete stage report",
+  "Selected Stage": "P2G-20",
+  "Execution Status": "completed",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CATP-P2G10-001",
+    "Content Digest": null
+  },
+  "Current Working Checkpoint Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CATP-P2G20-001",
+    "Content Digest": null
+  },
+  "Complete Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CATP-P2G20-001",
+    "Content Digest": null
+  },
+  "is_p2g20_complete": true,
+  "Validation": {
+    "result": "passed",
+    "elements": 6,
+    "acceptance_members": 13,
+    "bindings": 6,
+    "plan_requirements": 7,
+    "required_sources_confirmed": 6,
+    "excluded_source_disposition": 1,
+    "missing_or_cyclic_ref": 0,
+    "meaning_or_acceptance_delta": 0,
+    "source_hash_mismatch": [],
+    "required_source_gaps": [],
+    "candidate_successor_body_and_findings_reviewed": true,
+    "new_gameplay_execution_count": 0
+  },
+  "Next Stage": "P2G-30",
+  "New User Request Required": false,
+  "recorded_at_utc": "2026-09-09T20:27:57.833516+00:00"
+}

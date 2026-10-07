@@ -1,0 +1,28 @@
+{
+  "stage": "P2G-00",
+  "status": "complete",
+  "created_refs": [
+    {
+      "Artifact Type": "Policy Intake Snapshot",
+      "Artifact ID": "PIS-CRFI-001",
+      "Content Digest": "sha256:955ef53580eef6b6a311ba51fbca13f89bb423e27507953083c36b61f79189e7"
+    },
+    {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRFI-001",
+      "Content Digest": "sha256:4427038456cafaf37abde305efe5fa16c657e111703921b11840a0b1e384ae3c"
+    }
+  ],
+  "checks": {
+    "path_unoccupied": true,
+    "identity_unique": true,
+    "raw_intake_archived": true,
+    "scope_approval_per_item": true,
+    "empty_initial_policy_sets": true,
+    "no_later_stage_artifacts": true,
+    "U02_independent_Master_closed": true
+  },
+  "archive_sha256": "68df466cae79d2d92d014e626aea2bd8f405ccb9a7b1e0a57d46d91b43be16ee",
+  "next": "P2G-10",
+  "production_mutation": false
+}

@@ -1,0 +1,158 @@
+{
+  "record": "R06_COMPLETION_CODE_EVIDENCE_20260929",
+  "kind": "instruction_preparation_not_implementation_or_independent_audit",
+  "date": "2026-09-29",
+  "goal": "GS-CAVER-SCOPE50-001 / GOAL-CAVER-01 / PHASE-CAVER-01",
+  "currentness": {
+    "manifest": {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d07_b_f03_order_001/target/d07_b_f03_order_001/MANIFEST.json",
+      "bytes": 291118,
+      "sha256": "41b98656a421e489a04d528d2dbc9ac196ff247ab8f56ec69d30cfbea4d7a882"
+    },
+    "verification": {
+      "state": "CURRENTNESS_AND_ISOLATED_BIDIRECTIONAL_RESTORATION_VERIFIED",
+      "before_source_count": 345,
+      "after_source_count": 347,
+      "modified_paths": [
+        "core_enhanced/src/authoring/trial.rs",
+        "core_enhanced/src/game/battle/core/mod.rs"
+      ],
+      "added_paths": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+        "core_enhanced/src/authoring/trial/tests/amount_order.rs"
+      ],
+      "source_test_membership_verified": true,
+      "record_count": 529
+    }
+  },
+  "source_digest": "ff05f531a378146effa2c3e3321b250db7763b17e5a849fecb0b25c3006d510a",
+  "source_readings": [
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "bytes": 40064,
+      "sha256": "b1a42d28a92f8925ee6e4402221b7052420bdfe182d19bec33689461737d9fa7",
+      "reason": "advance_skill_projectile_runtime: prior-hit empty expiry returns without terminal impact; C07-OBS01"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "bytes": 20946,
+      "sha256": "602b2e6e728811487f86f838d9c62b0f755c2cae265d3a69b66a7645700ceb30",
+      "reason": "resolve_skill_step_delivery, previous_step_damage_gate, release_deferred_skill_steps: pending/result/cleanup boundary"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+      "bytes": 21312,
+      "sha256": "d0a9dde2f1a5caaa03ba084e3462d4997c3ef372044e688141449b64de09d092",
+      "reason": "persistent_stats_for_draft_profile: composition order and base_uuid enhancement join"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "bytes": 38957,
+      "sha256": "5bfdaa7c4c82e37c8a8421199d2527acb7b184b506bcedd514a4513fc3a63d24",
+      "reason": "BattleEquipmentEnhancement, UnitCombatProfile, scale_attack_interval_ms"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "bytes": 10130,
+      "sha256": "5ef954381e0d08b2615471d338af7827652909e799fb2d147df2e657a31b972e",
+      "reason": "ordinary and certified inventory-to-draft enhancement producers"
+    },
+    {
+      "path": "core_enhanced/src/game/stats.rs",
+      "bytes": 18446,
+      "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+      "reason": "UnitStats, StatId, modifier semantics and serialization"
+    },
+    {
+      "path": "core_enhanced/src/game/data/equipment_data.rs",
+      "bytes": 37726,
+      "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "reason": "WeaponCombatProfile numeric schema seam"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "bytes": 29707,
+      "sha256": "c4b99f4ab2c57719e704702099fc995f0f5f2b2298b203516d32572d2337299b",
+      "reason": "RuntimeUnit has stats but no original attack speed points; CloneShape"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "bytes": 292481,
+      "sha256": "eced4c63c30433327c48fe670ec1ac57953527a7caf7967c43fde920f5e2e05a",
+      "reason": "SpellPower/AttackSpeedPoints runtime MissingContext placeholder and frame capture"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_power.rs",
+      "bytes": 13360,
+      "sha256": "4815c9a1b4e1504495b8b334320092c05a13499896de8e94eb0120fb0f20015b",
+      "reason": "persistent certification consumer lacks separate input fingerprint"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "bytes": 11499,
+      "sha256": "e927f4eaf70f1eea586d45ae32e8c156ab25a13dea17fffc09cbc4c2614cebe5",
+      "reason": "V7 typed deserialize/reserialize SHA verification"
+    },
+    {
+      "path": "core_enhanced/src/game/world/authoring_observation.rs",
+      "bytes": 8955,
+      "sha256": "0bfaf1f29477016caf621692d1fd15568ffc01dac3883d3f149d45df4d0ec7f0",
+      "reason": "capture_authoring_terminal observer/trace capsule ownership"
+    },
+    {
+      "path": "core_enhanced/src/authoring/amount_query.rs",
+      "bytes": 12033,
+      "sha256": "3325fa5d09e63ec8786e9e94d23c55f8ca3a53b6d4ccd98d4beb255fdfda46d5",
+      "reason": "actual selector and retained-record encoder"
+    },
+    {
+      "path": "core_enhanced/src/game/ability.rs",
+      "bytes": 38402,
+      "sha256": "991062a91b2cf199de26f24d511617fbf7436db2c4ff396a7018ff3c6efa8411",
+      "reason": "SkillEffectDef signed i32 derived Deserialize"
+    },
+    {
+      "path": "core_enhanced/src/game/value_expr/catalog.rs",
+      "bytes": 32569,
+      "sha256": "113115ee87a3f94c8155607ad1a20c3104908c179744412a895e3e06526ef8d0",
+      "reason": "ensure_runtime_publishable blanket authored expression refusal"
+    }
+  ],
+  "authority": [
+    {
+      "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+      "bytes": 127723,
+      "sha256": "fa26ccacb976aca00becd06de5cc5a5d76cbbbf746e99106ddab9c3c62c329ab"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/CODE_REVIEW_003.ko.md",
+      "bytes": 37472,
+      "sha256": "0256c545729c50e78980cd31a530ca5136c8748ad6fa1a19ffb312ed2858a4df"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/successors/r06_scope_20260927_001/P2G_50_GOAL_SET.ko.md",
+      "bytes": 38835,
+      "sha256": "aa91081c6bb0bc232589715894a0b6fd2c65e5f16d85f45328cd23a5351db909"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d07_b_f03_order_001/REVIEW_HANDOFF.ko.md",
+      "bytes": 8102,
+      "sha256": "55e169ccbd326168badd6ebf96951cafd642020cdbe9b0cb5e668be7c748e85b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d07_b_f03_order_001/evidence/C07_OBS01.json",
+      "bytes": 1373,
+      "sha256": "eeaef599b1142692b05726a5bf98b148b6e2ff5c39691f200b9e9831e0d63c90"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/PREIMPLEMENTATION_FIXTURES.json",
+      "bytes": 1640,
+      "sha256": "99f41d63657d0ece0e07d7c1c049bbf4490f2b9f4822fb9cee6dd8958daf2f2d"
+    }
+  ],
+  "limits": [
+    "C07 behavior not independently audited here",
+    "No product implementation or Cargo test execution for this document-only task",
+    "Line/symbol guidance must be reconciled against actual implementation-entry source"
+  ]
+}

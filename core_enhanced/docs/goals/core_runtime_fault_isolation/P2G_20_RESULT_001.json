@@ -1,0 +1,35 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-002",
+    "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-003",
+    "Content Digest": "sha256:b9efe0a4999d79536831b567399c2ee7d564325ed8181fcc6fcb4c312b2a2fc7"
+  },
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CRFI-001",
+    "Content Digest": "sha256:d47390ad7bbf00e04dd392b1953d3972e2429ce5b3a9b7fc51f63e022bc2c07c"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CRFI-001",
+    "Content Digest": "sha256:9f2648ae7cb8dabd543e5d02d597e3c2d941a92b51c9e4a85362c96444a81487"
+  },
+  "checks": {
+    "exact_reference_integrity": true,
+    "source_unchanged": true,
+    "input_acceptance_preserved": true,
+    "all_12_reviewed_and_bound": true,
+    "all_8_source_requirements_confirmed": true,
+    "material_policy_findings": 0,
+    "required_source_gaps": 0
+  },
+  "production_mutation": false,
+  "next": "P2G-30"
+}

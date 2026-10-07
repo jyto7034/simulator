@@ -1,0 +1,10 @@
+--- inherited_cfg
++++ actual_cfg
+@@ -83,6 +83,7 @@
+         | ActionKind::UnequipRelic
+         | ActionKind::RequestRelicState
+         | ActionKind::RequestRelicNumericPlan
++        | ActionKind::RequestRelicEffectivePlan
+         | ActionKind::PreviewRelicCorruption
+         | ActionKind::CorruptRelic
+         | ActionKind::PreviewRelicDismantle

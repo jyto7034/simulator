@@ -245,6 +245,12 @@ fn common_map_and_checkpoint_capabilities_are_typed_and_revalidated() {
     let node_id = node.id;
     let kind_id = node.kind_id.clone();
     let category = node.category;
+    core.state.node_session = Some(crate::game::map::NodeSession {
+        node_id,
+        kind_id: kind_id.clone(),
+        category,
+        payload: node.payload.clone(),
+    });
     core.transition_to(GameState::InNode {
         node_id,
         kind_id,
@@ -377,7 +383,7 @@ fn combat_node_preview_exposes_basic_briefing() {
     assert!(!preview.deployment_zones.is_empty());
     assert!(!preview.spawn_zones.is_empty());
     assert!(!preview.spawn_waves.is_empty());
-    assert_eq!(preview.spawn_waves[0].time_ms, 0);
+    assert_eq!(preview.spawn_waves[0].activation.at_time_ms(), Some(0));
 }
 
 #[test]
@@ -545,12 +551,6 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should queue delivery");
     let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
     {
         let roster = core.roster_mut().unwrap();
@@ -605,7 +605,6 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
     let BehaviorResult::FloorAdvanced {
         game_mode,
         floor_index,
-        research_deliveries,
         ..
     } = result
     else {
@@ -613,12 +612,6 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
     };
     assert_eq!(game_mode, GameMode::Standard);
     assert_eq!(floor_index, 1);
-    assert_eq!(research_deliveries.len(), 1);
-    assert_eq!(research_deliveries[0].fragment_id, fragment_id);
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count + 1
-    );
     assert!(matches!(core.get_state(), GameState::ViewingMap));
     let roster = core.roster().unwrap();
     assert_eq!(
@@ -663,49 +656,6 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
 }
 
 #[test]
-fn invalid_pending_research_aborts_gate_transition_without_partial_commit() {
-    let mut core = GameCore::new(empty_game_data(), 126);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let missing_fragment_id = crate::game::data::skill_fragment_data::SkillFragmentId::from(
-        "zz_missing_gate_research_fragment",
-    );
-    core.state
-        .skill_fragments
-        .add_research_progress(&missing_fragment_id, 100)
-        .expect("missing static identity can exist only as invalid pending state");
-    let employee_id = core.roster().unwrap().combat_eligible_employee_ids()[0];
-    core.roster_mut()
-        .unwrap()
-        .get_mut(&employee_id)
-        .unwrap()
-        .condition
-        .trauma = 90;
-    let gate_node_id = force_first_available_node(
-        &mut core,
-        MapNodeCategory::Gate,
-        "gate_stairs",
-        MapNodePayload::None,
-    );
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectMapNode {
-            node_id: gate_node_id,
-        },
-    )
-    .unwrap();
-    let before = core.get_run_snapshot_json().unwrap();
-
-    let error = core
-        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap_err();
-
-    assert!(matches!(error, GameError::InvalidStaticData(_)));
-    assert_eq!(core.get_run_snapshot_json().unwrap(), before);
-    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
-}
-
-#[test]
 fn endless_gate_transition_advances_floor_without_max_cap_or_run_completion() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
@@ -722,6 +672,8 @@ fn endless_gate_transition_advances_floor_without_max_cap_or_run_completion() {
         "Endless snapshots must not expose a max floor cap"
     );
     assert!(initial_progression["current_floor_seed"].is_u64());
+    assert_eq!(core.state.player_profile.highest_floor_reached, 1);
+    assert_eq!(core.state.player_profile.longest_deathless_floor_streak, 0);
 
     let gate_node_id = force_first_available_node(
         &mut core,
@@ -759,6 +711,8 @@ fn endless_gate_transition_advances_floor_without_max_cap_or_run_completion() {
     assert_eq!(run.run_progression.game_mode, GameMode::Endless);
     assert_eq!(run.run_progression.floor_index(), 1);
     assert_eq!(run.run_progression.max_floors(), None);
+    assert_eq!(core.state.player_profile.highest_floor_reached, 2);
+    assert_eq!(core.state.player_profile.longest_deathless_floor_streak, 1);
     assert_eq!(
         run.map
             .node(run.map.terminals[0].node_id)
@@ -853,161 +807,19 @@ fn combat_node_confirm_starts_live_battle() {
 
     assert!(matches!(result, BehaviorResult::BattleAdvanced { .. }));
     assert!(matches!(core.get_state(), GameState::InBattle { .. }));
-    assert!(core.get_action_capabilities().is_empty());
-}
-
-#[test]
-fn save_point_entry_queues_research_until_authoritative_planning_return() {
-    let mut core = GameCore::new(empty_game_data(), 123);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should be queued");
     assert_eq!(
-        core.state
-            .skill_fragments
-            .pending_research_deliveries()
-            .collect::<Vec<_>>(),
-        vec![(&fragment_id, 1)]
+        core.get_action_capabilities(),
+        vec![
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicState,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+        ]
     );
-
-    let node_id = force_first_available_node(
-        &mut core,
-        MapNodeCategory::SavePoint,
-        "save_point",
-        MapNodePayload::SavePoint,
-    );
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    let entered = core
-        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-
-    let BehaviorResult::SavePointState { .. } = entered else {
-        panic!("expected SavePoint state");
-    };
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_count,
-        "node entry must not grant queued research"
-    );
-    assert_eq!(
-        core.state
-            .skill_fragments
-            .pending_research_deliveries()
-            .collect::<Vec<_>>(),
-        vec![(&fragment_id, 1)]
-    );
-
-    let completed = core
-        .execute(player_id, PlayerBehavior::CompleteNode)
-        .unwrap();
-    let BehaviorResult::NodeCompleted {
-        research_deliveries,
-        ..
-    } = completed
-    else {
-        panic!("expected planning return");
-    };
-    assert_eq!(research_deliveries.len(), 1);
-    assert_eq!(research_deliveries[0].fragment_id, fragment_id);
-    assert_eq!(research_deliveries[0].count, 1);
-    assert_eq!(research_deliveries[0].total_count, starting_count + 1);
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_count + 1
-    );
-    assert!(core
-        .state
-        .skill_fragments
-        .pending_research_deliveries()
-        .next()
-        .is_none());
-
-    core.execute(player_id, PlayerBehavior::RequestMapData)
-        .unwrap();
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_count + 1
-    );
-}
-
-#[test]
-fn cancel_snapshot_and_checkpoint_load_never_deliver_pending_research() {
-    let mut core = GameCore::new(empty_game_data(), 124);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should queue delivery");
-    core.save_run_checkpoint().unwrap();
-    let node_id = force_first_available_node(
-        &mut core,
-        MapNodeCategory::SavePoint,
-        "save_point",
-        MapNodePayload::SavePoint,
-    );
-
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    core.execute(player_id, PlayerBehavior::CancelSelectedNode)
-        .unwrap();
-    core.execute(player_id, PlayerBehavior::RequestMapData)
-        .unwrap();
-    core.get_run_snapshot_json().unwrap();
-    core.handle_load_run_checkpoint().unwrap();
-
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_count
-    );
-    assert_eq!(
-        core.state
-            .skill_fragments
-            .pending_research_deliveries()
-            .collect::<Vec<_>>(),
-        vec![(&fragment_id, 1)]
-    );
-}
-
-#[test]
-fn invalid_pending_research_aborts_planning_return_without_partial_node_commit() {
-    let mut core = GameCore::new(empty_game_data(), 125);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let missing_fragment_id = crate::game::data::skill_fragment_data::SkillFragmentId::from(
-        "zz_missing_research_fragment",
-    );
-    core.state
-        .skill_fragments
-        .add_research_progress(&missing_fragment_id, 100)
-        .expect("missing static identity can exist only as invalid pending state");
-    let node_id = force_first_available_node(
-        &mut core,
-        MapNodeCategory::SavePoint,
-        "save_point",
-        MapNodePayload::SavePoint,
-    );
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-    let before = core.get_run_snapshot_json().unwrap();
-
-    let error = core
-        .execute(player_id, PlayerBehavior::CompleteNode)
-        .unwrap_err();
-
-    assert!(matches!(error, GameError::InvalidStaticData(_)));
-    assert_eq!(core.get_run_snapshot_json().unwrap(), before);
-    assert!(matches!(core.get_state(), GameState::InNode { .. }));
 }
 
 #[test]
@@ -1108,7 +920,7 @@ fn map_progression_selects_completes_and_unlocks_next_nodes() {
 }
 
 #[test]
-fn generated_standard_maps_use_gate_before_final_floor_and_boss_on_final_floor() {
+fn generated_standard_maps_use_fixed_gate_and_nothing_there_normal_boss_terminal() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -1152,18 +964,16 @@ fn generated_standard_maps_use_gate_before_final_floor_and_boss_on_final_floor()
         .collect::<Vec<_>>();
     assert!(
         !terminal_parent_ids.is_empty(),
-        "Standard non-final Gate must have incoming Elite parents"
+        "Standard Floor 1 Gate must have an incoming fixed guard"
     );
     for parent_id in terminal_parent_ids {
         let parent = run.map.node(parent_id).expect("gate parent exists");
-        assert_eq!(parent.kind_id.as_str(), "combat_elite");
+        assert_eq!(parent.kind_id.as_str(), "combat_monster");
         assert!(matches!(
             &parent.payload,
             MapNodePayload::Encounter {
                 encounter_id: Some(id)
-            } if core.game_data.pve_data.get_by_id(id).is_some_and(|encounter| {
-                encounter.encounter_class == crate::game::data::pve_data::PveEncounterClass::Elite
-            })
+            } if id == "normal_breach_response"
         ));
     }
 
@@ -1182,29 +992,41 @@ fn generated_standard_maps_use_gate_before_final_floor_and_boss_on_final_floor()
         floor_index: run_policy().setup.standard_floor_count - 1,
         max_floors: run_policy().setup.standard_floor_count,
     };
-    let abnormality_research =
-        crate::game::abnormality_research::RunAbnormalityResearchState::initialize(
-            core.game_data.as_ref(),
-        );
-    let mut boss_omen = crate::game::boss_omen::BossOmenRunState::default();
+    let mut encounter_progression =
+        crate::game::encounter_progression::EncounterProgressionState::default();
     let (final_map, _, _) = core.generate_current_floor_map(
         &final_floor_progression,
         &crate::game::map::FacilityRunState::default(),
-        &abnormality_research,
-        &crate::game::abnormality_research::RunAbnormalityEncounterHistory::default(),
-        &crate::game::monolith::MonolithRunState::default(),
-        &mut boss_omen,
+        &mut encounter_progression,
     );
     let final_terminal = final_map
         .node(final_map.terminals[0].node_id)
         .expect("final terminal exists");
     assert_eq!(final_terminal.category, MapNodeCategory::Boss);
+    assert_eq!(
+        final_map.terminals[0].resolution,
+        FacilityTerminalResolution::StandardCompletion
+    );
     assert!(matches!(
         &final_terminal.payload,
         MapNodePayload::Encounter {
             encounter_id: Some(id)
-        } if id == "final_boss_risk_encounter"
+        } if id == "suppress_nothing_there"
     ));
+    assert_eq!(
+        final_terminal.combat_difficulty.as_ref().unwrap().class,
+        crate::game::map::MapNodeCombatDifficultyClass::Role(
+            crate::game::data::run_policy_data::CombatNodeDifficultyRole::NormalBoss
+        )
+    );
+    assert!(final_map.nodes.iter().all(|node| {
+        node.combat_difficulty.as_ref().is_none_or(|difficulty| {
+            difficulty.class
+                != crate::game::map::MapNodeCombatDifficultyClass::Role(
+                    crate::game::data::run_policy_data::CombatNodeDifficultyRole::FinalBoss,
+                )
+        })
+    }));
 }
 
 #[test]
@@ -1258,16 +1080,14 @@ fn map_encounter_assignment_respects_node_kind_and_boss_purpose() {
         }],
     };
     let run_progression = RunProgression::new(123, GameMode::Standard, 3);
+    let mut encounter_progression =
+        crate::game::encounter_progression::EncounterProgressionState::default();
 
     super::map_encounters::assign_map_encounters(
         &core.game_data.pve_data,
         &mut map,
         &run_progression,
-        &crate::game::abnormality_research::RunAbnormalityResearchState::initialize(
-            core.game_data.as_ref(),
-        ),
-        &crate::game::abnormality_research::RunAbnormalityEncounterHistory::default(),
-        &crate::game::monolith::MonolithRunState::default(),
+        &mut encounter_progression,
         core.run_policy(),
     );
 
@@ -1753,7 +1573,26 @@ fn enter_single_scene_event(
         other => panic!("expected event state, got {other:?}"),
     };
     assert_eq!(event.current_scene_id.as_str(), "choice");
+    assert_persisted_active_event_session_equal(core, event_node_id);
     event.event_id
+}
+
+#[test]
+fn event_entry_without_run_rejects_before_creating_active_session() {
+    let event_id = crate::game::data::event_data::EventId::new("no_run_event");
+    let game_data = game_data_with_event_definitions(
+        game_data_with_pve_encounters(),
+        vec![event_choice_definition("no_run_event", "choice", None)],
+    );
+    let mut core = GameCore::new(game_data, 123);
+    let node_id = MapNodeId::new(Uuid::from_u128(0xE1_00FF));
+
+    let error = core.enter_event_node(node_id, event_id).unwrap_err();
+
+    assert!(matches!(error, GameError::MissingResource("RunState")));
+    assert!(core.state.run.is_none());
+    assert!(core.state.active_node_content.is_none());
+    assert!(matches!(core.get_state(), GameState::NotStarted));
 }
 
 #[test]
@@ -1900,6 +1739,9 @@ fn event_check_persists_one_result_and_commits_success_grant_at_most_once() {
     let event_node_id = force_single_event_node_run(&mut core, "event_grant_once");
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
     let employee_uuid = first_living_employee_uuid(&core);
+    let skill_fragments_before = serde_json::to_value(&core.state.skill_fragments).unwrap();
+    let roster_before = serde_json::to_value(&core.state.roster).unwrap();
+    let uuid_manager_before = serde_json::to_value(&core.state.uuid_manager).unwrap();
     let resolved = core
         .execute(
             player_id,
@@ -1954,6 +1796,7 @@ fn event_check_persists_one_result_and_commits_success_grant_at_most_once() {
         .as_ref()
         .unwrap()
         .clone();
+    assert_persisted_active_event_session_equal(&core, event_node_id);
     assert_eq!(committed_state.aptitude, EventAptitude::Maintenance);
     assert_eq!(committed_state.dc, 8);
     assert!(matches!(
@@ -1976,8 +1819,20 @@ fn event_check_persists_one_result_and_commits_success_grant_at_most_once() {
             .quantity,
         3
     );
+    assert_eq!(
+        serde_json::to_value(&core.state.skill_fragments).unwrap(),
+        skill_fragments_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.roster).unwrap(),
+        roster_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.uuid_manager).unwrap(),
+        uuid_manager_before
+    );
 
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     core.handle_advance_event_scene(event_node_id, event_id.clone(), resolved_scene_id)
         .unwrap();
     core.set_enkephalin(999);
@@ -1998,6 +1853,7 @@ fn event_check_persists_one_result_and_commits_success_grant_at_most_once() {
     );
     core.enter_event_node(event_node_id, event_id.clone())
         .unwrap();
+    assert_persisted_active_event_session_equal(&core, event_node_id);
 
     let repeated = core
         .handle_resolve_event_choice_check(
@@ -2037,6 +1893,77 @@ fn event_check_persists_one_result_and_commits_success_grant_at_most_once() {
             .unwrap()
             .quantity,
         3
+    );
+    assert_persisted_active_event_session_equal(&core, event_node_id);
+}
+
+#[test]
+fn event_grant_late_failure_preserves_all_five_roots_and_both_session_copies() {
+    let mut event = event_choice_definition(
+        "event_grant_late_failure",
+        "take",
+        Some(crate::game::data::event_data::EventSuccessAction::Grant {
+            effects: vec![
+                RewardEffect::GrantEnkephalin { amount: 7 },
+                RewardEffect::GrantEquipment {
+                    equipment_id: "missing_event_grant_equipment".to_string(),
+                },
+            ],
+        }),
+    );
+    let crate::game::data::event_data::EventSceneNext::EmployeeCheckChoices { choices } =
+        &mut event.scenes[0].next
+    else {
+        unreachable!()
+    };
+    choices[0].check.dc = 8;
+    let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    let event_node_id = force_single_event_node_run(&mut core, "event_grant_late_failure");
+    let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
+    let employee_uuid = first_living_employee_uuid(&core);
+    let roots_before = serialized_grant_roots(&core);
+    let persisted_sessions_before =
+        serde_json::to_value(&core.state.run.as_ref().unwrap().event_sessions).unwrap();
+    let active_session_before = serde_json::to_value(
+        core.state
+            .active_node_content
+            .as_ref()
+            .unwrap()
+            .as_event()
+            .unwrap(),
+    )
+    .unwrap();
+
+    let error = core
+        .handle_resolve_event_choice_check(
+            event_node_id,
+            event_id,
+            crate::game::data::event_data::EventSceneId::new("choice"),
+            crate::game::data::event_data::EventChoiceId::new("take"),
+            employee_uuid,
+        )
+        .unwrap_err();
+
+    assert!(matches!(error, GameError::InvalidStaticData(_)));
+    assert_eq!(serialized_grant_roots(&core), roots_before);
+    assert_eq!(
+        serde_json::to_value(&core.state.run.as_ref().unwrap().event_sessions).unwrap(),
+        persisted_sessions_before
+    );
+    assert_eq!(
+        serde_json::to_value(
+            core.state
+                .active_node_content
+                .as_ref()
+                .unwrap()
+                .as_event()
+                .unwrap(),
+        )
+        .unwrap(),
+        active_session_before
     );
 }
 
@@ -2107,30 +2034,9 @@ fn event_check_failure_is_persisted_gameplay_state_and_final_advance_completes()
 }
 
 #[test]
-fn live_awakened_fragment_can_trigger_boss_omen_overlay() {
+fn live_white_night_bootstrap_requires_no_global_awakened_fragment() {
     let game_data = live_game_data_from_ron();
-    let fragment_id = game_data
-        .skill_fragment_data
-        .fragments
-        .iter()
-        .find_map(|fragment| match &fragment.effect {
-            SkillFragmentEffectDef::ActiveSkill {
-                awakened_skill_id: Some(_),
-                ..
-            } => Some(fragment.id.clone()),
-            _ => None,
-        })
-        .expect("live data must contain at least one awakenable active fragment");
-    let mut skill_fragments = crate::game::skill_fragment::SkillFragmentInventory::new();
-    skill_fragments
-        .add_id(&fragment_id)
-        .expect("live awakenable fragment should be grantable");
-    skill_fragments
-        .add_fragment_dust(100)
-        .expect("test should be able to add awakening dust");
-    skill_fragments
-        .awaken_with_dust(&fragment_id, &game_data.skill_fragment_data)
-        .expect("live awakenable fragment should be awakenable");
+    let skill_fragments = crate::game::skill_fragment::SkillFragmentInventory::new();
 
     let event_node_id = MapNodeId::new(Uuid::from_u128(0xB0_0301));
     let mut map = RunMap {
@@ -2170,7 +2076,7 @@ fn live_awakened_fragment_can_trigger_boss_omen_overlay() {
     let node = map.node(event_node_id).expect("event node exists");
     assert!(
         node.omen.is_some(),
-        "awakened live fragment should trigger omen placement"
+        "WhiteNight required_fragment: None must not inherit a global awakened-fragment gate"
     );
     assert!(boss_omen.provisional.is_some());
     assert!(boss_omen.placed_source.is_some());
@@ -2446,7 +2352,7 @@ fn precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee()
         .profile
         .event_aptitude = EventAptitude::Analysis;
     let event_node_id = force_single_event_node_run(&mut core, "checkpoint_roll_event");
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
 
     assert!(core
@@ -2894,7 +2800,7 @@ fn live_sealed_archive_duplicate_and_precheck_checkpoint_reuse_one_raw_roll() {
     let mut core = GameCore::new(live_game_data_from_ron(), 0xD1CE);
     let player_id = Uuid::from_u128(0xA11CE);
     start_live_run_with_archive_starters(&mut core, player_id);
-    core.save_run_checkpoint()
+    core.save_run_checkpoint_for_test()
         .expect("pre-check live checkpoint should save from the map");
     let enkephalin_at_checkpoint = core.get_enkephalin();
     let node_id = enter_live_archive_admin(&mut core);
@@ -3042,6 +2948,7 @@ fn live_event_panels_advance_through_typed_route_and_complete_node() {
         other => panic!("expected event state, got {other:?}"),
     };
     assert_eq!(event.current_scene_id.as_str(), "start");
+    assert_persisted_active_event_session_equal(&core, event_node_id);
 
     let advanced = core
         .execute(
@@ -3062,6 +2969,7 @@ fn live_event_panels_advance_through_typed_route_and_complete_node() {
         event.interaction,
         crate::game::behavior::EventInteractionDto::Advance
     ));
+    assert_persisted_active_event_session_equal(&core, event_node_id);
 
     let advanced = core
         .execute(
@@ -3078,6 +2986,7 @@ fn live_event_panels_advance_through_typed_route_and_complete_node() {
         other => panic!("expected event result scene, got {other:?}"),
     };
     assert_eq!(event.current_scene_id.as_str(), "end");
+    assert_persisted_active_event_session_equal(&core, event_node_id);
 
     let completed = core
         .execute(
@@ -3198,7 +3107,7 @@ fn boss_omen_event_step_consumption_forces_authored_capstone() {
 }
 
 #[test]
-fn final_standard_floor_boss_node_selects_final_boss_encounter() {
+fn generic_standard_boss_assignment_never_selects_final_boss_encounter() {
     let core = GameCore::new(game_data_with_pve_encounters(), 123);
     let boss_node_id = MapNodeId::new(Uuid::from_u128(0xA004));
     let mut map = RunMap {
@@ -3226,16 +3135,14 @@ fn final_standard_floor_boss_node_selects_final_boss_encounter() {
         floor_index: 2,
         max_floors: 3,
     };
+    let mut encounter_progression =
+        crate::game::encounter_progression::EncounterProgressionState::default();
 
     super::map_encounters::assign_map_encounters(
         &core.game_data.pve_data,
         &mut map,
         &run_progression,
-        &crate::game::abnormality_research::RunAbnormalityResearchState::initialize(
-            core.game_data.as_ref(),
-        ),
-        &crate::game::abnormality_research::RunAbnormalityEncounterHistory::default(),
-        &crate::game::monolith::MonolithRunState::default(),
+        &mut encounter_progression,
         core.run_policy(),
     );
 
@@ -3245,8 +3152,7 @@ fn final_standard_floor_boss_node_selects_final_boss_encounter() {
         MapNodePayload::Encounter {
             encounter_id: Some(id)
         } if core.game_data.pve_data.get_by_id(id).is_some_and(|encounter| {
-            encounter.encounter_class == crate::game::data::pve_data::PveEncounterClass::FinalBoss
-                && encounter.primary_abnormality_id.as_deref() == Some("final_boss_risk_abno")
+            encounter.encounter_class == crate::game::data::pve_data::PveEncounterClass::NormalBoss
                 && encounter.node_type == Some(crate::game::combat_preview::CombatNodeType::Boss)
         })
     ));
@@ -3259,9 +3165,6 @@ fn boss_completion_advances_standard_floors_until_run_complete() {
     start_new_game_with_default_starters(&mut core, player_id);
 
     let mut floor_advanced_count = 0_u32;
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    let mut queued_for_run_complete = false;
     loop {
         let map = match core
             .execute(player_id, PlayerBehavior::RequestMapData)
@@ -3289,20 +3192,6 @@ fn boss_completion_advances_standard_floors_until_run_complete() {
         core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
 
-        let completes_run = {
-            let run = core.state.run.as_ref().expect("run state");
-            run.run_progression.is_final_standard_floor()
-                && run.map.terminal_resolution(next_node)
-                    == Some(FacilityTerminalResolution::RunFinalBoss)
-        };
-        if completes_run && !queued_for_run_complete {
-            core.state
-                .skill_fragments
-                .add_research_progress(&fragment_id, 100)
-                .expect("final node research should queue delivery");
-            queued_for_run_complete = true;
-        }
-
         match core
             .execute(player_id, PlayerBehavior::CompleteNode)
             .unwrap()
@@ -3319,27 +3208,18 @@ fn boss_completion_advances_standard_floors_until_run_complete() {
                 assert_eq!(floor_index, floor_advanced_count);
                 assert!(!map.nodes.is_empty());
                 assert!(matches!(core.get_state(), GameState::ViewingMap));
+                assert!(!core.state.player_profile.standard_tutorial_completed);
             }
             BehaviorResult::RunComplete { map } => {
-                assert!(queued_for_run_complete);
                 assert_eq!(
                     floor_advanced_count,
                     u32::from(run_policy().setup.standard_floor_count - 1)
                 );
                 assert!(!map.nodes.is_empty());
                 assert!(matches!(core.get_state(), GameState::RunComplete));
-                assert_eq!(
-                    core.state.skill_fragments.count(&fragment_id),
-                    starting_fragment_count,
-                    "RunComplete is not a planning/Safe Zone return"
-                );
-                assert_eq!(
-                    core.state
-                        .skill_fragments
-                        .pending_research_deliveries()
-                        .collect::<Vec<_>>(),
-                    vec![(&fragment_id, 1)]
-                );
+                assert!(core.state.player_profile.standard_tutorial_completed);
+                assert_eq!(core.state.player_profile.highest_floor_reached, 0);
+                assert_eq!(core.state.player_profile.longest_deathless_floor_streak, 0);
                 break;
             }
             other => panic!("unexpected map progression result: {other:?}"),

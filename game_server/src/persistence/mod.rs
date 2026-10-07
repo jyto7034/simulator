@@ -1,5 +1,5 @@
 pub mod active_run_store;
-pub mod encounter_compendium_store;
+pub mod player_profile_store;
 
 use std::{io, path::Path};
 
@@ -55,4 +55,14 @@ pub(crate) fn sync_directory(path: &Path) -> io::Result<()> {
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
         .open(path)?
         .sync_all()
+}
+
+/// Test subprocesses terminate at actual completed filesystem stages. The
+/// production adapter has no environment-driven crash behavior.
+#[inline]
+pub(crate) fn durable_crash_point(_stage: &str) {
+    #[cfg(test)]
+    if std::env::var("U04_DURABLE_CRASH_AT").ok().as_deref() == Some(_stage) {
+        std::process::exit(86);
+    }
 }

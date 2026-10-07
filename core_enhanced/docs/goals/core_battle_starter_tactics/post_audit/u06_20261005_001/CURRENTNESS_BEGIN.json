@@ -1,0 +1,25 @@
+{
+  "at_utc": "2026-10-04T18:30:02.754805+00:00",
+  "manifest_sha256": "ce3789acbe476671b2791f59df99346e1660190089d71efe0776f20265ccd1a2",
+  "product_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+  "membership_count": 2671,
+  "source_count": 392,
+  "record_count": 2215,
+  "reference_count": 72,
+  "archive_counts": {
+    "SOURCE_BEFORE": 385,
+    "SOURCE_AFTER": 392,
+    "RECORDS": 2215,
+    "REFERENCES": 72,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_BEFORE.tar.gz": 375,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_AFTER.tar.gz": 377,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/RECORDS.tar.gz": 2992,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/REFERENCES.tar.gz": 166
+  },
+  "attribution": {
+    "tracked/clean": 37,
+    "tracked/dirty": 188,
+    "untracked": 2446
+  },
+  "errors": []
+}

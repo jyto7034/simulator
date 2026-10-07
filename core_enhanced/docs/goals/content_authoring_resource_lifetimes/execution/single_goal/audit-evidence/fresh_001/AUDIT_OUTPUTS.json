@@ -1,0 +1,84 @@
+{
+  "record": "R05-FRESH-AUDIT-OUTPUTS-001",
+  "sealed_at_utc": "2026-09-12T11:50:53.981984+00:00",
+  "reviewer": "/root/r05_fresh_completion_audit; separate same-model, no implementation participation or conversation fork",
+  "verdict": "Not Complete",
+  "finding": "F-R05-001",
+  "runtime_panic_reproduced": false,
+  "target": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_TARGET_002.json",
+  "target_sha256": "c6f995769f7a1293f1787f856541462fa7826370f74c7ff87f4d8a7b93e8f778",
+  "report": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/COMPLETION_AUDIT_001.md",
+  "report_sha256": "06fd6d936e58b254720ef65b312d3c136f7d5fa970b7d4e2fcc9064f7ce95cde",
+  "entry_and_closure": "current / unchanged",
+  "required_predecessor_supplements": "all four exact target/report/registry identities and 47 registered outputs verified at entry and closure",
+  "source_mutations_by_auditor": false,
+  "new_builds_or_gameplay_runs": false,
+  "excluded_self": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/AUDIT_OUTPUTS.json",
+  "outputs": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/COMPLETION_AUDIT_001.md",
+      "bytes": 37680,
+      "sha256": "06fd6d936e58b254720ef65b312d3c136f7d5fa970b7d4e2fcc9064f7ce95cde"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/COMPLETION_AUDIT.md",
+      "bytes": 698,
+      "sha256": "1cb0c982750cbca7d7307e09c81ff21a766ccf151c1cd24982ffd8f14ddf2b24"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/CLOSURE_CURRENTNESS.json",
+      "bytes": 3846644,
+      "sha256": "af985f9175c3453a636e22b9de8c5e1807be7af8cecddeedd935c19c95f8de0a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/ENTRY_CURRENTNESS.json",
+      "bytes": 3846642,
+      "sha256": "8f0be7ad11d842cdb872baee0c6391333e7bbdd2625ca94947dbd494cf58170d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/EVIDENCE_CLOSURE.json",
+      "bytes": 40257,
+      "sha256": "c0951db69c88679a965238afd738c994bdd02dcc27b08a9e49871368095311d3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/EVIDENCE_ENTRY.json",
+      "bytes": 40273,
+      "sha256": "676fe64e31d6fcc5550b05106ce4c13e12cef890c20bf919416ddc03b11faba3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/EVIDENCE_VERIFIED_ENTRY.json",
+      "bytes": 40264,
+      "sha256": "12a29101d03d1b62a86f4abe061d8717a8af8213680b63684fd7c89472a5f2bf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/FINDING_F_R05_001.json",
+      "bytes": 45227,
+      "sha256": "441802adaf68787b7753950df50c1abbf3951b032c42e10b1a612c975068dc04"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/REQUIRED_TEST_OBSERVATIONS.json",
+      "bytes": 5948,
+      "sha256": "5df0d88787b3171f068ac7ee56c599eaf5d6206fa020fd416385c10f5f60667b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/capture_finding.py",
+      "bytes": 4003,
+      "sha256": "72b2523fd01a77ccad1ca82c9882c070484f74b47a6ede45d469584d66986078"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/seal_outputs.py",
+      "bytes": 2217,
+      "sha256": "f74ec323182759a876639bc89e733d8e8d920521c37c6e3150faf37470977538"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/verify_currentness.py",
+      "bytes": 2393,
+      "sha256": "4d7f7666eaacd72cdd0709b6decab7a6d0a54b1e19b3d4c5c6d52782b5c14fe8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/audit-evidence/fresh_001/verify_evidence.py",
+      "bytes": 6372,
+      "sha256": "f61b64350be7ba42db00f29261ab80d57c746e12405f1887b11a9ba3084918da"
+    }
+  ]
+}

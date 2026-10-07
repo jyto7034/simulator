@@ -1,0 +1,462 @@
+{
+  "kind": "root semantic P2G-20 code-review disposition; no runtime/completion verdict",
+  "reviewed_at": "2026-09-09T20:27:57.644617+00:00",
+  "owner": "/root",
+  "input_working_revision": "WR-CATP-P2G10-001",
+  "source_plan": "RSP-CATP-P2G20-001",
+  "original_candidate": {
+    "path": "core_enhanced/docs/goals/content_authoring_tool_ports/review-evidence/root_candidate_001.ko.md",
+    "sha256": "53c997b286792710741f31b2987ef961ba5efad7ee4140c252c6ed3ab8c812dd",
+    "inspection": "candidate001 preserved; reviewed by separate helper"
+  },
+  "accepted_body": "core_enhanced/docs/goals/content_authoring_tool_ports/CODE_REVIEW_001.ko.md",
+  "accepted_body_sha256": "5cb4fb8937212ecba5b4ce9620004a8a34ddf980ad9a520f5dd7ce565c8de232",
+  "helper_outputs": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/review-evidence/design_review_001.md",
+      "sha256": "ef5924df986b36a55aeb63fda4dd0817cb9b6303f6363e1e3c6e80187cb1c034",
+      "inspection": "root read entire report; separate helper reviewed candidate001 only"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/review-evidence/design_review_001.json",
+      "sha256": "8672a41b2cbba3f1aaf4c6050962568fc282e12d2670ee9b3d16921fcb0a47b3",
+      "inspection": "exact source and findings rehashed by root"
+    }
+  ],
+  "additional_exact_source_observations": [
+    {
+      "path": "/tmp/r03_code_review_candidate_001.ko.md",
+      "sha256": "53c997b286792710741f31b2987ef961ba5efad7ee4140c252c6ed3ab8c812dd",
+      "inspected_spans_or_selectors": [
+        "1–181 (entire candidate)"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_10_POLICY_001.json",
+      "sha256": "eea71a35d9f66ddcf3c5fb60d395ca65dd9ee6117813869e57b7d32c12c83fa6",
+      "inspected_spans_or_selectors": [
+        "PER-CATP-E01..E06-DECIDED-001 policy statements and all 13 acceptance entries; corresponding DR payloads"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_20_SOURCE_PLAN_001.json",
+      "sha256": "0aef3066029105968090bf1b9b6b6959486fb89954d2fd5bf374248c00a448ee",
+      "inspected_spans_or_selectors": [
+        "RQ01–RQ07 payloads"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252",
+      "inspected_spans_or_selectors": [
+        "1–140, especially 39–57,96–130"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "/tmp/r03_runtime_trace_review_001.md",
+      "sha256": "5f0a3ec32f9014ca73c8d5566024c85bd3485ad75d8a16c10c67f45fc9e89cdc",
+      "inspected_spans_or_selectors": [
+        "runtime/private authority, observation, output commit, startup/fuel, lifetime and validation recommendations; helper evidence only"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "inspected_spans_or_selectors": [
+        "120–244",
+        "780–847",
+        "929–1028"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "sha256": "9eec3c8c6904f3473acbcfd66747f3717fa56b86772966327f75d689c6ec0554",
+      "inspected_spans_or_selectors": [
+        "130–218"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "sha256": "65677baa2deee83e1dcae974500d0da7ed61c633c8688fd8804ef60600261614",
+      "inspected_spans_or_selectors": [
+        "49–210"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "inspected_spans_or_selectors": [
+        "590–696",
+        "1347–1408"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "sha256": "ee52fbcd1f92c5730be3fa4e0d2d4dabca782c41721d66553cb0b60fa2b0c314",
+      "inspected_spans_or_selectors": [
+        "1780–1950"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "sha256": "1ccd3ca9b7c87339d32f0c7c047f1532c52a5be2eb7007079e0a90ca654440f6",
+      "inspected_spans_or_selectors": [
+        "445–579"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "sha256": "84936b0a6844316678a029d648abefd30055e345ce13b4924dcdc4e56c9dd32e",
+      "inspected_spans_or_selectors": [
+        "1–100"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "sha256": "5493fbfdfbf2cb07a1ec68f249e37445c87e080e97d23096398170b8dac44133",
+      "inspected_spans_or_selectors": [
+        "335–448",
+        "555–655",
+        "870–898"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "sha256": "697b219ec8f60c63052e451708dfd8bb31805be1367bd1aee5b41344399d0561",
+      "inspected_spans_or_selectors": [
+        "30–65",
+        "378–445"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "sha256": "3e108ed0e0c6e0df0dfc69d5154db17e9f2f92f0e9f41c5145c1df171beff3c5",
+      "inspected_spans_or_selectors": [
+        "45–93",
+        "1430–1460"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "inspected_spans_or_selectors": [
+        "10–55",
+        "110–181"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "sha256": "b82bc924568b98acf5bc61620e3efc3f5b774303c91e2ee2f5127b5894f42e33",
+      "inspected_spans_or_selectors": [
+        "220–286",
+        "1038–1056"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/data/validation.rs",
+      "sha256": "a8471db1aa6f08ff76f166afcb2ee1e2f944140d1af8f18f4884d7401ec5a8b4",
+      "inspected_spans_or_selectors": [
+        "507–640",
+        "1485–1618"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "inspected_spans_or_selectors": [
+        "25–48",
+        "103–156"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "inspected_spans_or_selectors": [
+        "144–190",
+        "375–441"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "sha256": "e20c7ff9ab45a4797c615b744dbfc15848267af40b040f04a192ba6362ad2c5a",
+      "inspected_spans_or_selectors": [
+        "35–60",
+        "610–656",
+        "745–773"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1",
+      "inspected_spans_or_selectors": [
+        "1–45"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "inspected_spans_or_selectors": [
+        "1–93"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+      "sha256": "029179ae0b7d715ae01001e377800ec128276616be1406204750be94915cd745",
+      "inspected_spans_or_selectors": [
+        "1–120"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "sha256": "f489f2392299ff61ecda75e5f2e2e83acb3e72419b4128cfd9cec064eb0d419d",
+      "inspected_spans_or_selectors": [
+        "entire manifest"
+      ],
+      "method": "read-only targeted nl/sed/rg or JSON payload inspection; SHA-256 from raw bytes at report close"
+    }
+  ],
+  "finding_dispositions": [
+    {
+      "id": "DR01",
+      "classification": "technical_decision",
+      "disposition": "closed in accepted body P05/P06/V07",
+      "reason": "Mandatory result/binding/admission/receipt/work budget independent of optional trace; separate bounded trace and fixed coverage; no trace/timing gameplay bindings; explicit cap-on/off continuation test."
+    },
+    {
+      "id": "DR02",
+      "classification": "technical_decision",
+      "disposition": "closed in accepted body B06/P06/V07",
+      "reason": "Real load-generated validator and trial startup control begin before BattleCore construction/start; actual phase-specific low-fuel/cancel tests required, same producer pipeline retained."
+    },
+    {
+      "id": "DR03",
+      "classification": "technical_decision",
+      "disposition": "explicit GEX implementation obligation in P04/P06",
+      "reason": "Private opaque fork/stage port required; operation-local control/staged observations preferred, explicit successful transfer/reset if fields used; no shared mutable A/B counter or raw public authority."
+    },
+    {
+      "id": "ROOT-CLASSIFICATION",
+      "classification": "technical_decision",
+      "disposition": "closed in §7",
+      "reason": "F06/F07 use canonical §8.1 primary classifications technical_decision/out_of_scope; approved policy/exclusion meaning unchanged."
+    }
+  ],
+  "acceptance_to_validation_seams": [
+    {
+      "acceptance": "CATP-E01[0]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "독립 외부 RON 입력이 API와 CLI에서 같은 production 로딩·컴파일·실행에 연결된다.",
+      "seams": [
+        "V01",
+        "V03"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E01[1]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "지원 설명은 실제 지원과 일치하고 미지원 조합은 명시적으로 거부된다. fixture-only 생성이나 콘텐츠 이름별 전용 runner로 성공을 대신하지 않는다.",
+      "seams": [
+        "V01",
+        "V02"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E02[0]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "같은 잘못된 입력에 API와 CLI가 동일 의미의 code/phase/source 진단을 제공한다.",
+      "seams": [
+        "V01",
+        "V02"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E02[1]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "구문·구조·최종 조합·컴파일·generated setup·시험 준비 실패는 알려진 실제 출처와 관련 입력을 보존하며 잘못된 후보를 성공으로 게시하지 않는다.",
+      "seams": [
+        "V02",
+        "V06",
+        "V07"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E03[0]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "독립 외부 RON의 변경이 공통 공개 코어를 거친 실제 전투 실행과 관찰 결과에 반영된다. 문서·컴파일 성공만을 실행으로 세지 않는다.",
+      "seams": [
+        "V03"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E03[1]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "같은 초기 authority·콘텐츠·seed·입력·clock은 적용 가능한 semantic 결과와 출처를 재현하고 trace 수집 여부가 gameplay 결과와 RNG를 바꾸지 않는다.",
+      "seams": [
+        "V04",
+        "V07"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E04[0]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "Explain/Preview의 반복 전후 state·authority·revision과 이어지는 결정론적 실행이 유지된다.",
+      "seams": [
+        "V04",
+        "V05"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E04[1]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "실제 선택 정의·효과 origin과 관찰을 설명하며 미구현 후속 기능의 의미를 실행된 결과처럼 꾸미지 않는다.",
+      "seams": [
+        "V01",
+        "V05"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E05[0]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "정상 A→B reload는 B의 실제 시험 준비 뒤 교체되고 새 state·token·입력·receipt가 B와 일치한다.",
+      "seams": [
+        "V06"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E05[1]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "잘못된 B와 검증은 성공했으나 시험 준비가 실패한 B는 A state·token·seed·입력·receipt를 반복 시도에서도 보존하며 이후 정상 B로 복구할 수 있다.",
+      "seams": [
+        "V06",
+        "V07"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E06[0]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "빈값·경계·초과·손상 요청의 결과가 실제 한계와 일치하고 실패가 유효한 시험 session을 교체하지 않는다.",
+      "seams": [
+        "V02",
+        "V06",
+        "V07"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E06[1]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "시험 취소·교체 때 더 이상 참조하지 않는 도입 상태를 회수하며 기존 publication·pin·save·profile·공개 API 계약은 current로 유지된다.",
+      "seams": [
+        "V06",
+        "V08"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    },
+    {
+      "acceptance": "CATP-E06[2]",
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CATP-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "acceptance_text": "실제 source·toolchain·workload·명령·nonzero 실행·receipt가 실행·재사용·남은 한계를 구별하고 prototype 수치는 공식 정책과 분리한다.",
+      "seams": [
+        "V03",
+        "V08",
+        "V09"
+      ],
+      "interpretation": "original acceptance unchanged; actual GEX execution still required"
+    }
+  ],
+  "unresolved_required_findings": [],
+  "open_material_policy": [],
+  "disposition": "accepted",
+  "review_limits": [
+    "Root independently reviewed successor clarifications; separate design helper did not review successor002.",
+    "55 initial workspace hashes plus exact additional helper read spans and 3 local dependency sources; selected source review only.",
+    "No new runtime tests/builds or implementation; final work controls/defaults/overhead remain mandatory GEX work.",
+    "Read helpers are not fresh completion auditors. P2G exact batch validation is separate and still required."
+  ]
+}

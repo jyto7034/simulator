@@ -1,3 +1,4 @@
+use crate::owned_collections::OwnedHashMap;
 use std::{cmp::Ordering, collections::HashMap};
 
 use serde::{Deserialize, Serialize};
@@ -112,19 +113,72 @@ impl EmployeeAccumulator {
     }
 }
 
-pub fn collect_battle_result_stats(
-    winner: BattleWinner,
-    event_log: &BattleEventLog,
-    participant_results: &[ParticipantBattleResult],
-    policy: &BattleResultStatsPolicy,
-) -> BattleResultStatsDto {
-    let mut unit_sources = HashMap::<UnitInstanceId, UnitSourceInfo>::new();
-    let mut employees = HashMap::<Uuid, EmployeeAccumulator>::new();
-    let mut active_deployments = HashMap::<UnitInstanceId, (Uuid, u64)>::new();
-    let mut duration_ms = 0;
-    let mut killed_enemy_count = 0_u32;
+#[derive(Debug, Clone)]
+pub(crate) struct BattleResultStatsAccumulator {
+    employee_participants_possible: bool,
+    unit_sources: OwnedHashMap<UnitInstanceId, UnitSourceInfo>,
+    employees: OwnedHashMap<Uuid, EmployeeAccumulator>,
+    active_deployments: OwnedHashMap<UnitInstanceId, (Uuid, u64)>,
+    duration_ms: u64,
+    killed_enemy_count: u32,
+}
 
-    for entry in &event_log.entries {
+crate::authoring::clone_shape::struct_shape!(BattleResultStatsAccumulator {
+    employee_participants_possible,
+    unit_sources,
+    employees,
+    active_deployments,
+    duration_ms,
+    killed_enemy_count,
+});
+crate::authoring::clone_shape::copy_shape!(UnitSourceInfo);
+crate::authoring::clone_shape::struct_shape!(EmployeeAccumulator { stats });
+crate::authoring::clone_shape::struct_shape!(BattleResultEmployeeStatsDto {
+    employee_uuid,
+    unit_instance_id,
+    survived,
+    became_incapacitated,
+    final_hp,
+    max_hp,
+    damage_dealt,
+    damage_taken,
+    kill_count,
+    basic_attack_count,
+    skill_cast_count,
+    deployed_count,
+    withdrawn_count,
+    deployed_time_ms,
+});
+
+impl Default for BattleResultStatsAccumulator {
+    fn default() -> Self {
+        Self::new(true)
+    }
+}
+
+impl BattleResultStatsAccumulator {
+    pub(crate) fn new(employee_participants_possible: bool) -> Self {
+        Self {
+            employee_participants_possible,
+            unit_sources: OwnedHashMap::new(),
+            employees: OwnedHashMap::new(),
+            active_deployments: OwnedHashMap::new(),
+            duration_ms: 0,
+            killed_enemy_count: 0,
+        }
+    }
+
+    #[inline]
+    pub(crate) fn should_observe(&self, event: &BattleLogEvent) -> bool {
+        self.employee_participants_possible
+            || matches!(
+                event,
+                BattleLogEvent::UnitDied { .. } | BattleLogEvent::BattleEnd { .. }
+            )
+    }
+
+    pub(crate) fn observe(&mut self, entry: &crate::game::battle::event_log::BattleEventLogEntry) {
+        debug_assert!(self.should_observe(&entry.event));
         if let BattleLogEvent::UnitSpawned {
             unit_instance_id,
             owner,
@@ -136,7 +190,7 @@ pub fn collect_battle_result_stats(
                 BattleUnitSourceIdentity::Employee { employee_uuid, .. } => Some(*employee_uuid),
                 _ => None,
             };
-            unit_sources.insert(
+            self.unit_sources.insert(
                 *unit_instance_id,
                 UnitSourceInfo {
                     owner: *owner,
@@ -144,62 +198,53 @@ pub fn collect_battle_result_stats(
                 },
             );
             if let Some(employee_uuid) = employee_uuid {
-                employees
+                self.employees
                     .entry(employee_uuid)
                     .and_modify(|employee| employee.stats.unit_instance_id = *unit_instance_id)
                     .or_insert_with(|| EmployeeAccumulator::new(employee_uuid, *unit_instance_id));
             }
         }
-    }
-
-    let participant_results_by_unit = participant_results
-        .iter()
-        .map(|participant| (participant.unit_instance_id, participant))
-        .collect::<HashMap<_, _>>();
-    for participant in participant_results
-        .iter()
-        .filter(|participant| participant.side == Side::Player)
-    {
-        let Some(employee_uuid) =
-            direct_employee_uuid(&unit_sources, &participant.unit_instance_id)
-        else {
-            continue;
-        };
-        let employee = employees.entry(employee_uuid).or_insert_with(|| {
-            EmployeeAccumulator::new(employee_uuid, participant.unit_instance_id)
-        });
-        employee.stats.became_incapacitated |= participant.became_incapacitated;
-    }
-
-    for entry in &event_log.entries {
+        if self.employees.is_empty()
+            && matches!(
+                &entry.event,
+                BattleLogEvent::AttackResolve { .. }
+                    | BattleLogEvent::AbilityCast { .. }
+                    | BattleLogEvent::HpChanged { .. }
+            )
+        {
+            return;
+        }
         match &entry.event {
             BattleLogEvent::UnitDeployed {
                 employee_uuid,
                 unit_instance_id,
                 ..
             } => {
-                let employee = employees
+                let employee = self
+                    .employees
                     .entry(*employee_uuid)
                     .or_insert_with(|| EmployeeAccumulator::new(*employee_uuid, *unit_instance_id));
                 employee.stats.unit_instance_id = *unit_instance_id;
                 employee.stats.deployed_count = employee.stats.deployed_count.saturating_add(1);
-                active_deployments.insert(*unit_instance_id, (*employee_uuid, entry.time_ms));
+                self.active_deployments
+                    .insert(*unit_instance_id, (*employee_uuid, entry.time_ms));
             }
             BattleLogEvent::UnitWithdrawn {
                 unit_instance_id, ..
             } => {
-                if let Some(employee_uuid) = unit_sources
+                if let Some(employee_uuid) = self
+                    .unit_sources
                     .get(unit_instance_id)
                     .and_then(|source| source.employee_uuid)
                 {
-                    if let Some(employee) = employees.get_mut(&employee_uuid) {
+                    if let Some(employee) = self.employees.get_mut(&employee_uuid) {
                         employee.stats.withdrawn_count =
                             employee.stats.withdrawn_count.saturating_add(1);
                     }
                 }
                 close_deployment(
-                    &mut employees,
-                    &mut active_deployments,
+                    &mut self.employees,
+                    &mut self.active_deployments,
                     *unit_instance_id,
                     entry.time_ms,
                 );
@@ -209,9 +254,9 @@ pub fn collect_battle_result_stats(
                 ..
             } => {
                 if let Some(employee_uuid) =
-                    direct_employee_uuid(&unit_sources, attacker_instance_id)
+                    direct_employee_uuid(&self.unit_sources, attacker_instance_id)
                 {
-                    if let Some(employee) = employees.get_mut(&employee_uuid) {
+                    if let Some(employee) = self.employees.get_mut(&employee_uuid) {
                         employee.stats.basic_attack_count =
                             employee.stats.basic_attack_count.saturating_add(1);
                     }
@@ -220,9 +265,10 @@ pub fn collect_battle_result_stats(
             BattleLogEvent::AbilityCast {
                 caster_instance_id, ..
             } => {
-                if let Some(employee_uuid) = direct_employee_uuid(&unit_sources, caster_instance_id)
+                if let Some(employee_uuid) =
+                    direct_employee_uuid(&self.unit_sources, caster_instance_id)
                 {
-                    if let Some(employee) = employees.get_mut(&employee_uuid) {
+                    if let Some(employee) = self.employees.get_mut(&employee_uuid) {
                         employee.stats.skill_cast_count =
                             employee.stats.skill_cast_count.saturating_add(1);
                     }
@@ -234,38 +280,43 @@ pub fn collect_battle_result_stats(
                 hp_before,
                 hp_after,
                 damage_source,
+                reason,
                 ..
             } => {
+                if *reason == crate::game::battle::event_log::HpChangeReason::HealthCost {
+                    return;
+                }
                 let actual_damage = hp_before.saturating_sub(*hp_after);
                 if actual_damage == 0 {
-                    continue;
+                    return;
                 }
                 if let Some(target_employee_uuid) =
-                    direct_employee_uuid(&unit_sources, target_instance_id)
+                    direct_employee_uuid(&self.unit_sources, target_instance_id)
                 {
-                    if let Some(employee) = employees.get_mut(&target_employee_uuid) {
+                    if let Some(employee) = self.employees.get_mut(&target_employee_uuid) {
                         employee.stats.damage_taken =
                             employee.stats.damage_taken.saturating_add(actual_damage);
                     }
                 }
                 let Some(source_instance_id) = source_instance_id else {
-                    continue;
+                    return;
                 };
                 if !is_first_slice_damage_source(*damage_source) {
-                    continue;
+                    return;
                 }
                 let Some(source_employee_uuid) =
-                    direct_employee_uuid(&unit_sources, source_instance_id)
+                    direct_employee_uuid(&self.unit_sources, source_instance_id)
                 else {
-                    continue;
+                    return;
                 };
-                let target_owner = unit_sources
+                let target_owner = self
+                    .unit_sources
                     .get(target_instance_id)
                     .map(|source| source.owner);
                 if target_owner == Some(Side::Player) {
-                    continue;
+                    return;
                 }
-                if let Some(employee) = employees.get_mut(&source_employee_uuid) {
+                if let Some(employee) = self.employees.get_mut(&source_employee_uuid) {
                     employee.stats.damage_dealt =
                         employee.stats.damage_dealt.saturating_add(actual_damage);
                 }
@@ -277,14 +328,14 @@ pub fn collect_battle_result_stats(
                 ..
             } => {
                 if *owner != Side::Player {
-                    killed_enemy_count = killed_enemy_count.saturating_add(1);
+                    self.killed_enemy_count = self.killed_enemy_count.saturating_add(1);
                 }
                 if let Some(killer_instance_id) = killer_instance_id {
                     if *owner != Side::Player {
                         if let Some(employee_uuid) =
-                            direct_employee_uuid(&unit_sources, killer_instance_id)
+                            direct_employee_uuid(&self.unit_sources, killer_instance_id)
                         {
-                            if let Some(employee) = employees.get_mut(&employee_uuid) {
+                            if let Some(employee) = self.employees.get_mut(&employee_uuid) {
                                 employee.stats.kill_count =
                                     employee.stats.kill_count.saturating_add(1);
                             }
@@ -292,19 +343,19 @@ pub fn collect_battle_result_stats(
                     }
                 }
                 close_deployment(
-                    &mut employees,
-                    &mut active_deployments,
+                    &mut self.employees,
+                    &mut self.active_deployments,
                     *unit_instance_id,
                     entry.time_ms,
                 );
             }
             BattleLogEvent::BattleEnd { .. } => {
-                duration_ms = entry.time_ms;
-                let open_deployments = active_deployments.keys().copied().collect::<Vec<_>>();
+                self.duration_ms = entry.time_ms;
+                let open_deployments = self.active_deployments.keys().copied().collect::<Vec<_>>();
                 for unit_instance_id in open_deployments {
                     close_deployment(
-                        &mut employees,
-                        &mut active_deployments,
+                        &mut self.employees,
+                        &mut self.active_deployments,
                         unit_instance_id,
                         entry.time_ms,
                     );
@@ -314,33 +365,74 @@ pub fn collect_battle_result_stats(
         }
     }
 
-    for employee in employees.values_mut() {
-        let Some(participant) = participant_results_by_unit.get(&employee.stats.unit_instance_id)
-        else {
-            continue;
-        };
-        employee.stats.survived = participant.survived;
-        employee.stats.final_hp = participant.final_hp;
-        employee.stats.max_hp = participant.max_hp;
+    pub(crate) fn finish(
+        mut self,
+        winner: BattleWinner,
+        participant_results: &[ParticipantBattleResult],
+        policy: &BattleResultStatsPolicy,
+    ) -> BattleResultStatsDto {
+        let participant_results_by_unit = participant_results
+            .iter()
+            .map(|participant| (participant.unit_instance_id, participant))
+            .collect::<HashMap<_, _>>();
+        for participant in participant_results
+            .iter()
+            .filter(|participant| participant.side == Side::Player)
+        {
+            let Some(employee_uuid) =
+                direct_employee_uuid(&self.unit_sources, &participant.unit_instance_id)
+            else {
+                continue;
+            };
+            let employee = self.employees.entry(employee_uuid).or_insert_with(|| {
+                EmployeeAccumulator::new(employee_uuid, participant.unit_instance_id)
+            });
+            employee.stats.became_incapacitated |= participant.became_incapacitated;
+        }
+
+        for employee in self.employees.values_mut() {
+            let Some(participant) =
+                participant_results_by_unit.get(&employee.stats.unit_instance_id)
+            else {
+                continue;
+            };
+            employee.stats.survived = participant.survived;
+            employee.stats.final_hp = participant.final_hp;
+            employee.stats.max_hp = participant.max_hp;
+        }
+
+        let mut employees = self
+            .employees
+            .into_values()
+            .map(|accumulator| accumulator.stats)
+            .collect::<Vec<_>>();
+        employees.sort_by(|left, right| left.employee_uuid.cmp(&right.employee_uuid));
+
+        let mvp = select_mvp(&employees, &policy.mvp);
+
+        BattleResultStatsDto {
+            battle: BattleResultBattleStatsDto {
+                duration_ms: self.duration_ms,
+                winner,
+                killed_enemy_count: self.killed_enemy_count,
+            },
+            employees,
+            mvp,
+        }
     }
+}
 
-    let mut employees = employees
-        .into_values()
-        .map(|accumulator| accumulator.stats)
-        .collect::<Vec<_>>();
-    employees.sort_by(|left, right| left.employee_uuid.cmp(&right.employee_uuid));
-
-    let mvp = select_mvp(&employees, &policy.mvp);
-
-    BattleResultStatsDto {
-        battle: BattleResultBattleStatsDto {
-            duration_ms,
-            winner,
-            killed_enemy_count,
-        },
-        employees,
-        mvp,
+pub fn collect_battle_result_stats(
+    winner: BattleWinner,
+    event_log: &BattleEventLog,
+    participant_results: &[ParticipantBattleResult],
+    policy: &BattleResultStatsPolicy,
+) -> BattleResultStatsDto {
+    let mut accumulator = BattleResultStatsAccumulator::default();
+    for entry in &event_log.entries {
+        accumulator.observe(entry);
     }
+    accumulator.finish(winner, participant_results, policy)
 }
 
 fn direct_employee_uuid(
@@ -353,8 +445,8 @@ fn direct_employee_uuid(
 }
 
 fn close_deployment(
-    employees: &mut HashMap<Uuid, EmployeeAccumulator>,
-    active_deployments: &mut HashMap<UnitInstanceId, (Uuid, u64)>,
+    employees: &mut OwnedHashMap<Uuid, EmployeeAccumulator>,
+    active_deployments: &mut OwnedHashMap<UnitInstanceId, (Uuid, u64)>,
     unit_instance_id: UnitInstanceId,
     end_ms: u64,
 ) {
@@ -379,19 +471,42 @@ fn is_first_slice_damage_source(
     )
 }
 
+struct MvpScoreEvaluation {
+    total: i64,
+    highlight: Option<BattleResultMetricHighlightDto>,
+}
+
+struct EvaluatedMvpCandidate<'a> {
+    employee: &'a BattleResultEmployeeStatsDto,
+    score: MvpScoreEvaluation,
+}
+
 fn select_mvp(
     employees: &[BattleResultEmployeeStatsDto],
     policy: &BattleResultMvpPolicy,
 ) -> Option<BattleResultMvpDto> {
     employees
         .iter()
-        .max_by(|left, right| compare_mvp_candidates(left, right, policy))
-        .map(|employee| {
-            let (score, highlight) = score_employee(employee, &policy.metric_weights);
+        .map(|employee| EvaluatedMvpCandidate {
+            employee,
+            score: evaluate_mvp_score(employee, &policy.metric_weights),
+        })
+        .max_by(|left, right| {
+            compare_mvp_candidates(
+                left.employee,
+                left.score.total,
+                right.employee,
+                right.score.total,
+                policy,
+            )
+        })
+        .map(|candidate| {
+            let employee = candidate.employee;
+            let MvpScoreEvaluation { total, highlight } = candidate.score;
             BattleResultMvpDto {
                 employee_uuid: employee.employee_uuid,
                 unit_instance_id: employee.unit_instance_id,
-                score,
+                score: total,
                 title: highlight
                     .as_ref()
                     .map(|highlight| highlight.title.clone())
@@ -403,13 +518,14 @@ fn select_mvp(
 
 fn compare_mvp_candidates(
     left: &BattleResultEmployeeStatsDto,
+    left_score: i64,
     right: &BattleResultEmployeeStatsDto,
+    right_score: i64,
     policy: &BattleResultMvpPolicy,
 ) -> Ordering {
     for tiebreaker in &policy.tiebreakers {
         let ordering = match tiebreaker {
-            BattleResultMvpTieBreaker::Score => score_total(left, &policy.metric_weights)
-                .cmp(&score_total(right, &policy.metric_weights)),
+            BattleResultMvpTieBreaker::Score => left_score.cmp(&right_score),
             BattleResultMvpTieBreaker::DamageDealt => left.damage_dealt.cmp(&right.damage_dealt),
             BattleResultMvpTieBreaker::KillCount => left.kill_count.cmp(&right.kill_count),
             BattleResultMvpTieBreaker::SkillCastCount => {
@@ -430,20 +546,10 @@ fn compare_mvp_candidates(
     right.employee_uuid.cmp(&left.employee_uuid)
 }
 
-fn score_total(
+fn evaluate_mvp_score(
     employee: &BattleResultEmployeeStatsDto,
     weights: &[BattleResultMvpMetricWeight],
-) -> i64 {
-    weights
-        .iter()
-        .map(|weight| metric_score(employee, weight))
-        .sum()
-}
-
-fn score_employee(
-    employee: &BattleResultEmployeeStatsDto,
-    weights: &[BattleResultMvpMetricWeight],
-) -> (i64, Option<BattleResultMetricHighlightDto>) {
+) -> MvpScoreEvaluation {
     let mut total = 0_i64;
     let mut highlight = None;
     for weight in weights {
@@ -467,7 +573,7 @@ fn score_employee(
             highlight = Some(candidate);
         }
     }
-    (total, highlight)
+    MvpScoreEvaluation { total, highlight }
 }
 
 fn metric_score(
@@ -518,6 +624,7 @@ mod tests {
 
     fn entry(seq: u64, time_ms: u64, event: BattleLogEvent) -> BattleEventLogEntry {
         BattleEventLogEntry {
+            skill_effect_source: None,
             time_ms,
             seq,
             cause: Default::default(),
@@ -554,6 +661,126 @@ mod tests {
                 ],
             },
         }
+    }
+
+    fn employee_stats(
+        id: u128,
+        damage_dealt: u32,
+        kill_count: u32,
+    ) -> BattleResultEmployeeStatsDto {
+        BattleResultEmployeeStatsDto {
+            employee_uuid: employee_uuid(id),
+            unit_instance_id: unit_id(100 + id),
+            survived: true,
+            became_incapacitated: false,
+            final_hp: 100,
+            max_hp: 100,
+            damage_dealt,
+            damage_taken: 0,
+            kill_count,
+            basic_attack_count: 0,
+            skill_cast_count: 0,
+            deployed_count: 1,
+            withdrawn_count: 0,
+            deployed_time_ms: 1_000,
+        }
+    }
+
+    #[test]
+    fn mvp_selection_and_publication_share_positive_saturated_score() {
+        let policy = BattleResultMvpPolicy {
+            metric_weights: vec![
+                BattleResultMvpMetricWeight {
+                    metric: BattleResultMetricKind::DamageDealt,
+                    weight: i64::MAX,
+                    title: "Extreme Damage".to_string(),
+                },
+                BattleResultMvpMetricWeight {
+                    metric: BattleResultMetricKind::KillCount,
+                    weight: i64::MAX,
+                    title: "Extreme Kills".to_string(),
+                },
+            ],
+            tiebreakers: vec![
+                BattleResultMvpTieBreaker::Score,
+                BattleResultMvpTieBreaker::DamageDealt,
+                BattleResultMvpTieBreaker::EmployeeUuid,
+            ],
+        };
+        let employees = [employee_stats(1, 1, 1), employee_stats(2, 0, 1)];
+
+        let mvp = select_mvp(&employees, &policy).expect("MVP candidate");
+
+        assert_eq!(mvp.employee_uuid, employee_uuid(1));
+        assert_eq!(mvp.score, i64::MAX);
+        assert_eq!(mvp.title, "Extreme Damage");
+        assert_eq!(mvp.highlighted_metrics.len(), 1);
+        assert_eq!(
+            mvp.highlighted_metrics[0],
+            BattleResultMetricHighlightDto {
+                metric: BattleResultMetricKind::DamageDealt,
+                value: 1,
+                weighted_score: i64::MAX,
+                title: "Extreme Damage".to_string(),
+            }
+        );
+    }
+
+    #[test]
+    fn mvp_selection_and_publication_share_negative_saturated_score() {
+        let policy = BattleResultMvpPolicy {
+            metric_weights: vec![
+                BattleResultMvpMetricWeight {
+                    metric: BattleResultMetricKind::DamageDealt,
+                    weight: i64::MIN,
+                    title: "Negative Damage".to_string(),
+                },
+                BattleResultMvpMetricWeight {
+                    metric: BattleResultMetricKind::KillCount,
+                    weight: i64::MIN,
+                    title: "Negative Kills".to_string(),
+                },
+            ],
+            tiebreakers: vec![
+                BattleResultMvpTieBreaker::Score,
+                BattleResultMvpTieBreaker::EmployeeUuid,
+            ],
+        };
+        let employees = [employee_stats(1, 1, 1), employee_stats(2, 0, 0)];
+
+        let mvp = select_mvp(&employees, &policy).expect("MVP candidate");
+
+        assert_eq!(mvp.employee_uuid, employee_uuid(2));
+        assert_eq!(mvp.score, 0);
+        assert_eq!(mvp.title, "Negative Damage");
+        assert_eq!(mvp.highlighted_metrics.len(), 1);
+        assert_eq!(
+            mvp.highlighted_metrics[0],
+            BattleResultMetricHighlightDto {
+                metric: BattleResultMetricKind::DamageDealt,
+                value: 0,
+                weighted_score: 0,
+                title: "Negative Damage".to_string(),
+            }
+        );
+    }
+
+    #[test]
+    fn mvp_uuid_fallback_is_deterministic_for_equal_candidates() {
+        let first = employee_stats(1, 0, 0);
+        let second = employee_stats(2, 0, 0);
+        let policy = policy().mvp;
+
+        let forward =
+            select_mvp(&[first.clone(), second.clone()], &policy).expect("forward MVP candidate");
+        let reverse = select_mvp(&[second, first], &policy).expect("reverse MVP candidate");
+
+        assert_eq!(forward.employee_uuid, employee_uuid(1));
+        assert_eq!(reverse.employee_uuid, employee_uuid(1));
+        assert_eq!(forward.score, 50);
+        assert_eq!(reverse.score, 50);
+        assert_eq!(forward.title, "Survivor");
+        assert_eq!(reverse.title, "Survivor");
     }
 
     fn spawn_employee(
@@ -726,7 +953,8 @@ mod tests {
                     winner: BattleWinner::Player,
                 },
             ),
-        ];
+        ]
+        .into();
         let participant_results = vec![ParticipantBattleResult {
             unit_instance_id: player,
             owned_uuid: employee,
@@ -737,12 +965,21 @@ mod tests {
             became_incapacitated: false,
         }];
 
-        let stats = collect_battle_result_stats(
+        let collected_stats = collect_battle_result_stats(
             BattleWinner::Player,
             &event_log,
             &participant_results,
             &policy(),
         );
+        let mut accumulator = BattleResultStatsAccumulator::default();
+        for event in &event_log.entries {
+            accumulator.observe(event);
+        }
+        event_log.entries.clear();
+        let stats = accumulator.finish(BattleWinner::Player, &participant_results, &policy());
+
+        assert!(event_log.entries.is_empty());
+        assert_eq!(stats, collected_stats);
 
         assert_eq!(stats.battle.duration_ms, 1_000);
         assert_eq!(stats.battle.killed_enemy_count, 1);
@@ -809,7 +1046,8 @@ mod tests {
                     winner: BattleWinner::Player,
                 },
             ),
-        ];
+        ]
+        .into();
         let participant_results = vec![
             ParticipantBattleResult {
                 unit_instance_id: second_unit,
@@ -907,7 +1145,8 @@ mod tests {
                     winner: BattleWinner::Player,
                 },
             ),
-        ];
+        ]
+        .into();
         let participant_results = vec![
             ParticipantBattleResult {
                 unit_instance_id: first_unit,
@@ -963,7 +1202,8 @@ mod tests {
                     winner: BattleWinner::Player,
                 },
             ),
-        ];
+        ]
+        .into();
         let participant_results = vec![
             ParticipantBattleResult {
                 unit_instance_id: player,

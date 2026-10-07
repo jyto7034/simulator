@@ -1,0 +1,93 @@
+{
+  "stage": "P2G-20",
+  "status": "aborted/non-current",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSL-002",
+    "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+  },
+  "Candidate Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CRSL-001",
+    "Content Digest": "sha256:38cbca407bacafdce0cacae9c1f5c484c2eace778a88c003b0b9641c6ed41c9e"
+  },
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CRSL-ABORT-001",
+        "Content Digest": "sha256:ad21e1e2783ff6128b30308cfe3224f6e40be69f7e7d21245c3a3e2ca3924025"
+      },
+      "payload": {
+        "Repository/environment identity": "/mnt/f/work/simulator",
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSL-002",
+          "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CRSL-001",
+          "Content Digest": "sha256:38cbca407bacafdce0cacae9c1f5c484c2eace778a88c003b0b9641c6ed41c9e"
+        },
+        "Observed sources": [
+          {
+            "path": "core_enhanced/docs/game_rulebook.md",
+            "sha256": "ef7637cb40ec8de40cecf1d9fe4ad9aabf6d4f54b06dcb1efbeccca7fd09fd06"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+            "sha256": "17214555540e7568229ca6f3b2b4c354aed3c2d53df2fa68b87b66955cb605d7"
+          },
+          {
+            "path": "core_enhanced/src/game/data/consumable_data.rs",
+            "sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114"
+          },
+          {
+            "path": "core_enhanced/src/game/ability/flow.rs",
+            "sha256": "2a04b224831857f2441d6c61769d25e6dcfeb90437e395977946dfea0f831f7e"
+          },
+          {
+            "path": "core_enhanced/src/game/ability/sustained.rs",
+            "sha256": "4e3dcfcdad9c3481760f34737b06c1a77493de9f6af8905ea42a7aa186f8a985"
+          },
+          {
+            "path": "core_enhanced/src/game/data/abnormality_data.rs",
+            "sha256": "bbda968e58c0bcfdeae09f7796ae4ed1fa92893fd89f8c250e4014a6e3275828"
+          },
+          {
+            "path": "core_enhanced/src/game/data/equipment_data.rs",
+            "sha256": "429c456b68d16b9a05cca581645a2a6ea10d40cfa7b290b041d6758a3bbb865d"
+          }
+        ],
+        "Observation command/method": "Read-only sed/rg from public employee stat pipeline, actual live InitialSkillCharge RON and adopted P03 redeploy rule; trace AutoCastStart and resonance writers",
+        "Observed result": "Current employee pipeline adds InitialSkillCharge after fragment assembly; game_rulebook.md:426-429 explicitly reapplies it on every deployment and next combat.md:71-73 preserves valid deployment effects. AutoCastStart and hit-charge also serve opponent/other authored actors. New employee resource rule must not silently rewrite unrelated enemy cadence.",
+        "Supported claim": "Clarify base amount versus valid explicit deployment effects and exact employee versus autonomous actor scope before code_reviewed publication",
+        "Limitations": "Static local review only; no runtime execution or approved target implementation claim"
+      }
+    }
+  ],
+  "Finding Triage": [
+    {
+      "id": "MF-CRSL-001",
+      "classification": "material_policy",
+      "affected": [
+        "PE-CRSL-01"
+      ],
+      "finding": "Absolute floor-only wording would discard explicitly preserved InitialSkillCharge/on-deploy effect; clarify base versus modifier order in policy owner."
+    },
+    {
+      "id": "MF-CRSL-002",
+      "classification": "material_policy",
+      "affected": [
+        "PE-CRSL-02",
+        "PE-CRSL-12"
+      ],
+      "finding": "Shared old resonance structs serve employee and opponent autonomous cadence. Clarify domain applicability and removed-field projection without selecting a new opponent skill cadence."
+    }
+  ],
+  "Produced code_reviewed Policy Element Revision Ref Set": [],
+  "Result Working Revision Ref": null,
+  "Review Batch Ref": null,
+  "next": "P2G-10 under existing CF-D06; no user question required after ownership evidence"
+}

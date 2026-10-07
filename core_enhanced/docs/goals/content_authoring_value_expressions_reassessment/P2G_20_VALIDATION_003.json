@@ -1,0 +1,125 @@
+{
+  "result": "passed",
+  "checks": [
+    {
+      "id": 1,
+      "check": "exact input/result/Decision/source plan identified",
+      "result": "passed"
+    },
+    {
+      "id": 2,
+      "check": "current/target/delta/proposal separated with substantive design",
+      "result": "passed"
+    },
+    {
+      "id": 3,
+      "check": "required runtime/data/store/consumer bodies reviewed",
+      "result": "passed"
+    },
+    {
+      "id": 4,
+      "check": "claims tied to source or explicit limits",
+      "result": "passed"
+    },
+    {
+      "id": 5,
+      "check": "findings classified/disposed in C01",
+      "result": "passed"
+    },
+    {
+      "id": 6,
+      "check": "no new policy meaning",
+      "result": "passed"
+    },
+    {
+      "id": 7,
+      "check": "technical choices preserve acceptance",
+      "result": "passed"
+    },
+    {
+      "id": 8,
+      "check": "no required planning evidence gap",
+      "result": "passed"
+    },
+    {
+      "id": 9,
+      "check": "exclusions do not expand scope",
+      "result": "passed"
+    },
+    {
+      "id": 10,
+      "check": "produced/current and complete binding coverage",
+      "result": "passed"
+    },
+    {
+      "id": 11,
+      "check": "9 code_reviewed result members",
+      "result": "passed"
+    },
+    {
+      "id": 12,
+      "check": "all bindings use identical exact result/source/plan",
+      "result": "passed"
+    },
+    {
+      "id": 13,
+      "check": "complete references checked before current",
+      "result": "passed"
+    },
+    {
+      "id": 14,
+      "check": "no old candidate/binding selected",
+      "result": "passed"
+    },
+    {
+      "id": 15,
+      "check": "no applicable Change",
+      "result": "passed"
+    },
+    {
+      "id": 16,
+      "check": "repair N/A",
+      "result": "passed"
+    },
+    {
+      "id": 17,
+      "check": "12 requirements each have exact fresh observations",
+      "result": "passed"
+    },
+    {
+      "id": 18,
+      "check": "27 acceptance members exact unchanged",
+      "result": "passed"
+    },
+    {
+      "id": 19,
+      "check": "current head selected only after complete validation",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "requirements": 12,
+    "observations": 12,
+    "reviewed_members": 9,
+    "bindings": 9,
+    "acceptance": 27,
+    "old_source_hash_matches": 34,
+    "predecessor_source_members_checked": 270
+  },
+  "semantic_evidence": {
+    "path": "CODE_REVIEW_003.ko.md",
+    "sha256": "0256c545729c50e78980cd31a530ca5136c8748ad6fa1a19ffb312ed2858a4df"
+  },
+  "note": "Source subset count is separately authoritative in P2G_20_SOURCE_EVIDENCE_001.json; no game test/audit pass",
+  "correction": {
+    "predecessor": "P2G_20_VALIDATION_001.json",
+    "defects": [
+      "Source Observation disposition incorrectly spelled current; P2G requires confirmed",
+      "summary predecessor source count shadowed by exit-check variable (19), actual source evidence contains270",
+      "candidate002 generation collapsed numbered Evidence/Observation IDs; unique ID assertion failed before current selection, all002 files retained"
+    ],
+    "disposition": "Preserve all 001 files; 001 Review Batch not eligible/current. Same valid P2G-10 input/source-plan, corrected new immutable batch 003 with newly issued observations/reviewed revisions/result/bindings. No Freeze existed; no post-freeze repair obligation.",
+    "current": "RB-CAVER-P2G20-003 / WR-CAVER-P2G20-003",
+    "fresh_checks": "all exact review payload references resolved, enum checked, acceptance bytes equal, result-basis bindings checked"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "U08_FOCUS_CONTINUATION_002",
+  "recorded_at_utc": "2026-10-07T02:34:37.137595+00:00",
+  "user_direction": "Continue after deliberate turn interruption; original roles/scope remain.",
+  "prior_focus_return": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/FOCUS_RETURN001.json",
+    "bytes": 15018,
+    "sha256": "f1b88dea66b05d23d7a2dcde6dd4a576d2370b2dad6a640b45a2a36cc3564a67"
+  },
+  "source_trace": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/SETUP_VS_TICK_SOURCE_TRACE001.json",
+    "bytes": 8137,
+    "sha256": "067c51ac4e782178de1bb10ac939e247fd08774caef5ae9962ff71b93c99e926"
+  },
+  "verifier_handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/composite_validator_review001/HANDOFF.json",
+    "bytes": 6595,
+    "sha256": "0d1f7532bff7ef906c1349446df00bde5ffd59cf30a851f4b016b06a07124cfc"
+  },
+  "root_readback": {
+    "current1322_hashes_unchanged": true,
+    "canonical4_and_current_policy6_hashes_unchanged": true,
+    "verifier_helper_whole_code_read": true,
+    "verifier_handoff_exact_refs_checked": 18,
+    "actual_check003_cases": 63,
+    "actual_check003_failures": 0,
+    "visible_relevant_processes": 0
+  },
+  "tool_acceptance": "Accept composite versioned validator implementation and pure verification evidence; no actual finalizer stage or whole goal PASS. New cfg must bind changed selector and helper exact refs.",
+  "execution_transfer": "Supplement returned runner0. Main /root/u08_test_author_resume gpt-6-astra/high is sole focused runner for next local game fixture attempt. Sol idle.",
+  "candidate": "One delayed wave at5000ms, fixed3actors using existing public preset schema. Unlike wave duplication, keeps single initial wake event; actual generated setup and scheduled100ms tick still unproven.",
+  "scope": "New unique attempt005 or later inside existing fault_websocket_successor001. Preserve failed001/003/004 and unexecuted malformed002. Original cap1000, stock100ms, admission/progression/HostTick work-limit/durable/refusal/reconnect/quit/Continue assertions unchanged. No product edits.",
+  "snapshot_requirement": "Record actual U08_EXECUTION_INPUT_SNAPSHOT_V1 before and after for new accepted attempt according to reviewed SCHEMA_CONTRACT. Cover final focused input set plus original1322 dependencies via actual primary/additional sets, retain exact external2 archives/members8 on primary for gap consistency. No backdating custom old snapshots. Source is438/4c7.",
+  "return_condition": "If3actor candidate admits but does not generate scheduled resource error, or another setup limit blocks it, return actual result and source-bound alternatives; do not lower cap or alter original oracle.",
+  "whole_complete": false
+}

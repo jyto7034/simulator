@@ -177,6 +177,7 @@ fn core_with_admin_grant_catalog_data() -> GameCore {
         live_pool: true,
     };
     let fragment = SkillFragmentMetadata {
+        corrosion_class: crate::game::data::skill_fragment_data::FragmentCorrosionClass::Ordinary,
         id: SkillFragmentId::from("fixture_fragment"),
         uuid: Uuid::from_u128(60_001),
         name: "Fixture Fragment".to_string(),
@@ -235,8 +236,9 @@ fn admin_enter_save_point_requires_an_active_run() {
 
 #[test]
 fn admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint() {
-    let game_data =
-        GameDataBase::load_live_embedded().expect("embedded live gameplay RON must be valid");
+    let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid")
+        .into_fixture_database_arc();
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     let start = core
@@ -292,14 +294,19 @@ fn admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint()
         .map_progression
         .current_node_id
         .expect("admin SavePoint is current");
-    assert_eq!(
-        run.map
-            .node(save_point_id)
-            .expect("SavePoint node")
-            .slot_id
-            .as_str(),
-        "save_archive"
-    );
+    assert!(run.map_progression.available_node_ids.is_empty());
+    assert!(!run
+        .map_progression
+        .completed_node_ids
+        .contains(&save_point_id));
+    let save_point_node = run.map.node(save_point_id).expect("SavePoint node");
+    assert_eq!(save_point_node.slot_id.as_str(), "save_archive");
+    assert_eq!(save_point_node.state, MapNodeState::Unavailable);
+    assert_eq!(save_point_node.visibility, MapNodeVisibility::Revealed);
+    let template = core.facility_template_for_map(&run.map).unwrap();
+    assert!(run
+        .map_progression
+        .validate_checkpoint_state(&run.map, &template));
 
     core.execute(player_id, PlayerBehavior::CompleteNode)
         .expect("admin SavePoint should complete and save a checkpoint");
@@ -323,6 +330,19 @@ fn admin_enter_maintenance_creates_valid_fixture_state() {
 
     assert_eq!(output.result_type, "AdminEnteredMaintenance");
     assert!(matches!(core.get_state(), GameState::InNode { .. }));
+    let run = core.state.run.as_ref().unwrap();
+    let fixture_id = run
+        .map_progression
+        .current_node_id
+        .expect("admin fixture is current");
+    assert_eq!(run.map_progression.available_node_ids, vec![fixture_id]);
+    assert!(run.map_progression.completed_node_ids.is_empty());
+    assert!(run.map.node(fixture_id).is_some_and(|node| {
+        node.slot_id.as_str() == "admin_fixture"
+            && node.category == MapNodeCategory::Maintenance
+            && node.state == MapNodeState::Unavailable
+            && node.visibility == MapNodeVisibility::Revealed
+    }));
     let selected_event = core.get_selected_event_snapshot_json().unwrap().unwrap();
     assert_eq!(selected_event["type"], "maintenance");
     assert!(selected_event["maintenance_options"].is_object());
@@ -330,8 +350,9 @@ fn admin_enter_maintenance_creates_valid_fixture_state() {
 
 #[test]
 fn admin_enter_event_uses_live_typed_event_projection() {
-    let game_data =
-        GameDataBase::load_live_embedded().expect("embedded live gameplay RON must be valid");
+    let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid")
+        .into_fixture_database_arc();
     let mut core = core_with_run(game_data);
     let output = core
         .execute_admin_command(AdminCommand::AdminEnterEvent {
@@ -454,6 +475,13 @@ fn admin_enter_headquarters_contact_creates_fixture_snapshot() {
 #[test]
 fn admin_grant_missing_equipment_is_rejected_without_inventory_change() {
     let mut core = empty_core_with_run();
+    let roots_before = serde_json::json!({
+        "inventory": &core.state.inventory,
+        "skill_fragments": &core.state.skill_fragments,
+        "roster": &core.state.roster,
+        "uuid_manager": &core.state.uuid_manager,
+        "enkephalin": &core.state.enkephalin,
+    });
 
     let err = core
         .execute_admin_command(AdminCommand::AdminGrantEquipment {
@@ -464,6 +492,66 @@ fn admin_grant_missing_equipment_is_rejected_without_inventory_change() {
 
     assert!(matches!(err, GameError::InvalidStaticData(_)));
     assert_eq!(core.state.inventory.equipments.len(), 0);
+    assert_eq!(
+        serde_json::json!({
+            "inventory": &core.state.inventory,
+            "skill_fragments": &core.state.skill_fragments,
+            "roster": &core.state.roster,
+            "uuid_manager": &core.state.uuid_manager,
+            "enkephalin": &core.state.enkephalin,
+        }),
+        roots_before
+    );
+}
+
+#[test]
+fn admin_grant_late_duplicate_uuid_failure_preserves_all_five_roots() {
+    let mut core = core_with_admin_grant_catalog_data();
+    let uuid_manager_before_setup = core.state.uuid_manager.clone();
+    let setup = core
+        .execute_admin_command(AdminCommand::AdminGrantEquipment {
+            definition_id: "fixture_armor".to_string(),
+            count: 2,
+        })
+        .unwrap();
+    let setup_uuids = setup.payload["item_uuids"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|uuid| Uuid::parse_str(uuid.as_str().unwrap()).unwrap())
+        .collect::<Vec<_>>();
+    core.state
+        .inventory
+        .equipments
+        .remove_item(setup_uuids[0])
+        .unwrap();
+    core.state.uuid_manager = uuid_manager_before_setup;
+    let roots_before = serde_json::json!({
+        "inventory": &core.state.inventory,
+        "skill_fragments": &core.state.skill_fragments,
+        "roster": &core.state.roster,
+        "uuid_manager": &core.state.uuid_manager,
+        "enkephalin": &core.state.enkephalin,
+    });
+
+    let error = core
+        .execute_admin_command(AdminCommand::AdminGrantEquipment {
+            definition_id: "fixture_armor".to_string(),
+            count: 2,
+        })
+        .unwrap_err();
+
+    assert!(matches!(error, GameError::InvalidAction));
+    assert_eq!(
+        serde_json::json!({
+            "inventory": &core.state.inventory,
+            "skill_fragments": &core.state.skill_fragments,
+            "roster": &core.state.roster,
+            "uuid_manager": &core.state.uuid_manager,
+            "enkephalin": &core.state.enkephalin,
+        }),
+        roots_before
+    );
 }
 
 #[test]
@@ -504,6 +592,15 @@ fn admin_consumable_grants_share_one_definition_stack_and_report_post_quantity()
 #[test]
 fn admin_equipment_grant_crosses_former_cap_and_grows_reserve_without_inventory_full() {
     let mut core = core_with_admin_grant_catalog_data();
+    let skill_fragments_before = serde_json::to_value(&core.state.skill_fragments).unwrap();
+    let roster_before = serde_json::to_value(&core.state.roster).unwrap();
+    let enkephalin_before = serde_json::to_value(&core.state.enkephalin).unwrap();
+    let mut expected_uuid_manager = core.state.uuid_manager.clone();
+    let expected_item_uuids = (0..51)
+        .map(|_| expected_uuid_manager.next_owned_equipment())
+        .collect::<Vec<_>>();
+    let expected_next_uuid = expected_uuid_manager
+        .peek(crate::game::managers::uuid_manager::UuidManager::NS_OWNED_EQUIPMENT);
 
     let output = core
         .execute_admin_command(AdminCommand::AdminGrantEquipment {
@@ -513,10 +610,36 @@ fn admin_equipment_grant_crosses_former_cap_and_grows_reserve_without_inventory_
         .unwrap();
 
     assert_eq!(output.result_type, "AdminGrantedEquipment");
-    assert_eq!(output.payload["item_uuids"].as_array().unwrap().len(), 51);
+    assert_eq!(
+        output.payload["item_uuids"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|uuid| Uuid::parse_str(uuid.as_str().unwrap()).unwrap())
+            .collect::<Vec<_>>(),
+        expected_item_uuids
+    );
     assert_eq!(core.state.inventory.equipments.len(), 51);
     assert_eq!(core.state.inventory.occupied_slot_count(), 51);
     assert_eq!(core.state.inventory.reserved_slot_count(), 60);
+    assert_eq!(
+        serde_json::to_value(&core.state.skill_fragments).unwrap(),
+        skill_fragments_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.roster).unwrap(),
+        roster_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.enkephalin).unwrap(),
+        enkephalin_before
+    );
+    assert_eq!(
+        core.state
+            .uuid_manager
+            .peek(crate::game::managers::uuid_manager::UuidManager::NS_OWNED_EQUIPMENT),
+        expected_next_uuid
+    );
 }
 
 #[test]

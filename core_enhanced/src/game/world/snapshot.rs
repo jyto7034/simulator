@@ -14,18 +14,16 @@ use crate::game::behavior::{
     EncounterCompendiumAbnormalitySnapshotDto, EncounterCompendiumCorrosionSnapshotDto,
     EncounterCompendiumSnapshotDto, GameError, GameStateContextDto,
     InventoryEquipmentMaterialSnapshotDto, InventoryEquipmentSnapshotDto,
-    InventorySkillFragmentProgressSnapshotDto, InventorySkillFragmentSnapshotDto,
-    InventorySnapshotDto, MapNavigationSnapshotDto, MonolithProgressSnapshotDto,
-    MonolithResidualSnapshotDto, MonolithRunSnapshotDto, PendingResearchDeliverySnapshotDto,
-    RewardOptionSnapshotDto, RunAbnormalityResearchEntrySnapshotDto,
-    RunAbnormalityResearchSnapshotDto, RunProgressionSnapshotDto, RunResourcesSnapshotDto,
-    RunSnapshotDto, SelectedEventSnapshotDto, SkillCatalogCastTargetDto, SkillCatalogDeliveryKind,
-    SkillCatalogDto, SkillCatalogSkillDto, SkillCatalogStepDto, SkillCatalogTileAreaDto,
-    SkillFragmentProgressSnapshotDto, SnapshotErrorDto, VisualNovelChoicePreviewDto,
+    InventorySkillFragmentSnapshotDto, InventorySnapshotDto, MapNavigationSnapshotDto,
+    MonolithProgressSnapshotDto, MonolithResidualSnapshotDto, MonolithRunSnapshotDto,
+    PlayerProfileSnapshotDto, RewardOptionSnapshotDto, RunProgressionSnapshotDto,
+    RunResourcesSnapshotDto, RunSnapshotDto, SelectedEventSnapshotDto, SkillCatalogCastTargetDto,
+    SkillCatalogDeliveryKind, SkillCatalogDto, SkillCatalogSkillDto, SkillCatalogStepDto,
+    SkillCatalogTileAreaDto, SnapshotErrorDto, VisualNovelChoicePreviewDto,
     VisualNovelChoiceSnapshotDto, VisualNovelPresentationModeDto, VisualNovelSnapshotDto,
     VisualNovelSourceDto, VisualNovelSpeakerDto, VisualNovelSpeakerPositionDto,
 };
-use crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee;
+use crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee_with_relics;
 use crate::game::data::visual_novel_data::{
     VisualNovelBackground, VisualNovelChoicePreview, VisualNovelDefinition,
     VisualNovelSceneDefinition, VisualNovelSceneNext, VisualNovelSpeakerPosition,
@@ -35,47 +33,38 @@ use crate::game::resources::{ActiveNodeContent, GameState};
 use crate::game::reward::RewardOption;
 use crate::game::visual_novel::{VisualNovelSessionPresentationMode, VisualNovelSource};
 
-fn snapshot_game_error_code(error: &GameError) -> &'static str {
-    match error {
-        GameError::EventNotFound => "event_not_found",
-        GameError::EventTypeMismatch => "event_type_mismatch",
-        GameError::InvalidAction => "invalid_action",
-        GameError::ActionUnavailable { reason, .. } => reason.as_str(),
-        GameError::InvalidBattleResyncSeq { .. } => "invalid_battle_resync_seq",
-        GameError::BattleStateRevisionOverflow => "battle_state_revision_overflow",
-        GameError::MissingBattleStateAuthority { .. } => "missing_battle_state_authority",
-        GameError::StaleBattleStateAuthority { .. } => "stale_battle_state_authority",
-        GameError::NotInShopState => "not_in_shop_state",
-        GameError::NotInRewardState => "not_in_reward_state",
-        GameError::ShopItemNotFound => "shop_item_not_found",
-        GameError::InventoryFull => "inventory_full",
-        GameError::InventoryItemNotFound => "inventory_item_not_found",
-        GameError::InventoryItemNotRemovable => "inventory_item_not_removable",
-        GameError::InsufficientResources => "insufficient_resources",
-        GameError::MissingResource(_) => "missing_resource",
-        GameError::InvalidUnitStats(_) => "invalid_unit_stats",
-        GameError::InvalidStaticData(_) => "invalid_static_data",
-        GameError::NotImplemented(_) => "not_implemented",
-        GameError::SkillFragmentIncompatible { .. } => "skill_fragment_incompatible",
-        GameError::OutOfBounds => "out_of_bounds",
-        GameError::PositionOccupied => "position_occupied",
-        GameError::StaticObstacleBlocked => "static_obstacle_blocked",
-        GameError::UnitAlreadyPlaced => "unit_already_placed",
-        GameError::UnitNotFound => "unit_not_found",
-    }
-}
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+const COMBAT_TRACE_CAPABILITY_AVAILABLE: bool = true;
+#[cfg(not(any(test, debug_assertions, feature = "test-fixtures")))]
+const COMBAT_TRACE_CAPABILITY_AVAILABLE: bool = false;
 
 fn snapshot_game_error_message(error: &GameError) -> String {
     match error {
+        GameError::BattleRuntimeFault(fault) => {
+            format!("{} at {}", fault.code.as_str(), fault.site)
+        }
+        GameError::ValueExpressionFault(fault) => fault.to_string(),
         GameError::EventNotFound => "event not found".to_string(),
         GameError::EventTypeMismatch => "event type mismatch".to_string(),
         GameError::InvalidAction => "invalid action".to_string(),
+        GameError::TutorialCompletionRequired { game_mode } => {
+            format!("tutorial completion required for {game_mode:?}")
+        }
         GameError::ActionUnavailable { action, reason } => {
             format!("action unavailable: {action:?} ({reason:?})")
         }
+        GameError::WeaponRequired => "weapon required".to_string(),
         GameError::InvalidBattleResyncSeq { requested, latest } => {
             format!("invalid battle resync seq: requested {requested}, latest {latest}")
         }
+        GameError::BattleSnapshotResyncRequired {
+            requested,
+            oldest_available_after_seq,
+            latest,
+        } => format!(
+            "battle snapshot resync required: requested {requested}, oldest available after seq \
+             {oldest_available_after_seq}, latest {latest}"
+        ),
         GameError::BattleStateRevisionOverflow => "battle state revision overflow".to_string(),
         GameError::MissingBattleStateAuthority { current } => format!(
             "missing battle state authority: current {}@{}",
@@ -97,7 +86,9 @@ fn snapshot_game_error_message(error: &GameError) -> String {
         GameError::InsufficientResources => "insufficient resources".to_string(),
         GameError::MissingResource(resource) => format!("missing resource: {resource}"),
         GameError::InvalidUnitStats(reason) => format!("invalid unit stats: {reason}"),
-        GameError::InvalidStaticData(reason) => format!("invalid static data: {reason}"),
+        GameError::InvalidStaticData(reason) | GameError::InvalidCommandData(reason) => {
+            format!("invalid static data: {reason}")
+        }
         GameError::NotImplemented(feature) => format!("not implemented: {feature}"),
         GameError::SkillFragmentIncompatible {
             fragment_id,
@@ -116,7 +107,7 @@ fn snapshot_game_error_message(error: &GameError) -> String {
 
 fn effective_profile_error_dto(error: &GameError) -> SnapshotErrorDto {
     SnapshotErrorDto {
-        code: snapshot_game_error_code(error).to_string(),
+        code: error.code().to_string(),
         message: snapshot_game_error_message(error),
     }
 }
@@ -256,38 +247,6 @@ impl GameCore {
                 current_floor_seed: run.current_floor_seed(),
             }
         });
-        let abnormality_research = self.state.run.as_ref().map(|state| {
-            let mut entries = state
-                .abnormality_research
-                .entries
-                .iter()
-                .map(|(abnormality_id, entry)| {
-                    let response_complete_skill_fragment_id = self
-                        .game_data
-                        .abnormality_data
-                        .get_by_id(abnormality_id)
-                        .and_then(|abnormality| {
-                            abnormality.response_complete_skill_fragment_id.clone()
-                        });
-                    RunAbnormalityResearchEntrySnapshotDto {
-                        abnormality_id: abnormality_id.clone(),
-                        research_points: entry.research_points,
-                        research_required: entry.research_required,
-                        response_complete: entry.response_complete,
-                        suppression_wins: entry.suppression_wins,
-                        last_encountered_floor: entry.last_encountered_floor,
-                        completed_at_floor: entry.completed_at_floor,
-                        unique_fragment_granted: entry.unique_fragment_granted,
-                        response_complete_skill_fragment_id,
-                    }
-                })
-                .collect::<Vec<_>>();
-            entries.sort_by(|left, right| left.abnormality_id.cmp(&right.abnormality_id));
-            RunAbnormalityResearchSnapshotDto {
-                entries,
-                all_response_complete: state.abnormality_research.all_response_complete(),
-            }
-        });
         let map_navigation = self.state.run.as_ref().and_then(|state| {
             let progression = &state.map_progression;
             progression
@@ -311,14 +270,13 @@ impl GameCore {
                         natural_outcome: match progress.natural_outcome {
                             crate::game::monolith::NaturalEliteOutcome::Unresolved => "unresolved",
                             crate::game::monolith::NaturalEliteOutcome::Victory => "victory",
-                            crate::game::monolith::NaturalEliteOutcome::Failed => "failed",
                         }
                         .to_string(),
                         victories: progress.victories,
                         purchased: progress.purchased,
                         uses_remaining: progress.uses_remaining,
                         active_node_id: progress.active_node_id,
-                        unique_fragment_granted: progress.unique_fragment_granted,
+                        remanifestation_failed: progress.remanifestation_failed,
                         residual_created: progress.residual_created,
                     })
                 })
@@ -364,6 +322,18 @@ impl GameCore {
         });
         let enkephalin = self.state.enkephalin.amount;
         let encounter_compendium = self.get_encounter_compendium_snapshot_dto()?;
+        let player_profile = PlayerProfileSnapshotDto {
+            standard_tutorial_completed: self.state.player_profile.standard_tutorial_completed,
+            highest_floor_reached: self.state.player_profile.highest_floor_reached,
+            longest_deathless_floor_streak: self
+                .state
+                .player_profile
+                .longest_deathless_floor_streak,
+            all_live_final_bosses_defeated: self
+                .state
+                .player_profile
+                .all_live_final_bosses_defeated,
+        };
         let combat_recovery_restriction = self.state.run.as_ref().and_then(|run| {
             run.combat_recovery_restriction.as_ref().map(|restriction| {
                 CombatRecoveryRestrictionSnapshotDto {
@@ -382,8 +352,8 @@ impl GameCore {
                 .to_dto(self.checkpoint_payload_is_loadable()),
             combat_recovery_restriction,
             run_progression,
-            abnormality_research,
             monolith,
+            player_profile,
             encounter_compendium,
             map_navigation,
             map,
@@ -401,6 +371,7 @@ impl GameCore {
         &self,
     ) -> Result<EncounterCompendiumSnapshotDto, GameError> {
         self.state
+            .player_profile
             .encounter_compendium
             .validate_persisted()
             .map_err(GameError::InvalidStaticData)?;
@@ -410,21 +381,17 @@ impl GameCore {
             .items
             .iter()
             .map(|metadata| {
-                let discovered = self
+                let registered = self
                     .state
+                    .player_profile
                     .encounter_compendium
-                    .discovered_abnormality_ids
+                    .registered_ids
                     .contains(&metadata.id);
                 EncounterCompendiumAbnormalitySnapshotDto {
                     abnormality_id: metadata.id.clone(),
-                    discovered,
-                    defeated: self
-                        .state
-                        .encounter_compendium
-                        .defeated_abnormality_ids
-                        .contains(&metadata.id),
-                    name: discovered.then(|| metadata.name.clone()),
-                    risk_level: discovered.then_some(metadata.risk_level),
+                    registered,
+                    name: registered.then(|| metadata.name.clone()),
+                    risk_level: registered.then_some(metadata.risk_level),
                 }
             })
             .collect();
@@ -434,20 +401,16 @@ impl GameCore {
             .profiles
             .iter()
             .map(|metadata| {
-                let discovered = self
+                let registered = self
                     .state
+                    .player_profile
                     .encounter_compendium
-                    .discovered_corrosion_profile_ids
+                    .registered_ids
                     .contains(&metadata.id);
                 EncounterCompendiumCorrosionSnapshotDto {
                     profile_id: metadata.id.clone(),
-                    discovered,
-                    defeated: self
-                        .state
-                        .encounter_compendium
-                        .defeated_corrosion_profile_ids
-                        .contains(&metadata.id),
-                    name: discovered.then(|| metadata.name.clone()),
+                    registered,
+                    name: registered.then(|| metadata.name.clone()),
                 }
             })
             .collect();
@@ -458,7 +421,7 @@ impl GameCore {
     }
 
     pub fn get_run_snapshot_json(&self) -> Result<Value, GameError> {
-        serde_json::to_value(self.get_run_snapshot_dto()?)
+        crate::authoring::projection::to_value(self.get_run_snapshot_dto()?)
             .map_err(|error| GameError::InvalidStaticData(error.to_string()))
     }
 
@@ -554,6 +517,7 @@ impl GameCore {
                     omen: run.and_then(|run| run.boss_omen.node_confirm_omen(node_id)),
                     monolith_conversion: self.monolith_conversion_snapshot(),
                     monolith_remanifestation: self.monolith_remanifestation_snapshot(),
+                    mastered_elite_resolution: self.mastered_elite_resolution_dto(),
                 }
             }
             GameState::InNode {
@@ -573,6 +537,9 @@ impl GameCore {
             GameState::CombatResult { battle_uuid } => {
                 GameStateContextDto::CombatResult { battle_uuid }
             }
+            GameState::MasteredEliteSweepResult { sweep_uuid } => {
+                GameStateContextDto::MasteredEliteSweepResult { sweep_uuid }
+            }
             GameState::InBattle { battle_uuid } => {
                 let active = self
                     .state
@@ -584,7 +551,7 @@ impl GameCore {
                     .run
                     .as_ref()
                     .map(|run| run.abnormality_attempt_dto(active.node_id));
-                let can_retreat = !active.execution.is_finished();
+                let can_retreat = self.active_battle_retreat_available();
                 GameStateContextDto::InBattle {
                     battle_uuid,
                     node_type: Some(active.node_type),
@@ -592,6 +559,7 @@ impl GameCore {
                     encounter_id: Some(active.encounter_id.clone()),
                     combat_preview: Some(active.combat_preview.clone()),
                     battle_state_revision: active.battle_state_revision,
+                    tactical_resource: active.tactical_resource.to_dto(),
                     deployment: active.live_deployment_dto(active.employee_roster()),
                     playback: Some(active.playback_state()),
                     abnormality_attempt,
@@ -620,6 +588,7 @@ impl GameCore {
             .map(|skill| {
                 let cast_target = skill.cast_target_definition().map(
                     |(target, reach, target_range, air_capable)| SkillCatalogCastTargetDto {
+                        selection: skill.cast_selection(),
                         target_policy: target.clone(),
                         reach,
                         target_range: target_range.cloned(),
@@ -679,59 +648,68 @@ impl GameCore {
             .collect::<Vec<_>>();
         skills.sort_by(|left, right| left.skill_id.cmp(&right.skill_id));
         SkillCatalogDto {
-            version: 2,
+            version: 3,
             range_source_of_truth: "range_previews.final_cells".to_string(),
             skills,
         }
     }
 
-    fn skill_fragment_progress_snapshot(
-        progress: &crate::game::skill_fragment::SkillFragmentProgress,
-    ) -> SkillFragmentProgressSnapshotDto {
-        SkillFragmentProgressSnapshotDto {
-            research_progress: progress.research_progress,
-            research_completion_count: progress.research_completion_count,
-            upgrade_level: progress.upgrade_level,
-            awakening_progress: progress.awakening_progress,
-            awakening_available: progress.awakening_available,
-            awakened: progress.awakened,
-        }
+    pub(super) fn fragment_forms_snapshot(
+        &self,
+        copy: &crate::game::skill_fragment::OwnedFragment,
+    ) -> Vec<crate::game::behavior::FragmentFormSnapshotDto> {
+        let Some(metadata) = self
+            .game_data
+            .skill_fragment_data
+            .get_by_id(&copy.definition_id)
+        else {
+            return vec![];
+        };
+        let crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
+            forms,
+            ..
+        } = &metadata.effect
+        else {
+            return vec![];
+        };
+        forms
+            .iter()
+            .map(|(id, form)| {
+                let unlock_unavailable_reason =
+                    self.fragment_form_unavailable_reason(copy.copy_uuid, id, false);
+                let select_unavailable_reason =
+                    self.fragment_form_unavailable_reason(copy.copy_uuid, id, true);
+                crate::game::behavior::FragmentFormSnapshotDto {
+                    form_id: id.clone(),
+                    skill_id: form.skill_id.clone(),
+                    resonance_max: form.resonance_max,
+                    unlocked: copy.unlocked_forms.contains(id),
+                    selected: copy.selected_form == *id,
+                    can_unlock: unlock_unavailable_reason.is_none(),
+                    can_select: select_unavailable_reason.is_none(),
+                    unlock_unavailable_reason,
+                    select_unavailable_reason,
+                    recipe: form.bloom_recipe.clone(),
+                }
+            })
+            .collect()
     }
 
     pub fn get_inventory_snapshot_dto(&self) -> Result<InventorySnapshotDto, GameError> {
         let inventory = self.inventory()?;
-        let skill_fragments = self
-            .state
-            .skill_fragments
-            .owned_ids()
-            .map(|fragment_id| {
-                let metadata = self.game_data.skill_fragment_data.get_by_id(fragment_id);
-                let progress = self.state.skill_fragments.progress(fragment_id);
-                InventorySkillFragmentSnapshotDto {
-                    id: fragment_id.clone(),
-                    count: self.state.skill_fragments.count(fragment_id),
-                    name: metadata.map(|fragment| fragment.name.clone()),
-                    effect: metadata
-                        .map(|fragment| wire_skill_fragment_effect_label(&fragment.effect).into()),
-                    requirements: metadata.map(|fragment| fragment.compatibility.clone()),
-                    progress: Self::skill_fragment_progress_snapshot(&progress),
-                }
-            })
-            .collect::<Vec<_>>();
-        let skill_fragment_progress = self
-            .state
-            .skill_fragments
-            .progress_entries()
-            .map(|(fragment_id, progress)| {
-                let metadata = self.game_data.skill_fragment_data.get_by_id(fragment_id);
-                InventorySkillFragmentProgressSnapshotDto {
-                    id: fragment_id.clone(),
-                    owned_count: self.state.skill_fragments.count(fragment_id),
-                    name: metadata.map(|fragment| fragment.name.clone()),
-                    progress: Self::skill_fragment_progress_snapshot(&progress),
-                }
-            })
-            .collect::<Vec<_>>();
+        let skill_fragments = self.state.skill_fragments.copies().map(|copy| {
+            let metadata = self.game_data.skill_fragment_data.get_by_id(&copy.definition_id);
+            let (dismantle_recipe, unavailable_reason) = match metadata.map(|m| &m.effect) {
+                Some(crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill { dismantle_recipe, .. }) => (dismantle_recipe.clone(), None),
+                Some(_) => (None, Some("fragment_active_skill_unavailable".into())),
+                None => (None, Some("fragment_definition_missing".into())),
+            };
+            InventorySkillFragmentSnapshotDto {
+                copy: copy.clone(), definition_count: self.state.skill_fragments.count(&copy.definition_id),
+                name: metadata.map(|m| m.name.clone()), effect: metadata.map(|m| wire_skill_fragment_effect_label(&m.effect).into()),
+                forms: self.fragment_forms_snapshot(copy), dismantle_recipe, unavailable_reason,
+            }
+        }).collect::<Vec<_>>();
 
         let mut equipments = inventory
             .equipments
@@ -781,22 +759,13 @@ impl GameCore {
             equipment_materials,
             consumables,
             skill_fragments,
-            skill_fragment_progress,
-            pending_research_deliveries: self
-                .state
-                .skill_fragments
-                .pending_research_deliveries()
-                .map(|(fragment_id, count)| PendingResearchDeliverySnapshotDto {
-                    fragment_id: fragment_id.clone(),
-                    count,
-                })
-                .collect::<Vec<_>>(),
+            fragment_dust_usage: "reserved_legacy_asset_not_used_by_fragment_recipes".into(),
             fragment_dust: self.state.skill_fragments.fragment_dust(),
         })
     }
 
     pub fn get_inventory_snapshot_json(&self) -> Result<Value, GameError> {
-        serde_json::to_value(self.get_inventory_snapshot_dto()?)
+        crate::authoring::projection::to_value(self.get_inventory_snapshot_dto()?)
             .map_err(|error| GameError::InvalidStaticData(error.to_string()))
     }
 
@@ -807,10 +776,11 @@ impl GameCore {
         let mut employees = roster
             .iter()
             .map(|employee| -> Result<EmployeeSnapshotDto, GameError> {
-                let effective_profile_result = effective_combat_profile_for_employee(
+                let effective_profile_result = effective_combat_profile_for_employee_with_relics(
                     roster,
                     inventory,
                     &self.state.skill_fragments,
+                    &self.state.relics,
                     &self.game_data,
                     employee.uuid,
                 );
@@ -818,25 +788,34 @@ impl GameCore {
                     Ok(profile) => (Some(profile), None),
                     Err(error) => (None, Some(effective_profile_error_dto(&error))),
                 };
-                let skill_fragment_compatibility = self
-                    .state
-                    .skill_fragments
-                    .owned_ids()
-                    .map(|fragment_id| {
-                        let metadata = self.game_data.skill_fragment_data.get_by_id(fragment_id);
-                        let report = self.skill_fragment_compatibility_report_for_employee(
-                            employee.uuid,
-                            fragment_id,
-                        )?;
-                        Ok(EmployeeSkillFragmentCompatibilitySnapshotDto {
-                            id: fragment_id.clone(),
-                            name: metadata.map(|fragment| fragment.name.clone()),
-                            is_compatible: report.is_compatible,
-                            failure_codes: report.failure_codes,
-                            requirements: metadata.map(|fragment| fragment.compatibility.clone()),
+                let skill_fragment_compatibility =
+                    self.state
+                        .skill_fragments
+                        .copies()
+                        .map(|copy| {
+                            let metadata = self
+                                .game_data
+                                .skill_fragment_data
+                                .get_by_id(&copy.definition_id);
+                            let report = self.skill_fragment_compatibility_report_for_employee(
+                                employee.uuid,
+                                copy.copy_uuid,
+                            );
+                            let unavailable_reason = report.as_ref().err().map(|_| {
+                                "fragment_active_skill_or_profile_unavailable".to_string()
+                            });
+                            EmployeeSkillFragmentCompatibilitySnapshotDto {
+                                copy_uuid: copy.copy_uuid,
+                                definition_id: copy.definition_id.clone(),
+                                selected_form: copy.selected_form.clone(),
+                                name: metadata.map(|m| m.name.clone()),
+                                is_compatible: report.as_ref().is_ok_and(|r| r.is_compatible),
+                                failure_codes: report.map(|r| r.failure_codes).unwrap_or_default(),
+                                requirements: metadata.map(|m| m.compatibility.clone()),
+                                unavailable_reason,
+                            }
                         })
-                    })
-                    .collect::<Result<Vec<_>, GameError>>()?;
+                        .collect::<Vec<_>>();
                 Ok(EmployeeSnapshotDto {
                     uuid: employee.uuid,
                     employee_definition_id: employee.employee_definition_id.clone(),
@@ -845,6 +824,7 @@ impl GameCore {
                     level: employee.level,
                     experience: employee.experience,
                     condition: EmployeeConditionSnapshotDto {
+                        breakdown_remaining_nodes: employee.breakdown.remaining_nodes(),
                         physical_damage: employee.condition.physical_damage,
                         physical_state: employee.condition.physical_state(),
                         trauma: employee.condition.trauma,
@@ -901,10 +881,6 @@ impl GameCore {
                         .into(),
                         base_stats: employee.combat_profile.battle_profile.stats,
                         basic_attack: employee.combat_profile.battle_profile.basic_attack.clone(),
-                        deployment_affinity: employee
-                            .combat_profile
-                            .battle_profile
-                            .deployment_affinity,
                         effective_stats: effective_profile.as_ref().map(|profile| profile.stats),
                         effective_basic_attack: effective_profile
                             .as_ref()
@@ -923,8 +899,15 @@ impl GameCore {
                     skill_fragments: EmployeeSkillFragmentsSnapshotDto {
                         equipped: employee
                             .skill_fragments
-                            .equipped_ids()
+                            .baseline_ids()
                             .iter()
+                            .chain(
+                                employee
+                                    .skill_fragments
+                                    .active_copy_uuid()
+                                    .and_then(|id| self.state.skill_fragments.get(&id))
+                                    .map(|copy| &copy.definition_id),
+                            )
                             .map(|fragment_id| {
                                 let metadata =
                                     self.game_data.skill_fragment_data.get_by_id(fragment_id);
@@ -938,8 +921,7 @@ impl GameCore {
                             })
                             .collect::<Vec<_>>(),
                         baseline_ids: employee.skill_fragments.baseline_ids().to_vec(),
-                        active_fragment_id: employee.skill_fragments.active_fragment_id().cloned(),
-                        equipped_ids: employee.skill_fragments.equipped_ids(),
+                        active_copy_uuid: employee.skill_fragments.active_copy_uuid(),
                         compatibility: skill_fragment_compatibility,
                     },
                     active_consumable_modifier: employee.active_consumable_modifier.as_ref().map(
@@ -991,7 +973,7 @@ impl GameCore {
     }
 
     pub fn get_employee_roster_snapshot_json(&self) -> Result<Value, GameError> {
-        serde_json::to_value(self.get_employee_roster_snapshot_dto()?)
+        crate::authoring::projection::to_value(self.get_employee_roster_snapshot_dto()?)
             .map_err(|error| GameError::InvalidStaticData(error.to_string()))
     }
 
@@ -1086,6 +1068,20 @@ impl GameCore {
     pub fn get_selected_event_snapshot_dto(
         &self,
     ) -> Result<Option<SelectedEventSnapshotDto>, GameError> {
+        if let Some(receipt) = self.state.confirmed_combat_result.as_ref() {
+            return Ok(Some(receipt.summary.clone()));
+        }
+        if matches!(
+            self.state.lifecycle.phase(),
+            GameState::MasteredEliteSweepResult { .. }
+        ) {
+            let result = self
+                .staged_mastered_elite_sweep_result()
+                .ok_or(GameError::InvalidAction)?;
+            return Ok(Some(SelectedEventSnapshotDto::MasteredEliteSweepResult {
+                result: result.clone(),
+            }));
+        }
         let Some(selected) = self.state.active_node_content.as_ref() else {
             return Ok(None);
         };
@@ -1175,6 +1171,8 @@ impl GameCore {
                 node_type: battle.node_type,
                 mission_variant: battle.mission_variant,
                 abnormality_uuid: battle.abnormality_uuid,
+                outcome_id: battle.outcome_id.clone(),
+                verdict: battle.verdict,
                 winner: battle.winner,
                 reward_mode: battle.reward_mode,
                 rewards: battle
@@ -1183,8 +1181,10 @@ impl GameCore {
                     .map(display_reward_option_snapshot_dto)
                     .collect::<Vec<_>>(),
                 result_stats: battle.result_stats.clone(),
-                bonus_objectives: battle.bonus_objectives.clone(),
-                has_event_log: true,
+                no_reward_candidates: battle.reward_mode
+                    == crate::game::enums::RewardMode::ChooseOne
+                    && battle.rewards.is_empty(),
+                has_event_log: COMBAT_TRACE_CAPABILITY_AVAILABLE,
             },
         };
 
@@ -1194,7 +1194,7 @@ impl GameCore {
     pub fn get_selected_event_snapshot_json(&self) -> Result<Option<Value>, GameError> {
         self.get_selected_event_snapshot_dto()?
             .map(|selected| {
-                serde_json::to_value(selected).map_err(|error| {
+                crate::authoring::projection::to_value(selected).map_err(|error| {
                     GameError::InvalidStaticData(format!(
                         "failed to serialize selected event snapshot: {error}"
                     ))
@@ -1232,6 +1232,265 @@ fn display_reward_option_snapshot_dto(reward: &RewardOption) -> RewardOptionSnap
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::game::behavior::{ActionDisabledReasonCode, ActionKind, BattleStateAuthorityDto};
+    use crate::game::data::skill_fragment_data::{
+        SkillFragmentCompatibilityFailureCode, SkillFragmentId,
+    };
+
+    const ALL_DISABLED_REASONS: [ActionDisabledReasonCode; 41] = [
+        ActionDisabledReasonCode::ContextIrrelevant,
+        ActionDisabledReasonCode::NoEligiblePayload,
+        ActionDisabledReasonCode::MissingEventChoiceKey,
+        ActionDisabledReasonCode::CheckpointUnavailable,
+        ActionDisabledReasonCode::ProgressionUnavailable,
+        ActionDisabledReasonCode::ContentUnavailable,
+        ActionDisabledReasonCode::CompletionUnavailable,
+        ActionDisabledReasonCode::AlreadyActive,
+        ActionDisabledReasonCode::InsufficientResources,
+        ActionDisabledReasonCode::RedeployCooldown,
+        ActionDisabledReasonCode::StanceCooldown,
+        ActionDisabledReasonCode::RelocationCooldown,
+        ActionDisabledReasonCode::UnitUnavailable,
+        ActionDisabledReasonCode::WeaponRequired,
+        ActionDisabledReasonCode::EmployeeDead,
+        ActionDisabledReasonCode::CriticalPhysicalDamage,
+        ActionDisabledReasonCode::Breakdown,
+        ActionDisabledReasonCode::NoTrauma,
+        ActionDisabledReasonCode::SkillUnavailable,
+        ActionDisabledReasonCode::ActivationModeNotManual,
+        ActionDisabledReasonCode::HardCrowdControl,
+        ActionDisabledReasonCode::Silenced,
+        ActionDisabledReasonCode::DefenseStance,
+        ActionDisabledReasonCode::DefenseRequired,
+        ActionDisabledReasonCode::ActionInProgress,
+        ActionDisabledReasonCode::ActionLocked,
+        ActionDisabledReasonCode::FieldWorking,
+        ActionDisabledReasonCode::ResonanceNotFull,
+        ActionDisabledReasonCode::SkillTargetRequired,
+        ActionDisabledReasonCode::SkillTargetTypeMismatch,
+        ActionDisabledReasonCode::NoValidTarget,
+        ActionDisabledReasonCode::OfferUnavailable,
+        ActionDisabledReasonCode::RefreshUnavailable,
+        ActionDisabledReasonCode::RefreshUsesExhausted,
+        ActionDisabledReasonCode::PoolExhausted,
+        ActionDisabledReasonCode::SellingUnavailable,
+        ActionDisabledReasonCode::InvalidQuantity,
+        ActionDisabledReasonCode::InvalidQuote,
+        ActionDisabledReasonCode::ItemBound,
+        ActionDisabledReasonCode::ItemEquipped,
+        ActionDisabledReasonCode::TagNotAccepted,
+    ];
+
+    fn authority(battle_uuid: u128, battle_state_revision: u64) -> BattleStateAuthorityDto {
+        BattleStateAuthorityDto {
+            battle_uuid: Uuid::from_u128(battle_uuid),
+            battle_state_revision,
+        }
+    }
+
+    fn characterized_fixed_game_errors() -> Vec<(GameError, &'static str, String)> {
+        let current = authority(0xCAFE, 17);
+        let expected = authority(0xBEEF, 11);
+
+        vec![
+            (
+                GameError::EventNotFound,
+                "event_not_found",
+                "event not found".into(),
+            ),
+            (
+                GameError::EventTypeMismatch,
+                "event_type_mismatch",
+                "event type mismatch".into(),
+            ),
+            (
+                GameError::InvalidAction,
+                "invalid_action",
+                "invalid action".into(),
+            ),
+            (
+                GameError::WeaponRequired,
+                "weapon_required",
+                "weapon required".into(),
+            ),
+            (
+                GameError::InvalidBattleResyncSeq {
+                    requested: 29,
+                    latest: 23,
+                },
+                "invalid_battle_resync_seq",
+                "invalid battle resync seq: requested 29, latest 23".into(),
+            ),
+            (
+                GameError::BattleSnapshotResyncRequired {
+                    requested: 3,
+                    oldest_available_after_seq: 8,
+                    latest: 23,
+                },
+                "battle_snapshot_resync_required",
+                "battle snapshot resync required: requested 3, oldest available after seq 8, \
+                 latest 23"
+                    .into(),
+            ),
+            (
+                GameError::BattleStateRevisionOverflow,
+                "battle_state_revision_overflow",
+                "battle state revision overflow".into(),
+            ),
+            (
+                GameError::MissingBattleStateAuthority { current },
+                "missing_battle_state_authority",
+                format!(
+                    "missing battle state authority: current {}@{}",
+                    current.battle_uuid, current.battle_state_revision
+                ),
+            ),
+            (
+                GameError::StaleBattleStateAuthority { expected, current },
+                "stale_battle_state_authority",
+                format!(
+                    "stale battle state authority: expected {}@{}, current {}@{}",
+                    expected.battle_uuid,
+                    expected.battle_state_revision,
+                    current.battle_uuid,
+                    current.battle_state_revision
+                ),
+            ),
+            (
+                GameError::NotInShopState,
+                "not_in_shop_state",
+                "not in shop state".into(),
+            ),
+            (
+                GameError::NotInRewardState,
+                "not_in_reward_state",
+                "not in reward state".into(),
+            ),
+            (
+                GameError::ShopItemNotFound,
+                "shop_item_not_found",
+                "shop item not found".into(),
+            ),
+            (
+                GameError::InventoryFull,
+                "inventory_full",
+                "inventory full".into(),
+            ),
+            (
+                GameError::InventoryItemNotFound,
+                "inventory_item_not_found",
+                "inventory item not found".into(),
+            ),
+            (
+                GameError::InventoryItemNotRemovable,
+                "inventory_item_not_removable",
+                "inventory item not removable".into(),
+            ),
+            (
+                GameError::InsufficientResources,
+                "insufficient_resources",
+                "insufficient resources".into(),
+            ),
+            (
+                GameError::MissingResource("RunState"),
+                "missing_resource",
+                "missing resource: RunState".into(),
+            ),
+            (
+                GameError::InvalidUnitStats("negative defense"),
+                "invalid_unit_stats",
+                "invalid unit stats: negative defense".into(),
+            ),
+            (
+                GameError::InvalidStaticData("broken fixture".into()),
+                "invalid_static_data",
+                "invalid static data: broken fixture".into(),
+            ),
+            (
+                GameError::NotImplemented("future loop"),
+                "not_implemented",
+                "not implemented: future loop".into(),
+            ),
+            (
+                GameError::SkillFragmentIncompatible {
+                    fragment_id: SkillFragmentId::from("fragment_contract"),
+                    failure_codes: vec![
+                        SkillFragmentCompatibilityFailureCode::WeaponRequired,
+                        SkillFragmentCompatibilityFailureCode::RangeRoleMismatch,
+                    ],
+                },
+                "skill_fragment_incompatible",
+                "skill fragment incompatible: fragment_contract; failure code count 2".into(),
+            ),
+            (
+                GameError::OutOfBounds,
+                "out_of_bounds",
+                "out of bounds".into(),
+            ),
+            (
+                GameError::PositionOccupied,
+                "position_occupied",
+                "position occupied".into(),
+            ),
+            (
+                GameError::StaticObstacleBlocked,
+                "static_obstacle_blocked",
+                "static obstacle blocked".into(),
+            ),
+            (
+                GameError::UnitAlreadyPlaced,
+                "unit_already_placed",
+                "unit already placed".into(),
+            ),
+            (
+                GameError::UnitNotFound,
+                "unit_not_found",
+                "unit not found".into(),
+            ),
+        ]
+    }
+
+    #[test]
+    fn snapshot_error_projection_characterizes_every_game_error_code_and_message() {
+        let fixed_cases = characterized_fixed_game_errors();
+        assert_eq!(fixed_cases.len(), 26);
+        assert_eq!(ALL_DISABLED_REASONS.len(), 41);
+
+        for (error, expected_code, expected_message) in fixed_cases {
+            let actual = effective_profile_error_dto(&error);
+            assert_eq!(actual.code, expected_code, "{error:?}");
+            assert_eq!(actual.message, expected_message, "{error:?}");
+            assert_eq!(
+                serde_json::to_value(&actual).unwrap(),
+                serde_json::json!({
+                    "code": expected_code,
+                    "message": expected_message,
+                }),
+                "{error:?}"
+            );
+        }
+
+        for reason in ALL_DISABLED_REASONS {
+            let error = GameError::ActionUnavailable {
+                action: ActionKind::DeployUnit,
+                reason,
+            };
+            let expected_message = format!("action unavailable: DeployUnit ({reason:?})");
+            let actual = effective_profile_error_dto(&error);
+            assert_eq!(actual.code, reason.as_str(), "{reason:?}");
+            assert_eq!(actual.message, expected_message, "{reason:?}");
+            assert_eq!(
+                serde_json::to_value(&actual).unwrap(),
+                serde_json::json!({
+                    "code": reason.as_str(),
+                    "message": expected_message,
+                }),
+                "{reason:?}"
+            );
+        }
+
+        assert_eq!(25 + ALL_DISABLED_REASONS.len(), 66);
+    }
 
     #[test]
     fn wire_snapshot_string_labels_are_explicit_contract_values() {
@@ -1255,5 +1514,18 @@ mod tests {
             wire_trust_band_label(crate::game::employee_psychology::TrustBand::Devoted),
             "Devoted"
         );
+    }
+}
+
+impl GameCore {
+    pub fn certified_input_fingerprint(
+        &self,
+    ) -> Result<crate::game::combat_power::CertifiedInputFingerprint, GameError> {
+        crate::game::combat_power::certified_input_fingerprint_for_roster(
+            &self.state.roster,
+            &self.state.inventory,
+            &self.state.skill_fragments,
+            &self.game_data,
+        )
     }
 }

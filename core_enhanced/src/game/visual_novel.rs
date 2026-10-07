@@ -73,3 +73,9 @@ pub enum VisualNovelTriggerConsumedScope {
     Battle { battle_uuid: Uuid },
     Node { node_id: MapNodeId },
 }
+
+crate::authoring::clone_shape::struct_shape!(VisualNovelRuntimeState { active, queue });
+// Opaque construction/consumption is fresh + insert-only. Checkpoint restoration
+// replaces the complete set; no public arbitrary raw-set import is certified.
+crate::authoring::clone_shape::struct_shape_with_sets!(VisualNovelTriggerRuntimeState {
+} sets { persistent_consumed, checkpoint_rewind_consumed });

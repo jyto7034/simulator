@@ -1,0 +1,14 @@
+[
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff001/MANIFEST.json",
+    "sha256": "11f9c176158bef036438a8a887d3f4b431f112c8f867e42d30ab8f9a4eff92fa"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff001/EXECUTION_HANDOFF_002.json",
+    "sha256": "8348d9edd04361243b8651d2f42c53596147c0d7cfdded94a9c1d5ff2b0d7360"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/docs_checkpoint017/RECORD.json",
+    "sha256": "91a65e2a719871f5476f38b163abfa9c8f123e64484039ee13f050b3c4f8f5fe"
+  }
+]

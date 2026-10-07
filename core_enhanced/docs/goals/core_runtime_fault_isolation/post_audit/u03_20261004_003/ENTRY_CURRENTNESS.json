@@ -1,0 +1,19 @@
+{
+  "time": "2026-10-04T04:16:19.787846+00:00",
+  "verdict": "current / unchanged",
+  "manifest_sha256": "76fd812b8ab094050302e36c72abd19ab629091bfce8cd4330be3bc8ab1c552b",
+  "product_sha256": "0e8194aca0984ec11c5a5a3068cffe32f16ab187912249a3083e0ae0c0271979",
+  "union_sha256": "aa5e95252d575f3506b639f6deba68d0181750a68250b40191bd998b07bd9fd5",
+  "membership_count": 2289,
+  "source_count": 367,
+  "records_count": 1748,
+  "references_count": 175,
+  "records_membership_freshly_enumerated": true,
+  "member_bytes_and_kinds_match": true,
+  "archive_hashes_match": true,
+  "source_membership_freshly_enumerated": true,
+  "references_membership_freshly_enumerated": true,
+  "extra_inputs_checked": 0,
+  "extra_inputs_match": true,
+  "external_inputs_match": true
+}

@@ -1,0 +1,8 @@
+{
+  "copy": "/tmp/r06-f02-f03-f01-regression.7rfjxtir",
+  "product_overlays": {
+    "core_enhanced/src/game/battle/core/runtime_facts.rs": "d7c133b00b354192e136803d25fccc2c31d47ae0c53c39a19903776e2663dc2c",
+    "core_enhanced/src/game/battle/core/value_expr_runtime.rs": "38549063d5f61da987721c411c4b953e33dee4e30886bf8987f2657ce202e726"
+  },
+  "probe_sha256": "c3503fdb33a50758a1e8115c47d3424c48430d981e9319568e15647cb1b1f04b"
+}

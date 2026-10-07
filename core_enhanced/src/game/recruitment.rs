@@ -24,6 +24,11 @@ pub struct RecruitmentState {
     active_session: Option<RecruitmentSessionState>,
 }
 
+crate::authoring::clone_shape::struct_shape!(RecruitmentState {
+    queue,
+    active_session
+});
+
 impl RecruitmentState {
     pub fn initialize(
         run_seed: u64,

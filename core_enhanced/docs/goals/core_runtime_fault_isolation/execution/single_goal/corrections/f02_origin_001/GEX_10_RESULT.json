@@ -1,0 +1,62 @@
+{
+  "stage": "GEX-10",
+  "goal": "GOAL-CRFI-01",
+  "goal_set": "GS-CRFI-001",
+  "phase": "PHASE-CRFI-01",
+  "status": "implementation and self-verification complete; independent GEX-20 pending",
+  "recorded_at_utc": "2026-10-04T04:12:23.066433+00:00",
+  "source_sha256": "0e8194aca0984ec11c5a5a3068cffe32f16ab187912249a3083e0ae0c0271979",
+  "frozen_policy": "../../../../P2G_30_FREEZE_003.json",
+  "phase_plan": "../../../../P2G_40_PHASE_PLAN_002.json",
+  "handoff": "../../../../P2G_60_HANDOFF_001.json",
+  "coverage": "COVERAGE.json",
+  "predecessor_impact": "PREDECESSOR_IMPACT.json",
+  "canonical_contract": "../../../../../../core_runtime_contract.md",
+  "host_contract": "../../../../../../../../game_server/config/observability/README.md",
+  "suite_counts": {
+    "f02_final_core_default001": {
+      "passed": 1717,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f02_final_core_fixtures001": {
+      "passed": 1717,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f02_final_core_observation001": {
+      "passed": 1726,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f02_final_host_default001": {
+      "passed": 81,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f02_final_host_observation001": {
+      "passed": 88,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "frozen_acceptance_count": 12,
+  "validation_seams": 12,
+  "dimensions": 10,
+  "inherited_conditions": 100,
+  "r06_acceptances": 31,
+  "raw_r05_exit": 101,
+  "r05_classification": "warning_concurrent_peak_only",
+  "public_fault_modes": [
+    "none",
+    "detached",
+    "queue_full",
+    "on",
+    "off"
+  ],
+  "next": "Stable target/u03_003 freeze and fresh independent GEX-20 by implementation-nonparticipant GPT-6 Astra / High. No U04 implementation until Complete / High.",
+  "self_awarded_independent_verdict": false,
+  "predecessor_finding": "../../../../post_audit/u03_20261004_002/FINDINGS.json",
+  "producer_review": "PRODUCER_REVIEW.md",
+  "correction_entry": "ENTRY.json"
+}

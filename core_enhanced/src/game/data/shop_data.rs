@@ -123,6 +123,21 @@ pub struct ShopDatabase {
 }
 
 impl ShopDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(
+        merchandise_presets: Vec<ShopMerchandisePreset>,
+        shops: Vec<ShopMetadata>,
+        pools: Vec<ShopPoolMetadata>,
+    ) -> Self {
+        Self {
+            merchandise_presets,
+            shops,
+            pools,
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
+        }
+    }
+
     pub fn new(shops: Vec<ShopMetadata>) -> Self {
         Self::new_with_catalog(shops, vec![], vec![])
     }

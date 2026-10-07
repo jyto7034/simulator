@@ -1,0 +1,102 @@
+{
+  "time": "2026-09-09T14:31:57.375717+00:00",
+  "baseline_count": 1709,
+  "changed_existing": [
+    "core_enhanced/docs/core_runtime_contract.md",
+    "core_enhanced/docs/data_loading_contract.md",
+    "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/docs/skill_target_contract.md",
+    "core_enhanced/src/application.rs",
+    "core_enhanced/src/game/ability.rs",
+    "core_enhanced/src/game/battle/core/commands.rs",
+    "core_enhanced/src/game/battle/core/damage_runtime.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+    "core_enhanced/src/game/battle/core/target_usefulness.rs",
+    "core_enhanced/src/game/battle/core/types.rs",
+    "core_enhanced/src/game/battle/damage.rs",
+    "core_enhanced/src/game/battle/enums.rs",
+    "core_enhanced/src/game/battle/event_log.rs",
+    "core_enhanced/src/game/battle/mod.rs",
+    "core_enhanced/src/game/battle/recording.rs",
+    "core_enhanced/src/game/battle/result_stats.rs",
+    "core_enhanced/src/game/behavior.rs",
+    "core_enhanced/src/game/data/live_ron.rs",
+    "core_enhanced/src/game/data/mod.rs",
+    "core_enhanced/src/game/data/skill_data.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/tests/skill_runtime_contract.rs",
+    "game_resources/data/bundle.ron",
+    "game_resources/data/skills/base.ron"
+  ],
+  "unexpected_existing_changes": [],
+  "validation_input_count": 221,
+  "validation_mismatch": [],
+  "validation_001_to_002_delta": [
+    "core_enhanced/src/game/ability/authoring/tests.rs"
+  ],
+  "source_files_not_covered_by_validation_input": [],
+  "scoped_diff_paths": [
+    "core_enhanced/docs/core_runtime_contract.md",
+    "core_enhanced/docs/data_loading_contract.md",
+    "core_enhanced/docs/skill_target_contract.md",
+    "core_enhanced/src/application.rs",
+    "core_enhanced/src/game/ability.rs",
+    "core_enhanced/src/game/ability/authoring.rs",
+    "core_enhanced/src/game/ability/authoring/tests.rs",
+    "core_enhanced/src/game/battle/core/commands.rs",
+    "core_enhanced/src/game/battle/core/damage_runtime.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+    "core_enhanced/src/game/battle/core/target_usefulness.rs",
+    "core_enhanced/src/game/battle/core/types.rs",
+    "core_enhanced/src/game/battle/damage.rs",
+    "core_enhanced/src/game/battle/enums.rs",
+    "core_enhanced/src/game/battle/event_log.rs",
+    "core_enhanced/src/game/battle/mod.rs",
+    "core_enhanced/src/game/battle/recording.rs",
+    "core_enhanced/src/game/battle/result_stats.rs",
+    "core_enhanced/src/game/battle/skill_source.rs",
+    "core_enhanced/src/game/behavior.rs",
+    "core_enhanced/src/game/data/live_ron.rs",
+    "core_enhanced/src/game/data/mod.rs",
+    "core_enhanced/src/game/data/skill_data.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+    "core_enhanced/tests/skill_runtime_contract.rs",
+    "game_resources/data/bundle.ron",
+    "game_resources/data/skills/base.ron"
+  ],
+  "baseline_backup_mismatch": [],
+  "handoff_hashes": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_REVIEW_001.json",
+      "match": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "match": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json",
+      "match": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_GOAL_SET_001.ko.md",
+      "match": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_RESULT_001.json",
+      "match": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_AUTHORING_REVIEW_001.ko.md",
+      "match": true
+    }
+  ]
+}

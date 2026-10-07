@@ -1,0 +1,73 @@
+{
+  "predecessor": "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/compatibility/current_002",
+  "changes": [
+    "Current source rerun after V10 imported Monolith clone accounting fix; only output directory and receipt suffix change. Create evidence directory before consumers. Cargo build jobs=1 to avoid previous memory contention. All assertions and original thresholds retained."
+  ],
+  "files": [
+    {
+      "path": "boundary.py",
+      "before_sha256": "837a908a3e0b515ac2bb4e1f0e83587bf3b1b9817a5009b935fbb78790251525",
+      "after_sha256": "837a908a3e0b515ac2bb4e1f0e83587bf3b1b9817a5009b935fbb78790251525"
+    },
+    {
+      "path": "compare_pc.py",
+      "before_sha256": "d75ade59d4fbe85245a7a968244c57b7503eaeaaf3b5a0499e0d5d9449f43cf3",
+      "after_sha256": "d75ade59d4fbe85245a7a968244c57b7503eaeaaf3b5a0499e0d5d9449f43cf3"
+    },
+    {
+      "path": "default_parity.py",
+      "before_sha256": "b7fe23a8c9a92c0f320b965b4e1d6e6d944b30b2cd708ec2432b1fe77cfa9fa4",
+      "after_sha256": "aa17c5b439f8302dd858a5c617532cb55774e5b2f85d7004874fcc4b61ae0725"
+    },
+    {
+      "path": "host_peak_failure_probe.rs",
+      "before_sha256": "671a92c07d8ac27a5d9674e13976278316677fe3e5f1a5508cf9a624a0295afc",
+      "after_sha256": "671a92c07d8ac27a5d9674e13976278316677fe3e5f1a5508cf9a624a0295afc"
+    },
+    {
+      "path": "prepare_pc.py",
+      "before_sha256": "b4d1e6cabd6e832ebc6cb71d870620ebe17dbb4850c57629e5065e9cf194d277",
+      "after_sha256": "e6614acd4a444803a2d47703a7b804f90ee3b5719cda9f1dd6fd732d8c91103f"
+    },
+    {
+      "path": "probe.py",
+      "before_sha256": "561bcc0c2c39a5f004a2d1f7cf0f173aafdf71fd128d9cb13629836eebd5dde1",
+      "after_sha256": "561bcc0c2c39a5f004a2d1f7cf0f173aafdf71fd128d9cb13629836eebd5dde1"
+    },
+    {
+      "path": "public_boundary_probe.py",
+      "before_sha256": "4aa061efaf056a415cddb7b955c535b511a6acfb13e49c49c592bbc3af257291",
+      "after_sha256": "99ab6ea47391028ddd27b4ee9e4eb4836b682dca09352b2fda6d99753c11c07b"
+    },
+    {
+      "path": "public_cli.py",
+      "before_sha256": "6c4e218482e84a80ad3e1d2c637c46c841b5d275f76808bd4ef6cb2e18b78770",
+      "after_sha256": "be02827d31e1202d989d5e1814d6480c20834437b4f8bd0f920cac673838de23"
+    },
+    {
+      "path": "public_probe.py",
+      "before_sha256": "d0131b1baa378f0a1963e21a2dd64c606885e7536ab353b366580fa9f5a4c2ea",
+      "after_sha256": "8029fb69d030f674a5755c7b64a7767c1eacfe414818a023f09315fede1d46f4"
+    },
+    {
+      "path": "public_profile_probe.py",
+      "before_sha256": "331cdca64a60b55532e1b6f266c7d85a14a37da7e66aaff811dc9adc48d0dc60",
+      "after_sha256": "04c2775bd6a8df0950f9cf1a90ba9b08b317f119b580ef7190079beff8d9905d"
+    },
+    {
+      "path": "public_trace_probe.py",
+      "before_sha256": "263ea29046bf4fec3baa18a0364ab35b97b6769f16cabd1b0f1ee0ab81496765",
+      "after_sha256": "3ec31d78d818a4aee54519ed3d02e3f9ffd2c4c0870d726befe7eb99a441318c"
+    },
+    {
+      "path": "regressions.py",
+      "before_sha256": "664508eab7d45f448220ca552dc2d48c37ac639b5728f362f4b481c3ce45212f",
+      "after_sha256": "5683a19f2a269cab1ddc0cdb1fc70fbfe6422190df4f4ca1717728ad40a741f4"
+    },
+    {
+      "path": "summarize_r05.py",
+      "before_sha256": "030afb1681a7d24d62b6a44c52ef87e6089439338f807be439d7eb4dcc967033",
+      "after_sha256": "f3046a2758c57f286fa45d44b1305d24d76a1dad4aa66df0004249e46cf300c3"
+    }
+  ]
+}

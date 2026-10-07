@@ -1,0 +1,26 @@
+{
+  "target_sha256": "b16697bfe8c518944f0bddcf800b0f1e005ed639edd6fe915e4d96c726a6e1f4",
+  "only_isolated_source_change": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+  "change_is_test_module_hook_only": true,
+  "workspace_333_unchanged": true,
+  "runs": {
+    "probes_001": {
+      "probe_source": "probes_attempt_001.rs",
+      "probe_sha256": "72c9450f2a05ef2e220a0538e9d74d8cf242081c96cc914775c49a0c917e397e",
+      "receipt_sha256": "6e823729c392802a755bcabd1f6f491629ae5b33a233622a8930408262f3aece",
+      "log_sha256": "2cfb4a9d2912a02f1ac197a217453d122060484a1649ef0846e4e7bbcb2d75ab"
+    },
+    "probes_002": {
+      "probe_source": "probes_attempt_002.rs",
+      "probe_sha256": "4f22d6a340ebeb1eacc277db7c6c961264476b0962edb308b1cf727b5798c96f",
+      "receipt_sha256": "308d0014f385bf981a1d5153f14c279dde42606cac9135b7d3235485e913b91a",
+      "log_sha256": "c17f10bed7de1aaeca1e1f62b7abebbdfa6df0913bb7440e3e7e8af40096a37c"
+    },
+    "probes_003": {
+      "probe_source": "probes.rs",
+      "probe_sha256": "d545e9fbf6321c34b6b5679fb7341961dc9fe527e1154aff9a14bf6009f9f762",
+      "receipt_sha256": "6ec0aa36230853fc02e70f5ecb16ad7fccbf13fa6af61e1da0d00dc69201d055",
+      "log_sha256": "8e588aee380f93de90fa8743059c63fa660a593547609d18288b5d4e65f39531"
+    }
+  }
+}

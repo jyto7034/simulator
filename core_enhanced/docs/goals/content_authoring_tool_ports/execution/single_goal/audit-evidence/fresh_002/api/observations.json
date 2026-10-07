@@ -1,0 +1,325 @@
+[
+  {
+    "final_bytes": 295157,
+    "final_work": 1813038,
+    "initial_bytes": 5534,
+    "lifecycle": {
+      "current": {
+        "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+        "entry_ordinal": 1,
+        "last_battle_time_ms": 16950,
+        "status": {
+          "state": "exited"
+        },
+        "terminal_verdict": "victory",
+        "time_zero_completed": true
+      },
+      "entries": 1,
+      "total_elapsed_ms": 16950
+    },
+    "mode": "off",
+    "observation": {
+      "active": null,
+      "last_terminal": {
+        "actual_time_ms": 16950,
+        "key": {
+          "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+          "entry_ordinal": 1
+        },
+        "mandatory": {
+          "applications": 27,
+          "key": {
+            "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+            "entry_ordinal": 1
+          },
+          "latest": {
+            "change": {
+              "after": 0,
+              "before": 3,
+              "channel": "hp",
+              "reason": "BasicAttack"
+            },
+            "ordinal": 27,
+            "source": null,
+            "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+            "time_ms": 16950
+          },
+          "latest_nonzero_sourced_hp": {
+            "change": {
+              "after": 3,
+              "before": 21,
+              "channel": "hp",
+              "reason": "Command"
+            },
+            "ordinal": 24,
+            "source": {
+              "ability_event_seq": 241,
+              "authored": {
+                "field_path": "skills[21].steps[0].effects[0]",
+                "origin": "Original",
+                "origin_definition_id": "paradise_lost_judgement",
+                "site": {
+                  "action": {
+                    "action_id": "judgement_strike",
+                    "definition_id": "paradise_lost_judgement"
+                  },
+                  "effect_id": "effect_01"
+                },
+                "source_file": "official/data/skills/base.ron"
+              },
+              "cast_seq": 5,
+              "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+              "cause": {
+                "cause_type": "parent",
+                "seq": 240
+              },
+              "proc_origin": {
+                "activation_source": {
+                  "Item": {
+                    "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                  }
+                },
+                "binding_index": 0,
+                "event_seq": 240
+              },
+              "skill_id": "paradise_lost_judgement"
+            },
+            "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+            "time_ms": 15450
+          },
+          "nonzero_hp_applications": 22,
+          "sourced_applications": 10
+        },
+        "outcome_id": "victory",
+        "verdict": "victory"
+      }
+    },
+    "ready_bytes": 120088,
+    "ready_work": 564123,
+    "receipts": 15,
+    "source_capture_after_caller_edit": true,
+    "source_files": 25,
+    "steps": 13,
+    "trace_gap": null,
+    "trace_rows": 0
+  },
+  {
+    "final_bytes": 295157,
+    "final_work": 1813038,
+    "initial_bytes": 5534,
+    "lifecycle": {
+      "current": {
+        "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+        "entry_ordinal": 1,
+        "last_battle_time_ms": 16950,
+        "status": {
+          "state": "exited"
+        },
+        "terminal_verdict": "victory",
+        "time_zero_completed": true
+      },
+      "entries": 1,
+      "total_elapsed_ms": 16950
+    },
+    "mode": "on",
+    "observation": {
+      "active": null,
+      "last_terminal": {
+        "actual_time_ms": 16950,
+        "key": {
+          "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+          "entry_ordinal": 1
+        },
+        "mandatory": {
+          "applications": 27,
+          "key": {
+            "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+            "entry_ordinal": 1
+          },
+          "latest": {
+            "change": {
+              "after": 0,
+              "before": 3,
+              "channel": "hp",
+              "reason": "BasicAttack"
+            },
+            "ordinal": 27,
+            "source": null,
+            "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+            "time_ms": 16950
+          },
+          "latest_nonzero_sourced_hp": {
+            "change": {
+              "after": 3,
+              "before": 21,
+              "channel": "hp",
+              "reason": "Command"
+            },
+            "ordinal": 24,
+            "source": {
+              "ability_event_seq": 241,
+              "authored": {
+                "field_path": "skills[21].steps[0].effects[0]",
+                "origin": "Original",
+                "origin_definition_id": "paradise_lost_judgement",
+                "site": {
+                  "action": {
+                    "action_id": "judgement_strike",
+                    "definition_id": "paradise_lost_judgement"
+                  },
+                  "effect_id": "effect_01"
+                },
+                "source_file": "official/data/skills/base.ron"
+              },
+              "cast_seq": 5,
+              "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+              "cause": {
+                "cause_type": "parent",
+                "seq": 240
+              },
+              "proc_origin": {
+                "activation_source": {
+                  "Item": {
+                    "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                  }
+                },
+                "binding_index": 0,
+                "event_seq": 240
+              },
+              "skill_id": "paradise_lost_judgement"
+            },
+            "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+            "time_ms": 15450
+          },
+          "nonzero_hp_applications": 22,
+          "sourced_applications": 10
+        },
+        "outcome_id": "victory",
+        "verdict": "victory"
+      }
+    },
+    "ready_bytes": 120088,
+    "ready_work": 564123,
+    "receipts": 15,
+    "source_capture_after_caller_edit": true,
+    "source_files": 25,
+    "steps": 13,
+    "trace_gap": null,
+    "trace_rows": 27
+  },
+  {
+    "final_bytes": 295157,
+    "final_work": 1813038,
+    "initial_bytes": 5534,
+    "lifecycle": {
+      "current": {
+        "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+        "entry_ordinal": 1,
+        "last_battle_time_ms": 16950,
+        "status": {
+          "state": "exited"
+        },
+        "terminal_verdict": "victory",
+        "time_zero_completed": true
+      },
+      "entries": 1,
+      "total_elapsed_ms": 16950
+    },
+    "mode": "gap",
+    "observation": {
+      "active": null,
+      "last_terminal": {
+        "actual_time_ms": 16950,
+        "key": {
+          "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+          "entry_ordinal": 1
+        },
+        "mandatory": {
+          "applications": 27,
+          "key": {
+            "battle_uuid": "9a81c2d7-ce6b-469a-819c-bb402bc1a319",
+            "entry_ordinal": 1
+          },
+          "latest": {
+            "change": {
+              "after": 0,
+              "before": 3,
+              "channel": "hp",
+              "reason": "BasicAttack"
+            },
+            "ordinal": 27,
+            "source": null,
+            "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+            "time_ms": 16950
+          },
+          "latest_nonzero_sourced_hp": {
+            "change": {
+              "after": 3,
+              "before": 21,
+              "channel": "hp",
+              "reason": "Command"
+            },
+            "ordinal": 24,
+            "source": {
+              "ability_event_seq": 241,
+              "authored": {
+                "field_path": "skills[21].steps[0].effects[0]",
+                "origin": "Original",
+                "origin_definition_id": "paradise_lost_judgement",
+                "site": {
+                  "action": {
+                    "action_id": "judgement_strike",
+                    "definition_id": "paradise_lost_judgement"
+                  },
+                  "effect_id": "effect_01"
+                },
+                "source_file": "official/data/skills/base.ron"
+              },
+              "cast_seq": 5,
+              "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+              "cause": {
+                "cause_type": "parent",
+                "seq": 240
+              },
+              "proc_origin": {
+                "activation_source": {
+                  "Item": {
+                    "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                  }
+                },
+                "binding_index": 0,
+                "event_seq": 240
+              },
+              "skill_id": "paradise_lost_judgement"
+            },
+            "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+            "time_ms": 15450
+          },
+          "nonzero_hp_applications": 22,
+          "sourced_applications": 10
+        },
+        "outcome_id": "victory",
+        "verdict": "victory"
+      }
+    },
+    "ready_bytes": 120088,
+    "ready_work": 564123,
+    "receipts": 15,
+    "source_capture_after_caller_edit": true,
+    "source_files": 25,
+    "steps": 13,
+    "trace_gap": {
+      "counter_overflow": false,
+      "dropped_rows": 27,
+      "first_ordinal": 1,
+      "reason": "byte_limit"
+    },
+    "trace_rows": 0
+  }
+]

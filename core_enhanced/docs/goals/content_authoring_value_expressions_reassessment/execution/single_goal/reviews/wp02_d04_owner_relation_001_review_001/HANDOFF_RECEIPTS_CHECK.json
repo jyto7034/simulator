@@ -1,0 +1,51 @@
+{
+  "all_targets_final_003": {
+    "exit_code": 0,
+    "log_hash_verified": true,
+    "test_passed": 1520,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  },
+  "value_expr_final_003": {
+    "exit_code": 0,
+    "log_hash_verified": true,
+    "test_passed": 83,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  },
+  "check_all_targets_final_004": {
+    "exit_code": 0,
+    "log_hash_verified": true,
+    "test_passed": 0,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  },
+  "clippy_all_targets_final_003": {
+    "exit_code": 0,
+    "log_hash_verified": true,
+    "test_passed": 0,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  },
+  "pc_36_final_002": {
+    "exit_code": 0,
+    "log_hash_verified": true,
+    "test_passed": 1,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  },
+  "pc_compare_final_003": {
+    "exit_code": 0,
+    "log_hash_verified": true,
+    "test_passed": 0,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  },
+  "r05_guard_final_004": {
+    "exit_code": 101,
+    "log_hash_verified": true,
+    "test_passed": 0,
+    "source_before_after_equal": true,
+    "source_digest_matches_frozen_target": true
+  }
+}

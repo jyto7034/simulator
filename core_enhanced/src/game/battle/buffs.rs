@@ -27,7 +27,6 @@ impl BuffId {
     }
 }
 
-// Stun, Freeze 같은 하드 CC 는 한 가지 상태만 존재할 수 있음. (기존 CC 를 덮어씌움)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum BuffKind {
@@ -38,6 +37,22 @@ pub enum BuffKind {
     Stun,
     Freeze,
     Silence,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BuffControlCapability {
+    HardCrowdControl,
+    Silence,
+}
+
+impl BuffKind {
+    pub fn control_capability(self) -> Option<BuffControlCapability> {
+        match self {
+            Self::Stun | Self::Freeze => Some(BuffControlCapability::HardCrowdControl),
+            Self::Silence => Some(BuffControlCapability::Silence),
+            Self::PeriodicDamage { .. } => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -55,6 +70,16 @@ pub struct BuffDef {
     pub max_stacks: u8,
     pub reapply_policy: BuffReapplyPolicy,
 }
+
+crate::authoring::clone_shape::copy_shape!(BuffKind, BuffReapplyPolicy);
+crate::authoring::clone_shape::struct_shape!(BuffDef {
+    id,
+    name,
+    kind,
+    tick_interval_ms,
+    max_stacks,
+    reapply_policy
+});
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -75,6 +100,14 @@ pub struct BuffMetadata {
 }
 
 impl BuffDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(buffs: Vec<BuffMetadata>) -> Self {
+        Self {
+            buffs,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(buffs: Vec<BuffMetadata>) -> Self {
         let database = Self {
             buffs,
@@ -226,5 +259,29 @@ mod tests {
         assert_eq!(error.object_id.as_deref(), Some("bad_stun"));
         assert_eq!(error.field_path.as_deref(), Some("buffs[0].max_stacks"));
         assert!(error.cause.contains("max_stacks == 1"));
+    }
+
+    #[test]
+    fn control_capability_classifies_statuses_without_buff_name_checks() {
+        assert_eq!(
+            BuffKind::Stun.control_capability(),
+            Some(BuffControlCapability::HardCrowdControl)
+        );
+        assert_eq!(
+            BuffKind::Freeze.control_capability(),
+            Some(BuffControlCapability::HardCrowdControl)
+        );
+        assert_eq!(
+            BuffKind::Silence.control_capability(),
+            Some(BuffControlCapability::Silence)
+        );
+        assert_eq!(
+            BuffKind::PeriodicDamage {
+                damage_per_tick: 1,
+                damage_type: DamageType::Physical,
+            }
+            .control_capability(),
+            None
+        );
     }
 }

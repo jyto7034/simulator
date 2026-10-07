@@ -2,13 +2,16 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    game::resources::Position,
+    game::resources::{
+        item_slot::{EquipmentSlotAddress, SlotLayoutKind},
+        Position,
+    },
     game::{
         ability::{SkillActivationMode, SkillId},
         battle::core::movement::types::WorldVec2,
         battle::damage::DamageModifiers,
-        battle::event_log::BattleEventLog,
         battle::ids::UnitInstanceId,
+        battle::result_stats::BattleResultStatsDto,
         battle::tile_range::TileRangePattern,
         behavior::GameError,
         data::{
@@ -23,9 +26,44 @@ use crate::{
 };
 
 pub struct BattleResult {
+    pub runtime_facts: std::sync::Arc<super::runtime_facts::RuntimeFactSnapshot>,
+    pub outcome_id: BattleOutcomeId,
+    pub verdict: BattleVerdict,
     pub winner: BattleWinner,
-    pub event_log: BattleEventLog,
+    pub result_stats: BattleResultStatsDto,
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub event_log: crate::game::battle::event_log::BattleEventLog,
     pub participant_results: Vec<ParticipantBattleResult>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct BattleOutcomeId(pub String);
+
+impl BattleOutcomeId {
+    pub fn new(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BattleVerdict {
+    Victory,
+    Defeat,
+}
+
+impl BattleVerdict {
+    pub const fn winner(self) -> BattleWinner {
+        match self {
+            Self::Victory => BattleWinner::Player,
+            Self::Defeat => BattleWinner::Opponent,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -46,6 +84,14 @@ pub enum BattleWinner {
     Draw,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum UnitExclusiveActivity {
+    #[default]
+    Ready,
+    FieldWorking,
+}
+
 /// 어빌리티 실행에 필요한 유닛 정보
 #[derive(Debug, Clone)]
 pub struct UnitSnapshot {
@@ -59,6 +105,31 @@ pub struct UnitSnapshot {
     pub stats: UnitStats,
 }
 
+crate::authoring::clone_shape::struct_shape!(UnitSnapshot {
+    id,
+    owner,
+    role,
+    threat_class,
+    mobility_kind,
+    position,
+    world_position,
+    stats,
+});
+
+/// Definition and, when known, the actual inventory copy entering battle.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BattleEquipmentBinding {
+    pub base_uuid: Uuid,
+    pub persistent_copy_uuid: Option<Uuid>,
+    pub slot: Option<EquipmentSlotAddress>,
+}
+
+crate::authoring::clone_shape::struct_shape!(BattleEquipmentBinding {
+    base_uuid,
+    persistent_copy_uuid,
+    slot,
+});
+
 #[derive(Debug, Clone)]
 pub struct BattleUnitDraft {
     pub owned_uuid: Uuid,
@@ -67,7 +138,8 @@ pub struct BattleUnitDraft {
     pub level: Tier,
     pub stat_scale: BattleUnitStatScale,
     pub growth_stacks: GrowthStack,
-    pub equipped_items: Vec<Uuid>,
+    pub equipment_layout: Option<SlotLayoutKind>,
+    pub equipped_items: Vec<BattleEquipmentBinding>,
     pub equipped_item_enhancements: Vec<BattleEquipmentEnhancement>,
     pub employee_start_condition: Option<EmployeeBattleStartCondition>,
 }
@@ -83,6 +155,15 @@ pub struct BattleUnitStatScale {
     pub max_health_percent: u32,
     pub attack_percent: u32,
     pub defense_percent: u32,
+    pub exact_override: Option<BattleUnitExactStatOverride>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BattleUnitExactStatOverride {
+    pub max_health: u32,
+    pub attack: u32,
+    pub defense: i32,
+    pub magic_resistance: i32,
 }
 
 impl Default for BattleUnitStatScale {
@@ -91,6 +172,7 @@ impl Default for BattleUnitStatScale {
             max_health_percent: 100,
             attack_percent: 100,
             defense_percent: 100,
+            exact_override: None,
         }
     }
 }
@@ -98,6 +180,7 @@ impl Default for BattleUnitStatScale {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BattleEquipmentEnhancement {
     pub base_uuid: Uuid,
+    pub persistent_copy_uuid: Option<Uuid>,
     pub enhancement_level: u8,
 }
 
@@ -119,7 +202,73 @@ pub enum BattleUnitSource {
         base_uuid: Uuid,
         profile: UnitCombatProfile,
     },
+    IndependentObject {
+        definition_id: String,
+        base_uuid: Uuid,
+        profile: UnitCombatProfile,
+        creator_instance_id: crate::game::battle::ids::UnitInstanceId,
+        kind: IndependentUnitKind,
+    },
+    SummonedUnit {
+        definition_id: String,
+        base_uuid: Uuid,
+        profile: UnitCombatProfile,
+        summoner_instance_id: crate::game::battle::ids::UnitInstanceId,
+        summon_sequence: u64,
+        batch_uuid: Uuid,
+    },
 }
+
+crate::authoring::clone_shape::struct_shape!(BattleUnitDraft {
+    owned_uuid,
+    source,
+    threat_class,
+    level,
+    stat_scale,
+    growth_stacks,
+    equipment_layout,
+    equipped_items,
+    equipped_item_enhancements,
+    employee_start_condition,
+});
+crate::authoring::clone_shape::copy_shape!(
+    EmployeeBattleStartCondition,
+    BattleUnitStatScale,
+    BattleEquipmentEnhancement,
+    crate::game::resources::item_slot::EquipmentSlotAddress,
+    crate::game::resources::item_slot::SlotLayoutKind,
+    crate::game::enums::Tier,
+    BattleVerdict
+);
+crate::authoring::clone_shape::newtype_shape!(BattleOutcomeId);
+crate::authoring::clone_shape::enum_shape!(BattleUnitSource {
+    units: [],
+    tuples: [Employee(profile)],
+    records: [
+        Abnormality { base_uuid },
+        CorrodedEmployee {
+            profile_id,
+            base_uuid
+        },
+        TestFixture { base_uuid, profile },
+        DefenseObject { base_uuid, profile },
+        IndependentObject {
+            definition_id,
+            base_uuid,
+            profile,
+            creator_instance_id,
+            kind
+        },
+        SummonedUnit {
+            definition_id,
+            base_uuid,
+            profile,
+            summoner_instance_id,
+            summon_sequence,
+            batch_uuid
+        }
+    ]
+});
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -146,6 +295,20 @@ pub enum BattleUnitSourceIdentity {
     TestFixture {
         base_uuid: Uuid,
     },
+    IndependentObject {
+        definition_id: String,
+        base_uuid: Uuid,
+        creator_instance_id: crate::game::battle::ids::UnitInstanceId,
+        #[serde(rename = "object_kind")]
+        kind: IndependentUnitKind,
+    },
+    SummonedUnit {
+        definition_id: String,
+        base_uuid: Uuid,
+        summoner_instance_id: crate::game::battle::ids::UnitInstanceId,
+        summon_sequence: u64,
+        batch_uuid: Uuid,
+    },
 }
 
 impl BattleUnitSourceIdentity {
@@ -156,10 +319,20 @@ impl BattleUnitSourceIdentity {
             | Self::CorrodedEmployee { base_uuid, .. }
             | Self::FacilityEntity { base_uuid, .. }
             | Self::DefenseObject { base_uuid }
-            | Self::TestFixture { base_uuid } => *base_uuid,
+            | Self::TestFixture { base_uuid }
+            | Self::IndependentObject { base_uuid, .. }
+            | Self::SummonedUnit { base_uuid, .. } => *base_uuid,
         }
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum IndependentUnitKind {
+    Actor,
+    Wall,
+}
+crate::authoring::clone_shape::copy_shape!(IndependentUnitKind);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
@@ -167,6 +340,7 @@ pub enum BattleUnitRole {
     #[default]
     Combatant,
     DefenseObject,
+    IndependentWall,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -191,6 +365,21 @@ pub enum DeploymentAffinity {
     GroundOnly,
     PlatformOnly,
     Any,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum EngagementStance {
+    #[default]
+    Attack,
+    Defense,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TacticalTileKind {
+    Ground,
+    Platform,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
@@ -240,12 +429,18 @@ impl BattleUnitSource {
             BattleUnitSource::CorrodedEmployee { base_uuid, .. } => *base_uuid,
             BattleUnitSource::TestFixture { base_uuid, .. } => *base_uuid,
             BattleUnitSource::DefenseObject { base_uuid, .. } => *base_uuid,
+            BattleUnitSource::IndependentObject { base_uuid, .. }
+            | BattleUnitSource::SummonedUnit { base_uuid, .. } => *base_uuid,
         }
     }
 
     pub fn role(&self) -> BattleUnitRole {
         match self {
             BattleUnitSource::DefenseObject { .. } => BattleUnitRole::DefenseObject,
+            BattleUnitSource::IndependentObject {
+                kind: IndependentUnitKind::Wall,
+                ..
+            } => BattleUnitRole::IndependentWall,
             _ => BattleUnitRole::Combatant,
         }
     }
@@ -287,6 +482,32 @@ impl BattleUnitSource {
                     base_uuid: *base_uuid,
                 }
             }
+            BattleUnitSource::IndependentObject {
+                definition_id,
+                base_uuid,
+                creator_instance_id,
+                kind,
+                ..
+            } => BattleUnitSourceIdentity::IndependentObject {
+                definition_id: definition_id.clone(),
+                base_uuid: *base_uuid,
+                creator_instance_id: *creator_instance_id,
+                kind: *kind,
+            },
+            BattleUnitSource::SummonedUnit {
+                definition_id,
+                base_uuid,
+                summoner_instance_id,
+                summon_sequence,
+                batch_uuid,
+                ..
+            } => BattleUnitSourceIdentity::SummonedUnit {
+                definition_id: definition_id.clone(),
+                base_uuid: *base_uuid,
+                summoner_instance_id: *summoner_instance_id,
+                summon_sequence: *summon_sequence,
+                batch_uuid: *batch_uuid,
+            },
         })
     }
 }
@@ -300,6 +521,8 @@ pub struct UnitCombatProfile {
     pub movement: MovementDef,
     pub resonance: ResonanceDef,
     pub skill_id: Option<SkillId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fragment_source: Option<crate::game::skill_fragment::FragmentSourceSnapshot>,
     pub skill_activation_mode: SkillActivationMode,
     pub deployment_affinity: DeploymentAffinity,
     pub block_capacity: u32,
@@ -336,6 +559,17 @@ pub fn effective_basic_attack_tile_range(basic_attack: &BasicAttackDef) -> TileR
 }
 
 impl UnitCombatProfile {
+    pub(crate) fn employee_base_resonance() -> ResonanceDef {
+        ResonanceDef {
+            start: 20,
+            max: 100,
+            gain_lock_ms: 0,
+        }
+    }
+
+    pub(crate) fn has_employee_base_resonance(&self) -> bool {
+        self.resonance.start == 20 && self.resonance.max == 100 && self.resonance.gain_lock_ms == 0
+    }
     pub fn employee_default() -> Self {
         Self::for_employee(100, 10, 0, 0, 100)
     }
@@ -349,7 +583,6 @@ impl UnitCombatProfile {
     ) -> Self {
         assert!(basic_attack_speed_percent > 0);
         let basic_attack = BasicAttackDef {
-            range_units: 1.0,
             defense_tile_range: Some(default_basic_attack_tile_range_for_role(
                 WeaponRangeRole::Melee,
             )),
@@ -379,8 +612,9 @@ impl UnitCombatProfile {
             basic_attack_speed_percent,
             weapon_profile: None,
             movement,
-            resonance: ResonanceDef::default(),
+            resonance: Self::employee_base_resonance(),
             skill_id: None,
+            fragment_source: None,
             skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
             block_capacity: 0,
@@ -392,35 +626,50 @@ impl UnitCombatProfile {
         }
     }
 
-    pub fn apply_weapon_profile(&mut self, weapon_profile: &WeaponCombatProfile) {
-        weapon_profile
-            .validate_runtime_contract("equipped weapon")
-            .expect("validated equipment weapon profile");
-        self.basic_attack.range_units = weapon_profile.range_units;
+    pub fn apply_weapon_profile(
+        &mut self,
+        weapon_profile: &WeaponCombatProfile,
+    ) -> Result<(), GameError> {
+        weapon_profile.validate_runtime_contract("equipped weapon")?;
+        let interval_ms = checked_scale_attack_interval_ms(
+            weapon_profile.interval_ms,
+            self.basic_attack_speed_percent,
+        )?;
+        self.basic_attack.action.clone_from(&weapon_profile.action);
         self.basic_attack.range_policy = crate::game::battle::tile_range::TileRangePolicy::Pattern;
         self.basic_attack.defense_tile_range = Some(weapon_profile.defense_tile_range.clone());
         self.basic_attack.damage_type = weapon_profile.damage_type;
         self.basic_attack.targeting_profile = weapon_profile.targeting_profile;
         self.basic_attack.air_capable = weapon_profile.air_capable;
         self.basic_attack.range_role = weapon_profile.range_role;
-        let interval_ms =
-            scale_attack_interval_ms(weapon_profile.interval_ms, self.basic_attack_speed_percent);
         self.basic_attack.interval_ms = interval_ms;
         self.basic_attack.windup_ms = weapon_profile.windup_ms;
         self.basic_attack.ranged_reposition_ms = weapon_profile.ranged_reposition_ms;
         self.basic_attack.delivery = weapon_profile.delivery.clone();
         self.stats.attack_interval_ms = interval_ms;
+        self.deployment_affinity = weapon_profile.deployment_affinity;
         self.block_capacity = weapon_profile.block_capacity;
         self.weapon_profile = Some(weapon_profile.clone());
+        Ok(())
     }
 }
 
+pub fn checked_scale_attack_interval_ms(
+    base_interval_ms: u64,
+    speed_percent: u32,
+) -> Result<u64, GameError> {
+    if base_interval_ms == 0 || speed_percent == 0 {
+        return Err(GameError::InvalidStaticData(
+            "attack interval and speed points must be > 0".into(),
+        ));
+    }
+    u64::try_from((u128::from(base_interval_ms) * 100).div_ceil(u128::from(speed_percent)))
+        .map_err(|_| GameError::InvalidStaticData("scaled attack interval overflows u64".into()))
+}
+
 pub fn scale_attack_interval_ms(base_interval_ms: u64, speed_percent: u32) -> u64 {
-    assert!(base_interval_ms > 0);
-    assert!(speed_percent > 0);
-    let numerator = u128::from(base_interval_ms) * 100;
-    u64::try_from(numerator.div_ceil(u128::from(speed_percent)))
-        .expect("scaled attack interval must fit u64")
+    checked_scale_attack_interval_ms(base_interval_ms, speed_percent)
+        .expect("validated attack cadence")
 }
 
 impl BattleUnitDraft {
@@ -461,6 +710,7 @@ impl BattleUnitDraft {
             movement: meta.movement.clone(),
             resonance: meta.resonance.clone(),
             skill_id: meta.skill_id.clone(),
+            fragment_source: None,
             skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
             block_capacity: 0,
@@ -485,14 +735,16 @@ impl BattleUnitDraft {
                 .ok_or(GameError::MissingResource("CorrodedEmployeeProfile")),
             BattleUnitSource::TestFixture { profile, .. } => Ok(profile.clone()),
             BattleUnitSource::DefenseObject { profile, .. } => Ok(profile.clone()),
+            BattleUnitSource::IndependentObject { profile, .. }
+            | BattleUnitSource::SummonedUnit { profile, .. } => Ok(profile.clone()),
         }?;
 
         if matches!(&self.source, BattleUnitSource::Employee(_)) {
             let mut weapon_profile: Option<&WeaponCombatProfile> = None;
-            for item_uuid in &self.equipped_items {
+            for binding in &self.equipped_items {
                 let item = game_data
                     .equipment_data
-                    .get_by_uuid(item_uuid)
+                    .get_by_uuid(&binding.base_uuid)
                     .ok_or(GameError::MissingResource(""))?;
                 if item.equipment_type != EquipmentType::Weapon {
                     continue;
@@ -510,11 +762,46 @@ impl BattleUnitDraft {
                 }
                 weapon_profile = Some(next_profile);
             }
-            if let Some(weapon_profile) = weapon_profile {
-                profile.apply_weapon_profile(weapon_profile);
+            let weapon_profile = weapon_profile.ok_or(GameError::WeaponRequired)?;
+            profile.apply_weapon_profile(weapon_profile)?;
+        }
+
+        if let Some(source) = &profile.fragment_source {
+            let metadata = game_data
+                .skill_fragment_data
+                .get_by_id(&source.definition_id)
+                .ok_or(GameError::InvalidAction)?;
+            let crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
+                forms,
+                ..
+            } = &metadata.effect
+            else {
+                return Err(GameError::InvalidAction);
+            };
+            if source.copy_uuid.is_nil()
+                || forms
+                    .get(&source.form_id)
+                    .is_none_or(|form| form.skill_id != source.skill_id)
+                || profile.skill_id.as_ref() != Some(&source.skill_id)
+            {
+                return Err(GameError::InvalidAction);
+            }
+            let report = metadata
+                .form_compatibility_report(&source.form_id, &profile)
+                .ok_or(GameError::InvalidAction)?;
+            if !report.is_compatible {
+                return Err(GameError::SkillFragmentIncompatible {
+                    fragment_id: source.definition_id.clone(),
+                    failure_codes: report.failure_codes,
+                });
             }
         }
 
+        if profile.basic_attack_speed_percent == 0 || profile.stats.attack_interval_ms == 0 {
+            return Err(GameError::InvalidStaticData(
+                "battle profile cadence must be positive".into(),
+            ));
+        }
         Ok(profile)
     }
 
@@ -537,6 +824,7 @@ fn effective_target_traits(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::game::ability::DeliveryDef;
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
         equipment_data::{
@@ -575,10 +863,50 @@ mod tests {
 
         let mut weapon = WeaponCombatProfile::default();
         weapon.interval_ms = 1001;
-        profile.apply_weapon_profile(&weapon);
+        profile.apply_weapon_profile(&weapon).unwrap();
 
         assert_eq!(profile.basic_attack.interval_ms, 801);
         assert_eq!(profile.stats.attack_interval_ms, 801);
+    }
+
+    #[test]
+    fn equipped_weapon_profile_is_runtime_basic_attack_delivery_authority() {
+        let mut profile = UnitCombatProfile::employee_default();
+        assert!(matches!(
+            profile.basic_attack.delivery,
+            DeliveryDef::Instant
+        ));
+
+        let mut weapon = WeaponCombatProfile::default();
+        weapon.delivery = DeliveryDef::Projectile {
+            speed_units_per_ms: 2_500,
+            hit_policy: Default::default(),
+            allow_targetless_cast: false,
+            max_range_tiles: None,
+            max_lifetime_ms: None,
+            max_kills: None,
+            max_pierces: None,
+            collision: Default::default(),
+        };
+        profile.apply_weapon_profile(&weapon).unwrap();
+
+        assert!(matches!(
+            profile.basic_attack.delivery,
+            DeliveryDef::Projectile {
+                speed_units_per_ms: 2_500,
+                ..
+            }
+        ));
+        assert!(matches!(
+            profile
+                .weapon_profile
+                .as_ref()
+                .map(|weapon| &weapon.delivery),
+            Some(DeliveryDef::Projectile {
+                speed_units_per_ms: 2_500,
+                ..
+            })
+        ));
     }
 
     #[test]
@@ -722,7 +1050,12 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: growth,
-            equipped_items: vec![item_uuid],
+            equipment_layout: None,
+            equipped_items: vec![BattleEquipmentBinding {
+                base_uuid: item_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
             equipped_item_enhancements: vec![],
             employee_start_condition: None,
         };
@@ -817,9 +1150,15 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
-            equipped_items: vec![item_uuid],
+            equipment_layout: None,
+            equipped_items: vec![BattleEquipmentBinding {
+                base_uuid: item_uuid,
+                persistent_copy_uuid: Some(Uuid::from_u128(0xc001)),
+                slot: None,
+            }],
             equipped_item_enhancements: vec![BattleEquipmentEnhancement {
                 base_uuid: item_uuid,
+                persistent_copy_uuid: Some(Uuid::from_u128(0xc001)),
                 enhancement_level: 2,
             }],
             employee_start_condition: None,
@@ -842,6 +1181,7 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
+            equipment_layout: None,
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
             employee_start_condition: None,
@@ -855,7 +1195,7 @@ mod tests {
     }
 
     #[test]
-    fn effective_stats_rejects_invalid_permanent_targeting() {
+    fn programmatic_data_publication_rejects_invalid_permanent_targeting() {
         let abno_uuid = Uuid::from_u128(1);
         let item_uuid = Uuid::from_u128(2);
 
@@ -909,28 +1249,25 @@ mod tests {
             event_choice_keys: vec![],
         };
 
-        let game_data = GameDataBuilder::empty()
-            .with_abnormalities(vec![abno])
-            .with_equipment(vec![item])
-            .build();
-
-        let unit = BattleUnitDraft {
-            owned_uuid: Uuid::from_u128(10),
-            source: BattleUnitSource::Abnormality {
-                base_uuid: abno_uuid,
-            },
-            threat_class: BattleUnitThreatClass::Elite,
-            level: Tier::I,
-            stat_scale: Default::default(),
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![item_uuid],
-            equipped_item_enhancements: vec![],
-            employee_start_condition: None,
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            GameDataBuilder::empty()
+                .with_abnormalities(vec![abno])
+                .with_equipment(vec![item])
+                .build()
+        }));
+        let payload = match result {
+            Ok(_) => panic!("programmatic publication must reject invalid Permanent targeting"),
+            Err(payload) => payload,
         };
-
-        assert!(matches!(
-            unit.effective_stats(&game_data),
-            Err(GameError::InvalidStaticData(_))
+        let message = payload
+            .downcast_ref::<String>()
+            .map(String::as_str)
+            .or_else(|| payload.downcast_ref::<&str>().copied())
+            .expect("validation panic should contain a string message");
+        assert!(message.contains("invalid Equipment effect or activation contract"));
+        assert!(message.contains("items[0].triggered_effects.Permanent[0]"));
+        assert!(message.contains(
+            "unsupported equipment trigger effect: trigger=Permanent, target=CounterpartUnit, effect=Modifier"
         ));
     }
 }

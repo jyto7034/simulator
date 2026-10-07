@@ -1,0 +1,187 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "valid",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/valid.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/valid",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 0,
+      "expected_error": null,
+      "source_sha256": "223fe3ad1388e537de548b513c498bac9f6cbce2b4d6a0c30cd23cbe22ea96d6",
+      "log_sha256": "3d981bd2723f115750738b49e0d55d4a7f7a9ae2fea921fae6e3065dc33f3141"
+    },
+    {
+      "name": "private",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/private.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/private",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0616",
+      "source_sha256": "81079aaeb29c231316c00f18c85c6d2e3d524ab97b7e08d2472631c091779022",
+      "log_sha256": "aa3d151cee635c484569a5fb96b64983fb20b252b340d4d7af936c43963ed8c2"
+    },
+    {
+      "name": "clone",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/clone.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/clone",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0277",
+      "source_sha256": "be26bcfbf2d7cc945cf37ac3354fbddc70f0f1c2bf4ffe8c16d2b74e6c6c5f98",
+      "log_sha256": "7b78c62d32a0032140bb0b082c272b78424a947b66806124ec1c7e087b7ee0c9"
+    },
+    {
+      "name": "serialize",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/serialize.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/serialize",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0277",
+      "source_sha256": "e21e2e8a9129c38c44b4a1a1e26b45836f9e1573ea1091c6a29767b9b5f3ee77",
+      "log_sha256": "f119d7ab3e026899c21ac051ad18fcd36e7db9aebda12a21f97121b6792d92f7"
+    },
+    {
+      "name": "deserialize",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/deserialize.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/deserialize",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0277",
+      "source_sha256": "b1aa3bd542b3a83eec100d9933652356fd7aa7b3f07c6268dc9f0a84207a542c",
+      "log_sha256": "29b524159022978b4cb5d7e3899138966fd4f7b3a0756fd9f7a4fb61c8d60c4c"
+    },
+    {
+      "name": "reuse",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/reuse.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/reuse",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0382",
+      "source_sha256": "953883931208ae56d02d0c5d07579587a8fcdf4ffe764e17608cf2d8f72bb47e",
+      "log_sha256": "a97414fee6e470bdd5dc4b4fb53d2f8f8ed67f7f75d795b043ca56c896053221"
+    },
+    {
+      "name": "interleave",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/interleave.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/interleave",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0499",
+      "source_sha256": "e97c1eb3bd964c7231ce600e3a5f2434fd3a571a6fd8374aaf81f0629e965197",
+      "log_sha256": "11a12c6ca399ddcf6b2830288e15ff6df7d46e1476da07f2717f3640baa9b3db"
+    },
+    {
+      "name": "foreign",
+      "command": [
+        "rustc",
+        "--edition=2021",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/foreign.rs",
+        "-o",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/boundary_001/foreign",
+        "--extern",
+        "serde_json=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+        "--extern",
+        "uuid=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+        "--extern",
+        "game_core=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+        "-L",
+        "dependency=/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps"
+      ],
+      "exit_code": 1,
+      "expected_error": "E0616",
+      "source_sha256": "142ca44fcf185a3e493e38249c1c0082929773c43be3df6bdd8bbc2b2ae78fcb",
+      "log_sha256": "9e9a5dfb30c8e00d7e574c09f98634fecadf0852cc00cd2e2a29dc060057002a"
+    }
+  ],
+  "libraries": {
+    "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib": "e8f71326546f62b5bb983e9cd2a87005e24e82cb70e434fa93b485ab0da8f766",
+    "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib": "c251b87040b86edf8a5c7d17edd4e8aee498d97aac38fbbfbbb728dd8423ed7f",
+    "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib": "847cd79895e7d94c54339a1bebe47e094f6a8c3e7fee4affb5073bb875ba14a2"
+  },
+  "build_receipt_sha256": "d700235d80af45c01d7d7cec56f15433a451d191804730d3e6679b9b55955f88"
+}

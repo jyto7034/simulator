@@ -1,0 +1,41 @@
+{
+  "at_utc": "2026-10-05T13:26:40.029416+00:00",
+  "historical_archive_members_match": true,
+  "baseline_only_log_hash_migration": true,
+  "workload_input_exact_prior": true,
+  "raw_exit_code": 101,
+  "raw_sha256": "764b72dac920e8702852c3e6a7a25dd49ee75e7c2a79612cf14205dbd6e86b92",
+  "fresh_depinfo_verified": true,
+  "measurements": {
+    "event_heavy": {
+      "maximum_operations_retained_peak": [
+        44194,
+        265846,
+        271415
+      ],
+      "original_caps": [
+        70671,
+        276174,
+        276174
+      ],
+      "repeatable": true,
+      "baseline_parity": true
+    },
+    "concurrent_sessions": {
+      "maximum_operations_retained_peak": [
+        370928,
+        4196928,
+        9670041
+      ],
+      "original_caps": [
+        389240,
+        4196928,
+        9030188
+      ],
+      "repeatable": true,
+      "baseline_parity": true
+    }
+  },
+  "classification": "Only inherited concurrent peak warning; original hard guard remains failed in raw execution. No new allowance.",
+  "errors": []
+}

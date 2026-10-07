@@ -57,8 +57,7 @@ fn main() {
         equipment_materials: vec![],
         consumables: vec![ConsumableItemDto::from_metadata(&consumable, 7)],
         skill_fragments: vec![],
-        skill_fragment_progress: vec![],
-        pending_research_deliveries: vec![],
+        fragment_dust_usage: "reserved_legacy_asset_not_used_by_fragment_recipes".into(),
         fragment_dust: 0,
     };
     let output = json!({

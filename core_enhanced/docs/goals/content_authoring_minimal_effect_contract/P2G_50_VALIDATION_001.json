@@ -1,0 +1,133 @@
+{
+  "record_kind": "external P2G-50 structural validation and supplementary relation evidence; not a Validation Receipt artifact",
+  "request": "NEXT-0007",
+  "checked_at": "2026-09-09T07:37:15.385458+00:00",
+  "workspace": {
+    "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803",
+    "dirty": true
+  },
+  "standard_validation": {
+    "command": "node core_enhanced/docs/tools/validate_p2g50_goal_set.mjs --freeze core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json --plan core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json --receipt core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json --quality-contract 2 --goal-set core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_GOAL_SET_001.ko.md",
+    "exit_code": 0,
+    "stdout": {
+      "validator": "p2g50-goal-set-validator/1.3.0",
+      "quality_contract": 2,
+      "result": "passed",
+      "counts": {
+        "freeze_members": 6,
+        "phases": 1,
+        "final_execution_nodes": 2,
+        "goal_members": 1,
+        "executable_goal_members": 1,
+        "phase_to_goal_rows": 1,
+        "traceability_rows": 6,
+        "integration_rows": 6,
+        "validation_dimension_rows": 10
+      },
+      "failures": []
+    },
+    "tool_session_id": 42637,
+    "final_output_chunk": "037c35"
+  },
+  "exact_inputs": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_GOAL_SET_001.ko.md",
+      "sha256": "df9d9f0a314101e2af4976274dd1c2735d5abaee1940f0c926b6b5d69ac87223"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "sha256": "64bbe82d782b7f556c97899a024427d39884554516de5be37c9d427c4f97cfaf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json",
+      "sha256": "942af93bdf56832a3252cc89430380026345d788426cd558dccb46a13374f51d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json",
+      "sha256": "0f13147bc41c7621b0b79b4694113516c07b24a8a2c1bb4e72dd186efec26bf7"
+    }
+  ],
+  "reachable_JSON_input_sources": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_00_INITIAL_001.json",
+      "sha256": "4b2ee63a061b1ebc7dcbe1a5dece8bcbad5e80dd88353974b7717740bd6e5e42"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_10_POLICY_001.json",
+      "sha256": "81cd5fc3c5bc25087da73abb356f85aaf3ad693fa832079722463825a1c61170"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_REVIEW_001.json",
+      "sha256": "cd3e8e41941c7acbbd63cdfff5a1bfdd2520beea7da3cd2b7bb0ebaf56b093b0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_SOURCE_PLAN_001.json",
+      "sha256": "6b24ccab63784c7ccd1c8c2f17ece40d482c52bc3dc5977c6252de1deed06891"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "sha256": "64bbe82d782b7f556c97899a024427d39884554516de5be37c9d427c4f97cfaf"
+    }
+  ],
+  "tool_sources": [
+    {
+      "path": "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs",
+      "sha256": "a072f17a59e16c0b999ecd4a0d74740e508efaa39b4bf0216ad7aed138e63897"
+    },
+    {
+      "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+      "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9"
+    },
+    {
+      "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+      "sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f"
+    }
+  ],
+  "runtime": {
+    "node": "v24.11.0"
+  },
+  "supplementary_relation_checks": {
+    "result": "passed",
+    "complete_single_goal_cardinality": true,
+    "typed_current_prerequisite_chain": true,
+    "exact_PER_to_Decision_relation_rows": 6,
+    "acceptance_member_indices": 12,
+    "freeze_acceptance_projection_unchanged": true,
+    "integration_ownership_and_exact_source_locator_preserved": 6,
+    "validation_dimensions": 10,
+    "review_sources_current": 31,
+    "unchanged_existing_JSON_artifacts": 75,
+    "applicable_change_and_obligation_sets_empty": true,
+    "baseline_paths_unchanged_before_stage_publication": 1699
+  },
+  "method": {
+    "command": "python3 /tmp/ca01_next0007_record.py",
+    "sha256": "f56a327d7443f699a6be6fed1660abd9cffcf116b64e0bc64a5bf6d9540bcca6",
+    "scope": "exact owner-derived acceptance indices, per-element Decisions, Phase/node/Goal and integration source/owner preservation, current source/tool/rule hashes; this external evidence publication only"
+  },
+  "semantic_review": {
+    "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_AUTHORING_REVIEW_001.ko.md",
+    "sha256": "92915fbeb80fae747bc234a1609cc9967d5dd38d12b5bd49f08b63ca37a9adc2"
+  },
+  "reused_tests": {
+    "source": {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_TOOLING_VALIDATION_001.json",
+      "sha256": "3d97ebcf1f4f1c7d69eb74dd597938e9cfb9be045f1304e44cfdffdae459ddb6"
+    },
+    "regression_tests": 37,
+    "disposition": "unchanged tooling evidence inherited; not rerun in NEXT-0007"
+  },
+  "not_executed": [
+    "game tests/builds",
+    "validator code changes or regression rerun",
+    "production/RON/store/canonical/rule/AGENTS mutations",
+    "P2G-60 Handoff",
+    "GEX implementation or completion audit"
+  ],
+  "limitations": [
+    "structure passed is not semantic approval or implemented game behavior",
+    "existing field-presence checks are supplemented by explicit acceptance/Decision mapping and authoring semantic review",
+    "selected paths only; not all ignored assets or private-store bytes"
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "status": "ROOT_READBACK_PRE_EXECUTION_NOT_PROBE_PASS",
+  "recorded_at_utc": "2026-10-06T14:23:58.337174+00:00",
+  "source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "source_files_current": 438,
+  "regular_inputs_current": 1322,
+  "new_auxiliary_inputs_current": 115,
+  "old_probe002_files_current": 211,
+  "new_inputs_disjoint_from1322": true,
+  "copied_fixture_files": 108,
+  "changed_copied_files": [
+    [
+      "static_mixed_resource_sum",
+      "official/data/resources/base.ron"
+    ],
+    [
+      "static_mixed_resource_sum",
+      "official/data/skills/base.ron"
+    ],
+    [
+      "static_homogeneous_resource_sum",
+      "official/data/resources/base.ron"
+    ],
+    [
+      "static_homogeneous_resource_sum",
+      "official/data/skills/base.ron"
+    ],
+    [
+      "dynamic_mixed_resource_sum",
+      "official/data/resources/base.ron"
+    ],
+    [
+      "dynamic_mixed_resource_sum",
+      "official/data/skills/base.ron"
+    ],
+    [
+      "dynamic_homogeneous_resource_sum",
+      "official/data/resources/base.ron"
+    ],
+    [
+      "dynamic_homogeneous_resource_sum",
+      "official/data/skills/base.ron"
+    ]
+  ],
+  "handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/HANDOFF.json",
+    "bytes": 4266,
+    "sha256": "b91b50bd3493113596a4e0d5c1a0724a23501348a8b5066c10dee905231c8ccd"
+  },
+  "input_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/INPUT_MANIFEST.json",
+    "bytes": 35021,
+    "sha256": "b860d4299db60747c0773bf9c835e40a914732b9cf2bd35452d3db0e8656120d"
+  },
+  "oracle": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/ORACLE.json",
+    "bytes": 60207,
+    "sha256": "c5afdd1f6fe42c48ec05e7ba63952e7c0c2b125c4f8ca336288220168ef7fd2c"
+  },
+  "probe": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/probe.py",
+    "bytes": 13610,
+    "sha256": "76a9ce85e6452752942d3201ae74125a90bb5d933d21e60151712678544e262c"
+  },
+  "copy_binding": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/COPY_BINDING.json",
+    "bytes": 84957,
+    "sha256": "5192ab1a0c0dfb9858d0d51b16a2a63413188175c86d32997553d745c394ecb2"
+  },
+  "static_review": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/STATIC_REVIEW.json",
+    "bytes": 2258,
+    "sha256": "11de9d87217f8b5c18403efba90e1779c69d16e5e2adddb80a13635371312ee7"
+  },
+  "source_readback": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/SOURCE_READBACK.json",
+    "bytes": 39460,
+    "sha256": "cb5cf2b2ff06f51824987ca8317c5b4689b9373fcb9d5e00292e5cef1eaf6a48"
+  },
+  "existing007_before": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/execution_harness_binding007/BEFORE.json",
+    "bytes": 1522218,
+    "sha256": "3331e5cd407de8d586f1ca7820fa3a1fd667dbdeab8f457ad7b0be50063803bf"
+  },
+  "closed_core_results": [
+    {
+      "id": "integrated_core_default",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default007.json",
+        "bytes": 169864,
+        "sha256": "7ab994bbfc5c95d0fc99d25420a24742dbc89d8c65d99f5214bff4a911452edc"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default007.log",
+        "bytes": 227547,
+        "sha256": "4bf74d6dfb9870f2b320c1fefbf2d72e02cbd0c530cb81fd0641331295a788e6"
+      },
+      "actual_totals": {
+        "passed": 1967,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "verified_exact_selector_rows": 12
+    },
+    {
+      "id": "integrated_core_fixtures",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_fixtures007.json",
+        "bytes": 169902,
+        "sha256": "c6aa97df3cf90d76bace2bb16beca5e25f4cd5080261c28c399bd32fc77ec784"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_fixtures007.log",
+        "bytes": 228711,
+        "sha256": "b0a4638ec678a34b1dcad34d24e319d1d3c5a0c73a25d4606300aac6a3a960b8"
+      },
+      "actual_totals": {
+        "passed": 1967,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "verified_exact_selector_rows": 12
+    },
+    {
+      "id": "integrated_core_observation",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_observation007.json",
+        "bytes": 169908,
+        "sha256": "6780b9ae5ba5990ef8ba58c226ba8cea2cda5a799a876de7754624054baf57e5"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_observation007.log",
+        "bytes": 229867,
+        "sha256": "c61cbeb7a32198f6c629e4aaaca327608dd5056c2107b547e476bc9334cd71ca"
+      },
+      "actual_totals": {
+        "passed": 1986,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "verified_exact_selector_rows": 12
+    }
+  ],
+  "semantic_review": {
+    "read_entire_probe_source": true,
+    "resource_AB_Sum_not_generic_Add": true,
+    "two_distinct_ids_registered_in_all4": true,
+    "static_dynamic_pair": true,
+    "positive_AA_required": true,
+    "valid_final_Magnitude_conversion": "Aggregate ResourceA / Const1ResourceA -> Scalar; Magnitude1 * Scalar",
+    "precise_diagnostic_site": "E009 skills[1], unknown_distortion_strike/strike/effect_01",
+    "limit": "publication acceptance/refusal only; numeric gameplay damage not observed"
+  },
+  "additional_documentary_ref_scan": {
+    "occurrences": 2128,
+    "unique": 591,
+    "current_or_document_refs_verified": 529,
+    "historical_predecessor_delta_before_refs": 62,
+    "historical_refs_not_misclassified_as_current": true,
+    "unexpected_mismatch": 0
+  },
+  "canonical_role_mapping": {
+    "selected_id": "r06_resource_sum_public",
+    "handoff_and_oracle_role_alias": "r06_resource_sum_publication",
+    "receipt_label": "r06_resource_sum_publication007",
+    "reason": "Preserve already agreed optional selected ID and frozen author handoff bytes; alias is metadata, not executed assertion."
+  },
+  "execution_performed_by_root": false
+}

@@ -1,0 +1,7 @@
+{
+  "path": "game_server/docs/unity_bridge_protocol.md",
+  "sha256": "ebfb9534fc901afe8a40885c23c6504e6524f0b07420f83aa0f45a60898429c4",
+  "bytes": 12955,
+  "required_by": "P2G_50_GOAL_SET.ko.md Canonical Documentation Obligation",
+  "in_target_manifest": false
+}

@@ -1,0 +1,193 @@
+{
+  "receipt_bindings_independently_checked": [
+    {
+      "id": "final_core_default001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_core_fixtures001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_core_observation001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_host_default001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_host_observation001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fmt001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_check001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_event_log001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_clippy_core001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_clippy_host001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_heap001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_release001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_prepared_public_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_prepared_boundary_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_observed_release_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_default_parity_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_public_oracle_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_public_trace_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_public_cli_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_public_profile_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_public_boundary_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_public_api_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_pc_prepare_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_pc_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_pc_compare_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_pc_immediate_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "compat_r05_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 101
+    },
+    {
+      "id": "compat_r05_compare_001",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_build_on",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_none",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_detached",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_queue_full",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_on",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_websocket",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_build_off",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    },
+    {
+      "id": "final_fault_001_off",
+      "source_and_receipt_and_log_exact": true,
+      "exit": 0
+    }
+  ],
+  "surviving_off_release_binary_identity_checked": [
+    {
+      "path": ".cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+      "bytes": 22903936,
+      "sha256": "4bf38ecc8e1389b81e32f272909634f04abf67a973cdcd27f350a38663ef1037"
+    }
+  ],
+  "observed_binary_disposition": "The on binary at the shared path was subsequently replaced by the final off build as declared in receipts; historical on execution is bound by its frozen build and run receipts, not asserted identical to current off binary. Full transitive evidence audit deferred after F01.",
+  "scope": "Exact receipt/source/log identity checked. Does not convert implementation assertions into an independent semantic verdict."
+}

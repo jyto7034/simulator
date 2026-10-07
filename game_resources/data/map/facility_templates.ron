@@ -78,7 +78,7 @@
                 (id: "lower_containment", role: Ordinary, allowed_categories: [Combat, Event]),
                 (id: "upper_containment", role: Ordinary, allowed_categories: [Combat, HeadquartersContact]),
                 (id: "final_approach", role: Ordinary, allowed_categories: [Combat, Maintenance, Reward]),
-                (id: "final_chamber", role: Terminal(RunFinalBoss), allowed_categories: [Boss], tags: ["boss_room"]),
+                (id: "final_chamber", role: Terminal(StandardCompletion), allowed_categories: [Boss], tags: ["boss_room"]),
             ],
             connections: [
                 (from_slot_id: "entry", to_slot_id: "west_containment", direction: Bidirectional),

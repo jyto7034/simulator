@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "errors": [],
+  "typed_cases": 15,
+  "original256_repeated_refusals": 2,
+  "original256_failure": "battle_runtime_clone_limit",
+  "split256_terminal_ms": 27450,
+  "split256_entries": 256,
+  "split256_balance": 5,
+  "typed_boundaries": 8,
+  "order_and_shortage": true,
+  "new_gameplay_execution": false,
+  "source_oracles": "authoring_typed_resource_external_probe.py; examples/typed_adversarial.rs and typed_limits.rs; original owner-produced output recomputation only"
+}

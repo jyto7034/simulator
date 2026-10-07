@@ -1,0 +1,138 @@
+{
+  "schema": "bounded_scenario_source_review_v1",
+  "status": "grammar_parser_read_only_review",
+  "not_completion_audit": true,
+  "workspace": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "captured_at_utc": "2026-09-10T07:33:48.400996+00:00",
+  "written_files": [
+    "/tmp/r03_scenario_review_001.md",
+    "/tmp/r03_scenario_review_001.json"
+  ],
+  "production_test_docs_build_mutations": [],
+  "tests_runtime_probes_executed": [],
+  "confirmed_defects": [],
+  "conclusion": "No confirmed defect in implemented grammar/parser at inspected source; resolver/session/receipt absence excluded by task scope.",
+  "integration_notes": [
+    {
+      "id": "SI01",
+      "topic": "No Deserialize ApplicationExecutionContext; strict post-binding context conversion required",
+      "classification": "future resolver integration fact, not current parser defect"
+    },
+    {
+      "id": "SI02",
+      "topic": "Actual prior result and source pointer/type validation after execution",
+      "classification": "future resolver responsibility"
+    },
+    {
+      "id": "SI03",
+      "topic": "Bound and validate complete resolved template after copying",
+      "classification": "future resolver responsibility"
+    },
+    {
+      "id": "SI04",
+      "topic": "Explicit requested delta ceilings differ from host-scaled and next-bucket actual time",
+      "classification": "runtime boundary fact, not parser defect"
+    },
+    {
+      "id": "SI05",
+      "topic": "Scenario does not retain limits; execution must retain or explicitly consume correct trusted basis",
+      "classification": "future ownership requirement"
+    }
+  ],
+  "snapshot_limit": "Initial samples taken after first reads; final compare only, no lock/atomic multi-file snapshot. Root implementing concurrently.",
+  "sources": [
+    {
+      "id": "SCENARIO",
+      "path": "core_enhanced/src/authoring/scenario.rs",
+      "sha256_final": "688bfa6abc8f96bfc6cf4722d17e802d4ca240919f6280a129599c11e8802f37",
+      "bytes_final": 28085,
+      "sha256_initial_sample": "688bfa6abc8f96bfc6cf4722d17e802d4ca240919f6280a129599c11e8802f37",
+      "drift_since_initial_sample": false,
+      "read_spans_or_selectors": [
+        "1–582 production grammar/parser/validation",
+        "583–818 existing tests source only"
+      ],
+      "read_method": "sed full sequential source reads; rg public surface/caller inspection"
+    },
+    {
+      "id": "EXPORT",
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "sha256_final": "a86d47ab495b9038a3114beb9330ec0773cde0cdd55d8646bef0a5799c0630c6",
+      "bytes_final": 4345,
+      "sha256_initial_sample": "a86d47ab495b9038a3114beb9330ec0773cde0cdd55d8646bef0a5799c0630c6",
+      "drift_since_initial_sample": false,
+      "read_spans_or_selectors": [
+        "1–87; scenario reexports11–14"
+      ],
+      "read_method": "sed/rg"
+    },
+    {
+      "id": "PLAN",
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+      "sha256_final": "2c4da8240b20e832134d800d90840556c495e5e284a11ee0375ee9a2e1e40fb0",
+      "bytes_final": 24892,
+      "sha256_initial_sample": "2c4da8240b20e832134d800d90840556c495e5e284a11ee0375ee9a2e1e40fb0",
+      "drift_since_initial_sample": false,
+      "read_spans_or_selectors": [
+        "58–66",
+        "233–241 (detailed design007)"
+      ],
+      "read_method": "sed exact007; targeted rg finite/binding clauses"
+    },
+    {
+      "id": "GOAL",
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_50_GOAL_SET_001.ko.md",
+      "sha256_final": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "bytes_final": 33683,
+      "sha256_initial_sample": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "drift_since_initial_sample": false,
+      "read_spans_or_selectors": [
+        "37",
+        "41",
+        "56–67",
+        "124–128"
+      ],
+      "read_method": "targeted rg finite/binding/clock/failure contract"
+    },
+    {
+      "id": "APP",
+      "path": "core_enhanced/src/application.rs",
+      "sha256_final": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "bytes_final": 44770,
+      "sha256_initial_sample": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "drift_since_initial_sample": false,
+      "read_spans_or_selectors": [
+        "208–247",
+        "680–713",
+        "898–956"
+      ],
+      "read_method": "sed actual context/snapshot/clock APIs"
+    },
+    {
+      "id": "COMBAT",
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256_final": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "bytes_final": 129610,
+      "sha256_initial_sample": null,
+      "drift_since_initial_sample": null,
+      "read_spans_or_selectors": [
+        "1580–1647"
+      ],
+      "read_method": "sed host tick/next bucket route"
+    },
+    {
+      "id": "STATE",
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256_final": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "bytes_final": 70625,
+      "sha256_initial_sample": null,
+      "drift_since_initial_sample": null,
+      "read_spans_or_selectors": [
+        "800–835"
+      ],
+      "read_method": "sed actual simulation_delta_for_tick"
+    }
+  ],
+  "report_sha256": "85239b161c53591a1adb6af591c4ff13b0fb80931b71cf1d0139fae18dc0de8d"
+}

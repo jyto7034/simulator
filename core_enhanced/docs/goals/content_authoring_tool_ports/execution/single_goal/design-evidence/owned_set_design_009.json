@@ -1,0 +1,577 @@
+{
+  "report_id": "R03-OWNED-SET-DESIGN-009",
+  "kind": "bounded_readonly_design_investigation_not_completion_audit",
+  "capture_utc": "2026-09-10T08:46:35.993869+00:00",
+  "addendum_capture_utc": "2026-09-10T08:49:20.640181+00:00",
+  "std_hash_set_capture_utc": "2026-09-10T08:50:06.605766+00:00",
+  "close_utc": "2026-09-10T08:50:29.823447+00:00",
+  "constraints": {
+    "root_sole_repo_writer": true,
+    "source_edits": false,
+    "tests_executed": false,
+    "builds_executed": false,
+    "git_commands": false,
+    "network_by_helper": false,
+    "dependency_changes": false,
+    "only_new_report_files": true
+  },
+  "decision": {
+    "minimal_seam": "One private MapCloneHistory sidecar for BattlefieldLayout.static_obstacles; explicit tombstone-free capacity envelope for the seven other named fields; preserve raw public fields/native Clone; no generic OwnedHashSet framework.",
+    "phase": "proposed, not implemented by helper",
+    "opaque_obstacle_note": "Production opaque path currently insert/clear-only; sidecar covers the separately public deletion-capable owner API."
+  },
+  "observations": [
+    {
+      "id": "OS009-O01",
+      "topic": "public_VN_provenance",
+      "conclusion": "Both public VN fields are insert-only in the fresh opaque owner family, including fresh byte deserialization and captured-state restoration. Arbitrary externally mutated values of the public type are not certified."
+    },
+    {
+      "id": "OS009-O02",
+      "topic": "battlefield",
+      "conclusion": "valid_tiles is freshly collected from Vec then immutable. static_obstacles exposes controlled remove; one private lifetime insertion sidecar covers all public paths while leaving signatures/native sets unchanged."
+    },
+    {
+      "id": "OS009-O03",
+      "topic": "other_insert_only_owners",
+      "fields": [
+        "ScenarioRuntimeState.spawned_groups",
+        "BossEncounterRuntime.latched_signals",
+        "ActiveBossPattern.cleared_batch_handles",
+        "BattleEmployeeAttemptState.processed_incapacitations"
+      ],
+      "conclusion": "Creation/insert/whole owner replacement or drop/Clone found; no in-place deletion path found in scoped ordinary code."
+    },
+    {
+      "id": "OS009-O04",
+      "topic": "empty_clear_caveat",
+      "source": "/tmp/r03-hashbrown-0.15.5-raw-mod.rs:850-854",
+      "conclusion": "RawTable::clear on len==0 returns without clearing tombstones. Never reset obstacle history merely because clear was called."
+    },
+    {
+      "id": "OS009-O05",
+      "topic": "all_retained_copies",
+      "conclusion": "Count each owned live/checkpoint/entry-snapshot set separately; equality or capture ancestry does not imply Arc allocation sharing."
+    },
+    {
+      "id": "OS009-O06",
+      "topic": "bucket_model",
+      "conclusion": "capacity is a usable-item lower bound generally, full usable capacity under a verified tombstone-free invariant. Apply a checked bucket envelope rather than count capacity or len directly as buckets."
+    }
+  ],
+  "classifications": [
+    {
+      "field": "VisualNovelTriggerRuntimeState.persistent_consumed",
+      "invariant": "tombstone_free_in_opaque_flow",
+      "seam": "preserve_public_raw"
+    },
+    {
+      "field": "VisualNovelTriggerRuntimeState.checkpoint_rewind_consumed",
+      "invariant": "tombstone_free_in_opaque_flow_with_fresh_deserialize_and_capture_restore",
+      "seam": "preserve_public_raw"
+    },
+    {
+      "field": "BattlefieldLayout.valid_tiles",
+      "invariant": "tombstone_free_all_inspected_public_construction_paths",
+      "seam": "private_capacity_envelope"
+    },
+    {
+      "field": "BattlefieldLayout.static_obstacles",
+      "invariant": "public_deletion_capable;opaque_production_currently_insert_clear_only",
+      "seam": "private_lifetime_insertion_sidecar"
+    },
+    {
+      "field": "ScenarioRuntimeState.spawned_groups",
+      "invariant": "insert_only_until_whole_replacement",
+      "seam": "private_capacity_envelope"
+    },
+    {
+      "field": "BossEncounterRuntime.latched_signals",
+      "invariant": "insert_only_until_whole_replacement",
+      "seam": "private_capacity_envelope"
+    },
+    {
+      "field": "ActiveBossPattern.cleared_batch_handles",
+      "invariant": "insert_only_until_whole_replacement_or_drop",
+      "seam": "private_capacity_envelope"
+    },
+    {
+      "field": "BattleEmployeeAttemptState.processed_incapacitations",
+      "invariant": "insert_only_until_attempt_drop",
+      "seam": "private_capacity_envelope"
+    }
+  ],
+  "formula": {
+    "zero": "E(0)=0",
+    "positive": "E(c)=max(16,checked_next_power_of_two((checked(c*2)*8)/7))",
+    "inputs": "c=current capacity only with tombstone-free owner proof, or c=lifetime insert-attempt credit with history",
+    "not_claimed": [
+      "exact allocator bytes",
+      "RSS",
+      "full transitive heap bounds",
+      "arbitrary unknown public set provenance"
+    ]
+  },
+  "archive_members": [
+    {
+      "archive": "/home/acr0tic/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/hashbrown-0.15.5.crate",
+      "member": "hashbrown-0.15.5/src/set.rs",
+      "sha256": "cd7d05424d731f0ad5eb4cf255e9a4d970b96fb68398cc904481af942a106fb4",
+      "spans": [
+        "114-127",
+        "269-270",
+        "368-372",
+        "430-431",
+        "1092-1093",
+        "1175-1179",
+        "1265-1276"
+      ]
+    },
+    {
+      "member": "hashbrown-0.15.5/src/map.rs",
+      "sha256": "7ad82c1a141b824be1201ea0014623b2433d32080f528ef3958e65d04ddb7688",
+      "archive": "/home/acr0tic/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/hashbrown-0.15.5.crate",
+      "spans": [
+        "185-203",
+        "1009-1011",
+        "1790-1800"
+      ]
+    }
+  ],
+  "official_source_urls": [
+    "https://raw.githubusercontent.com/rust-lang/rust/1.91.1/library/std/src/collections/hash/set.rs",
+    "https://raw.githubusercontent.com/rust-lang/rust/1.91.1/library/std/Cargo.toml",
+    "https://raw.githubusercontent.com/rust-lang/rust/1.91.1/Cargo.lock",
+    "https://raw.githubusercontent.com/rust-lang/hashbrown/v0.15.5/src/set.rs",
+    "https://raw.githubusercontent.com/rust-lang/hashbrown/v0.15.5/src/raw/mod.rs"
+  ],
+  "limitations": [
+    "Eight named logical fields plus owned snapshot/checkpoint copies; not an exhaustive transitive graph or heap proof.",
+    "Additional BTreeSet fields identified in SpawnKernelState and EncounterProgressionState require separate accounting.",
+    "No test/build/runtime verification executed.",
+    "Earlier std wrapper gap was resolved by independently reading/hash-checking root-supplied exact source.",
+    "Search-result-only files are not represented as full-file reviews. The HashMap source is a rehashed prior-proof input.",
+    "No source drift in the 37 captured files between their capture and close hashes."
+  ],
+  "sources": [
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/visual_novel.rs",
+      "sha256": "bd9c83551d5547a5ca425859fd40db197d3b64fbfcab27683dc5ce5a89ed29c3",
+      "bytes": 2278,
+      "inspected_spans": [
+        "55-75"
+      ],
+      "close_sha256": "bd9c83551d5547a5ca425859fd40db197d3b64fbfcab27683dc5ce5a89ed29c3",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/mod.rs",
+      "sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "bytes": 587,
+      "inspected_spans": [
+        "1-29"
+      ],
+      "close_sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/battlefield/mod.rs",
+      "sha256": "54d0466d93ac176ed131c57ccdd4954966bf2224d1a41ee5e0943f9a9ae77144",
+      "bytes": 456,
+      "inspected_spans": [
+        "1-17"
+      ],
+      "close_sha256": "54d0466d93ac176ed131c57ccdd4954966bf2224d1a41ee5e0943f9a9ae77144",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/battlefield/field.rs",
+      "sha256": "66859782c24b0b2ad65ee5c2b95b344c00c75128e11419224d46422aa1336047",
+      "bytes": 4902,
+      "inspected_spans": [
+        "1-114",
+        "116-154: direct remove test"
+      ],
+      "close_sha256": "66859782c24b0b2ad65ee5c2b95b344c00c75128e11419224d46422aa1336047",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/state.rs",
+      "sha256": "0cf2f62af29ff9e04c67cda515e4b4488be9ac9d9806311d7c11607db49c0a4c",
+      "bytes": 70669,
+      "inspected_spans": [
+        "138-180",
+        "374-470",
+        "508-618",
+        "750-769",
+        "1816"
+      ],
+      "close_sha256": "0cf2f62af29ff9e04c67cda515e4b4488be9ac9d9806311d7c11607db49c0a4c",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/combat.rs",
+      "sha256": "19c5a48bdfe3e1a7acae673e55db5fbd51dcce933027289c59b63550f177641b",
+      "bytes": 129670,
+      "inspected_spans": [
+        "114-132",
+        "515",
+        "field-reference search"
+      ],
+      "close_sha256": "19c5a48bdfe3e1a7acae673e55db5fbd51dcce933027289c59b63550f177641b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/application.rs",
+      "sha256": "abbc0534548428ab35286059f03b9b83c91f5f282e596c0eeffe8432e3777a9d",
+      "bytes": 9615,
+      "inspected_spans": [
+        "1-125",
+        "220-278"
+      ],
+      "close_sha256": "abbc0534548428ab35286059f03b9b83c91f5f282e596c0eeffe8432e3777a9d",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world.rs",
+      "sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "bytes": 34199,
+      "inspected_spans": [
+        "19-55",
+        "89-114",
+        "732"
+      ],
+      "close_sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/active_run.rs",
+      "sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "bytes": 10224,
+      "inspected_spans": [
+        "115-155",
+        "249-278"
+      ],
+      "close_sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/visual_novel_triggers.rs",
+      "sha256": "ae14bc093afa121cc2e6cfc09164e0f94e6572ace81d388387b1f5ea096a4e87",
+      "bytes": 9433,
+      "inspected_spans": [
+        "183-221",
+        "field-reference search"
+      ],
+      "close_sha256": "ae14bc093afa121cc2e6cfc09164e0f94e6572ace81d388387b1f5ea096a4e87",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/mod.rs",
+      "sha256": "46e0da5070f321ca2d3e3bf85f32ac7b2d8a49d763e405d030489122defd2008",
+      "bytes": 351151,
+      "inspected_spans": [
+        "80-120",
+        "190-202",
+        "321-370",
+        "HashSet and scenario/boss replacement searches"
+      ],
+      "close_sha256": "46e0da5070f321ca2d3e3bf85f32ac7b2d8a49d763e405d030489122defd2008",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/build.rs",
+      "sha256": "99e777d2791b3b6223bdbaada1eba0d3f18c267e1a7fd2565d0f6108d0199761",
+      "bytes": 22178,
+      "inspected_spans": [
+        "30",
+        "158-160"
+      ],
+      "close_sha256": "99e777d2791b3b6223bdbaada1eba0d3f18c267e1a7fd2565d0f6108d0199761",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "sha256": "23eadbd1192cfe28e2e94f3d555b1ebf283ec6d319e9cec5e2120a654a1bde93",
+      "bytes": 43656,
+      "inspected_spans": [
+        "311",
+        "400-430"
+      ],
+      "close_sha256": "23eadbd1192cfe28e2e94f3d555b1ebf283ec6d319e9cec5e2120a654a1bde93",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/sim.rs",
+      "sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207",
+      "bytes": 130316,
+      "inspected_spans": [
+        "1265",
+        "1575-1645",
+        "1796-1818"
+      ],
+      "close_sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "sha256": "2706ba8233d41ea79eb15cd0fb2145acf679773f9c28d9c9780b835606822eb6",
+      "bytes": 138714,
+      "inspected_spans": [
+        "73-144",
+        "277-290",
+        "1118-1132",
+        "1346-1352",
+        "1500-1539",
+        "1644-1665",
+        "1763-1774",
+        "2127",
+        "set/owner replacement search"
+      ],
+      "close_sha256": "2706ba8233d41ea79eb15cd0fb2145acf679773f9c28d9c9780b835606822eb6",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/encounter_progression.rs",
+      "sha256": "ce29245f00aee072318dde20c33c0431716d539f8b656ee99ffc82668f74949b",
+      "bytes": 21610,
+      "inspected_spans": [
+        "19-25",
+        "127-143",
+        "HashSet/BTreeSet search"
+      ],
+      "close_sha256": "ce29245f00aee072318dde20c33c0431716d539f8b656ee99ffc82668f74949b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/owned_collections.rs",
+      "sha256": "f2dcd5bb4826a3db6d5752b013a17595a79bd9812af7a56be3f320ef5d3edd6c",
+      "bytes": 10794,
+      "inspected_spans": [
+        "1-150"
+      ],
+      "close_sha256": "f2dcd5bb4826a3db6d5752b013a17595a79bd9812af7a56be3f320ef5d3edd6c",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/lib.rs",
+      "sha256": "f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7",
+      "bytes": 77,
+      "inspected_spans": [
+        "module declarations"
+      ],
+      "close_sha256": "f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7",
+      "drift": false
+    },
+    {
+      "path": "/tmp/r03-hashbrown-0.15.5-raw-mod.rs",
+      "sha256": "a88cd291be71cd2f6119a1f8b4030a0429b6b1f8771b7f2a8b140c1824788bed",
+      "bytes": 191672,
+      "inspected_spans": [
+        "103-159",
+        "848-863",
+        "1277-1284",
+        "2627-2677",
+        "3053-3058",
+        "3095-3184",
+        "3271-3282"
+      ],
+      "close_sha256": "a88cd291be71cd2f6119a1f8b4030a0429b6b1f8771b7f2a8b140c1824788bed",
+      "drift": false
+    },
+    {
+      "path": "/tmp/r03-rust-1.91.1-std-hash-map.rs",
+      "sha256": "628357909f9fa43cfe47e03f315c868b8115483079377d964e7758b106e7c6b1",
+      "bytes": 86413,
+      "inspected_spans": [
+        "earlier proof input; exact bytes rehashed, not independently re-reviewed in009"
+      ],
+      "close_sha256": "628357909f9fa43cfe47e03f315c868b8115483079377d964e7758b106e7c6b1",
+      "drift": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.228/src/de/impls.rs",
+      "sha256": "9fb7a0322af51971fe1fa8f5b56c7ca3716622a6e9127b86bddfc0742c11383c",
+      "bytes": 97135,
+      "inspected_spans": [
+        "1002-1067",
+        "1109-1118"
+      ],
+      "close_sha256": "9fb7a0322af51971fe1fa8f5b56c7ca3716622a6e9127b86bddfc0742c11383c",
+      "drift": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/cache/index.crates.io-1949cf8c6b5b557f/hashbrown-0.15.5.crate",
+      "sha256": "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1",
+      "bytes": 140908,
+      "inspected_spans": [
+        "member set.rs and map.rs; read in-memory without extraction"
+      ],
+      "close_sha256": "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/application.rs",
+      "sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "bytes": 44770,
+      "inspected_spans": [
+        "781-910",
+        "987-1039",
+        "public method and GameCore reference search"
+      ],
+      "close_sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "0521f6860a8079ec8b6558dec2b46bacdaed410a079f91f609e05debb937d79b",
+      "bytes": 62192,
+      "inspected_spans": [
+        "1237-1286"
+      ],
+      "close_sha256": "0521f6860a8079ec8b6558dec2b46bacdaed410a079f91f609e05debb937d79b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/mod.rs",
+      "sha256": "c740b990aef0013af17d7261f7d06ebf7950a1588338457904902c3a8e09b76e",
+      "bytes": 429,
+      "inspected_spans": [
+        "1-18"
+      ],
+      "close_sha256": "c740b990aef0013af17d7261f7d06ebf7950a1588338457904902c3a8e09b76e",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "sha256": "61af123232aba8af42cdc864738cab3e174b787da8f403c824ff7fcca456f570",
+      "bytes": 64355,
+      "inspected_spans": [
+        "452-453",
+        "1228",
+        "1602",
+        "920-945"
+      ],
+      "close_sha256": "61af123232aba8af42cdc864738cab3e174b787da8f403c824ff7fcca456f570",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/types.rs",
+      "sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "bytes": 17929,
+      "inspected_spans": [
+        "HashSet/BTreeSet search only"
+      ],
+      "close_sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "sha256": "de76e4e9cd653b3badf4a4bd971d6903f7e6b754b1f9ec37c72c5c4fc6ea2b1f",
+      "bytes": 37114,
+      "inspected_spans": [
+        "HashSet/BTreeSet search; retained field235"
+      ],
+      "close_sha256": "de76e4e9cd653b3badf4a4bd971d6903f7e6b754b1f9ec37c72c5c4fc6ea2b1f",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "sha256": "f6ed6b5869490f1bb2ec29aaaff93c5bda2639f6d3ba5f2380bd43e57bbbc5a6",
+      "bytes": 65702,
+      "inspected_spans": [
+        "HashSet/BTreeSet and owner replacement searches"
+      ],
+      "close_sha256": "f6ed6b5869490f1bb2ec29aaaff93c5bda2639f6d3ba5f2380bd43e57bbbc5a6",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/field_work.rs",
+      "sha256": "507b0ced1cf6923238bf48d737545aa7bb2beff317bdf6a0b8660462304a9d66",
+      "bytes": 50664,
+      "inspected_spans": [
+        "HashSet/BTreeSet search only"
+      ],
+      "close_sha256": "507b0ced1cf6923238bf48d737545aa7bb2beff317bdf6a0b8660462304a9d66",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/helpers.rs",
+      "sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22",
+      "bytes": 24820,
+      "inspected_spans": [
+        "checkpoint/VN consumer search only"
+      ],
+      "close_sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/map_content.rs",
+      "sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26",
+      "bytes": 14070,
+      "inspected_spans": [
+        "checkpoint/VN consumer search only"
+      ],
+      "close_sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/design-evidence/std_hashmap_bound_001.md",
+      "sha256": "3b6494a2f62af700323aa449085ce9e8c8c5e599c62dc308b88d0660c949a774",
+      "bytes": 1670,
+      "inspected_spans": [
+        "full"
+      ],
+      "close_sha256": "3b6494a2f62af700323aa449085ce9e8c8c5e599c62dc308b88d0660c949a774",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/design-evidence/std_hashmap_bound_001.json",
+      "sha256": "300af969d1051bf32abc95a2035cc17930cf0edd94c00bbd6d0d0020269f7c62",
+      "bytes": 1455,
+      "inspected_spans": [
+        "source provenance metadata"
+      ],
+      "close_sha256": "300af969d1051bf32abc95a2035cc17930cf0edd94c00bbd6d0d0020269f7c62",
+      "drift": false
+    },
+    {
+      "path": "/tmp/r03-rust-1.91.1-std-Cargo.toml",
+      "sha256": "8039e2509a082251502fd014b3157e68250b488f84657af3c6bee05e2f1286e5",
+      "bytes": 5534,
+      "inspected_spans": [
+        "hashbrown dependency line23"
+      ],
+      "close_sha256": "8039e2509a082251502fd014b3157e68250b488f84657af3c6bee05e2f1286e5",
+      "drift": false
+    },
+    {
+      "path": "/tmp/r03-rust-1.91.1-Cargo.lock",
+      "sha256": "b89b588a745aa7b8e57a31dd3d674eeb2d385510da9710483cff80200313027e",
+      "bytes": 151050,
+      "inspected_spans": [
+        "1562-1569"
+      ],
+      "close_sha256": "b89b588a745aa7b8e57a31dd3d674eeb2d385510da9710483cff80200313027e",
+      "drift": false
+    },
+    {
+      "path": "/tmp/r03-rust-1.91.1-std-hash-set.rs",
+      "sha256": "7b4ab07b633a2850df7cce1817b892e8fa2f906a58c689bd9351ecd5f4bc4f05",
+      "bytes": 67560,
+      "inspected_spans": [
+        "4",
+        "125-126",
+        "181-182",
+        "361-362",
+        "916-917",
+        "963-968",
+        "1006-1023",
+        "1060-1069",
+        "1110-1128"
+      ],
+      "close_sha256": "7b4ab07b633a2850df7cce1817b892e8fa2f906a58c689bd9351ecd5f4bc4f05",
+      "drift": false
+    }
+  ]
+}

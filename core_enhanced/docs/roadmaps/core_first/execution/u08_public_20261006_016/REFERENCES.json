@@ -1,0 +1,34 @@
+[
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/docs_checkpoint018/RECORD.json",
+    "sha256": "27d68c95e9a46d8dc3dc8887207e651c6ce406652664fec8758568804df2cf4e"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/product_world_scope_split001/POST_DIAGNOSTIC.json",
+    "sha256": "4ca31e315f0b21a449b5a62a566cc46e69ae85414636df6d4e828750b66351e3"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_g1_stage001/RESULT.json",
+    "sha256": "e0d2ca343b8264c7ccb6f814ccf345e3d2f548d0f3000a23b6907b09c427c371"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/coverage_preflight001/COVERAGE.json",
+    "sha256": "0947082f07c7faddad2f865bc63d0bd324b664a5fa0b13b3296bf29b26291225"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_r07_stack_diagnostic002.json",
+    "sha256": "0dfdeff61963375231adcfc62277c3af057d9e247d69bf5b2bff26beb603d435"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_g1_duplicate002.json",
+    "sha256": "6f04416f4319328b98ecde1e2924257e7cb86299eb3048d0c94a97a3f50b2082"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_g1_battle002.json",
+    "sha256": "0e6d506daad0d8ee77d83d338a905f6adc478c23ad011462b9e40377cd389725"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_g1_weapon002.json",
+    "sha256": "3a7e6f9b60574887ee8b79300e089caa1c05a249e6bd70b193b7d7b2d342fb9c"
+  }
+]

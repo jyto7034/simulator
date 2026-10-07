@@ -1,0 +1,56 @@
+{
+  "observed_at": "2026-09-09T18:41:40.585131+00:00",
+  "target_sha256": "18ae4137394def5a0454b6cd7d69e42c9570bd207fc1e7170574a9ee864818ee",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "direct_members": 581,
+  "external_members": 106,
+  "binaries": 2,
+  "target_mismatches": [],
+  "predecessor_changes": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/ACCEPTANCE_EVIDENCE_001.md",
+      "before": "21915fcc716b4a682001bc6a0d7d525d444ad84433026470226b6956990fd1f8",
+      "after": "c5ef106e2b8f31404473905ce84bc04280c06a04f9be7757a9df2c58f5ce666f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/EXPERIMENTS.md",
+      "before": "04b8474bc669e68d504db9ebf37d5a0569209f451089e93e559b906b7850384a",
+      "after": "f3a7942667014a84ab97c5d12121cd09367c2b4d701f988f5ca60a29f568850e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before": "9351a80b818bee8cfd24502196f719bcc4ce598532d25674b0c7b8b0af0b2f1a",
+      "after": "c42ca4fb7aa05f9f0af01e239c601bd3dbe6ffa5e9ab66a1d47b3a577ef2ae58"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/PLAN.md",
+      "before": "7f6fc5f1b752c38f041a3d04c4807e492484b7651c52394be08a190926338533",
+      "after": "bbfc4a9379469adcd7c972620978248d732f1e6029401b7298d2cab9a6493eaf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/R01_SUCCESSOR_IMPACT_001.md",
+      "before": "f2ff85dcc4c78c6b4418d0b5b57d63caf121954910769ed2db3c5c4edec7762a",
+      "after": "5386da4b683746aef1c09a2cbde73ee149a9b8bebe2b3a59044d23e9e9a5ed73"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "before": "bc31340706e3a9651599d9eeaa2155cd1fe2aaf3b960c10dc506d1eb76ad28d9",
+      "after": "4202f83de4064bf9711d9a194f303d921b77a3d2146372f918e93b208c87ee93"
+    }
+  ],
+  "predecessor_changes_match_claim": true,
+  "exact_comment_reconstruction": true,
+  "VI023_mismatches": [],
+  "VI022_to_023_delta": [
+    "core_enhanced/src/game/data/mod.rs"
+  ],
+  "toolchain": {
+    "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+    "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)"
+  },
+  "environment": {
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_TARGET_DIR": null
+  }
+}

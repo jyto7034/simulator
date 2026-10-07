@@ -1,9 +1,9 @@
-use super::node_flow::StagedNodeCompletion;
-use super::GameCore;
+use super::node_flow::{NodeCompletionContext, StagedNodeCompletion};
+use super::{shop::ShopSessionCommitMode, GameCore};
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::employee::Employee;
 use crate::game::map::{MapNodeCategory, MapNodePayload};
-use crate::game::resources::{ActiveNodeContent, GameState};
+use crate::game::resources::GameState;
 
 impl GameCore {
     fn current_headquarters_contact(
@@ -24,43 +24,10 @@ impl GameCore {
     }
 
     fn plan_headquarters_contact_completion(&mut self) -> Result<StagedNodeCompletion, GameError> {
-        let active_content = self.state.active_node_content.take();
-        let completion = self.plan_complete_current_node(true);
-        self.state.active_node_content = active_content;
-        completion
-    }
-
-    fn with_headquarters_transaction<T>(
-        &mut self,
-        apply: impl FnOnce(&mut Self) -> Result<T, GameError>,
-    ) -> Result<T, GameError> {
-        let rollback_game_state = self.state.game_state.clone();
-        let rollback_active_content = self.state.active_node_content.clone();
-        let rollback_node_session = self.state.node_session.clone();
-        let rollback_run = self.state.run.clone();
-        let rollback_uuid_manager = self.state.uuid_manager.clone();
-        let rollback_enkephalin = self.state.enkephalin.clone();
-        let rollback_inventory = self.state.inventory.clone();
-        let rollback_roster = self.state.roster.clone();
-        let rollback_skill_fragments = self.state.skill_fragments.clone();
-        let rollback_checkpoint = self.state.run_checkpoint.clone();
-
-        match apply(self) {
-            Ok(result) => Ok(result),
-            Err(error) => {
-                self.state.game_state = rollback_game_state;
-                self.state.active_node_content = rollback_active_content;
-                self.state.node_session = rollback_node_session;
-                self.state.run = rollback_run;
-                self.state.uuid_manager = rollback_uuid_manager;
-                self.state.enkephalin = rollback_enkephalin;
-                self.state.inventory = rollback_inventory;
-                self.state.roster = rollback_roster;
-                self.state.skill_fragments = rollback_skill_fragments;
-                self.state.run_checkpoint = rollback_checkpoint;
-                Err(error)
-            }
-        }
+        self.plan_complete_current_node_with_context(
+            true,
+            NodeCompletionContext::ResolvedHeadquartersContact,
+        )
     }
 
     pub(super) fn handle_recruit_employee(
@@ -68,6 +35,9 @@ impl GameCore {
         employee_definition_id: &str,
     ) -> Result<BehaviorResult, GameError> {
         let headquarters = self.current_headquarters_contact()?;
+        if self.state.roster.len() >= crate::game::employee::MAX_EMPLOYEE_ROSTER_SIZE {
+            return Err(GameError::InvalidAction);
+        }
         let active_session = self
             .run_state()?
             .recruitment
@@ -104,10 +74,10 @@ impl GameCore {
         )?;
         let staged_completion = self.plan_headquarters_contact_completion()?;
 
-        self.with_headquarters_transaction(move |core| {
+        self.with_state_transaction(move |core| {
             core.run_state_mut()?.recruitment = recruitment;
             core.state.uuid_manager = uuid_manager;
-            core.state.roster = roster;
+            core.initialize_employees_with_loadouts(&[(employee_uuid, candidate.clone())])?;
             core.state.active_node_content = None;
             let completion = core.commit_interactive_node_completion(staged_completion)?;
             Ok(BehaviorResult::EmployeeRecruited {
@@ -133,7 +103,7 @@ impl GameCore {
         let enkephalin_amount = enkephalin.checked_add(emergency_enkephalin)?;
         let staged_completion = self.plan_headquarters_contact_completion()?;
 
-        self.with_headquarters_transaction(move |core| {
+        self.with_state_transaction(move |core| {
             core.run_state_mut()?.recruitment = recruitment;
             core.state.enkephalin = enkephalin;
             core.state.active_node_content = None;
@@ -167,11 +137,9 @@ impl GameCore {
             &self.state.roster,
         )?;
 
-        self.with_headquarters_transaction(move |core| {
-            let run = core.run_state_mut()?;
-            run.recruitment = recruitment;
-            run.shop_sessions.insert(headquarters.node_id, shop.clone());
-            core.state.active_node_content = Some(ActiveNodeContent::Shop(shop));
+        self.with_state_transaction(move |core| {
+            core.run_state_mut()?.recruitment = recruitment;
+            core.commit_shop_session(shop, ShopSessionCommitMode::RequireRun)?;
             core.transition_to(GameState::InShop { shop_uuid })?;
             Ok(BehaviorResult::ShopState { shop: shop_result })
         })

@@ -1,0 +1,13 @@
+{
+  "same_document_as_frozen_cli": true,
+  "actual_source_and_site_match": true,
+  "literal_preserved": 60,
+  "evaluation": {
+    "context": "context_free",
+    "performed": false
+  },
+  "publication": "legacy_supported",
+  "numeric_result_trace_final_damage_absent": true,
+  "fingerprint": "2d43b2f0fe9675a2b0ad5309aeda5d85e29a64390bd0039fb708d1ccc3e8143c",
+  "heal_expr_publication_refused": true
+}

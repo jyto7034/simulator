@@ -1,0 +1,121 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CARL-P2G00-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CARL-20260911",
+          "Policy Topic": "R05 타입화 자원·owner×lifetime·원자적 소비",
+          "Requested Result": "R05 bounded_pipeline through P2G-60; eligible exact GEX separately authorized by same fixed-R request",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "R05 typed resource store with separate owner and Run/Attempt/Deployment/Activation/Delivery/Chain lifetime; reserve/commit/abort, cap/grant/decay and epoch/lease boundaries.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Actual persistent employee/equipment ownership and battle binding, including same-definition distinct copies and deployment-versus-attempt state; no definition-ID substitute for actual copy identity.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Introduced Run state writer/restore/checkpoint/entry/result-delta/source-owner exactly-once application and required failure/retreat/retry/redeployment/stale work tests; AT05 remains indivisible for each implemented family.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Actual directly connected producer/consumer and authoring surface for resource operations; any new RON/schema/opcode requires production parser-validation-compiler-executor and negative fixtures, truthful publication and finite budgets.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "R05 applicable T05/T20/T23/T29, actual current R04 and affected direct/predecessor consumers, state/clone/determinism/cost validation and eventual fresh independent audit. Unresolved families remain incomplete.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "R05에 필요한 P2G-60까지의 bounded_pipeline. 통상적 정책은 위임 조건으로 결정하며 사용자 선택이 필요한 정책만 질문 후 대기한다. P2G 성공 자체는 GEX 권한이 아니다.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Server/Unity/client, external service deployment, RON editor UI, remote publication and global installation/configuration.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unapproved new gameplay/balance/UX/owner-lifetime/data-loss/compatibility choices. Pending family behavior is not decided by defaults, implementation convenience or elapsed time.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "R06-R24 full content implementations outside R05 required producer/consumer/state boundary, including R07 fragment-copy binding and later revival/transform/Flow/relic features; their parent requirements remain outstanding.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "Personal store deletion/automatic conversion, content-name executors, unused kernel or fixture-only false completion, silent success/fallback and fabricated future identities.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "Changes to AUTORUN/P2G/GEX/validators/AGENTS/runner/global settings or authority created by artifacts.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CARL-P2G10-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

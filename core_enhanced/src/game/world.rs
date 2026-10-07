@@ -1,20 +1,17 @@
-use std::sync::Arc;
 use tracing::{debug, info};
 use uuid::Uuid;
 
-use crate::game::abnormality_research::{
-    RunAbnormalityEncounterHistory, RunAbnormalityResearchState,
-};
-use crate::game::behavior::{
-    ActionKind, BehaviorResult, CombatResultEventLogAttachmentDto, GameError, PlayerBehavior,
-};
+use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
 use crate::game::data::visual_novel_data::VisualNovelPresentationMode;
-use crate::game::data::{run_policy_data::RunPolicyData, GameDataBase};
-use crate::game::encounter_compendium::EncounterCompendiumProfileState;
+use crate::game::data::{run_policy_data::RunPolicyData, ValidatedGameData};
+use crate::game::encounter_compendium::{EncounterCompendiumProfileState, PlayerProfileState};
+use crate::game::encounter_progression::EncounterProgressionState;
 use crate::game::enums::{RewardAction, ShopAction};
 use crate::game::map::{GameMode, RunProgression};
 use crate::game::recruitment::RecruitmentState;
-use crate::game::resources::{ActiveNodeContent, GameState};
+#[cfg(test)]
+use crate::game::resources::ActiveNodeContent;
+use crate::game::resources::GameState;
 use crate::game::visual_novel::{
     VisualNovelRuntimeState, VisualNovelSessionPresentationMode, VisualNovelTriggerRuntimeState,
 };
@@ -22,34 +19,58 @@ use crate::game::visual_novel::{
 mod action_capability;
 mod active_run;
 mod admin;
+mod application;
+pub(crate) mod authoring_lifecycle;
+pub(crate) mod authoring_observation;
 mod battle_capability;
+mod battle_interaction;
 mod combat;
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 mod combat_trace;
 mod event_node;
 mod facility;
+mod grant_state;
 mod headquarters;
 mod helpers;
 mod maintenance;
 mod map_content;
 mod map_encounters;
+mod mastered_elite_sweep;
 mod node_flow;
+mod relic_runtime;
+mod resource_runtime;
 mod reward;
 mod shop;
 mod snapshot;
 mod state;
+mod tactical_preview;
 mod visual_novel_flow;
 mod visual_novel_triggers;
 
 use state::{GameCoreState, RunState};
 
-pub use active_run::{ActiveRunCheckpointExport, ActiveRunTransactionRollback};
-pub use admin::{AdminCommand, AdminCommandOutput};
+#[cfg(test)]
+pub(crate) use active_run::ActiveRunCheckpointExport;
+pub(crate) use active_run::ActiveRunTransactionRollback;
+pub(crate) use admin::AdminCommand;
+pub(crate) use application::PreparedApplicationCommit;
 
-pub struct GameCore {
+#[derive(Clone)]
+pub(crate) struct GameCore {
     state: GameCoreState,
-    game_data: Arc<GameDataBase>,
+    game_data: ValidatedGameData,
     run_seed: u64,
+    authoring_lifecycle: Option<authoring_lifecycle::TrialLifecycle>,
+    authoring_observation: Option<authoring_observation::TrialObservation>,
 }
+
+crate::authoring::clone_shape::struct_shape!(GameCore {
+    state,
+    game_data,
+    run_seed,
+    authoring_lifecycle,
+    authoring_observation
+});
 
 fn runtime_presentation_mode(
     mode: VisualNovelPresentationMode,
@@ -63,24 +84,70 @@ fn runtime_presentation_mode(
 }
 
 impl GameCore {
+    pub(crate) fn runtime_safety(&self) -> &crate::runtime_safety::RuntimeSafetySettings {
+        self.game_data.runtime_safety()
+    }
+
+    pub(crate) fn active_battle_authority(
+        &self,
+    ) -> Option<crate::game::behavior::BattleStateAuthorityDto> {
+        self.state.active_battle.as_ref().map(|active| {
+            crate::game::behavior::BattleStateAuthorityDto {
+                battle_uuid: active.battle_uuid,
+                battle_state_revision: active.battle_state_revision,
+            }
+        })
+    }
+
+    pub(crate) fn content_identity(&self) -> &crate::game::data::content_pack::ContentIdentity {
+        self.game_data.identity()
+    }
+
+    #[cfg(feature = "test-fixtures")]
+    pub(crate) fn replace_active_battle_event_log_fixture(
+        &mut self,
+        event_log: crate::game::battle::event_log::BattleEventLog,
+    ) -> Result<u64, GameError> {
+        let active = self
+            .state
+            .active_battle
+            .as_mut()
+            .ok_or(GameError::InvalidAction)?;
+        let latest = event_log.latest_seq();
+        active.battle.event_log = event_log;
+        active.battle.event_log_seq = latest.saturating_add(1);
+        Ok(latest)
+    }
+
     /// GameCore 생성
     ///
     /// # Arguments
-    /// * `game_data` - game_server에서 로드한 게임 데이터 (Arc로 공유)
-    pub fn new(game_data: Arc<GameDataBase>, run_seed: u64) -> Self {
+    /// * `game_data` - validated Core game-data publication
+    pub fn new(game_data: impl Into<ValidatedGameData>, run_seed: u64) -> Self {
         info!("Initializing GameCore with run_seed={}", run_seed);
 
         debug!("GameCore state initialized with default resources");
+        let game_data = game_data.into();
 
         Self {
             state: GameCoreState::new(run_seed),
             game_data,
             run_seed,
+            authoring_lifecycle: None,
+            authoring_observation: None,
         }
     }
 
+    pub(crate) fn new_for_authoring(game_data: ValidatedGameData, run_seed: u64) -> Self {
+        let mut core = Self::new(game_data, run_seed);
+        core.authoring_lifecycle = Some(Default::default());
+        core.authoring_observation = Some(Default::default());
+        core
+    }
+
+    #[cfg(test)]
     pub fn new_with_encounter_compendium_profile(
-        game_data: Arc<GameDataBase>,
+        game_data: impl Into<ValidatedGameData>,
         run_seed: u64,
         profile: EncounterCompendiumProfileState,
     ) -> Result<Self, GameError> {
@@ -89,29 +156,69 @@ impl GameCore {
         Ok(core)
     }
 
-    pub fn encounter_compendium_profile(&self) -> EncounterCompendiumProfileState {
-        self.state.encounter_compendium.clone()
+    pub(crate) fn capture_player_profile(&self) -> Result<PlayerProfileState, GameError> {
+        crate::authoring::clone_shape::controlled_clone(&self.state.player_profile)
     }
 
-    pub fn reset_encounter_compendium_profile(&mut self) {
-        self.state.encounter_compendium = EncounterCompendiumProfileState::default();
+    pub fn player_profile(&self) -> PlayerProfileState {
+        self.state.player_profile.clone()
+    }
+
+    pub fn encounter_compendium_profile(&self) -> EncounterCompendiumProfileState {
+        self.state.player_profile.encounter_compendium.clone()
     }
 
     pub fn merge_encounter_compendium_profile(
         &mut self,
         profile: EncounterCompendiumProfileState,
     ) -> Result<(), GameError> {
+        self.execute_application(
+            application::ApplicationRoute::MergeEncounterCompendiumProfile,
+            move |draft| draft.merge_encounter_compendium_profile_draft(profile),
+        )
+    }
+
+    fn merge_encounter_compendium_profile_draft(
+        &mut self,
+        profile: EncounterCompendiumProfileState,
+    ) -> Result<(), GameError> {
         profile
             .validate_persisted()
             .map_err(GameError::InvalidStaticData)?;
-        self.state.encounter_compendium.merge(profile);
+        self.state
+            .player_profile
+            .encounter_compendium
+            .merge(profile);
         Ok(())
+    }
+
+    pub fn merge_player_profile(&mut self, profile: PlayerProfileState) -> Result<(), GameError> {
+        self.execute_application(
+            application::ApplicationRoute::MergePlayerProfile,
+            move |draft| draft.merge_player_profile_draft(profile),
+        )
+    }
+
+    fn merge_player_profile_draft(&mut self, profile: PlayerProfileState) -> Result<(), GameError> {
+        profile
+            .validate_persisted()
+            .map_err(GameError::InvalidStaticData)?;
+        self.state.player_profile.merge(profile);
+        Ok(())
+    }
+
+    pub fn reset_player_profile(&mut self) -> Result<(), GameError> {
+        self.execute_application(application::ApplicationRoute::ResetPlayerProfile, |draft| {
+            draft.state.player_profile = PlayerProfileState::default();
+            Ok(())
+        })
     }
 
     pub(super) fn run_policy(&self) -> &RunPolicyData {
         &self.game_data.run_policy
     }
 
+    #[cfg(test)]
     pub fn execute(
         &mut self,
         player_id: Uuid,
@@ -120,6 +227,7 @@ impl GameCore {
         self.execute_with_source_command_id(player_id, behavior, None)
     }
 
+    #[cfg(test)]
     pub fn execute_with_source_command_id(
         &mut self,
         player_id: Uuid,
@@ -134,6 +242,7 @@ impl GameCore {
         )
     }
 
+    #[cfg(test)]
     pub fn execute_with_source_command_id_and_battle_cursor(
         &mut self,
         player_id: Uuid,
@@ -150,6 +259,7 @@ impl GameCore {
         )
     }
 
+    #[cfg(test)]
     pub fn execute_with_transport_context(
         &mut self,
         player_id: Uuid,
@@ -158,25 +268,125 @@ impl GameCore {
         battle_event_after_seq: u64,
         expected_battle_authority: Option<crate::game::behavior::BattleStateAuthorityDto>,
     ) -> Result<BehaviorResult, GameError> {
+        self.execute_with_transport_context_and_generation(
+            player_id,
+            behavior,
+            source_command_id,
+            battle_event_after_seq,
+            expected_battle_authority,
+            None,
+        )
+    }
+
+    pub(crate) fn execute_with_transport_context_and_generation(
+        &mut self,
+        player_id: Uuid,
+        behavior: PlayerBehavior,
+        source_command_id: Option<&str>,
+        battle_event_after_seq: u64,
+        expected_battle_authority: Option<crate::game::behavior::BattleStateAuthorityDto>,
+        generation: Option<ValidatedGameData>,
+    ) -> Result<BehaviorResult, GameError> {
+        if generation.is_some() && !matches!(behavior, PlayerBehavior::StartNewGame { .. }) {
+            return Err(GameError::InvalidAction);
+        }
+        let route = application::ApplicationRoute::Behavior(behavior.kind());
+        self.execute_application(route, move |draft| {
+            draft.execute_behavior_draft(
+                player_id,
+                behavior,
+                source_command_id,
+                battle_event_after_seq,
+                expected_battle_authority,
+                generation,
+            )
+        })
+    }
+
+    pub(crate) fn prepare_with_transport_context(
+        &mut self,
+        player_id: Uuid,
+        behavior: PlayerBehavior,
+        source_command_id: Option<&str>,
+        battle_event_after_seq: u64,
+        expected_battle_authority: Option<crate::game::behavior::BattleStateAuthorityDto>,
+        generation: Option<ValidatedGameData>,
+    ) -> Result<PreparedApplicationCommit<BehaviorResult>, GameError> {
+        if generation.is_some() && !matches!(behavior, PlayerBehavior::StartNewGame { .. }) {
+            return Err(GameError::InvalidAction);
+        }
+        let route = application::ApplicationRoute::Behavior(behavior.kind());
+        self.prepare_application_for_publication(route, move |draft| {
+            draft.execute_behavior_draft(
+                player_id,
+                behavior,
+                source_command_id,
+                battle_event_after_seq,
+                expected_battle_authority,
+                generation,
+            )
+        })
+    }
+
+    fn execute_behavior_draft(
+        &mut self,
+        player_id: Uuid,
+        behavior: PlayerBehavior,
+        source_command_id: Option<&str>,
+        battle_event_after_seq: u64,
+        expected_battle_authority: Option<crate::game::behavior::BattleStateAuthorityDto>,
+        generation: Option<ValidatedGameData>,
+    ) -> Result<BehaviorResult, GameError> {
         debug!("Executing behavior {:?} for player {}", behavior, player_id);
         let action_kind = behavior.kind();
+        let tactical_world_mutation = matches!(
+            &behavior,
+            PlayerBehavior::DeployUnit { .. }
+                | PlayerBehavior::WithdrawUnit { .. }
+                | PlayerBehavior::SetEngagementStance { .. }
+                | PlayerBehavior::TacticalRelocateUnit { .. }
+                | PlayerBehavior::TacticalSwapUnits { .. }
+        );
 
         self.validate_battle_command_authority(&behavior, expected_battle_authority)?;
 
+        if application::behavior_owner(action_kind) == application::ApplicationOwner::Battle
+            && !matches!(behavior, PlayerBehavior::RecoverBattleSetupLoss)
+        {
+            if let Some(active) = self.state.active_battle.as_ref() {
+                active.ensure_battle_update_cursor_valid(battle_event_after_seq)?;
+            }
+        }
+
         self.gate_behavior_action(player_id, &behavior, action_kind)?;
-        let mut result = self.execute_validated_behavior_domain(
+        if let Some(generation) = generation {
+            // The existing eligibility gate runs against the original root.
+            // Only an eligible new-run draft installs the candidate, before VN,
+            // starter and subsequent projections read any of its definitions.
+            self.game_data = generation;
+        }
+        let mut result = self.execute_owned_behavior_draft(
             player_id,
             behavior,
             source_command_id,
             battle_event_after_seq,
         )?;
         if matches!(result, BehaviorResult::VisualNovelState { .. })
-            && matches!(self.state.game_state, GameState::InBattle { .. })
+            && matches!(self.state.lifecycle.phase(), GameState::InBattle { .. })
         {
             result = self
                 .current_battle_update_result_for_visual_novel_transport(battle_event_after_seq)?;
         }
-        self.attach_visual_novel_to_battle_result(&mut result)?;
+        // A finishing advance projected its final VN/capabilities before
+        // removing the active battle. Re-projecting here would query a removed
+        // root, rejecting an otherwise successful immediate-terminal entry.
+        let terminal_advance = matches!(
+            result,
+            BehaviorResult::BattleAdvanced { finished: true, .. }
+        );
+        if !tactical_world_mutation && !terminal_advance {
+            self.attach_visual_novel_to_battle_result(&mut result)?;
+        }
         Ok(result)
     }
 
@@ -233,64 +443,28 @@ impl GameCore {
         Ok(())
     }
 
-    fn execute_validated_behavior_domain(
+    fn execute_owned_behavior_draft(
         &mut self,
         player_id: Uuid,
         behavior: PlayerBehavior,
         source_command_id: Option<&str>,
         battle_event_after_seq: u64,
     ) -> Result<BehaviorResult, GameError> {
-        match behavior {
-            PlayerBehavior::StartNewGame { .. }
-            | PlayerBehavior::ContinueRun
-            | PlayerBehavior::ResetActiveRun
-            | PlayerBehavior::RetryEncounterCompendium
-            | PlayerBehavior::ResetEncounterCompendium
-            | PlayerBehavior::SelectStarterEmployees { .. }
-            | PlayerBehavior::RequestMapData
-            | PlayerBehavior::SelectMapNode { .. }
-            | PlayerBehavior::ConvertMapNodeWithMonolith { .. }
-            | PlayerBehavior::ConfirmEnterNode
-            | PlayerBehavior::CancelSelectedNode
-            | PlayerBehavior::CompleteNode
-            | PlayerBehavior::LoadRunCheckpoint
-            | PlayerBehavior::ConfirmRunFailure
-            | PlayerBehavior::AbandonRun => self.execute_map_run_behavior(player_id, behavior),
-
-            PlayerBehavior::RecruitEmployee { .. }
-            | PlayerBehavior::RequestEmergencySupplies
-            | PlayerBehavior::OpenHeadquartersShop => self.execute_headquarters_behavior(behavior),
-
-            PlayerBehavior::EquipItem { .. }
-            | PlayerBehavior::UnEquipItem { .. }
-            | PlayerBehavior::UseConsumableItem { .. }
-            | PlayerBehavior::EquipSkillFragment { .. }
-            | PlayerBehavior::UnequipSkillFragment { .. }
-            | PlayerBehavior::UpgradeSkillFragment { .. }
-            | PlayerBehavior::AwakenSkillFragment { .. }
-            | PlayerBehavior::DismantleSkillFragment { .. }
-            | PlayerBehavior::DismantleEquipment { .. }
-            | PlayerBehavior::EnhanceEquipment { .. } => {
+        match application::behavior_owner(behavior.kind()) {
+            application::ApplicationOwner::MapRun => {
+                self.execute_map_run_behavior(player_id, behavior)
+            }
+            application::ApplicationOwner::Headquarters => {
+                self.execute_headquarters_behavior(behavior)
+            }
+            application::ApplicationOwner::Maintenance => {
                 self.execute_equipment_maintenance_behavior(behavior)
             }
-
-            PlayerBehavior::PurchaseItem { .. }
-            | PlayerBehavior::SellItem { .. }
-            | PlayerBehavior::RefreshShop
-            | PlayerBehavior::ExitShop => self.execute_shop_behavior(behavior),
-
-            PlayerBehavior::SelectReward { .. }
-            | PlayerBehavior::ClaimReward
-            | PlayerBehavior::ExitReward => self.execute_reward_behavior(behavior),
-
-            PlayerBehavior::AdvanceEventScene { .. }
-            | PlayerBehavior::ResolveEventChoiceCheck { .. } => {
-                self.execute_event_behavior(behavior)
-            }
-
-            PlayerBehavior::AdvanceVisualNovel { .. }
-            | PlayerBehavior::SelectVisualNovelChoice { .. } => {
-                if matches!(self.state.game_state, GameState::InBattle { .. }) {
+            application::ApplicationOwner::Shop => self.execute_shop_behavior(behavior),
+            application::ApplicationOwner::Reward => self.execute_reward_behavior(behavior),
+            application::ApplicationOwner::Event => self.execute_event_behavior(behavior),
+            application::ApplicationOwner::VisualNovel => {
+                if matches!(self.state.lifecycle.phase(), GameState::InBattle { .. }) {
                     self.state
                         .active_battle
                         .as_ref()
@@ -299,19 +473,17 @@ impl GameCore {
                 }
                 self.execute_visual_novel_behavior(behavior)
             }
-
-            PlayerBehavior::CompleteCombatResult
-            | PlayerBehavior::RequestBattleState { .. }
-            | PlayerBehavior::RecoverBattleSetupLoss
-            | PlayerBehavior::RequestDeploymentRangePreview { .. }
-            | PlayerBehavior::DeployUnit { .. }
-            | PlayerBehavior::WithdrawUnit { .. }
-            | PlayerBehavior::ActivateSkill { .. }
-            | PlayerBehavior::RetreatBattle
-            | PlayerBehavior::PauseBattle
-            | PlayerBehavior::ResumeBattle
-            | PlayerBehavior::SetBattleSpeed { .. } => {
+            application::ApplicationOwner::Battle => {
                 self.execute_battle_behavior(behavior, source_command_id, battle_event_after_seq)
+            }
+            application::ApplicationOwner::Admin
+            | application::ApplicationOwner::ActiveRunRecovery
+            | application::ApplicationOwner::PlayerProfile => {
+                unreachable!("non-behavior owner returned for PlayerBehavior")
+            }
+            #[cfg(test)]
+            application::ApplicationOwner::TestFixture => {
+                unreachable!("fixture owner returned for PlayerBehavior")
             }
         }
     }
@@ -327,8 +499,8 @@ impl GameCore {
             }
             PlayerBehavior::ContinueRun => Err(GameError::InvalidAction),
             PlayerBehavior::ResetActiveRun => Err(GameError::InvalidAction),
-            PlayerBehavior::RetryEncounterCompendium => Err(GameError::InvalidAction),
-            PlayerBehavior::ResetEncounterCompendium => Err(GameError::InvalidAction),
+            PlayerBehavior::RetryPlayerProfile => Err(GameError::InvalidAction),
+            PlayerBehavior::ResetPlayerProfile => Err(GameError::InvalidAction),
             PlayerBehavior::SelectStarterEmployees {
                 employee_definition_ids,
             } => {
@@ -346,6 +518,10 @@ impl GameCore {
             } => self.handle_convert_map_node_with_monolith(node_id, &abnormality_id),
             PlayerBehavior::ConfirmEnterNode => self.handle_confirm_enter_node(),
             PlayerBehavior::CancelSelectedNode => self.handle_cancel_selected_node(),
+            PlayerBehavior::SweepMasteredElite { .. } => self.handle_sweep_mastered_elite(),
+            PlayerBehavior::CompleteMasteredEliteSweep { .. } => {
+                self.handle_complete_mastered_elite_sweep()
+            }
             PlayerBehavior::CompleteNode => self.handle_complete_node(),
             PlayerBehavior::LoadRunCheckpoint => self.handle_load_run_checkpoint(),
             PlayerBehavior::ConfirmRunFailure => self.handle_confirm_run_failure(),
@@ -373,6 +549,28 @@ impl GameCore {
         behavior: PlayerBehavior,
     ) -> Result<BehaviorResult, GameError> {
         match behavior {
+            PlayerBehavior::EquipRelic {
+                copy_uuid,
+                employee_uuid,
+                slot,
+            } => self.handle_equip_relic(copy_uuid, employee_uuid, slot),
+            PlayerBehavior::UnequipRelic { copy_uuid } => self.handle_unequip_relic(copy_uuid),
+            PlayerBehavior::RequestRelicState => self.handle_request_relic_state(),
+            PlayerBehavior::RequestRelicNumericPlan { employee_uuid } => {
+                self.handle_request_relic_numeric_plan(employee_uuid)
+            }
+            PlayerBehavior::RequestRelicEffectivePlan { employee_uuid } => {
+                self.handle_request_relic_effective_plan(employee_uuid)
+            }
+            PlayerBehavior::PreviewRelicCorruption { copy_uuid } => self
+                .handle_preview_relic(copy_uuid, crate::game::relic::RelicOperationKind::Corrupt),
+            PlayerBehavior::CorruptRelic { copy_uuid } => self.handle_corrupt_relic(copy_uuid),
+            PlayerBehavior::PreviewRelicDismantle { copy_uuid } => self
+                .handle_preview_relic(copy_uuid, crate::game::relic::RelicOperationKind::Dismantle),
+            PlayerBehavior::DismantleRelic {
+                copy_uuid,
+                confirmed,
+            } => self.handle_dismantle_relic(copy_uuid, confirmed),
             PlayerBehavior::EquipItem {
                 item_uuid,
                 target_unit,
@@ -390,21 +588,26 @@ impl GameCore {
             } => self.handle_use_consumable_item(item_uuid, target_employee_uuid),
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
-                fragment_id,
-            } => self.handle_equip_skill_fragment(employee_uuid, &fragment_id),
+                copy_uuid,
+            } => self.handle_equip_skill_fragment(employee_uuid, copy_uuid),
             PlayerBehavior::UnequipSkillFragment {
                 employee_uuid,
-                fragment_id,
-            } => self.handle_unequip_skill_fragment(employee_uuid, &fragment_id),
-            PlayerBehavior::UpgradeSkillFragment { target_fragment_id } => {
-                self.handle_upgrade_skill_fragment(&target_fragment_id)
+                copy_uuid,
+            } => self.handle_unequip_skill_fragment(employee_uuid, copy_uuid),
+            PlayerBehavior::TransferSkillFragment {
+                copy_uuid,
+                target_employee_uuid,
+            } => self.handle_transfer_skill_fragment(copy_uuid, target_employee_uuid),
+            PlayerBehavior::AwakenSkillFragment { copy_uuid, form_id } => {
+                self.handle_awaken_skill_fragment(copy_uuid, &form_id)
             }
-            PlayerBehavior::AwakenSkillFragment { target_fragment_id } => {
-                self.handle_awaken_skill_fragment(&target_fragment_id)
+            PlayerBehavior::SelectSkillFragmentForm { copy_uuid, form_id } => {
+                self.handle_select_skill_fragment_form(copy_uuid, &form_id)
             }
-            PlayerBehavior::DismantleSkillFragment { fragment_id } => {
-                self.handle_dismantle_skill_fragment(&fragment_id)
-            }
+            PlayerBehavior::DismantleSkillFragment {
+                copy_uuid,
+                confirmed,
+            } => self.handle_dismantle_skill_fragment(copy_uuid, confirmed),
             PlayerBehavior::DismantleEquipment { item_uuid } => {
                 self.handle_dismantle_equipment(item_uuid)
             }
@@ -474,6 +677,14 @@ impl GameCore {
                 choice_id,
                 employee_uuid,
             ),
+            PlayerBehavior::ChooseRelicCorruption {
+                node_id,
+                event_id,
+                current_scene_id,
+                copy_uuid,
+            } => {
+                self.handle_choose_relic_corruption(node_id, event_id, current_scene_id, copy_uuid)
+            }
             _ => unreachable!("behavior routed to event domain incorrectly"),
         }
     }
@@ -528,6 +739,75 @@ impl GameCore {
             PlayerBehavior::WithdrawUnit { employee_uuid } => {
                 self.handle_withdraw_unit(employee_uuid, source_command_id, battle_event_after_seq)
             }
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid,
+                stance,
+            } => self.handle_set_engagement_stance(
+                employee_uuid,
+                stance,
+                source_command_id,
+                battle_event_after_seq,
+            ),
+            PlayerBehavior::TacticalRelocateUnit {
+                employee_uuid,
+                destination,
+                facing,
+            } => self.handle_tactical_relocate_unit(
+                employee_uuid,
+                destination,
+                facing,
+                source_command_id,
+                battle_event_after_seq,
+            ),
+            PlayerBehavior::TacticalSwapUnits {
+                first_employee_uuid,
+                second_employee_uuid,
+                first_facing,
+                second_facing,
+            } => self.handle_tactical_swap_units(
+                first_employee_uuid,
+                second_employee_uuid,
+                first_facing,
+                second_facing,
+                source_command_id,
+                battle_event_after_seq,
+            ),
+            behavior @ (PlayerBehavior::FocusBattleUnit { .. }
+            | PlayerBehavior::ClearBattleFocus
+            | PlayerBehavior::BeginDeploymentSelection { .. }
+            | PlayerBehavior::CancelDeploymentSelection
+            | PlayerBehavior::OpenBattleSettings
+            | PlayerBehavior::CloseBattleSettings) => {
+                self.handle_battle_interaction(behavior, battle_event_after_seq)
+            }
+            PlayerBehavior::BeginSkillTargeting {
+                employee_uuid,
+                skill_id,
+            } => self.handle_begin_skill_targeting(employee_uuid, skill_id, battle_event_after_seq),
+            PlayerBehavior::CancelSkillTargeting => {
+                self.handle_cancel_skill_targeting(battle_event_after_seq)
+            }
+            PlayerBehavior::PreviewTacticalCommand { command } => {
+                self.handle_preview_tactical_command(command)
+            }
+            PlayerBehavior::PreviewSkillTarget {
+                employee_uuid,
+                skill_id,
+                target,
+            } => self.handle_preview_skill_target(employee_uuid, skill_id, target),
+            PlayerBehavior::ReinputSustainedSkill {
+                employee_uuid,
+                skill_id,
+                activation,
+                target,
+            } => self.handle_activate_skill(
+                employee_uuid,
+                skill_id,
+                target,
+                Some(activation),
+                source_command_id,
+                battle_event_after_seq,
+            ),
             PlayerBehavior::ActivateSkill {
                 employee_uuid,
                 skill_id,
@@ -536,6 +816,7 @@ impl GameCore {
                 employee_uuid,
                 skill_id,
                 target,
+                None,
                 source_command_id,
                 battle_event_after_seq,
             ),
@@ -572,6 +853,10 @@ impl GameCore {
         player_id: Uuid,
         game_mode: GameMode,
     ) -> Result<BehaviorResult, GameError> {
+        if game_mode == GameMode::Endless && !self.state.player_profile.standard_tutorial_completed
+        {
+            return Err(GameError::TutorialCompletionRequired { game_mode });
+        }
         self.initial_player(player_id);
         self.state.roster.clear();
         self.state.starter_candidates.clear();
@@ -579,7 +864,10 @@ impl GameCore {
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.state.active_battle = None;
+        self.state.confirmed_combat_result = None;
+        self.state.combat_reward_continuation = None;
         self.state.run_checkpoint = Default::default();
+        self.state.continue_state = Default::default();
         self.state.visual_novel = VisualNovelRuntimeState::default();
         self.state.visual_novel_triggers = VisualNovelTriggerRuntimeState::default();
         self.state.pending_game_mode = Some(game_mode);
@@ -610,10 +898,10 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
         let player = self.state.player.clone();
-        let encounter_compendium = self.state.encounter_compendium.clone();
+        let player_profile = self.state.player_profile.clone();
         let mut next = GameCoreState::new(self.run_seed);
         next.player = player;
-        next.encounter_compendium = encounter_compendium;
+        next.player_profile = player_profile;
         self.state = next;
         Ok(BehaviorResult::RunAbandoned)
     }
@@ -657,9 +945,7 @@ impl GameCore {
             .ok_or(GameError::InvalidAction)?;
         let run_progression =
             RunProgression::new(self.run_seed, game_mode, setup_policy.standard_floor_count);
-        let abnormality_research = RunAbnormalityResearchState::initialize(self.game_data.as_ref());
-        let abnormality_encounter_history = RunAbnormalityEncounterHistory::default();
-        let monolith = crate::game::monolith::MonolithRunState::default();
+        let mut encounter_progression = EncounterProgressionState::default();
         let recruitment = RecruitmentState::initialize(
             self.run_seed,
             &self.game_data.employee_definition_data.definitions,
@@ -669,21 +955,20 @@ impl GameCore {
             &self.game_data.employee_definition_data.definitions,
             &self.state.roster,
         )?;
-        let mut boss_omen = crate::game::boss_omen::BossOmenRunState::default();
         let (run_map, progression, facility_run_state) = self.generate_current_floor_map(
             &run_progression,
             &crate::game::map::FacilityRunState::default(),
-            &abnormality_research,
-            &abnormality_encounter_history,
-            &monolith,
-            &mut boss_omen,
+            &mut encounter_progression,
         );
+        if run_progression.game_mode == GameMode::Endless {
+            self.state
+                .player_profile
+                .record_floor_reached(run_progression.floor_index().saturating_add(1));
+        }
         self.state.run = Some(
             RunState::new(run_map, progression, run_progression)
-                .with_abnormality_research(abnormality_research)
-                .with_abnormality_encounter_history(abnormality_encounter_history)
                 .with_recruitment(recruitment)
-                .with_boss_omen(boss_omen)
+                .with_encounter_progression(encounter_progression)
                 .with_facility_run_state(facility_run_state),
         );
         self.state.node_session = None;
@@ -709,20 +994,29 @@ impl GameCore {
     /// # Returns
     /// 현재 GameState의 복사본
     pub fn get_state(&self) -> GameState {
-        self.state.game_state.clone()
+        self.state.lifecycle.snapshot()
     }
 
     /// 현재 Enkephalin 양 조회
     ///
     /// # Returns
     /// 현재 Enkephalin 양. Resource가 없으면 0 반환
+    #[cfg(test)]
     pub fn get_enkephalin(&self) -> u32 {
         self.state.enkephalin.amount
     }
 
     /// Enkephalin 양 설정 (테스트 헬퍼)
+    #[cfg(test)]
     pub fn set_enkephalin(&mut self, amount: u32) {
-        self.state.enkephalin.amount = amount;
+        self.execute_application(
+            application::ApplicationRoute::SetEnkephalinFixture,
+            move |draft| {
+                draft.state.enkephalin.amount = amount;
+                Ok(())
+            },
+        )
+        .expect("the private lifecycle context must remain coherent");
     }
 
     pub fn game_state_name(&self) -> &'static str {
@@ -737,29 +1031,13 @@ impl GameCore {
             GameState::InReward { .. } => "in_reward",
             GameState::InRewardClaimed { .. } => "in_reward_claimed",
             GameState::CombatResult { .. } => "combat_result",
+            GameState::MasteredEliteSweepResult { .. } => "mastered_elite_sweep_result",
             GameState::InBattle { .. } => "in_battle",
             GameState::AwaitingRunFailureDecision { .. } => "awaiting_run_failure_decision",
             GameState::GameOver => "game_over",
             GameState::RunComplete => "run_complete",
             GameState::RunFailed { .. } => "run_failed",
         }
-    }
-
-    pub fn get_combat_result_event_log_attachment(
-        &self,
-    ) -> Option<CombatResultEventLogAttachmentDto> {
-        self.state
-            .active_node_content
-            .as_ref()
-            .and_then(|selected| match selected {
-                ActiveNodeContent::CombatBattle(battle) => {
-                    Some(CombatResultEventLogAttachmentDto {
-                        winner: battle.winner,
-                        event_log: battle.event_log.clone(),
-                    })
-                }
-                _ => None,
-            })
     }
 }
 

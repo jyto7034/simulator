@@ -37,9 +37,8 @@ SkillFragmentDatabase(
                 allowed_weapon_archetypes: [Gun],
             ),
             effect: ActiveSkill(
-                imitation_skill_id: "fragment_freischutz_black_round",
-                upgrade_skill_ids: {},
-                awakened_skill_id: Some("freischutz_magic_bullet"),
+                forms: { "base": (skill_id: "fragment_freischutz_black_round", resonance_max: 100), "awakened": (skill_id: "freischutz_magic_bullet", resonance_max: 100) },
+                // No implicit balance recipe: bloom/dismantle unavailable until authored.
             ),
         ),
                 SkillFragmentMetadata(
@@ -61,9 +60,8 @@ SkillFragmentDatabase(
                 allowed_weapon_archetypes: [Bow, Gun],
             ),
             effect: ActiveSkill(
-                imitation_skill_id: "fragment_funeral_butterfly_eulogy",
-                upgrade_skill_ids: {},
-                awakened_skill_id: Some("funeral_butterfly_eulogy_volley"),
+                forms: { "base": (skill_id: "fragment_funeral_butterfly_eulogy", resonance_max: 100), "awakened": (skill_id: "fragment_funeral_awakened_eulogy", resonance_max: 100) },
+                // No implicit balance recipe: bloom/dismantle unavailable until authored.
             ),
         ),
 
@@ -71,6 +69,7 @@ SkillFragmentDatabase(
         // S/A/B급 환상체 placeholder skill fragments
         SkillFragmentMetadata(
             id: "fragment_white_night_trace",
+            corrosion_class: ExcludedFinalBoss,
             uuid: "730e8400-e29b-41d4-a716-446655440001",
             name: "WhiteNight Trace Fragment",
             description: "A simple skill fragment placeholder derived from WhiteNight. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
@@ -109,6 +108,7 @@ SkillFragmentDatabase(
         ),
         SkillFragmentMetadata(
             id: "fragment_apocalypse_bird_trace",
+            corrosion_class: ExcludedFinalBoss,
             uuid: "730e8400-e29b-41d4-a716-446655440004",
             name: "Apocalypse Bird Trace Fragment",
             description: "A simple skill fragment placeholder derived from Apocalypse Bird. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
@@ -223,6 +223,7 @@ SkillFragmentDatabase(
         ),
         SkillFragmentMetadata(
             id: "fragment_silent_orchestra_trace",
+            corrosion_class: ExcludedFinalBoss,
             uuid: "730e8400-e29b-41d4-a716-446655440014",
             name: "The Silent Orchestra Trace Fragment",
             description: "A simple skill fragment placeholder derived from The Silent Orchestra. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
@@ -301,7 +302,7 @@ SkillFragmentDatabase(
             id: "fragment_laetitia_trace",
             uuid: "730e8400-e29b-41d4-a716-446655440020",
             name: "Laetitia Trace Fragment",
-            description: "A simple skill fragment placeholder derived from Laetitia. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            description: "Place a small friend, or evolve your own small friend into a great friend. The awakened form places a great friend directly.",
             rarity: Rare,
             equip_limit: OwnedCopies,
             origin: Some(Abnormality(abnormality_id: "o-01-67_laetitia")),
@@ -311,9 +312,10 @@ SkillFragmentDatabase(
             dependencies: [
                 SourceAbnormality(abnormality_id: "o-01-67_laetitia"),
             ],
-            effect: BasicAttackModifier(
-                attack_bonus: 4,
-                attack_interval_ms_reduction: 40,
+            compatibility: (allowed_weapon_archetypes: [Staff]),
+            effect: ActiveSkill(
+                forms: { "base": (skill_id: "laetitia_place_friend", resonance_max: 100), "awakened": (skill_id: "laetitia_place_great_friend", resonance_max: 100) },
+                // Bloom recipe remains unavailable until authored.
             ),
         ),
                         SkillFragmentMetadata(
@@ -600,6 +602,82 @@ SkillFragmentDatabase(
                 attack_bonus: 3,
                 attack_interval_ms_reduction: 20,
             ),
+        ),
+        // NONPRODUCTION REFERENCE ONLY: catalog integrity row; no reward source grants it.
+        SkillFragmentMetadata(
+            id: "fragment_cwbs_reference_dormant",
+            corrosion_class: ExcludedFinalBoss,
+            uuid: "c0de0600-0000-0000-0000-000000000002",
+            name: "[NONPRODUCTION] CWBS Dormant Reference Fragment",
+            description: "Validation-only metadata. It has no production encounter reward source.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "x-00-00_cwbs_reference_boss")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "x-00-00_cwbs_reference_boss"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "x-00-00_cwbs_reference_boss"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 0,
+                attack_interval_ms_reduction: 0,
+            ),
+        ),
+    
+        SkillFragmentMetadata(
+            id: "training_adrenaline", uuid: "53544152-5445-525f-4652-414700000101",
+            name: "Company Training adrenaline", description: "Company-issued active training fragment.",
+            rarity: Common, equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "company_training")),
+            sources: [DependentConcept(concept_id: "company_training")], dependencies: [],
+            compatibility: (allowed_weapon_archetypes: [Gun]),
+            effect: ActiveSkill(forms: {"base": (skill_id: "training_adrenaline", resonance_max: 100)}),
+        ),
+        SkillFragmentMetadata(
+            id: "training_berserker", uuid: "53544152-5445-525f-4652-414700000102",
+            name: "Company Training berserker", description: "Company-issued active training fragment.",
+            rarity: Common, equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "company_training")),
+            sources: [DependentConcept(concept_id: "company_training")], dependencies: [],
+            compatibility: (allowed_weapon_archetypes: [Sword]),
+            effect: ActiveSkill(forms: {"base": (skill_id: "training_berserker", resonance_max: 100)}),
+        ),
+        SkillFragmentMetadata(
+            id: "training_last_line", uuid: "53544152-5445-525f-4652-414700000103",
+            name: "Company Training last_line", description: "Company-issued active training fragment.",
+            rarity: Common, equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "company_training")),
+            sources: [DependentConcept(concept_id: "company_training")], dependencies: [],
+            compatibility: (allowed_weapon_archetypes: [Shield]),
+            effect: ActiveSkill(forms: {"base": (skill_id: "training_last_line", resonance_max: 100)}),
+        ),
+        SkillFragmentMetadata(
+            id: "training_breakthrough", uuid: "53544152-5445-525f-4652-414700000104",
+            name: "Company Training breakthrough", description: "Company-issued active training fragment.",
+            rarity: Common, equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "company_training")),
+            sources: [DependentConcept(concept_id: "company_training")], dependencies: [],
+            compatibility: (allowed_weapon_archetypes: [Sword]),
+            effect: ActiveSkill(forms: {"base": (skill_id: "training_breakthrough", resonance_max: 100)}),
+        ),
+        SkillFragmentMetadata(
+            id: "training_single_heal", uuid: "53544152-5445-525f-4652-414700000105",
+            name: "Company Training single_heal", description: "Company-issued active training fragment.",
+            rarity: Common, equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "company_training")),
+            sources: [DependentConcept(concept_id: "company_training")], dependencies: [],
+            compatibility: (allowed_weapon_archetypes: [Staff]),
+            effect: ActiveSkill(forms: {"base": (skill_id: "training_single_heal", resonance_max: 100)}),
+        ),
+        SkillFragmentMetadata(
+            id: "training_area_heal", uuid: "53544152-5445-525f-4652-414700000106",
+            name: "Company Training area_heal", description: "Company-issued active training fragment.",
+            rarity: Common, equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "company_training")),
+            sources: [DependentConcept(concept_id: "company_training")], dependencies: [],
+            compatibility: (allowed_weapon_archetypes: [Staff]),
+            effect: ActiveSkill(forms: {"base": (skill_id: "training_area_heal", resonance_max: 100)}),
         ),
     ],
 )

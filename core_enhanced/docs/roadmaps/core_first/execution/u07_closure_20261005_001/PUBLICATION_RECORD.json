@@ -1,0 +1,33 @@
+{
+  "recorded_at_utc": "2026-10-05T13:40:03.064499+00:00",
+  "owner": "root planner publication after independent audit closed",
+  "audit_closure_sha256": "d371f43c1122826347261ed68f0817e66432bbc97e85fdb6759deaf686a59cb9",
+  "target_manifest_sha256": "deefd24a1ee8ea628922e139fd03c99482f053a25245c21f616cd632a538505a",
+  "before_membership_all_match": true,
+  "membership_count": 7143,
+  "unchanged_members": 7141,
+  "changed_members": [
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+  ],
+  "documents": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "before_sha256": "a5fc67519e3edf21db2976030db224e7a072ffbf32b2421f3cac4a3ad363d129",
+      "after_sha256": "269966f0132db9db7543007fc4ee3cb131e01ff50df6484325623e07c217e233"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "3ef41709ec1c7c9c25a04331509eac24c5d594dacde71acf22fae8f9e2f8041a",
+      "after_sha256": "d834e5a3b762af7c69b88b7f157266561f824b9d123cd878b73047f807263060"
+    }
+  ],
+  "currentness": "current / proven non-impacting delta",
+  "impact_path": "Only roadmap current-status paragraphs and superseded banner labels changed. No requirement, ordering, policy, source/data/schema/consumer, selected evidence, frozen target or audit bytes changed. Exact full membership comparison proves all other members unchanged; replacement diff binds the two status-only deltas. This is prerequisite intake by planner, not a new independent verdict.",
+  "product_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+  "product_implementation_or_tests_by_root": false,
+  "archive_sha256": "a065e6a47cd843f6cb70c73feeef981dc03e8186ef2ce68fe81dc54bd37e2983",
+  "diff_sha256": "895a0a1d4d9590ab46c09d760d7f95cf5b7a08cc9160e510f31bac657a465441",
+  "result_sha256": "3abb5b687306cccfe3869cac8eeab4d619287df96f6ade684ed7cdc2dc2e72d3",
+  "next": "U07-M code-informed P2G then Sol/xHigh implementation and nonparticipant Astra/High audit; U08 follows U07-M"
+}

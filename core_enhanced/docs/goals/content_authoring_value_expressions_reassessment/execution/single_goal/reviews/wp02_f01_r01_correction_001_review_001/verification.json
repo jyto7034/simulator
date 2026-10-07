@@ -1,0 +1,98 @@
+{
+  "timestamp": "2026-09-25T17:53:27.935Z",
+  "manifest_sha256": "ba25a8fbedfeb4b43c13d8f3bce88340e3ffafc4eb6dba2424169028bad7be98",
+  "isolated_source": "/tmp/r06-f01-r01-review.d7WUvr",
+  "verified_source_files": 328,
+  "instrumentation_only_files": 1,
+  "producer_probes_preserved_sha256": "7fc943cbfb556e83cccea9a577819596064db83b0cb335fcd5f478dd19852b07",
+  "predecessorArchives": [
+    {
+      "kind": "source",
+      "path": "SOURCE_AFTER_CORRECTION.tar.gz",
+      "bytes": 1608835,
+      "sha256": "bab0024911e970420bcedef14864b2755022ba9b216eb0aa92eb84a8f8e593bc"
+    },
+    {
+      "kind": "evidence",
+      "path": "EVIDENCE_AND_HANDOFF.tar.gz",
+      "bytes": 176168,
+      "sha256": "9f06de2788673ba77d30eaa04de110ab8929e8178ab57155aa822b596c19a93d"
+    }
+  ],
+  "currentness_command": [
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f01_r01_001/verification/verify_target.py"
+  ],
+  "currentness": {
+    "result": "FROZEN_TARGET_ARCHIVES_DELTA_AND_CURRENTNESS_VERIFIED",
+    "manifest_sha256": "ba25a8fbedfeb4b43c13d8f3bce88340e3ffafc4eb6dba2424169028bad7be98",
+    "source_files": 328,
+    "evidence_files": 20,
+    "modified_from_entry": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/value_expr/eval.rs",
+      "core_enhanced/src/game/value_expr/mod.rs",
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "added_from_entry": [],
+    "deleted_from_entry": [],
+    "predecessor_frozen_source_drift": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/value_expr/eval.rs",
+      "core_enhanced/src/game/value_expr/mod.rs",
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ]
+  },
+  "review_artifacts": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 6401,
+      "sha256": "1f927ad2e4148fed67969af596cfee52a26104142b41f2e8e332672d6435c70f"
+    },
+    {
+      "path": "adapter_regressions.json",
+      "bytes": 524,
+      "sha256": "06dd4b1614a09510fad06a1896a24c698ebd0bbe600066cc103f84579915a524"
+    },
+    {
+      "path": "adapter_regressions.log",
+      "bytes": 3558,
+      "sha256": "d9f8531986883cce5e2abd69aced68ed4277822428205f957e95b807fa13c96c"
+    },
+    {
+      "path": "allocation_and_snapshot.json",
+      "bytes": 486,
+      "sha256": "ab4c01a636d7499c9e16c65ce396f81c9c441641697b6a85da5d91a79aae6283"
+    },
+    {
+      "path": "allocation_and_snapshot.log",
+      "bytes": 5027,
+      "sha256": "1123b0bb393e451535b587115a92c156febf07fdf6241e0ef6afa7c904274e00"
+    },
+    {
+      "path": "kernel_regressions.json",
+      "bytes": 495,
+      "sha256": "b30d7c74c22733d1560d1f293b964547af8546ceec35b8eae798d6f119272fb5"
+    },
+    {
+      "path": "kernel_regressions.log",
+      "bytes": 4485,
+      "sha256": "56a74452e320da6b58922058d5f60f7a46c6889fa1f8aa6a18c1ad45980a2494"
+    },
+    {
+      "path": "probes.rs",
+      "bytes": 12450,
+      "sha256": "c3503fdb33a50758a1e8115c47d3424c48430d981e9319568e15647cb1b1f04b"
+    },
+    {
+      "path": "run.mjs",
+      "bytes": 1260,
+      "sha256": "4ad59750310b9d85f07d559ab23fd546e89f04b7a93070fedc820a55346cf6bc"
+    },
+    {
+      "path": "verify.mjs",
+      "bytes": 3026,
+      "sha256": "fabfc14b2876a4ab9d5c17f6b8cf2a889f6fb08ca76050c370cdec3085442a6b"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "time": "2026-10-03T23:38:54.551077+00:00",
+  "verdict": "current / unchanged",
+  "manifest_sha256": "42bd3deab7c16aae1feddd7e8b02687f9ec5a29a2fba783d151776f6431611fd",
+  "product_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+  "union_sha256": "d7c0cd2e6c9517133196903550bb011a374581bafc45053dae2b0923ea5c1198",
+  "membership_count": 2568,
+  "records_membership_freshly_enumerated": true,
+  "member_bytes_and_kinds_match": true,
+  "archive_hashes_match": true,
+  "source_membership_freshly_enumerated": true,
+  "references_membership_freshly_enumerated": true,
+  "extra_inputs_checked": 606,
+  "extra_inputs_match": true
+}

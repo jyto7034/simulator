@@ -1,0 +1,790 @@
+{
+  "report_id": "R03-WORLD-LEAF-SHAPE-011",
+  "kind": "bounded_readonly_ownership_design_not_completion_audit",
+  "capture_utc": "2026-09-10T09:31:30.245403+00:00",
+  "close_utc": "2026-09-10T09:38:55.702816+00:00",
+  "constraints": {
+    "repo_edits": false,
+    "git_commands": false,
+    "cargo_build_tests": false,
+    "only_new_report_files": true,
+    "excluded_whole_roots": [
+      "RunState",
+      "ActiveBattleSession",
+      "RunCheckpointState"
+    ],
+    "shared_children": "Inspected only where pending plan or requested root directly owns them"
+  },
+  "summary": {
+    "closed_leaf_candidates": [
+      "PlayerInfo",
+      "GameState",
+      "NodeSession",
+      "VisualNovelRuntimeState/VisualNovelSession",
+      "VisualNovelTriggerConsumedKey",
+      "EventSessionState nested evidence",
+      "RewardOption/RewardEffect",
+      "BattleResultStatsDto",
+      "ParticipantBattleResult",
+      "MasteredEliteSweepResultDto"
+    ],
+    "copy_root": "RunPowerAuthorityState",
+    "native_owners": [
+      "LifecycleContext",
+      "ActiveNodeContent variants",
+      "VisualNovelTriggerRuntimeState",
+      "MasteredEliteSweepCommitPlan",
+      "EconomyGrantState",
+      "EncounterProgressionState",
+      "CombatResultNodeCompletion",
+      "BossOmenRunState",
+      "MonolithRunState"
+    ],
+    "not_existing_defects": "Root has not whitelisted ShopSessionState or MonolithRunState as whole leaves; this report describes required ownership seams, not a failure of a completed visitor."
+  },
+  "roots": [
+    {
+      "type": "PlayerInfo",
+      "serialize": true,
+      "fields": [
+        "id",
+        "name"
+      ],
+      "recommended": "closed leaf or explicit native fields"
+    },
+    {
+      "type": "LifecycleContext",
+      "serialize": false,
+      "fields": [
+        "phase"
+      ],
+      "recommended": "native phase borrow; GameState leaf; do not clone snapshot to measure"
+    },
+    {
+      "type": "GameState",
+      "serialize": true,
+      "copy": false,
+      "dynamic_children": [
+        "NodeConfirm.kind_id:String newtype",
+        "InNode.kind_id:String newtype"
+      ],
+      "recommended": "closed leaf or exhaustive native enum"
+    },
+    {
+      "type": "NodeSession",
+      "serialize": true,
+      "fields": [
+        "node_id",
+        "kind_id",
+        "category",
+        "payload"
+      ],
+      "recommended": "closed owned leaf"
+    },
+    {
+      "type": "VisualNovelRuntimeState",
+      "serialize": true,
+      "fields": [
+        "active",
+        "queue"
+      ],
+      "recommended": "closed owned leaf or struct; no definition graph expansion"
+    },
+    {
+      "type": "VisualNovelTriggerRuntimeState",
+      "serialize": true,
+      "fields": [
+        "persistent_consumed",
+        "checkpoint_rewind_consumed"
+      ],
+      "native_tables": "Two public raw HashSets",
+      "recommended": "explicit tombstone-free set envelope restricted to proven opaque provenance"
+    },
+    {
+      "type": "RunPowerAuthorityState",
+      "serialize": true,
+      "copy": true,
+      "fields": [
+        "power_model_version",
+        "run_peak_certified_power",
+        "current_floor_power_anchor"
+      ],
+      "recommended": "Copy-bounded shape"
+    },
+    {
+      "type": "MasteredEliteSweepCommitPlan",
+      "serialize": false,
+      "fields": [
+        "result",
+        "grant_state",
+        "encounter_progression_after",
+        "node_completion"
+      ],
+      "recommended": "explicit native fields and independently retained child copies"
+    }
+  ],
+  "active_variants": {
+    "Shop": {
+      "serialize": true,
+      "fields": [
+        "id",
+        "name",
+        "uuid",
+        "context",
+        "node_id",
+        "offer_count",
+        "refresh_policy",
+        "sell_policy",
+        "refresh_uses",
+        "page_index",
+        "offers",
+        "purchased_merchandise"
+      ],
+      "table": "HashSet<ShopMerchandise> purchased_merchandise"
+    },
+    "Reward": {
+      "serialize": false,
+      "fields": [
+        "stage_uuid",
+        "mode",
+        "rewards",
+        "selected_reward_uuid",
+        "can_skip"
+      ]
+    },
+    "Event": {
+      "serialize": true,
+      "fields": [
+        "node_id",
+        "event_id",
+        "current_scene_id",
+        "committed_check",
+        "started_combat"
+      ]
+    },
+    "SavePoint": {
+      "serialize": false,
+      "fields": [
+        "node_id"
+      ]
+    },
+    "Maintenance": {
+      "serialize": false,
+      "fields": [
+        "node_id"
+      ]
+    },
+    "HeadquartersContact": {
+      "serialize": false,
+      "fields": [
+        "node_id",
+        "options",
+        "shop_pool_id"
+      ]
+    },
+    "CombatBattle": {
+      "serialize": false,
+      "fields": [
+        "primary_abnormality_id",
+        "encounter_id",
+        "node_type",
+        "mission_variant",
+        "abnormality_uuid",
+        "outcome_id",
+        "verdict",
+        "winner",
+        "event_log(cfg test/debug_assertions/test-fixtures)",
+        "result_stats",
+        "reward_mode",
+        "rewards",
+        "grant_node_bonus",
+        "advance_encounter_progression",
+        "participant_results",
+        "employee_conditions",
+        "compendium_candidates"
+      ],
+      "native_children": [
+        "BattleEventLog/Arc and serde-skipped counters",
+        "EmployeeRoster",
+        "non-Serialize CompendiumCandidate"
+      ]
+    }
+  },
+  "native_plan_fields": {
+    "EconomyGrantState": [
+      "inventory",
+      "skill_fragments",
+      "roster",
+      "uuid_manager",
+      "enkephalin"
+    ],
+    "EncounterProgressionState": [
+      "completed_reward_source_ids",
+      "mastered_elite_cycle",
+      "normal_boss_cycle",
+      "monolith",
+      "boss_omen"
+    ],
+    "CombatResultNodeCompletion": {
+      "NodeCompleted": [
+        "map",
+        "progression",
+        "completing_node_id",
+        "boss_omen",
+        "view"
+      ],
+      "FloorAdvanced": [
+        "next_map",
+        "next_progression",
+        "run_progression",
+        "facility_run_state",
+        "encounter_progression",
+        "view"
+      ],
+      "RunComplete": [
+        "map",
+        "progression",
+        "run_progression",
+        "view"
+      ]
+    },
+    "BossOmenRunState": [
+      "provisional",
+      "active",
+      "placed_source",
+      "forced_boss",
+      "cycle_index",
+      "remaining_chain_ids",
+      "completed_chain_ids"
+    ],
+    "MonolithRunState": [
+      "progress_by_abnormality",
+      "remanifestation_nodes",
+      "residuals",
+      "next_residual_sequence",
+      "exchange_state",
+      "exchange_shop_guarantee_issued",
+      "next_floor_shop_guarantee_pending",
+      "corrupted_monolith_acquired"
+    ]
+  },
+  "observations": [
+    {
+      "id": "WL011-O01",
+      "kind": "native_set_boundary",
+      "owner": "ShopSessionState.purchased_merchandise",
+      "mutations": {
+        "new": "world/shop.rs:70",
+        "insert": [
+          "world/shop.rs:559",
+          "world/shop.rs:599"
+        ],
+        "remove": [],
+        "retain": [],
+        "clear": [],
+        "reserve": [],
+        "raw_mutable_escape": "public raw field; no extra mutable-set getter found"
+      },
+      "provenance": "Fresh opaque session + native copies/fresh checkpoint Deserialize are insert-only in scoped reference search; arbitrary public raw field mutation is excluded."
+    },
+    {
+      "id": "WL011-O02",
+      "kind": "unresolved_native_table_storage_credit",
+      "owner": "MonolithRunState.remanifestation_nodes",
+      "mutations": {
+        "insert": [
+          "monolith.rs:190"
+        ],
+        "remove": [
+          "monolith.rs:213",
+          "monolith.rs:266"
+        ],
+        "drain": [
+          "monolith.rs:282"
+        ],
+        "retain": [],
+        "reserve": [],
+        "direct_clear": [],
+        "raw_mutable_escape": "public raw field permits unrestricted external mutation"
+      },
+      "ordinary_callers": [
+        "world/node_flow.rs:551",
+        "world/combat.rs:3019",
+        "world/combat.rs:3069",
+        "world/state.rs:1494"
+      ],
+      "existing_history": "No retained insertion/reservation/capacity high-water field; uses_remaining and residual counters are not established storage credits.",
+      "recommendation": "Preserve public field/literal type; provide separately proved owner-history/provenance seam, covering imports and owned copies. No arbitrary multiplier or rebuild substitute proposed."
+    },
+    {
+      "id": "WL011-O03",
+      "kind": "serializer_scope",
+      "finding": "HashSet/BTreeSet Serialize use sequence, so SerializeMap rejection alone cannot detect native set storage. Do not whitelist table-containing owners."
+    },
+    {
+      "id": "WL011-O04",
+      "kind": "hidden_clone_state",
+      "finding": "CombatBattle cfg event_log owns Arc entries and nine serde-skipped counters; Arc clone retains only handle, COW measurement is separate."
+    },
+    {
+      "id": "WL011-O05",
+      "kind": "noncopy_and_nonserialize_edges",
+      "finding": "GameState is not Copy and owns kind_id Strings; CompendiumCandidateKind has no Copy/Serialize despite unit variants."
+    }
+  ],
+  "sources": [
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/authoring/clone_shape.rs",
+      "sha256": "128a52d55e3bba9800039128d209b1e50ccd9f87e51d68d2d64f84c49fb0229e",
+      "bytes": 25190,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "17-209: native trait/macros at initial read",
+        "245-276: earlier closed leaf list",
+        "323-429: earlier serializer body; file drifted"
+      ],
+      "close_sha256": "b46e1c87e744adc5515ab434a0f8def82eb501063a2ff14ec58a45738ded397a",
+      "drift": true
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/state.rs",
+      "sha256": "0cf2f62af29ff9e04c67cda515e4b4488be9ac9d9806311d7c11607db49c0a4c",
+      "bytes": 70669,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "53-66",
+        "113-180",
+        "325-331",
+        "471: checkpoint ShopSessionState boundary only",
+        "1422,1472: ShopSessionState retained map boundary only",
+        "1484-1495: monolith drain caller only"
+      ],
+      "close_sha256": "0cf2f62af29ff9e04c67cda515e4b4488be9ac9d9806311d7c11607db49c0a4c",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/resources/state.rs",
+      "sha256": "d9f4733134d5e6fb1e371d08fd39de66bf6a987df80916a12a231f7896c1af8b",
+      "bytes": 1431,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "6-62"
+      ],
+      "close_sha256": "d9f4733134d5e6fb1e371d08fd39de66bf6a987df80916a12a231f7896c1af8b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/resources/selection.rs",
+      "sha256": "8c01853213e60a5773234fa557a6e97174220f755c77df2b98dd15e03caee7a3",
+      "bytes": 9604,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "26-232",
+        "242-245,256-259,270-273: owner mutable access boundaries"
+      ],
+      "close_sha256": "8c01853213e60a5773234fa557a6e97174220f755c77df2b98dd15e03caee7a3",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/map/session.rs",
+      "sha256": "b826a9658993a7e26dc26c576b05b02415491f113bcd529c92d05e3baf654d05",
+      "bytes": 1917,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "1-27"
+      ],
+      "close_sha256": "b826a9658993a7e26dc26c576b05b02415491f113bcd529c92d05e3baf654d05",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/map/types.rs",
+      "sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f",
+      "bytes": 24289,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "8-80",
+        "136-190",
+        "227-241",
+        "347-361",
+        "591-635",
+        "686-699"
+      ],
+      "close_sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "sha256": "4edc42a44b2fb8da17ec0717b7a01687bd328c41129f0673cf57491f26ef1ed7",
+      "bytes": 17884,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "21-34",
+        "150-180: plan staging read"
+      ],
+      "close_sha256": "4edc42a44b2fb8da17ec0717b7a01687bd328c41129f0673cf57491f26ef1ed7",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/grant_state.rs",
+      "sha256": "248d55a4feca4e4fac376327254c6ff6ce31721c31b7df750f13c9c3420167de",
+      "bytes": 2917,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "15-45"
+      ],
+      "close_sha256": "248d55a4feca4e4fac376327254c6ff6ce31721c31b7df750f13c9c3420167de",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "0521f6860a8079ec8b6558dec2b46bacdaed410a079f91f609e05debb937d79b",
+      "bytes": 62192,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "89-112",
+        "541-558",
+        "Monolith reference search"
+      ],
+      "close_sha256": "0521f6860a8079ec8b6558dec2b46bacdaed410a079f91f609e05debb937d79b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/behavior.rs",
+      "sha256": "c38657dd64aeae18fbb6a4998cfeb65cc45b015a897f379360236b2b4c3e2552",
+      "bytes": 232858,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "1193-1217"
+      ],
+      "close_sha256": "c38657dd64aeae18fbb6a4998cfeb65cc45b015a897f379360236b2b4c3e2552",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/visual_novel.rs",
+      "sha256": "bd9c83551d5547a5ca425859fd40db197d3b64fbfcab27683dc5ce5a89ed29c3",
+      "bytes": 2278,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "1-75"
+      ],
+      "close_sha256": "bd9c83551d5547a5ca425859fd40db197d3b64fbfcab27683dc5ce5a89ed29c3",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/data/visual_novel_data.rs",
+      "sha256": "93303a188777146bec027ce2c7c5d0a9d6499ea64858f1855dbb9f5f5aac4b37",
+      "bytes": 21541,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "10-49",
+        "serde/ID search"
+      ],
+      "close_sha256": "93303a188777146bec027ce2c7c5d0a9d6499ea64858f1855dbb9f5f5aac4b37",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "sha256": "4abe1bb5cfed1ead3d5fd528c8fe33e3470edae6b4cd0ceeab27694138c082fe",
+      "bytes": 14020,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "14-26",
+        "serde/ID search"
+      ],
+      "close_sha256": "4abe1bb5cfed1ead3d5fd528c8fe33e3470edae6b4cd0ceeab27694138c082fe",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/data/shop_data.rs",
+      "sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001",
+      "bytes": 20073,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "14-27",
+        "77-104"
+      ],
+      "close_sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/data/event_data.rs",
+      "sha256": "11ac2223f2587e5149a78ab14793e172e55b13cc97bdbecbbc6ad6007e4f8409",
+      "bytes": 22957,
+      "first_capture_utc": "2026-09-10T09:31:30.245403+00:00",
+      "inspected_spans": [
+        "14-79",
+        "EventCheckOutcome and serde search"
+      ],
+      "close_sha256": "11ac2223f2587e5149a78ab14793e172e55b13cc97bdbecbbc6ad6007e4f8409",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/shop.rs",
+      "sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81",
+      "bytes": 43390,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "1-77",
+        "545-610",
+        "purchased_merchandise reference search"
+      ],
+      "close_sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/monolith.rs",
+      "sha256": "45adf95e78f50216add4084ac60b77ed472f7345548582d38a50ff73c5200ec2",
+      "bytes": 22676,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "1-40",
+        "66-102",
+        "145-295",
+        "remanifestation_nodes full field-reference search"
+      ],
+      "close_sha256": "45adf95e78f50216add4084ac60b77ed472f7345548582d38a50ff73c5200ec2",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/boss_omen.rs",
+      "sha256": "3ca97f8660c0d2c5a9d4a552668f2b1de6db31a24f8a9eec7937f4f30ce4e986",
+      "bytes": 27222,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "22-84"
+      ],
+      "close_sha256": "3ca97f8660c0d2c5a9d4a552668f2b1de6db31a24f8a9eec7937f4f30ce4e986",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/encounter_progression.rs",
+      "sha256": "ce29245f00aee072318dde20c33c0431716d539f8b656ee99ffc82668f74949b",
+      "bytes": 21610,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "19-25",
+        "127-135",
+        "native table references"
+      ],
+      "close_sha256": "ce29245f00aee072318dde20c33c0431716d539f8b656ee99ffc82668f74949b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/map/facility.rs",
+      "sha256": "0122d19e7e146ca6b3a8e94bad29416a4c8fd06a1e8f4a6a02076ab16fb2f6cd",
+      "bytes": 38869,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "209-219",
+        "type/native table reference search"
+      ],
+      "close_sha256": "0122d19e7e146ca6b3a8e94bad29416a4c8fd06a1e8f4a6a02076ab16fb2f6cd",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/map/progression.rs",
+      "sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014",
+      "bytes": 32025,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "18-42"
+      ],
+      "close_sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/event_log.rs",
+      "sha256": "82975ec82b87e469eaa206e46a2042a51a12ee4b6adf0375148ab64ace97d7b8",
+      "bytes": 55876,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "76-101",
+        "397-425",
+        "804-808: skipped source Arc field search"
+      ],
+      "close_sha256": "49ddbf7545b8939ab4ae2b3cd42a87e1b42fbe97c7dbdfec67201daf33b63619",
+      "drift": true
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/result_stats.rs",
+      "sha256": "bd0259e0daf942a9dca490962b40fb374ce5c7891fccf14f5754e95bac10c543",
+      "bytes": 42465,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "20-80",
+        "116-124: distinguish runtime accumulator from DTO"
+      ],
+      "close_sha256": "dab57d5d702c078ee000c7ac40933982471ce7e42001ec2d9cdc7c288732ceea",
+      "drift": true
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/types.rs",
+      "sha256": "4e8c235f337de94ad59c10f6927d1769e58d6416e8d8d63b785ffaddf328fbea",
+      "bytes": 37802,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "35-81"
+      ],
+      "close_sha256": "4e8c235f337de94ad59c10f6927d1769e58d6416e8d8d63b785ffaddf328fbea",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "sha256": "59d924f4f0c52999fdbecb9f5d3b0e3c1c17b769914fbe71aa411c119ea4f185",
+      "bytes": 42287,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "722-733"
+      ],
+      "close_sha256": "59d924f4f0c52999fdbecb9f5d3b0e3c1c17b769914fbe71aa411c119ea4f185",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/reward.rs",
+      "sha256": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f",
+      "bytes": 18099,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "19-91"
+      ],
+      "close_sha256": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/resources/inventory.rs",
+      "sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09",
+      "bytes": 32545,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "30-43",
+        "79-93",
+        "117-174",
+        "228-243",
+        "476,527,584,606,721: native table/Arc owner search"
+      ],
+      "close_sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/resources/economy.rs",
+      "sha256": "3b59a3cee8fe87573e709d30f5ab75fe1d9ac8c62e1a966151485c983995724d",
+      "bytes": 546,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "1-6"
+      ],
+      "close_sha256": "3b59a3cee8fe87573e709d30f5ab75fe1d9ac8c62e1a966151485c983995724d",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/data/consumable_data.rs",
+      "sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114",
+      "bytes": 13860,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "35-66",
+        "98-123: metadata vs database boundary"
+      ],
+      "close_sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/employee.rs",
+      "sha256": "26ef7def8931e4490644c7ec1f681b7f819e6fd6afdd5da6a8ef86a445359379",
+      "bytes": 37749,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "EventAptitude declaration search",
+        "371-390,659: existing owner visitor/table references"
+      ],
+      "close_sha256": "26ef7def8931e4490644c7ec1f681b7f819e6fd6afdd5da6a8ef86a445359379",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/managers/uuid_manager.rs",
+      "sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d",
+      "bytes": 4285,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "1-18"
+      ],
+      "close_sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/skill_fragment.rs",
+      "sha256": "6b8f81c7a59fc522e22774b6c225d0ec3cd108633e48e1e98f741716e109e64d",
+      "bytes": 41813,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "1-26"
+      ],
+      "close_sha256": "6b8f81c7a59fc522e22774b6c225d0ec3cd108633e48e1e98f741716e109e64d",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/map_content.rs",
+      "sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26",
+      "bytes": 14070,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "Monolith caller/reference search only"
+      ],
+      "close_sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/combat.rs",
+      "sha256": "19c5a48bdfe3e1a7acae673e55db5fbd51dcce933027289c59b63550f177641b",
+      "bytes": 129670,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "3008-3025",
+        "3060-3075"
+      ],
+      "close_sha256": "19c5a48bdfe3e1a7acae673e55db5fbd51dcce933027289c59b63550f177641b",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/world/active_run.rs",
+      "sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "bytes": 10224,
+      "first_capture_utc": "2026-09-10T09:34:23.577689+00:00",
+      "inspected_spans": [
+        "115-124: fresh parser boundary only"
+      ],
+      "close_sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "drift": false
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/data/equipment_data.rs",
+      "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "bytes": 37726,
+      "first_capture_utc": "2026-09-10T09:36:29.445600+00:00",
+      "inspected_spans": [
+        "68-92",
+        "177-203: DTO profile vs Arc metadata ownership distinction"
+      ],
+      "close_sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "drift": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.228/src/ser/impls.rs",
+      "sha256": "5ee7efc439345e8665da0bd79bc06c02a0506e5fd0f3a4cf11af0c7197eaa643",
+      "bytes": 29535,
+      "first_capture_utc": "2026-09-10T09:36:29.445600+00:00",
+      "inspected_spans": [
+        "186-225: serde sequence implementation"
+      ],
+      "close_sha256": "5ee7efc439345e8665da0bd79bc06c02a0506e5fd0f3a4cf11af0c7197eaa643",
+      "drift": false
+    }
+  ],
+  "any_drift": true,
+  "limitations": [
+    "Source reads/hash captures were not atomic; concurrent drift retained rather than re-reviewed as successor completion.",
+    "Closed leaf eligibility is source ownership analysis, not executed serializer/native Clone test proof.",
+    "Existing reviewed leaf children such as WeaponCombatProfile were not fully re-audited.",
+    "Excluded whole roots, total heap/coexistence and full runtime coverage remain outside scope."
+  ]
+}

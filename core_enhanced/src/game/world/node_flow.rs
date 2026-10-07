@@ -1,9 +1,6 @@
 use super::facility::StagedRecoveryEffect;
 use super::state::{RunCheckpointPayload, RUN_CHECKPOINT_MAX_LOADS};
 use super::{map_encounters, GameCore, RunState};
-use crate::game::abnormality_research::{
-    RunAbnormalityEncounterHistory, RunAbnormalityResearchState,
-};
 use crate::game::behavior::{
     BehaviorResult, GameError, MonolithConversionOptionDto, MonolithConversionSnapshotDto,
     MonolithRemanifestationSnapshotDto, MonolithRewardTierDto,
@@ -12,6 +9,8 @@ use crate::game::boss_omen::{
     apply_boss_omen_to_map, complete_forced_boss_with_exit_gate, force_boss_node_if_ready,
     BossOmenRunState,
 };
+use crate::game::combat_setup::player_spawns::skill_fragment_compatibility_profile_for_employee_with_item_slot;
+use crate::game::encounter_progression::EncounterProgressionState;
 use crate::game::map::{
     FacilityGenerationRequirements, FacilityMapGenerator, FacilityRunState,
     FacilityTerminalResolution, MapNodeCategory, MapNodeCombatDifficultyClass, MapNodeExecutor,
@@ -19,8 +18,6 @@ use crate::game::map::{
     MonolithRemanifestationStage, RunMap, RunProgression,
 };
 use crate::game::resources::{ActiveNodeContent, GameState};
-use crate::game::skill_fragment::{SkillFragmentInventory, SkillFragmentResearchDelivery};
-use tracing::info;
 
 fn percent_of_anchor_ceil(anchor: u64, percent: u32) -> u64 {
     let value = u128::from(anchor)
@@ -68,7 +65,7 @@ pub(super) enum StagedNodeCompletion {
         next_progression: MapProgression,
         run_progression: RunProgression,
         facility_run_state: FacilityRunState,
-        boss_omen: BossOmenRunState,
+        encounter_progression: EncounterProgressionState,
         recovery_effect: StagedRecoveryEffect,
         view: MapViewDto,
     },
@@ -81,6 +78,13 @@ pub(super) enum StagedNodeCompletion {
     },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum NodeCompletionContext {
+    CurrentNode,
+    ResolvedHeadquartersContact,
+}
+
+#[derive(Clone)]
 pub(super) enum CombatResultNodeCompletion {
     NodeCompleted {
         map: RunMap,
@@ -94,7 +98,7 @@ pub(super) enum CombatResultNodeCompletion {
         next_progression: MapProgression,
         run_progression: RunProgression,
         facility_run_state: FacilityRunState,
-        boss_omen: BossOmenRunState,
+        encounter_progression: EncounterProgressionState,
         view: MapViewDto,
     },
     RunComplete {
@@ -134,7 +138,7 @@ impl TryFrom<StagedNodeCompletion> for CombatResultNodeCompletion {
                 next_progression,
                 run_progression,
                 facility_run_state,
-                boss_omen,
+                encounter_progression,
                 recovery_effect,
                 view,
             } => {
@@ -146,7 +150,7 @@ impl TryFrom<StagedNodeCompletion> for CombatResultNodeCompletion {
                     next_progression,
                     run_progression,
                     facility_run_state,
-                    boss_omen,
+                    encounter_progression,
                     view,
                 })
             }
@@ -198,33 +202,6 @@ impl GameCore {
         Ok(template.clone())
     }
 
-    pub(super) fn deliver_pending_research_in_staged_inventory(
-        &self,
-        skill_fragments: &mut SkillFragmentInventory,
-    ) -> Result<Vec<SkillFragmentResearchDelivery>, GameError> {
-        skill_fragments.deliver_pending_research_with_policy(
-            &self.game_data.skill_fragment_data,
-            &self.state.skill_fragment_policy,
-        )
-    }
-
-    fn stage_current_planning_return_research_delivery(
-        &self,
-    ) -> Result<(SkillFragmentInventory, Vec<SkillFragmentResearchDelivery>), GameError> {
-        let mut skill_fragments = self.state.skill_fragments.clone();
-        let deliveries = self.deliver_pending_research_in_staged_inventory(&mut skill_fragments)?;
-        Ok((skill_fragments, deliveries))
-    }
-
-    fn log_planning_return_research_deliveries(deliveries: &[SkillFragmentResearchDelivery]) {
-        if !deliveries.is_empty() {
-            info!(
-                "Delivered pending skill fragment research on authoritative planning return: {:?}",
-                deliveries
-            );
-        }
-    }
-
     pub(super) fn current_map_view(&self) -> Result<MapViewDto, GameError> {
         let run = self.run_state()?;
         let template = self.facility_template_for_map(&run.map)?;
@@ -241,7 +218,7 @@ impl GameCore {
             .state
             .roster
             .iter()
-            .any(|employee| employee.is_combat_eligible())
+            .any(|employee| employee.is_battle_deployable())
         {
             readiness_warnings
                 .push(crate::game::map::CombatReadinessWarningDto::NoDeployableEmployees);
@@ -308,10 +285,7 @@ impl GameCore {
         &mut self,
         run_progression: &RunProgression,
         facility_run_state: &FacilityRunState,
-        abnormality_research: &RunAbnormalityResearchState,
-        abnormality_encounter_history: &RunAbnormalityEncounterHistory,
-        monolith: &crate::game::monolith::MonolithRunState,
-        boss_omen: &mut crate::game::boss_omen::BossOmenRunState,
+        encounter_progression: &mut EncounterProgressionState,
     ) -> (RunMap, MapProgression, FacilityRunState) {
         let power_model_version = self.run_policy().combat_difficulty.power_model_version;
         if self.state.run_power_authority.power_model_version == 0 {
@@ -340,7 +314,9 @@ impl GameCore {
             self.run_policy(),
             self.state.run_power_authority.current_floor_power_anchor,
             FacilityGenerationRequirements {
-                guarantee_reachable_shop: monolith.next_floor_shop_guarantee_pending,
+                guarantee_reachable_shop: encounter_progression
+                    .monolith
+                    .next_floor_shop_guarantee_pending,
             },
         )
         .expect("validated live facility data must generate the current Floor");
@@ -349,9 +325,7 @@ impl GameCore {
             &self.game_data.pve_data,
             &mut run_map,
             run_progression,
-            abnormality_research,
-            abnormality_encounter_history,
-            monolith,
+            encounter_progression,
             self.run_policy(),
         );
         let mut progression = MapProgression::from_map(&run_map);
@@ -360,15 +334,19 @@ impl GameCore {
             &mut progression,
             run_progression,
             self.game_data.as_ref(),
-            boss_omen,
+            &mut encounter_progression.boss_omen,
         );
-        if boss_omen.forced_boss_node_id().is_none() {
+        if encounter_progression
+            .boss_omen
+            .forced_boss_node_id()
+            .is_none()
+        {
             apply_boss_omen_to_map(
                 &mut run_map,
                 run_progression,
                 &self.state.skill_fragments,
                 self.game_data.as_ref(),
-                boss_omen,
+                &mut encounter_progression.boss_omen,
             );
             progression = MapProgression::from_map(&run_map);
         }
@@ -418,9 +396,10 @@ impl GameCore {
     }
 
     pub(super) fn monolith_conversion_snapshot(&self) -> Option<MonolithConversionSnapshotDto> {
-        let GameState::NodeConfirm { node_id, .. } = self.state.game_state else {
+        let GameState::NodeConfirm { node_id, .. } = self.state.lifecycle.phase() else {
             return None;
         };
+        let node_id = *node_id;
         let run = self.state.run.as_ref()?;
         if run.run_progression.game_mode != crate::game::map::GameMode::Endless {
             return None;
@@ -505,9 +484,10 @@ impl GameCore {
     pub(super) fn monolith_remanifestation_snapshot(
         &self,
     ) -> Option<MonolithRemanifestationSnapshotDto> {
-        let GameState::NodeConfirm { node_id, .. } = self.state.game_state else {
+        let GameState::NodeConfirm { node_id, .. } = self.state.lifecycle.phase() else {
             return None;
         };
+        let node_id = *node_id;
         let run = self.state.run.as_ref()?;
         let remanifestation = run.monolith.remanifestation(node_id)?;
         let metadata = self
@@ -643,7 +623,8 @@ impl GameCore {
             node.category,
             MapNodeCategory::Combat | MapNodeCategory::Boss
         )
-        .then(|| super::state::BattleEntrySnapshot::capture(&self.state));
+        .then(|| super::state::BattleEntrySnapshot::capture(&self.state))
+        .transpose()?;
 
         let template = self.facility_template_for_map(&map)?;
         progression
@@ -704,12 +685,6 @@ impl GameCore {
                     .ok_or(GameError::MissingResource("PveEncounter"))?
                     .primary_abnormality_id
                     .clone();
-                if let Some(primary_abnormality_id) = primary_abnormality_id.as_deref() {
-                    let floor_index = self.run_state()?.run_progression.floor_index();
-                    self.run_state_mut()?
-                        .abnormality_encounter_history
-                        .record_appearance(primary_abnormality_id, floor_index);
-                }
                 return self.handle_map_combat_node(
                     node_id,
                     primary_abnormality_id,
@@ -750,26 +725,28 @@ impl GameCore {
         if !run_progression.advance_floor() {
             return Err(GameError::InvalidAction);
         }
-        let abnormality_research = self.run_state()?.abnormality_research.clone();
-        let abnormality_encounter_history = self.run_state()?.abnormality_encounter_history.clone();
-        let monolith = self.run_state()?.monolith.clone();
-        let mut boss_omen = self.run_state()?.boss_omen.clone();
-        boss_omen.handle_gate_advance();
+        let mut encounter_progression = self.run_state()?.encounter_progression.clone();
+        encounter_progression.handle_gate_advance();
         let previous_facility_run_state = self.run_state()?.facility_run_state.clone();
         let (next_map, next_progression, facility_run_state) = self.generate_current_floor_map(
             &run_progression,
             &previous_facility_run_state,
-            &abnormality_research,
-            &abnormality_encounter_history,
-            &monolith,
-            &mut boss_omen,
+            &mut encounter_progression,
         );
         let next_template = self.facility_template_for_map(&next_map)?;
         let view = next_progression.view(&next_map, &next_template);
-        let (staged_skill_fragments, research_deliveries) =
-            self.stage_current_planning_return_research_delivery()?;
         self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(StagedRecoveryEffect::GateTransition)?;
+        self.complete_employee_breakdown_node()?;
+        if run_progression.game_mode == crate::game::map::GameMode::Endless {
+            let completed_streak = self.run_state_mut()?.record_progress.complete_floor();
+            self.state
+                .player_profile
+                .record_deathless_streak(completed_streak);
+            self.state
+                .player_profile
+                .record_floor_reached(run_progression.floor_index().saturating_add(1));
+        }
         let mut next_run = {
             let previous_run = self.run_state()?;
             RunState::for_next_floor_from(
@@ -777,8 +754,8 @@ impl GameCore {
                 next_map,
                 next_progression,
                 run_progression.clone(),
-                boss_omen,
-            )
+                encounter_progression,
+            )?
             .with_facility_run_state(facility_run_state)
         };
         next_run.monolith.consume_next_floor_shop_guarantee();
@@ -786,14 +763,11 @@ impl GameCore {
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
-        self.state.skill_fragments = staged_skill_fragments;
-        Self::log_planning_return_research_deliveries(&research_deliveries);
 
         Ok(BehaviorResult::FloorAdvanced {
             game_mode: run_progression.game_mode,
             floor_index: run_progression.floor_index(),
             map: view,
-            research_deliveries,
         })
     }
 
@@ -810,19 +784,24 @@ impl GameCore {
         &mut self,
         operation: impl FnOnce(&mut Self) -> Result<T, GameError>,
     ) -> Result<T, GameError> {
+        let before_observation =
+            crate::authoring::clone_shape::controlled_clone(&self.authoring_observation)?;
         let before = self
             .state
-            .clone_non_battle_transaction_state()
+            .clone_non_battle_transaction_state()?
             .ok_or(GameError::InvalidAction)?;
+        let before_lifecycle = self.authoring_lifecycle;
         match operation(self) {
             Ok(result) => Ok(result),
             Err(error) => {
-                let encounter_compendium = self.state.encounter_compendium.clone();
+                let player_profile = std::mem::take(&mut self.state.player_profile);
                 self.state = before;
-                // Profile knowledge is a separate monotonic aggregate. Preserve
-                // both the pre-transaction union and discoveries or defeats that
-                // committed while the failed run-local operation was in flight.
-                self.state.encounter_compendium.merge(encounter_compendium);
+                self.authoring_lifecycle = before_lifecycle;
+                self.authoring_observation = before_observation;
+                // The capture deliberately contains an empty profile. Move the
+                // entire live profile back, including knowledge committed during
+                // the failed run-local operation, without allocating on rollback.
+                self.state.player_profile = player_profile;
                 Err(error)
             }
         }
@@ -832,13 +811,53 @@ impl GameCore {
         &mut self,
         apply_recovery_effect: bool,
     ) -> Result<StagedNodeCompletion, GameError> {
-        if self
-            .state
-            .active_node_content
-            .as_ref()
-            .is_some_and(|content| matches!(content, ActiveNodeContent::HeadquartersContact(_)))
-        {
-            return Err(GameError::InvalidAction);
+        self.plan_complete_current_node_with_context_and_encounter_progression(
+            apply_recovery_effect,
+            NodeCompletionContext::CurrentNode,
+            None,
+        )
+    }
+
+    pub(super) fn plan_complete_current_node_with_context(
+        &mut self,
+        apply_recovery_effect: bool,
+        context: NodeCompletionContext,
+    ) -> Result<StagedNodeCompletion, GameError> {
+        self.plan_complete_current_node_with_context_and_encounter_progression(
+            apply_recovery_effect,
+            context,
+            None,
+        )
+    }
+
+    pub(super) fn plan_complete_current_node_with_encounter_progression(
+        &mut self,
+        apply_recovery_effect: bool,
+        encounter_progression: Option<&EncounterProgressionState>,
+    ) -> Result<StagedNodeCompletion, GameError> {
+        self.plan_complete_current_node_with_context_and_encounter_progression(
+            apply_recovery_effect,
+            NodeCompletionContext::CurrentNode,
+            encounter_progression,
+        )
+    }
+
+    fn plan_complete_current_node_with_context_and_encounter_progression(
+        &mut self,
+        apply_recovery_effect: bool,
+        context: NodeCompletionContext,
+        encounter_progression_override: Option<&EncounterProgressionState>,
+    ) -> Result<StagedNodeCompletion, GameError> {
+        match (self.state.active_node_content.as_ref(), context) {
+            (
+                Some(ActiveNodeContent::HeadquartersContact(_)),
+                NodeCompletionContext::ResolvedHeadquartersContact,
+            ) => {}
+            (Some(ActiveNodeContent::HeadquartersContact(_)), _)
+            | (_, NodeCompletionContext::ResolvedHeadquartersContact) => {
+                return Err(GameError::InvalidAction);
+            }
+            _ => {}
         }
 
         let mut map = self.run_state()?.map.clone();
@@ -853,13 +872,16 @@ impl GameCore {
         };
 
         if !apply_recovery_effect {
-            let mut boss_omen = self.run_state()?.boss_omen.clone();
+            let mut encounter_progression = match encounter_progression_override {
+                Some(progression) => progression.clone(),
+                None => self.run_state()?.encounter_progression.clone(),
+            };
             let template = self.facility_template_for_map(&map)?;
             if complete_forced_boss_with_exit_gate(
                 &mut map,
                 &mut progression,
                 &template,
-                &mut boss_omen,
+                &mut encounter_progression.boss_omen,
             )
             .map_err(|_| GameError::InvalidAction)?
             {
@@ -868,7 +890,7 @@ impl GameCore {
                     map,
                     progression,
                     completing_node_id,
-                    boss_omen: Some(boss_omen),
+                    boss_omen: Some(encounter_progression.boss_omen),
                     recovery_effect,
                     view,
                 });
@@ -903,6 +925,7 @@ impl GameCore {
             Some(
                 FacilityTerminalResolution::FloorGate
                     | FacilityTerminalResolution::RunFinalBoss
+                    | FacilityTerminalResolution::StandardCompletion
                     | FacilityTerminalResolution::SpecialRunCompletion
             )
         ) {
@@ -912,23 +935,24 @@ impl GameCore {
         let mut run_progression = run_progression;
 
         if run_progression.advance_floor() {
-            let abnormality_research = self.run_state()?.abnormality_research.clone();
-            let abnormality_encounter_history =
-                self.run_state()?.abnormality_encounter_history.clone();
-            let monolith = self.run_state()?.monolith.clone();
-            let mut boss_omen = self.run_state()?.boss_omen.clone();
+            let mut encounter_progression = match encounter_progression_override {
+                Some(progression) => progression.clone(),
+                None => self.run_state()?.encounter_progression.clone(),
+            };
             if let Some(node_id) = completing_node_id {
-                boss_omen.consume_completed_source(node_id);
-                boss_omen.clear_after_forced_boss_victory(node_id);
+                encounter_progression
+                    .boss_omen
+                    .consume_completed_source(node_id);
+                encounter_progression
+                    .boss_omen
+                    .clear_after_forced_boss_victory(node_id);
             }
+            encounter_progression.handle_gate_advance();
             let previous_facility_run_state = self.run_state()?.facility_run_state.clone();
             let (next_map, next_progression, facility_run_state) = self.generate_current_floor_map(
                 &run_progression,
                 &previous_facility_run_state,
-                &abnormality_research,
-                &abnormality_encounter_history,
-                &monolith,
-                &mut boss_omen,
+                &mut encounter_progression,
             );
             let next_template = self.facility_template_for_map(&next_map)?;
             let view = next_progression.view(&next_map, &next_template);
@@ -937,7 +961,7 @@ impl GameCore {
                 next_progression,
                 run_progression,
                 facility_run_state,
-                boss_omen,
+                encounter_progression,
                 recovery_effect,
                 view,
             })
@@ -965,43 +989,31 @@ impl GameCore {
                 boss_omen,
                 recovery_effect,
                 view,
-            } => {
-                let (staged_skill_fragments, research_deliveries) =
-                    self.stage_current_planning_return_research_delivery()?;
-                self.commit_node_completed_with_recovery(
-                    map,
-                    progression,
-                    completing_node_id,
-                    boss_omen,
-                    view,
-                    recovery_effect,
-                    Some(staged_skill_fragments),
-                    research_deliveries,
-                )
-            }
+            } => self.commit_node_completed_with_recovery(
+                map,
+                progression,
+                completing_node_id,
+                boss_omen,
+                view,
+                recovery_effect,
+            ),
             StagedNodeCompletion::FloorAdvanced {
                 next_map,
                 next_progression,
                 run_progression,
                 facility_run_state,
-                boss_omen,
+                encounter_progression,
                 recovery_effect,
                 view,
-            } => {
-                let (staged_skill_fragments, research_deliveries) =
-                    self.stage_current_planning_return_research_delivery()?;
-                self.commit_floor_advanced_with_recovery(
-                    next_map,
-                    next_progression,
-                    run_progression,
-                    facility_run_state,
-                    boss_omen,
-                    view,
-                    recovery_effect,
-                    Some(staged_skill_fragments),
-                    research_deliveries,
-                )
-            }
+            } => self.commit_floor_advanced_with_recovery(
+                next_map,
+                next_progression,
+                run_progression,
+                facility_run_state,
+                encounter_progression,
+                view,
+                recovery_effect,
+            ),
             StagedNodeCompletion::RunComplete {
                 map,
                 progression,
@@ -1021,7 +1033,6 @@ impl GameCore {
     pub(super) fn commit_combat_result_node_completion(
         &mut self,
         completion: CombatResultNodeCompletion,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     ) -> Result<BehaviorResult, GameError> {
         match completion {
             CombatResultNodeCompletion::NodeCompleted {
@@ -1037,26 +1048,22 @@ impl GameCore {
                 boss_omen,
                 view,
                 StagedRecoveryEffect::None,
-                None,
-                research_deliveries,
             ),
             CombatResultNodeCompletion::FloorAdvanced {
                 next_map,
                 next_progression,
                 run_progression,
                 facility_run_state,
-                boss_omen,
+                encounter_progression,
                 view,
             } => self.commit_floor_advanced_with_recovery(
                 next_map,
                 next_progression,
                 run_progression,
                 facility_run_state,
-                boss_omen,
+                encounter_progression,
                 view,
                 StagedRecoveryEffect::None,
-                None,
-                research_deliveries,
             ),
             CombatResultNodeCompletion::RunComplete {
                 map,
@@ -1075,10 +1082,9 @@ impl GameCore {
         planned_boss_omen: Option<BossOmenRunState>,
         mut view: MapViewDto,
         recovery_effect: StagedRecoveryEffect,
-        staged_skill_fragments: Option<SkillFragmentInventory>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     ) -> Result<BehaviorResult, GameError> {
         let game_data = self.game_data.clone();
+        let mut completed_all_live_final_bosses = None;
         if let Some(run) = self.state.run.as_mut() {
             let has_planned_boss_omen = planned_boss_omen.is_some();
             let mut boss_omen = planned_boss_omen.unwrap_or_else(|| run.boss_omen.clone());
@@ -1102,34 +1108,44 @@ impl GameCore {
                     .expect("committed run map template must remain live");
                 view = run.map_progression.view(&run.map, template);
                 run.clear_abnormality_attempt(node_id);
-                run.event_sessions.remove(&node_id);
+                // A relic selection receipt belongs to this floor's authored
+                // Event even after completion. Keep it for durable restoration
+                // and later legal dismantling; the existing next-floor and
+                // terminal constructors still retire floor-local sessions.
+                if !run
+                    .event_sessions
+                    .get(&node_id)
+                    .is_some_and(|session| session.has_relic_history())
+                {
+                    run.event_sessions.remove(&node_id);
+                }
             }
             run.boss_omen = boss_omen;
+            if run.run_progression.game_mode == crate::game::map::GameMode::Endless {
+                completed_all_live_final_bosses = Some(run.boss_omen.clone());
+            }
+        }
+        if let Some(boss_omen) = completed_all_live_final_bosses.as_ref() {
+            self.state
+                .player_profile
+                .refresh_all_live_final_bosses_defeated(game_data.as_ref(), boss_omen);
         }
         self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(recovery_effect)?;
+        self.complete_employee_breakdown_node()?;
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
         let completion = BehaviorResult::NodeCompleted {
             map: view,
             outcome: None,
-            research_deliveries: Vec::new(),
         };
         let completion = self.finalize_combat_recovery_node_resolution(completion)?;
         let BehaviorResult::NodeCompleted { map, outcome, .. } = completion else {
             return Ok(completion);
         };
-        if let Some(staged_skill_fragments) = staged_skill_fragments {
-            self.state.skill_fragments = staged_skill_fragments;
-        }
-        Self::log_planning_return_research_deliveries(&research_deliveries);
         self.save_completion_checkpoint_if_needed(recovery_effect)?;
-        Ok(BehaviorResult::NodeCompleted {
-            map,
-            outcome,
-            research_deliveries,
-        })
+        Ok(BehaviorResult::NodeCompleted { map, outcome })
     }
 
     fn commit_floor_advanced_with_recovery(
@@ -1138,12 +1154,19 @@ impl GameCore {
         next_progression: MapProgression,
         run_progression: RunProgression,
         facility_run_state: FacilityRunState,
-        boss_omen: BossOmenRunState,
+        encounter_progression: EncounterProgressionState,
         view: MapViewDto,
         recovery_effect: StagedRecoveryEffect,
-        staged_skill_fragments: Option<SkillFragmentInventory>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     ) -> Result<BehaviorResult, GameError> {
+        if run_progression.game_mode == crate::game::map::GameMode::Endless {
+            let completed_streak = self.run_state_mut()?.record_progress.complete_floor();
+            self.state
+                .player_profile
+                .record_deathless_streak(completed_streak);
+            self.state
+                .player_profile
+                .record_floor_reached(run_progression.floor_index().saturating_add(1));
+        }
         let next_run = {
             let previous_run = self.run_state()?;
             RunState::for_next_floor_from(
@@ -1151,26 +1174,22 @@ impl GameCore {
                 next_map,
                 next_progression,
                 run_progression.clone(),
-                boss_omen,
-            )
+                encounter_progression,
+            )?
             .with_facility_run_state(facility_run_state)
         };
         self.state.run = Some(next_run);
         self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(recovery_effect)?;
+        self.complete_employee_breakdown_node()?;
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
-        if let Some(staged_skill_fragments) = staged_skill_fragments {
-            self.state.skill_fragments = staged_skill_fragments;
-        }
-        Self::log_planning_return_research_deliveries(&research_deliveries);
         self.save_completion_checkpoint_if_needed(recovery_effect)?;
         Ok(BehaviorResult::FloorAdvanced {
             game_mode: run_progression.game_mode,
             floor_index: run_progression.floor_index(),
             map: view,
-            research_deliveries,
         })
     }
 
@@ -1198,13 +1217,17 @@ impl GameCore {
         view: MapViewDto,
         recovery_effect: StagedRecoveryEffect,
     ) -> Result<BehaviorResult, GameError> {
+        if run_progression.game_mode == crate::game::map::GameMode::Standard {
+            self.state.player_profile.standard_tutorial_completed = true;
+        }
         let completed_run = {
             let previous_run = self.run_state()?;
-            RunState::for_run_complete_from(previous_run, map, progression, run_progression)
+            RunState::for_run_complete_from(previous_run, map, progression, run_progression)?
         };
         self.state.run = Some(completed_run);
         self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(recovery_effect)?;
+        self.complete_employee_breakdown_node()?;
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::RunComplete)?;
@@ -1222,6 +1245,38 @@ impl GameCore {
         Ok(())
     }
 
+    pub(super) fn reconcile_employee_breakdown(&mut self) {
+        let limit = self.run_policy().corrosion.breakdown_collapse_node_limit;
+        let node = self
+            .state
+            .node_session
+            .as_ref()
+            .map(|session| session.node_id);
+        for employee in self.state.roster.iter_mut() {
+            employee.reconcile_breakdown(limit, node);
+        }
+    }
+    fn complete_employee_breakdown_node(&mut self) -> Result<(), GameError> {
+        let limit = self.run_policy().corrosion.breakdown_collapse_node_limit;
+        let node = self
+            .state
+            .node_session
+            .as_ref()
+            .map(|session| session.node_id);
+        let mut roster = crate::authoring::clone_shape::controlled_clone(&self.state.roster)?;
+        let mut inventory = crate::authoring::clone_shape::controlled_clone(&self.state.inventory)?;
+        let mut fragments =
+            crate::authoring::clone_shape::controlled_clone(&self.state.skill_fragments)?;
+        for employee in roster.iter_mut() {
+            employee.complete_breakdown_node(limit, node);
+        }
+        self.recover_assets_for_new_deaths(&mut roster, &mut inventory, &mut fragments)?;
+        self.state.roster = roster;
+        self.state.inventory = inventory;
+        self.state.skill_fragments = fragments;
+        Ok(())
+    }
+
     fn advance_employee_psychology_node(&mut self) -> Result<(), GameError> {
         for employee in self.roster_mut()?.iter_mut() {
             employee.psychology.advance_node();
@@ -1230,34 +1285,12 @@ impl GameCore {
     }
 
     pub(super) fn save_run_checkpoint(&mut self) -> Result<(), GameError> {
-        let run = self.run_state()?;
-        self.state.run_checkpoint.payload = Some(RunCheckpointPayload {
-            power_model_version: self.state.run_power_authority.power_model_version,
-            current_floor_power_anchor: self.state.run_power_authority.current_floor_power_anchor,
-            map: run.map.clone(),
-            map_progression: run.map_progression.clone(),
-            run_progression: run.run_progression.clone(),
-            facility_run_state: run.facility_run_state.clone(),
-            abnormality_research: run.abnormality_research.clone(),
-            abnormality_encounter_history: run.abnormality_encounter_history.clone(),
-            monolith: run.monolith.clone(),
-            boss_omen: run.boss_omen.clone(),
-            event_sessions: run.event_sessions.clone(),
-            shop_sessions: run.shop_sessions.clone(),
-            combat_previews: run.combat_previews.clone(),
-            abnormality_attempts: run.abnormality_attempts.clone(),
-            recruitment: run.recruitment.clone(),
-            visual_novel_trigger_checkpoint_consumed: self
-                .state
-                .visual_novel_triggers
-                .checkpoint_rewind_consumed
-                .clone(),
-            enkephalin: self.state.enkephalin.clone(),
-            inventory: self.state.inventory.clone(),
-            roster: self.state.roster.clone(),
-            skill_fragments: self.state.skill_fragments.clone(),
-            uuid_manager: self.state.uuid_manager.clone(),
-        });
+        let payload = RunCheckpointPayload::capture(
+            &self.state,
+            self.run_state()?,
+            self.game_data.identity(),
+        )?;
+        self.state.run_checkpoint.payload = Some(payload);
         Ok(())
     }
 
@@ -1267,7 +1300,7 @@ impl GameCore {
 
     fn handle_load_run_checkpoint_inner(&mut self) -> Result<BehaviorResult, GameError> {
         if !matches!(
-            self.state.game_state,
+            self.state.lifecycle.phase(),
             GameState::ViewingMap
                 | GameState::NodeConfirm { .. }
                 | GameState::AwaitingRunFailureDecision { .. }
@@ -1278,8 +1311,14 @@ impl GameCore {
             .state
             .run_checkpoint
             .payload
-            .clone()
+            .as_ref()
             .ok_or(GameError::InvalidAction)?;
+        crate::game::resource::store::preflight_resource_clone(&payload.typed_resources)
+            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        payload.relics.preflight_clone()?;
+        payload.uuid_manager.preflight_relic_stream_clone()?;
+        payload.preflight_relic_history_clone()?;
+        let payload = crate::authoring::clone_shape::controlled_clone(payload)?;
         self.validate_run_checkpoint_payload(&payload)?;
         if self.state.run_checkpoint.loads_used >= RUN_CHECKPOINT_MAX_LOADS {
             return Err(GameError::InvalidAction);
@@ -1294,40 +1333,7 @@ impl GameCore {
         &mut self,
         payload: RunCheckpointPayload,
     ) -> Result<(), GameError> {
-        self.state.run_power_authority.power_model_version = payload.power_model_version;
-        self.state.run_power_authority.current_floor_power_anchor =
-            payload.current_floor_power_anchor;
-        self.state.run = Some(RunState {
-            map: payload.map,
-            map_progression: payload.map_progression,
-            run_progression: payload.run_progression,
-            facility_run_state: payload.facility_run_state,
-            abnormality_research: payload.abnormality_research,
-            abnormality_encounter_history: payload.abnormality_encounter_history,
-            monolith: payload.monolith,
-            boss_omen: payload.boss_omen,
-            event_sessions: payload.event_sessions,
-            shop_sessions: payload.shop_sessions,
-            combat_previews: payload.combat_previews,
-            abnormality_attempts: payload.abnormality_attempts,
-            recruitment: payload.recruitment,
-            combat_recovery_restriction: None,
-        });
-        self.state.enkephalin = payload.enkephalin;
-        self.state.inventory = payload.inventory;
-        self.state.roster = payload.roster;
-        self.state.skill_fragments = payload.skill_fragments;
-        self.state
-            .uuid_manager
-            .restore_checkpoint_preserving_counters(
-                payload.uuid_manager,
-                &[crate::game::managers::uuid_manager::UuidManager::NS_VISUAL_NOVEL_SESSION],
-            );
-        self.state.visual_novel_triggers.checkpoint_rewind_consumed =
-            payload.visual_novel_trigger_checkpoint_consumed;
-        self.state.node_session = None;
-        self.state.active_node_content = None;
-        self.state.active_battle = None;
+        payload.restore_into_state(&mut self.state);
         self.transition_to(GameState::ViewingMap)?;
         Ok(())
     }
@@ -1346,6 +1352,43 @@ impl GameCore {
         &self,
         payload: &RunCheckpointPayload,
     ) -> Result<(), GameError> {
+        self.validate_run_checkpoint_payload_with_seed(payload, Some(self.run_seed))
+    }
+
+    pub(super) fn validate_run_checkpoint_payload_for_continue(
+        &self,
+        payload: &RunCheckpointPayload,
+    ) -> Result<(), GameError> {
+        self.validate_run_checkpoint_payload_with_seed(payload, None)
+    }
+
+    fn validate_run_checkpoint_payload_with_seed(
+        &self,
+        payload: &RunCheckpointPayload,
+        expected_run_seed: Option<u64>,
+    ) -> Result<(), GameError> {
+        if &payload.content_identity != self.game_data.identity() {
+            return Err(GameError::InvalidStaticData(
+                "run checkpoint content identity does not match the retained generation"
+                    .to_string(),
+            ));
+        }
+        if payload.run_progression.run_seed != payload.uuid_manager.run_seed()
+            || expected_run_seed
+                .is_some_and(|run_seed| run_seed != payload.run_progression.run_seed)
+        {
+            return Err(GameError::InvalidStaticData(
+                "run checkpoint seed authority is inconsistent".to_string(),
+            ));
+        }
+        if !payload
+            .run_progression
+            .validate_checkpoint_state(self.run_policy().setup.standard_floor_count)
+        {
+            return Err(GameError::InvalidStaticData(
+                "run checkpoint progression does not match its map graph".to_string(),
+            ));
+        }
         if payload.power_model_version != self.run_policy().combat_difficulty.power_model_version
             || payload.current_floor_power_anchor == 0
         {
@@ -1355,8 +1398,12 @@ impl GameCore {
         }
         if payload.map.nodes.iter().any(|node| {
             let Some(difficulty) = node.combat_difficulty.as_ref() else {
-                return validate_monolith_difficulty_authority(node.id, None, &payload.monolith)
-                    .is_err();
+                return validate_monolith_difficulty_authority(
+                    node.id,
+                    None,
+                    &payload.encounter_progression.monolith,
+                )
+                .is_err();
             };
             let Some(tuning) = self
                 .run_policy()
@@ -1364,17 +1411,27 @@ impl GameCore {
             else {
                 return true;
             };
+            let authored_fixed = self
+                .run_policy()
+                .combat_difficulty_profile(&difficulty.difficulty_profile_id)
+                .is_some_and(|profile| profile.authored_fixed);
             difficulty.power_model_version != payload.power_model_version
-                || difficulty.floor_power_anchor != payload.current_floor_power_anchor
-                || difficulty.target_power
-                    != percent_of_anchor_ceil(
-                        difficulty.floor_power_anchor,
-                        tuning.target_power_percent,
-                    )
+                || if authored_fixed {
+                    difficulty.floor_power_anchor != payload.current_floor_power_anchor
+                        || difficulty.target_power != 0
+                        || difficulty.monolith_stage.is_some()
+                } else {
+                    difficulty.floor_power_anchor != payload.current_floor_power_anchor
+                        || difficulty.target_power
+                            != percent_of_anchor_ceil(
+                                difficulty.floor_power_anchor,
+                                tuning.target_power_percent,
+                            )
+                }
                 || validate_monolith_difficulty_authority(
                     node.id,
                     Some(difficulty),
-                    &payload.monolith,
+                    &payload.encounter_progression.monolith,
                 )
                 .is_err()
         }) {
@@ -1387,32 +1444,87 @@ impl GameCore {
             .map
             .validate_facility_template_contract(&template)
             .map_err(GameError::InvalidStaticData)?;
-        let references_existing_node = |node_id: &MapNodeId| payload.map.node(*node_id).is_some();
-        if payload
+        if !payload
             .map_progression
-            .current_node_id
-            .as_ref()
-            .is_some_and(|node_id| !references_existing_node(node_id))
-            || payload
-                .map_progression
-                .available_node_ids
-                .iter()
-                .any(|node_id| !references_existing_node(node_id))
-            || payload
-                .map_progression
-                .completed_node_ids
-                .iter()
-                .any(|node_id| !references_existing_node(node_id))
+            .validate_checkpoint_state(&payload.map, &template)
         {
             return Err(GameError::InvalidStaticData(
-                "run checkpoint progression references a missing map node".to_string(),
+                "run checkpoint progression does not match its map graph".to_string(),
             ));
         }
         payload.recruitment.validate_exact_ownership(
             &self.game_data.employee_definition_data.definitions,
             &payload.roster,
         )?;
+        self.validate_run_checkpoint_economy_graph(payload)?;
+        for (node_id, session) in &payload.event_sessions {
+            if session.has_relic_history() {
+                let node = payload.map.node(*node_id).ok_or_else(|| {
+                    GameError::InvalidStaticData("relic Event session node is missing".into())
+                })?;
+                if session.node_id != *node_id
+                    || node.category != MapNodeCategory::Event
+                    || !matches!(&node.payload, MapNodePayload::Event { event_id: Some(id) } if *id == session.event_id)
+                {
+                    return Err(GameError::InvalidStaticData(
+                        "relic Event session node authority is inconsistent".into(),
+                    ));
+                }
+                self.validate_relic_event_session_history(session, &payload.relics)?;
+            }
+        }
+        if payload.abnormality_attempts.iter().any(|(node, attempt)| {
+            payload.map.node(*node).is_none()
+                || attempt.retreats_used > 2
+                || attempt.max_attempts != 3
+                || attempt.attempts_started > 3
+                || attempt.attempts_started < attempt.retreats_used
+        }) {
+            return Err(GameError::InvalidStaticData(
+                "run checkpoint retreat ledger is inconsistent".into(),
+            ));
+        }
+        for key in &payload.visual_novel_trigger_checkpoint_consumed {
+            use crate::game::{
+                data::visual_novel_trigger_data::{
+                    VisualNovelTriggerCheckpointPolicy as Policy,
+                    VisualNovelTriggerRepeat as Repeat,
+                },
+                visual_novel::VisualNovelTriggerConsumedScope as Scope,
+            };
+            let valid = self
+                .game_data
+                .visual_novel_trigger_data
+                .get_by_id(key.trigger_id.as_str())
+                .is_some_and(|trigger| {
+                    trigger.checkpoint_policy == Policy::RewindWithRunCheckpoint
+                        && matches!(
+                            (trigger.repeat, key.scope),
+                            (Repeat::OncePerRun, Scope::Run)
+                                | (Repeat::OncePerBattle, Scope::Battle { .. })
+                                | (Repeat::OncePerNode, Scope::Node { .. })
+                        )
+                });
+            if !valid {
+                return Err(GameError::InvalidStaticData(
+                    "run checkpoint visual novel trigger is inconsistent".into(),
+                ));
+            }
+        }
+
         payload
+            .encounter_progression
+            .validate_checkpoint_state(&self.game_data.pve_data)
+            .map_err(GameError::InvalidStaticData)?;
+        payload
+            .encounter_progression
+            .boss_omen
+            .validate_checkpoint_state(self.game_data.as_ref(), |node_id| {
+                payload.map.node(node_id).is_some()
+            })
+            .map_err(GameError::InvalidStaticData)?;
+        payload
+            .encounter_progression
             .monolith
             .validate_checkpoint_state(
                 self.run_policy().monolith.initial_uses,
@@ -1437,6 +1549,119 @@ impl GameCore {
                 },
             )
             .map_err(GameError::InvalidStaticData)?;
+        Ok(())
+    }
+
+    fn validate_run_checkpoint_economy_graph(
+        &self,
+        payload: &RunCheckpointPayload,
+    ) -> Result<(), GameError> {
+        let invalid = |message: &'static str| GameError::InvalidStaticData(message.to_string());
+        let resource_owners = super::resource_runtime::resource_owners(
+            &self.game_data.resource_data,
+            &payload.roster,
+            &payload.inventory,
+            &payload.skill_fragments,
+        )?;
+        // Check the current generation's host policy before accepting a saved
+        // resource graph. Save bytes do not carry authority to relax this cap.
+        let retained = payload
+            .typed_resources
+            .retained_extent()
+            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        crate::game::battle::runtime_control::limit(
+            crate::game::battle::runtime_control::RuntimeFaultCode::RetainedByteLimit,
+            "checkpoint_run_resource_extent",
+            self.game_data
+                .runtime_safety()
+                .native_runtime()
+                .max_retained_bytes,
+            Some(retained),
+        )?;
+        if payload.typed_resources.closed {
+            return Err(invalid("run checkpoint resource timeline is closed"));
+        }
+        payload
+            .typed_resources
+            .validate(&self.game_data.resource_data, &resource_owners)
+            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        if !payload.roster.validate_checkpoint_identities() {
+            return Err(invalid(
+                "run checkpoint roster identity graph is inconsistent",
+            ));
+        }
+        if let Err(error) = payload.inventory.validate_checkpoint_state(&payload.roster) {
+            return Err(match error {
+                crate::game::resources::inventory::InventoryCheckpointValidationError::Ownership => {
+                    invalid("run checkpoint equipment ownership graph is inconsistent")
+                }
+                crate::game::resources::inventory::InventoryCheckpointValidationError::Stack => {
+                    invalid("run checkpoint inventory stack graph is inconsistent")
+                }
+            });
+        }
+        payload
+            .relics
+            .validate(&self.game_data.relic_data, |id| {
+                payload.roster.get(&id).is_some()
+            })
+            .map_err(|_| invalid("run checkpoint relic graph is inconsistent"))?;
+        if !payload.skill_fragments.validate_checkpoint_state(
+            &self.game_data.skill_fragment_data,
+            &self.state.skill_fragment_policy,
+        ) {
+            return Err(invalid(
+                "run checkpoint skill fragment graph is inconsistent",
+            ));
+        }
+
+        payload
+            .skill_fragments
+            .validate_bindings(&payload.roster, &self.game_data.skill_fragment_data)
+            .map_err(|_| invalid("run checkpoint skill fragment graph is inconsistent"))?;
+        for employee in payload.roster.iter() {
+            let coherent = match employee.breakdown {
+                crate::game::employee::BreakdownCounter::Inactive => {
+                    !employee.is_alive() || !employee.condition.is_breakdown()
+                }
+                crate::game::employee::BreakdownCounter::Active {
+                    remaining_nodes, ..
+                } => {
+                    employee.is_alive()
+                        && employee.condition.is_breakdown()
+                        && remaining_nodes > 0
+                        && remaining_nodes
+                            <= self.run_policy().corrosion.breakdown_collapse_node_limit
+                }
+            };
+            if !coherent
+                || employee.condition.trauma > 100
+                || employee.condition.physical_damage > crate::game::employee::MAX_PHYSICAL_DAMAGE
+            {
+                return Err(invalid("run checkpoint breakdown counter is inconsistent"));
+            }
+
+            let profile = skill_fragment_compatibility_profile_for_employee_with_item_slot(
+                employee,
+                &payload.inventory,
+                &payload.skill_fragments,
+                &self.game_data,
+                &employee.loadout.item_slot,
+            )
+            .map_err(|_| invalid("run checkpoint equipment or fragment graph is inconsistent"))?;
+            if let Some(id) = employee.skill_fragments.active_copy_uuid() {
+                let (copy, metadata, _) = payload
+                    .skill_fragments
+                    .resolve(&id, &self.game_data.skill_fragment_data)
+                    .map_err(|_| invalid("run checkpoint fragment copy invalid"))?;
+                if !metadata
+                    .form_compatibility_report(&copy.selected_form, &profile)
+                    .is_some_and(|r| r.is_compatible)
+                {
+                    return Err(invalid("run checkpoint fragment form is incompatible"));
+                }
+            }
+        }
         Ok(())
     }
 
@@ -1497,3 +1722,31 @@ mod monolith_difficulty_authority_tests {
         assert!(validate_monolith_difficulty_authority(node_id, None, &monolith).is_err());
     }
 }
+
+crate::authoring::clone_shape::enum_shape!(CombatResultNodeCompletion {
+    units: [],
+    tuples: [],
+    records: [
+        NodeCompleted {
+            map,
+            progression,
+            completing_node_id,
+            boss_omen,
+            view
+        },
+        FloorAdvanced {
+            next_map,
+            next_progression,
+            run_progression,
+            facility_run_state,
+            encounter_progression,
+            view
+        },
+        RunComplete {
+            map,
+            progression,
+            run_progression,
+            view
+        }
+    ]
+});

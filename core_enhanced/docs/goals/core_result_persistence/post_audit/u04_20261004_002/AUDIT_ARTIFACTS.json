@@ -1,0 +1,154 @@
+{
+  "closed_at_utc": "2026-10-04T09:57:34.336657+00:00",
+  "verdict": "Complete",
+  "confidence": "High",
+  "goal_set": "GS-CRRP-001",
+  "goal": "GOAL-CRRP-01",
+  "phase": "PHASE-CRRP-01",
+  "audit_target_manifest_sha256": "f53fed3ecc1f6abc65b480f8f6a735e1fe3a4a1d385948244bdd980972bbe42c",
+  "audit_only": true,
+  "implementation_nonparticipant": true,
+  "open_findings": [],
+  "closed_findings": [
+    "F01"
+  ],
+  "explicit_erratum": "audit001 host-document omission assertion disproved; original document already in manifests and actual archives; stale-content finding remained valid and is corrected in003",
+  "freeze_released_for": "Existing authorized owner closure/status publication and next eligible P2G/GEX boundary; U04 prerequisite for U05 satisfied; no GEX-30 for this single phase",
+  "files": [
+    {
+      "path": "ADDITIONAL_BINDINGS.json",
+      "bytes": 193896,
+      "sha256": "b5ae7c1f305d974779a32f1747af9bf8c8c5263a6053c718b2a7f138ba265207"
+    },
+    {
+      "path": "AUDIT_CHECK_NOTES.md",
+      "bytes": 532,
+      "sha256": "da9daec2a130e66e5b04bf610ef8f9f2d7e69fb873aa84f76456ec614caf0fea"
+    },
+    {
+      "path": "COMPLETION_AUDIT.md",
+      "bytes": 9176,
+      "sha256": "fbd8986a6bb90a803dbb6f911ea80d777243ea31bf869c112e621f8f7c9c0417"
+    },
+    {
+      "path": "CONDITION_REVIEW.json",
+      "bytes": 61150,
+      "sha256": "1c2c8b48d1d68a2147667cd4633d241dc0794de693ea1730ef5c6e9a1ac877e9"
+    },
+    {
+      "path": "CORRECTION_INTEGRITY_AND_ERRATUM.json",
+      "bytes": 5551,
+      "sha256": "06e2732c470e9f55d919c732b2b1324b5151009c673f074c63488f3f113465e0"
+    },
+    {
+      "path": "DIRTY_CHECK.json",
+      "bytes": 2131,
+      "sha256": "f6f12ab7b770cd00d911057fa4012e9e278043a82d1e688babea045ae99454bf"
+    },
+    {
+      "path": "ENTRY_CURRENTNESS.json",
+      "bytes": 3414,
+      "sha256": "e04aeb46d7c2cb725b52e5b53ed7f26da12151ebd107d1ccc9d1f91a955b86d3"
+    },
+    {
+      "path": "EVIDENCE_BINDINGS.json",
+      "bytes": 95348,
+      "sha256": "61b7c65b16529126f74cb55c01fd6843b813546bf39b3263a2e19bef479bca8e"
+    },
+    {
+      "path": "EXIT_CURRENTNESS.json",
+      "bytes": 3414,
+      "sha256": "54b86d608544b472ce8a280b60c9d015546af6fbce370ca97a8d949b12a1740e"
+    },
+    {
+      "path": "FINDINGS.json",
+      "bytes": 1117,
+      "sha256": "305b60d9a07d1d72b2a38d3ef331754c7d0736b5a4dfd8db8265b020552d731e"
+    },
+    {
+      "path": "GIT_STATUS_ENTRY.txt",
+      "bytes": 11020952,
+      "sha256": "b99783f6d59435780a9abe2325e205d9bfe0a38530fdedbba67fdc44b56bc536"
+    },
+    {
+      "path": "GIT_STATUS_EXIT.txt",
+      "bytes": 11022577,
+      "sha256": "5d9c143d305ea744d8db51ab1c4bac2fd07a46d2380d63c0c8d682c233febe8e"
+    },
+    {
+      "path": "INTEGRITY.json",
+      "bytes": 3152,
+      "sha256": "ff0cde4471b68b481b6e95d7d4f867002d9d152c221f7cb915ab984358c28f5d"
+    },
+    {
+      "path": "NUMERIC_REVIEW.json",
+      "bytes": 2063,
+      "sha256": "195e3fb3751d773ff662a3090c89cf3ac5633179017aa45a34e7340dc68ca403"
+    },
+    {
+      "path": "PREDECESSOR_REVIEW.json",
+      "bytes": 503953,
+      "sha256": "e2b419fdb018599ae5fc93fd0e68d474d791699da54864ae283a2c4fe27baf0f"
+    },
+    {
+      "path": "RESTORE_FORWARD.log",
+      "bytes": 2955,
+      "sha256": "f147cdce6a57071efc90d0753894f8d5595400884609945a2427c5050ab3d920"
+    },
+    {
+      "path": "RESTORE_REVERSE.log",
+      "bytes": 2955,
+      "sha256": "f147cdce6a57071efc90d0753894f8d5595400884609945a2427c5050ab3d920"
+    },
+    {
+      "path": "REUSE_MAP.json",
+      "bytes": 1660,
+      "sha256": "cd98cfa214026ad6869459386500c6fb976cc717a81a70eee5e0bfaff3033a47"
+    },
+    {
+      "path": "SCOPE_AND_UPSTREAM.json",
+      "bytes": 2016,
+      "sha256": "3458a461655ea5af783c028a2c87ee25652b01cf2df6547a733049e22fe6c5a1"
+    },
+    {
+      "path": "SOURCE_DOCUMENT_REVIEW.md",
+      "bytes": 10278,
+      "sha256": "8ffed0607c5693656d7cb4b108eed3aed0b374fcd7b109cb50c9268c26a87a13"
+    },
+    {
+      "path": "currentness.py",
+      "bytes": 1425,
+      "sha256": "ab48fee3e30ea7745e16821ea8168519b5b67c2138d250506ba43bf0d3208232"
+    },
+    {
+      "path": "verify_additional.py",
+      "bytes": 3242,
+      "sha256": "b7022a90eb727092fbdb707b8ad10c7797f8bbbe876f7208a19d8a16f622adb7"
+    },
+    {
+      "path": "verify_correction.py",
+      "bytes": 4112,
+      "sha256": "176e397867f05ed8f04bd9b908fd7a9de893fc62513975ce45291f1b99bb2681"
+    },
+    {
+      "path": "verify_evidence.py",
+      "bytes": 2586,
+      "sha256": "0c465a54391c853f0214e19d8b5814d3dda7e6236210bc77ff3395daf08d7154"
+    },
+    {
+      "path": "verify_integrity.py",
+      "bytes": 3086,
+      "sha256": "b362bae9b6bc48373c5e1179bf2c7c7e4cdbccd3453ba9d774de63896e9e4bb7"
+    },
+    {
+      "path": "verify_scope.py",
+      "bytes": 3924,
+      "sha256": "d6cbd4f666c4952b726826ecb10a9897680a581a8b2c7f9f2681af0c2d00202c"
+    },
+    {
+      "path": "write_review.py",
+      "bytes": 8916,
+      "sha256": "05e0cda8970804000f2b690668190c558f6f2657d302dd7fd2da6ad1e290b80e"
+    }
+  ]
+}

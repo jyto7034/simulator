@@ -1,0 +1,59 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CRSA-001",
+        "Content Digest": "sha256:1c9609c24969fe4acf542e71514b4e903895a71207a652f304a2a2321b2f68dc"
+      },
+      "payload": {
+        "Predecessor Handoff Artifact Ref": null,
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-003",
+            "Content Digest": "sha256:9f81d4ac1874e7c273f4addaafd87664f5d62de4ab997dfd1ab1b5a6b4a2421e"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSA-001",
+            "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRSA-001",
+            "Content Digest": "sha256:2eafa0278ec9eab0dbb7e8a4175eacdea1957d4d53f55355a338fc4d324fe7d0"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CRSA-001",
+            "Content Digest": "sha256:737ee86dbba08490929b013b6623fbb934ef21ecd48ec0ecd45d17aa5cf60034"
+          },
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRSA-001",
+          "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CRSA-001",
+          "Content Digest": "sha256:2eafa0278ec9eab0dbb7e8a4175eacdea1957d4d53f55355a338fc4d324fe7d0"
+        },
+        "Goal Set Ref": {
+          "Artifact Type": "Goal Set",
+          "Artifact ID": "GS-CRSA-001",
+          "Content Digest": "sha256:737ee86dbba08490929b013b6623fbb934ef21ecd48ec0ecd45d17aa5cf60034"
+        },
+        "Remaining Gap/Blocker/Limitation Summary": "No unresolved required policy/source gap. CODE_REVIEW_001 TD01–06 and runtime/test reports distinguish actual code from proposed APIs. Concrete typed schema/DTO/version, finite-proof representation, cache/fingerprint and effect-local or proven equivalent lowering remain Sol detailed-design work before connected test authoring. All runtime producer/consumer/lifecycle boundaries form AG-CRSA-RUNTIME. Actual new product/test execution and measured costs are unverified. U08 audit013 plus closure publication delta supplies valid predecessor evidence; 223 conditions plus separate R06 31 must be dispositioned. Preserve legacy numeric inputs, original source/SnapshotLive/channel/cost, shared protection stage, regular-only new coefficient scope, native/authoring admission and exact restore. Inherited R05 peak-only warning, shared-host and native historical SHA limits remain.",
+        "Scope/Authorization Boundary": "P2G authoring/handoff only: no Goal activation, implementation authorization, production mutation or completion verdict. Current intake IN001 continuous user request separately authorizes designated Root Astra/High planning, Sol/xhigh product/integrated execution, separate Astra/High test author/focused execution, nonparticipant Astra/High final whole-goal audit, correction and roadmap continuation. GEX entry/ownership/baseline gates remain required; no renewed user approval solely for stage transition.",
+        "Out-of-Scope Summary": "U10 reactive/future cards; arbitrary private-field patches/infinite grants; unagreed official S/duration/corruption penalties/full encounters; Unity and individual final bosses; new live-battle disk resume; original limit/workload/oracle relaxation; unrelated cleanup or retrospective changes to frozen prior targets. Representative fixture values are not canonical balance.",
+        "Applicable P2G-60 Obligation Key Set": [],
+        "P2G-60 Resolution Record Ref Set": [],
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

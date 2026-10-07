@@ -1,0 +1,374 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CAFCP-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAFCP-001",
+          "Content Digest": null
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAFCP-001",
+            "Content Digest": null
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CAFCP-001",
+            "Content Digest": null
+          }
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CAFCP-01",
+            "selectors": {
+              "implementation": [
+                "CAFCP-E01"
+              ]
+            },
+            "boundary": "game/skill_fragment.rs; game/reward.rs; game/managers/uuid_manager.rs; game/world/grant_state.rs",
+            "expected_change": "BTreeMap<Uuid, OwnedFragment>만 소유 상태를 쓴다. 파생 count만 제공한다. 새 전용 UUID namespace를 checked 증가하고 EconomyGrantState 후보에서 지급한다. 일반 강화 명령/공통 progress gameplay reader를 제거한다.",
+            "prerequisite": "R06 frozen boundary; transaction/save/runtime shared schema must cut over together",
+            "validation": "F01,F10,F12",
+            "unknown": "none in delegated policy; exact implementation in GEX"
+          },
+          {
+            "id": "WP-CAFCP-02",
+            "selectors": {
+              "implementation": [
+                "CAFCP-E02"
+              ]
+            },
+            "boundary": "game/world/maintenance.rs; game/world/helpers.rs; game/world/combat.rs; game/resources/equipment_loadout.rs; game/employee.rs",
+            "expected_change": "직원 active 슬롯 하나와 사본 equipped_to를 양방향 검증한다. exact copy만 명령으로 받는다. occupied 슬롯 거부, 명시 이전에서 두 직원을 원자적으로 변경한다. 분쇄 확인 필드가 없으면 장착 사본은 무변경 거부. 죽음 회수는 해당 copy의 owner만 해제한다.",
+            "prerequisite": "R06 frozen boundary; transaction/save/runtime shared schema must cut over together",
+            "validation": "F02,F03,F05,F06",
+            "unknown": "none in delegated policy; exact implementation in GEX"
+          },
+          {
+            "id": "WP-CAFCP-03",
+            "selectors": {
+              "implementation": [
+                "CAFCP-E03"
+              ]
+            },
+            "boundary": "game/data/skill_fragment_data.rs; game/skill_fragment.rs; game/world/maintenance.rs; game/reward.rs",
+            "expected_change": "stable form ID→compiled SkillId, base 항상 해금. 개화는 해당 copy만 해금하며 선택 유지. Maintenance에서 선택. 이미 해금/동일 선택은 비용 없는 명시 무변경. enkephalin+명시 parts recipe 중복 checked 합산. recipe 없으면 unavailable. 본편 수치 창작 없이 공개 external pack에 완전 recipe 시험.",
+            "prerequisite": "R06 frozen boundary; transaction/save/runtime shared schema must cut over together",
+            "validation": "F02,F04,F07",
+            "unknown": "none in delegated policy; exact implementation in GEX"
+          },
+          {
+            "id": "WP-CAFCP-04",
+            "selectors": {
+              "implementation": [
+                "CAFCP-E04"
+              ]
+            },
+            "boundary": "game/battle/stat_pipeline.rs; game/battle/combat_setup/player_spawns.rs; game/battle/core/runtime_facts.rs; game/resources.rs; game/world/active_run.rs",
+            "expected_change": "공통 resolver가 copy/definition/selected form을 skill로 연결한다. 명시 fragment provenance와 필요한 최소 owner를 전달한다. 기존 action/delivery Snapshot identity는 불변. Live도 기존 권한 유지. 새 battle fingerprint는 선택/owner 변화를 반영한다. intrinsic baseline modifier는 직원 고유 입력으로 보존한다.",
+            "prerequisite": "R06 frozen boundary; transaction/save/runtime shared schema must cut over together",
+            "validation": "F07,F08",
+            "unknown": "none in delegated policy; exact implementation in GEX"
+          },
+          {
+            "id": "WP-CAFCP-05",
+            "selectors": {
+              "implementation": [
+                "CAFCP-E05"
+              ]
+            },
+            "boundary": "game/world/active_run.rs; game/world/node_flow.rs; game/world/state.rs; authoring/clone_shape.rs",
+            "expected_change": "새 schema에서 copy UUID/form/unlock/양방향 owner를 검증한 뒤 commit. old V7 원본 raw checksum+old identity 먼저 검증하는 명시 converter. def/직원 UUID 정렬 및 전용 UUID stream으로 count→copy 배정. 공통 awakened는 모든 사본 해금/선택 승계. 제거된 rank와 zero-count progress는 읽기 전용 legacy provenance로 보존. 원본 자동 덮어쓰기 금지.",
+            "prerequisite": "R06 frozen boundary; transaction/save/runtime shared schema must cut over together",
+            "validation": "F09,F10",
+            "unknown": "none in delegated policy; exact implementation in GEX"
+          },
+          {
+            "id": "WP-CAFCP-06",
+            "selectors": {
+              "implementation": [
+                "CAFCP-E06"
+              ]
+            },
+            "boundary": "game/world/snapshot.rs; game/behavior.rs; application.rs; authoring/clone_shape.rs; authoring/trial.rs",
+            "expected_change": "DTO/preview/explain/command는 exact copy/form/owner/unavailable 이유와 동일 recipe를 소비한다. R06 수용표와 F01–F12 전부 default 공개 seam/새 process/비용/전체 feature에서 검증한다. clone/retained membership에 새 payload를 포함한다. R06 경계와 최종 source 양방향 복원 및 원자료 보존.",
+            "prerequisite": "R06 frozen boundary; transaction/save/runtime shared schema must cut over together",
+            "validation": "F01,F02,F03,F04,F05,F06,F07,F08,F09,F10,F11,F12",
+            "unknown": "none in delegated policy; exact implementation in GEX"
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CAFCP-01",
+            "to": "WP-CAFCP-06",
+            "type": "validation_input",
+            "evidence": "F01–F12 needs final copy runtime/store",
+            "broken": "cannot prove integration from old ledger"
+          },
+          {
+            "from": "WP-CAFCP-02",
+            "to": "WP-CAFCP-06",
+            "type": "validation_input",
+            "evidence": "F01–F12 needs final copy runtime/store",
+            "broken": "cannot prove integration from old ledger"
+          },
+          {
+            "from": "WP-CAFCP-03",
+            "to": "WP-CAFCP-06",
+            "type": "validation_input",
+            "evidence": "F01–F12 needs final copy runtime/store",
+            "broken": "cannot prove integration from old ledger"
+          },
+          {
+            "from": "WP-CAFCP-04",
+            "to": "WP-CAFCP-06",
+            "type": "validation_input",
+            "evidence": "F01–F12 needs final copy runtime/store",
+            "broken": "cannot prove integration from old ledger"
+          },
+          {
+            "from": "WP-CAFCP-05",
+            "to": "WP-CAFCP-06",
+            "type": "validation_input",
+            "evidence": "F01–F12 needs final copy runtime/store",
+            "broken": "cannot prove integration from old ledger"
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CAFCP-01",
+            "members": [
+              "WP-CAFCP-01",
+              "WP-CAFCP-02",
+              "WP-CAFCP-03",
+              "WP-CAFCP-04",
+              "WP-CAFCP-05"
+            ],
+            "evidence": "AT07 shared loadout/save/grant/runtime schema cannot be independently complete"
+          }
+        ],
+        "standalone": [
+          "WP-CAFCP-06"
+        ],
+        "cyclic_sccs": [],
+        "phases": [
+          {
+            "id": "PHASE-CAFCP-01",
+            "primary": [
+              "CAFCP-E01",
+              "CAFCP-E02",
+              "CAFCP-E03",
+              "CAFCP-E04",
+              "CAFCP-E05",
+              "CAFCP-E06"
+            ],
+            "nodes": [
+              "AG-CAFCP-01",
+              "WP-CAFCP-06"
+            ],
+            "exit": "F01–F12 + R06 regression + PC36/R05 and final source restore; independent audit pending"
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CAFCP-01",
+            "state": "single authoritative copies, all producer/consumer/save paths migrated",
+            "checks": "no shared mutable progress; validated reverse owners and form references; bounded costs; old checksum preserved",
+            "evidence": "GEX final COVERAGE + receipts + manifest required",
+            "limitation": "not an executed implementation or independent audit"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CAFCP-01",
+            "source": "continuous request F01; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-02",
+            "source": "continuous request F02; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-03",
+            "source": "continuous request F03; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-04",
+            "source": "continuous request F04; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-05",
+            "source": "continuous request F05; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-06",
+            "source": "continuous request F06; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-07",
+            "source": "continuous request F07; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-08",
+            "source": "continuous request F08; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-09",
+            "source": "continuous request F09; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-10",
+            "source": "continuous request F10; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-11",
+            "source": "continuous request F11; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          },
+          {
+            "id": "IVA-CAFCP-12",
+            "source": "continuous request F12; T11/T18/T20/T27",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CAFCP-06"
+            ],
+            "phases": [
+              "PHASE-CAFCP-01"
+            ],
+            "locator": "GEX F acceptance tests, public RON and release CLI, fresh-process save, default/feature and PC36/R05",
+            "evidence": "nonzero selector + input/expected/actual + source/toolchain/lock hashes + raw log",
+            "prerequisite": "AG-CAFCP-01 fully cut over"
+          }
+        ],
+        "Shared Contract Handoff": "BTreeMap<Uuid, OwnedFragment>만 소유 상태를 쓴다. 파생 count만 제공한다. 새 전용 UUID namespace를 checked 증가하고 EconomyGrantState 후보에서 지급한다. 일반 강화 명령/공통 progress gameplay reader를 제거한다.공통 resolver가 copy/definition/selected form을 skill로 연결한다. 명시 fragment provenance와 필요한 최소 owner를 전달한다. 기존 action/delivery Snapshot identity는 불변. Live도 기존 권한 유지. 새 battle fingerprint는 선택/owner 변화를 반영한다. intrinsic baseline modifier는 직원 고유 입력으로 보존한다.새 schema에서 copy UUID/form/unlock/양방향 owner를 검증한 뒤 commit. old V7 원본 raw checksum+old identity 먼저 검증하는 명시 converter. def/직원 UUID 정렬 및 전용 UUID stream으로 count→copy 배정. 공통 awakened는 모든 사본 해금/선택 승계. 제거된 rank와 zero-count progress는 읽기 전용 legacy provenance로 보존. 원본 자동 덮어쓰기 금지.",
+        "Known Unknown/Limitations": "No workspace GUI consumer; Core public commands/DTO/authoring are required. Costs not yet measured. Old V7 identity passed explicitly to conversion, new validated content checked after conversion."
+      }
+    }
+  ],
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CAFCP-001",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0"
+}

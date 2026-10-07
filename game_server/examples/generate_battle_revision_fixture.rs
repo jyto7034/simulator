@@ -2,8 +2,8 @@ use game_core::game::{
     behavior::{
         BattlePlaybackState, LiveBattleEventDeltaDto, LiveBattleSetupBattlefieldDto,
         LiveBattleSetupCatalogRefsDto, LiveBattleSetupSnapshotDto,
-        LiveBattleSetupSnapshotMessageType, LiveBattleStateCheckpointDto, LiveBattleUpdateDto,
-        LiveBattleUpdateMessageType,
+        LiveBattleSetupSnapshotMessageType, LiveBattleStateCheckpointDto,
+        LiveBattleTacticalResourceDto, LiveBattleUpdateDto, LiveBattleUpdateMessageType,
     },
     combat_preview::{CombatMissionVariant, CombatNodeType},
 };
@@ -24,6 +24,9 @@ fn update(battle_uuid: Uuid, revision: u64, paused: bool) -> LiveBattleUpdateDto
             events: Vec::new(),
         },
         checkpoint: LiveBattleStateCheckpointDto {
+            interaction: Default::default(),
+            sustained_effects: Default::default(),
+            independent_objects: Default::default(),
             at_seq: 0,
             battle_time_ms: 0,
             playback: BattlePlaybackState {
@@ -37,7 +40,14 @@ fn update(battle_uuid: Uuid, revision: u64, paused: bool) -> LiveBattleUpdateDto
                         ..BattlePlaybackState::default()
                     },
                 ),
+            tactical_focus: None,
+            field_work_objects: Vec::new(),
             units: Vec::new(),
+            tactical_resource: LiveBattleTacticalResourceDto {
+                current: 20,
+                maximum: 99,
+                recovery_per_second: 1,
+            },
             deployment: None,
         },
         visual_novel: None,
@@ -49,7 +59,7 @@ fn main() {
         .expect("fixture UUID must be valid");
     let setup = LiveBattleSetupSnapshotDto {
         message_type: LiveBattleSetupSnapshotMessageType::BattleSetupSnapshot,
-        setup_version: 1,
+        setup_version: 2,
         battle_uuid,
         encounter_id: "revision_contract_fixture".to_string(),
         node_type: CombatNodeType::Defense,
@@ -68,6 +78,7 @@ fn main() {
         spawn_zones: Vec::new(),
         tactical_points: Vec::new(),
         static_objects: Vec::new(),
+        field_work_objects: Vec::new(),
         initial_units: Vec::new(),
         catalog_refs: LiveBattleSetupCatalogRefsDto {
             battlefield_template_id: "revision_contract_fixture".to_string(),

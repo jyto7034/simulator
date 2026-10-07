@@ -1,0 +1,579 @@
+{
+  "report_id": "R03-LOG-COW-DESIGN-004",
+  "role": "bounded read-only source/design helper; not completion auditor",
+  "authorization": "Root delegated AUTORUN section8 task; root sole implementation/artifact writer",
+  "scope": "Event-log Arc COW preparation and five actual production clone owners; future fresh-only opaque Session constraints",
+  "workspace": "/mnt/f/work/simulator",
+  "observed_at": "2026-09-10T08:29:57.037896+00:00",
+  "source_execution": [],
+  "test_execution": [],
+  "build_execution": [],
+  "git_mutation": [],
+  "production_mutation": [],
+  "outputs": [
+    "/tmp/r03_log_cow_design_004.md",
+    "/tmp/r03_log_cow_design_004.json"
+  ],
+  "assessment": "Eager preparation of actual write-side candidate can cover identified production log COW under fresh-only opaque ownership and mandatory clone-seam invariants. Not general imported-core coverage and not full clone/copy/retention safety.",
+  "concrete_during_work_findings": [
+    {
+      "id": "COW04-F01",
+      "title": "New world seams briefly used nonexistent ActiveBattleSession.core",
+      "status": "root corrected to active.battle and staged.battle; corrected source snapshot read",
+      "refs": [
+        "world/state.rs507–527",
+        "world/application.rs183–186",
+        "world/combat.rs1833–1841"
+      ]
+    },
+    {
+      "id": "COW04-F02",
+      "title": "Spawn return type needed explicit interrupted error instead of a cached/domain rejection",
+      "status": "root added SpawnKernelError::ExecutionInterrupted plus entry/post-placement polls and restore-on-preparation-failure; corrected production spans read",
+      "refs": [
+        "battle/core/spawn_kernel.rs190–209",
+        "battle/core/spawn_kernel.rs478–546"
+      ]
+    }
+  ],
+  "open_concrete_findings": [],
+  "identified_seams": [
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "clone_line": 183,
+      "target": "draft.state.active_battle.as_mut().battle.event_log",
+      "preparation_line": 185
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "clone_line": 1838,
+      "target": "staged.battle.event_log",
+      "preparation_line": 1839
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "clone_line": 511,
+      "target": "self.event_log; before is rollback snapshot",
+      "preparation_line": 512
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "clone_line": 282,
+      "target": "self.event_log; before is rollback snapshot",
+      "preparation_line": 283
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "clone_line": 1771,
+      "target": "staged.event_log",
+      "preparation_line": 1773
+    }
+  ],
+  "design_conditions": [
+    {
+      "id": "COW04-C01",
+      "text": "Fresh opaque Session only; no imported CoreApplication/GameCore/BattleCore or externally supplied/deserialized/mutated log."
+    },
+    {
+      "id": "COW04-C02",
+      "text": "Every later whole candidate clone prepares its actual future write side after clone and before operations, including future opaque fork; no prepared boolean survives later Arc-sharing clone."
+    },
+    {
+      "id": "COW04-C03",
+      "text": "Optional trace must not hold BattleEventLog/BattleEventEntries Arc clones; owned observations/source handles cannot alter event-entry sharing, work or admission."
+    },
+    {
+      "id": "COW04-C04",
+      "text": "Pre-copy limits/shape work and post-copy poll remain fallible at candidate owner; no changes to infallible recorder identity/append contract."
+    },
+    {
+      "id": "COW04-C05",
+      "text": "Outer control failure takes precedence; restore/drop complete candidate before any mandatory receipt/session publication."
+    }
+  ],
+  "separate_gaps_or_exclusions": [
+    {
+      "id": "COW04-X01",
+      "text": "entries_after_seq clones entries to a new Vec; no log Arc sharing but separate deep-copy work/retention seam."
+    },
+    {
+      "id": "COW04-X02",
+      "text": "Native new/from_entries/deserialization/public DerefMut/fixture mutation are not generally controlled by candidate COW seam; fresh-only owner excludes imported state."
+    },
+    {
+      "id": "COW04-X03",
+      "text": "Current debug/test terminal log copies occur after final BattleEnd, with no supported follow-up runtime write before active battle removal; arbitrary fixture writes after terminal are excluded."
+    },
+    {
+      "id": "COW04-X04",
+      "text": "Preparing COW does not bound unique-owner appends, accounting scans/eviction, other whole-Core clone fields, allocator peak or copy wall-time."
+    },
+    {
+      "id": "COW04-X05",
+      "text": "Spawn reserve_request precedes rollback snapshot, so preparation failure restores post-reservation Pending basis inside private candidate; full A preservation belongs to outer aggregate discard."
+    }
+  ],
+  "implementation_drift": [
+    "Task initially proposed borrowed serialized shape work; root instead factored exhaustive owned_payload_shape O(1) per entry and charged native element/string lengths plus Arc source slots before detach.",
+    "Root concurrently connected and corrected five seams; report records source snapshots and does not label this a frozen implementation audit.",
+    "spawn_kernel full hash drifted after snapshot; final reread hash de76e4e9cd653b3badf4a4bd971d6903f7e6b754b1f9ec37c72c5c4fc6ea2b1f has identical reviewed production spans184–218 and463–552 to earlier f024851f…; changes outside reviewed spans are not reviewed/test-certified."
+  ],
+  "sources": [
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "bytes": 56048,
+      "sha256": "ff18749cccde8dfa01fe8a34fbbc0ae98da09ade32c277da2efc43c9f8686908",
+      "reviewed_spans": [
+        [
+          42,
+          140
+        ],
+        [
+          140,
+          307
+        ],
+        [
+          383,
+          510
+        ],
+        [
+          536,
+          837
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/event_log.rs",
+        "bytes": 56048,
+        "sha256": "ff18749cccde8dfa01fe8a34fbbc0ae98da09ade32c277da2efc43c9f8686908"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 9615,
+      "sha256": "abbc0534548428ab35286059f03b9b83c91f5f282e596c0eeffe8432e3777a9d",
+      "reviewed_spans": [
+        [
+          170,
+          216
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/world/application.rs",
+        "bytes": 9615,
+        "sha256": "abbc0534548428ab35286059f03b9b83c91f5f282e596c0eeffe8432e3777a9d"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129670,
+      "sha256": "19c5a48bdfe3e1a7acae673e55db5fbd51dcce933027289c59b63550f177641b",
+      "reviewed_spans": [
+        [
+          465,
+          529
+        ],
+        [
+          633,
+          694
+        ],
+        [
+          1350,
+          1408
+        ],
+        [
+          1443,
+          1568
+        ],
+        [
+          1820,
+          1870
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/world/combat.rs",
+        "bytes": 129670,
+        "sha256": "19c5a48bdfe3e1a7acae673e55db5fbd51dcce933027289c59b63550f177641b"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "bytes": 70625,
+      "sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "reviewed_spans": [
+        [
+          137,
+          160
+        ],
+        [
+          507,
+          546
+        ],
+        [
+          1149,
+          1228
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "bytes": 70625,
+        "sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "bytes": 37114,
+      "sha256": "de76e4e9cd653b3badf4a4bd971d6903f7e6b754b1f9ec37c72c5c4fc6ea2b1f",
+      "reviewed_spans": [
+        [
+          184,
+          218
+        ],
+        [
+          463,
+          552
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+        "bytes": 36464,
+        "sha256": "908ebcbbc7263b6c63a8ef76ee6cef6698602cc6fccffbff92f6e36910678802"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "bytes": 65702,
+      "sha256": "f6ed6b5869490f1bb2ec29aaaff93c5bda2639f6d3ba5f2380bd43e57bbbc5a6",
+      "reviewed_spans": [
+        [
+          266,
+          291
+        ],
+        [
+          350,
+          407
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+        "bytes": 65702,
+        "sha256": "f6ed6b5869490f1bb2ec29aaaff93c5bda2639f6d3ba5f2380bd43e57bbbc5a6"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 138620,
+      "sha256": "cf67be542a70a8ae71e5507264fe90dd96b60e9ff1a755103e0bfec17490e757",
+      "reviewed_spans": [
+        [
+          286,
+          316
+        ],
+        [
+          1758,
+          1814
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+        "bytes": 138620,
+        "sha256": "cf67be542a70a8ae71e5507264fe90dd96b60e9ff1a755103e0bfec17490e757"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 130316,
+      "sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207",
+      "reviewed_spans": [
+        [
+          1276,
+          1300
+        ],
+        [
+          1607,
+          1698
+        ],
+        [
+          1796,
+          1860
+        ],
+        [
+          1938,
+          1960
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "bytes": 130316,
+        "sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "bytes": 349296,
+      "sha256": "026b85b1b7d47cfc3f08d3e88467dfe7de9558926aa1783e76b3cb56bf5bf67e",
+      "reviewed_spans": [
+        [
+          79,
+          130
+        ],
+        [
+          299,
+          373
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "bytes": 349296,
+        "sha256": "026b85b1b7d47cfc3f08d3e88467dfe7de9558926aa1783e76b3cb56bf5bf67e"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "bytes": 84303,
+      "sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66",
+      "reviewed_spans": [
+        [
+          185,
+          230
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/events/combat.rs",
+        "bytes": 84303,
+        "sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34199,
+      "sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "reviewed_spans": [
+        [
+          60,
+          98
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/world.rs",
+        "bytes": 34199,
+        "sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed"
+      }
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "bytes": 44770,
+      "sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "reviewed_spans": [
+        [
+          780,
+          826
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/application.rs",
+        "bytes": 44770,
+        "sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a"
+      }
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 16946,
+      "sha256": "1c465fc9e00ef53d1b93cab11f4cf97fdffa341b02715d3227af8d0f8803edcc",
+      "reviewed_spans": [
+        [
+          29,
+          59
+        ],
+        [
+          87,
+          155
+        ],
+        [
+          159,
+          289
+        ],
+        [
+          320,
+          443
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "bytes": 16946,
+        "sha256": "1c465fc9e00ef53d1b93cab11f4cf97fdffa341b02715d3227af8d0f8803edcc"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/mod.rs",
+      "bytes": 429,
+      "sha256": "c740b990aef0013af17d7261f7d06ebf7950a1588338457904902c3a8e09b76e",
+      "reviewed_spans": [
+        [
+          1,
+          18
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/mod.rs",
+        "bytes": 429,
+        "sha256": "c740b990aef0013af17d7261f7d06ebf7950a1588338457904902c3a8e09b76e"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "bytes": 3082,
+      "sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "reviewed_spans": [
+        [
+          1,
+          92
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/recording.rs",
+        "bytes": 3082,
+        "sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat_trace.rs",
+      "bytes": 3153,
+      "sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092",
+      "reviewed_spans": [
+        [
+          1,
+          93
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/world/combat_trace.rs",
+        "bytes": 3153,
+        "sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "bytes": 870,
+      "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1",
+      "reviewed_spans": [
+        [
+          1,
+          29
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/skill_source.rs",
+        "bytes": 870,
+        "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "bytes": 45184,
+      "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a",
+      "reviewed_spans": [
+        [
+          225,
+          276
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/damage.rs",
+        "bytes": 45184,
+        "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/stats.rs",
+      "bytes": 18446,
+      "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+      "reviewed_spans": [
+        [
+          184,
+          224
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/stats.rs",
+        "bytes": 18446,
+        "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/ability.rs",
+      "bytes": 38098,
+      "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195",
+      "reviewed_spans": [
+        [
+          615,
+          631
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/ability.rs",
+        "bytes": 38098,
+        "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "bytes": 36600,
+      "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f",
+      "reviewed_spans": [
+        [
+          186,
+          218
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/types.rs",
+        "bytes": 36600,
+        "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/cooldown.rs",
+      "bytes": 711,
+      "sha256": "fa401d4db5a2c6572a8ef404979303fe4c5b957e1aa3160f62befef12a3d55f4",
+      "reviewed_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "read_method": "rg/sed read-only source discovery; full-file bytes+SHA256 captured with selected source spans, then exact snapshot spans inspected",
+      "last_rehash": {
+        "path": "core_enhanced/src/game/battle/cooldown.rs",
+        "bytes": 711,
+        "sha256": "fa401d4db5a2c6572a8ef404979303fe4c5b957e1aa3160f62befef12a3d55f4"
+      }
+    }
+  ],
+  "tests": "No helper test execution. Root stated tests being frozen/run; no results adopted as this helper's evidence.",
+  "limitations": [
+    "No generalized imported-core, arbitrary fixture callback or public mutable log coverage.",
+    "No promise of unmeasured cost limits or broad R23 safety.",
+    "No whole R03 completion or final source audit."
+  ]
+}

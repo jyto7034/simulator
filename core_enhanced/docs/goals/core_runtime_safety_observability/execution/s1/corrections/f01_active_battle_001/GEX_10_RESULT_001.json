@@ -1,0 +1,10 @@
+{
+  "goal": "GOAL-CRSO-S1",
+  "finding": "F01",
+  "status": "corrected_and_self_verified; fresh independent audit pending",
+  "source_sha256": "aeb2671288385c1eb541781baa03631fa59dca089cfb341a6b13485845f46d32",
+  "coverage": "COVERAGE.json",
+  "target": "target/s1_f01_001/MANIFEST.json",
+  "previous_audit": "../../../../post_audit/s1_20261004_001/COMPLETION_AUDIT.md",
+  "next_audit": "../../../../post_audit/s1_20261004_002"
+}

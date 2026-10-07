@@ -1,0 +1,55 @@
+{
+  "record": "R06_WP02_EFFECT_EXECUTION_DEVELOPMENT_FAILURES_001",
+  "purpose": "Failed and invalid development attempts are retained separately from final passing validation.",
+  "attempts": [
+    {
+      "label": "initial_all_targets_after_ordered_executor",
+      "command": "cargo test -p game_core --all-targets --offline --locked",
+      "result": "FAILED_5_OF_1430_LIB_TESTS",
+      "failure": "sim.rs indexed targets[0] through bool::then_some; then_some eagerly evaluated the index for empty target lists.",
+      "affected_tests": [
+        "authoring_control_area_tick_policies_match_ordinary_execution",
+        "skill_projectile_impact_does_not_hit_withdrawn_target",
+        "cast_usefulness_accepts_a_later_useful_delivery_step_in_either_order",
+        "manual_player_unit_invalidation_noops_without_retarget_or_refund",
+        "relocation_preserves_ground_fixed_and_reanchors_follow_areas"
+      ],
+      "correction": "Replaced eager indexing with the explicit len==1 / first().copied() branch; each five focused tests then passed and final all-target passed."
+    },
+    {
+      "label": "invalid_exact_name_rerun",
+      "result": "INVALID_ZERO_MATCH",
+      "failure": "Five bare test names were invoked with --exact although Rust test names included module paths; every selection ran 0 tests.",
+      "correction": "Reran each as a non-exact filter and required one selected test; 5/5 passed. Zero-match output was not counted as validation."
+    },
+    {
+      "label": "sandbox_cargo_target_lock",
+      "result": "ENVIRONMENT_FAILURE",
+      "failure": "The managed sandbox could not open /mnt/f/work/simulator/target/debug/.cargo-lock because the repository-level target is outside the writable root.",
+      "correction": "Used the approved existing Cargo target for focused development runs and /tmp/r06-wp02-validation-target for preserved final validation."
+    },
+    {
+      "label": "accidental_rustfmt_print_config_destination",
+      "result": "NON_PRODUCT_FILE_OVERWRITE_DETECTED_AND_RESTORED",
+      "failure": "A diagnostic rustfmt --print-config invocation treated src/lib.rs as its output path.",
+      "correction": "Restored src/lib.rs to the preserved baseline bytes (77 bytes, SHA-256 f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7) and rechecked all 333 source files; only the expected 17 implementation files differ."
+    },
+    {
+      "label": "validation_initial",
+      "evidence": "evidence/validation/",
+      "result": "FAILED_2_RECEIPTS",
+      "failure": "all-target had one Unix socket PermissionDenied in the sandbox (1 failed, 1431 passed); focused rustfmt used repository edition 2021 and found six edits left in two files previously formatted with edition 2024.",
+      "correction": "Formatted only mod.rs and value_expr_runtime.rs with edition 2021; reran the identical validation outside the sandbox as validation_final, where all receipts passed."
+    },
+    {
+      "label": "pc_current_001",
+      "evidence": "evidence/performance/pc_current_001/FAILURE.json",
+      "result": "STOPPED_BEFORE_MEASUREMENT",
+      "failure": "A reused isolated sandbox contained a non-current authoring/control.rs and failed the 333-file identity assertion.",
+      "correction": "pc_current_002 used a distinct sandbox and replaced all 333 source files with current bytes before adding the two isolated hooks; direct measurement completed."
+    }
+  ],
+  "final_validation": "evidence/validation_final/VALIDATION_SUMMARY.json",
+  "review_pass_declared": false,
+  "wp_phase_goal_complete": false
+}

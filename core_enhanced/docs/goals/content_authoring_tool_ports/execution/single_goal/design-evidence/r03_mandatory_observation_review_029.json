@@ -1,0 +1,422 @@
+{
+  "report_id": "r03_mandatory_observation_review_029",
+  "role": "bounded read-only implementation source review; not completion audit",
+  "finding_status": "No concrete defect established in the reviewed mandatory HP/Stats source subset",
+  "findings": [],
+  "scope_exclusions": [
+    "public setup enable",
+    "actual entry key binding",
+    "world terminal/capsule propagation",
+    "optional trace implementation",
+    "full public/default-release completion"
+  ],
+  "source_conclusions": [
+    "Mutation reservation occurs after target eligibility and before HP/Stats write; stored ordinal commits after write and before callbacks.",
+    "Stats HP clamp emits one observer application; companion HP log does not double count.",
+    "Observation-only source guards clear unsourced command/batch calls and restore on break/failure paths.",
+    "Active-scope reject is sticky; outside-scope counter failure remains detectable by private accessor.",
+    "BattleCore and observer exhaustive visitors include all newly owned fields; source clones are immutable handles.",
+    "Ordinary observer remains disabled; source reasoning only, no regression execution."
+  ],
+  "limitations": [
+    "Void leaf reservation failure is not full leaf transactionality; caller may form precomputed summary or mutate bounded candidate state until real poll; whole candidate must be discarded.",
+    "Legacy i32 HP event delta arithmetic precedes new observer commit; reachable broad u32 input bounds not audited.",
+    "Tests use fixture log clear and synthetic ambient-source installation, not real retention eviction or actual lethal nested callback.",
+    "Complete native clone equality test does not mutate a cloned observer."
+  ],
+  "root_reported_tests_not_executed_or_log_verified_by_helper": {
+    "focused101": "earlier import compile error, preserved by root",
+    "focused102": "INPUTS073, 2 passed; 51.86s build/0.20s tests",
+    "regression103": "running when root message received"
+  },
+  "read_method": "rg discovery; Python Path.read_bytes; SHA256 complete exact read bytes and numbered UTF-8 spans; close hash comparison",
+  "source_mutations": false,
+  "test_execution": false,
+  "completion_audit": false,
+  "first_read_utc": "2026-09-10T12:22:23.461030+00:00",
+  "last_read_utc": "2026-09-10T12:25:08.324581+00:00",
+  "close_hash_utc": "2026-09-10T12:25:32.643591+00:00",
+  "inputs": [
+    {
+      "path": "core_enhanced/src/game/battle/core/authoring_observation.rs",
+      "reads": [
+        {
+          "bytes": 7038,
+          "sha256": "b79d42c1f6f7f1a337934c56de0dc6a591f7ab2d14e23b8e703d6dbd72863b96",
+          "observed_at_utc": "2026-09-10T12:22:23.461030+00:00",
+          "spans": [
+            {
+              "start": 1,
+              "end": 226
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/authoring_observation.rs",
+        "bytes": 7038,
+        "sha256": "b79d42c1f6f7f1a337934c56de0dc6a591f7ab2d14e23b8e703d6dbd72863b96",
+        "observed_at_utc": "2026-09-10T12:25:32.624674+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "reads": [
+        {
+          "bytes": 232506,
+          "sha256": "a755cd6fb08053d13b75124a9b680d66384b97dcee966ae092e765ed0f976d9a",
+          "observed_at_utc": "2026-09-10T12:22:23.492009+00:00",
+          "spans": [
+            {
+              "start": 448,
+              "end": 550
+            },
+            {
+              "start": 606,
+              "end": 758
+            },
+            {
+              "start": 2538,
+              "end": 2730
+            }
+          ]
+        },
+        {
+          "bytes": 232506,
+          "sha256": "a755cd6fb08053d13b75124a9b680d66384b97dcee966ae092e765ed0f976d9a",
+          "observed_at_utc": "2026-09-10T12:25:08.266779+00:00",
+          "spans": [
+            {
+              "start": 550,
+              "end": 606
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/commands.rs",
+        "bytes": 232506,
+        "sha256": "a755cd6fb08053d13b75124a9b680d66384b97dcee966ae092e765ed0f976d9a",
+        "observed_at_utc": "2026-09-10T12:25:32.626659+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "reads": [
+        {
+          "bytes": 22882,
+          "sha256": "423a368b26279ea6322fac1a64f6c078c2a4efa0ad7895c644e155f2ae623a6d",
+          "observed_at_utc": "2026-09-10T12:22:23.518404+00:00",
+          "spans": [
+            {
+              "start": 265,
+              "end": 314
+            },
+            {
+              "start": 427,
+              "end": 649
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+        "bytes": 22882,
+        "sha256": "423a368b26279ea6322fac1a64f6c078c2a4efa0ad7895c644e155f2ae623a6d",
+        "observed_at_utc": "2026-09-10T12:25:32.628293+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "reads": [
+        {
+          "bytes": 361828,
+          "sha256": "05cb798e42b9c2b38e00ce10dfc6f67a50b177f098bbe0fb50dd712d136f15d3",
+          "observed_at_utc": "2026-09-10T12:22:23.548234+00:00",
+          "spans": [
+            {
+              "start": 118,
+              "end": 242
+            },
+            {
+              "start": 492,
+              "end": 514
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "bytes": 361828,
+        "sha256": "05cb798e42b9c2b38e00ce10dfc6f67a50b177f098bbe0fb50dd712d136f15d3",
+        "observed_at_utc": "2026-09-10T12:25:32.630568+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "reads": [
+        {
+          "bytes": 131546,
+          "sha256": "1061fdc3774f67504c9ba727602b03c0a16bc75ef8cc4f8b336693f07caefc3a",
+          "observed_at_utc": "2026-09-10T12:22:23.578232+00:00",
+          "spans": [
+            {
+              "start": 1628,
+              "end": 1645
+            }
+          ]
+        },
+        {
+          "bytes": 131546,
+          "sha256": "1061fdc3774f67504c9ba727602b03c0a16bc75ef8cc4f8b336693f07caefc3a",
+          "observed_at_utc": "2026-09-10T12:24:04.996226+00:00",
+          "spans": [
+            {
+              "start": 2647,
+              "end": 2674
+            },
+            {
+              "start": 3325,
+              "end": 3390
+            },
+            {
+              "start": 1630,
+              "end": 1668
+            },
+            {
+              "start": 2400,
+              "end": 2423
+            }
+          ]
+        },
+        {
+          "bytes": 131546,
+          "sha256": "1061fdc3774f67504c9ba727602b03c0a16bc75ef8cc4f8b336693f07caefc3a",
+          "observed_at_utc": "2026-09-10T12:25:08.298033+00:00",
+          "spans": [
+            {
+              "start": 1868,
+              "end": 1888
+            },
+            {
+              "start": 1940,
+              "end": 1962
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "bytes": 131546,
+        "sha256": "1061fdc3774f67504c9ba727602b03c0a16bc75ef8cc4f8b336693f07caefc3a",
+        "observed_at_utc": "2026-09-10T12:25:32.632333+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "reads": [
+        {
+          "bytes": 22728,
+          "sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+          "observed_at_utc": "2026-09-10T12:22:23.601886+00:00",
+          "spans": [
+            {
+              "start": 310,
+              "end": 401
+            }
+          ]
+        },
+        {
+          "bytes": 22728,
+          "sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+          "observed_at_utc": "2026-09-10T12:25:08.324581+00:00",
+          "spans": [
+            {
+              "start": 215,
+              "end": 254
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "bytes": 22728,
+        "sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+        "observed_at_utc": "2026-09-10T12:25:32.633509+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/field_work.rs",
+      "reads": [
+        {
+          "bytes": 50959,
+          "sha256": "594a5aac3aebe0697f0c46583098852711a23436d17b1c0c9d7f3818788433a7",
+          "observed_at_utc": "2026-09-10T12:24:04.938456+00:00",
+          "spans": [
+            {
+              "start": 146,
+              "end": 175
+            },
+            {
+              "start": 265,
+              "end": 323
+            },
+            {
+              "start": 397,
+              "end": 446
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/field_work.rs",
+        "bytes": 50959,
+        "sha256": "594a5aac3aebe0697f0c46583098852711a23436d17b1c0c9d7f3818788433a7",
+        "observed_at_utc": "2026-09-10T12:25:32.635237+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "reads": [
+        {
+          "bytes": 64355,
+          "sha256": "61af123232aba8af42cdc864738cab3e174b787da8f403c824ff7fcca456f570",
+          "observed_at_utc": "2026-09-10T12:24:04.969703+00:00",
+          "spans": [
+            {
+              "start": 375,
+              "end": 434
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/tactical_stance.rs",
+        "bytes": 64355,
+        "sha256": "61af123232aba8af42cdc864738cab3e174b787da8f403c824ff7fcca456f570",
+        "observed_at_utc": "2026-09-10T12:25:32.636770+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+      "reads": [
+        {
+          "bytes": 7797,
+          "sha256": "abdcb6de0b58487011f28df0652a7531fccabec2fa2e6ac833662d30eaf6ce71",
+          "observed_at_utc": "2026-09-10T12:24:05.026038+00:00",
+          "spans": [
+            {
+              "start": 88,
+              "end": 171
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+        "bytes": 7797,
+        "sha256": "abdcb6de0b58487011f28df0652a7531fccabec2fa2e6ac833662d30eaf6ce71",
+        "observed_at_utc": "2026-09-10T12:25:32.638222+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "reads": [
+        {
+          "bytes": 41036,
+          "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+          "observed_at_utc": "2026-09-10T12:24:05.055401+00:00",
+          "spans": [
+            {
+              "start": 35,
+              "end": 66
+            },
+            {
+              "start": 94,
+              "end": 125
+            },
+            {
+              "start": 150,
+              "end": 158
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "bytes": 41036,
+        "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+        "observed_at_utc": "2026-09-10T12:25:32.639533+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "reads": [
+        {
+          "bytes": 994,
+          "sha256": "798d5a96e4550bab80cda46a724f13990be5cffe73d6a3535c179f2d3a8d7d30",
+          "observed_at_utc": "2026-09-10T12:24:05.085759+00:00",
+          "spans": [
+            {
+              "start": 1,
+              "end": 35
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/skill_source.rs",
+        "bytes": 994,
+        "sha256": "798d5a96e4550bab80cda46a724f13990be5cffe73d6a3535c179f2d3a8d7d30",
+        "observed_at_utc": "2026-09-10T12:25:32.640846+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "reads": [
+        {
+          "bytes": 6247,
+          "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+          "observed_at_utc": "2026-09-10T12:25:08.210718+00:00",
+          "spans": [
+            {
+              "start": 10,
+              "end": 55
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/ability/authoring.rs",
+        "bytes": 6247,
+        "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+        "observed_at_utc": "2026-09-10T12:25:32.642235+00:00"
+      }
+    },
+    {
+      "path": "core_enhanced/src/game/battle/cooldown.rs",
+      "reads": [
+        {
+          "bytes": 711,
+          "sha256": "fa401d4db5a2c6572a8ef404979303fe4c5b957e1aa3160f62befef12a3d55f4",
+          "observed_at_utc": "2026-09-10T12:25:08.238843+00:00",
+          "spans": [
+            {
+              "start": 7,
+              "end": 11
+            }
+          ]
+        }
+      ],
+      "close": {
+        "path": "core_enhanced/src/game/battle/cooldown.rs",
+        "bytes": 711,
+        "sha256": "fa401d4db5a2c6572a8ef404979303fe4c5b957e1aa3160f62befef12a3d55f4",
+        "observed_at_utc": "2026-09-10T12:25:32.643591+00:00"
+      }
+    }
+  ],
+  "read_count": 17,
+  "path_count": 13,
+  "drift": []
+}

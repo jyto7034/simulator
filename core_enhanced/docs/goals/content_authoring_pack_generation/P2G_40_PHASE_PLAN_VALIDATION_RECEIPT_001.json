@@ -1,0 +1,218 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CAPG-P2G40-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CAPG-P2G40-001",
+    "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "57a9e4c950ccb6a97c57854a7527685f8b8abe6628f37eecf20e1380aa36e7b8"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CAPG-P2G30-001",
+    "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_30_FREEZE_001.json",
+    "sha256": "11a18396f42efbc6b851c3fccf7852e0c6e6ddbbe7cef41571cdee6cebc9b9dc"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CAPG-P2G20-001",
+    "review_batch_ref": "RB-CAPG-P2G20-002",
+    "reviewed_source_basis_ref": "RSB-CAPG-P2G20-001",
+    "code_review_binding_count": 6,
+    "bound_final_policy_freeze_ref": "FPF-CAPG-P2G30-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 6,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "CAPG-E01",
+        "policy_element_revision_ref": "PER-CAPG-E01-REVIEWED-001"
+      },
+      {
+        "element_id": "CAPG-E02",
+        "policy_element_revision_ref": "PER-CAPG-E02-REVIEWED-001"
+      },
+      {
+        "element_id": "CAPG-E03",
+        "policy_element_revision_ref": "PER-CAPG-E03-REVIEWED-001"
+      },
+      {
+        "element_id": "CAPG-E04",
+        "policy_element_revision_ref": "PER-CAPG-E04-REVIEWED-001"
+      },
+      {
+        "element_id": "CAPG-E05",
+        "policy_element_revision_ref": "PER-CAPG-E05-REVIEWED-001"
+      },
+      {
+        "element_id": "CAPG-E06",
+        "policy_element_revision_ref": "PER-CAPG-E06-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 6,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "CAPG-E01",
+        "phase_id": "PHASE-CAPG-01"
+      },
+      {
+        "element_id": "CAPG-E02",
+        "phase_id": "PHASE-CAPG-01"
+      },
+      {
+        "element_id": "CAPG-E03",
+        "phase_id": "PHASE-CAPG-01"
+      },
+      {
+        "element_id": "CAPG-E04",
+        "phase_id": "PHASE-CAPG-01"
+      },
+      {
+        "element_id": "CAPG-E05",
+        "phase_id": "PHASE-CAPG-01"
+      },
+      {
+        "element_id": "CAPG-E06",
+        "phase_id": "PHASE-CAPG-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 3,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 2,
+    "standalone_work_package_count": 1,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CAPG-01": [
+        "WP-CAPG-01",
+        "WP-CAPG-02"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CAPG-03"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 3,
+    "edge_count": 4,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CAPG-01",
+        "WP-CAPG-02"
+      ]
+    ],
+    "final_execution_node_count": 2,
+    "condensation_edge_count": 1,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 2,
+    "assigned_once_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CAPG-01": "PHASE-CAPG-01",
+      "WP-CAPG-03": "PHASE-CAPG-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 8,
+    "mapped_count": 8,
+    "assigned_execution_node_count": 8,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CAPG-P2G30-001",
+      "Content Digest": null
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CAPG-P2G40-001",
+      "Content Digest": null
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_00_INITIAL_001.json",
+        "sha256": "dc3d55076f9766dacbac18d424520efb8914b8039ed6af674de52cf4d9c4847f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_10_POLICY_001.json",
+        "sha256": "ecca36c5ba809c858131c63b7097ccc9396fb171c03d209df44f1cb443b02507"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_20_BATCH_REPAIR_002.json",
+        "sha256": "ee2dc2f015ce70e16c045014272f0df6c4b9de78cf1454afef042f3f9ef296c7"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_20_REVIEW_001.json",
+        "sha256": "e7d8b074839c4ac62a738660938839191c1f51c6ddc5d925c76f8d4b05d9c668"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "4dff4ff960118a09901cfbcc4ef7cf202414c212f819a43a084df922b5bb2b5d"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_30_FREEZE_001.json",
+        "sha256": "11a18396f42efbc6b851c3fccf7852e0c6e6ddbbe7cef41571cdee6cebc9b9dc"
+      }
+    ]
+  }
+}

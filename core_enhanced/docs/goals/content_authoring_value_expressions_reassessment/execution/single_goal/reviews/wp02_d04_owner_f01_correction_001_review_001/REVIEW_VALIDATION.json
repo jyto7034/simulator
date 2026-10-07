@@ -1,0 +1,79 @@
+{
+  "verdict": "partial_scope_pass",
+  "finding": "D04-OWNER-F01",
+  "finding_status": "resolved",
+  "manifest_sha256": "58505bbcd34089b9c1ec3d70f4d9df4ca32a2397e1115c68386364e44514e549",
+  "source_digest_337": "8aa03d6bd04f8d524fa61b465a9bd7a4171062a1190f615b794e20f915190f04",
+  "entry_exit_verification_equal": true,
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--all-targets",
+    "--offline",
+    "--locked"
+  ],
+  "cwd": "/mnt/f/work/simulator/core_enhanced",
+  "env": {
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/home/blast/.cache/d04-owner-f01-independent-review-product"
+  },
+  "exit_code": 0,
+  "test_groups": [
+    [
+      1474,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      25,
+      0
+    ],
+    [
+      15,
+      0
+    ],
+    [
+      4,
+      0
+    ]
+  ],
+  "test_passed": 1526,
+  "test_failed": 0,
+  "log_sha256": "57bab315ee15c968eb2d67c7ae8197f8511ae23e770ad4d23cb6411bb866694a",
+  "critical_tests_confirmed_in_independent_log": [
+    "equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+    "equipment_lookup_count_tracks_predicates_relations_members_and_nodes",
+    "equipment_relation_rejects_every_direct_runtime_item_identity_mismatch",
+    "equipment_projection_keeps_source_order_item_ids_for_by_type_and_any3",
+    "equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+    "stack_item_instance_material_is_byte_identical_to_the_previous_vec_scheme",
+    "native_runtime_facts_preserve_actual_same_definition_inventory_copies_through_player_drafts"
+  ],
+  "pc_workload_rerun": false,
+  "r05_workload_rerun": false,
+  "production_code_modified_by_reviewer": false,
+  "wp02_complete": false,
+  "r06_complete": false,
+  "publication_unblocked": false
+}

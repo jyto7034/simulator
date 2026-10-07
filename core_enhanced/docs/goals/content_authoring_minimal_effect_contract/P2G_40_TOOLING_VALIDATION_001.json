@@ -1,0 +1,91 @@
+{
+  "kind": "external NEXT-0006 tooling validation evidence; not a new policy/Goal/GEX artifact",
+  "standard_generation": {
+    "argv": [
+      "node",
+      "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+      "--write-receipt",
+      "--plan",
+      "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json",
+      "--freeze",
+      "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "--receipt",
+      "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "generator": "p2g40-receipt-generator/1.2.0",
+      "status": "unchanged",
+      "receipt": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json",
+      "validation": {
+        "validator": "p2g40-receipt-validator/1.2.0",
+        "result": "passed",
+        "counts": {
+          "freeze_members": 6,
+          "work_packages": 3,
+          "dependency_edges": 4,
+          "cyclic_sccs": 1,
+          "atomic_groups": 1,
+          "final_execution_nodes": 2,
+          "phases": 1,
+          "audit_rows": 1,
+          "integration_rows": 6
+        },
+        "failures": []
+      }
+    },
+    "note": "Receipt created earlier in this same request; final generator invocation confirmed unchanged exact result"
+  },
+  "standard_validation": {
+    "argv": [
+      "node",
+      "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+      "--plan",
+      "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json",
+      "--freeze",
+      "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "--receipt",
+      "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "validator": "p2g40-receipt-validator/1.2.0",
+      "result": "passed",
+      "counts": {
+        "freeze_members": 6,
+        "work_packages": 3,
+        "dependency_edges": 4,
+        "cyclic_sccs": 1,
+        "atomic_groups": 1,
+        "final_execution_nodes": 2,
+        "phases": 1,
+        "audit_rows": 1,
+        "integration_rows": 6
+      },
+      "failures": []
+    }
+  },
+  "regression_tests": {
+    "command": "node --test core_enhanced/docs/tools/p2g_validation.test.mjs",
+    "node_version": "v24.11.0",
+    "exit_code": 0,
+    "tests": 37,
+    "pass": 37,
+    "fail": 0,
+    "skipped": 0,
+    "duration_ms": 1461.015385,
+    "tool_execution_session": 74392,
+    "environment": "approved unsandboxed execution; Node child process EPERM in sandbox was reproduced then permission granted",
+    "cases": "26 malformed Plan/Freeze rejection cases, Unicode/opaque identity and CLI roundtrip, source-hash invalidation, immutable Receipt tamper rejection, atomic condensation, current Topic, four historical Receipts, JSON upstream consumer and historical complete Goal Set",
+    "corrections_before_pass": [
+      "legacy inline-code integration row extraction",
+      "legacy Current Decision Revision Ref Set fallback"
+    ],
+    "earlier_failures_not_counted_as_pass": true
+  },
+  "not_executed": [
+    "game implementation/build/tests",
+    "P2G-50 authoring for this Topic",
+    "P2G-60/GEX execution or new completion audit"
+  ]
+}

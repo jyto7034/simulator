@@ -1,0 +1,37 @@
+{
+  "created_at_utc": "2026-10-06T08:23:53.249518+00:00",
+  "artifacts": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_014/EXPERIMENT_NOTES.md.diff",
+      "sha256": "0144fa3afaa5c66e1bf1f18b058cba8e94fb8d9f45bef84e965b7ae10c5a4da8"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_014/PLAN.md.diff",
+      "sha256": "39ec5efb03bacaf4e2c27fb6ed832bf838f93b098e7554d43db3cf7d9b105f44"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_014/RECORD.ko.md",
+      "sha256": "bf59dc9be1605a84dc725a0bbc19cc5ca0f2d190253f36b37b4e40cc636d70fe"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_014/REFERENCES.json",
+      "sha256": "5405cc168900d686de06d16f862aa33ea127a9ad674b9a39262eec0597a408e1"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_014/before_EXPERIMENT_NOTES.md",
+      "sha256": "fb9372f8cf9e0c2a3a15714808deabf3717b3fd5bb6a70d28c08dfdccbc272fc"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_014/before_PLAN.md",
+      "sha256": "1e88ce7fb060768f7190fbd150cdb6023af8879aa3ca059019f66bd287682c7f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "sha256": "2a90571bfa33491b4c82f68a2390227c94e55bc264beeb7be8229e44e7ddc42b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "sha256": "533f629cd2c38ca1ff7f815dab63cce25be15c8a95fcf21d748b9ded0a9dc241"
+    }
+  ]
+}

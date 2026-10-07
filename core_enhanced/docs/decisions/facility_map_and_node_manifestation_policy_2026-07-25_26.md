@@ -7,7 +7,7 @@
 - 문서 등급: 구현 이력·정책 근거 문서
 - 분리 출처:
   [save_point_trauma_recovery_policy_draft_2026-07-25.md](save_point_trauma_recovery_policy_draft_2026-07-25.md)
-- 주의: 현재 runtime, live RON, save/wire 계약의 source of truth는 `game_rulebook.md`,
+- 주의: 현재 runtime, live RON, save/wire 계약의 source of truth는 `archive/game_rulebook_legacy_2026-10-04.md`,
   `core_runtime_contract.md`, `data_loading_contract.md`와 외부 Unity canonical이다. 이 문서는 P03이
   구현한 승인 정책의 역사적 입력으로 유지한다. 완료 근거는
   `../goals/run_policy_phase_03_facility_map_manifestation/COMPLETION_REVIEW.md`에 있다.
@@ -366,7 +366,7 @@ repair 규칙도 mode·Floor assignment profile과 slot 기반 결정론적 cons
 
 독립 goal에서 최소 다음 표면을 함께 감사하고 갱신한다.
 
-- `game_rulebook.md`: Floor 맵, node 선택, edge direction과 SavePoint 배치 의미
+- `archive/game_rulebook_legacy_2026-10-04.md`: Floor 맵, node 선택, edge direction과 SavePoint 배치 의미
 - `core_runtime_contract.md`: template source-of-truth, navigation projection, checkpoint 경계
 - `data_loading_contract.md`: template id, room slot, allowed category, connection과 validation
 - live map RON: `facility_templates.ron`의 slot tag, `node_assignment_profiles.ron`, template

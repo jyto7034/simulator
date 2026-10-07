@@ -1,0 +1,28 @@
+{
+  "target": {
+    "result": "FROZEN_CAP_01_02_TARGET_AND_RESTORATION_VERIFIED",
+    "manifest_sha256": "179bff1593608283c82ed51a2923f183d47312b8df51ad3dcb7556fdca8a4a5f",
+    "source_files": 333,
+    "evidence_files": 48,
+    "modified": [
+      "core_enhanced/src/authoring/control.rs",
+      "core_enhanced/src/game/battle/core/queue.rs",
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/battle/runtime_control.rs"
+    ]
+  },
+  "isolated_source_files_verified": 333,
+  "instrumentation": "one queue.rs cfg(test) module; probes.rs archived here",
+  "probe_sha256": "979e1510859fed3a86405eb02ec7b8b78428065b99511e3dab1768143d70b188",
+  "formatting": {
+    "before": {
+      "exit_code": 1,
+      "hunks": 37
+    },
+    "after": {
+      "exit_code": 1,
+      "hunks": 57
+    }
+  }
+}

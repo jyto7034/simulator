@@ -1,0 +1,490 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CRSL-001",
+        "Content Digest": "sha256:ab8bcb830c740578eeef8484892284e03b22f08156cc2028534af7d8a4a23fe1"
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRSL-001",
+          "Content Digest": "sha256:57c36bd5f0637d0f23fb78a4c0a4f843e17f6c4f72b07168b58f484ff36e8a36"
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-004",
+            "Content Digest": "sha256:214d3c9bd0c92eb5a398b5fa34b0f3ea4bd036d28d76e5e0e6671c53e82b63ae"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSL-001",
+            "Content Digest": "sha256:57c36bd5f0637d0f23fb78a4c0a4f843e17f6c4f72b07168b58f484ff36e8a36"
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CRSL-DEFINITION",
+            "selectors": {
+              "implementation": [
+                "PE-CRSL-01",
+                "PE-CRSL-02",
+                "PE-CRSL-12"
+              ],
+              "supporting": [
+                "PE-CRSL-03",
+                "PE-CRSL-05",
+                "PE-CRSL-08",
+                "PE-CRSL-10",
+                "PE-CRSL-13"
+              ]
+            },
+            "boundary": "actual fragment/profile + raw/compiled skill + live25 and typed RON fixtures",
+            "expected_change": "TD01/02/05: employee base/fragment max and explicit use descriptor; remove employee/Rest old fields; preserve valid deployment effect and opponent cadence",
+            "prerequisite": "Current150 source and frozen employee/autonomous scope; U01/U04 audit closed",
+            "validation": "V01/02/12 strict loader and current all-skill applicability",
+            "unknown": "exact type/field spelling and public descriptor compilation within TD01–11"
+          },
+          {
+            "id": "WP-CRSL-ADMISSION",
+            "selectors": {
+              "implementation": [
+                "PE-CRSL-04",
+                "PE-CRSL-07",
+                "PE-CRSL-08",
+                "PE-CRSL-09",
+                "PE-CRSL-10",
+                "PE-CRSL-11"
+              ],
+              "supporting": [
+                "PE-CRSL-01",
+                "PE-CRSL-02",
+                "PE-CRSL-03",
+                "PE-CRSL-06",
+                "PE-CRSL-12",
+                "PE-CRSL-13"
+              ]
+            },
+            "boundary": "public command→latest validate→single consume/credential→pending start/corrosion→target anchor/cancel",
+            "expected_change": "TD03/04/08: consumed-once action credential, rejection unchanged, empty tile, direct target invalidity, paused actual timing",
+            "prerequisite": "DEFINITION resource/skill identity; sole CoreApplication candidate and existing action source",
+            "validation": "V04/07–11 latest public input, Pause/resume, target/preview, corrosion timing/cost",
+            "unknown": "exact credential handle private representation; no new input execution timing"
+          },
+          {
+            "id": "WP-CRSL-LIFETIME",
+            "selectors": {
+              "implementation": [
+                "PE-CRSL-03",
+                "PE-CRSL-05",
+                "PE-CRSL-06"
+              ],
+              "supporting": [
+                "PE-CRSL-02",
+                "PE-CRSL-04",
+                "PE-CRSL-07",
+                "PE-CRSL-11",
+                "PE-CRSL-12",
+                "PE-CRSL-13"
+              ]
+            },
+            "boundary": "use owner→cast/legacy and structured flow/finite buff/channel/creation end→gain gate and battle-second pulse",
+            "expected_change": "TD02/05–07: separate control/use/effect lifetime, finite leases and early ends; future-control cancellation with released payload retained",
+            "prerequisite": "DEFINITION descriptor and ADMISSION accepted-use identity; R04/R05 action/source and U01 cancel boundaries",
+            "validation": "V02–07/11/12 mixed timed effects, slow projectile, combo/repeat, independent summon/DoT, CC/silence, no bank",
+            "unknown": "exact pulse scheduling/order and bounded tracking implementation in GEX; no inferred independent-child lock"
+          },
+          {
+            "id": "WP-CRSL-PROJECTION",
+            "selectors": {
+              "implementation": [
+                "PE-CRSL-13"
+              ],
+              "supporting": [
+                "PE-CRSL-01",
+                "PE-CRSL-02",
+                "PE-CRSL-03",
+                "PE-CRSL-04",
+                "PE-CRSL-05",
+                "PE-CRSL-06",
+                "PE-CRSL-07",
+                "PE-CRSL-08",
+                "PE-CRSL-09",
+                "PE-CRSL-10",
+                "PE-CRSL-11",
+                "PE-CRSL-12"
+              ]
+            },
+            "boundary": "authoritative readiness/gain reasons→Core query/host wire/reconnect and private rollback/confirmed Continue",
+            "expected_change": "TD09: source-derived DTO/canonical with typed overlap reasons, controlled clone and retained extent; U04 pre-entry/savepoint unchanged",
+            "prerequisite": "ADMISSION/LIFETIME current kernel facts and DEFINITION strict schema",
+            "validation": "V04/09/12/13 public host normal command/query, same actor Pause reconnect, rollback/Continue/old originals",
+            "unknown": "exact additive DTO fields and any genuinely affected save codec; no new live-battle disk snapshot"
+          },
+          {
+            "id": "WP-CRSL-VERIFY",
+            "selectors": {
+              "implementation": [
+                "PE-CRSL-14"
+              ],
+              "validation_only": [
+                "PE-CRSL-01",
+                "PE-CRSL-02",
+                "PE-CRSL-03",
+                "PE-CRSL-04",
+                "PE-CRSL-05",
+                "PE-CRSL-06",
+                "PE-CRSL-07",
+                "PE-CRSL-08",
+                "PE-CRSL-09",
+                "PE-CRSL-10",
+                "PE-CRSL-11",
+                "PE-CRSL-12",
+                "PE-CRSL-13"
+              ]
+            },
+            "boundary": "integrated Core/host/current live definitions→durable semantic fixtures,127 inherited+31 R06 and independent audit",
+            "expected_change": "V01–14 executable completion matrix, before/after rollback/source archive, applicable full suite and currentness",
+            "prerequisite": "AG-CRSL-RESONANCE integrated current source; exact U04 baseline reused only where unaffected",
+            "validation": "all14 acceptance sets,10dimensions,live25/public typed fixture/runtime/stock host paths; independent CompleteHigh before U06",
+            "unknown": "measured results pending; existing R05 exception/20-minute exclusion preserved without enlarging"
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CRSL-DEFINITION",
+            "to": "WP-CRSL-ADMISSION",
+            "type": "schema_data",
+            "evidence": "resource and use descriptor must match validated accepted input",
+            "broken": "Ignoring this edge breaks resource and use descriptor must match validated accepted input"
+          },
+          {
+            "from": "WP-CRSL-DEFINITION",
+            "to": "WP-CRSL-LIFETIME",
+            "type": "schema_data",
+            "evidence": "runtime end owner must execute actual compiled lifetime contract",
+            "broken": "Ignoring this edge breaks runtime end owner must execute actual compiled lifetime contract"
+          },
+          {
+            "from": "WP-CRSL-ADMISSION",
+            "to": "WP-CRSL-LIFETIME",
+            "type": "persistence_lifetime",
+            "evidence": "consume and lock require the same use identity",
+            "broken": "Ignoring this edge breaks consume and lock require the same use identity"
+          },
+          {
+            "from": "WP-CRSL-ADMISSION",
+            "to": "WP-CRSL-PROJECTION",
+            "type": "producer_consumer",
+            "evidence": "readiness and pending projection must consume admitted facts",
+            "broken": "Ignoring this edge breaks readiness and pending projection must consume admitted facts"
+          },
+          {
+            "from": "WP-CRSL-LIFETIME",
+            "to": "WP-CRSL-PROJECTION",
+            "type": "producer_consumer",
+            "evidence": "gain reasons require actual overlapping use/CC owners",
+            "broken": "Ignoring this edge breaks gain reasons require actual overlapping use/CC owners"
+          },
+          {
+            "from": "WP-CRSL-DEFINITION",
+            "to": "WP-CRSL-VERIFY",
+            "type": "validation",
+            "evidence": "integrated DEFINITION must exist for durable acceptance execution",
+            "broken": "Ignoring this edge breaks integrated DEFINITION must exist for durable acceptance execution"
+          },
+          {
+            "from": "WP-CRSL-ADMISSION",
+            "to": "WP-CRSL-VERIFY",
+            "type": "validation",
+            "evidence": "integrated ADMISSION must exist for durable acceptance execution",
+            "broken": "Ignoring this edge breaks integrated ADMISSION must exist for durable acceptance execution"
+          },
+          {
+            "from": "WP-CRSL-LIFETIME",
+            "to": "WP-CRSL-VERIFY",
+            "type": "validation",
+            "evidence": "integrated LIFETIME must exist for durable acceptance execution",
+            "broken": "Ignoring this edge breaks integrated LIFETIME must exist for durable acceptance execution"
+          },
+          {
+            "from": "WP-CRSL-PROJECTION",
+            "to": "WP-CRSL-VERIFY",
+            "type": "validation",
+            "evidence": "integrated PROJECTION must exist for durable acceptance execution",
+            "broken": "Ignoring this edge breaks integrated PROJECTION must exist for durable acceptance execution"
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CRSL-RESONANCE",
+            "members": [
+              "WP-CRSL-DEFINITION",
+              "WP-CRSL-ADMISSION",
+              "WP-CRSL-LIFETIME",
+              "WP-CRSL-PROJECTION"
+            ],
+            "evidence": "Minimal simultaneous resource/schema/admission/start/end/gain/query transition: consumption alone rejects pending at full gate; end alone double resets or unlocks early; schema alone fails actual current skills; projection alone reports unsupported semantics. All share current employee use identity and strict producer/consumer cutover."
+          }
+        ],
+        "standalone": [
+          "WP-CRSL-VERIFY"
+        ],
+        "cyclic_sccs": [],
+        "phases": [
+          {
+            "id": "PHASE-CRSL-01",
+            "primary": [
+              "PE-CRSL-01",
+              "PE-CRSL-02",
+              "PE-CRSL-03",
+              "PE-CRSL-04",
+              "PE-CRSL-05",
+              "PE-CRSL-06",
+              "PE-CRSL-07",
+              "PE-CRSL-08",
+              "PE-CRSL-09",
+              "PE-CRSL-10",
+              "PE-CRSL-11",
+              "PE-CRSL-12",
+              "PE-CRSL-13",
+              "PE-CRSL-14"
+            ],
+            "supporting": [],
+            "nodes": [
+              "AG-CRSL-RESONANCE",
+              "WP-CRSL-VERIFY"
+            ],
+            "exit": "All current skill admission/use-end/gain and employee charge rules valid across loader/Core/host/restore;14 acceptance sets and127 inherited/31 R06 impact proven; independent CompleteHigh before U06"
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CRSL-01",
+            "state": "one accepted-use resource owner; explicit compatible raw/compiled data; distinct action/effect/use lifetimes and accepted target anchor; current corrosion start timing; projection and same actor/Continue match",
+            "checks": "no full-after-consume recheck, reset/refund/reuse, unconditional child lifetime lock, all positive gain bypass, employee old field fallback or silent enemy cadence change; supported reader/writer/rollback agree",
+            "evidence": "V01–14+10 dimensions+127 inherited/31 R06,actual public fixtures/stock host and exact archive restoration",
+            "limitation": "workspace/local Linux only; Unity and remote deployment excluded; U19 new damage and future actors not preimplemented"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CRSL-V01",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 01; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V01",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V02",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 02; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V02",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V03",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 03; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V03",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V04",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 04; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V04",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V05",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 05; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V05",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V06",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 06; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V06",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V07",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 07; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V07",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V08",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 08; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V08",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V09",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 09; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V09",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V10",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 10; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V10",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V11",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 11; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V11",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V12",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 12; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V12",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V13",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 13; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V13",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          },
+          {
+            "id": "IVA-CRSL-V14",
+            "source": "CODE_REVIEW_002.ko.md Element Coverage 14; exact Freeze member acceptance",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSL-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSL-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V14",
+            "evidence": "actual nonzero execution, exact source/data/config/input/toolchain/command/raw result and expected vs observed; preserve failed receipts",
+            "prerequisite": "AG-CRSL-RESONANCE integrated source"
+          }
+        ],
+        "Known Unknown/Limitations": "Exact bounded tracking/schema/probe design is GEX-owned; no required policy/source gap or implicit future gameplay. Prior R05 exception remains source-bound."
+      }
+    }
+  ],
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CRSL-001",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0"
+}

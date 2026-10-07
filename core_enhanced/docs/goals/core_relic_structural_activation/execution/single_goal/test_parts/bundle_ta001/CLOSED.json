@@ -1,0 +1,241 @@
+{
+  "label": "u09_ta001_closed",
+  "closed_at_utc": "2026-10-07T10:34:41.937830+00:00",
+  "status": "focused_authoring_compiler_tests_pass_not_goal_completion",
+  "source_writer_count": 0,
+  "functional_runner_count": 0,
+  "source_before_count": 447,
+  "source_after_count": 449,
+  "source_after_sha256": "38269ec3b79e446eb7bbfcb9831d540e86f65f6c432d301c426503469d64d8e4",
+  "changed_source_files": [
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 214076,
+      "sha256": "5e25061bd0645fccd5bf6d5fde35a178d45cd387e6996103b70b5fee48efb680"
+    },
+    {
+      "path": "core_enhanced/src/game/relic/structural.rs",
+      "bytes": 9785,
+      "sha256": "a8427a43688c2256c6dfef4b5d73eccbefab1fce246df67ae2e87c10f12a335a"
+    },
+    {
+      "path": "core_enhanced/src/game/relic/structural/tests.rs",
+      "bytes": 6929,
+      "sha256": "ba4f82f7dbbd66d66b60fb4b34e0d6d0b93b3f4d3dd2f857392ee0065e7adc38"
+    },
+    {
+      "path": "core_enhanced/src/game/relic/structural/tests/compiler_cases.rs",
+      "bytes": 22043,
+      "sha256": "0d969bfb9e361c5351c40ae02e0099c4c89076ca62be97696f45e0cdd1805532"
+    },
+    {
+      "path": "core_enhanced/src/game/relic/tests.rs",
+      "bytes": 9947,
+      "sha256": "ccb0d82d3e8d16ff3926fefe079f4a385ca52c546c218fba56a4a8f3ae316474"
+    }
+  ],
+  "new_test_files": [
+    {
+      "path": "core_enhanced/src/game/relic/structural/tests.rs",
+      "bytes": 6929,
+      "sha256": "ba4f82f7dbbd66d66b60fb4b34e0d6d0b93b3f4d3dd2f857392ee0065e7adc38"
+    },
+    {
+      "path": "core_enhanced/src/game/relic/structural/tests/compiler_cases.rs",
+      "bytes": 22043,
+      "sha256": "0d969bfb9e361c5351c40ae02e0099c4c89076ca62be97696f45e0cdd1805532"
+    }
+  ],
+  "new_test_count": 12,
+  "test_names": [
+    "u09_typed_errors_and_consumer_boundaries_do_not_clamp",
+    "u09_typed_composition_397_is_order_independent",
+    "u09_strict_serde_and_condition_limits_recover_after_failure",
+    "u09_generated_75_finite_identity_and_dto_are_read_only",
+    "u09_positive_cycle_needs_current_seed_and_does_not_recurse",
+    "u09_same_effect_witness_cannot_be_split_across_siblings",
+    "u09_negative_cycle_and_provider_mismatch_are_typed_rejections",
+    "u09_footprint_recipe_produces_an_effect_local_typed_property",
+    "u09_normal_builder_rejects_structural_publication_and_legacy_serde_stays_stable",
+    "u09_personal_amount_and_source_creation_remain_separate_typed_stages",
+    "u09_removed_radius_is_dormant_only_with_explicit_property_condition",
+    "u09_personal_single_preserves_eval_moment_and_conflicting_recipes_reject"
+  ],
+  "product_body_changes": 0,
+  "existing_source_changes": {
+    "structural.rs": "cfg(test) module registration only",
+    "relic/tests.rs": "two empty rules fields preserving legacy fixture behavior",
+    "sim.rs": "cfg(test) legacy aggregate helper explicitly rejects PersonalShieldGrant requiring ordered occurrence executor"
+  },
+  "authority": "Root TA001 handover; later whole-file sim.rs cfg(test)-only handover; product author held all source/run throughout",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "game::relic::structural::tests",
+    "--offline",
+    "--locked",
+    "-j",
+    "1",
+    "--",
+    "--nocapture"
+  ],
+  "environment": {
+    "PATH": "/home/blast/.cargo/bin:/home/blast/.codex/packages/app-server-daemon/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/blast/.codex/tmp/arg0/codex-arg0ESE9LT:/home/blast/.codex/packages/app-server-daemon/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/blast/.codex/tmp/arg0/codex-arg0WNQeW2:/home/blast/.nvm/versions/node/v24.21.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/usr/local/cuda-13.2/bin:/home/blast/.cargo/bin:/home/blast/.nvm/versions/node/v24.21.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.9/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.9/libnvvp:/mnt/c/Users/blast/AppData/Local/Programs/Python/Python310/Scripts:/mnt/c/Users/blast/AppData/Local/Programs/Python/Python310:/mnt/c/Python314/Scripts/:/mnt/c/Python314/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Bandizip/:/mnt/c/Program Files/dotnet/:/mnt/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files/nodejs/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Cloudflare/Cloudflare WARP/:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2025.2.0/:/mnt/c/Program Files/WezTerm:/mnt/c/Program Files/Tailscale/:/mnt/c/Program Files/WSL/:/mnt/c/Users/blast/scoop/shims:/mnt/c/Users/blast/.local/bin:/mnt/c/Users/blast/.cargo/bin:/mnt/c/Users/blast/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/blast/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/blast/.dotnet/tools:/mnt/c/Users/blast/AppData/Roaming/npm:/mnt/c/Users/blast/AppData/Local/Programs/Python/Python310/Scripts:/mnt/c/Users/blast/AppData/Local/Programs/Python/Python310:/mnt/c/Users/blast/AppData/Local/Programs/Zed/bin:/mnt/c/flutter/flutter/bin:/mnt/c/Users/blast/AppData/Local/Programs/Ollama:/snap/bin",
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "toolchain": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+  },
+  "runs": [
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/u09_ta001_connect001.json",
+        "bytes": 176556,
+        "sha256": "03370aac635bab1df7012a3635088d8ca821c3233394210801973bbfa18c9347"
+      },
+      "exit_code": 101,
+      "selected_test_count": 0,
+      "result_summaries": [],
+      "source_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/u09_ta001_connect002.json",
+        "bytes": 176662,
+        "sha256": "d374285b2a2d36c8a33a72b4edfcbfff7b904ab24290ff1ed045402033f731b8"
+      },
+      "exit_code": 0,
+      "selected_test_count": 2,
+      "result_summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1894 filtered out; finished in 0.02s"
+      ],
+      "source_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/u09_ta001_expand003.json",
+        "bytes": 177078,
+        "sha256": "8fdea9c9a986e3f3ceac94fc0d1da90c0e583b6daaaecb2e1ea551c5b1b061ee"
+      },
+      "exit_code": 0,
+      "selected_test_count": 9,
+      "result_summaries": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1894 filtered out; finished in 0.60s"
+      ],
+      "source_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/u09_ta001_expand004.json",
+        "bytes": 177080,
+        "sha256": "50dcd0f4b19c6a66ed558e32459771063f04ce901e91ebd059afe3fa01240c4a"
+      },
+      "exit_code": 0,
+      "selected_test_count": 12,
+      "result_summaries": [
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 1894 filtered out; finished in 0.63s"
+      ],
+      "source_unchanged": true
+    }
+  ],
+  "failure_classification": [
+    {
+      "label": "u09_ta001_connect001",
+      "kind": "test_connection_compile_errors",
+      "count": 8,
+      "details": [
+        "5 own parser paths corrected from ron::from_str to ron::de::from_str",
+        "2 pre-existing relic fixture initializers required new rules field set empty",
+        "1 pre-existing cfg(test) helper required explicit new enum rejection; Root transferred whole file before correction"
+      ],
+      "product_semantic_defects_observed": 0
+    }
+  ],
+  "covered_seams": [
+    "strict closed serde and unknown property/field/primitive rejection",
+    "condition depth/node exact-boundary rejection and meter reset after nested failure",
+    "120 composition permutations yield independent integer oracle397; typed ranges/units/replacement conflicts/overflow",
+    "finite generated damage40+10 scaled50%=75; original11 unchanged; two provider copies have separate addresses; provider enumeration deterministic",
+    "positive closure no-seed/seed/removal plus rule order reversal; finite3 candidates",
+    "same-effect witness cannot be split across sibling effects",
+    "negative dependency cycle rejection and actual provider/form mismatch; absent provider dormant",
+    "effect-local footprint property production before predicate; sibling and authored delivery preserved",
+    "normal builder publication currently fails closed; legacy rules omitted during serialization",
+    "personal typed300/550/800 and separately described source creation450/825/1200, no runtime execution",
+    "personal single removes radius: unconditional edit faults vs explicit property predicate dormant",
+    "personal recipe evaluation moment preservation, equal recipe coalescing and unequal write conflict"
+  ],
+  "evidence_limits": [
+    "Private immutable fixture generations are compiler-only evidence and carry no normal publication/runtime acceptance claim.",
+    "Normal builder rejection is observed; a successful normal external RON reward/World/battle journey remains pending.",
+    "No battle recipient/source lifecycle, occurrence effects, cost transactions, recharge, regular-only attack or World/save/query integration executed.",
+    "Finite Flow lowering, full runtime safety/admission/budget surface, predecessor impact regression and integrated required suites remain later scope.",
+    "No performance measurement or independent final whole-goal audit performed.",
+    "Shared-host visibility is limited to visible processes; no global quiescence claim."
+  ],
+  "warnings": {
+    "latest_count": 4,
+    "classification": "existing unused import/function/method warnings; raw preserved"
+  },
+  "artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/BEFORE.json",
+      "bytes": 332,
+      "sha256": "4cfe4a2ad2abbd0f432effdefb64686a5cd6ae154ea36e617aa7f4e1e5d68d42"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/SCOPE_ADDENDUM_001.json",
+      "bytes": 265,
+      "sha256": "1798499c4a3d2971c1ecc016d94f58b2a7b17ed5c2f1670d61fd4433af25928a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/AFTER.json",
+      "bytes": 81896,
+      "sha256": "a6d5aece5706073fe9e42c39c785b943557fd7d59bf2256163cbcedab3504321"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/SOURCE_CHANGE.diff",
+      "bytes": 31578,
+      "sha256": "922ba9c628bacc5312e76bda779d2deecc93f1ce93cafdfc488775980ada710a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/CHANGED_AFTER.tar.gz",
+      "bytes": 42906,
+      "sha256": "73bf6c8d8c2b88d582bdd076c6d7b78996d6a7e315781a563bd26c4dbb1a6a81"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/RAW_RECEIPTS.tar.gz",
+      "bytes": 205354,
+      "sha256": "17ab069f8e10b1a472f0257d3edb6e38a03c96e04230e13d2b5ef711f44f75f8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/execute_focused.py",
+      "bytes": 3569,
+      "sha256": "1ab7dc0636975a6864c57794138ba52cad4f92ca2ba20decfdc382d0d6540ecb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/structural.rs.preimage",
+      "bytes": 9760,
+      "sha256": "d645e36da74055d6e26cc3b73d5a99a4c156fda29b7058f68ed59dd6cf074284"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/tests.rs.preimage",
+      "bytes": 9897,
+      "sha256": "80aae7edb3ec19622ee29f23512e12c95861a97b17630a4047b48d859b592ed6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_ta001/sim.rs.preimage",
+      "bytes": 213815,
+      "sha256": "154e0ff8765133791f006cd8f1968c0ca765cb2ece1d7322c4511461362daf17"
+    }
+  ]
+}

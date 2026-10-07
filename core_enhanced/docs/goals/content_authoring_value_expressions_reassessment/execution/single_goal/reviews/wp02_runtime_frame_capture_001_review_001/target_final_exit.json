@@ -1,0 +1,13 @@
+{
+  "start": "2026-09-25T15:48:20.500Z",
+  "end": "2026-09-25T15:48:23.352Z",
+  "cwd": "/mnt/f/work/simulator",
+  "command": [
+    "python3",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_runtime_frame_capture_001_review_001/verify_review_target.py"
+  ],
+  "code": 0,
+  "signal": null,
+  "log": "target_final_exit.log",
+  "sha256": "969acff0ebefaa82dc7a59be7db0adab8f0a097046552207e7ab55fe8585643c"
+}

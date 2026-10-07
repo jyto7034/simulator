@@ -48,11 +48,11 @@ impl BattleCore {
         owner_unit_instance: UnitInstanceId,
         salt: u32,
     ) -> Uuid {
-        let mut material = Vec::with_capacity(16 + 16 + 1 + 4);
-        material.extend_from_slice(equipment_uuid.as_bytes());
-        material.extend_from_slice(owner_unit_instance.as_bytes());
-        material.push(Self::side_tag(side));
-        material.extend_from_slice(&salt.to_be_bytes());
+        let mut material = [0_u8; 37];
+        material[..16].copy_from_slice(equipment_uuid.as_bytes());
+        material[16..32].copy_from_slice(owner_unit_instance.as_bytes());
+        material[32] = Self::side_tag(side);
+        material[33..].copy_from_slice(&salt.to_be_bytes());
         let seed = Self::stable_seed(&material);
         determinism::uuid_v4_from_seed(seed, Self::ITEM_INSTANCE_NS, 0)
     }
@@ -94,5 +94,38 @@ mod tests {
             a0,
             BattleCore::make_item_instance_id(equipment, Side::Player, owner_a, 0)
         );
+    }
+
+    #[test]
+    fn stack_item_instance_material_is_byte_identical_to_the_previous_vec_scheme() {
+        fn previous(
+            equipment_uuid: Uuid,
+            side: Side,
+            owner_unit_instance: UnitInstanceId,
+            salt: u32,
+        ) -> Uuid {
+            let mut material = Vec::with_capacity(37);
+            material.extend_from_slice(equipment_uuid.as_bytes());
+            material.extend_from_slice(owner_unit_instance.as_bytes());
+            material.push(BattleCore::side_tag(side));
+            material.extend_from_slice(&salt.to_be_bytes());
+            assert_eq!(material.len(), 37);
+            let seed = BattleCore::stable_seed(&material);
+            determinism::uuid_v4_from_seed(seed, BattleCore::ITEM_INSTANCE_NS, 0)
+        }
+
+        for (equipment, side, owner, salt) in [
+            (0xE001, Side::Player, 0xAA, 0),
+            (0xE001, Side::Player, 0xAA, 1),
+            (0xE002, Side::Player, 0xBB, u32::MAX),
+            (0xE001, Side::Opponent, 0xAA, 0),
+        ] {
+            let equipment = Uuid::from_u128(equipment);
+            let owner = UnitInstanceId(Uuid::from_u128(owner));
+            assert_eq!(
+                BattleCore::make_item_instance_id(equipment, side, owner, salt),
+                previous(equipment, side, owner, salt)
+            );
+        }
     }
 }

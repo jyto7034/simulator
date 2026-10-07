@@ -1,0 +1,61 @@
+{
+  "schema": "u09_product_bundle_closed_v1",
+  "actual_closed_at_utc": "2026-10-07T10:18:23.940925+00:00",
+  "before": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/BEFORE.json",
+    "bytes": 7696,
+    "sha256": "88cefc38ee2087258d9301bd5a5f17e52a853f4bf83852c37c1d709dc3bfcc42"
+  },
+  "after": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/AFTER.json",
+    "bytes": 97004,
+    "sha256": "997629fa55cc6bf682ad7f371f505bb7bfbd46f04cb1ce11d491be8a17008a53"
+  },
+  "api_handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/API_HANDOFF_001.md",
+    "bytes": 13555,
+    "sha256": "9e4e6d9e1dd78411ac7a06232f90a4d7888311a074832fce925456dc3584d17a"
+  },
+  "delta_archive": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/CHANGED_AFTER.tar.gz",
+    "bytes": 120485,
+    "sha256": "06a9bdd4630fc69dfb482c17f09130503ce9a3a5d8ba99f7cca94c2ed3b5d16d"
+  },
+  "check_archive": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/CHECK_RAW_RECEIPTS.tar.gz",
+    "bytes": 155632,
+    "sha256": "be6815952157a747b3fd3d0430ba7e6ff3adf18fe0784bc752911893f3baaf27"
+  },
+  "final_check": {
+    "label": "u09_product_bundle_a_check003",
+    "receipt": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/u09_product_bundle_a_check003.json",
+      "bytes": 176037,
+      "sha256": "e2bc71162a522cf77dece31ce8adef7339c6a321d16975dc4040f20e91c0b51e"
+    },
+    "stdout": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/u09_product_bundle_a_check003.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_a001/u09_product_bundle_a_check003.stderr",
+      "bytes": 4938,
+      "sha256": "290609d97d9fa9015c7ab790ac9597c6295766d78bb4e745489279c0d76a303f"
+    },
+    "actual_started_at_utc": "2026-10-07T10:12:01.772850+00:00",
+    "actual_closed_at_utc": "2026-10-07T10:12:25.101605+00:00",
+    "duration_seconds": 23.32874675700441,
+    "exit_code": 0,
+    "source_unchanged": true,
+    "source_count": 447,
+    "source_sha256": "bd332d3a331d823b64fd2a7f22ebcbb02021a05fc7b62e89160998a638f01e60"
+  },
+  "model": "Parent-confirmed gpt-6.1-sol/xhigh unchanged",
+  "source_count": 447,
+  "source_sha256": "bd332d3a331d823b64fd2a7f22ebcbb02021a05fc7b62e89160998a638f01e60",
+  "writer0": true,
+  "runner0": true,
+  "new_test_oracles_or_registrations": 0,
+  "handover": "Root review then sequential whole-file test-registration handover to Astra; no concurrent same-file writers."
+}

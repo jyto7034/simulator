@@ -1,0 +1,60 @@
+{
+  "purpose": "D07-B implementation request/document validation, not product validation",
+  "retention_policy": "user confirmed latest one evaluation per battle",
+  "baseline_manifest_sha256": "ae6609c1e75b711a27cacf8467ac0c42eaa99635a0fc19c5ae486ecd949bb1ac",
+  "reviewed_source_count": 21,
+  "reviewed_source_unchanged": true,
+  "exit_currentness_and_restoration": {
+    "manifest": {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/segments/wp02_d07_static_explain_001/target/d07_static_explain_001/MANIFEST.json",
+      "bytes": 160800,
+      "sha256": "ae6609c1e75b711a27cacf8467ac0c42eaa99635a0fc19c5ae486ecd949bb1ac"
+    },
+    "verification": {
+      "state": "CURRENTNESS_AND_ISOLATED_BIDIRECTIONAL_RESTORATION_VERIFIED",
+      "before_source_count": 337,
+      "after_source_count": 338,
+      "product_source_count": 334,
+      "modified_paths": [
+        "core_enhanced/src/authoring/mod.rs",
+        "core_enhanced/src/authoring/query.rs",
+        "core_enhanced/src/authoring/tests.rs",
+        "core_enhanced/src/authoring/trial.rs",
+        "core_enhanced/src/game/value_expr/catalog.rs",
+        "core_enhanced/src/game/value_expr/mod.rs"
+      ],
+      "added_paths": [
+        "core_enhanced/src/authoring/amount.rs"
+      ],
+      "record_count": 98
+    }
+  },
+  "criteria": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B10",
+    "B11",
+    "B12",
+    "B13",
+    "B14",
+    "B15",
+    "B16",
+    "B17",
+    "B18",
+    "B19",
+    "B20"
+  ],
+  "local_links_checked": 71,
+  "missing_links": [],
+  "product_modified": false,
+  "product_tests_run": false,
+  "request_sha256": "8bc0f62776ed86f0a348efaae02502acc0f48ec6b2dd6e1559eb84e07b944323",
+  "evidence_sha256": "b662dbb8b004d83bc67ee405681560ba703dca0f41f154132028daaeccc07dd9"
+}

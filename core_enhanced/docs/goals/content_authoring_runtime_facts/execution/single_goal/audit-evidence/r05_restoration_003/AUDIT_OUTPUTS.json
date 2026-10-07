@@ -1,0 +1,72 @@
+{
+  "record_id": "R04-R05-RESTORATION-AUDIT-003-OUTPUTS",
+  "created_at": "2026-09-12T11:29:22.294729+00:00",
+  "goal_set_ref": "GS-CARF-P2G50-002",
+  "goal_id": "GOAL-CARF-01",
+  "phase_id": "PHASE-CARF-01",
+  "verdict": "Complete / High",
+  "reviewer": "/root/r04_r05_fresh_audit; separate same-model nonparticipant; no conversation fork",
+  "target": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_005.json",
+    "sha256": "9d4be8c4371fb2967f1fa39facff9a457cfc6c6c2a69f4daefa25decd4a0f3c9"
+  },
+  "report": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT_003.md",
+    "sha256": "eb648d01f9a7509653bfcdc1990cd91ce4bb55df4bcf6c68e62fdf024fd3217d",
+    "bytes": 28409
+  },
+  "outputs": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT_003.md",
+      "sha256": "eb648d01f9a7509653bfcdc1990cd91ce4bb55df4bcf6c68e62fdf024fd3217d",
+      "bytes": 28409
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/CURRENTNESS_CLOSURE.json",
+      "sha256": "65b09c7e9e3d8861701027d041b51f5b9697f84ba93d07988e5814eceff8c9ea",
+      "bytes": 679
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/CURRENTNESS_ENTRY.json",
+      "sha256": "1650d399eb64e8b12455434e56ecc9bca6c68a13345bc0c53ac5bc3a1bdc2588",
+      "bytes": 677
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/EVIDENCE_CLOSURE.json",
+      "sha256": "4df37244217bcf9971fdf334febd9a87f269020405ef4c1a66d81c900387fcdc",
+      "bytes": 18740
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/EVIDENCE_ENTRY.json",
+      "sha256": "5dd507b6b7686a482aa953899906601fa559bf6117a9fd92fb3efc775ed35d9b",
+      "bytes": 18738
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/FACT_OUTPUT_VERIFICATION.json",
+      "sha256": "b8a86d94b28f5f9ccc418d31d4db490310c40cff4d91f8d82a9ab641f312b4eb",
+      "bytes": 9470
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/REQUIRED_TEST_OBSERVATIONS.json",
+      "sha256": "f18496148382851f992655bae280952152712a73e30764d804faa1e0a5fcf54f",
+      "bytes": 26653
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/check_currentness.py",
+      "sha256": "396f6172727db21db4e291eef86c9e829a5667c6c545191f1dae2909b51bb32b",
+      "bytes": 2090
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/verify_evidence.py",
+      "sha256": "e17844aa03af333f3f0294cf1080e8fec858a95713e8505f257c7bc4adc3489f",
+      "bytes": 6946
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/r05_restoration_003/verify_fact_outputs.py",
+      "sha256": "9a52252247b7897cc86662d7e4a538735409b55d1fa38c9e69bda011676f739c",
+      "bytes": 5900
+    }
+  ],
+  "self_exclusion": "This registry excludes itself; current target excludes actual audit outputs.",
+  "new_gameplay_executions": 0
+}

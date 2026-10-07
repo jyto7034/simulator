@@ -1,0 +1,366 @@
+{
+  "target_manifest_sha256": "23bb1e61232265d8db0fd2fa85b94bef825b065fd537a41a218cc2b96194626c",
+  "full_suites": {
+    "s1f02_all_default_001": [
+      1701,
+      0,
+      0
+    ],
+    "s1f02_all_feature_001": [
+      1701,
+      0,
+      0
+    ],
+    "s1f02_server_002": [
+      77,
+      0,
+      0
+    ]
+  },
+  "all_v_selectors_present": true,
+  "inherited_conditions": 88,
+  "inherited_conditions_with_current_nonzero_selectors": 86,
+  "non_selector_rows": [
+    "X09: full checks/public/cost evidence",
+    "X10: exact archive restoration and currentness"
+  ],
+  "f01_selectors": 7,
+  "receipts": [
+    {
+      "name": "s1f02_all_default_001",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "sha256": "dba726d2024c2ade8c900f0d8d676800e0ae98fed266018ab625f03d6fc49b59",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_all_feature_001",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "test-fixtures",
+        "--offline",
+        "--locked"
+      ],
+      "sha256": "e7d49a1f9d3f0a68b7e089e85e6cf8633b68fd83333c5255dc85e8a7ba9126b2",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_server_002",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "sha256": "b1a9af4d81cabb8fde184bfde0197fbb181755d3cbbee60568c2964211e57a63",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_fmt_001",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "sha256": "7267e60ee6d1dfd498209ed5f3649987e41af2d3206ccb4dba0d3b99eb0d1c25",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_event_log_001",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "event_log_checks",
+        "--offline",
+        "--locked"
+      ],
+      "sha256": "b5faf8ed7aad1bb44d636c928575d1aed3c5db9cff69e7b238cf7ed204773252",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_clippy_core_001",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "sha256": "32d1a5e2c1d9db98c37d442017bc1ca53eb9947d2ea650b04ba0d79b501cce3d",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_clippy_server_001",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "sha256": "d4a1ccab6c6a190600040dce88790c982229025c44e0ae56364803ad3433ea1d",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_release_001",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--offline",
+        "--locked"
+      ],
+      "sha256": "86945be9f83a226b85446886fd6dc0af537f2b660960e005e98196325daeca59",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_probe_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/probe.py"
+      ],
+      "sha256": "cf056cc3653e607370c7df59eef4a837ae0d556f6ee3f96b07498de9d166a005",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_boundary_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/boundary.py"
+      ],
+      "sha256": "3e3046246f7095e45944812a006dca95b21fcab98cfed4238bd2a30e285edb00",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_default_parity_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/default_parity.py"
+      ],
+      "sha256": "14e0cd7794c7e58b073b9cbdbce27aa1f820767f207a3245f5d8e20ee01093ba",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_oracle_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/public_probe.py",
+        "after"
+      ],
+      "sha256": "a066237067bff5c147d1e0a81526974c56d03c5fa12542ef1d06c5ee47b2b17a",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_trace_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/public_trace_probe.py"
+      ],
+      "sha256": "f0022ed7af5a07ffa2f29e4b13a9154ebc6c41c5ef31cdf7e14e59169d6354f9",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_cli_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/public_cli.py"
+      ],
+      "sha256": "626f3ff3bfa8385985b803c7076390909e100bc7475be899380d5b45565730f7",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_profile_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/public_profile_probe.py"
+      ],
+      "sha256": "b9f454868cdc975eb7bd2827a2405ff927981a52762d51250a10ca491ab1766e",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_boundary_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/public_boundary_probe.py"
+      ],
+      "sha256": "f9a04d9baa6eb2a41d9210c79567a2a6531bb203b60baf1b106f92b1a183b993",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_public_api_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_api_cli_probe.py",
+        "--repository",
+        "/mnt/f/work/simulator",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/public_api"
+      ],
+      "sha256": "c142babb3b1aa8d5babce5507ed7ecb8946952f441270e079db46034e3ae5c3f",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_pc_prepare_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/prepare_pc.py",
+        "001"
+      ],
+      "sha256": "fdf0bd4b56e6bce866215e4645daa853a05efad4f1ce120f0d02f712c3aff697",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_pc_001",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-pc-target",
+        "R06_BASELINE_OUTPUT=/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/pc_raw_current_002.json",
+        "R06_BASELINE_SAMPLES=11",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "/tmp/r06-completion-pc-ctme1599/Cargo.toml",
+        "-p",
+        "game_core",
+        "--lib",
+        "--release",
+        "--offline",
+        "--locked",
+        "pc_load_baseline",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "sha256": "4a580863af92372401bcc41e58e0b96e8061148bae3f05d50fcaeb358e176fef",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_pc_compare_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/compare_pc_v32.py",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/pc_raw_current_002.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/PC_SUMMARY_CURRENT_002.json"
+      ],
+      "sha256": "b677830d6b289c29fab75f05d18574ebb1c0a514c73a6feb31f057fa1196d257",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_r05_compare_001",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/summarize_r05.py"
+      ],
+      "sha256": "39dd96f6cba17e7dfa750afce1d8e6f27854239ce793f5a5d59a52b01409e079",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_check_002",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "sha256": "3f8eab1bcf7a4d762c94dff8fd0329a8ecec5dbef263f52ba67c63eb8af0549d",
+      "exit_code": 0
+    },
+    {
+      "name": "s1f02_r05_001",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "final_performance",
+        "--release",
+        "--features",
+        "allocation-observer",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/r05_raw_current_002.json"
+      ],
+      "sha256": "d580e3ad1e74d9da1769e48200cce2b56aac9e32371e5842722a8f783d685839",
+      "exit_code": 101
+    },
+    {
+      "name": "s1f02_pc_immediate_002",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/compare_pc.py"
+      ],
+      "sha256": "60adad0a0a1c2ed601482809bb36098e090b6343228ebd86e4518c9e95a8e671",
+      "exit_code": 0
+    }
+  ],
+  "restore": {
+    "forward": true,
+    "reverse": true,
+    "fuzz": 0,
+    "source_after_archive": true,
+    "records_archive": true,
+    "references_archive": true
+  },
+  "exact_delta": {
+    "paths": [
+      "core_enhanced/docs/core_runtime_contract.md",
+      "core_enhanced/src/application.rs",
+      "core_enhanced/src/game/world.rs",
+      "core_enhanced/src/game/world/application.rs",
+      "game_server/src/game/player_game_actor/handlers.rs"
+    ],
+    "f01_restore_byte_identical": true
+  },
+  "immediate_cost_parity_excluding_elapsed_ns": true
+}

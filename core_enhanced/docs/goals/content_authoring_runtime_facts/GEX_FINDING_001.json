@@ -1,0 +1,113 @@
+{
+  "recorded_at_utc": "2026-09-10T19:50:05.969436+00:00",
+  "classification": "technical_decision / corrected reviewed Workspace Actual premise",
+  "sources": [
+    {
+      "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+      "sha256": "abdcb6de0b58487011f28df0652a7531fccabec2fa2e6ac833662d30eaf6ce71",
+      "read_spans": [
+        [
+          88,
+          170
+        ]
+      ],
+      "supported_claim": "Death changes movement/lifecycle/wave/buffs/graveyard/reactions, does not take pending cast, remove active casts, or remove follow areas."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/build.rs",
+      "sha256": "99e777d2791b3b6223bdbaada1eba0d3f18c267e1a7fd2565d0f6108d0199761",
+      "read_spans": [
+        [
+          360,
+          565
+        ]
+      ],
+      "supported_claim": "Withdrawal takes pending and cancels active cast/follow areas; released projectile/GroundFixed remain."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "sha256": "8780ed276ff988e6ba8cb1e15e3cdc8d645f73e9207a0b71854286b2130f580c",
+      "read_spans": [
+        [
+          133,
+          258
+        ]
+      ],
+      "supported_claim": "Earlier piercing hits followed by empty expiry interval remove runtime without a terminal impact; finite settlement cannot use step-terminal callback alone."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "sha256": "4a74af5c2b55b7db2052df9e164241f557bfc53e9e4b9f68c5bff4333de96012",
+      "read_spans": [
+        [
+          407,
+          587
+        ],
+        [
+          1110,
+          1136
+        ],
+        [
+          2287,
+          2450
+        ],
+        [
+          2998,
+          3193
+        ]
+      ],
+      "supported_claim": "Pending CastEnd takes pending, invokes then updates recovery/resonance; dead caster invocation can return without a cast."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+      "sha256": "9e546c166984517d20956c69f70ef9666297dd6c51b0c29477e00bf1a7c7156e",
+      "read_spans": [
+        [
+          8,
+          30
+        ]
+      ],
+      "supported_claim": "Death movement interruption changes movement/action state only; it does not share withdrawal cast cleanup."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "sha256": "602b2e6e728811487f86f838d9c62b0f755c2cae265d3a69b66a7645700ceb30",
+      "read_spans": [
+        [
+          1,
+          320
+        ]
+      ],
+      "supported_claim": "Current cast removal/gates/deferred state is not an independent finite-delivery settlement authority."
+    }
+  ],
+  "prior_source_currentness": {
+    "checked_source_files": 49,
+    "mismatch": [],
+    "raw_evidence": {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SOURCE_EVIDENCE_001.json",
+      "sha256": "31896ad740074ee2c4f1666804cc105efada8f23ea315f981c233d06bfbf3cf7"
+    }
+  },
+  "findings": [
+    {
+      "id": "GF-CARF-001",
+      "incorrect_owner": {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/CODE_REVIEW_001.ko.md",
+        "sha256": "3f86179b5b0a3c9048ff58f4d80b66321b871087fa0033cd3c19e4bdc6d857b0"
+      },
+      "selector": "B03 paragraph 2",
+      "finding": "withdraw/death cleanup grouping is false for death",
+      "resolution": "Preserve each actual cause. Never invoke withdrawal cleanup on death merely to simplify action observation; dead pending invocation is a failed/no-release observation if it cannot invoke, with existing resource/recovery behavior preserved. Allow-dead OnDeath remains qualified separately."
+    },
+    {
+      "id": "GF-CARF-002",
+      "selector": "P03 finite carrier completion detail",
+      "finding": "Piercing runtime may end without old damage-gate terminal callback",
+      "resolution": "Observe actual removal for finite delivery completion without synthesizing hit/gate success or altering deferred-step gameplay. A still deferred control decision must not be presented as FlowFinished."
+    }
+  ],
+  "production_mutations": 0,
+  "new_runtime_tests": 0,
+  "limitations": "Static source verification. New causal/action behavior and regressions remain unimplemented and require actual GEX tests."
+}

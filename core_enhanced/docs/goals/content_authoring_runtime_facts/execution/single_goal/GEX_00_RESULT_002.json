@@ -1,0 +1,47 @@
+{
+  "stage": "GEX-00",
+  "result": "completed",
+  "request_mode": "execute / goal-run",
+  "root_target": {
+    "goal_set_ref": "GS-CARF-P2G50-002",
+    "goal_id": "GOAL-CARF-01"
+  },
+  "selected_target": {
+    "goal_set_ref": "GS-CARF-P2G50-002",
+    "goal_id": "GOAL-CARF-01",
+    "kind": "single",
+    "phase_id": "PHASE-CARF-01",
+    "assigned_final_execution_nodes": [
+      "AG-CARF-01",
+      "WP-CARF-03"
+    ]
+  },
+  "accepted_handoff": "HOF-CARF-P2G60-002",
+  "accepted_freeze": "FPF-CARF-P2G30-003",
+  "accepted_plan": "PP-CARF-P2G40-004",
+  "accepted_receipt": "PVR-CARF-P2G40-004",
+  "authority": "Current user-adopted AUTORUN §§3/5/6/8 separately selects eligible exact child. Immutable P2G statuses preserved. No new permission request required.",
+  "execution_directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal",
+  "roles": {
+    "PLAN": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/PLAN.md",
+    "EXPERIMENTS": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/EXPERIMENTS.md",
+    "EXPERIMENT_NOTES": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/EXPERIMENT_NOTES.md",
+    "future_completion_audit": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT.md"
+  },
+  "baseline": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/baseline/BASELINE_002.json",
+    "sha256": "418414c0f38b6ad78ba7c48f2b0916d4122f410363614c2770cc1346cdfca557"
+  },
+  "resume_disposition": "Explicit successor GS002/HOF002 reintake after technical P2G owner return; original stable Goal member/path reused; source baseline retained",
+  "next_pass": "GEX-10",
+  "next_action": "Detailed actual source design/readiness then implementation and validation under existing goal-run",
+  "required_dimensions": 10,
+  "acceptance_members": 20,
+  "assigned_integration_seams": 10,
+  "user_visible_conditions": 8,
+  "blockers": [],
+  "production_mutation": false,
+  "new_gameplay_execution_count": 0,
+  "recorded_at_utc": "2026-09-10T20:07:03.072119+00:00",
+  "resolved_change": "PFC001/COD002 viaDS001 allO20–60 RR002"
+}

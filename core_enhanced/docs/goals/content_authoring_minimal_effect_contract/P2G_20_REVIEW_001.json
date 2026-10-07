@@ -1,0 +1,3729 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Workspace Actual"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0",
+            "read_spans": [
+              [
+                1,
+                162
+              ],
+              [
+                244,
+                300
+              ],
+              [
+                1385,
+                1465
+              ],
+              [
+                1475,
+                1525
+              ],
+              [
+                3405,
+                3424
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/live_ron.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/mod.rs",
+            "sha256": "74ed2bcf2bed377d13b4e1442d2c35ee0b83f3e7d86f1f2e26c308b660997270",
+            "read_spans": [
+              [
+                220,
+                270
+              ],
+              [
+                803,
+                915
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/mod.rs"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "sha256": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1",
+            "read_spans": [
+              [
+                787,
+                825
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": "?? core_enhanced/src/application.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_data.rs",
+            "sha256": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f",
+            "read_spans": [
+              [
+                1,
+                340
+              ],
+              [
+                345,
+                500
+              ],
+              [
+                857,
+                880
+              ],
+              [
+                923,
+                996
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/skill_data.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/ability.rs",
+            "sha256": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25",
+            "read_spans": [
+              [
+                150,
+                208
+              ],
+              [
+                575,
+                610
+              ],
+              [
+                715,
+                835
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/ability.rs"
+          },
+          {
+            "path": "core_enhanced/Cargo.toml",
+            "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+            "read_spans": [
+              [
+                1,
+                52
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/Cargo.toml"
+          }
+        ],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "embedded source → parse raw → validate → generated preview → opaque token → CoreApplication 생성. SourceMap/descriptor는 신규 delta.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "embedded/live loader → raw skill conversion → validation → opaque published database/application",
+        "Review body selector": "§2 B01–03; §4 L01–02/L04",
+        "Limitations": "정적 코드 경계와 작성된 test assertion의 관찰. 게임 테스트/새 RON parser 실행/배포 호환 PASS 아님. 과거 감사는 원래 target 범위의 이력.",
+        "Scope evidence": null,
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ01",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0"
+          },
+          {
+            "path": "core_enhanced/src/game/data/mod.rs",
+            "sha256": "74ed2bcf2bed377d13b4e1442d2c35ee0b83f3e7d86f1f2e26c308b660997270"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "sha256": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_data.rs",
+            "sha256": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f"
+          },
+          {
+            "path": "core_enhanced/src/game/ability.rs",
+            "sha256": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25"
+          },
+          {
+            "path": "core_enhanced/Cargo.toml",
+            "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "Workspace static review only; test execution not claimed",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Workspace Actual"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/ability.rs",
+            "sha256": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25",
+            "read_spans": [
+              [
+                150,
+                208
+              ],
+              [
+                575,
+                610
+              ],
+              [
+                715,
+                835
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/ability.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb",
+            "read_spans": [
+              [
+                370,
+                490
+              ],
+              [
+                1115,
+                1160
+              ],
+              [
+                1975,
+                2175
+              ],
+              [
+                2195,
+                2330
+              ],
+              [
+                3010,
+                3095
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/sim.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/commands.rs",
+            "sha256": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149",
+            "read_spans": [
+              [
+                77,
+                123
+              ],
+              [
+                489,
+                540
+              ],
+              [
+                573,
+                590
+              ],
+              [
+                625,
+                690
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/commands.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+            "sha256": "8c586e5a98252579eb1093c24ac85304d1b27fff7d83cafb1b9e54966081eef5",
+            "read_spans": [
+              [
+                1,
+                222
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/skill_runtime/cast.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/types.rs",
+            "sha256": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9",
+            "read_spans": [
+              [
+                120,
+                143
+              ],
+              [
+                205,
+                250
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/types.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/damage.rs",
+            "sha256": "e92d03779bb460e370326559244cd95fd842da78050ec92493005169e5497076",
+            "read_spans": [
+              [
+                1,
+                88
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/damage.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+            "sha256": "7b4d43792b45b08b0b3c872813059ff1ded233736e67e9c47ef11cdab154f7cb",
+            "read_spans": [
+              [
+                178,
+                317
+              ],
+              [
+                490,
+                558
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/damage_runtime.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/build.rs",
+            "sha256": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7",
+            "read_spans": [
+              [
+                1,
+                90
+              ],
+              [
+                110,
+                175
+              ],
+              [
+                250,
+                295
+              ],
+              [
+                475,
+                540
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/build.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+            "sha256": "8c1a2a84776a8f54efc496bba9e2153ca51aedfe6bb4ad2d929ae0d505f8d96e",
+            "read_spans": [
+              [
+                855,
+                905
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/skill_runtime/projectile.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+            "sha256": "23e25cdfb7831dedc970912d531c20c669083bd36218f00af37cd0d9de9b8f42",
+            "read_spans": [
+              [
+                647,
+                696
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/skill_runtime/area.rs"
+          }
+        ],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "Instant의 실제 producer/command/HP mutation chain과 step gate/취소 확인. Damage/Heal 결과 및 signed Heal/HP-loss gate를 구분.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "SkillStep/Effect, cast scheduling → command construction → Damage/Heal mutation and result",
+        "Review body selector": "§2 B04–07; §4 L03–04",
+        "Limitations": "정적 코드 경계와 작성된 test assertion의 관찰. 게임 테스트/새 RON parser 실행/배포 호환 PASS 아님. 과거 감사는 원래 target 범위의 이력.",
+        "Scope evidence": null,
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ02",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/ability.rs",
+            "sha256": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/commands.rs",
+            "sha256": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+            "sha256": "8c586e5a98252579eb1093c24ac85304d1b27fff7d83cafb1b9e54966081eef5"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/types.rs",
+            "sha256": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/damage.rs",
+            "sha256": "e92d03779bb460e370326559244cd95fd842da78050ec92493005169e5497076"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+            "sha256": "7b4d43792b45b08b0b3c872813059ff1ded233736e67e9c47ef11cdab154f7cb"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/build.rs",
+            "sha256": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+            "sha256": "8c1a2a84776a8f54efc496bba9e2153ca51aedfe6bb4ad2d929ae0d505f8d96e"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+            "sha256": "23e25cdfb7831dedc970912d531c20c669083bd36218f00af37cd0d9de9b8f42"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "Workspace static review only; test execution not claimed",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Workspace Actual"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/ability.rs",
+            "sha256": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25",
+            "read_spans": [
+              [
+                150,
+                208
+              ],
+              [
+                575,
+                610
+              ],
+              [
+                715,
+                835
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/ability.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_data.rs",
+            "sha256": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f",
+            "read_spans": [
+              [
+                1,
+                340
+              ],
+              [
+                345,
+                500
+              ],
+              [
+                857,
+                880
+              ],
+              [
+                923,
+                996
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/skill_data.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0",
+            "read_spans": [
+              [
+                1,
+                162
+              ],
+              [
+                244,
+                300
+              ],
+              [
+                1385,
+                1465
+              ],
+              [
+                1475,
+                1525
+              ],
+              [
+                3405,
+                3424
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/live_ron.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/damage.rs",
+            "sha256": "e92d03779bb460e370326559244cd95fd842da78050ec92493005169e5497076",
+            "read_spans": [
+              [
+                1,
+                88
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/damage.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/types.rs",
+            "sha256": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9",
+            "read_spans": [
+              [
+                120,
+                143
+              ],
+              [
+                205,
+                250
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/types.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/stats.rs",
+            "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+            "read_spans": [
+              [
+                40,
+                105
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/stats.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb",
+            "read_spans": [
+              [
+                370,
+                490
+              ],
+              [
+                1115,
+                1160
+              ],
+              [
+                1975,
+                2175
+              ],
+              [
+                2195,
+                2330
+              ],
+              [
+                3010,
+                3095
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/sim.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/commands.rs",
+            "sha256": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149",
+            "read_spans": [
+              [
+                77,
+                123
+              ],
+              [
+                489,
+                540
+              ],
+              [
+                573,
+                590
+              ],
+              [
+                625,
+                690
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/commands.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/triggers.rs",
+            "sha256": "303313fcaa5e27df6b886f1d03274baa902723e3c899953f23b164c859b0f34d",
+            "read_spans": [
+              [
+                235,
+                315
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/triggers.rs"
+          }
+        ],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "effect ID/tag/property/compiled source map이 현재 skill shape에는 없음. 기존 source snapshot/parent cause/proc source는 부분 근거. raw 변환 문자열에서 위치 손실 가능.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "effect/source identity, tags/property, source-position diagnostics and consumer support",
+        "Review body selector": "§2 B02–03/B06–07; §4 L01–03/L05",
+        "Limitations": "정적 코드 경계와 작성된 test assertion의 관찰. 게임 테스트/새 RON parser 실행/배포 호환 PASS 아님. 과거 감사는 원래 target 범위의 이력.",
+        "Scope evidence": null,
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ03",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/ability.rs",
+            "sha256": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_data.rs",
+            "sha256": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f"
+          },
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/damage.rs",
+            "sha256": "e92d03779bb460e370326559244cd95fd842da78050ec92493005169e5497076"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/types.rs",
+            "sha256": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9"
+          },
+          {
+            "path": "core_enhanced/src/game/stats.rs",
+            "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/commands.rs",
+            "sha256": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/triggers.rs",
+            "sha256": "303313fcaa5e27df6b886f1d03274baa902723e3c899953f23b164c859b0f34d"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "Workspace static review only; test execution not claimed",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Workspace Actual"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/skill_fragment.rs",
+            "sha256": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d",
+            "read_spans": [
+              [
+                1,
+                75
+              ],
+              [
+                678,
+                765
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/skill_fragment.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "sha256": "8d3940dce94a7e8d8858b39c2c48c22f367d76d3b31d23319e76859cc53eaa54",
+            "read_spans": [
+              [
+                487,
+                505
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/employee.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+            "sha256": "3db4f9e21c6bb82e0c0c0d3044c4f5a3b7c7354c3893facac58ff25b0ab1485f",
+            "read_spans": [
+              [
+                35,
+                66
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/stat_pipeline.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/build.rs",
+            "sha256": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7",
+            "read_spans": [
+              [
+                1,
+                90
+              ],
+              [
+                110,
+                175
+              ],
+              [
+                250,
+                295
+              ],
+              [
+                475,
+                540
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/build.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/equipment_data.rs",
+            "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+            "read_spans": [
+              [
+                373,
+                455
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/equipment_data.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/validation.rs",
+            "sha256": "6b636e9ecd48d9084435a930f3201d22d253d93b956e74e823d42469c3942e60",
+            "read_spans": [
+              [
+                550,
+                610
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/validation.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/triggers.rs",
+            "sha256": "303313fcaa5e27df6b886f1d03274baa902723e3c899953f23b164c859b0f34d",
+            "read_spans": [
+              [
+                235,
+                315
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/triggers.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/commands.rs",
+            "sha256": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149",
+            "read_spans": [
+              [
+                77,
+                123
+              ],
+              [
+                489,
+                540
+              ],
+              [
+                573,
+                590
+              ],
+              [
+                625,
+                690
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/commands.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb",
+            "read_spans": [
+              [
+                370,
+                490
+              ],
+              [
+                1115,
+                1160
+              ],
+              [
+                1975,
+                2175
+              ],
+              [
+                2195,
+                2330
+              ],
+              [
+                3010,
+                3095
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/sim.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/range_preview.rs",
+            "sha256": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338",
+            "read_spans": [
+              [
+                45,
+                125
+              ],
+              [
+                168,
+                253
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/range_preview.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+            "sha256": "5c259a9892c30c5ab3f818370ac3a8f241ffd2b3562a365d0525da4d13c6701d",
+            "read_spans": [
+              [
+                173,
+                227
+              ],
+              [
+                554,
+                617
+              ],
+              [
+                840,
+                870
+              ],
+              [
+                1085,
+                1110
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": "?? core_enhanced/src/game/data/boss_runtime_data.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+            "sha256": "8c1a2a84776a8f54efc496bba9e2153ca51aedfe6bb4ad2d929ae0d505f8d96e",
+            "read_spans": [
+              [
+                855,
+                905
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/skill_runtime/projectile.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+            "sha256": "23e25cdfb7831dedc970912d531c20c669083bd36218f00af37cd0d9de9b8f42",
+            "read_spans": [
+              [
+                647,
+                696
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/skill_runtime/area.rs"
+          },
+          {
+            "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md",
+            "sha256": "f04382a6fa9dc6eb171fc22cb10c1a6020ea5862aba5eff04b3952ada238b554",
+            "read_spans": [
+              [
+                1,
+                36
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": "?? core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md"
+          }
+        ],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "fragment/profile/장비 activation/range preview/spatial helper가 SkillId 또는 step contract의 직접 소비자. 보스 task에는 skill invocation 없음. 기존 CRAR 완료는 인수 이력.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "direct consumers: equipment/fragment → runtime skill; boss compiled boundary; core/headless/test host",
+        "Review body selector": "§3; §4 L04–05",
+        "Limitations": "정적 코드 경계와 작성된 test assertion의 관찰. 게임 테스트/새 RON parser 실행/배포 호환 PASS 아님. 과거 감사는 원래 target 범위의 이력.",
+        "Scope evidence": null,
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ04",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/skill_fragment.rs",
+            "sha256": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "sha256": "8d3940dce94a7e8d8858b39c2c48c22f367d76d3b31d23319e76859cc53eaa54"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+            "sha256": "3db4f9e21c6bb82e0c0c0d3044c4f5a3b7c7354c3893facac58ff25b0ab1485f"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/build.rs",
+            "sha256": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7"
+          },
+          {
+            "path": "core_enhanced/src/game/data/equipment_data.rs",
+            "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e"
+          },
+          {
+            "path": "core_enhanced/src/game/data/validation.rs",
+            "sha256": "6b636e9ecd48d9084435a930f3201d22d253d93b956e74e823d42469c3942e60"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/triggers.rs",
+            "sha256": "303313fcaa5e27df6b886f1d03274baa902723e3c899953f23b164c859b0f34d"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/commands.rs",
+            "sha256": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb"
+          },
+          {
+            "path": "core_enhanced/src/game/range_preview.rs",
+            "sha256": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338"
+          },
+          {
+            "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+            "sha256": "5c259a9892c30c5ab3f818370ac3a8f241ffd2b3562a365d0525da4d13c6701d"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+            "sha256": "8c1a2a84776a8f54efc496bba9e2153ca51aedfe6bb4ad2d929ae0d505f8d96e"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+            "sha256": "23e25cdfb7831dedc970912d531c20c669083bd36218f00af37cd0d9de9b8f42"
+          },
+          {
+            "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md",
+            "sha256": "f04382a6fa9dc6eb171fc22cb10c1a6020ea5862aba5eff04b3952ada238b554"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "Workspace static review only; test execution not claimed",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Workspace Actual"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "sha256": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab",
+            "read_spans": [
+              [
+                374,
+                447
+              ],
+              [
+                523,
+                584
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/world/state.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "sha256": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8",
+            "read_spans": [
+              [
+                110,
+                190
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/world/active_run.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/skill_fragment.rs",
+            "sha256": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d",
+            "read_spans": [
+              [
+                1,
+                75
+              ],
+              [
+                678,
+                765
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/skill_fragment.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/types.rs",
+            "sha256": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9",
+            "read_spans": [
+              [
+                120,
+                143
+              ],
+              [
+                205,
+                250
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/types.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb",
+            "read_spans": [
+              [
+                370,
+                490
+              ],
+              [
+                1115,
+                1160
+              ],
+              [
+                1975,
+                2175
+              ],
+              [
+                2195,
+                2330
+              ],
+              [
+                3010,
+                3095
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/battle/core/sim.rs"
+          }
+        ],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "checkpoint에 gameplay inventory/roster/fragments 저장, V5 writer와 V4/V5 reader. 새 정의 metadata/compiled index는 해당 저장 필드 아님; 새 상태 도입 시 저장 동시 전환 필요.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "definition/runtime/save ownership, authoritative snapshot and durable restore",
+        "Review body selector": "§3 저장; §4 L01/L04",
+        "Limitations": "정적 코드 경계와 작성된 test assertion의 관찰. 게임 테스트/새 RON parser 실행/배포 호환 PASS 아님. 과거 감사는 원래 target 범위의 이력.",
+        "Scope evidence": null,
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ05",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "sha256": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "sha256": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8"
+          },
+          {
+            "path": "core_enhanced/src/game/skill_fragment.rs",
+            "sha256": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/types.rs",
+            "sha256": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "Workspace static review only; test execution not claimed",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Workspace Actual"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/tests/skill_runtime_contract.rs",
+            "sha256": "9292bd7175c043073698e724a2265a9a56b107d2a5f4884c3ddcd585e54368ac",
+            "read_spans": [
+              [
+                230,
+                258
+              ],
+              [
+                2202,
+                2400
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/tests/skill_runtime_contract.rs"
+          },
+          {
+            "path": "core_enhanced/tests/live_skill_catalog_audit.rs",
+            "sha256": "d07a40f566d9c598a4fecb285b107f923f256b25f2770e8c52b1f90cef278b7f",
+            "read_spans": [
+              [
+                1,
+                170
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/tests/live_skill_catalog_audit.rs"
+          },
+          {
+            "path": "core_enhanced/tests/live_item_skill_activation.rs",
+            "sha256": "607251fd94ea8819551ef505e3f782be1593121fbef6df6675d446da168bf1f6",
+            "read_spans": [
+              [
+                1,
+                105
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/tests/live_item_skill_activation.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_data.rs",
+            "sha256": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f",
+            "read_spans": [
+              [
+                1,
+                340
+              ],
+              [
+                345,
+                500
+              ],
+              [
+                857,
+                880
+              ],
+              [
+                923,
+                996
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/skill_data.rs"
+          },
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0",
+            "read_spans": [
+              [
+                1,
+                162
+              ],
+              [
+                244,
+                300
+              ],
+              [
+                1385,
+                1465
+              ],
+              [
+                1475,
+                1525
+              ],
+              [
+                3405,
+                3424
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/src/game/data/live_ron.rs"
+          },
+          {
+            "path": "game_resources/data/skills/base.ron",
+            "sha256": "4087df054a663e20ddab14f184a206d532f8df7b472c656bbd708835298f1770",
+            "read_spans": [
+              [
+                1,
+                85
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M game_resources/data/skills/base.ron"
+          },
+          {
+            "path": "core_enhanced/Cargo.toml",
+            "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+            "read_spans": [
+              [
+                1,
+                52
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": " M core_enhanced/Cargo.toml"
+          },
+          {
+            "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md",
+            "sha256": "f04382a6fa9dc6eb171fc22cb10c1a6020ea5862aba5eff04b3952ada238b554",
+            "read_spans": [
+              [
+                1,
+                36
+              ]
+            ],
+            "method": "read-only sed selected spans; rg symbol and caller/reference search",
+            "read_limit": "기재 span만 claim 근거. 잘린 broad search/cat 출력은 전체 파일 읽기 완료로 사용하지 않음.",
+            "dirty_at_request": "?? core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md"
+          }
+        ],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "기존 positive/negative 시험 본문과 실제 run_battle helper, embedded RON/Cargo wiring 확인. 이번 게임 시험/빌드 0. 신규 descriptor/source recipe는 계획.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "validation and representative positive/negative test seams, live fixture/current wiring",
+        "Review body selector": "§5; §3 실제 선행",
+        "Limitations": "정적 코드 경계와 작성된 test assertion의 관찰. 게임 테스트/새 RON parser 실행/배포 호환 PASS 아님. 과거 감사는 원래 target 범위의 이력.",
+        "Scope evidence": null,
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ06",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/tests/skill_runtime_contract.rs",
+            "sha256": "9292bd7175c043073698e724a2265a9a56b107d2a5f4884c3ddcd585e54368ac"
+          },
+          {
+            "path": "core_enhanced/tests/live_skill_catalog_audit.rs",
+            "sha256": "d07a40f566d9c598a4fecb285b107f923f256b25f2770e8c52b1f90cef278b7f"
+          },
+          {
+            "path": "core_enhanced/tests/live_item_skill_activation.rs",
+            "sha256": "607251fd94ea8819551ef505e3f782be1593121fbef6df6675d446da168bf1f6"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_data.rs",
+            "sha256": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f"
+          },
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0"
+          },
+          {
+            "path": "game_resources/data/skills/base.ron",
+            "sha256": "4087df054a663e20ddab14f184a206d532f8df7b472c656bbd708835298f1770"
+          },
+          {
+            "path": "core_enhanced/Cargo.toml",
+            "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"
+          },
+          {
+            "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md",
+            "sha256": "f04382a6fa9dc6eb171fc22cb10c1a6020ea5862aba5eff04b3952ada238b554"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "Workspace static review only; test execution not claimed",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "branch": "cleanup/simulator-dirty-worktree-20260803",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "Scope applicability"
+        },
+        "Source Set": [],
+        "Observation command/method": "rg forward/reverse symbol search + sed source span inspection; repository baseline sha256 comparison; no game process execution",
+        "Observed result": "현재 승인된 core/headless workspace 검토는 release/deploy/server/Unity compatibility claim을 포함하지 않음. 해당 실제 환경 동작은 미확인.",
+        "Observation timestamp": "2026-09-09T06:03:05.462898+00:00",
+        "Supported claim": "released/deployed/server/Unity compatibility or rollout",
+        "Review body selector": "§1; §6 F20-07",
+        "Limitations": "외부 runtime 안전·호환·배포를 관찰한 것이 아님.",
+        "Scope evidence": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G10-001",
+            "Content Digest": null
+          },
+          "scope_selectors": [
+            "I02",
+            "I03",
+            "O05"
+          ]
+        },
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CAMEC-P2G20-RQ07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Requirement ID": "RQ07",
+        "Observed source identity/location/version": {
+          "scope_source": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G10-001",
+            "Content Digest": null
+          },
+          "selectors": [
+            "I02",
+            "I03",
+            "O05"
+          ]
+        },
+        "Disposition": "N/A",
+        "Observation evidence": {
+          "Artifact Type": "Review Evidence",
+          "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+          "Content Digest": null
+        },
+        "Limitation or N/A reason": "현재 승인된 core/headless workspace 검토는 release/deploy/server/Unity compatibility claim을 포함하지 않음. 해당 실제 환경 동작은 미확인.",
+        "Observation timestamp/version": "2026-09-09T06:03:05.462898+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Reviewed Source Basis",
+        "Artifact ID": "RSB-CAMEC-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Selected Source Set": [
+          {
+            "Source ID": "RQ01",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            "Supported claim": "embedded/live loader → raw skill conversion → validation → opaque published database/application",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "RQ02",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ02-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+              "Content Digest": null
+            },
+            "Supported claim": "SkillStep/Effect, cast scheduling → command construction → Damage/Heal mutation and result",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "RQ03",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ03-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+              "Content Digest": null
+            },
+            "Supported claim": "effect/source identity, tags/property, source-position diagnostics and consumer support",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "RQ04",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ04-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+              "Content Digest": null
+            },
+            "Supported claim": "direct consumers: equipment/fragment → runtime skill; boss compiled boundary; core/headless/test host",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "RQ05",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ05-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+              "Content Digest": null
+            },
+            "Supported claim": "definition/runtime/save ownership, authoritative snapshot and durable restore",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "RQ06",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            "Supported claim": "validation and representative positive/negative test seams, live fixture/current wiring",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "RQ07",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            },
+            "Supported claim": "released/deployed/server/Unity compatibility or rollout",
+            "Disposition": "N/A"
+          }
+        ],
+        "Currentness evidence": {
+          "request_baseline": {
+            "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+            "observed_at": "2026-09-09T05:39:18.738178+00:00"
+          },
+          "all_reviewed_source_hashes_match_request_baseline": true,
+          "existing_baseline_text_paths_unchanged_before_review_publication": 1668,
+          "released_deployed_claim": false
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CAMEC-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Review body": {
+          "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+          "sha256": "d14d661c81eb5a85fc09ced3a71997b5462f79ec86fa0f861f0db6430bcfa352"
+        },
+        "Element review mapping": [
+          {
+            "Reviewed Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+              "Content Digest": null
+            },
+            "Approved Target": "공통 명령·행동·조건·효과의 지원 조합으로 콘텐츠를 작성하며, 지원 조합 안의 콘텐츠별 전용 실행 코드를 만들지 않는다. 새 공통 기능 추가는 가능하다.",
+            "Decision Revision Ref": {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CAMEC-E01-001",
+              "Content Digest": null
+            },
+            "Approved Observable Policy Acceptance": [
+              "같은 지원 조합을 사용하는 새 정의를 추가할 때 그 콘텐츠 ID를 분기하는 전용 executor가 필요하지 않는다.",
+              "새 동작이 공통 지원 목록 밖이면 공통 기능의 추가 대상으로 구분한다."
+            ],
+            "Required Claim/Boundary Set": [
+              "RQ01",
+              "RQ02",
+              "RQ04",
+              "RQ06",
+              "RQ07"
+            ]
+          },
+          {
+            "Reviewed Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+              "Content Digest": null
+            },
+            "Approved Target": "향후 조합기가 소비할 작성 정보·공통 검증·진단·시험 실행 기반을 엔진에 둔다. RON 조합기 UI 자체는 이번 제작 범위가 아니다.",
+            "Decision Revision Ref": {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CAMEC-E02-001",
+              "Content Digest": null
+            },
+            "Approved Observable Policy Acceptance": [
+              "엔진 소비자가 작성 가능한 기능 정보와 검증 결과·진단을 얻을 수 있다.",
+              "조합기 UI 없이 코어/headless 시험 입구를 사용할 수 있다."
+            ],
+            "Required Claim/Boundary Set": [
+              "RQ01",
+              "RQ03",
+              "RQ04",
+              "RQ06",
+              "RQ07"
+            ]
+          },
+          {
+            "Reviewed Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+              "Content Digest": null
+            },
+            "Approved Target": "범용 유물은 효과 태그와 세부 속성으로 적용 대상을 판별하고 실제 변화는 유물 효과 정의가 소유한다. 전용 유물은 명시한 파편·장비의 고유 구조를 확장한다.",
+            "Decision Revision Ref": {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CAMEC-E03-001",
+              "Content Digest": null
+            },
+            "Approved Observable Policy Acceptance": [
+              "범용 판별은 해당 효과의 태그·세부 속성에 근거하며 특정 콘텐츠 ID 전용 분기를 요구하지 않는다.",
+              "같은 일반 태그라는 이유만으로 전용 대상 조건을 대신 충족하지 않는다.",
+              "태그 자체를 실제 강화 수치나 새 실행 동작으로 간주하지 않는다."
+            ],
+            "Required Claim/Boundary Set": [
+              "RQ01",
+              "RQ02",
+              "RQ03",
+              "RQ06",
+              "RQ07"
+            ]
+          },
+          {
+            "Reviewed Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+              "Content Digest": null
+            },
+            "Approved Target": "새로 부여한 효과에도 태그와 출처를 부여하여 다른 유물의 조합 대상이 될 수 있게 한다.",
+            "Decision Revision Ref": {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CAMEC-E04-001",
+              "Content Digest": null
+            },
+            "Approved Observable Policy Acceptance": [
+              "원래 효과와 새로 부여한 효과의 출처를 구별할 수 있다.",
+              "새 효과도 다른 유물의 태그 조건을 만족하는 대상이 될 수 있다."
+            ],
+            "Required Claim/Boundary Set": [
+              "RQ01",
+              "RQ02",
+              "RQ03",
+              "RQ04",
+              "RQ05",
+              "RQ06",
+              "RQ07"
+            ]
+          },
+          {
+            "Reviewed Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+              "Content Digest": null
+            },
+            "Approved Target": "기존 RON은 전량 교체 가능하며 구형 별칭·레거시 호환·이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의 삭제하지 않는다.",
+            "Decision Revision Ref": {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CAMEC-E05-001",
+              "Content Digest": null
+            },
+            "Approved Observable Policy Acceptance": [
+              "최신 규격 도입을 위해 구형 문법 별칭이나 구형/신형 이중 실행·자동 저장 변환을 추가하지 않는다.",
+              "미지원 저장의 처리 때문에 기존 개인 파일이 임의 삭제되지 않는다."
+            ],
+            "Required Claim/Boundary Set": [
+              "RQ05",
+              "RQ06",
+              "RQ07"
+            ]
+          },
+          {
+            "Reviewed Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+              "Content Digest": null
+            },
+            "Approved Target": "외부 콘텐츠 스크립트·플러그인 코드를 실행하지 않는다. 콘텐츠 작성 권한을 OS·파일 시스템·네트워크 실행 권한으로 확대하지 않는다.",
+            "Decision Revision Ref": {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CAMEC-E06-001",
+              "Content Digest": null
+            },
+            "Approved Observable Policy Acceptance": [
+              "콘텐츠 정의가 엔진이 지원하는 데이터 조합을 넘어 외부 코드나 임의 OS·파일·네트워크 명령을 실행할 수 없다."
+            ],
+            "Required Claim/Boundary Set": [
+              "RQ01",
+              "RQ03",
+              "RQ06",
+              "RQ07"
+            ]
+          }
+        ],
+        "Current Actual selector": "§2–3",
+        "Implementation Delta/Proposed Implementation selector": "§4 L01–05",
+        "Validation seams selector": "§5",
+        "Finding/Unknown selector": "§6",
+        "Outcome": "all scoped candidate reviews accepted; static code review only"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CAMEC-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate Batch ID": "CAND-BATCH-CAMEC-001",
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Reviewed Element/Revision": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+          "Content Digest": null
+        },
+        "Review Path": "policy_revision_review",
+        "Candidate Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Candidate Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Proposed code_reviewed Revision Payload": {
+          "Stable Element ID": "CAMEC-E01",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "Policy statement": "공통 명령·행동·조건·효과의 지원 조합으로 콘텐츠를 작성하며, 지원 조합 안의 콘텐츠별 전용 실행 코드를 만들지 않는다. 새 공통 기능 추가는 가능하다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E01-001",
+            "Content Digest": null
+          },
+          "Observable Policy Acceptance": [
+            "같은 지원 조합을 사용하는 새 정의를 추가할 때 그 콘텐츠 ID를 분기하는 전용 executor가 필요하지 않는다.",
+            "새 동작이 공통 지원 목록 밖이면 공통 기능의 추가 대상으로 구분한다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Candidate Binding Payload": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E01-REVIEWED-001",
+            "Content Digest": null
+          },
+          "Code Review Artifact Ref": {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "P2G-20 Review Scope/Source Requirement Plan Ref": {
+            "Artifact Type": "Review Scope/Source Requirement Plan",
+            "Artifact ID": "RSP-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Reviewed Source Basis Ref": {
+            "Artifact Type": "Reviewed Source Basis",
+            "Artifact ID": "RSB-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Review Evidence Ref Set": [
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            }
+          ],
+          "Covered Required Claim/Boundary Set": [
+            "RQ01",
+            "RQ02",
+            "RQ04",
+            "RQ06",
+            "RQ07"
+          ],
+          "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+          "Applicable Policy Impact Closure Canonical Union": []
+        },
+        "Candidate Result": "accepted-for-complete-result",
+        "Abort Reason": null,
+        "Lifecycle Disposition": "non-current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E01-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+          "Content Digest": null
+        },
+        "Policy statement": "공통 명령·행동·조건·효과의 지원 조합으로 콘텐츠를 작성하며, 지원 조합 안의 콘텐츠별 전용 실행 코드를 만들지 않는다. 새 공통 기능 추가는 가능하다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 지원 조합을 사용하는 새 정의를 추가할 때 그 콘텐츠 ID를 분기하는 전용 executor가 필요하지 않는다.",
+          "새 동작이 공통 지원 목록 밖이면 공통 기능의 추가 대상으로 구분한다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAMEC-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E01-REVIEWED-001",
+          "Content Digest": null
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "P2G-20 Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "RQ01",
+          "RQ02",
+          "RQ04",
+          "RQ06",
+          "RQ07"
+        ],
+        "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+        "Applicable Policy Impact Closure Canonical Union": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CAMEC-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate Batch ID": "CAND-BATCH-CAMEC-001",
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Reviewed Element/Revision": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+          "Content Digest": null
+        },
+        "Review Path": "policy_revision_review",
+        "Candidate Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Candidate Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Proposed code_reviewed Revision Payload": {
+          "Stable Element ID": "CAMEC-E02",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "Policy statement": "향후 조합기가 소비할 작성 정보·공통 검증·진단·시험 실행 기반을 엔진에 둔다. RON 조합기 UI 자체는 이번 제작 범위가 아니다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E02-001",
+            "Content Digest": null
+          },
+          "Observable Policy Acceptance": [
+            "엔진 소비자가 작성 가능한 기능 정보와 검증 결과·진단을 얻을 수 있다.",
+            "조합기 UI 없이 코어/headless 시험 입구를 사용할 수 있다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Candidate Binding Payload": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E02-REVIEWED-001",
+            "Content Digest": null
+          },
+          "Code Review Artifact Ref": {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "P2G-20 Review Scope/Source Requirement Plan Ref": {
+            "Artifact Type": "Review Scope/Source Requirement Plan",
+            "Artifact ID": "RSP-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Reviewed Source Basis Ref": {
+            "Artifact Type": "Reviewed Source Basis",
+            "Artifact ID": "RSB-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Review Evidence Ref Set": [
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            }
+          ],
+          "Covered Required Claim/Boundary Set": [
+            "RQ01",
+            "RQ03",
+            "RQ04",
+            "RQ06",
+            "RQ07"
+          ],
+          "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+          "Applicable Policy Impact Closure Canonical Union": []
+        },
+        "Candidate Result": "accepted-for-complete-result",
+        "Abort Reason": null,
+        "Lifecycle Disposition": "non-current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E02-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+          "Content Digest": null
+        },
+        "Policy statement": "향후 조합기가 소비할 작성 정보·공통 검증·진단·시험 실행 기반을 엔진에 둔다. RON 조합기 UI 자체는 이번 제작 범위가 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "엔진 소비자가 작성 가능한 기능 정보와 검증 결과·진단을 얻을 수 있다.",
+          "조합기 UI 없이 코어/headless 시험 입구를 사용할 수 있다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAMEC-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E02-REVIEWED-001",
+          "Content Digest": null
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "P2G-20 Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "RQ01",
+          "RQ03",
+          "RQ04",
+          "RQ06",
+          "RQ07"
+        ],
+        "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+        "Applicable Policy Impact Closure Canonical Union": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CAMEC-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate Batch ID": "CAND-BATCH-CAMEC-001",
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Reviewed Element/Revision": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+          "Content Digest": null
+        },
+        "Review Path": "policy_revision_review",
+        "Candidate Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Candidate Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Proposed code_reviewed Revision Payload": {
+          "Stable Element ID": "CAMEC-E03",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "Policy statement": "범용 유물은 효과 태그와 세부 속성으로 적용 대상을 판별하고 실제 변화는 유물 효과 정의가 소유한다. 전용 유물은 명시한 파편·장비의 고유 구조를 확장한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E03-001",
+            "Content Digest": null
+          },
+          "Observable Policy Acceptance": [
+            "범용 판별은 해당 효과의 태그·세부 속성에 근거하며 특정 콘텐츠 ID 전용 분기를 요구하지 않는다.",
+            "같은 일반 태그라는 이유만으로 전용 대상 조건을 대신 충족하지 않는다.",
+            "태그 자체를 실제 강화 수치나 새 실행 동작으로 간주하지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Candidate Binding Payload": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E03-REVIEWED-001",
+            "Content Digest": null
+          },
+          "Code Review Artifact Ref": {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "P2G-20 Review Scope/Source Requirement Plan Ref": {
+            "Artifact Type": "Review Scope/Source Requirement Plan",
+            "Artifact ID": "RSP-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Reviewed Source Basis Ref": {
+            "Artifact Type": "Reviewed Source Basis",
+            "Artifact ID": "RSB-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Review Evidence Ref Set": [
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            }
+          ],
+          "Covered Required Claim/Boundary Set": [
+            "RQ01",
+            "RQ02",
+            "RQ03",
+            "RQ06",
+            "RQ07"
+          ],
+          "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+          "Applicable Policy Impact Closure Canonical Union": []
+        },
+        "Candidate Result": "accepted-for-complete-result",
+        "Abort Reason": null,
+        "Lifecycle Disposition": "non-current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E03-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+          "Content Digest": null
+        },
+        "Policy statement": "범용 유물은 효과 태그와 세부 속성으로 적용 대상을 판별하고 실제 변화는 유물 효과 정의가 소유한다. 전용 유물은 명시한 파편·장비의 고유 구조를 확장한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "범용 판별은 해당 효과의 태그·세부 속성에 근거하며 특정 콘텐츠 ID 전용 분기를 요구하지 않는다.",
+          "같은 일반 태그라는 이유만으로 전용 대상 조건을 대신 충족하지 않는다.",
+          "태그 자체를 실제 강화 수치나 새 실행 동작으로 간주하지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAMEC-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E03-REVIEWED-001",
+          "Content Digest": null
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "P2G-20 Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "RQ01",
+          "RQ02",
+          "RQ03",
+          "RQ06",
+          "RQ07"
+        ],
+        "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+        "Applicable Policy Impact Closure Canonical Union": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CAMEC-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate Batch ID": "CAND-BATCH-CAMEC-001",
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Reviewed Element/Revision": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+          "Content Digest": null
+        },
+        "Review Path": "policy_revision_review",
+        "Candidate Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Candidate Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Proposed code_reviewed Revision Payload": {
+          "Stable Element ID": "CAMEC-E04",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "Policy statement": "새로 부여한 효과에도 태그와 출처를 부여하여 다른 유물의 조합 대상이 될 수 있게 한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E04-001",
+            "Content Digest": null
+          },
+          "Observable Policy Acceptance": [
+            "원래 효과와 새로 부여한 효과의 출처를 구별할 수 있다.",
+            "새 효과도 다른 유물의 태그 조건을 만족하는 대상이 될 수 있다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Candidate Binding Payload": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E04-REVIEWED-001",
+            "Content Digest": null
+          },
+          "Code Review Artifact Ref": {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "P2G-20 Review Scope/Source Requirement Plan Ref": {
+            "Artifact Type": "Review Scope/Source Requirement Plan",
+            "Artifact ID": "RSP-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Reviewed Source Basis Ref": {
+            "Artifact Type": "Reviewed Source Basis",
+            "Artifact ID": "RSB-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Review Evidence Ref Set": [
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            }
+          ],
+          "Covered Required Claim/Boundary Set": [
+            "RQ01",
+            "RQ02",
+            "RQ03",
+            "RQ04",
+            "RQ05",
+            "RQ06",
+            "RQ07"
+          ],
+          "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+          "Applicable Policy Impact Closure Canonical Union": []
+        },
+        "Candidate Result": "accepted-for-complete-result",
+        "Abort Reason": null,
+        "Lifecycle Disposition": "non-current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E04-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+          "Content Digest": null
+        },
+        "Policy statement": "새로 부여한 효과에도 태그와 출처를 부여하여 다른 유물의 조합 대상이 될 수 있게 한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "원래 효과와 새로 부여한 효과의 출처를 구별할 수 있다.",
+          "새 효과도 다른 유물의 태그 조건을 만족하는 대상이 될 수 있다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAMEC-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E04-REVIEWED-001",
+          "Content Digest": null
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "P2G-20 Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "RQ01",
+          "RQ02",
+          "RQ03",
+          "RQ04",
+          "RQ05",
+          "RQ06",
+          "RQ07"
+        ],
+        "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+        "Applicable Policy Impact Closure Canonical Union": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CAMEC-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate Batch ID": "CAND-BATCH-CAMEC-001",
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Reviewed Element/Revision": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+          "Content Digest": null
+        },
+        "Review Path": "policy_revision_review",
+        "Candidate Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Candidate Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Proposed code_reviewed Revision Payload": {
+          "Stable Element ID": "CAMEC-E05",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "Policy statement": "기존 RON은 전량 교체 가능하며 구형 별칭·레거시 호환·이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의 삭제하지 않는다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E05-001",
+            "Content Digest": null
+          },
+          "Observable Policy Acceptance": [
+            "최신 규격 도입을 위해 구형 문법 별칭이나 구형/신형 이중 실행·자동 저장 변환을 추가하지 않는다.",
+            "미지원 저장의 처리 때문에 기존 개인 파일이 임의 삭제되지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Candidate Binding Payload": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E05-REVIEWED-001",
+            "Content Digest": null
+          },
+          "Code Review Artifact Ref": {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "P2G-20 Review Scope/Source Requirement Plan Ref": {
+            "Artifact Type": "Review Scope/Source Requirement Plan",
+            "Artifact ID": "RSP-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Reviewed Source Basis Ref": {
+            "Artifact Type": "Reviewed Source Basis",
+            "Artifact ID": "RSB-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Review Evidence Ref Set": [
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            }
+          ],
+          "Covered Required Claim/Boundary Set": [
+            "RQ05",
+            "RQ06",
+            "RQ07"
+          ],
+          "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+          "Applicable Policy Impact Closure Canonical Union": []
+        },
+        "Candidate Result": "accepted-for-complete-result",
+        "Abort Reason": null,
+        "Lifecycle Disposition": "non-current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E05-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+          "Content Digest": null
+        },
+        "Policy statement": "기존 RON은 전량 교체 가능하며 구형 별칭·레거시 호환·이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의 삭제하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "최신 규격 도입을 위해 구형 문법 별칭이나 구형/신형 이중 실행·자동 저장 변환을 추가하지 않는다.",
+          "미지원 저장의 처리 때문에 기존 개인 파일이 임의 삭제되지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAMEC-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E05-REVIEWED-001",
+          "Content Digest": null
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "P2G-20 Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "RQ05",
+          "RQ06",
+          "RQ07"
+        ],
+        "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+        "Applicable Policy Impact Closure Canonical Union": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CAMEC-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate Batch ID": "CAND-BATCH-CAMEC-001",
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Reviewed Element/Revision": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+          "Content Digest": null
+        },
+        "Review Path": "policy_revision_review",
+        "Candidate Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Candidate Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Proposed code_reviewed Revision Payload": {
+          "Stable Element ID": "CAMEC-E06",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+            "Content Digest": null
+          },
+          "Policy statement": "외부 콘텐츠 스크립트·플러그인 코드를 실행하지 않는다. 콘텐츠 작성 권한을 OS·파일 시스템·네트워크 실행 권한으로 확대하지 않는다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E06-001",
+            "Content Digest": null
+          },
+          "Observable Policy Acceptance": [
+            "콘텐츠 정의가 엔진이 지원하는 데이터 조합을 넘어 외부 코드나 임의 OS·파일·네트워크 명령을 실행할 수 없다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Candidate Binding Payload": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E06-REVIEWED-001",
+            "Content Digest": null
+          },
+          "Code Review Artifact Ref": {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "P2G-20 Review Scope/Source Requirement Plan Ref": {
+            "Artifact Type": "Review Scope/Source Requirement Plan",
+            "Artifact ID": "RSP-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Reviewed Source Basis Ref": {
+            "Artifact Type": "Reviewed Source Basis",
+            "Artifact ID": "RSB-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Review Evidence Ref Set": [
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+              "Content Digest": null
+            }
+          ],
+          "Covered Required Claim/Boundary Set": [
+            "RQ01",
+            "RQ03",
+            "RQ06",
+            "RQ07"
+          ],
+          "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+          "Applicable Policy Impact Closure Canonical Union": []
+        },
+        "Candidate Result": "accepted-for-complete-result",
+        "Abort Reason": null,
+        "Lifecycle Disposition": "non-current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E06-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+          "Content Digest": null
+        },
+        "Policy statement": "외부 콘텐츠 스크립트·플러그인 코드를 실행하지 않는다. 콘텐츠 작성 권한을 OS·파일 시스템·네트워크 실행 권한으로 확대하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "콘텐츠 정의가 엔진이 지원하는 데이터 조합을 넘어 외부 코드나 임의 OS·파일·네트워크 명령을 실행할 수 없다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAMEC-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E06-REVIEWED-001",
+          "Content Digest": null
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "P2G-20 Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "RQ01",
+          "RQ03",
+          "RQ06",
+          "RQ07"
+        ],
+        "Evaluated applicable active Change/Obligation/Closure Ref Set": [],
+        "Applicable Policy Impact Closure Canonical Union": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CAMEC-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CAMEC-20260909",
+          "Policy Topic": "CA01 최소 작성·실행 지원 계약",
+          "Requested Result": "필요한 P2G-00/10/20을 거쳐 P2G-20 exit까지; blocker이면 해당 owner 기록 후 정지",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "현재 대화: 콘텐츠 문서 확정 여부에 대한 질의·답변 다음의 사용자 실행 요청",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md를 읽고\n다음 단계를 진행해줘. 첫 인수에서 문서 배치와 P2G/GEX의 적용 버전도\n확인하고, 작업 결과와 근거를 기록한 뒤 현황 문서를 갱신해줘.",
+            "selected_card": {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+              "revision": "v1.3 / record 0004 / NEXT-0003",
+              "sha256": "2d82cb35cfe5a1de57b1d8ee1a58a38cd7a5b80793c51f3ee58ac8bb762735bc",
+              "exact_card": "\n**작업 표지: NEXT-0003 — CA01 최소 작성·실행 지원 계약의 P2G-20 검토까지**\n\n| 항목 | 수행할 내용 |\n| --- | --- |\n| 분류·대상 | 다음 요청에서 선택할 P2G `bounded_pipeline`: CA01 최소 계약 Topic의 필요한 P2G-00/10/20부터 **P2G-20 exit까지**. 정식 identity는 아직 미배정 |\n| 근거·선정 이유 | [NEXT-0002 §7](records/CA00_NEXT-0002_REQUIREMENTS.ko.md#7-다음-topic-범위-제안). 전체 원문 요구 입력을 확보했고 기존 publication·Damage/Heal 경로를 재사용하는 작은 계약을 검토할 수 있음 |\n| 먼저 읽을 것 | 위 범위 제안과 [CA01](roadmap/goals/CA01.md), [요구 원본](records/CA00_NEXT-0002_COVERAGE.json)의 R016–028/061·F135–138, [정책 출처](records/CA00_NEXT-0002_REQUIREMENTS.ko.md#3-정책-출처와-상태), 실제 P2G r2 Reader와 진입 단계 절 |\n| 포함 | 효과별 identity·태그/property descriptor·EffectSite/ActionSite 경계, SourceMap/unsupported 진단, 기존 Damage/Heal/Instant 최소 작성→검증→실행 지원 계약. parser/validator/executor·직접 후행 소비자·필요한 저장/동시 전환을 코드로 검토 |\n| 허용 변경 | 다음 사용자 실행 요청 시: conforming documentation root 안의 Topic 경로/identity 기술 배정, 필요한 Working Policy·P2G-10 결정/질문·P2G-20 review/binding/evidence 작성·범위 내 수리/검증, 안전한 진단, 현황 갱신. 기존 문서 identity가 발견되면 재초기화하지 않음 |\n| 제외 | production 코드·RON·store·검증기·AGENTS·P2G/GEX 규칙 수정, 새 gameplay 선택의 대리 승인, P2G-30 Freeze·Phase/Goal/Handoff·GEX 실행, 외부팩/사본/보스/도구 전체 구현, 서버/Unity |\n| 순서 근거·직접 전제 | 계획상 CA01 후보. 실제 B01–B03과 기존 CRAR/P02 감사 이력·354개 COV 입력 확보. 새 계약 실행 검증·정식 Phase Plan은 없음. 필요한 선행/후행 부분만 P2G-20에서 확인 |\n| 미검토·조정 owner | 정책 의미·필수 provenance는 P2G-10, current source/consumer는 P2G-20, 이후 최소 Atomic Group·유효 중간 상태는 P2G-40. 후반 전체 함수 검토를 일괄 선행으로 만들지 않음 |\n| 종료점 | 같은 범위의 필요한 단계와 검증을 거쳐 P2G-20 결과를 원래 Topic 문서에 기록하고 현황 갱신. P2G-30 또는 다음 Topic은 실행하지 않음 |\n| 중단 조건 | 새 정책/범위/위험/권한 선택, 해결할 수 없는 필수 approval·source/도구 근거, 지침 revision 충돌이 실제 exit를 막으면 영향·근거·필요 질문을 기록하고 정지. 내부 기술 선택은 조사로 해결 |\n\nNEXT-0001/0002를 재시작하지 않는다. 새 NEXT-0003은 이번 요청에서 실행하지 않았다. 다음 사용자 요청이 이 카드를 선택하면 위 Topic 범위와 종료점에 한정하여 진행한다.\n\n"
+            },
+            "authorization_boundary": "사용자 실행 요청이 선택한 카드의 검토 범위와 P2G-20 종료점만 승인. 콘텐츠 전체/개별 gameplay 확정이나 구현 승인이 아니다."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "동일 Topic의 필요한 P2G-00/10/20과 범위 내 artifact 수리·안전한 검증; P2G-20 exit 또는 필수 blocker까지",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "효과별 identity·태그/property descriptor·EffectSite/ActionSite 경계·SourceMap/unsupported 진단·기존 Damage/Heal/Instant 최소 작성→검증→실행 지원 계약 검토",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "parser/validator/executor·직접 후행 소비자·필요한 저장/동시 전환의 코드 검토",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "conforming documentation root에서 미점유 Topic 경로/identity 기술 배정·Working Policy/결정/질문/review/binding/evidence 작성·현황 갱신",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "production 코드·RON·store·검증기·AGENTS·P2G/GEX 규칙 수정",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "새 gameplay 정책·범위·위험·권한 선택의 대리 승인",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "P2G-30 Freeze·Phase/Goal/Handoff·GEX 실행",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "외부팩/사본/보스/도구 전체 구현",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "서버/Unity 전환",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CAMEC-P2G00-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {
+          "CAMEC-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E01-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E02-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E03-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E04-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E05-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E06-REVIEWED-001",
+            "Content Digest": null
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Batch",
+        "Artifact ID": "RB-CAMEC-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G10-001",
+          "Content Digest": null
+        },
+        "Candidate Review Envelope Ref Set": [
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CAMEC-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CAMEC-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CAMEC-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CAMEC-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CAMEC-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CAMEC-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Source Observation Ref Set": [
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CAMEC-P2G20-001",
+            "Content Digest": null
+          }
+        ],
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "RE-CAMEC-P2G20-RQ07-001",
+            "Content Digest": null
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Produced code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E01-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E02-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E03-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E04-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E05-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E06-REVIEWED-001",
+            "Content Digest": null
+          }
+        ],
+        "Result Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G20-001",
+          "Content Digest": null
+        },
+        "Result Current code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E01-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E02-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E03-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E04-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E05-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E06-REVIEWED-001",
+            "Content Digest": null
+          }
+        ],
+        "Result-basis Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAMEC-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAMEC-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAMEC-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAMEC-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAMEC-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAMEC-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Batch Completeness Evidence": {
+          "required_claim_boundary_coverage": "exactly every plan requirement for each mapped input element; observation covers all listed sources",
+          "input_result_policy_meaning_preserved": true,
+          "one_result_successor": true,
+          "required_source_gaps": [],
+          "new_material_policy_findings": [],
+          "static_review_only": true
+        },
+        "Applicable P2G-20 Obligation Key Set": []
+      }
+    }
+  ]
+}

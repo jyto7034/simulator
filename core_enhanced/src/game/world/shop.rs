@@ -4,7 +4,7 @@ use rand::{Rng, SeedableRng};
 use tracing::warn;
 use uuid::Uuid;
 
-use super::GameCore;
+use super::{grant_state::EconomyGrantState, GameCore};
 use crate::game::{
     behavior::{ActionDisabledReasonCode, ActionKind, BehaviorResult, GameError},
     data::shop_data::{ShopMerchandise, ShopMerchandiseEntry, ShopMetadata},
@@ -14,20 +14,40 @@ use crate::game::{
     resources::{
         ConsumableItemDto, InventoryDiffDto, InventoryItemDto, ShopOfferState, ShopSessionState,
     },
-    reward::{GrantExecutionContext, GrantExecutor, RewardEffect},
+    reward::{GrantExecutionContext, RewardEffect},
 };
 
 const SHOP_PAGE_SEED_NAMESPACE: u64 = 0x5348_4f50_5041_4745;
 const SHOP_OFFER_ID_HIGH_NAMESPACE: u64 = 0x5348_4f50_4f46_4849;
 const SHOP_OFFER_ID_LOW_NAMESPACE: u64 = 0x5348_4f50_4f46_4c4f;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ShopSessionCommitMode {
+    RequireRun,
+    AllowActiveOnlyWithoutRun,
+}
+
 impl GameCore {
-    fn commit_shop_session(&mut self, session: ShopSessionState) {
-        if let Some(run) = self.state.run.as_mut() {
-            run.shop_sessions.insert(session.node_id, session.clone());
+    pub(super) fn commit_shop_session(
+        &mut self,
+        session: ShopSessionState,
+        mode: ShopSessionCommitMode,
+    ) -> Result<(), GameError> {
+        match mode {
+            ShopSessionCommitMode::RequireRun => {
+                self.run_state_mut()?
+                    .shop_sessions
+                    .insert(session.node_id, session.clone());
+            }
+            ShopSessionCommitMode::AllowActiveOnlyWithoutRun => {
+                if let Some(run) = self.state.run.as_mut() {
+                    run.shop_sessions.insert(session.node_id, session.clone());
+                }
+            }
         }
         self.state.active_node_content =
             Some(crate::game::resources::ActiveNodeContent::Shop(session));
+        Ok(())
     }
 
     pub(super) fn build_shop_session(
@@ -427,6 +447,13 @@ impl GameCore {
             .sell_policy
             .as_ref()
             .ok_or(ActionDisabledReasonCode::SellingUnavailable)?;
+        if self.state.relics.get(item_uuid).is_some() {
+            return Err(if quantity == 1 {
+                ActionDisabledReasonCode::RelicNotSellable
+            } else {
+                ActionDisabledReasonCode::InvalidQuantity
+            });
+        }
         let (merchandise, base_price) =
             if let Some(owned) = self.state.inventory.equipments.get_item(&item_uuid) {
                 if quantity != 1 {
@@ -539,7 +566,10 @@ impl GameCore {
                 .insert(removed.merchandise);
             self.run_state_mut()?.monolith = next_monolith;
             self.state.enkephalin.amount = next_currency;
-            self.commit_shop_session(next_session);
+            self.commit_shop_session(
+                next_session,
+                ShopSessionCommitMode::AllowActiveOnlyWithoutRun,
+            )?;
             return Ok(BehaviorResult::PurchaseItem {
                 enkephalin: next_currency,
                 inventory_diff: InventoryDiffDto::default(),
@@ -556,21 +586,13 @@ impl GameCore {
             },
             ShopMerchandise::Monolith { .. } => return Err(GameError::InvalidAction),
         };
-        let mut next_inventory = self.state.inventory.clone();
-        let mut next_skill_fragments = self.state.skill_fragments.clone();
-        let mut next_roster = self.state.roster.clone();
-        let mut next_uuid_manager = self.state.uuid_manager.clone();
-        let mut next_enkephalin = self.state.enkephalin.clone();
-        next_enkephalin.amount = next_enkephalin
+        let mut grant_state = EconomyGrantState::capture(&self.state)?;
+        grant_state.enkephalin.amount = grant_state
+            .enkephalin
             .amount
             .checked_sub(offer.total_price)
             .ok_or(GameError::InsufficientResources)?;
-        let granted = GrantExecutor::grant_effects_with_state(
-            &mut next_inventory,
-            &mut next_skill_fragments,
-            &mut next_roster,
-            &mut next_uuid_manager,
-            &mut next_enkephalin,
+        let granted = grant_state.grant_effects(
             &self.game_data,
             &self.state.skill_fragment_policy,
             &GrantExecutionContext::default(),
@@ -583,12 +605,11 @@ impl GameCore {
             .purchased_merchandise
             .insert(removed.merchandise);
 
-        self.state.inventory = next_inventory;
-        self.state.skill_fragments = next_skill_fragments;
-        self.state.roster = next_roster;
-        self.state.uuid_manager = next_uuid_manager;
-        self.state.enkephalin = next_enkephalin;
-        self.commit_shop_session(next_session);
+        grant_state.commit_into(&mut self.state);
+        self.commit_shop_session(
+            next_session,
+            ShopSessionCommitMode::AllowActiveOnlyWithoutRun,
+        )?;
 
         Ok(BehaviorResult::PurchaseItem {
             enkephalin: self.state.enkephalin.amount,
@@ -690,7 +711,10 @@ impl GameCore {
         next_session.offers = next_offers;
         let result = Self::shop_event_option(&next_session);
         self.state.enkephalin.amount = next_currency;
-        self.commit_shop_session(next_session);
+        self.commit_shop_session(
+            next_session,
+            ShopSessionCommitMode::AllowActiveOnlyWithoutRun,
+        )?;
         Ok(BehaviorResult::RefreshShop {
             enkephalin: next_currency,
             shop: result,
@@ -878,9 +902,9 @@ mod tests {
             .build_shop_session(node_id, &core.game_data.shop_data.shops[0])
             .unwrap();
         core.state.active_node_content = Some(ActiveNodeContent::Shop(session));
-        core.state.game_state = GameState::InShop {
+        core.state.transition_to(GameState::InShop {
             shop_uuid: Uuid::from_u128(0x300),
-        };
+        });
         (core, node_id)
     }
 
@@ -930,7 +954,11 @@ mod tests {
             .unwrap()
             .clone();
         let before_currency = core.state.enkephalin.amount;
+        let skill_fragments_before = serde_json::to_value(&core.state.skill_fragments).unwrap();
+        let roster_before = serde_json::to_value(&core.state.roster).unwrap();
+        let uuid_manager_before = serde_json::to_value(&core.state.uuid_manager).unwrap();
         let result = core.purchase_offer(offer.offer_id).unwrap();
+        assert!(core.state.run.is_none());
         assert_eq!(
             core.state
                 .inventory
@@ -958,6 +986,84 @@ mod tests {
             panic!("purchase result");
         };
         assert_eq!(inventory_diff.added.len(), 1);
+        assert_eq!(
+            serde_json::to_value(&core.state.skill_fragments).unwrap(),
+            skill_fragments_before
+        );
+        assert_eq!(
+            serde_json::to_value(&core.state.roster).unwrap(),
+            roster_before
+        );
+        assert_eq!(
+            serde_json::to_value(&core.state.uuid_manager).unwrap(),
+            uuid_manager_before
+        );
+    }
+
+    #[test]
+    fn purchase_grant_failure_preserves_all_five_roots_and_the_offer_session() {
+        let (mut core, _) = test_core(1, 1);
+        let offer_id = core
+            .state
+            .active_node_content
+            .as_ref()
+            .unwrap()
+            .as_shop()
+            .unwrap()
+            .offers[0]
+            .offer_id;
+        core.state
+            .active_node_content
+            .as_mut()
+            .unwrap()
+            .as_shop_mut()
+            .unwrap()
+            .offers[0]
+            .merchandise = ShopMerchandise::Equipment {
+            equipment_id: "missing_purchase_equipment".to_string(),
+        };
+        let roots_before = serde_json::json!({
+            "inventory": &core.state.inventory,
+            "skill_fragments": &core.state.skill_fragments,
+            "roster": &core.state.roster,
+            "uuid_manager": &core.state.uuid_manager,
+            "enkephalin": &core.state.enkephalin,
+        });
+        let session_before = serde_json::to_value(
+            core.state
+                .active_node_content
+                .as_ref()
+                .unwrap()
+                .as_shop()
+                .unwrap(),
+        )
+        .unwrap();
+
+        let error = core.purchase_offer(offer_id).unwrap_err();
+
+        assert!(matches!(error, GameError::InvalidStaticData(_)));
+        assert_eq!(
+            serde_json::json!({
+                "inventory": &core.state.inventory,
+                "skill_fragments": &core.state.skill_fragments,
+                "roster": &core.state.roster,
+                "uuid_manager": &core.state.uuid_manager,
+                "enkephalin": &core.state.enkephalin,
+            }),
+            roots_before
+        );
+        assert_eq!(
+            serde_json::to_value(
+                core.state
+                    .active_node_content
+                    .as_ref()
+                    .unwrap()
+                    .as_shop()
+                    .unwrap(),
+            )
+            .unwrap(),
+            session_before
+        );
     }
 
     #[test]
@@ -975,6 +1081,7 @@ mod tests {
         core.purchase_offer(purchased_offer.offer_id).unwrap();
         let before_refresh_currency = core.state.enkephalin.amount;
         core.refresh_shop().unwrap();
+        assert!(core.state.run.is_none());
         let session = core
             .state
             .active_node_content

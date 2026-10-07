@@ -1,0 +1,804 @@
+{
+  "goal": "GOAL-CRFI-01",
+  "goal_set": "GS-CRFI-001",
+  "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+  "status": "GEX-10 self-verification complete; separate nonparticipant audit pending",
+  "frozen_policy_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CRFI-003",
+    "Content Digest": "sha256:3a6db391f688bbdf63603c118c14485d8d77e0aedd59d12cb482697185e66ff3"
+  },
+  "acceptances": [
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-01-REVIEWED-003",
+        "Content Digest": "sha256:1ba8be15ce5ad4daac18634e9d17c627a96ccbceebf31897f94d8ba0996f5533"
+      },
+      "Observable Policy Acceptance": [
+        "실제 native 한도와 동적 수식/내부 실패가 오류 종료를 만든다. 잘못된 authority·일반 행동/자원 거절·미게시 진입 실패는 기존 거절 의미를 유지하며 정상 전투를 오류 종료하지 않는다."
+      ],
+      "validation_refs": [
+        "V01",
+        "V02"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-02-REVIEWED-003",
+        "Content Digest": "sha256:415f58df8524022495223e215e1cbcc38a2f88cd19d621cf8116c5169baae034"
+      },
+      "Observable Policy Acceptance": [
+        "첫 오류 뒤 gameplay 상태/RNG/event/result가 진전하지 않고 모든 후속 경로에서 같은 전투 identity·최초 원인을 조회할 수 있다. 동일 오류의 반복은 원인 교체·중복 정산을 만들지 않는다."
+      ],
+      "validation_refs": [
+        "V01",
+        "V04",
+        "V05",
+        "V10"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-03-REVIEWED-003",
+        "Content Digest": "sha256:4400397416b24c22504db68640a03e8edf9dd4771b2049349964543e810b2bee"
+      },
+      "Observable Policy Acceptance": [
+        "실패 시 마지막 commit의 자원·RNG·event·결과가 유지되고 실패 시도 비용은 사라지지 않는다. 오류 직후 정상 BattleResult/보상 권리/노드 완료가 새로 생기지 않는다."
+      ],
+      "validation_refs": [
+        "V01",
+        "V02",
+        "V03",
+        "V07",
+        "V10",
+        "V11"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-04-REVIEWED-003",
+        "Content Digest": "sha256:773b7094fb672cb033a5456de699f2854762cfdf1767890970cf0bff566a249d"
+      },
+      "Observable Policy Acceptance": [
+        "postcommit projection/transport 오류가 성공 commit을 되돌리거나 새 전투 fault를 만들지 않는다. runtime fault와 진단 실패가 겹친 경우에도 후속 실행·저장이 거절되고 최소 오류 원인을 조회할 수 있다."
+      ],
+      "validation_refs": [
+        "V02",
+        "V03"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-05-REVIEWED-003",
+        "Content Digest": "sha256:025e600b18ba82ce1be77c3e2686fea5c2b50559f1909a5b5e725fa624e0d1be"
+      },
+      "Observable Policy Acceptance": [
+        "공개 API와 실제 headless host에서 같은 최초 오류를 읽고 재접속 시 오류임을 식별한다. 큰 원인/진단 실패·중복 조회에서도 저장량이 유한하고 trace 한도·root 불변을 지킨다."
+      ],
+      "validation_refs": [
+        "V03",
+        "V04",
+        "V06"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-06-REVIEWED-003",
+        "Content Digest": "sha256:397b792e7435ed3b9151b281c1f42d2b654631c9a9c32078d5c41c8e7cd2e70d"
+      },
+      "Observable Policy Acceptance": [
+        "공개 mutation 포트와 host 관리 명령을 직접 호출해도 오류 root를 바꾸거나 저장 가능한 정상 성공 결과를 만들 수 없다. 조회·명시적 종료는 가능하고 정상 전투/비전투의 기존 유효 호출은 계속 동작한다."
+      ],
+      "validation_refs": [
+        "V01",
+        "V04",
+        "V05",
+        "V07",
+        "V11"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-07-REVIEWED-003",
+        "Content Digest": "sha256:7176d0de2566952febedfdc6f984623da4efd59f0b65540cee2c5404d910917e"
+      },
+      "Observable Policy Acceptance": [
+        "실제 actor에서 수동/자동 최초 실패 후 late callback·EnsureTick·재접속·세션 교체에도 gameplay가 진전하지 않는다. 새 접속이 같은 오류 원인을 받고 오래된 접속이 mutation을 수행하지 못한다."
+      ],
+      "validation_refs": [
+        "V05",
+        "V06"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-08-REVIEWED-003",
+        "Content Digest": "sha256:17fecdda7be0ca83aa3f1fa34e5fba08f2a80152013a37e6c700ec8db1f77ffd"
+      },
+      "Observable Policy Acceptance": [
+        "오류 유발부터 후속 명령·detach/reconnect·actor stop까지 해당 actor에 기인한 쓰기/삭제가 없고 active/profile 원본 파일 bytes가 같다. 정상 다른 세션 저장까지 전역 차단하지 않는다."
+      ],
+      "validation_refs": [
+        "V07",
+        "V08",
+        "V09"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-09-REVIEWED-003",
+        "Content Digest": "sha256:769d845b108f8ffd554f4a671b21fa3b9f23e1cc3ec5f5ba108c05e81a346346"
+      },
+      "Observable Policy Acceptance": [
+        "실제 Quit→actor 종료→새 actor→기존 Continue 경로를 검증하고 원본 저장이 유효할 때만 이어한다. 오류 전투 identity는 재개되지 않고 파일/loads 규칙을 우회하지 않는다. 저장 부재/거절도 기존 의미를 유지한다."
+      ],
+      "validation_refs": [
+        "V08"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-10-REVIEWED-003",
+        "Content Digest": "sha256:a8b78f5ce388813c37be94d5194358d12515638425dd17819d157324af3d7ce4"
+      },
+      "Observable Policy Acceptance": [
+        "동일 실제 host의 두 player 중 하나가 fault를 일으켜도 다른 player는 명령/tick/정상 저장을 계속한다. fault actor는 공유 store를 오염시키지 않고 다른 player의 성공을 자기 fault 해제로 해석하지 않는다."
+      ],
+      "validation_refs": [
+        "V09"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-11-REVIEWED-003",
+        "Content Digest": "sha256:0791aa26f4c8be42b4579d9e0dec7845d2b8d47d49fb4a5190b4ec66b806932d"
+      },
+      "Observable Policy Acceptance": [
+        "fault 후 관측의 활성 집계와 선택 상세가 정리되고 실패 횟수/시도 work는 남는다. off/on·포화/부재에서 fault 이유·root·저장 보호가 같고 반복 gate가 최초 실행을 재수행하지 않는다."
+      ],
+      "validation_refs": [
+        "V10"
+      ],
+      "status": "self-verified; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRFI-12-REVIEWED-003",
+        "Content Digest": "sha256:ffdba791146db5c5ec380b447f71824f7a814aab601490a19d64d7bb37407760"
+      },
+      "Observable Policy Acceptance": [
+        "100개 선행 조건의 현재 적용성/의도된 차이/새 증거가 추적되고 실제 runtime fault가 실행된 공개 경로 증거가 있다. 기존 경고·raw 실패를 보존하며 내부 fixture만으로 host 완료를 주장하지 않는다."
+      ],
+      "validation_refs": [
+        "V02",
+        "V07",
+        "V11",
+        "V12"
+      ],
+      "status": "self-verified; independent audit pending"
+    }
+  ],
+  "validations": [
+    {
+      "id": "V01",
+      "core_selectors": [
+        "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+        "application::fault_tests::trusted_boss_activation_failure_preserves_first_cause_at_public_advance",
+        "application::fault_tests::trusted_reconciliation_origins_fault_once_and_preserve_complete_root"
+      ],
+      "host_selectors": [],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_none",
+        "final_fault_f01_001_off"
+      ]
+    },
+    {
+      "id": "V02",
+      "core_selectors": [
+        "application::fault::tests::typed_normal_resource_and_control_refusals_are_not_terminal",
+        "application::fault_tests::actual_dynamic_expression_failure_preserves_complete_root_and_latches_at_manual_command",
+        "application::fault_tests::actual_revision_overflow_is_terminal_but_postcommit_projection_cancellation_is_not",
+        "application::fault_tests::normal_refusals_queries_and_profile_errors_do_not_fault",
+        "application::fault_tests::ordinary_invalid_targeting_action_is_recoverable_at_the_real_public_producer",
+        "application::fault_tests::ordinary_missing_employee_is_recoverable_at_the_real_public_producer",
+        "application::fault_tests::trusted_reconciliation_fault_at_manual_deployment_retains_original_authority"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "f01_compat_public_boundary_001",
+        "f01_compat_public_api_001"
+      ]
+    },
+    {
+      "id": "V03",
+      "core_selectors": [
+        "application::fault_tests::actual_revision_overflow_is_terminal_but_postcommit_projection_cancellation_is_not",
+        "application::fault_tests::interrupted_diagnostic_keeps_fixed_first_fault_and_origin_excludes_read_only_errors",
+        "application::fault_tests::trusted_boss_activation_failure_preserves_first_cause_at_public_advance",
+        "application::fault_tests::trusted_reconciliation_origins_fault_once_and_preserve_complete_root"
+      ],
+      "host_selectors": [],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": []
+    },
+    {
+      "id": "V04",
+      "core_selectors": [
+        "application::fault_tests::interrupted_diagnostic_keeps_fixed_first_fault_and_origin_excludes_read_only_errors",
+        "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_websocket"
+      ]
+    },
+    {
+      "id": "V05",
+      "core_selectors": [],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer",
+        "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_websocket"
+      ]
+    },
+    {
+      "id": "V06",
+      "core_selectors": [],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_websocket"
+      ]
+    },
+    {
+      "id": "V07",
+      "core_selectors": [],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue",
+        "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+        "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_websocket",
+        "f01_compat_prepared_public_001"
+      ]
+    },
+    {
+      "id": "V08",
+      "core_selectors": [],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::fault::new_owner_continue_keeps_existing_missing_and_invalid_save_refusals",
+        "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_websocket",
+        "f01_compat_public_profile_001"
+      ]
+    },
+    {
+      "id": "V09",
+      "core_selectors": [],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": []
+    },
+    {
+      "id": "V10",
+      "core_selectors": [],
+      "host_selectors": [],
+      "observed_selectors": [
+        "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+        "application::fault_tests::trusted_origin_fault_ends_observation_once_without_committing_candidate",
+        "observability::tests::actual_queue_batch_dedup_and_dead_lease_cleanup_do_not_depend_on_end_messages",
+        "observability::tests::selection_switch_ring_rollover_end_and_aggregate_subtraction_are_exact"
+      ],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "final_fault_f01_001_none",
+        "final_fault_f01_001_detached",
+        "final_fault_f01_001_queue_full",
+        "final_fault_f01_001_on",
+        "final_fault_f01_001_off",
+        "f01_final_heap002"
+      ]
+    },
+    {
+      "id": "V11",
+      "core_selectors": [
+        "application::persistence_rollback_tests::persistence_rollback_preserves_monotonic_profile_and_exhaustion_never_wraps",
+        "application::persistence_rollback_tests::persistence_rollback_restores_one_attempt_and_rejects_foreign_stale_and_double_tokens",
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+        "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+        "authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial",
+        "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+        "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+        "authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure",
+        "authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness",
+        "authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output",
+        "authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically",
+        "authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner",
+        "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+        "authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion",
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token"
+      ],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "f01_compat_prepared_public_001",
+        "f01_compat_prepared_boundary_001",
+        "f01_compat_public_boundary_001",
+        "f01_compat_public_api_001",
+        "f01_compat_public_oracle_001",
+        "f01_compat_public_trace_001"
+      ]
+    },
+    {
+      "id": "V12",
+      "core_selectors": [],
+      "host_selectors": [],
+      "observed_selectors": [],
+      "suite_receipts": [
+        "f01_final_core_default002",
+        "f01_final_core_fixtures002",
+        "f01_final_core_observation002",
+        "f01_final_host_default002",
+        "f01_final_host_observation002"
+      ],
+      "status": "current self-verification; independent semantic audit pending",
+      "direct_receipts": [
+        "f01_compat_default_parity_001",
+        "f01_compat_public_cli_001",
+        "f01_compat_public_profile_001",
+        "f01_compat_pc_compare_001",
+        "f01_compat_pc_immediate_001",
+        "f01_compat_r05_compare_001"
+      ]
+    }
+  ],
+  "required_dimensions": {
+    "success": [
+      "V01",
+      "V05",
+      "V08",
+      "V09"
+    ],
+    "invalid_input": [
+      "V02",
+      "V04",
+      "V08"
+    ],
+    "failure_rollback": [
+      "V01",
+      "V02",
+      "V03",
+      "V07"
+    ],
+    "retry_idempotency": [
+      "V01",
+      "V05",
+      "V07"
+    ],
+    "ordering_concurrency": [
+      "V05",
+      "V06",
+      "V09"
+    ],
+    "boundary_empty_max": [
+      "V01",
+      "V02",
+      "V04",
+      "V10"
+    ],
+    "disconnect_restart_persistence": [
+      "V06",
+      "V07",
+      "V08"
+    ],
+    "live_data": [
+      "V01",
+      "V02",
+      "V12"
+    ],
+    "producer_consumer": [
+      "V04",
+      "V05",
+      "V06",
+      "V07",
+      "V08",
+      "V09",
+      "V10"
+    ],
+    "legacy_fallback_absence": [
+      "V06",
+      "V07",
+      "V11",
+      "V12"
+    ]
+  },
+  "suite_counts": {
+    "f01_final_core_default002": {
+      "passed": 1712,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f01_final_core_fixtures002": {
+      "passed": 1712,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f01_final_core_observation002": {
+      "passed": 1720,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f01_final_host_default002": {
+      "passed": 81,
+      "failed": 0,
+      "ignored": 0
+    },
+    "f01_final_host_observation002": {
+      "passed": 88,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "receipt_bindings": {
+    "f01_final_core_default002": {
+      "receipt_sha256": "70a27785a7782a65ed28ee85895423104428ada6e7e20e0fd4053be3ee7e588a",
+      "log_sha256": "cee301fd46e1e18c816a1c6a7810a122fd787090706eddf34f2965278cea2512",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_core_fixtures002": {
+      "receipt_sha256": "446ecaf8a5eb26f69e138e8e3409fde3d41d943f4be6f48e08f40f723347ee00",
+      "log_sha256": "fe78e1b19fb20ef0fa6a88c4328c259d1ffae051fd2f15db24b0cf55e6d7f60c",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_core_observation002": {
+      "receipt_sha256": "142cb76fcce4ac27819610df03cda6b194a997e7b6f18e3ac50089646dfdbf25",
+      "log_sha256": "bfd40b952ec05788d46e0a078a1ed87c19acc023aabc6c13e3814037d683ad99",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_host_default002": {
+      "receipt_sha256": "3a8fd36aa7b66be2e458396b8fb1a3cf6081bad83d68c2094e1c9af10c9178aa",
+      "log_sha256": "9dc6473424b04154163232d2bbb4ac53a4209d440ab8ba6a17baede2cc61d995",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_host_observation002": {
+      "receipt_sha256": "070391db7fa7c2ae975deee8bb8199b27431bafcd750ead0daaad81932b68b25",
+      "log_sha256": "9e7292edcac4007c02f10ea19eaf861612535850d9c5dee75d82aa9a7adfdfa2",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_fmt002": {
+      "receipt_sha256": "43e4a09e2130590d2843e5a353e9ceea68a1fb69aeed0367a352952f63a05c47",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_check002": {
+      "receipt_sha256": "3c6233496220cb385388a22cf0c6be9a2ec0fbbfb60584b1b19a857375f2c42a",
+      "log_sha256": "ad48ac250309ae9399d79442d2876bb85fc0387f898f04be9cc1773661f3ed65",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_event_log002": {
+      "receipt_sha256": "cb008a422805c036cd5eeaa0728f4f5e0daf01c8c29a82bf0cd2e80470684a9c",
+      "log_sha256": "1ace20331f1786ca20a133b8c48d42a6fa9158b33670236061d6e1e4abbb7b05",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_clippy_core002": {
+      "receipt_sha256": "7a0be753eb0696742d13b7039384d7c18ef153b881d0293f1d19eb1b6faad8b3",
+      "log_sha256": "d6b1692310af062c7a825e27738aba60679391edf6f4560deaf6ff0fea2c2b13",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_clippy_host002": {
+      "receipt_sha256": "4b30e5f94dc7e7e9d78bd343c8846517b77a395d5333d797b3b5aa3074801a25",
+      "log_sha256": "b32edc817acc05c451574f4ad0b83748bb45157cd00275ef145998d72f566b33",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_heap002": {
+      "receipt_sha256": "9a9d77f6b1bef64b5815d1393bd774df6c6d7aa2018f4e990af9b20ca4277d45",
+      "log_sha256": "b1fc8ab8839af167c2ada5c112160709bb7cb94b29f73732bd41c29c51894eff",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_final_release002": {
+      "receipt_sha256": "b5924db23e6308ee32af787958658fd136490225c9705fc97bf2c90e6b380b49",
+      "log_sha256": "b51d0ab3122bf07ee175c5526a0d4af4b38b2efa5f6078397be2145df042f80a",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_prepared_public_001": {
+      "receipt_sha256": "77fb68018ea063eeb7df73b934510dd3c8e5517f786513d6a4e0f22876c3b4a8",
+      "log_sha256": "b35e0ee593e7517b4842e670ef61b519051510a7fdf59b5f61d4e49a24018bc3",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_prepared_boundary_001": {
+      "receipt_sha256": "c44053a1c9e894b6adaffca88c46dc059f2ca3c78e667ce18c6ee12384f767f9",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_observed_release_001": {
+      "receipt_sha256": "55e3c7e0264d4f1460bc23700c78dc0244cd5996d0b918b8ffa0c2c63dffd24c",
+      "log_sha256": "b1c9d17660454aa1b8d4b8e56aa1a308206753802771164fc4862d5d395472df",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_default_parity_001": {
+      "receipt_sha256": "c588c53c13d9401942f14792775532d0014395787a1f7da6be060ebcbb478be1",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_public_oracle_001": {
+      "receipt_sha256": "e296b5ea7ef1f6bc34af4bd6027f2359409310717b15dd9791ff265b83fc4405",
+      "log_sha256": "7c09aa44b0f015e1e6dc09e73b5370837d56301f2a85cd0e4d9deaebf62e3341",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_public_trace_001": {
+      "receipt_sha256": "dce520c5eff9a199ff232351b7925272c0c700d1149d13e43e07f688497175e2",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_public_cli_001": {
+      "receipt_sha256": "dd3bbe14fc1986b08ba28b6dab195623cd314807709c43f02ccc7adc6c5cdb95",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_public_profile_001": {
+      "receipt_sha256": "a75550d4e25257b968f3fa537befa24744323ab0bb7acce215c0252cef9e4aa9",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_public_boundary_001": {
+      "receipt_sha256": "0aaf5bc6ca36ae2af7c3457afa0aac2b3374451ab351e999ad04930ece66195d",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_public_api_001": {
+      "receipt_sha256": "7155a52be6ea02662bfb94379c22d80de073d63c5cdcc4029de1f0eb458d2fec",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_pc_prepare_001": {
+      "receipt_sha256": "77fee1f561dce6ed17034764497bf72412787ce67867dcaf2270fb0e3681cf7b",
+      "log_sha256": "ce08ed90f0366b42950b509fa3e30eb5a943f16601fae563591b330710205756",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_pc_001": {
+      "receipt_sha256": "fb3c78453ce745fbe8415bd035985ce2168d9f2d00bdc1d208605a24b8975b9f",
+      "log_sha256": "7904d2116d96ff38cf46bb1f4c62b05439224cbc55b7213a39e9b66cc57e1af1",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_pc_compare_001": {
+      "receipt_sha256": "3cb801c4addbca56fc1f30963f95c99ba6b3e3ae72bde6b1d48ced0d41b72446",
+      "log_sha256": "8d2cdd136de6908dc2b1156193ef9077bdd20d1beae9856a5de7fb1c46c96422",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_pc_immediate_001": {
+      "receipt_sha256": "4a0a617882138f93f19d281c76c75667cb72b2da1cc56cc1509b22acaf5cb659",
+      "log_sha256": "dd922373a87d778df0d888eaab7ceef39cae3cab57a27e5e188ff7361adf547f",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "f01_compat_r05_001": {
+      "receipt_sha256": "118d1edd8c162f9ebdfdde9adeee612da579c9645b5e83214bde070c71344561",
+      "log_sha256": "ea441babb9843811621fd025451c185f15e774689e1d50a5fc30234cd783aa51",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 101
+    },
+    "f01_compat_r05_compare_001": {
+      "receipt_sha256": "ec55e06ad35b36f2cbc5a1ca629e32a0197a05d424015e96a591a284b23b35f8",
+      "log_sha256": "f4f74b169b1d9655c784137410567fef953c2373ddb6eef62027a82e8ac15db4",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_build_on": {
+      "receipt_sha256": "ac92bbe36aca159d0fc1eee0949d04680c8e6db4c0d03e76286a4ba956d7ad4a",
+      "log_sha256": "3a74292491f39bd82bbf1cb1897800af58c8a33b7d1d36f337b0dda3111ab97b",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_none": {
+      "receipt_sha256": "b1d33d324a7181c6830ba80da119f91fe860c0d28308fa807eaeeb84ace861e6",
+      "log_sha256": "dfa37334714503a657ca27519646e81a44841f6e7ff00a608e14a9f6054df8b3",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_detached": {
+      "receipt_sha256": "4be4de0e294c55ee0a525dd72cfe95c90f1173b365fbd185308cb95381c83431",
+      "log_sha256": "dfa37334714503a657ca27519646e81a44841f6e7ff00a608e14a9f6054df8b3",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_queue_full": {
+      "receipt_sha256": "105d3ce1a711c1cfb5487888debb5459f9d6a134e2da55e21a07bc93027edb8f",
+      "log_sha256": "bcd7065ceccf09be20942f6cc5013798d4c2ae6367ed756bcab2a6da86d2d17d",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_on": {
+      "receipt_sha256": "6ad1362885c8fcdf85ec607e9c4cf4c56426b5b1bf228b11f4e3c0104c8af616",
+      "log_sha256": "fe32edf4bc538673fba6bbf19fa3d86c87c5b0efe24a9b1e00fdfbc60f1c29d5",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_websocket": {
+      "receipt_sha256": "556c041c16b41caa1410327916943ae4893a232a4f096306e784c213e5d86251",
+      "log_sha256": "3b366794c240b20002c8983f2e9d1e4508c0f9df10453e51ab6d03e8429751e3",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_build_off": {
+      "receipt_sha256": "939a92d2e676d0d7608faf1867584fb6456ad4c764561152cf991ecf71dc88d1",
+      "log_sha256": "b3e68ed961c41c8f060c7377678c6e14057d168da6a8f3f9a49311d68de1f3cf",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    },
+    "final_fault_f01_001_off": {
+      "receipt_sha256": "5def984eb55109f96cd584020f50a082c103e6c47140043da86163f1aa74ee28",
+      "log_sha256": "dfa37334714503a657ca27519646e81a44841f6e7ff00a608e14a9f6054df8b3",
+      "source_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+      "raw_exit_code": 0
+    }
+  },
+  "public_fault_summary": "../../../../evidence/final_fault_f01_001_SUMMARY.json",
+  "compatibility": "compatibility/current_001/ADAPTATION.json",
+  "unchanged_observation_service_reuse": "SERVICE_REUSE.json",
+  "limitations": [
+    "No Unity UI or remote deployment claim; actual local stock websocket server and public release Core/CLI exercised.",
+    "R05 raw exit and original hard guards are preserved; only the previously approved concurrent-peak warning may be classified separately.",
+    "20 minute test and OBS001 excluded as inherited; no new arbitrary production cap.",
+    "Independent completion verdict is not issued by this implementation."
+  ]
+}

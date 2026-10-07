@@ -1,0 +1,604 @@
+{
+  "scope": "Prior Master integration judgments remain applicable to this S2 documentation successor; not a new Master GEX-30 verdict.",
+  "prior_master_sha256": "744c00efa660aceb559f194802fe29735bcc4ec5e2abffbd676bb0a092a815f5",
+  "prior_conditions_sha256": "70b9bc36d4fbf7637a0199135d7d01cb568129a161f7be44624effa765f3dd49",
+  "acceptances": [
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-01-REVIEWED-002",
+        "Content Digest": "sha256:39e724c415b5857af48c1dd0e45f189a04381599f7e9f3bba79cf548e18c2ca5"
+      },
+      "requirement": [
+        "기본 profile과 변경 전 기본 실행은 결과·오류가 같다. 파일 미지정 embedding/host/CLI의 effective settings가 같고 임의 pack 값은 이를 완화하지 못한다. 신규 gameplay 상한이나 전투 총 메모리 cap을 추가하지 않는다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "One immutable embedded38-number profile remains the operational default; observation configuration is downstream and absent from content/safety identities. Original ceilings and typed legal ranges preserved. Current API/CLI/host defaults and S2 release payload evidence apply.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/0",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/0",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-02-REVIEWED-002",
+        "Content Digest": "sha256:faffd23a2ad95a61089bfe80af453da146643e88e0f99dfc91c21da1e9481cfc"
+      },
+      "requirement": [
+        "미지정은 정상 default, 지정 missing/invalid는 경로와 field를 포함한 오류이며 콘텐츠 publication·전투 생성 전에 거절된다. 입력 크기·중첩·중복·범위 경계를 넘는 입력도 bounded하게 거절된다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Safety loader rejects explicit invalid input before load_game_data publishes content; it does not use the optional diagnostic-config failure fallback. Bounded parsing and public invalid-host evidence remain exact.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/1",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/1",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-03-REVIEWED-002",
+        "Content Digest": "sha256:9ba59c6268d53f2f7db2297722193dd888bd518738c3707175e2c06ea9a7a91d"
+      },
+      "requirement": [
+        "주석/공백만 다르면 raw SHA만 다르고 effective SHA는 같다. 값이 다른 profile은 admission/cache identity가 다르며 서로 격리된다. active 실행은 후속 host profile 변경으로 바뀌지 않고 재현의 hash 불일치는 명시된다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "ContentGeneration holds immutable database/profile; admission identity pairs original content identity with effective safety hash. Separate host observation RON and recorder never enter it. Raw/effective and concurrent generation evidence applies.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/2",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/2",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-04-REVIEWED-002",
+        "Content Digest": "sha256:5ddad53d008d10a209e7982dc9d95230c7c8b77a45a59ce30b431dd1541ca07c"
+      },
+      "requirement": [
+        "실제 host→Core 및 embedding의 첫 spawn부터 작은 유효 한도가 적용된다. restore는 현재 host 한도로 검증하며 실패 시 원본 save bytes가 유지된다. profile을 저장에서 무검증 복구하지 않는다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Current preparation uses the same generation before first native work and current-host restore. Read-only prepared checkpoint is persisted before live-root move; failed actual store writes leave save bytes/root unchanged. No settings imported as trusted save authority.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/3",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/3",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-05-REVIEWED-002",
+        "Content Digest": "sha256:96979a8f10476289a79b1e673d93c3c954a8ccca020278dec8017d1fece1a5ea"
+      },
+      "requirement": [
+        "동일 입력의 API/CLI/host는 적용 가능한 동일 settings와 typed fault를 관측한다. 작은 한도·중첩·취소·rollback 시험에서 allowance가 우회되지 않으며 invalid 설정으로 기존 세션/publication이 교체되지 않는다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Public wrapper body and native teardown preserve same nested allowance/first fault, typed errors and rollback. Active-battle restore refuses before revision mutation; observed discard is diagnostic only. Actual API/CLI/host and opaque capability cases apply.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/4",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/4",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-06-REVIEWED-002",
+        "Content Digest": "sha256:3cf202df6808afe50c1a6ef34cf41ec717611a287dd47e3b4fd3a6dd59e724c1"
+      },
+      "requirement": [
+        "각 단계의 경계 입력이 선택 profile을 소비한다. 두 profile의 compile/admission 결과와 cache reuse는 identity로 격리되며 정상 식 의미/preview 읽기 전용 계약과 기존 합법 ExprLimits 범위를 보존한다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Original selected parse/compile/evaluate/query limits and semantic identity are unaffected by observation. Current named selectors and exact public/PC expression oracles cover shared consumers; no alternate evaluator or reconstructed query introduced.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/5",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/5",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-07-REVIEWED-002",
+        "Content Digest": "sha256:2726dc8e5e8edf0970295e8d5261b8df287be1715166626fc42c59cdfb9457ef"
+      },
+      "requirement": [
+        "작은 history profile에서 import·실행 모두 저장 상한을 지키고 cursor gap/resync와 결과 통계가 유지된다. 창보다 긴 정상 전투도 history span 때문에 종료되지 않는다."
+      ],
+      "primary_phase": "PHASE-CRSO-S1",
+      "primary_goal": "GOAL-CRSO-S1",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "History settings/import/count/bytes/span owner remains original; observation reads cached fields and uses already-required reconciliation. Cursor/resync and long-battle history tests remain current; span does not become gameplay timeout.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/6",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/6",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-08-REVIEWED-002",
+        "Content Digest": "sha256:dad44216fc4d13818ad7689b3364d72029780f89f4e6958e3079a57df4ee67e6"
+      },
+      "requirement": [
+        "짧은 사용량 peak와 실제 반환 fault가 관측되고 내부 poll 중복으로 rejection이 증가하지 않는다. exporter 값이 safety 판정으로 역류하지 않으며 scrape가 비용 청구·owner 전체 순회·게임 오류를 유발하지 않는다."
+      ],
+      "primary_phase": "PHASE-CRSO-S2",
+      "primary_goal": "GOAL-CRSO-S2",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Native totals copied only after existing budget take; insertion/reconciliation hooks sample numeric peaks. Outer guard records actual returned fault once, and live-root address protects committed state. Scrape reads standard recorder, not Core.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/7",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/7",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-09-REVIEWED-002",
+        "Content Digest": "sha256:e84c118589651c7103fa6d8d502c040b601db997110f31c4aefa4370bbd51967"
+      },
+      "requirement": [
+        "저장소 구성으로 실제 Grafana에서 사용량·거부 원인을 볼 수 있다. 계측 disabled/enabled·collector 미접속·scrape 중단에서 게임 결과/오류/RNG/event 순서가 같고 유한 exporter storage가 유휴에도 회수된다."
+      ],
+      "primary_phase": "PHASE-CRSO-S2",
+      "primary_goal": "GOAL-CRSO-S2",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Bounded standard recorder batches use synchronous upkeep plus deferred-retirement fence independently of scrape. Captured real Prometheus/Grafana/browser data and exact seven-mode release parity are applicable to unchanged production inputs.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/8",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/8",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-10-REVIEWED-002",
+        "Content Digest": "sha256:6c7435f84bd6f71152b79dd17c4ea3ac17a4c1ec747066040790c5b5e23eff8a"
+      },
+      "requirement": [
+        "전체 sum/max/분포와 선택한 전투 상세가 있고 선택 identity/시각은 제한된 상세 기록에 표시된다. 포화 시 관측 손실만 기록되고 게임 이벤트는 유지된다. profile 변경이 gameplay hash를 바꾸지 않으며 registry/ring/histogram storage 상한을 확인할 수 있다."
+      ],
+      "primary_phase": "PHASE-CRSO-S2",
+      "primary_goal": "GOAL-CRSO-S2",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Finite labels/handles/buckets,1024 queue,128 batch,300 ring and O(live sessions) weak registry are explicit. Queued loss cannot erase atomic counters/current state or game events. Real two-session selection and production sample vocabulary remain applicable.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/9",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/9",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-11-REVIEWED-002",
+        "Content Digest": "sha256:b699c1860411c4139b0b87cfd594908aefbcdcbf6796922a442842d2de20219b"
+      },
+      "requirement": [
+        "실패/rollback·중복 소비·종료·선택 변경에서 counter 중복과 stale gauge가 없고 관측 보관량이 bounded하다. 종료와 exporter 부재/포화가 gameplay 상태·한도 의미에 영향을 주지 않는다."
+      ],
+      "primary_phase": "PHASE-CRSO-S2",
+      "primary_goal": "GOAL-CRSO-S2",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "Pending capture detaches TLS; discard retains attempts/peaks with no commit or invented fault. Counters/current ownership is independent of summary consumption. Sequence dedup and absent-owner expiry now have accurate canonical definitions; end/drop clears aggregates/selection.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/10",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/10",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-12-REVIEWED-002",
+        "Content Digest": "sha256:553c84eaea75eb1f2bae7ee2f76ce4289da0f695dbaebadf4f2474e7fc658a77"
+      },
+      "requirement": [
+        "현재 source의 필요한 전체 Core/host 검사와 고정입력 off/on parity, 정상/집중/기능별/한도거절 표본이 남는다. 기존 경고를 숨기거나 새 source 실행으로 과거 결과를 가장하지 않으며 U01 취소 계약이 유지된다."
+      ],
+      "primary_phase": "PHASE-CRSO-S2",
+      "primary_goal": "GOAL-CRSO-S2",
+      "final_evidence_owner": "GOAL-CRSO-S2",
+      "verdict": "PASS",
+      "master_judgment": "S2 is designated final executable owner and has current nonzero complete suites/public/cost/consumer evidence. Source exceptions are precisely Markdown-only N01 and earlier cfg(test) test addition for three release receipts. Raw failures, warnings and inherited cancellation oracles remain explicit.",
+      "prior_semantic_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#acceptances/11",
+      "N01_currentness_ref": "post_audit/s2_20261004_002/CONDITION_REVIEW.json#acceptances/11",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    }
+  ],
+  "integration": [
+    {
+      "id": "IVA-CRSO-V01-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V01",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V01",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V02-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V02",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V02",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V03-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V03",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V03",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V04-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V04",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V04",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V05-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V05",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V05",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V06-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V06",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V06",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V07-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V07",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V07",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V08-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V08",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V08",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V09-S2",
+      "original_goal": "GOAL-CRSO-S2",
+      "node": "WP-CRSO-S2VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s2/COVERAGE.json V09",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V09",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V10-S2",
+      "original_goal": "GOAL-CRSO-S2",
+      "node": "WP-CRSO-S2VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s2/COVERAGE.json V10",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V10",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V11-S2",
+      "original_goal": "GOAL-CRSO-S2",
+      "node": "WP-CRSO-S2VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s2/COVERAGE.json V11",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V11",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V12-S1",
+      "original_goal": "GOAL-CRSO-S1",
+      "node": "WP-CRSO-S1VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s1/COVERAGE.json V12",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V12",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "id": "IVA-CRSO-V12-S2",
+      "original_goal": "GOAL-CRSO-S2",
+      "node": "WP-CRSO-S2VERIFY",
+      "disposition": "assigned_execution_node",
+      "seam_locator": "execution/s2/COVERAGE.json V12",
+      "current_validation_ref": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#V12",
+      "final_execution_owner": "GOAL-CRSO-S2/WP-CRSO-S2VERIFY",
+      "verdict": "PASS",
+      "master_assessment": "Existing durable Phase seam remains available; source-bound S2 final executions revalidate shared consumers, N01 changes no executable input, and Master adds no source delta. Original owner is retained; Master owns no implementation seam.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    }
+  ],
+  "phase_dimensions": [
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "success",
+      "disposition": "required",
+      "original_seam": "V01,V03–08 actual host/API/CLI",
+      "completion_requirement": "default/explicit valid profile completes with expected identity and gameplay",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "invalid_input",
+      "disposition": "required",
+      "original_seam": "V02 bytes/depth/schema/field/range tests",
+      "completion_requirement": "typed path/field rejection before publication, no fallback",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "failure_rollback",
+      "disposition": "required",
+      "original_seam": "V04,V05,V08 injected failures",
+      "completion_requirement": "same allowance and state; opaque restore exact authority; previous session/save preserved",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "retry_idempotency",
+      "disposition": "required",
+      "original_seam": "V04/V08 repeated fault/restore/capability reuse",
+      "completion_requirement": "no refreshed allowance or duplicate restore; retry after corrected input succeeds",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "ordering_concurrency",
+      "disposition": "required",
+      "original_seam": "V03/V04 two immutable profiles, nested calls",
+      "completion_requirement": "no global cross-profile effect; original RNG/event order",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "boundary_empty_max",
+      "disposition": "required",
+      "original_seam": "V02/V06/V07 zero/max/overflow/parser/history",
+      "completion_requirement": "bounded rejection and exact original legal typed ranges",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "disconnect_restart_persistence",
+      "disposition": "required",
+      "original_seam": "V04/V08 reconnect/checkpoint/persistence failures",
+      "completion_requirement": "cursor and monotonic data preserved under current host settings",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "live_data",
+      "disposition": "required",
+      "original_seam": "V01/V05 production embedded and external content pack",
+      "completion_requirement": "same real loader/compiler profile, no fixture-only evidence",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "producer_consumer",
+      "disposition": "required",
+      "original_seam": "V03–08 full pipeline",
+      "completion_requirement": "profile identity reaches every required consumer before first spawn",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S1",
+      "dimension": "legacy_fallback_absence",
+      "disposition": "required",
+      "original_seam": "V01/V02/V08 source and failure path",
+      "completion_requirement": "one operational default source; no private Core re-export or silent invalid-profile fallback",
+      "verdict": "PASS",
+      "evidence": "post_audit/s1_20261004_003/COMPLETION_AUDIT.md#Full S1 acceptance and validation",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "success",
+      "disposition": "required",
+      "original_seam": "V09/V11 actual operations and graph",
+      "completion_requirement": "work, extent, faults, peaks and time units agree with actual ledgers",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "invalid_input",
+      "disposition": "required",
+      "original_seam": "V10 observer config and malformed service config",
+      "completion_requirement": "observability errors isolated from valid gameplay; safe configuration diagnostics",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "failure_rollback",
+      "disposition": "required",
+      "original_seam": "V09/V10 fault injection and disabled comparison",
+      "completion_requirement": "attempt once persists, committed state unchanged, no gameplay blocking",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "retry_idempotency",
+      "disposition": "required",
+      "original_seam": "V09 duplicated summary/termination/reselection",
+      "completion_requirement": "no duplicate fault or stale/double-subtracted gauge",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "ordering_concurrency",
+      "disposition": "required",
+      "original_seam": "V09/V10 nested operation/two sessions/worker stall",
+      "completion_requirement": "finite aggregate ownership, exact same gameplay events/RNG",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "boundary_empty_max",
+      "disposition": "required",
+      "original_seam": "V10 no sessions/queue full/ring rollover/finite buckets",
+      "completion_requirement": "storage reaches fixed bounds then drops observation only",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "disconnect_restart_persistence",
+      "disposition": "required",
+      "original_seam": "V10/V11 exporter restart and battle end/drop",
+      "completion_requirement": "collector absence maintenance works; no stale battle gauge or gameplay save mutation",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "live_data",
+      "disposition": "required",
+      "original_seam": "V10/V12 normal/concentrated/function/refusal content",
+      "completion_requirement": "actual runtime summary from source-bound battles; synthetic fixtures identified",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "producer_consumer",
+      "disposition": "required",
+      "original_seam": "V11 real exporter→Prometheus→Grafana",
+      "completion_requirement": "datasource queries show expected samples and rejection reasons",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    },
+    {
+      "phase": "PHASE-CRSO-S2",
+      "dimension": "legacy_fallback_absence",
+      "disposition": "required",
+      "original_seam": "V10 feature disabled/exporter failed",
+      "completion_requirement": "no new hidden required service or metrics-driven safety decision",
+      "verdict": "PASS",
+      "evidence": "post_audit/s2_20261004_001/CONDITION_REVIEW.json#required_dimensions",
+      "successor_assessment": "S2 final source/execution and independent full-delta review cover original dimension, not just happy path. Exact N01→Master inputs and Master cross-Phase authority/storage/persistence review preserve applicability.",
+      "n02_applicability": "S2 audit003 independently proves exactly one canonical Markdown hyperlink substitution against Master001/N01 after bytes. All 359 product inputs, other 364 union inputs, 606 transitive extra inputs, original requirements and 34 runtime receipt/log pairs are unchanged. Both current routes resolve the exact previously audited N01 contract. Prior condition/source/evidence judgments therefore remain current; no executable, policy or consumer delta requires runtime reruns."
+    }
+  ],
+  "finding": "N02 closed by S2 owner successor; fresh separate Master GEX-30 still required"
+}

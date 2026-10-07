@@ -1,0 +1,21 @@
+{
+  "start": "2026-09-25T15:36:34.487Z",
+  "end": "2026-09-25T15:38:06.264Z",
+  "cwd": "/mnt/f/work/simulator",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--offline",
+    "--locked",
+    "--lib",
+    "game::world::tests::combat::resource_lifetimes",
+    "--",
+    "--test-threads=1"
+  ],
+  "code": 0,
+  "signal": null,
+  "log": "current_resource_lifetimes.log",
+  "sha256": "15195e44244dabdb890b43dca4d8d8fa3f786d7ff2fa668136f8b0430a185a60"
+}

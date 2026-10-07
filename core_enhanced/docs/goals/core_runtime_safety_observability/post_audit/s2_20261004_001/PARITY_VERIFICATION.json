@@ -1,0 +1,604 @@
+{
+  "rows": [
+    {
+      "sample": 0,
+      "mode": "off",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "b5d13a00534a2731f1299ab571ada578c72318c413e4c0c4aa92fcdf2ce4e975"
+    },
+    {
+      "sample": 0,
+      "mode": "none",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "6b7b44ac96569895eac21ebfb4524c6dc9a80bbee5aa16f54f8b465afc837ff9"
+    },
+    {
+      "sample": 0,
+      "mode": "detached",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "5d748652391fc9a760813f4e50a206e238008bed44e4d2947edbf89b9383e438"
+    },
+    {
+      "sample": 0,
+      "mode": "queue_full",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "ac9ac285c41e209a270bb1b2ff136f5f1dd6f963842dadbac759624ff025b7c8"
+    },
+    {
+      "sample": 0,
+      "mode": "on",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "01bd668abfd3b2938a3e29e5b901caee6d4915ca492f4933765721e372c81196"
+    },
+    {
+      "sample": 0,
+      "mode": "stalled",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "bcb103ec09b31ede7a2ee4649013fd9b48dfcb5c100292cf9a0da789ebf6b938"
+    },
+    {
+      "sample": 0,
+      "mode": "exporter_failed",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "29a6dd120e102c64108ce71e4abd965080b440537a814c52aa1373ccd359a41a"
+    },
+    {
+      "sample": 1,
+      "mode": "exporter_failed",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "83323af111be62ca13e25f86790b5ef49e5cff8df51a0b259034b24f88036e59"
+    },
+    {
+      "sample": 1,
+      "mode": "stalled",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "6aab1c263e8482eda0a8ae2f818f3267a808c7b882fcd6499eba402f15e867bf"
+    },
+    {
+      "sample": 1,
+      "mode": "on",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "220d9189e04d575eab0d0bef307702c434233b3b322ff62000a8021d03abcdb3"
+    },
+    {
+      "sample": 1,
+      "mode": "queue_full",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "a8a2359f639b95cdf8401858b6565efb17f8c491ada90dcc545fda52b810483f"
+    },
+    {
+      "sample": 1,
+      "mode": "detached",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "288f4581c1599206eb191d366109e5457d69a10c2974c323ab2ea5369f2f5a1e"
+    },
+    {
+      "sample": 1,
+      "mode": "none",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "005f229c6f7e30f21ae176b4bae21e152a9cbb4e271d88be4652f99c5008b58a"
+    },
+    {
+      "sample": 1,
+      "mode": "off",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "13d133649c6863e3c0244871faa608e8a51b39c7519d6c37963ba20a79294a5c"
+    },
+    {
+      "sample": 2,
+      "mode": "off",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "78fb03413b1690106caf51497f08cc5978fa6251d9ea7c167cbbb13007d05ccc"
+    },
+    {
+      "sample": 2,
+      "mode": "none",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "560690372eef1d1b85384199dab1760038becb5e5a33d5559b22f00bcb696fcd"
+    },
+    {
+      "sample": 2,
+      "mode": "detached",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "64fcde5f9532d3695d732b0b4991e8e8862dc4e1f8cd96da36fabd6d1ac81ac4"
+    },
+    {
+      "sample": 2,
+      "mode": "queue_full",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "3580a37b5d5736fb031444c7076bbddb1ab5d3a56adcbeebd6883a04361948fc"
+    },
+    {
+      "sample": 2,
+      "mode": "on",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "af4d4ddcba28fdb0e9ada0b1b9fa6c2db0cb2135946794ef9828144d4c3e6f3b"
+    },
+    {
+      "sample": 2,
+      "mode": "stalled",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "793cc908c70297105f7204db2415e5172295d8c2eda46cdfe023c941be512dc9"
+    },
+    {
+      "sample": 2,
+      "mode": "exporter_failed",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "933ee4e3b9acdec639a143b3ce3f5eae59f76fccf0a0820be8608432f6fe438d"
+    },
+    {
+      "sample": 3,
+      "mode": "exporter_failed",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "51b526207952a9451a22a3692e46da240cf513a3861e99cc56908e7ae9aa455e"
+    },
+    {
+      "sample": 3,
+      "mode": "stalled",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "d46e7d4a9ab31ec4f7028a70b1a0758fe9deb26e52d0731eb31d94bae3f9ee6a"
+    },
+    {
+      "sample": 3,
+      "mode": "on",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "888885f8be953b11abcbee979aa9fd8b414d867edc6eb414d9d3ae5dce1a5f7e"
+    },
+    {
+      "sample": 3,
+      "mode": "queue_full",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "30f0b2fef28e267d846713aa673b41c3514057c534d2107a2a30f573f19be3ba"
+    },
+    {
+      "sample": 3,
+      "mode": "detached",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "28db53ed719e9d4d0d3e484793fb7be8bb0471c2da7da7a8009c04f61c39137f"
+    },
+    {
+      "sample": 3,
+      "mode": "none",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "76b3dd2940132717d322ccc6ed208913984e666c8fd37e7a787a929fb65244c8"
+    },
+    {
+      "sample": 3,
+      "mode": "off",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "6010e89e07b0534fde6379905ba85fff9926bc79993004bffa93368b4b7d0b0e"
+    },
+    {
+      "sample": 4,
+      "mode": "off",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "b9d776be8c43095fae7cb3ba58905fe5da996617fddaf1702d9b45aba8bdd3c4"
+    },
+    {
+      "sample": 4,
+      "mode": "none",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "43d58f498a99396cfa670afa63ff31417396d18cdbc0a8e41bb4ea69441fcb2e"
+    },
+    {
+      "sample": 4,
+      "mode": "detached",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "70237948db4ff42e50710fc03a4a52fb935c4c3635c67a4b4f2f4717c9f5d1fe"
+    },
+    {
+      "sample": 4,
+      "mode": "queue_full",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "2226f47640f848f39ed91bada04c43e5b6c59a6c21084cfced45477b620fe64d"
+    },
+    {
+      "sample": 4,
+      "mode": "on",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "046110e23594d1b51cdd3ced58b6b76303e4d16a61ee459a2c72729963afe26a"
+    },
+    {
+      "sample": 4,
+      "mode": "stalled",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "3a5f4a561dbe357c74e3d34f047ba17c3508a267776f682a554bdf4c50205b66"
+    },
+    {
+      "sample": 4,
+      "mode": "exporter_failed",
+      "gameplay_sha256": "67a63efdd38dc1f4f33f3d67d46d141fd73f42d17d021bd83a7fbb27b5669958",
+      "normal_ticks": 1100,
+      "raw_sha256": "d66ef6d419226cc2c04a6548062eb3dfbd17e1911d6681cc999ac91c4909ad99"
+    }
+  ],
+  "summary": {
+    "off": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2755735,
+        "p95_ns": 2936156,
+        "max_ns": 2952999
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 157874.5,
+        "p95_ns": 266195,
+        "max_ns": 695740
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 143652,
+        "p95_ns": 144534,
+        "max_ns": 146998
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 379539,
+        "p95_ns": 390591,
+        "max_ns": 393365
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 124686,
+        "p95_ns": 125147,
+        "max_ns": 133604
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 158501,
+        "p95_ns": 164712,
+        "max_ns": 262117
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 89690,
+        "p95_ns": 90021,
+        "max_ns": 115098
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 397183,
+        "p95_ns": 425577,
+        "max_ns": 437810
+      }
+    },
+    "none": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2271888,
+        "p95_ns": 2315781,
+        "max_ns": 2448432
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 157218.0,
+        "p95_ns": 271224,
+        "max_ns": 696741
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 144373,
+        "p95_ns": 144684,
+        "max_ns": 145365
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 337270,
+        "p95_ns": 345334,
+        "max_ns": 360523
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 123915,
+        "p95_ns": 126079,
+        "max_ns": 129165
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 532870,
+        "p95_ns": 557186,
+        "max_ns": 580420
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 226489,
+        "p95_ns": 242610,
+        "max_ns": 254292
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 406291,
+        "p95_ns": 406350,
+        "max_ns": 424015
+      }
+    },
+    "detached": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2247512,
+        "p95_ns": 2388067,
+        "max_ns": 2446539
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 158150.0,
+        "p95_ns": 277957,
+        "max_ns": 807562
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 144484,
+        "p95_ns": 148031,
+        "max_ns": 150295
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 340245,
+        "p95_ns": 342920,
+        "max_ns": 351286
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 125037,
+        "p95_ns": 130868,
+        "max_ns": 135286
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 561996,
+        "p95_ns": 572235,
+        "max_ns": 744080
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 226089,
+        "p95_ns": 259172,
+        "max_ns": 292535
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 391642,
+        "p95_ns": 392234,
+        "max_ns": 441037
+      }
+    },
+    "queue_full": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2174783,
+        "p95_ns": 2179633,
+        "max_ns": 2323847
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 162237.5,
+        "p95_ns": 271365,
+        "max_ns": 826347
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 144494,
+        "p95_ns": 147199,
+        "max_ns": 147239
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 359412,
+        "p95_ns": 367277,
+        "max_ns": 395149
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 124726,
+        "p95_ns": 124857,
+        "max_ns": 125077
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 553109,
+        "p95_ns": 559330,
+        "max_ns": 587474
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 226229,
+        "p95_ns": 230036,
+        "max_ns": 233854
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 428612,
+        "p95_ns": 548449,
+        "max_ns": 599547
+      }
+    },
+    "on": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2306002,
+        "p95_ns": 2375955,
+        "max_ns": 2377899
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 163335.0,
+        "p95_ns": 266726,
+        "max_ns": 719534
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 147900,
+        "p95_ns": 148843,
+        "max_ns": 153751
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 348461,
+        "p95_ns": 354812,
+        "max_ns": 355884
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 132622,
+        "p95_ns": 134505,
+        "max_ns": 137070
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 546185,
+        "p95_ns": 570291,
+        "max_ns": 587484
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 223604,
+        "p95_ns": 243191,
+        "max_ns": 250455
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 413504,
+        "p95_ns": 544373,
+        "max_ns": 608744
+      }
+    },
+    "stalled": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2443032,
+        "p95_ns": 2525608,
+        "max_ns": 2735908
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 163660.0,
+        "p95_ns": 280141,
+        "max_ns": 717411
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 145436,
+        "p95_ns": 145686,
+        "max_ns": 156527
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 339795,
+        "p95_ns": 348701,
+        "max_ns": 350815
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 128964,
+        "p95_ns": 131409,
+        "max_ns": 145465
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 553790,
+        "p95_ns": 628812,
+        "max_ns": 712461
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 222692,
+        "p95_ns": 229746,
+        "max_ns": 286132
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 418162,
+        "p95_ns": 423362,
+        "max_ns": 488466
+      }
+    },
+    "exporter_failed": {
+      "entry": {
+        "n": 5,
+        "median_ns": 2315219,
+        "p95_ns": 2375492,
+        "max_ns": 2389120
+      },
+      "normal_tick": {
+        "n": 5500,
+        "median_ns": 162132.5,
+        "p95_ns": 272076,
+        "max_ns": 707622
+      },
+      "concentrated_tick": {
+        "n": 5,
+        "median_ns": 144404,
+        "p95_ns": 145135,
+        "max_ns": 162568
+      },
+      "pause_battle": {
+        "n": 5,
+        "median_ns": 355995,
+        "p95_ns": 366314,
+        "max_ns": 370592
+      },
+      "resume_battle": {
+        "n": 5,
+        "median_ns": 131610,
+        "p95_ns": 131880,
+        "max_ns": 136359
+      },
+      "authority_rejection": {
+        "n": 5,
+        "median_ns": 547398,
+        "p95_ns": 672616,
+        "max_ns": 687664
+      },
+      "native_rejection": {
+        "n": 5,
+        "median_ns": 231138,
+        "p95_ns": 231499,
+        "max_ns": 259392
+      },
+      "end_battle": {
+        "n": 5,
+        "median_ns": 419817,
+        "p95_ns": 459140,
+        "max_ns": 470733
+      }
+    }
+  },
+  "binary_hashes_current": true,
+  "all_35_gameplay_payloads_exact": true,
+  "limitations": "No new latency gate. These are paired local release executions. Later product delta is solely cfg(test) amount_order.rs."
+}

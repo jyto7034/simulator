@@ -1,0 +1,8 @@
+// Enable only in an explicitly selected host file. This never enters the
+// gameplay content or runtime-safety hash. No file means no worker or HTTP.
+(
+    enabled: false,
+    metrics_listen: "127.0.0.1:9109",
+    detail_listen: "127.0.0.1:9110",
+    snapshot_ms: 200,
+)

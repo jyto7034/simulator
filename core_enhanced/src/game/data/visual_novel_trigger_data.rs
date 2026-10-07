@@ -82,6 +82,14 @@ pub struct VisualNovelTriggerDatabase {
 }
 
 impl VisualNovelTriggerDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(triggers: Vec<VisualNovelTrigger>) -> Self {
+        Self {
+            triggers,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(triggers: Vec<VisualNovelTrigger>) -> Self {
         let by_id = once_lock_with(build_string_index(
             &triggers,
@@ -175,6 +183,27 @@ fn validate_trigger(
             }
         }
     }
+    match (&trigger.source, trigger.repeat) {
+        (
+            VisualNovelTriggerSource::RunStart { .. }
+            | VisualNovelTriggerSource::MapNodeEntered { .. },
+            VisualNovelTriggerRepeat::OncePerBattle,
+        ) => {
+            return Err(trigger_error(
+                trigger,
+                format!("{trigger_path}.repeat"),
+                "OncePerBattle requires BattleStarted or BattleTimeReached source",
+            ));
+        }
+        (VisualNovelTriggerSource::RunStart { .. }, VisualNovelTriggerRepeat::OncePerNode) => {
+            return Err(trigger_error(
+                trigger,
+                format!("{trigger_path}.repeat"),
+                "OncePerNode requires MapNodeEntered, BattleStarted, or BattleTimeReached source",
+            ));
+        }
+        _ => {}
+    }
     Ok(())
 }
 
@@ -252,5 +281,129 @@ mod tests {
         assert_eq!(error.object_id.as_deref(), Some("t"));
         assert_eq!(error.field_path.as_deref(), Some("triggers[0].vn_id"));
         assert!(error.cause.contains("missing_vn"));
+    }
+
+    #[test]
+    fn runtime_rejected_repeat_source_pairs_fail_typed_publication_with_exact_provenance() {
+        let cases = vec![
+            (
+                "run_start_once_per_battle",
+                VisualNovelTriggerSource::RunStart {
+                    game_mode: GameMode::Standard,
+                },
+                VisualNovelTriggerRepeat::OncePerBattle,
+                "OncePerBattle requires BattleStarted or BattleTimeReached source",
+            ),
+            (
+                "run_start_once_per_node",
+                VisualNovelTriggerSource::RunStart {
+                    game_mode: GameMode::Standard,
+                },
+                VisualNovelTriggerRepeat::OncePerNode,
+                "OncePerNode requires MapNodeEntered, BattleStarted, or BattleTimeReached source",
+            ),
+            (
+                "map_node_entered_once_per_battle",
+                VisualNovelTriggerSource::MapNodeEntered {
+                    category: MapNodeCategory::SavePoint,
+                    kind_id: MapNodeKindId::new("save_point"),
+                },
+                VisualNovelTriggerRepeat::OncePerBattle,
+                "OncePerBattle requires BattleStarted or BattleTimeReached source",
+            ),
+        ];
+
+        let actual = cases
+            .iter()
+            .map(|(id, source, repeat, _)| {
+                let mut candidate = trigger(id, "vn");
+                candidate.source = source.clone();
+                candidate.repeat = *repeat;
+                VisualNovelTriggerDatabase::new(vec![candidate])
+                    .validate_contract()
+                    .err()
+                    .map(|error| (error.object_id, error.field_path, error.cause))
+            })
+            .collect::<Vec<_>>();
+        let expected = cases
+            .iter()
+            .map(|(id, _, _, cause)| {
+                Some((
+                    Some((*id).to_string()),
+                    Some("triggers[0].repeat".to_string()),
+                    (*cause).to_string(),
+                ))
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn every_runtime_keyable_repeat_source_pair_remains_typed_publication_valid() {
+        let sources = vec![
+            (
+                "run_start",
+                VisualNovelTriggerSource::RunStart {
+                    game_mode: GameMode::Standard,
+                },
+            ),
+            (
+                "map_node_entered",
+                VisualNovelTriggerSource::MapNodeEntered {
+                    category: MapNodeCategory::SavePoint,
+                    kind_id: MapNodeKindId::new("save_point"),
+                },
+            ),
+            (
+                "battle_started",
+                VisualNovelTriggerSource::BattleStarted {
+                    encounter_id: "encounter".to_string(),
+                    node_type: CombatNodeType::Defense,
+                    mission_variant: CombatMissionVariant::Defense,
+                },
+            ),
+            (
+                "battle_time_reached",
+                VisualNovelTriggerSource::BattleTimeReached { battle_time_ms: 1 },
+            ),
+        ];
+        let repeats = [
+            VisualNovelTriggerRepeat::Always,
+            VisualNovelTriggerRepeat::OncePerRun,
+            VisualNovelTriggerRepeat::OncePerBattle,
+            VisualNovelTriggerRepeat::OncePerNode,
+        ];
+        let mut accepted = 0;
+
+        for (source_name, source) in sources {
+            for repeat in repeats {
+                let runtime_rejects = matches!(
+                    (&source, repeat),
+                    (
+                        VisualNovelTriggerSource::RunStart { .. },
+                        VisualNovelTriggerRepeat::OncePerBattle
+                            | VisualNovelTriggerRepeat::OncePerNode
+                    ) | (
+                        VisualNovelTriggerSource::MapNodeEntered { .. },
+                        VisualNovelTriggerRepeat::OncePerBattle
+                    )
+                );
+                if runtime_rejects {
+                    continue;
+                }
+                let mut candidate = trigger(&format!("{source_name}_{repeat:?}"), "vn");
+                candidate.source = source.clone();
+                candidate.repeat = repeat;
+                VisualNovelTriggerDatabase::new(vec![candidate])
+                    .validate_contract()
+                    .unwrap_or_else(|error| {
+                        panic!("{source_name} + {repeat:?} must remain accepted: {error:?}")
+                    });
+                accepted += 1;
+            }
+        }
+
+        assert_eq!(accepted, 13);
     }
 }

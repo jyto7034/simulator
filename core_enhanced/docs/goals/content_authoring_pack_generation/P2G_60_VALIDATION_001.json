@@ -1,0 +1,63 @@
+{
+  "result": "passed",
+  "required_refs_and_source_hashes": true,
+  "current_chain": true,
+  "phase_goal_trace": [
+    {
+      "element": "CAPG-E01",
+      "policy_ref": "PER-CAPG-E01-REVIEWED-001",
+      "decision_ref": "DR-CAPG-E01-001",
+      "phase": "PHASE-CAPG-01",
+      "goal": "GOAL-CAPG-01"
+    },
+    {
+      "element": "CAPG-E02",
+      "policy_ref": "PER-CAPG-E02-REVIEWED-001",
+      "decision_ref": "DR-CAPG-E02-001",
+      "phase": "PHASE-CAPG-01",
+      "goal": "GOAL-CAPG-01"
+    },
+    {
+      "element": "CAPG-E03",
+      "policy_ref": "PER-CAPG-E03-REVIEWED-001",
+      "decision_ref": "DR-CAPG-E03-001",
+      "phase": "PHASE-CAPG-01",
+      "goal": "GOAL-CAPG-01"
+    },
+    {
+      "element": "CAPG-E04",
+      "policy_ref": "PER-CAPG-E04-REVIEWED-001",
+      "decision_ref": "DR-CAPG-E04-001",
+      "phase": "PHASE-CAPG-01",
+      "goal": "GOAL-CAPG-01"
+    },
+    {
+      "element": "CAPG-E05",
+      "policy_ref": "PER-CAPG-E05-REVIEWED-001",
+      "decision_ref": "DR-CAPG-E05-001",
+      "phase": "PHASE-CAPG-01",
+      "goal": "GOAL-CAPG-01"
+    },
+    {
+      "element": "CAPG-E06",
+      "policy_ref": "PER-CAPG-E06-REVIEWED-001",
+      "decision_ref": "DR-CAPG-E06-001",
+      "phase": "PHASE-CAPG-01",
+      "goal": "GOAL-CAPG-01"
+    }
+  ],
+  "upstream_authoring_state_preserved": true,
+  "remaining_summary_coverage": [
+    "KU30-01",
+    "KU30-02",
+    "KU30-03",
+    "KU30-04",
+    "TR30-01–06",
+    "SC01–05",
+    "Goal scope/validation/authority/reviewer"
+  ],
+  "production_mutations_in_P2G": 0,
+  "new_game_tests_in_P2G": 0,
+  "failures": [],
+  "method": "read-only exact chain/source SHA/typed Ref/complete primary-to-Goal relation checks plus root semantic remaining-boundary review; P2G50 standard output retained upstream; no P2G60 standard repository validator exists"
+}

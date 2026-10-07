@@ -1,0 +1,62 @@
+{
+  "frozen_d04": {
+    "allocation_operations": [
+      370928
+    ],
+    "retained_delta_bytes": [
+      4196928
+    ],
+    "event_log_sha256": [
+      "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9"
+    ],
+    "latency_gate_applicable": false
+  },
+  "correction_first": {
+    "allocation_operations": [
+      370928
+    ],
+    "retained_delta_bytes": [
+      4196928
+    ],
+    "event_log_sha256": [
+      "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9"
+    ],
+    "latency_gate_applicable": false
+  },
+  "correction_repeat": {
+    "allocation_operations": [
+      370928
+    ],
+    "retained_delta_bytes": [
+      4196928
+    ],
+    "event_log_sha256": [
+      "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9"
+    ],
+    "latency_gate_applicable": false
+  },
+  "predecessor_control": {
+    "allocation_operations": [
+      370928
+    ],
+    "retained_delta_bytes": [
+      4196928
+    ],
+    "event_log_sha256": [
+      "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9"
+    ],
+    "latency_gate_applicable": false
+  },
+  "correction_after_control": {
+    "allocation_operations": [
+      370928
+    ],
+    "retained_delta_bytes": [
+      4196928
+    ],
+    "event_log_sha256": [
+      "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9"
+    ],
+    "latency_gate_applicable": false
+  }
+}

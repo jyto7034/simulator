@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
+use game_core::application::{
+    ApplicationAdminCommand, ApplicationCommand, ApplicationDocument, ApplicationExecutionContext,
+    ApplicationResultKind, ApplicationSnapshotKind, CoreApplication,
+};
 use game_core::game::{
-    behavior::{BehaviorResult, PlayerBehavior},
     data::{
         event_data::{
             EventChoiceCheckDefinition, EventChoiceDefinition, EventChoiceId, EventChoiceKeyId,
@@ -11,8 +14,6 @@ use game_core::game::{
         GameDataBase,
     },
     employee::{EmployeeDefinition, EventAptitude},
-    map::GameMode,
-    world::{AdminCommand, GameCore},
 };
 use serde_json::json;
 use uuid::Uuid;
@@ -111,8 +112,9 @@ fn selected_starter_ids(game_data: &GameDataBase) -> Vec<String> {
 }
 
 fn main() {
-    let mut game_data =
-        GameDataBase::load_live_embedded().expect("embedded live data must load for fixture");
+    let mut game_data = game_core::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live data must load for fixture")
+        .into_fixture_database_arc();
     let mut events = game_data.event_data.events.clone();
     events.push(fixture_event());
     Arc::get_mut(&mut game_data)
@@ -121,56 +123,69 @@ fn main() {
 
     let starter_ids = selected_starter_ids(game_data.as_ref());
     let player_id = Uuid::from_u128(0xE001);
-    let mut core = GameCore::new(game_data, 0xD1CE);
-    let start = core
+    let mut application = CoreApplication::new(game_data, 0xD1CE);
+    let start = application
         .execute(
             player_id,
-            PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
-                replace_active_run: false,
-            },
+            ApplicationCommand::from_document(ApplicationDocument::new(json!({
+                "type": "start_new_game",
+                "game_mode": "Standard",
+                "replace_active_run": false,
+            })))
+            .expect("fixture start command must validate"),
+            ApplicationExecutionContext::default(),
         )
         .expect("fixture run should start");
-    let BehaviorResult::RunStartFlowStarted {
-        visual_novel: Some(visual_novel),
-        ..
-    } = start
-    else {
-        panic!("fixture run must open the pre-run briefing")
-    };
-    core.execute(
-        player_id,
-        PlayerBehavior::AdvanceVisualNovel {
-            session_id: visual_novel.session_id,
-            current_scene_id: game_core::game::data::visual_novel_data::VisualNovelSceneId::new(
-                visual_novel.current_scene_id,
-            ),
-        },
-    )
-    .expect("fixture briefing should close");
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectStarterEmployees {
-            employee_definition_ids: starter_ids,
-        },
-    )
-    .expect("fixture starter selection should begin the run");
-    core.execute_admin_command(AdminCommand::AdminEnterEvent {
-        event_id: "employee_check_fixture".to_string(),
-    })
-    .expect("fixture Event should enter through the real Core projection");
-
-    let snapshot = core
-        .get_run_snapshot_json()
-        .expect("fixture root snapshot should serialize");
-    let node_id = game_core::game::map::MapNodeId::new(
-        Uuid::parse_str(
-            snapshot["selected_event"]["node_id"]
-                .as_str()
-                .expect("fixture Event node id must be a string"),
+    assert_eq!(start.kind(), ApplicationResultKind::RunStartFlowStarted);
+    let visual_novel = &start.payload().as_value()["visual_novel"];
+    let session_id = visual_novel["session_id"]
+        .as_str()
+        .expect("fixture run must open the pre-run briefing");
+    let current_scene_id = visual_novel["current_scene_id"]
+        .as_str()
+        .expect("fixture briefing must expose its current scene");
+    application
+        .execute(
+            player_id,
+            ApplicationCommand::from_document(ApplicationDocument::new(json!({
+                "type": "advance_visual_novel",
+                "session_id": session_id,
+                "current_scene_id": current_scene_id,
+            })))
+            .expect("fixture Visual Novel command must validate"),
+            ApplicationExecutionContext::default(),
         )
-        .expect("fixture Event node id must be a UUID"),
-    );
+        .expect("fixture briefing should close");
+    application
+        .execute(
+            player_id,
+            ApplicationCommand::from_document(ApplicationDocument::new(json!({
+                "type": "select_starter_employees",
+                "employee_definition_ids": starter_ids,
+            })))
+            .expect("fixture starter command must validate"),
+            ApplicationExecutionContext::default(),
+        )
+        .expect("fixture starter selection should begin the run");
+    application
+        .execute_admin(
+            ApplicationAdminCommand::from_document(ApplicationDocument::new(json!({
+                "type": "admin_enter_event",
+                "event_id": "employee_check_fixture",
+            })))
+            .expect("fixture admin command must validate"),
+        )
+        .expect("fixture Event should enter through the real Core projection");
+
+    let snapshot = application
+        .snapshot(ApplicationSnapshotKind::Run)
+        .expect("fixture root snapshot should serialize")
+        .read_model()
+        .as_value()
+        .clone();
+    let node_id = snapshot["selected_event"]["node_id"]
+        .as_str()
+        .expect("fixture Event node id must be a string");
     let inspect_candidates = snapshot["selected_event"]["event"]["interaction"]["choices"][0]
         ["employee_candidates"]
         .as_array()
@@ -181,20 +196,27 @@ fn main() {
         .and_then(|candidate| candidate["employee_uuid"].as_str())
         .and_then(|value| Uuid::parse_str(value).ok())
         .expect("fixture inspect choice must have one eligible key provider");
-    core.execute(
-        player_id,
-        PlayerBehavior::ResolveEventChoiceCheck {
-            node_id,
-            event_id: EventId::new("employee_check_fixture"),
-            current_scene_id: EventSceneId::new("check"),
-            choice_id: EventChoiceId::new("inspect"),
-            employee_uuid,
-        },
-    )
-    .expect("fixture resolve must use the real Core command path");
-    let committed_snapshot = core
-        .get_run_snapshot_json()
-        .expect("committed fixture root snapshot should serialize");
+    application
+        .execute(
+            player_id,
+            ApplicationCommand::from_document(ApplicationDocument::new(json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id,
+                "event_id": "employee_check_fixture",
+                "current_scene_id": "check",
+                "choice_id": "inspect",
+                "employee_uuid": employee_uuid,
+            })))
+            .expect("fixture resolve command must validate"),
+            ApplicationExecutionContext::default(),
+        )
+        .expect("fixture resolve must use the real Core command path");
+    let committed_snapshot = application
+        .snapshot(ApplicationSnapshotKind::Run)
+        .expect("committed fixture root snapshot should serialize")
+        .read_model()
+        .as_value()
+        .clone();
     let output = json!({
         "game_state": snapshot["game_state"].clone(),
         "game_state_context": snapshot["game_state_context"].clone(),

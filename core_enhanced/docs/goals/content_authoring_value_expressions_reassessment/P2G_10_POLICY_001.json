@@ -1,0 +1,1574 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E01-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "ValueExpr는 유한 typed expression이다. 각 값은 명시적 semantic unit을 가지며 compatible unit끼리만 Add/Sum/Max/Clamp한다. Multiply는 dimensionless scalar, Ratio는 명시된 compatible result unit에서만 허용한다. integral division의 rounding mode는 loss가 가능한 식에 명시하고, 누락·unit mismatch·0나눗셈·overflow는 typed validation/evaluation error로 거부한다. saturating/fallback을 식 의미로 사용하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E01",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "ValueExpr는 유한 typed expression이다. 각 값은 명시적 semantic unit을 가지며 compatible unit끼리만 Add/Sum/Max/Clamp한다. Multiply는 dimensionless scalar, Ratio는 명시된 compatible result unit에서만 허용한다. integral division의 rounding mode는 loss가 가능한 식에 명시하고, 누락·unit mismatch·0나눗셈·overflow는 typed validation/evaluation error로 거부한다. saturating/fallback을 식 의미로 사용하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E01": [
+            "서로 다른 unit의 Add/Sum/Max와 unit을 잃는 Multiply/Ratio가 publication 전에 거부된다.",
+            "0나눗셈·checked overflow와 rounding 미지정 lossy division이 typed error이며 gameplay state를 변경하지 않는다.",
+            "같은 입력·rounding·compiled generation은 같은 값을 내고 외부 code eval을 사용하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "user-adopted scope, reassessed",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E01-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§1,3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA05.md",
+              "sha256": "aa7d0fe5f4ebc34191c9aff42a7fd5044d6fc33415efb336f6f242c4d2debf74",
+              "selector": "§§1–8"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG01"
+            }
+          ],
+          "reassessment": "유한 typed 식/연산·unit·checked fault는 R06 §§1/5/6, CA05 §§1/7, PG01와 일치. 기술 숫자 표현은 P2G-20이 소유하며 별도 Percent 의미를 변경하지 않는다.",
+          "ordinary_policy_evidence": null,
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "ValueExpr는 유한 typed expression이다. 각 값은 명시적 semantic unit을 가지며 compatible unit끼리만 Add/Sum/Max/Clamp한다. Multiply는 dimensionless scalar, Ratio는 명시된 compatible result unit에서만 허용한다. integral division의 rounding mode는 loss가 가능한 식에 명시하고, 누락·unit mismatch·0나눗셈·overflow는 typed validation/evaluation error로 거부한다. saturating/fallback을 식 의미로 사용하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "서로 다른 unit의 Add/Sum/Max와 unit을 잃는 Multiply/Ratio가 publication 전에 거부된다.",
+          "0나눗셈·checked overflow와 rounding 미지정 lossy division이 typed error이며 gameplay state를 변경하지 않는다.",
+          "같은 입력·rounding·compiled generation은 같은 값을 내고 외부 code eval을 사용하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-01",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E01-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E01",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E01-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E02-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "constant를 제외한 ValueExpr 참조는 evaluation moment를 명시한다. Snapshot은 action release/delivery materialization에서 필요한 typed input을 고정하여 이후 stat/HP/resource 변화가 이미 release된 결과를 바꾸지 않는다. Live는 명시된 effect consumption 시점의 유효한 owner/context만 읽으며 이미 고정된 fact를 다시 쓰지 않는다. moment가 필요한 참조의 silent default는 허용하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E02",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "constant를 제외한 ValueExpr 참조는 evaluation moment를 명시한다. Snapshot은 action release/delivery materialization에서 필요한 typed input을 고정하여 이후 stat/HP/resource 변화가 이미 release된 결과를 바꾸지 않는다. Live는 명시된 effect consumption 시점의 유효한 owner/context만 읽으며 이미 고정된 fact를 다시 쓰지 않는다. moment가 필요한 참조의 silent default는 허용하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E02": [
+            "release 뒤 source stat을 바꿔도 Snapshot 식의 전달 결과는 변하지 않고, 명시적 Live 식만 소비 시점 값을 읽는다.",
+            "snapshot과 live가 같은 authored field에서 모호하게 혼합되거나 필요한 context가 없으면 publication 또는 실행이 명시적으로 거부된다.",
+            "snapshot 캡처와 live read 모두 exact action/source-copy/target context를 보존한다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "delegated ordinary policy",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E02-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§1,5–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA05.md",
+              "sha256": "aa7d0fe5f4ebc34191c9aff42a7fd5044d6fc33415efb336f6f242c4d2debf74",
+              "selector": "§§1,4,7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG03"
+            }
+          ],
+          "reassessment": "R06 §6 release snapshot와 CA05 §7의 이미 고정된 전달 결과 보존. DamageSourceSnapshot은 source_attack/committed_at_ms를 소유한다. 캡처 순간과 소비 순간을 분리하는 기존 위임 판단을 유지하며 target availability는 P2G-20 조사 대상.",
+          "ordinary_policy_evidence": [
+            "기존 합의 유지: R06 §6 release snapshot와 CA05 §7의 이미 고정된 전달 결과 보존. DamageSourceSnapshot은 source_attack/committed_at_ms를 소유한다. 캡처 순간과 소비 순간을 분리하는 기존 위임 판단을 유지하며 target availability는 P2G-20 조사 대상.",
+            "기본 동작 도출: R06/CA05의 typed·snapshot 및 기존 action/source-copy/resource owner의 정체성·수명. P2G_10_REASSESSMENT_001.json의 bounded fact observations 참조.",
+            "별도 게임 규칙 없음: reward/cost/probability/cap/refund/inheritance/Replace priority나 balance weight를 추가하지 않는다.",
+            "해당 기능 안 영향: R06 expression/stat/direct projection만 대상으로 하며 R07+ 진행/획득 의미를 보존한다.",
+            "기존 사용자 데이터 보존: literal 입력과 저장 enhancement/growth의 의미를 보존하며 삭제·일괄 변환·재해석을 허용하지 않는다."
+          ],
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "constant를 제외한 ValueExpr 참조는 evaluation moment를 명시한다. Snapshot은 action release/delivery materialization에서 필요한 typed input을 고정하여 이후 stat/HP/resource 변화가 이미 release된 결과를 바꾸지 않는다. Live는 명시된 effect consumption 시점의 유효한 owner/context만 읽으며 이미 고정된 fact를 다시 쓰지 않는다. moment가 필요한 참조의 silent default는 허용하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "release 뒤 source stat을 바꿔도 Snapshot 식의 전달 결과는 변하지 않고, 명시적 Live 식만 소비 시점 값을 읽는다.",
+          "snapshot과 live가 같은 authored field에서 모호하게 혼합되거나 필요한 context가 없으면 publication 또는 실행이 명시적으로 거부된다.",
+          "snapshot 캡처와 live read 모두 exact action/source-copy/target context를 보존한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-02",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E02-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E02",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E02-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E03-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "Count/Sum/Max는 명시적 finite source set과 grouping owner를 사용한다. Count(empty)와 Sum(empty)는 해당 count/unit의 0이고 Max(empty)는 identity를 추정하지 않고 typed error다. Sum/Max는 compatible unit만 허용하고 checked arithmetic을 사용하며 traversal은 stable identity order로 결정론적이다. authored/runtime cardinality 예산을 넘으면 부분 결과 없이 거부한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E03",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "Count/Sum/Max는 명시적 finite source set과 grouping owner를 사용한다. Count(empty)와 Sum(empty)는 해당 count/unit의 0이고 Max(empty)는 identity를 추정하지 않고 typed error다. Sum/Max는 compatible unit만 허용하고 checked arithmetic을 사용하며 traversal은 stable identity order로 결정론적이다. authored/runtime cardinality 예산을 넘으면 부분 결과 없이 거부한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E03": [
+            "Max(5,3,2)=5이고 Sum(5,3,2)=10이며 Max(empty)는 error, Count/Sum(empty)는 0이다.",
+            "서로 다른 owner/target/tile unit을 묵시적으로 합치지 않고 explicit grouping이 없으면 거부한다.",
+            "같은 member set은 입력 순서와 hash iteration에 무관하게 같은 결과를 내며 budget 초과는 부분 적용하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "delegated ordinary policy",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E03-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§1,3,5–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA05.md",
+              "sha256": "aa7d0fe5f4ebc34191c9aff42a7fd5044d6fc33415efb336f6f242c4d2debf74",
+              "selector": "§§1,4,7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG08"
+            }
+          ],
+          "reassessment": "R06 §6 Max(5,3,2)·empty, CA05 §§1/7 owner/target/tile 구별. Count/Sum의 덧셈 항등원과 Max의 값 부재를 구별한 기존 위임 유지. 기존 AI의 tile producer 제외 제안은 승인 정책이 아니므로 후속 코드 조사에서 재평가.",
+          "ordinary_policy_evidence": [
+            "기존 합의 유지: R06 §6 Max(5,3,2)·empty, CA05 §§1/7 owner/target/tile 구별. Count/Sum의 덧셈 항등원과 Max의 값 부재를 구별한 기존 위임 유지. 기존 AI의 tile producer 제외 제안은 승인 정책이 아니므로 후속 코드 조사에서 재평가.",
+            "기본 동작 도출: R06/CA05의 typed·snapshot 및 기존 action/source-copy/resource owner의 정체성·수명. P2G_10_REASSESSMENT_001.json의 bounded fact observations 참조.",
+            "별도 게임 규칙 없음: reward/cost/probability/cap/refund/inheritance/Replace priority나 balance weight를 추가하지 않는다.",
+            "해당 기능 안 영향: R06 expression/stat/direct projection만 대상으로 하며 R07+ 진행/획득 의미를 보존한다.",
+            "기존 사용자 데이터 보존: literal 입력과 저장 enhancement/growth의 의미를 보존하며 삭제·일괄 변환·재해석을 허용하지 않는다."
+          ],
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "Count/Sum/Max는 명시적 finite source set과 grouping owner를 사용한다. Count(empty)와 Sum(empty)는 해당 count/unit의 0이고 Max(empty)는 identity를 추정하지 않고 typed error다. Sum/Max는 compatible unit만 허용하고 checked arithmetic을 사용하며 traversal은 stable identity order로 결정론적이다. authored/runtime cardinality 예산을 넘으면 부분 결과 없이 거부한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "Max(5,3,2)=5이고 Sum(5,3,2)=10이며 Max(empty)는 error, Count/Sum(empty)는 0이다.",
+          "서로 다른 owner/target/tile unit을 묵시적으로 합치지 않고 explicit grouping이 없으면 거부한다.",
+          "같은 member set은 입력 순서와 hash iteration에 무관하게 같은 결과를 내며 budget 초과는 부분 적용하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-03",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E03-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E03",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E03-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E04-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "Attack과 SpellPower를 별도 typed stat으로 구성하며 Magic damage type은 SpellPower가 아니다. employee base, equipped weapon contribution, persistent GrowthStack, permanent modifier와 owned-copy enhancement를 각 owner/site에서 정확히 한 번 합산한다. weapon contribution을 이미 포함한 final Attack/SpellPower에 다시 더하지 않는다. R07 전까지 기존 fragment rank/growth 동작은 보존한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E04",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "Attack과 SpellPower를 별도 typed stat으로 구성하며 Magic damage type은 SpellPower가 아니다. employee base, equipped weapon contribution, persistent GrowthStack, permanent modifier와 owned-copy enhancement를 각 owner/site에서 정확히 한 번 합산한다. weapon contribution을 이미 포함한 final Attack/SpellPower에 다시 더하지 않는다. R07 전까지 기존 fragment rank/growth 동작은 보존한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E04": [
+            "employee/weapon/modifier 입력으로 final Attack 100이 되면 weapon 40을 다시 더하지 않으며 각 입력을 제거했을 때 그 입력만 빠진다.",
+            "SpellPower만 바꾸면 SpellPower 참조 식만 변하고 Physical/Magic damage type 자체나 Attack 참조 식은 바뀌지 않는다.",
+            "같은 definition의 서로 다른 owned equipment enhancement가 definition UUID 합산으로 중복 적용되지 않고 actual copy binding을 따른다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "user-adopted scope, reassessed",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E04-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§3–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA05.md",
+              "sha256": "aa7d0fe5f4ebc34191c9aff42a7fd5044d6fc33415efb336f6f242c4d2debf74",
+              "selector": "§§1–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG05"
+            }
+          ],
+          "reassessment": "R06 §§3/5/6 및 AT06: final Attack100의 weapon40 재가산 금지, Magic과 SpellPower 분리, 사본별 enhancement. 기존 stat_pipeline 성장/영구 modifier 순서는 계약 근거로 보존하고 임의로 모든 Percent를 재정렬하지 않는다.",
+          "ordinary_policy_evidence": null,
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "Attack과 SpellPower를 별도 typed stat으로 구성하며 Magic damage type은 SpellPower가 아니다. employee base, equipped weapon contribution, persistent GrowthStack, permanent modifier와 owned-copy enhancement를 각 owner/site에서 정확히 한 번 합산한다. weapon contribution을 이미 포함한 final Attack/SpellPower에 다시 더하지 않는다. R07 전까지 기존 fragment rank/growth 동작은 보존한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "employee/weapon/modifier 입력으로 final Attack 100이 되면 weapon 40을 다시 더하지 않으며 각 입력을 제거했을 때 그 입력만 빠진다.",
+          "SpellPower만 바꾸면 SpellPower 참조 식만 변하고 Physical/Magic damage type 자체나 Attack 참조 식은 바뀌지 않는다.",
+          "같은 definition의 서로 다른 owned equipment enhancement가 definition UUID 합산으로 중복 적용되지 않고 actual copy binding을 따른다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-04",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E04-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E04",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E04-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E05-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "HP/time/resource/result 참조는 source/target/owner와 semantic field를 typed하게 지정한다. resource 값은 R05의 유효 lease/context에서 read-only로 조회하며 식 평가 자체가 grant/consume/decay를 수행하지 않는다. result는 같은 attempt의 exact ActionHandle에 속하고 정착된 current/earlier fact만 읽는다. missing owner, stale lease, 다른 attempt, unavailable/not-settled/future result는 typed error다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E05",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "HP/time/resource/result 참조는 source/target/owner와 semantic field를 typed하게 지정한다. resource 값은 R05의 유효 lease/context에서 read-only로 조회하며 식 평가 자체가 grant/consume/decay를 수행하지 않는다. result는 같은 attempt의 exact ActionHandle에 속하고 정착된 current/earlier fact만 읽는다. missing owner, stale lease, 다른 attempt, unavailable/not-settled/future result는 typed error다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E05": [
+            "동일 resource definition이라도 owner/lifetime/lease가 다른 값은 혼합되지 않고 식 평가만으로 balance/revision이 변하지 않는다.",
+            "다른 attempt·stale occurrence·not settled result 참조가 거부되며 0이나 마지막 값으로 fallback하지 않는다.",
+            "current/max/missing HP와 elapsed/remaining time이 구분되고 source/target context 불일치가 명시적으로 진단된다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "delegated ordinary policy",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E05-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§1,5–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+              "sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b",
+              "selector": "REL-008/REL-009"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG03/PG05"
+            }
+          ],
+          "reassessment": "R04 ActionHandle attempt identity와 R05 resource lease authority를 보존하는 위임 결정 유지. ResourceStore read는 grant가 아니며 query와 take는 다르다. settled fact를 읽는 정확한 adapter와 future rejection은 P2G-20의 필수 delta; query 호출만으로 완료 아님.",
+          "ordinary_policy_evidence": [
+            "기존 합의 유지: R04 ActionHandle attempt identity와 R05 resource lease authority를 보존하는 위임 결정 유지. ResourceStore read는 grant가 아니며 query와 take는 다르다. settled fact를 읽는 정확한 adapter와 future rejection은 P2G-20의 필수 delta; query 호출만으로 완료 아님.",
+            "기본 동작 도출: R06/CA05의 typed·snapshot 및 기존 action/source-copy/resource owner의 정체성·수명. P2G_10_REASSESSMENT_001.json의 bounded fact observations 참조.",
+            "별도 게임 규칙 없음: reward/cost/probability/cap/refund/inheritance/Replace priority나 balance weight를 추가하지 않는다.",
+            "해당 기능 안 영향: R06 expression/stat/direct projection만 대상으로 하며 R07+ 진행/획득 의미를 보존한다.",
+            "기존 사용자 데이터 보존: literal 입력과 저장 enhancement/growth의 의미를 보존하며 삭제·일괄 변환·재해석을 허용하지 않는다."
+          ],
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "HP/time/resource/result 참조는 source/target/owner와 semantic field를 typed하게 지정한다. resource 값은 R05의 유효 lease/context에서 read-only로 조회하며 식 평가 자체가 grant/consume/decay를 수행하지 않는다. result는 같은 attempt의 exact ActionHandle에 속하고 정착된 current/earlier fact만 읽는다. missing owner, stale lease, 다른 attempt, unavailable/not-settled/future result는 typed error다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "동일 resource definition이라도 owner/lifetime/lease가 다른 값은 혼합되지 않고 식 평가만으로 balance/revision이 변하지 않는다.",
+          "다른 attempt·stale occurrence·not settled result 참조가 거부되며 0이나 마지막 값으로 fallback하지 않는다.",
+          "current/max/missing HP와 elapsed/remaining time이 구분되고 source/target context 불일치가 명시적으로 진단된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-05",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E05-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E05",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E05-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E06-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "AttackSpeedPoints는 positive dimensionless input이고 basic-attack interval과 별도다. canonical conversion은 기존 scale_attack_interval_ms의 ceil division과 최소 1ms 계약을 재사용한다. 이 변환은 basic attack cadence에만 적용하며 spell delay, area tick, projectile lifetime 또는 다른 time-valued effect를 자동 가속하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E06",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "AttackSpeedPoints는 positive dimensionless input이고 basic-attack interval과 별도다. canonical conversion은 기존 scale_attack_interval_ms의 ceil division과 최소 1ms 계약을 재사용한다. 이 변환은 basic attack cadence에만 적용하며 spell delay, area tick, projectile lifetime 또는 다른 time-valued effect를 자동 가속하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E06": [
+            "동일 base interval과 points는 scale_attack_interval_ms와 같은 interval을 만들며 0 points/base interval은 publication 전에 거부된다.",
+            "AttackSpeedPoints 변경은 basic attack interval만 바꾸고 spell/area/projectile timer에는 영향이 없다.",
+            "point와 millisecond unit은 식의 compatible unit으로 오인되지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "user-adopted scope, reassessed",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E06-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§3–6"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA05.md",
+              "sha256": "aa7d0fe5f4ebc34191c9aff42a7fd5044d6fc33415efb336f6f242c4d2debf74",
+              "selector": "§§1,4,7–8"
+            }
+          ],
+          "reassessment": "CA05 §§1/7/8: point와 interval 구별, 공격속도는 폭격 cadence를 바꾸지 않음. 기존 scale_attack_interval_ms의 ceil 및 양수 precondition을 그대로 유지.",
+          "ordinary_policy_evidence": null,
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "AttackSpeedPoints는 positive dimensionless input이고 basic-attack interval과 별도다. canonical conversion은 기존 scale_attack_interval_ms의 ceil division과 최소 1ms 계약을 재사용한다. 이 변환은 basic attack cadence에만 적용하며 spell delay, area tick, projectile lifetime 또는 다른 time-valued effect를 자동 가속하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "동일 base interval과 points는 scale_attack_interval_ms와 같은 interval을 만들며 0 points/base interval은 publication 전에 거부된다.",
+          "AttackSpeedPoints 변경은 basic attack interval만 바꾸고 spell/area/projectile timer에는 영향이 없다.",
+          "point와 millisecond unit은 식의 compatible unit으로 오인되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-06",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E06-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E06",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E06-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E07-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E07",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "parser/validator/compiler/runtime/preview/explain은 같은 compiled ValueExpr와 evaluation context 계약을 소비한다. compiled generation과 source fingerprint는 immutable content generation에 결속한다. transient evaluation context/result cache는 저장하지 않으며 기존 persistent enhancement/growth owner는 round-trip한다. effective quantitative input이 바뀌면 preview/explain/Certified-input cache key나 model input fingerprint가 무효화된다. R19 final weights는 추가하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E07",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "parser/validator/compiler/runtime/preview/explain은 같은 compiled ValueExpr와 evaluation context 계약을 소비한다. compiled generation과 source fingerprint는 immutable content generation에 결속한다. transient evaluation context/result cache는 저장하지 않으며 기존 persistent enhancement/growth owner는 round-trip한다. effective quantitative input이 바뀌면 preview/explain/Certified-input cache key나 model input fingerprint가 무효화된다. R19 final weights는 추가하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E07": [
+            "runtime·preview·explain이 같은 expression/source fingerprint에서 같은 값과 source trace를 내고 별도 계산식을 유지하지 않는다.",
+            "저장 round-trip 뒤 owned enhancement/growth 입력과 final stat이 유지되며 transient action/result handle을 유효한 persistent ref처럼 복원하지 않는다.",
+            "effective input 변경은 관련 cache/fingerprint를 바꾸지만 기존 Certified final weight나 공식 model을 새로 승인하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "delegated ordinary policy",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E07-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§3,5–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+              "sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b",
+              "selector": "AT06"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T18/T27"
+            }
+          ],
+          "reassessment": "AT06 및 T18/T27의 동일 계산·source-copy 격리를 보존. 새 식 상태는 transient action에 귀속하며 persistent enhancement/growth는 기존 owner round-trip. 새 입력 fingerprint와 평가 weight 승인 분리. 공간 preview에 숫자 의미를 발명하지 않음.",
+          "ordinary_policy_evidence": [
+            "기존 합의 유지: AT06 및 T18/T27의 동일 계산·source-copy 격리를 보존. 새 식 상태는 transient action에 귀속하며 persistent enhancement/growth는 기존 owner round-trip. 새 입력 fingerprint와 평가 weight 승인 분리. 공간 preview에 숫자 의미를 발명하지 않음.",
+            "기본 동작 도출: R06/CA05의 typed·snapshot 및 기존 action/source-copy/resource owner의 정체성·수명. P2G_10_REASSESSMENT_001.json의 bounded fact observations 참조.",
+            "별도 게임 규칙 없음: reward/cost/probability/cap/refund/inheritance/Replace priority나 balance weight를 추가하지 않는다.",
+            "해당 기능 안 영향: R06 expression/stat/direct projection만 대상으로 하며 R07+ 진행/획득 의미를 보존한다.",
+            "기존 사용자 데이터 보존: literal 입력과 저장 enhancement/growth의 의미를 보존하며 삭제·일괄 변환·재해석을 허용하지 않는다."
+          ],
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E07-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E07",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E07-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "parser/validator/compiler/runtime/preview/explain은 같은 compiled ValueExpr와 evaluation context 계약을 소비한다. compiled generation과 source fingerprint는 immutable content generation에 결속한다. transient evaluation context/result cache는 저장하지 않으며 기존 persistent enhancement/growth owner는 round-trip한다. effective quantitative input이 바뀌면 preview/explain/Certified-input cache key나 model input fingerprint가 무효화된다. R19 final weights는 추가하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E07-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "runtime·preview·explain이 같은 expression/source fingerprint에서 같은 값과 source trace를 내고 별도 계산식을 유지하지 않는다.",
+          "저장 round-trip 뒤 owned enhancement/growth 입력과 final stat이 유지되며 transient action/result handle을 유효한 persistent ref처럼 복원하지 않는다.",
+          "effective input 변경은 관련 cache/fingerprint를 바꾸지만 기존 Certified final weight나 공식 model을 새로 승인하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-07",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E07-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E07-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E07",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E07-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E08-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E08",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "새 expression/schema/opcode는 public pack parser→semantic validation→compiler→executor와 headless describe/explain 경로를 함께 제공한 뒤에만 supported로 게시한다. AST depth/node count, aggregate cardinality, retained bytes와 execution work에 finite safety budget을 두며 이것을 gameplay cap으로 승격하지 않는다. validation/evaluation failure는 typed, deterministic, no-publication/no-partial-state다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E08",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "새 expression/schema/opcode는 public pack parser→semantic validation→compiler→executor와 headless describe/explain 경로를 함께 제공한 뒤에만 supported로 게시한다. AST depth/node count, aggregate cardinality, retained bytes와 execution work에 finite safety budget을 두며 이것을 gameplay cap으로 승격하지 않는다. validation/evaluation failure는 typed, deterministic, no-publication/no-partial-state다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E08": [
+            "public RON의 positive fixture가 실제 runtime consumer까지 실행되고 unknown/unsupported/unit/depth/node/cardinality/overflow fixtures가 typed error로 거부된다.",
+            "budget 한계 바로 아래는 성공하고 한계 초과는 publication 또는 action mutation 전에 실패하며 safety limit가 공식 balance 수치로 표시되지 않는다.",
+            "0 tests·skip·fixture-only/private builder 또는 빈 executor가 supported/complete로 보고되지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "user-adopted scope, reassessed",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E08-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§3,5–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG08"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T06"
+            }
+          ],
+          "reassessment": "R06 §§5/6, PG08: 실제 공개 parser→executor와 유한 예산/fault 필수. 계획 검증과 게임 시험을 구분하며 비용 수치·목표 장비를 이번에 공식 승인하지 않음.",
+          "ordinary_policy_evidence": null,
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E08-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E08-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "새 expression/schema/opcode는 public pack parser→semantic validation→compiler→executor와 headless describe/explain 경로를 함께 제공한 뒤에만 supported로 게시한다. AST depth/node count, aggregate cardinality, retained bytes와 execution work에 finite safety budget을 두며 이것을 gameplay cap으로 승격하지 않는다. validation/evaluation failure는 typed, deterministic, no-publication/no-partial-state다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E08-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "public RON의 positive fixture가 실제 runtime consumer까지 실행되고 unknown/unsupported/unit/depth/node/cardinality/overflow fixtures가 typed error로 거부된다.",
+          "budget 한계 바로 아래는 성공하고 한계 초과는 publication 또는 action mutation 전에 실패하며 safety limit가 공식 balance 수치로 표시되지 않는다.",
+          "0 tests·skip·fixture-only/private builder 또는 빈 executor가 supported/complete로 보고되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-08",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E08-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E08-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E08",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E08-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E09-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E09",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "기존 literal amount와 current stat/growth/enhancement RON/save는 동일 의미로 유지하고 canonical Constant/input으로 수용하며 일괄 변환이나 조용한 재해석을 요구하지 않는다. 서로 다른 기존 Percent 의미를 하나의 수학으로 합치지 않는다. R06은 T06과 applicable T18/T27, direct consumers와 fresh audit까지 닫지만 R07 fragment-copy/rank removal과 R19 Certified final weights/official supply는 미완료로 남긴다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAVER-E09-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAVER-E09",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "기존 literal amount와 current stat/growth/enhancement RON/save는 동일 의미로 유지하고 canonical Constant/input으로 수용하며 일괄 변환이나 조용한 재해석을 요구하지 않는다. 서로 다른 기존 Percent 의미를 하나의 수학으로 합치지 않는다. R06은 T06과 applicable T18/T27, direct consumers와 fresh audit까지 닫지만 R07 fragment-copy/rank removal과 R19 Certified final weights/official supply는 미완료로 남긴다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAVER-E09": [
+            "기존 literal pack/save가 동일 결과로 로드·실행되고 unsupported new expression은 명시적 진단을 내며 silent fallback하지 않는다.",
+            "T06의 typed error·snapshot·single composition과 R06 해당 T18/T27 source-copy/cache 경계가 actual nonzero tests와 fresh audit로 추적된다.",
+            "R07/R19 기능과 미정 Replace conflict/공식 weight는 R06 완료로 표시되지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "delegation": "AUTORUN single-r-v4-plan-only §3 + P2G §8.6, explicitly adopted by REQUEST_ORIGINAL.txt §6",
+          "decision_actor": "user-adopted scope, reassessed",
+          "old_decision_comparison_ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVE-E09-001",
+            "Content Digest": null
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+              "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+              "selector": "§§4–8"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+              "selector": "PG01/PG05/PG08"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T06/T18/T27"
+            }
+          ],
+          "reassessment": "R06 §§4–7 및 최신 요청: legacy literal/Percent·fragment rank를 보존하고 R07/R19로 확장하지 않음. fresh 감사는 향후 R06 수용 기준이며 현재 계획 실행 권한이 아님.",
+          "ordinary_policy_evidence": null,
+          "authorization_boundary": "P2G-60 only; future game tests/audit remain acceptance requirements, not current authorization"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAVER-E09-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAVER-E09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E09-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "기존 literal amount와 current stat/growth/enhancement RON/save는 동일 의미로 유지하고 canonical Constant/input으로 수용하며 일괄 변환이나 조용한 재해석을 요구하지 않는다. 서로 다른 기존 Percent 의미를 하나의 수학으로 합치지 않는다. R06은 T06과 applicable T18/T27, direct consumers와 fresh audit까지 닫지만 R07 fragment-copy/rank removal과 R19 Certified final weights/official supply는 미완료로 남긴다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAVER-E09-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "기존 literal pack/save가 동일 결과로 로드·실행되고 unsupported new expression은 명시적 진단을 내며 silent fallback하지 않는다.",
+          "T06의 typed error·snapshot·single composition과 R06 해당 T18/T27 source-copy/cache 경계가 actual nonzero tests와 fresh audit로 추적된다.",
+          "R07/R19 기능과 미정 Replace conflict/공식 weight는 R06 완료로 표시되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-09-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-09",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "old_file": "../content_authoring_value_expressions/P2G_10_POLICY_001.json",
+          "exact_old_element": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVE-E09-DECIDED-001",
+            "Content Digest": null
+          },
+          "preserved_bytes": "baseline/intake/MANIFEST.json"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E09-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CAVER-E09",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E09-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-10",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "path": "REQUEST_ORIGINAL.txt",
+          "selector": "§§1,3,6",
+          "statement": "R07+ 신규 기능·Certified final weight·공식 수치·미정 Replace 우선순위"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "out_of_scope",
+        "Evidence/decision ref": {
+          "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+          "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+          "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+        },
+        "Promoted Element ID": null,
+        "Initial open Policy Element Revision Ref": null
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAVER-11-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CAVER-11",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAVER-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+            "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+            "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAVER-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": {
+          "path": "REQUEST_ORIGINAL.txt",
+          "selector": "§§1,3,6",
+          "statement": "과거 AI/요청의 GEX 연속 구현·감사 위임"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "out_of_scope",
+        "Evidence/decision ref": {
+          "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/REQUEST_ORIGINAL.txt",
+          "sha256": "87f719340ea8aa332416482ffe9e9ff72fd70e0a9d6e309c214d178089aaac3c",
+          "selector": "§§1–4,6; 기존 승인 기능/수용/제외 보존, 통상적 정책 위임, 계획 전용"
+        },
+        "Promoted Element ID": null,
+        "Initial open Policy Element Revision Ref": null
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CAVER-P2G10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAVER-P2G00-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CAVER-20260913",
+          "Policy Topic": "R06 ValueExpr·집계·Attack/SpellPower와 무기 성장 재검토·최종 취합",
+          "Requested Result": "bounded_pipeline P2G-00→P2G-60; R06 P2G 재검토·계획 인계 완료 / 구현 요청 대기",
+          "Target Project/Repository Identity": {
+            "root": "/mnt/f/work/simulator",
+            "git_head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "User-Approved Initial Scope": [
+            {
+              "ID": "S01",
+              "Disposition": "in",
+              "Scope": "기존 R06 승인 기능·수용 기준·제외 범위를 계획 대상으로 보존하고 별도 Working Policy에서 P2G-00→60 재검토·비교·취합·상세 설계·검증·기준선 인계를 완료",
+              "Approval Reference": "REQUEST_ORIGINAL.txt §§1–6"
+            },
+            {
+              "ID": "S02",
+              "Disposition": "out",
+              "Scope": "GEX 인수·activation·게임 구현·완료 감사·R07 이후 신규 작업",
+              "Approval Reference": "REQUEST_ORIGINAL.txt §§1,6"
+            },
+            {
+              "ID": "S03",
+              "Disposition": "out",
+              "Scope": "기존 원본 삭제·이동·덮어쓰기, P2G/GEX 본문·검증기·AGENTS·전역 설정 수정, 사용자 정책 임의 변경/축소",
+              "Approval Reference": "REQUEST_ORIGINAL.txt §§2,3,6"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CAVER-P2G00-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {
+          "CAVER-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E06-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E07-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E08-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAVER-E09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E09-DECIDED-001",
+            "Content Digest": null
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E07-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E08-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E09-001",
+            "Content Digest": null
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": null,
+        "Authoritative Change Obligation Declaration Ref Set": []
+      }
+    }
+  ]
+}

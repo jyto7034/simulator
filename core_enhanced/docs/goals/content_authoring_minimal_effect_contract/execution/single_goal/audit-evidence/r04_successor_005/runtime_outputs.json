@@ -1,0 +1,1832 @@
+{
+  "at": "2026-09-11T00:55:38.191804+00:00",
+  "fresh_gameplay_executions": 0,
+  "retained_stream_hash_checks": 86,
+  "command_counts": {
+    "PREDECESSOR_API_002": 11,
+    "PREDECESSOR_BUFF_002": 10,
+    "PREDECESSOR_CLI_002": 21,
+    "PREDECESSOR_COMBAT_002": 12,
+    "PREDECESSOR_DELIVERY_002": 9,
+    "PREDECESSOR_INVALID_002": 29,
+    "PREDECESSOR_PACK_002": 10,
+    "PREDECESSOR_PREVIEW_002": 4,
+    "PREDECESSOR_RESOURCE_002": 10
+  },
+  "invalid_cases": [
+    "syntax",
+    "unclosed",
+    "unknown_field",
+    "malformed_manifest",
+    "contract",
+    "capability",
+    "final_reference",
+    "summon_compile",
+    "boss_compile",
+    "ambiguous",
+    "generated_policy",
+    "custom_generated_policy",
+    "custom_generated_boss"
+  ],
+  "delivery_counts": {
+    "delayed_repeat": 14,
+    "delayed_projectile": 7,
+    "periodic_area": 48
+  },
+  "guard_recomputations": {
+    "ORDINARY_GUARDS_003/kernel_plain.json": {
+      "event_heavy": {
+        "p95_ns": 13180868,
+        "cap_ns": 25000000,
+        "max_peak_delta": 0,
+        "max_alloc_realloc": 0,
+        "samples": 21,
+        "allocation_samples": 0
+      },
+      "concurrent_sessions": {
+        "p95_ns": 8182800,
+        "cap_ns": 10000000,
+        "max_peak_delta": 0,
+        "max_alloc_realloc": 0,
+        "samples": 21,
+        "allocation_samples": 0
+      }
+    },
+    "r04_finalalloc168.log": {
+      "event_heavy": {
+        "p95_ns": 12680473,
+        "cap_ns": 25000000,
+        "max_peak_delta": 255622,
+        "max_alloc_realloc": 41660,
+        "samples": 21,
+        "allocation_samples": 5
+      },
+      "concurrent_sessions": {
+        "p95_ns": 7202246,
+        "cap_ns": 10000000,
+        "max_peak_delta": 9018492,
+        "max_alloc_realloc": 367088,
+        "samples": 21,
+        "allocation_samples": 5
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "PREDECESSOR_CLI_002/package/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/package/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/public_api/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/public_api/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/validate/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/validate/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/describe/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/describe/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/explain/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/explain/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/simulate/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/simulate/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/repeat/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/repeat/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/trace/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/trace/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/trace_collision/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/trace_collision/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/partial_failure/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/partial_failure/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/preparation_failure/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/preparation_failure/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/malformed_selection/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/malformed_selection/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/oversized_selection/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/oversized_selection/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/invalid_args/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/invalid_args/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/failed_stdout/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/failed_stdout/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_private_state/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_private_state/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_clone/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_clone/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_serialize/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_serialize/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_deserialize/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_deserialize/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_deref/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_deref/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_borrow_mutation/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_CLI_002/privacy_borrow_mutation/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/a_off/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/a_off/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/a_on/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/a_on/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/a_gap/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/a_gap/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_a_off/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_a_off/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_a_on/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_a_on/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/explain_a/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/explain_a/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/b_off/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/b_off/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/b_on/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/b_on/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/b_gap/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/b_gap/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_b_off/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_b_off/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_b_on/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/cli_b_on/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/explain_b/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_COMBAT_002/explain_b/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/package_a/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/package_a/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/consume_a1/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/consume_a1/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/consume_b/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/consume_b/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/consume_a2/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/consume_a2/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/existing_output/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/existing_output/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/missing_b_catalog/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/missing_b_catalog/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/invalid_b_catalog/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/invalid_b_catalog/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/old_b_contract/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/old_b_contract/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/unsupported_b_capability/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/unsupported_b_capability/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/missing_source/stdout",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_PACK_002/missing_source/stderr",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a completion",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a HP/source",
+      "passed": true,
+      "actual": {
+        "change": {
+          "after": 61,
+          "before": 79,
+          "channel": "hp",
+          "reason": "Command"
+        },
+        "ordinal": 3,
+        "source": {
+          "ability_event_seq": 135,
+          "authored": {
+            "field_path": "skills[21].steps[0].effects[0]",
+            "origin": "Original",
+            "origin_definition_id": "paradise_lost_judgement",
+            "site": {
+              "action": {
+                "action_id": "judgement_strike",
+                "definition_id": "paradise_lost_judgement"
+              },
+              "effect_id": "effect_01"
+            },
+            "source_file": "official/data/skills/base.ron"
+          },
+          "cast_seq": 0,
+          "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "cause": {
+            "cause_type": "parent",
+            "seq": 134
+          },
+          "proc_origin": {
+            "activation_source": {
+              "Item": {
+                "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+              }
+            },
+            "binding_index": 0,
+            "event_seq": 134
+          },
+          "skill_id": "paradise_lost_judgement"
+        },
+        "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+        "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+        "time_ms": 7950
+      }
+    },
+    {
+      "check": "combat a real proc/authored origin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a on complete summary parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a on receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a gap complete summary parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a gap receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a CLI off parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a CLI on parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat a source explain parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b completion",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b HP/source",
+      "passed": true,
+      "actual": {
+        "change": {
+          "after": 43,
+          "before": 79,
+          "channel": "hp",
+          "reason": "Command"
+        },
+        "ordinal": 3,
+        "source": {
+          "ability_event_seq": 135,
+          "authored": {
+            "field_path": "skills[21].steps[0].effects[0]",
+            "origin": "Original",
+            "origin_definition_id": "paradise_lost_judgement",
+            "site": {
+              "action": {
+                "action_id": "judgement_strike",
+                "definition_id": "paradise_lost_judgement"
+              },
+              "effect_id": "effect_01"
+            },
+            "source_file": "official/data/skills/base.ron"
+          },
+          "cast_seq": 0,
+          "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "cause": {
+            "cause_type": "parent",
+            "seq": 134
+          },
+          "proc_origin": {
+            "activation_source": {
+              "Item": {
+                "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+              }
+            },
+            "binding_index": 0,
+            "event_seq": 134
+          },
+          "skill_id": "paradise_lost_judgement"
+        },
+        "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+        "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+        "time_ms": 7950
+      }
+    },
+    {
+      "check": "combat b real proc/authored origin",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b on complete summary parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b on receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b gap complete summary parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b gap receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b CLI off parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b CLI on parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat b source explain parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "combat same occurrence with amount-only delta",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 a on receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 a gap receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 a CLI parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 a actual sourced resource",
+      "passed": true,
+      "actual": [
+        {
+          "ordinal": 4,
+          "time_ms": 7950,
+          "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "target_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "change": {
+            "channel": "resonance",
+            "before": 11,
+            "after": 28,
+            "max": 100
+          },
+          "source": {
+            "authored": {
+              "source_file": "official/data/skills/base.ron",
+              "site": {
+                "action": {
+                  "definition_id": "paradise_lost_judgement",
+                  "action_id": "authoring_resource"
+                },
+                "effect_id": "resource_gain"
+              },
+              "field_path": "skills[21].steps[1].effects[0]",
+              "origin_definition_id": "paradise_lost_judgement",
+              "origin": "Original"
+            },
+            "skill_id": "paradise_lost_judgement",
+            "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "cast_seq": 0,
+            "ability_event_seq": 135,
+            "cause": {
+              "cause_type": "parent",
+              "seq": 134
+            },
+            "proc_origin": {
+              "event_seq": 134,
+              "activation_source": {
+                "Item": {
+                  "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                }
+              },
+              "binding_index": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 b on receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 b gap receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 b CLI parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_RESOURCE_002 b actual sourced resource",
+      "passed": true,
+      "actual": [
+        {
+          "ordinal": 4,
+          "time_ms": 7950,
+          "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "target_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "change": {
+            "channel": "resonance",
+            "before": 11,
+            "after": 42,
+            "max": 100
+          },
+          "source": {
+            "authored": {
+              "source_file": "official/data/skills/base.ron",
+              "site": {
+                "action": {
+                  "definition_id": "paradise_lost_judgement",
+                  "action_id": "authoring_resource"
+                },
+                "effect_id": "resource_gain"
+              },
+              "field_path": "skills[21].steps[1].effects[0]",
+              "origin_definition_id": "paradise_lost_judgement",
+              "origin": "Original"
+            },
+            "skill_id": "paradise_lost_judgement",
+            "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "cast_seq": 0,
+            "ability_event_seq": 135,
+            "cause": {
+              "cause_type": "parent",
+              "seq": 134
+            },
+            "proc_origin": {
+              "event_seq": 134,
+              "activation_source": {
+                "Item": {
+                  "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                }
+              },
+              "binding_index": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 a on receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 a gap receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 a CLI parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 a actual sourced resource",
+      "passed": true,
+      "actual": [
+        {
+          "ordinal": 4,
+          "time_ms": 7950,
+          "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "target_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "change": {
+            "channel": "resonance",
+            "before": 11,
+            "after": 28,
+            "max": 100
+          },
+          "source": {
+            "authored": {
+              "source_file": "official/data/skills/base.ron",
+              "site": {
+                "action": {
+                  "definition_id": "paradise_lost_judgement",
+                  "action_id": "authoring_resource"
+                },
+                "effect_id": "resource_gain"
+              },
+              "field_path": "skills[21].steps[1].effects[0]",
+              "origin_definition_id": "paradise_lost_judgement",
+              "origin": "Original"
+            },
+            "skill_id": "paradise_lost_judgement",
+            "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "cast_seq": 0,
+            "ability_event_seq": 135,
+            "cause": {
+              "cause_type": "parent",
+              "seq": 134
+            },
+            "proc_origin": {
+              "event_seq": 134,
+              "activation_source": {
+                "Item": {
+                  "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                }
+              },
+              "binding_index": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 a actual buffs",
+      "passed": true,
+      "actual": [
+        {
+          "ordinal": 5,
+          "time_ms": 7950,
+          "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "change": {
+            "channel": "buff",
+            "buff_id": 4806624552354013260,
+            "kind": "Silence",
+            "before": null,
+            "after": {
+              "stacks": 1,
+              "expires_at_ms": 8650,
+              "next_tick_ms": null
+            }
+          },
+          "source": {
+            "authored": {
+              "source_file": "official/data/skills/base.ron",
+              "site": {
+                "action": {
+                  "definition_id": "paradise_lost_judgement",
+                  "action_id": "judgement_strike"
+                },
+                "effect_id": "effect_02"
+              },
+              "field_path": "skills[21].steps[0].effects[1]",
+              "origin_definition_id": "paradise_lost_judgement",
+              "origin": "Original"
+            },
+            "skill_id": "paradise_lost_judgement",
+            "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "cast_seq": 0,
+            "ability_event_seq": 135,
+            "cause": {
+              "cause_type": "parent",
+              "seq": 134
+            },
+            "proc_origin": {
+              "event_seq": 134,
+              "activation_source": {
+                "Item": {
+                  "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                }
+              },
+              "binding_index": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 b on receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 b gap receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 b CLI parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 b actual sourced resource",
+      "passed": true,
+      "actual": [
+        {
+          "ordinal": 4,
+          "time_ms": 7950,
+          "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "target_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "change": {
+            "channel": "resonance",
+            "before": 11,
+            "after": 42,
+            "max": 100
+          },
+          "source": {
+            "authored": {
+              "source_file": "official/data/skills/base.ron",
+              "site": {
+                "action": {
+                  "definition_id": "paradise_lost_judgement",
+                  "action_id": "authoring_resource"
+                },
+                "effect_id": "resource_gain"
+              },
+              "field_path": "skills[21].steps[1].effects[0]",
+              "origin_definition_id": "paradise_lost_judgement",
+              "origin": "Original"
+            },
+            "skill_id": "paradise_lost_judgement",
+            "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "cast_seq": 0,
+            "ability_event_seq": 135,
+            "cause": {
+              "cause_type": "parent",
+              "seq": 134
+            },
+            "proc_origin": {
+              "event_seq": 134,
+              "activation_source": {
+                "Item": {
+                  "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                }
+              },
+              "binding_index": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "check": "PREDECESSOR_BUFF_002 b actual buffs",
+      "passed": true,
+      "actual": [
+        {
+          "ordinal": 5,
+          "time_ms": 7950,
+          "source_unit": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+          "target_unit": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "change": {
+            "channel": "buff",
+            "buff_id": 4806624552354013260,
+            "kind": "Silence",
+            "before": null,
+            "after": {
+              "stacks": 1,
+              "expires_at_ms": 8650,
+              "next_tick_ms": null
+            }
+          },
+          "source": {
+            "authored": {
+              "source_file": "official/data/skills/base.ron",
+              "site": {
+                "action": {
+                  "definition_id": "paradise_lost_judgement",
+                  "action_id": "judgement_strike"
+                },
+                "effect_id": "effect_02"
+              },
+              "field_path": "skills[21].steps[0].effects[1]",
+              "origin_definition_id": "paradise_lost_judgement",
+              "origin": "Original"
+            },
+            "skill_id": "paradise_lost_judgement",
+            "caster_instance_id": "c0d4a08a-ba22-4354-9026-0e12961429b2",
+            "cast_seq": 0,
+            "ability_event_seq": 135,
+            "cause": {
+              "cause_type": "parent",
+              "seq": 134
+            },
+            "proc_origin": {
+              "event_seq": 134,
+              "activation_source": {
+                "Item": {
+                  "item_instance_id": "7121c135-8aea-4aad-bd35-80195192271e"
+                }
+              },
+              "binding_index": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "check": "delivery on full receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery gap full receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery repeat full receipt parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery CLI off parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery CLI on parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery delayed_repeat actual HP/source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery delayed_repeat explain source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery delayed_projectile actual HP/source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery delayed_projectile explain source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery periodic_area actual HP/source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery periodic_area explain source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "delivery actual hit counts",
+      "passed": true,
+      "actual": {
+        "delayed_repeat": 14,
+        "delayed_projectile": 7,
+        "periodic_area": 48
+      }
+    },
+    {
+      "check": "invalid syntax repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid syntax exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "ron_parse",
+        "phase": "parse",
+        "source_file": "official/data/skills/base.ron",
+        "domain": "skills",
+        "object_id": null,
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "skills[0]",
+        "cause": "1:24: Expected struct",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": "Skills",
+        "definition_kind": null,
+        "position": {
+          "line": 1,
+          "column": 24
+        },
+        "parser_reason": "ExpectedStruct",
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid syntax exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid unclosed repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid unclosed exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_structure",
+        "phase": "structure",
+        "source_file": "official/data/skills/base.ron",
+        "domain": "content_snapshot",
+        "object_id": null,
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "byte[23]",
+        "cause": "unclosed delimiter",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": "Skills",
+        "definition_kind": null,
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid unclosed exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid unknown_field repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid unknown_field exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "ron_parse",
+        "phase": "parse",
+        "source_file": "official/data/skills/base.ron",
+        "domain": "skills",
+        "object_id": null,
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "unknown_authoring_field",
+        "cause": "unknown field `unknown_authoring_field`, expected `range_presets` or `skills`",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": "Skills",
+        "definition_kind": null,
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid unknown_field exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid malformed_manifest repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid malformed_manifest exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "ron_parse",
+        "phase": "parse",
+        "source_file": "official/pack.ron",
+        "domain": "pack_manifest",
+        "object_id": null,
+        "action_id": null,
+        "effect_id": null,
+        "field_path": null,
+        "cause": "missing field `pack_id`",
+        "related_sources": [],
+        "pack_id": null,
+        "catalog_kind": null,
+        "definition_kind": null,
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid malformed_manifest exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid contract repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid contract exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_contract_unsupported",
+        "phase": "structure",
+        "source_file": "official/pack.ron",
+        "domain": "pack_manifest",
+        "object_id": "official",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "contract",
+        "cause": "only the current complete content contract is supported",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": null,
+        "definition_kind": null,
+        "position": null,
+        "parser_reason": null,
+        "expected": {
+          "authoring": 1,
+          "catalog_schema": 2,
+          "execution": 1,
+          "fingerprint": 1,
+          "pack_format": 1
+        },
+        "actual": {
+          "authoring": 1,
+          "catalog_schema": 2,
+          "execution": 999,
+          "fingerprint": 1,
+          "pack_format": 1
+        }
+      }
+    },
+    {
+      "check": "invalid contract exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid capability repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid capability exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_capability_unsupported",
+        "phase": "structure",
+        "source_file": "official/pack.ron",
+        "domain": "pack_manifest",
+        "object_id": "official",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "required_capabilities",
+        "cause": "unsupported authoring/execution capability",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": null,
+        "definition_kind": null,
+        "position": null,
+        "parser_reason": null,
+        "expected": [
+          "gameplay_catalogs_v2",
+          "literal_effect_authoring_v1",
+          "boss_runtime_v1",
+          "summoned_units_v1"
+        ],
+        "actual": "unsupported_authoring_probe"
+      }
+    },
+    {
+      "check": "invalid capability exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid final_reference repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid final_reference exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_validation",
+        "phase": "final_validation",
+        "source_file": "official/data/summoned_units/base.ron",
+        "domain": "summoned_units",
+        "object_id": "cwbs_reference_minion",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "definitions[0].skill_id",
+        "cause": "references missing skill 'missing_authoring_skill'",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": "SummonedUnits",
+        "definition_kind": "SummonedUnit",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid final_reference exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid summon_compile repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid summon_compile exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_compile",
+        "phase": "compile",
+        "source_file": "official/data/summoned_units/base.ron",
+        "domain": "summoned_units",
+        "object_id": "cwbs_reference_minion",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "definitions[0].limits",
+        "cause": "max_alive and max_total must both be greater than zero",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": "SummonedUnits",
+        "definition_kind": "SummonedUnit",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid summon_compile exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid boss_compile repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid boss_compile exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_compile",
+        "phase": "compile",
+        "source_file": "official/data/boss_runtime/base.ron",
+        "domain": "boss_runtime",
+        "object_id": "little_red_pursuit",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "patterns[0].entry_state_id",
+        "cause": "references missing state 'missing_authoring_state'",
+        "related_sources": [],
+        "pack_id": "official",
+        "catalog_kind": "BossRuntime",
+        "definition_kind": "BossPattern",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid boss_compile exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid ambiguous repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid ambiguous exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "content_resolution",
+        "phase": "resolution",
+        "source_file": "selection",
+        "domain": "content_resolver",
+        "object_id": "run_policy",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "winners",
+        "cause": "ambiguous writers require an explicit winner or explicit chain",
+        "related_sources": [
+          {
+            "source_file": "left/pack.ron",
+            "object_id": "run_policy",
+            "field_path": "operations[0]",
+            "pack_id": "left",
+            "catalog_kind": "RunPolicy",
+            "definition_kind": "RunPolicy"
+          },
+          {
+            "source_file": "right/pack.ron",
+            "object_id": "run_policy",
+            "field_path": "operations[0]",
+            "pack_id": "right",
+            "catalog_kind": "RunPolicy",
+            "definition_kind": "RunPolicy"
+          }
+        ],
+        "pack_id": null,
+        "catalog_kind": "RunPolicy",
+        "definition_kind": "RunPolicy",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid generated_policy repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid generated_policy exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "generated_setup",
+        "phase": "generated_setup",
+        "source_file": "official/data/run/policy.ron",
+        "domain": "generated_combat_preview",
+        "object_id": "run_policy",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "combat_difficulty.profiles[1].ordinary_bands[0].tuning.extra_waves[0].spawn_zone_ids[0]",
+        "cause": "combat preview generation failed for manifested difficulty default_facility::Ordinary(Easy) seed 0: InvalidStaticData(\"invalid battlefield instance: spawn wave references missing spawn zone\")",
+        "related_sources": [
+          {
+            "source_file": "official/data/pve/encounters.ron",
+            "object_id": "normal_corroded_patrol",
+            "field_path": "encounters[0]",
+            "pack_id": "official",
+            "catalog_kind": "PveEncounters",
+            "definition_kind": "PveEncounter"
+          },
+          {
+            "source_file": "official/data/run/policy.ron",
+            "object_id": "run_policy",
+            "field_path": "combat_difficulty.profiles[1].ordinary_bands[0].tuning",
+            "pack_id": "official",
+            "catalog_kind": "RunPolicy",
+            "definition_kind": "RunPolicy"
+          },
+          {
+            "source_file": "official/data/map/battlefield_templates.ron",
+            "object_id": "obstacle_room_cover_line_01",
+            "field_path": "[13]",
+            "pack_id": "official",
+            "catalog_kind": "BattlefieldTemplates",
+            "definition_kind": "BattlefieldTemplate"
+          }
+        ],
+        "pack_id": "official",
+        "catalog_kind": "RunPolicy",
+        "definition_kind": "RunPolicy",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid generated_policy exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid generated_policy exact field",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid custom_generated_policy repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid custom_generated_policy exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "generated_setup",
+        "phase": "generated_setup",
+        "source_file": "custom/policy.ron",
+        "domain": "generated_combat_preview",
+        "object_id": "run_policy",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "combat_difficulty.profiles[1].ordinary_bands[0].tuning.extra_waves[0].spawn_zone_ids[0]",
+        "cause": "combat preview generation failed for manifested difficulty default_facility::Ordinary(Easy) seed 0: InvalidStaticData(\"invalid battlefield instance: spawn wave references missing spawn zone\")",
+        "related_sources": [
+          {
+            "source_file": "official/data/pve/encounters.ron",
+            "object_id": "normal_corroded_patrol",
+            "field_path": "encounters[0]",
+            "pack_id": "official",
+            "catalog_kind": "PveEncounters",
+            "definition_kind": "PveEncounter"
+          },
+          {
+            "source_file": "custom/policy.ron",
+            "object_id": "run_policy",
+            "field_path": "combat_difficulty.profiles[1].ordinary_bands[0].tuning",
+            "pack_id": "custom",
+            "catalog_kind": "RunPolicy",
+            "definition_kind": "RunPolicy"
+          },
+          {
+            "source_file": "official/data/map/battlefield_templates.ron",
+            "object_id": "obstacle_room_cover_line_01",
+            "field_path": "[13]",
+            "pack_id": "official",
+            "catalog_kind": "BattlefieldTemplates",
+            "definition_kind": "BattlefieldTemplate"
+          }
+        ],
+        "pack_id": "custom",
+        "catalog_kind": "RunPolicy",
+        "definition_kind": "RunPolicy",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid custom_generated_policy exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid custom_generated_policy exact field",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid custom_generated_boss repeat rejection no token/output",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "invalid custom_generated_boss exact code/phase",
+      "passed": true,
+      "actual": {
+        "code": "generated_setup",
+        "phase": "generated_setup",
+        "source_file": "official/data/pve/encounters.ron",
+        "domain": "generated_combat_preview",
+        "object_id": "reference_cwbs_final_boss",
+        "action_id": null,
+        "effect_id": null,
+        "field_path": "encounters[33]",
+        "cause": "resolved battle setup failed for manifested difficulty tutorial_fixed_v1::Ordinary(Easy) seed 0: InvalidStaticData(\"Boss Runtime encounter 'reference_cwbs_final_boss' references missing summon spawn zone 'missing_authoring_summon_zone'\")",
+        "related_sources": [
+          {
+            "source_file": "official/data/run/policy.ron",
+            "object_id": "run_policy",
+            "field_path": "combat_difficulty.profiles[0].ordinary_bands[0].tuning",
+            "pack_id": "official",
+            "catalog_kind": "RunPolicy",
+            "definition_kind": "RunPolicy"
+          },
+          {
+            "source_file": "official/data/map/battlefield_templates.ron",
+            "object_id": "ambush_side_entry_01",
+            "field_path": "[7]",
+            "pack_id": "official",
+            "catalog_kind": "BattlefieldTemplates",
+            "definition_kind": "BattlefieldTemplate"
+          },
+          {
+            "source_file": "official/data/boss_runtime/base.ron",
+            "object_id": "cwbs_reference_final_boss_runtime",
+            "field_path": "encounters[1]",
+            "pack_id": "official",
+            "catalog_kind": "BossRuntime",
+            "definition_kind": "BossEncounter"
+          },
+          {
+            "source_file": "official/data/boss_runtime/base.ron",
+            "object_id": "cwbs_reference_boss_behavior",
+            "field_path": "actor_behaviors[1]",
+            "pack_id": "official",
+            "catalog_kind": "BossRuntime",
+            "definition_kind": "BossActorBehavior"
+          },
+          {
+            "source_file": "custom/pattern.ron",
+            "object_id": "cwbs_reference_summon_cycle",
+            "field_path": "patterns[0]",
+            "pack_id": "custom",
+            "catalog_kind": "BossRuntime",
+            "definition_kind": "BossPattern"
+          }
+        ],
+        "pack_id": "official",
+        "catalog_kind": "PveEncounters",
+        "definition_kind": "PveEncounter",
+        "position": null,
+        "parser_reason": null,
+        "expected": null,
+        "actual": null
+      }
+    },
+    {
+      "check": "invalid custom_generated_boss exact source",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "pack A/B/A complete output restoration",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "diagnostic valid_b restoration",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "diagnostic boss_valid restoration",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "diagnostic invalid_b rejection repeat",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "diagnostic boss_invalid_route rejection repeat",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "diagnostic boss_invalid_zone rejection repeat",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json original baseline hash",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json current unchanged tool hash",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json event_heavy recomputed p95",
+      "passed": true,
+      "actual": 13180868
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json event_heavy absolute latency",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json event_heavy raw repeat parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json event_heavy original baseline parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json concurrent_sessions recomputed p95",
+      "passed": true,
+      "actual": 8182800
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json concurrent_sessions absolute latency",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json concurrent_sessions raw repeat parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard ORDINARY_GUARDS_003/kernel_plain.json concurrent_sessions original baseline parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log original baseline hash",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log current unchanged tool hash",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log event_heavy recomputed p95",
+      "passed": true,
+      "actual": 12680473
+    },
+    {
+      "check": "guard r04_finalalloc168.log event_heavy raw repeat parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log event_heavy original baseline parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log event_heavy original allocation/peak/retained caps",
+      "passed": true,
+      "actual": {
+        "operations": 70671,
+        "peak": 276174,
+        "retained": 276174
+      }
+    },
+    {
+      "check": "guard r04_finalalloc168.log concurrent_sessions recomputed p95",
+      "passed": true,
+      "actual": 7202246
+    },
+    {
+      "check": "guard r04_finalalloc168.log concurrent_sessions raw repeat parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log concurrent_sessions original baseline parity",
+      "passed": true,
+      "actual": null
+    },
+    {
+      "check": "guard r04_finalalloc168.log concurrent_sessions original allocation/peak/retained caps",
+      "passed": true,
+      "actual": {
+        "operations": 389240,
+        "peak": 9030188,
+        "retained": 4196928
+      }
+    }
+  ],
+  "passed": true
+}

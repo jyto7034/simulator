@@ -1,0 +1,93 @@
+{
+  "at": "2026-09-10T17:31:00.144106+00:00",
+  "input101_default_production_reconstruction": {
+    "unchanged": 264,
+    "restored": [
+      "core_enhanced/src/game/battle/core/commands.rs",
+      "core_enhanced/src/game/data/content_pack/tests.rs",
+      "core_enhanced/tools/authoring_trial_api_probe/Cargo.toml"
+    ],
+    "scope": "Two test-only additions and one standalone optional allocation feature declaration; does not assert old and current binary byte identity."
+  },
+  "public_api": {
+    "positive_runtime_consumers": 5,
+    "expected_privacy_rejections": 6,
+    "all_named_compiler_diagnostics_observed": true
+  },
+  "compile_only_checks": {
+    "all_targets_001": {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "input": "INPUTS_117.json",
+      "exit_code": 0
+    },
+    "release_check_001": {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--release",
+        "--lib",
+        "--no-default-features",
+        "--offline",
+        "--locked"
+      ],
+      "input": "INPUTS_117.json",
+      "exit_code": 0
+    },
+    "release_build_041": {
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "--release",
+        "--no-default-features",
+        "--offline",
+        "--locked",
+        "--bin",
+        "author_content",
+        "--bin",
+        "package_official_content",
+        "--bin",
+        "consume_content_pack"
+      ],
+      "input": "INPUTS_117.json",
+      "exit_code": 0
+    }
+  },
+  "preserved_failures": {
+    "runtime_guards_001": false,
+    "kernel_plain": 101,
+    "kernel_alloc": 101
+  },
+  "public_guard_observations": {
+    "plain": {
+      "snapshot_p95_ns": 220840,
+      "export_p95_ns": 7733,
+      "snapshot_bytes": 48493,
+      "export_bytes": 18154
+    },
+    "alloc": {
+      "snapshot_p95_ns": 214742,
+      "export_p95_ns": 8302,
+      "snapshot_bytes": 48493,
+      "export_bytes": 18154
+    }
+  },
+  "adapted_kernel": "Current token-input plain/allocation guards pass original checks; five separate positive conversion timings retained; old raw fixture failures not overwritten.",
+  "additional_invalid_evidence": {
+    "content_cases": 13,
+    "api_rejections": 26,
+    "cli_rejections": 26,
+    "applicability": "Same production source reconstructed above; no new audit execution."
+  }
+}

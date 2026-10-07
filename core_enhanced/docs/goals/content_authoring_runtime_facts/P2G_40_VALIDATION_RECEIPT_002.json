@@ -1,0 +1,206 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CARF-P2G40-002",
+  "evaluated_phase_plan": {
+    "ref": "PP-CARF-P2G40-002",
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_002.json",
+    "sha256": "a1720004d7eacf388fd1e54de8659221849e241957f7d18037974753028e0fc6"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CARF-P2G30-001",
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json",
+    "sha256": "abacf502adca360c469311c4e64a0c69c96613c474f1a90c0a062a771ae414d3"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CARF-P2G20-001",
+    "review_batch_ref": "RB-CARF-P2G20-001",
+    "reviewed_source_basis_ref": "RSB-CARF-P2G20-001",
+    "code_review_binding_count": 5,
+    "bound_final_policy_freeze_ref": "FPF-CARF-P2G30-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 5,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "CARF-E01",
+        "policy_element_revision_ref": "PER-CARF-E01-REVIEWED-001"
+      },
+      {
+        "element_id": "CARF-E02",
+        "policy_element_revision_ref": "PER-CARF-E02-REVIEWED-001"
+      },
+      {
+        "element_id": "CARF-E03",
+        "policy_element_revision_ref": "PER-CARF-E03-REVIEWED-001"
+      },
+      {
+        "element_id": "CARF-E04",
+        "policy_element_revision_ref": "PER-CARF-E04-REVIEWED-001"
+      },
+      {
+        "element_id": "CARF-E05",
+        "policy_element_revision_ref": "PER-CARF-E05-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 5,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "CARF-E01",
+        "phase_id": "PHASE-CARF-01"
+      },
+      {
+        "element_id": "CARF-E02",
+        "phase_id": "PHASE-CARF-01"
+      },
+      {
+        "element_id": "CARF-E03",
+        "phase_id": "PHASE-CARF-01"
+      },
+      {
+        "element_id": "CARF-E04",
+        "phase_id": "PHASE-CARF-01"
+      },
+      {
+        "element_id": "CARF-E05",
+        "phase_id": "PHASE-CARF-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 3,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 2,
+    "standalone_work_package_count": 1,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CARF-01": [
+        "WP-CARF-01",
+        "WP-CARF-02"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CARF-03"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 3,
+    "edge_count": 4,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CARF-01",
+        "WP-CARF-02"
+      ]
+    ],
+    "final_execution_node_count": 2,
+    "condensation_edge_count": 1,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 2,
+    "assigned_once_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CARF-01": "PHASE-CARF-01",
+      "WP-CARF-03": "PHASE-CARF-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 10,
+    "mapped_count": 10,
+    "assigned_execution_node_count": 10,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CARF-P2G30-001",
+      "Content Digest": null
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CARF-P2G40-002",
+      "Content Digest": null
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_00_INITIAL_001.json",
+        "sha256": "222c3c3185abbd310edef1e8def3150c72ac740b3c99151d33caf634b1afcf39"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_10_POLICY_001.json",
+        "sha256": "463e5a39b22500ec039227d1749d6c807aa9af9311d24ccd23eb32ec843e0fd8"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_REVIEW_001.json",
+        "sha256": "133815b3079c500316a7bc4753e566394aa3e94cba3f6de453ef33155a4d57b5"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "3a3676986e3a3cebe0c2f02c854e118a4d6a6f60be59b980d85c1a04b3c70cab"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json",
+        "sha256": "abacf502adca360c469311c4e64a0c69c96613c474f1a90c0a062a771ae414d3"
+      }
+    ]
+  }
+}

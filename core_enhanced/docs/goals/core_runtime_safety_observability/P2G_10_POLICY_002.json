@@ -1,0 +1,1137 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-01-002",
+        "Content Digest": "sha256:516628c72d906829469f7f564eefe4ae8c501577639a8818ead717e67dd87256"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-01-r1",
+          "Content Digest": "sha256:96fc792a24479bfe6dbf99b9f94a52b9b364c55607b84b0344c94bdccbdb4f2b"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-01"
+        ],
+        "Exact Decision": "한도 설정은 trusted host가 소유한다. pack/scenario/mod는 자기 한도를 바꿀 수 없다. 기존 native/execution/expression/trial/history 한도의 숫자·scope·ceiling·typed fault를 유지하며 embedded RON을 유일한 운영 기본값 원본으로 사용한다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §1, §2 형식·기본값"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "기본 profile과 변경 전 기본 실행은 결과·오류가 같다. 파일 미지정 embedding/host/CLI의 effective settings가 같고 임의 pack 값은 이를 완화하지 못한다. 신규 gameplay 상한이나 전투 총 메모리 cap을 추가하지 않는다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-01-DECIDED-002",
+        "Content Digest": "sha256:258a9abe6d6a54c21a8d6569747d322db8598b5bec1d76dcf748456dd2b297a3"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-01-r3",
+          "Content Digest": "sha256:a3f204c3e3f6fd131784ac476cdd85f3551b97843c1b13442e60a0480c685b61"
+        },
+        "Policy Statement": "한도 설정은 trusted host가 소유한다. pack/scenario/mod는 자기 한도를 바꿀 수 없다. 기존 native/execution/expression/trial/history 한도의 숫자·scope·ceiling·typed fault를 유지하며 embedded RON을 유일한 운영 기본값 원본으로 사용한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-01-002",
+          "Content Digest": "sha256:516628c72d906829469f7f564eefe4ae8c501577639a8818ead717e67dd87256"
+        },
+        "Observable Policy Acceptance": [
+          "기본 profile과 변경 전 기본 실행은 결과·오류가 같다. 파일 미지정 embedding/host/CLI의 effective settings가 같고 임의 pack 값은 이를 완화하지 못한다. 신규 gameplay 상한이나 전투 총 메모리 cap을 추가하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-02-002",
+        "Content Digest": "sha256:45607464ef8202009cb9f149f6936e9f27c34a76de2be51da5e526ff16b5237f"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-02-r1",
+          "Content Digest": "sha256:7a2f9ad44d00ea922d3d0554055ce8e502e0446408c3832a8c21e1103c2490ea"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-02"
+        ],
+        "Exact Decision": "명시적 설정 경로의 부재/invalid는 초기화 오류이며 fallback하지 않는다. DTO는 versioned named fields, 유한 정수·checked target-width conversion, unknown/duplicate/음수/overflow/불법0/ceiling 거절이다. loader는 고정64KiB·depth 제한을 profile 파싱 전에 적용한다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §2 파일 오류·identity"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "미지정은 정상 default, 지정 missing/invalid는 경로와 field를 포함한 오류이며 콘텐츠 publication·전투 생성 전에 거절된다. 입력 크기·중첩·중복·범위 경계를 넘는 입력도 bounded하게 거절된다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-02-DECIDED-002",
+        "Content Digest": "sha256:4ca40296f7cb5d964a569e1691c11d43768f91b2db8c746a7eed12bac19937bd"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-02-r3",
+          "Content Digest": "sha256:881361f58b1db586c945898bb992664a8cfdc8c03397d7f28b9bb49178039668"
+        },
+        "Policy Statement": "명시적 설정 경로의 부재/invalid는 초기화 오류이며 fallback하지 않는다. DTO는 versioned named fields, 유한 정수·checked target-width conversion, unknown/duplicate/음수/overflow/불법0/ceiling 거절이다. loader는 고정64KiB·depth 제한을 profile 파싱 전에 적용한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-02-002",
+          "Content Digest": "sha256:45607464ef8202009cb9f149f6936e9f27c34a76de2be51da5e526ff16b5237f"
+        },
+        "Observable Policy Acceptance": [
+          "미지정은 정상 default, 지정 missing/invalid는 경로와 field를 포함한 오류이며 콘텐츠 publication·전투 생성 전에 거절된다. 입력 크기·중첩·중복·범위 경계를 넘는 입력도 bounded하게 거절된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-03-002",
+        "Content Digest": "sha256:584fb735c73fb397f6258c758da9512806a8c00708679c6f41be12b25a73aa85"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-03-r1",
+          "Content Digest": "sha256:54922641011362ae936a424758789ad9226d0d8e0dc665bf6a5ed64b88969f50"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-03"
+        ],
+        "Exact Decision": "raw SHA와 canonical effective SHA를 분리한다. profile은 host/session/generation 생성 때 immutable하게 고정하고 active battle hot reload는 하지 않는다. 설정 차이로 달라지는 admission을 cache identity에 결속한다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §2 파일 오류·적용·identity"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "주석/공백만 다르면 raw SHA만 다르고 effective SHA는 같다. 값이 다른 profile은 admission/cache identity가 다르며 서로 격리된다. active 실행은 후속 host profile 변경으로 바뀌지 않고 재현의 hash 불일치는 명시된다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-03-DECIDED-002",
+        "Content Digest": "sha256:89c1bac96cc1a7aef89f891b172d26645c656ca7a14f5a5d36f08d3b0da20a41"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-03-r3",
+          "Content Digest": "sha256:2c92cb0076274246972907f9411e14b602765d73015cbf0bd595cc176a9f14f8"
+        },
+        "Policy Statement": "raw SHA와 canonical effective SHA를 분리한다. profile은 host/session/generation 생성 때 immutable하게 고정하고 active battle hot reload는 하지 않는다. 설정 차이로 달라지는 admission을 cache identity에 결속한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-03-002",
+          "Content Digest": "sha256:584fb735c73fb397f6258c758da9512806a8c00708679c6f41be12b25a73aa85"
+        },
+        "Observable Policy Acceptance": [
+          "주석/공백만 다르면 raw SHA만 다르고 effective SHA는 같다. 값이 다른 profile은 admission/cache identity가 다르며 서로 격리된다. active 실행은 후속 host profile 변경으로 바뀌지 않고 재현의 hash 불일치는 명시된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-04-002",
+        "Content Digest": "sha256:589db379253cdf60ebedcedda6339e693021becd8861772bd0747c1984aced1d"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-04-r1",
+          "Content Digest": "sha256:d0136b6fbf46bc2284309136fbd46c707737a1757efdfe0759507e29e9082726"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-04"
+        ],
+        "Exact Decision": "Core는 파일시스템/환경변수 없이 validated profile을 받는다. 실제 host와 library는 scenario/첫 spawn 이전에 native limits를 주입하고 restore도 host profile로 active state를 검증한다. 저장 파일은 임의 한도를 승인하지 않는다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §2 constructor·restore; S1 완료 기준"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "실제 host→Core 및 embedding의 첫 spawn부터 작은 유효 한도가 적용된다. restore는 현재 host 한도로 검증하며 실패 시 원본 save bytes가 유지된다. profile을 저장에서 무검증 복구하지 않는다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-04-DECIDED-002",
+        "Content Digest": "sha256:df514629f2e3f72914bb0d5e356ec25896176c1afad4f67d5a52044b92430bb4"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-04-r3",
+          "Content Digest": "sha256:432d35eac343404cef1bc9bff5dfa7d83b97649a05897313b51b2002541224c0"
+        },
+        "Policy Statement": "Core는 파일시스템/환경변수 없이 validated profile을 받는다. 실제 host와 library는 scenario/첫 spawn 이전에 native limits를 주입하고 restore도 host profile로 active state를 검증한다. 저장 파일은 임의 한도를 승인하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-04-002",
+          "Content Digest": "sha256:589db379253cdf60ebedcedda6339e693021becd8861772bd0747c1984aced1d"
+        },
+        "Observable Policy Acceptance": [
+          "실제 host→Core 및 embedding의 첫 spawn부터 작은 유효 한도가 적용된다. restore는 현재 host 한도로 검증하며 실패 시 원본 save bytes가 유지된다. profile을 저장에서 무검증 복구하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-05-002",
+        "Content Digest": "sha256:7438f7a1042366c6da51740d31671cce4026d55c8589b114108fa54800524e50"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-05-r1",
+          "Content Digest": "sha256:be59091ac5f45e91d76948ff4a764e3f44644fb02f188eda9b2becb87086704e"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-05"
+        ],
+        "Exact Decision": "authoring API와 CLI는 동일 validated profile을 사용한다. CLI 선택 --runtime-safety PATH는 기존 positional 계약을 보존한다. execution allowance의 중첩/rollback 공유를 보존하고 trial total-work/receipt cap을 live battle 전체 수명 cap으로 바꾸지 않는다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §2 authoring execution/trial·S1 완료 기준"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "동일 입력의 API/CLI/host는 적용 가능한 동일 settings와 typed fault를 관측한다. 작은 한도·중첩·취소·rollback 시험에서 allowance가 우회되지 않으며 invalid 설정으로 기존 세션/publication이 교체되지 않는다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-05-DECIDED-002",
+        "Content Digest": "sha256:3286750c24883cfbd4f9734023810d3c127269afcd14db56db6833adb88695f8"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-05-r3",
+          "Content Digest": "sha256:a2798afd04b17c0a563eb0f578c24e5feb658d624ffdf2007aa3e37c577044a6"
+        },
+        "Policy Statement": "authoring API와 CLI는 동일 validated profile을 사용한다. CLI 선택 --runtime-safety PATH는 기존 positional 계약을 보존한다. execution allowance의 중첩/rollback 공유를 보존하고 trial total-work/receipt cap을 live battle 전체 수명 cap으로 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-05-002",
+          "Content Digest": "sha256:7438f7a1042366c6da51740d31671cce4026d55c8589b114108fa54800524e50"
+        },
+        "Observable Policy Acceptance": [
+          "동일 입력의 API/CLI/host는 적용 가능한 동일 settings와 typed fault를 관측한다. 작은 한도·중첩·취소·rollback 시험에서 allowance가 우회되지 않으며 invalid 설정으로 기존 세션/publication이 교체되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-06-002",
+        "Content Digest": "sha256:59e36c50b9afc760b94091c048ba206ecd00591016c4729ff1d6fee74b949024"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-06-r1",
+          "Content Digest": "sha256:2abc432f53d9ded46a368ec5128f492a3534b11189b0624ec3827c7a5cb1292a"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-06"
+        ],
+        "Exact Decision": "expression profile은 parse→compile→catalog→plan→runtime/preview/explain까지 일관되게 적용한다. parser HARD_MAX와 compiler의 기존 typed API 허용 범위를 구분하고 다른 admission profile의 plan/cache를 무검증 재사용하지 않는다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §2 expression·cache"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "각 단계의 경계 입력이 선택 profile을 소비한다. 두 profile의 compile/admission 결과와 cache reuse는 identity로 격리되며 정상 식 의미/preview 읽기 전용 계약과 기존 합법 ExprLimits 범위를 보존한다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-06-DECIDED-002",
+        "Content Digest": "sha256:e0baf611a5402cf547cac87d78d2bfdcfd7236c3e4f2665903a0b1607a9f4e15"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-06-r3",
+          "Content Digest": "sha256:bc4ead9e222a66408d34f001615b7480030c3c403cd7ab454f78155f6d3972fe"
+        },
+        "Policy Statement": "expression profile은 parse→compile→catalog→plan→runtime/preview/explain까지 일관되게 적용한다. parser HARD_MAX와 compiler의 기존 typed API 허용 범위를 구분하고 다른 admission profile의 plan/cache를 무검증 재사용하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-06-002",
+          "Content Digest": "sha256:59e36c50b9afc760b94091c048ba206ecd00591016c4729ff1d6fee74b949024"
+        },
+        "Observable Policy Acceptance": [
+          "각 단계의 경계 입력이 선택 profile을 소비한다. 두 profile의 compile/admission 결과와 cache reuse는 identity로 격리되며 정상 식 의미/preview 읽기 전용 계약과 기존 합법 ExprLimits 범위를 보존한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-07-002",
+        "Content Digest": "sha256:ee2d789e17d13ebbb205b00f7cf343e2b460aaf862d2ae874c3a8b367c3c6f2f"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-07-r1",
+          "Content Digest": "sha256:2cdf45704b202f87f989e59ad8e036aa6841c57a77d73e3a9b6b2256ce481d6f"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-07"
+        ],
+        "Exact Decision": "history는 현재 bounded 창의 events/encoded bytes/span limits를 profile에서 받는다. 생성·deserialize·import도 같은 정책을 통과하고 floor_seq/eviction/resync/결과 통계를 유지한다. history span은 전투 최대 시간이 아니다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §2 battle history"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "작은 history profile에서 import·실행 모두 저장 상한을 지키고 cursor gap/resync와 결과 통계가 유지된다. 창보다 긴 정상 전투도 history span 때문에 종료되지 않는다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-07-DECIDED-002",
+        "Content Digest": "sha256:102e8ba045fdd75fbc8e336c1d8d87e1309ec83807634f2be2e4fd7b03995945"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-07",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-07-r3",
+          "Content Digest": "sha256:5755dd98560167d050e7ec3f462ee3f848485f30b164aaac4d89e2c5a0530bf8"
+        },
+        "Policy Statement": "history는 현재 bounded 창의 events/encoded bytes/span limits를 profile에서 받는다. 생성·deserialize·import도 같은 정책을 통과하고 floor_seq/eviction/resync/결과 통계를 유지한다. history span은 전투 최대 시간이 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-07-002",
+          "Content Digest": "sha256:ee2d789e17d13ebbb205b00f7cf343e2b460aaf862d2ae874c3a8b367c3c6f2f"
+        },
+        "Observable Policy Acceptance": [
+          "작은 history profile에서 import·실행 모두 저장 상한을 지키고 cursor gap/resync와 결과 통계가 유지된다. 창보다 긴 정상 전투도 history span 때문에 종료되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-08-002",
+        "Content Digest": "sha256:c8286dc07b2d8f02aebfa031ecb0ef2ba6516c5f6ea21e61f8b8fb2f52672f4e"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-08-r1",
+          "Content Digest": "sha256:0f9766b76bf7322f8a18dc70269060a9a86f7161e52a514672c19ea2dedb1fb5"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-08"
+        ],
+        "Exact Decision": "내부 정수 장부가 safety 판정을 계속 소유한다. bounded operation summary로 work/duration/admitted bytes·committed extent/events/actions/projectiles/units·history·fault/drop·selected simulation time과 interval peak를 제공한다. extent/admission/RSS 및 wall/simulation time을 구분한다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §3 첫 metric 계약"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "짧은 사용량 peak와 실제 반환 fault가 관측되고 내부 poll 중복으로 rejection이 증가하지 않는다. exporter 값이 safety 판정으로 역류하지 않으며 scrape가 비용 청구·owner 전체 순회·게임 오류를 유발하지 않는다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-08-DECIDED-002",
+        "Content Digest": "sha256:0f8af68df2715f4787291d61a564682f2cf86dc659291660180ae024375e8a93"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-08-r3",
+          "Content Digest": "sha256:d8ee845c6a4297ab4f96335aae3069601c1591037ad6e42cbd797f996c4f3c84"
+        },
+        "Policy Statement": "내부 정수 장부가 safety 판정을 계속 소유한다. bounded operation summary로 work/duration/admitted bytes·committed extent/events/actions/projectiles/units·history·fault/drop·selected simulation time과 interval peak를 제공한다. extent/admission/RSS 및 wall/simulation time을 구분한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-08-002",
+          "Content Digest": "sha256:c8286dc07b2d8f02aebfa031ecb0ef2ba6516c5f6ea21e61f8b8fb2f52672f4e"
+        },
+        "Observable Policy Acceptance": [
+          "짧은 사용량 peak와 실제 반환 fault가 관측되고 내부 poll 중복으로 rejection이 증가하지 않는다. exporter 값이 safety 판정으로 역류하지 않으며 scrape가 비용 청구·owner 전체 순회·게임 오류를 유발하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-09-002",
+        "Content Digest": "sha256:00e10cf4219c5f43b6fdedb8e4f2a4a3949175aa63a954b654652813f46aa4d2"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-09-r1",
+          "Content Digest": "sha256:d42c444ff2fed7a2730af50f3e4202422daece06e9681af63d7e87acb27cef0f"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-09"
+        ],
+        "Exact Decision": "core 계측은 선택 기능, exporter/HTTP/task는 opt-in host 소유다. Rust metrics→Prometheus→Grafana와 실제 datasource/dashboard 구성을 제공한다. HTTP 개발 기본은 loopback, 서비스 부재/실패는 gameplay를 막지 않는다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §3 표준 메트릭·수집 주기"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "저장소 구성으로 실제 Grafana에서 사용량·거부 원인을 볼 수 있다. 계측 disabled/enabled·collector 미접속·scrape 중단에서 게임 결과/오류/RNG/event 순서가 같고 유한 exporter storage가 유휴에도 회수된다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-09-DECIDED-002",
+        "Content Digest": "sha256:4f9b7fab6a9c97f8c2401758aa2152251a7a9a5c7b81c26fc4ddf3c4be9d4c7f"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-09-r3",
+          "Content Digest": "sha256:73abad16bb778b0ffdd08b9fc0883490364b0514ad672949363e3a54952ced92"
+        },
+        "Policy Statement": "core 계측은 선택 기능, exporter/HTTP/task는 opt-in host 소유다. Rust metrics→Prometheus→Grafana와 실제 datasource/dashboard 구성을 제공한다. HTTP 개발 기본은 loopback, 서비스 부재/실패는 gameplay를 막지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-09-002",
+          "Content Digest": "sha256:00e10cf4219c5f43b6fdedb8e4f2a4a3949175aa63a954b654652813f46aa4d2"
+        },
+        "Observable Policy Acceptance": [
+          "저장소 구성으로 실제 Grafana에서 사용량·거부 원인을 볼 수 있다. 계측 disabled/enabled·collector 미접속·scrape 중단에서 게임 결과/오류/RNG/event 순서가 같고 유한 exporter storage가 유휴에도 회수된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-10-002",
+        "Content Digest": "sha256:f61f3f7017551814c108f4cdef4f037530f82997690620932d7281c554c580ab"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-10-r1",
+          "Content Digest": "sha256:46c4fd0739533a02c6c478253aa16faae978075c06c09f5e8886feefba022761"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-10"
+        ],
+        "Exact Decision": "관측 설정은 별도 observability.ron으로 gameplay hash에서 분리한다. 최초 개발 기본은 snapshot200ms/scrape1s/dashboard1s/선택1개/최근ring300개/local24h다. label은 유한 operation/reason/outcome과 고정 slot0이며 UUID/player/action/event ID를 시계열 label로 쓰지 않는다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §3 bounded storage·label"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "전체 sum/max/분포와 선택한 전투 상세가 있고 선택 identity/시각은 제한된 상세 기록에 표시된다. 포화 시 관측 손실만 기록되고 게임 이벤트는 유지된다. profile 변경이 gameplay hash를 바꾸지 않으며 registry/ring/histogram storage 상한을 확인할 수 있다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-10-DECIDED-002",
+        "Content Digest": "sha256:00f3d7aba179e3abaef212f4c72bd5c1d57dfa4611408415acbe247ab7882250"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-10",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-10-r3",
+          "Content Digest": "sha256:50a39dd40077ee2ba5748d30b9fad42e40fd1d149542393cfca762a57c697778"
+        },
+        "Policy Statement": "관측 설정은 별도 observability.ron으로 gameplay hash에서 분리한다. 최초 개발 기본은 snapshot200ms/scrape1s/dashboard1s/선택1개/최근ring300개/local24h다. label은 유한 operation/reason/outcome과 고정 slot0이며 UUID/player/action/event ID를 시계열 label로 쓰지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-10-002",
+          "Content Digest": "sha256:f61f3f7017551814c108f4cdef4f037530f82997690620932d7281c554c580ab"
+        },
+        "Observable Policy Acceptance": [
+          "전체 sum/max/분포와 선택한 전투 상세가 있고 선택 identity/시각은 제한된 상세 기록에 표시된다. 포화 시 관측 손실만 기록되고 게임 이벤트는 유지된다. profile 변경이 gameplay hash를 바꾸지 않으며 registry/ring/histogram storage 상한을 확인할 수 있다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-11-002",
+        "Content Digest": "sha256:4cded75d8cddfb437ccaab0ce8dcbd2a6d6e2f1d87655a55ae0974f9ef1a384c"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-11-r1",
+          "Content Digest": "sha256:1a10a723e4262b82898a35545876945a02dcef31b04b7ed9a53ed00137b53e2a"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-11"
+        ],
+        "Exact Decision": "metric handle은 hot path 이전에 등록하고 allocator hook에서 등록/문자열/출력하지 않는다. rollback된 시도의 실패/작업 통계는 남기되 commit count/state gauge는 commit에만 반영한다. 종료된 전투는 집계 차감·선택 해제·자원 회수한다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "PLAN §3 종료·rollback·완료 기준"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "실패/rollback·중복 소비·종료·선택 변경에서 counter 중복과 stale gauge가 없고 관측 보관량이 bounded하다. 종료와 exporter 부재/포화가 gameplay 상태·한도 의미에 영향을 주지 않는다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-11-DECIDED-002",
+        "Content Digest": "sha256:16ca777c72f429e00ba4970c6389940dd7a738c88ed47d3259a3d36ba5bef93c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-11",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-11-r3",
+          "Content Digest": "sha256:49cc59266fb3de02777162e7d4de30d4e7c33ecfc3e9bc89ae64d49cce21c8c4"
+        },
+        "Policy Statement": "metric handle은 hot path 이전에 등록하고 allocator hook에서 등록/문자열/출력하지 않는다. rollback된 시도의 실패/작업 통계는 남기되 commit count/state gauge는 commit에만 반영한다. 종료된 전투는 집계 차감·선택 해제·자원 회수한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-11-002",
+          "Content Digest": "sha256:4cded75d8cddfb437ccaab0ce8dcbd2a6d6e2f1d87655a55ae0974f9ef1a384c"
+        },
+        "Observable Policy Acceptance": [
+          "실패/rollback·중복 소비·종료·선택 변경에서 counter 중복과 stale gauge가 없고 관측 보관량이 bounded하다. 종료와 exporter 부재/포화가 gameplay 상태·한도 의미에 영향을 주지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSO-12-002",
+        "Content Digest": "sha256:0ba415bcad6c519f1ee8c368b39e69707d1934672da900e3a0c180c16d6cdf01"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DEC-CRSO-12-r1",
+          "Content Digest": "sha256:8023020f84dca478036130e3f608e2f2941df18bb70ea77618810dadc847fdd7"
+        },
+        "Affected Element IDs": [
+          "PE-CRSO-12"
+        ],
+        "Exact Decision": "기존 R05 경고는 raw guard와 정책 판정을 구분해 유지한다. 관측 비용은 측정하되 임의 새 합격 수치·20분 시험·3MB cap·안전 오류의 자동 스킬 취소·continuation을 U02에 추가하지 않는다. 기존 기능·복원·결정론·공개 authoring 계약을 회귀 검증한다.",
+        "Decision Authority": "AI delegated decision adopting existing approved direction",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "item": "IN-001",
+          "scope": "U02/A04/A05"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSO-001",
+            "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+          },
+          "items": [
+            "IN-002",
+            "IN-005",
+            "IN-006"
+          ],
+          "span": "ROADMAP U02; PLAN §1,§4–6"
+        },
+        "Reason": "기존 추천 채택·설정/관측 계획을 새 연속 요청의 U02 범위에서 구체화한다. 예전 문서의 구현 미승인/인계 정지는 최신 명시적 요청으로 해소됐으며 원본은 보존한다.",
+        "Impact": "현재 source의 필요한 전체 Core/host 검사와 고정입력 off/on parity, 정상/집중/기능별/한도거절 표본이 남는다. 기존 경고를 숨기거나 새 source 실행으로 과거 결과를 가장하지 않으며 U01 취소 계약이 유지된다.",
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "기존 값·오류·scope와 U02 제외 유지",
+          "derived_from_ownership": "trusted host 설정과 별도 관측 소유권에서 도출",
+          "no_new_game_rule": "새 비용·보상·확률·gameplay 상한 없음",
+          "local_impact": "설정·관측 경계 안, 타 객체의 획득·진행 변경 없음",
+          "user_data_preserved": "구저장 삭제·일괄 변환·재해석 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSO-12-DECIDED-002",
+        "Content Digest": "sha256:3acbdaf63405740bc190868d8104ad28a022958eb8c7c67b25ffd9c6aadafd86"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSO-12",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRSO-12-r3",
+          "Content Digest": "sha256:919582eeab13aa373d2ed2fc8509ff2dc52bc13e8576ef662934a2774b9979d0"
+        },
+        "Policy Statement": "기존 R05 경고는 raw guard와 정책 판정을 구분해 유지한다. 관측 비용은 측정하되 임의 새 합격 수치·20분 시험·3MB cap·안전 오류의 자동 스킬 취소·continuation을 U02에 추가하지 않는다. 기존 기능·복원·결정론·공개 authoring 계약을 회귀 검증한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSO-12-002",
+          "Content Digest": "sha256:0ba415bcad6c519f1ee8c368b39e69707d1934672da900e3a0c180c16d6cdf01"
+        },
+        "Observable Policy Acceptance": [
+          "현재 source의 필요한 전체 Core/host 검사와 고정입력 off/on parity, 정상/집중/기능별/한도거절 표본이 남는다. 기존 경고를 숨기거나 새 source 실행으로 과거 결과를 가장하지 않으며 U01 취소 계약이 유지된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRSO-004",
+        "Content Digest": "sha256:4ab226dbc7e3ccbd43d61f849511c6b5b1117d233f7db31f5ac72728f26cee24"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSO-003",
+          "Content Digest": "sha256:0df22960dcca58294393c5ff9e3d4e8e4343ad4c5b8fa0d94c6388aa7f7c2e9e"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRSO-20261004",
+          "Policy Topic": "U02 실행 한도 설정과 제한된 비용의 런타임 관측",
+          "Requested Result": "bounded_pipeline P2G-00→60, then separately authorized GEX and independent audit",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+            "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+            "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+            "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "U02/A04: 기존 한도의 trusted host RON profile과 Core/authoring 실제 주입·identity·설정 오류 경계",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+                "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+                "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+                "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "U02/A05: bounded counters/high-water·종료 회수·관측 off/on 결정론·실제 Grafana 구성과 진단",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+                "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+                "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+                "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "선택 범위 P2G 및 GEX 자체 검증·독립 감사·교정; 기존 R05 경고와 유효 증거의 정확한 인수",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+                "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+                "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+                "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "U02 명시적 제외: 새 gameplay 발동 상한·임의 성능 합격 수치·20분 시험·mod가 profile 값을 바꾸는 권한",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+                "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+                "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+                "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "U02 카드: continuation/soft quota는 필수 아님; 후속 U03의 세션 terminal fault 및 U11의 새 Lab 허가 정책은 해당 owner 유지",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+                "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+                "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+                "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "활성 로드맵 Core 우선 범위: Unity 구현과 개별 최종보스 고유 구현; 기존 사용자 변경·감사 원본의 덮어쓰기",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.Intake Rows[IN-001]",
+                "adopted_scope": "IN-002 exact ROADMAP §U02, A04/A05 and S02 reference",
+                "execution_record": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+                "boundary": "P2G through Handoff; separately authorized GEX only after predecessor audit passes"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSO-001",
+          "Content Digest": "sha256:efefb21dfda035b6e1390e53ae3770b4e24f6dfcc9e1cfb5b6a9a9aca135b127"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRSO-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-01-DECIDED-002",
+            "Content Digest": "sha256:258a9abe6d6a54c21a8d6569747d322db8598b5bec1d76dcf748456dd2b297a3"
+          },
+          "PE-CRSO-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-02-DECIDED-002",
+            "Content Digest": "sha256:4ca40296f7cb5d964a569e1691c11d43768f91b2db8c746a7eed12bac19937bd"
+          },
+          "PE-CRSO-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-03-DECIDED-002",
+            "Content Digest": "sha256:89c1bac96cc1a7aef89f891b172d26645c656ca7a14f5a5d36f08d3b0da20a41"
+          },
+          "PE-CRSO-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-04-DECIDED-002",
+            "Content Digest": "sha256:df514629f2e3f72914bb0d5e356ec25896176c1afad4f67d5a52044b92430bb4"
+          },
+          "PE-CRSO-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-05-DECIDED-002",
+            "Content Digest": "sha256:3286750c24883cfbd4f9734023810d3c127269afcd14db56db6833adb88695f8"
+          },
+          "PE-CRSO-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-06-DECIDED-002",
+            "Content Digest": "sha256:e0baf611a5402cf547cac87d78d2bfdcfd7236c3e4f2665903a0b1607a9f4e15"
+          },
+          "PE-CRSO-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-07-DECIDED-002",
+            "Content Digest": "sha256:102e8ba045fdd75fbc8e336c1d8d87e1309ec83807634f2be2e4fd7b03995945"
+          },
+          "PE-CRSO-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-08-DECIDED-002",
+            "Content Digest": "sha256:0f8af68df2715f4787291d61a564682f2cf86dc659291660180ae024375e8a93"
+          },
+          "PE-CRSO-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-09-DECIDED-002",
+            "Content Digest": "sha256:4f9b7fab6a9c97f8c2401758aa2152251a7a9a5c7b81c26fc4ddf3c4be9d4c7f"
+          },
+          "PE-CRSO-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-10-DECIDED-002",
+            "Content Digest": "sha256:00f3d7aba179e3abaef212f4c72bd5c1d57dfa4611408415acbe247ab7882250"
+          },
+          "PE-CRSO-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-11-DECIDED-002",
+            "Content Digest": "sha256:16ca777c72f429e00ba4970c6389940dd7a738c88ed47d3259a3d36ba5bef93c"
+          },
+          "PE-CRSO-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSO-12-DECIDED-002",
+            "Content Digest": "sha256:3acbdaf63405740bc190868d8104ad28a022958eb8c7c67b25ffd9c6aadafd86"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-01-002",
+            "Content Digest": "sha256:516628c72d906829469f7f564eefe4ae8c501577639a8818ead717e67dd87256"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-02-002",
+            "Content Digest": "sha256:45607464ef8202009cb9f149f6936e9f27c34a76de2be51da5e526ff16b5237f"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-03-002",
+            "Content Digest": "sha256:584fb735c73fb397f6258c758da9512806a8c00708679c6f41be12b25a73aa85"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-04-002",
+            "Content Digest": "sha256:589db379253cdf60ebedcedda6339e693021becd8861772bd0747c1984aced1d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-05-002",
+            "Content Digest": "sha256:7438f7a1042366c6da51740d31671cce4026d55c8589b114108fa54800524e50"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-06-002",
+            "Content Digest": "sha256:59e36c50b9afc760b94091c048ba206ecd00591016c4729ff1d6fee74b949024"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-07-002",
+            "Content Digest": "sha256:ee2d789e17d13ebbb205b00f7cf343e2b460aaf862d2ae874c3a8b367c3c6f2f"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-08-002",
+            "Content Digest": "sha256:c8286dc07b2d8f02aebfa031ecb0ef2ba6516c5f6ea21e61f8b8fb2f52672f4e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-09-002",
+            "Content Digest": "sha256:00e10cf4219c5f43b6fdedb8e4f2a4a3949175aa63a954b654652813f46aa4d2"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-10-002",
+            "Content Digest": "sha256:f61f3f7017551814c108f4cdef4f037530f82997690620932d7281c554c580ab"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-11-002",
+            "Content Digest": "sha256:4cded75d8cddfb437ccaab0ce8dcbd2a6d6e2f1d87655a55ae0974f9ef1a384c"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSO-12-002",
+            "Content Digest": "sha256:0ba415bcad6c519f1ee8c368b39e69707d1934672da900e3a0c180c16d6cdf01"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

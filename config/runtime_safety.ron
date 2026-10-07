@@ -1,0 +1,50 @@
+// Trusted host settings. Never loaded from a content pack or save.
+// native_runtime.max_retained_bytes bounds operation admission/extent, not RSS.
+(
+    schema_version: 1,
+    native_runtime: (
+        max_work: 10000000,
+        max_clone_slots: 1048576,
+        max_active_actions: 4096,
+        max_retained_results: 4096,
+        max_deliveries: 8192,
+        max_actors: 4096,
+        max_providers: 16384,
+        max_control_steps: 4096,
+        max_strike_segments: 8192,
+        max_predeath_buffs: 4096,
+        max_retained_bytes: 8388608,
+    ),
+    authoring_execution: (
+        max_work: 10000000,
+        max_pending_events: 8192,
+        max_bucket_events: 4096,
+        max_effect_commands: 8192,
+        max_geometry_cells: 65536,
+        max_retained_entities: 4096,
+        max_definitions: 16384,
+        max_metadata_bytes: 8388608,
+        max_result_bytes: 8388608,
+        max_clone_slots: 65536,
+    ),
+    expression: (
+        parse: (
+            max_input_bytes: 65536,
+            max_depth: 64,
+            max_nodes: 1024,
+            max_authored_members: 4096,
+        ),
+        compile_and_evaluate: (
+            max_depth: 64,
+            max_nodes: 1024,
+            max_stack: 1024,
+            max_dynamic_members: 4096,
+            max_groups: 4096,
+            max_work: 65536,
+            max_compile_work: 65536,
+            max_retained_bytes: 1048576,
+        ),
+    ),
+    authoring_trial: (max_total_work: 1073741824, max_receipt_bytes: 67108864),
+    battle_history: (max_events: 8192, max_encoded_entry_array_bytes: 4194304, max_span_ms: 180000),
+)

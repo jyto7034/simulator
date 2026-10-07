@@ -28,15 +28,100 @@ pub struct DamageRequest {
     pub time_ms: u64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy)]
 pub struct DamageBonusSnapshot {
+    pub source: CooldownSource,
+    pub equipment_source: Option<super::runtime_facts::EquipmentSourceSnapshot>,
     pub flat: i32,
     pub percent: i32,
     pub damage_type: DamageType,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+impl PartialEq for DamageBonusSnapshot {
+    fn eq(&self, other: &Self) -> bool {
+        (self.flat, self.percent, self.damage_type)
+            == (other.flat, other.percent, other.damage_type)
+    }
+}
+impl Eq for DamageBonusSnapshot {}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DamageModifierSourceSnapshot {
+    pub source: CooldownSource,
+    pub equipment_source: Option<super::runtime_facts::EquipmentSourceSnapshot>,
+}
+crate::authoring::clone_shape::copy_shape!(DamageModifierSourceSnapshot);
+
+#[derive(Debug, Clone, Copy)]
+pub struct DamageComponentSource {
+    pub actor: UnitInstanceId,
+    pub equipment: Option<super::runtime_facts::EquipmentSourceSnapshot>,
+}
+
+#[derive(Debug, Clone)]
+pub struct BasicLifestealSnapshot {
+    pub percent: u32,
+    pub max_heal: u32,
+    pub equipment: Option<super::runtime_facts::EquipmentSourceSnapshot>,
+    pub(crate) fact_source: Option<std::sync::Arc<super::runtime_facts::RuntimeFactSource>>,
+}
+impl PartialEq for BasicLifestealSnapshot {
+    fn eq(&self, other: &Self) -> bool {
+        self.percent == other.percent
+            && self.max_heal == other.max_heal
+            && self.equipment == other.equipment
+    }
+}
+impl Eq for BasicLifestealSnapshot {}
+crate::authoring::clone_shape::struct_shape!(BasicLifestealSnapshot {
+    percent,
+    max_heal,
+    equipment,
+    fact_source
+});
+
+/// Read-only release-time contributors for the typed regular coefficient.
+/// These origins carry no caster action/resource/reinput execution authority.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct RegularBasicSupportContributor {
+    pub source: super::runtime_facts::RuntimeFactSource,
+    pub damage_percent: u32,
+    pub speed_points: u32,
+}
+crate::authoring::clone_shape::struct_shape!(RegularBasicSupportContributor {
+    source,
+    damage_percent,
+    speed_points
+});
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct RegularBasicSupportSnapshot {
+    pub contributors: Vec<RegularBasicSupportContributor>,
+}
+crate::authoring::clone_shape::struct_shape!(RegularBasicSupportSnapshot { contributors });
+impl RegularBasicSupportSnapshot {
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        crate::authoring::control::charge(self.contributors.len() as u64, "regular_support_extent")
+            .ok()?;
+        self.contributors
+            .iter()
+            .try_fold(std::mem::size_of::<Self>() + 64, |bytes, contributor| {
+                bytes.checked_add(contributor.source.retained_extent()?)
+            })?
+            .checked_add(
+                self.contributors
+                    .capacity()
+                    .checked_mul(std::mem::size_of::<RegularBasicSupportContributor>())?,
+            )
+    }
+}
+#[derive(Debug, Clone)]
 pub struct DamageSourceSnapshot {
+    pub fact_source: super::runtime_facts::RuntimeFactSource,
+    pub skill_cast_source: Option<std::sync::Arc<super::skill_source::SkillCastExecutionSource>>,
+    /// Immutable release-time expression carrier. Equality deliberately
+    /// ignores observation metadata, matching `fact_source` above.
+    pub(crate) value_expr_capture:
+        Option<std::sync::Arc<super::core::value_expr_runtime::ValueExprDeliveryCapture>>,
     pub source_id: UnitInstanceId,
     pub source_side: Side,
     pub source_attack: u32,
@@ -48,11 +133,124 @@ pub struct DamageSourceSnapshot {
     pub crit_roll_identity: CombatRollIdentity,
     pub minimum_damage: u32,
     pub committed_at_ms: u64,
+    pub basic_lifesteal: Vec<BasicLifestealSnapshot>,
     pub on_attack_modifiers: DamageModifiers,
     pub on_attack_bonus_damage: Vec<DamageBonusSnapshot>,
+    pub on_attack_modifier_sources: Vec<DamageModifierSourceSnapshot>,
 }
 
+// These snapshots are embedded in BattleEvent. New observation metadata must
+// not change the existing event equality contract (or heap ordering).
+impl PartialEq for DamageSourceSnapshot {
+    fn eq(&self, other: &Self) -> bool {
+        let cast_equal = match (&self.skill_cast_source, &other.skill_cast_source) {
+            (None, None) => true,
+            (Some(left), Some(right)) => {
+                left.skill_id == right.skill_id
+                    && left.caster_instance_id == right.caster_instance_id
+                    && left.cast_seq == right.cast_seq
+                    && left.ability_event_seq == right.ability_event_seq
+                    && left.cause == right.cause
+                    && match (&left.proc_origin, &right.proc_origin) {
+                        (None, None) => true,
+                        (Some(left), Some(right)) => {
+                            left.event_seq == right.event_seq
+                                && left.activation_source == right.activation_source
+                                && left.binding_index == right.binding_index
+                        }
+                        _ => false,
+                    }
+            }
+            _ => false,
+        };
+        cast_equal
+            && self.source_id == other.source_id
+            && self.source_side == other.source_side
+            && self.source_attack == other.source_attack
+            && self.source == other.source
+            && self.damage_type == other.damage_type
+            && self.base_damage == other.base_damage
+            && self.modifiers == other.modifiers
+            && self.crit_roll_percent == other.crit_roll_percent
+            && self.crit_roll_identity == other.crit_roll_identity
+            && self.minimum_damage == other.minimum_damage
+            && self.committed_at_ms == other.committed_at_ms
+            && self.basic_lifesteal == other.basic_lifesteal
+            && self.on_attack_modifiers == other.on_attack_modifiers
+            && self.on_attack_bonus_damage == other.on_attack_bonus_damage
+    }
+}
+impl Eq for DamageSourceSnapshot {}
+
+crate::authoring::clone_shape::struct_shape!(DamageSourceSnapshot {
+    fact_source,
+    skill_cast_source,
+    value_expr_capture,
+    source_id,
+    source_side,
+    source_attack,
+    source,
+    damage_type,
+    base_damage,
+    modifiers,
+    crit_roll_percent,
+    crit_roll_identity,
+    minimum_damage,
+    committed_at_ms,
+    basic_lifesteal,
+    on_attack_modifiers,
+    on_attack_bonus_damage,
+    on_attack_modifier_sources,
+});
+
 impl DamageSourceSnapshot {
+    pub(crate) fn fact_retained_extent(&self) -> Option<usize> {
+        let mut lifesteal_sources = 0usize;
+        for entry in &self.basic_lifesteal {
+            if let Some(source) = &entry.fact_source {
+                lifesteal_sources = lifesteal_sources
+                    .checked_add(
+                        std::mem::size_of::<super::runtime_facts::RuntimeFactSource>() + 64,
+                    )?
+                    .checked_add(source.retained_extent()?)?;
+            }
+        }
+        self.fact_source
+            .retained_extent()?
+            .checked_add(lifesteal_sources)?
+            .checked_add(
+                self.basic_lifesteal
+                    .capacity()
+                    .checked_mul(std::mem::size_of::<BasicLifestealSnapshot>())?,
+            )?
+            .checked_add(
+                self.value_expr_capture
+                    .as_ref()
+                    .map_or(0, |capture| capture.retained_extent()),
+            )?
+            .checked_add(
+                self.on_attack_bonus_damage
+                    .len()
+                    .checked_mul(std::mem::size_of::<DamageBonusSnapshot>())?,
+            )?
+            .checked_add(
+                self.on_attack_modifier_sources
+                    .len()
+                    .checked_mul(std::mem::size_of::<DamageModifierSourceSnapshot>())?,
+            )
+    }
+    pub(crate) fn admit_fact_owner(&self) -> Result<(), crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            self.fact_retained_extent(),
+            "damage_snapshot_owner",
+        )
+    }
+    pub(crate) fn try_clone_fact_source(&self) -> Result<Self, crate::game::behavior::GameError> {
+        self.admit_fact_owner()?;
+        Ok(self.clone())
+    }
+
     pub fn request(&self, target_id: UnitInstanceId) -> DamageRequest {
         DamageRequest {
             source: self.source,
@@ -275,6 +473,8 @@ pub struct DamageBreakdown {
 /// 데미지 계산 결과
 #[derive(Debug, Clone)]
 pub struct DamageResult {
+    /// Parallel to breakdown, captured where each component is actually formed.
+    pub component_sources: Vec<Option<DamageComponentSource>>,
     pub attacker_id: UnitInstanceId,
     pub target_id: UnitInstanceId,
     pub damage_source: DamageSource,
@@ -293,6 +493,30 @@ pub struct DamageResult {
 /// 전투 중 발생하는 커맨드 (상태 변경 요청)
 #[derive(Debug, Clone)]
 pub enum BattleCommand {
+    Pull {
+        caster_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        max_distance_tiles: u32,
+    },
+    PayHealthCost {
+        caster_id: UnitInstanceId,
+        amount: u32,
+        allow_lethal: bool,
+    },
+    RechargeShield {
+        caster_id: UnitInstanceId,
+        source_skill: crate::game::ability::SkillId,
+        amount: u32,
+    },
+    BeginSustained {
+        caster_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        definition: crate::game::ability::sustained::SustainedEffectDef,
+    },
+    Resources {
+        operations: Vec<crate::game::resource::ResourceOperation>,
+        targets: Vec<UnitInstanceId>,
+    },
     /// 유닛 사망 처리 요청
     UnitDied {
         unit_id: UnitInstanceId,
@@ -303,6 +527,7 @@ pub enum BattleCommand {
         caster_id: UnitInstanceId,
         target_id: Option<UnitInstanceId>,
         activation_source: CooldownSource,
+        equipment_source: Option<super::runtime_facts::EquipmentSourceSnapshot>,
         binding_index: usize,
         proc_roll_identity: ProcRollIdentity,
         proc_chance_percent: u8,
@@ -448,6 +673,26 @@ fn bonus_damage_component(
     }
 }
 
+pub(crate) fn bonus_damage_raw_from_source_snapshot(
+    snapshot: &DamageSourceSnapshot,
+    flat: i32,
+    percent: i32,
+    damage_type: DamageType,
+) -> u32 {
+    let mut running_raw_damage = i128::from(snapshot.base_damage);
+    for bonus in &snapshot.on_attack_bonus_damage {
+        let _ = bonus_damage_component(
+            &mut running_raw_damage,
+            bonus.flat,
+            bonus.percent,
+            bonus.damage_type,
+        );
+    }
+    bonus_damage_component(&mut running_raw_damage, flat, percent, damage_type)
+        .map(|(_, raw_damage)| raw_damage)
+        .unwrap_or(0)
+}
+
 fn type_damage_amp_percent(damage_type: DamageType, modifiers: DamageModifiers) -> i32 {
     match damage_type {
         DamageType::Physical => modifiers.physical_damage_amp_percent,
@@ -540,10 +785,35 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
         .merge(modifiers_from_effects(ctx.on_hit_effects));
     let critical = is_critical_hit(modifiers, request.crit_roll_percent);
 
-    let mut raw_components = vec![(
+    let mut breakdown = Vec::with_capacity(1);
+    let mut component_sources = Vec::with_capacity(1);
+    let mut pre_crit_raw_damage = 0_u32;
+    // Accumulate directly in the final parallel arrays, preserving the base,
+    // OnAttack and OnHit order (including saturating raw totals).
+    let mut append_component = |damage_type, raw_damage, source| {
+        pre_crit_raw_damage = pre_crit_raw_damage.saturating_add(raw_damage);
+        component_sources.push(source);
+        let raw_damage = apply_critical_multiplier(raw_damage, modifiers, critical);
+        breakdown.push(DamageBreakdown {
+            damage_type,
+            raw_damage,
+            final_damage: apply_post_mitigation_modifiers(
+                mitigate_damage(
+                    raw_damage,
+                    damage_type,
+                    resistance_for_type(damage_type, ctx, modifiers),
+                ),
+                damage_type,
+                modifiers,
+            ),
+            critical,
+        });
+    };
+    append_component(
         request.damage_type,
         raw_damage_component(request.base_damage.into()),
-    )];
+        None,
+    );
     let mut running_raw_damage = i128::from(request.base_damage);
 
     // 2. OnAttack 효과 적용
@@ -557,7 +827,17 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                 if let Some(component) =
                     bonus_damage_component(&mut running_raw_damage, *flat, *percent, *damage_type)
                 {
-                    raw_components.push(component);
+                    append_component(
+                        component.0,
+                        component.1,
+                        Some(DamageComponentSource {
+                            actor: match sourced.source {
+                                CooldownSource::Unit { unit_instance_id } => unit_instance_id,
+                                CooldownSource::Item { .. } => request.attacker_id,
+                            },
+                            equipment: sourced.equipment_source,
+                        }),
+                    );
                 }
             }
             _ => {}
@@ -575,7 +855,17 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                 if let Some(component) =
                     bonus_damage_component(&mut running_raw_damage, *flat, *percent, *damage_type)
                 {
-                    raw_components.push(component);
+                    append_component(
+                        component.0,
+                        component.1,
+                        Some(DamageComponentSource {
+                            actor: match sourced.source {
+                                CooldownSource::Unit { unit_instance_id } => unit_instance_id,
+                                CooldownSource::Item { .. } => request.target_id,
+                            },
+                            equipment: sourced.equipment_source,
+                        }),
+                    );
                 }
             }
             _ => {}
@@ -583,29 +873,6 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     }
 
     // 4. 최종 데미지 계산
-    let pre_crit_raw_damage = raw_components
-        .iter()
-        .fold(0_u32, |acc, (_, raw)| acc.saturating_add(*raw));
-    let mut breakdown: Vec<_> = raw_components
-        .into_iter()
-        .map(|(damage_type, raw_damage)| {
-            let raw_damage = apply_critical_multiplier(raw_damage, modifiers, critical);
-            DamageBreakdown {
-                damage_type,
-                raw_damage,
-                final_damage: apply_post_mitigation_modifiers(
-                    mitigate_damage(
-                        raw_damage,
-                        damage_type,
-                        resistance_for_type(damage_type, ctx, modifiers),
-                    ),
-                    damage_type,
-                    modifiers,
-                ),
-                critical,
-            }
-        })
-        .collect();
     let raw_damage = breakdown.iter().fold(0_u32, |acc, component| {
         acc.saturating_add(component.raw_damage)
     });
@@ -637,6 +904,7 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     }
 
     DamageResult {
+        component_sources,
         attacker_id: request.attacker_id,
         target_id: request.target_id,
         damage_source: request.source,
@@ -681,6 +949,7 @@ mod tests {
         };
 
         let effects = [SourcedEffect {
+            equipment_source: None,
             source: CooldownSource::Unit {
                 unit_instance_id: attacker_id,
             },
@@ -830,6 +1099,7 @@ mod tests {
             item_instance_id: Uuid::from_u128(0xC),
         };
         let on_attack = [SourcedEffect {
+            equipment_source: None,
             source: item_source,
             target: TriggerEffectTarget::SelfUnit,
             effect: Effect::ApplyBuff {
@@ -839,6 +1109,7 @@ mod tests {
         }];
 
         let on_hit = [SourcedEffect {
+            equipment_source: None,
             source: CooldownSource::Unit {
                 unit_instance_id: attacker_id,
             },
@@ -920,6 +1191,7 @@ mod tests {
         let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
         let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let bonus = [SourcedEffect {
+            equipment_source: None,
             source: CooldownSource::Item {
                 item_instance_id: Uuid::from_u128(0xC),
             },
@@ -969,6 +1241,7 @@ mod tests {
         let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
         let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let on_attack = [SourcedEffect {
+            equipment_source: None,
             source: CooldownSource::Item {
                 item_instance_id: Uuid::from_u128(0xC),
             },
@@ -1191,6 +1464,7 @@ mod tests {
         let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
         let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let on_hit = [SourcedEffect {
+            equipment_source: None,
             source: CooldownSource::Item {
                 item_instance_id: Uuid::from_u128(0xC),
             },

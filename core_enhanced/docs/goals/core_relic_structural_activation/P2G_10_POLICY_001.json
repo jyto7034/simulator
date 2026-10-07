@@ -1,0 +1,3012 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-01-OPEN-001",
+        "Content Digest": "sha256:7684d44702b1a1a00882fa6a09d3804e8c470cbd55ce4d39a388633858ad5f40"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "태그와 명시 typed property는 같은 실제 효과에서 AND로 판정한다. 정확한 파편·장비·형태 조건은 별도 identity 조건으로 함께 적용하며 다른 효과의 태그 합집합이나 일반 태그로 대신하지 않는다. 조건이 없으면 사본은 슬롯에 휴면 상태로 남고 조건 회복 시 재평가한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-01-001",
+        "Content Digest": "sha256:b1a00188db64fb601f2e67f42bb039959f5d53b5157fdf6804a265bb1953ee2b"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-01"
+        ],
+        "Decision Name": "효과 단위 조건과 정체성",
+        "Exact Decision": "태그와 명시 typed property는 같은 실제 효과에서 AND로 판정한다. 정확한 파편·장비·형태 조건은 별도 identity 조건으로 함께 적용하며 다른 효과의 태그 합집합이나 일반 태그로 대신하지 않는다. 조건이 없으면 사본은 슬롯에 휴면 상태로 남고 조건 회복 시 재평가한다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 조건과 비활성;H04§4.2/A15-01;U09 C05",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 조건과 비활성;H04§4.2/A15-01;U09 C05",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "효과 주소와 개인 사본의 기존 정체성을 유지한다.",
+        "Impact": [
+          "태그가 서로 나뉜 두 효과는 AND를 충족하지 않지만 같은 효과의 태그·속성·정확 ID/form이 모두 맞으면 활성이다.",
+          "생성 효과에도 같은 선택 규칙을 적용하고 ID/form mismatch·property 부재는 설명 가능한 휴면 또는 부적격 결과로 나타난다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-01-DECIDED-001",
+        "Content Digest": "sha256:db0f8438376ca3136198d335e9e5205f26bce931ae0f5202a37af033f0a357bb"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-01-OPEN-001",
+          "Content Digest": "sha256:7684d44702b1a1a00882fa6a09d3804e8c470cbd55ce4d39a388633858ad5f40"
+        },
+        "Policy Statement": "태그와 명시 typed property는 같은 실제 효과에서 AND로 판정한다. 정확한 파편·장비·형태 조건은 별도 identity 조건으로 함께 적용하며 다른 효과의 태그 합집합이나 일반 태그로 대신하지 않는다. 조건이 없으면 사본은 슬롯에 휴면 상태로 남고 조건 회복 시 재평가한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-01-001",
+          "Content Digest": "sha256:b1a00188db64fb601f2e67f42bb039959f5d53b5157fdf6804a265bb1953ee2b"
+        },
+        "Observable Policy Acceptance": [
+          "태그가 서로 나뉜 두 효과는 AND를 충족하지 않지만 같은 효과의 태그·속성·정확 ID/form이 모두 맞으면 활성이다.",
+          "생성 효과에도 같은 선택 규칙을 적용하고 ID/form mismatch·property 부재는 설명 가능한 휴면 또는 부적격 결과로 나타난다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-01-001",
+        "Content Digest": "sha256:5fa45e40f4284e98de577630790b47dacff927431d961a6f9402bb95f17410d4"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-01",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 조건과 비활성;H04§4.2/A15-01;U09 C05",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "태그와 명시 typed property는 같은 실제 효과에서 AND로 판정한다. 정확한 파편·장비·형태 조건은 별도 identity 조건으로 함께 적용하며 다른 효과의 태그 합집합이나 일반 태그로 대신하지 않는다. 조건이 없으면 사본은 슬롯에 휴면 상태로 남고 조건 회복 시 재평가한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-01",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-01-OPEN-001",
+          "Content Digest": "sha256:7684d44702b1a1a00882fa6a09d3804e8c470cbd55ce4d39a388633858ad5f40"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-01-001",
+          "Content Digest": "sha256:b1a00188db64fb601f2e67f42bb039959f5d53b5157fdf6804a265bb1953ee2b"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-02-OPEN-001",
+        "Content Digest": "sha256:0500793d39869995ab4f3c0962435fa158703105dba65ac23a53ced69484b546"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "현재 무기·파편의 실제 시작 효과와 무조건 부여 효과에서 출발해 더 활성화할 효과가 없을 때까지 최소 활성 집합을 구한다. 긍정 A/B 순환은 입력 오류가 아니라 seed 없을 때 휴면이다. 시작점 제거 뒤 과거 활성 효과만으로 스스로 유지하지 않는다. 슬롯 순서·사본 UUID 정렬이 활성 결과를 바꾸지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-02-001",
+        "Content Digest": "sha256:9723e482e4e207a24f0be4ee319eb5699545daa6c4728935b0ecfda2228a9577"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-02"
+        ],
+        "Decision Name": "seeded 최소 활성과 재계산",
+        "Exact Decision": "현재 무기·파편의 실제 시작 효과와 무조건 부여 효과에서 출발해 더 활성화할 효과가 없을 때까지 최소 활성 집합을 구한다. 긍정 A/B 순환은 입력 오류가 아니라 seed 없을 때 휴면이다. 시작점 제거 뒤 과거 활성 효과만으로 스스로 유지하지 않는다. 슬롯 순서·사본 UUID 정렬이 활성 결과를 바꾸지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 조건과 비활성;H04§4.2/A15-02;T28",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 조건과 비활성;H04§4.2/A15-02;T28",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "현재 구성을 권위로 삼고 이전 plan은 현재 활성의 seed로 쓰지 않는다.",
+        "Impact": [
+          "무seed A/B는 둘 다 휴면, 각 실제 seed의 추가로 도달 가능한 효과만 활성이고 seed 제거 뒤 다시 휴면이다.",
+          "같은 사본 집합의 모든 장착 순서에서 최종 효과·값·휴면 이유가 같으며 자기 부트스트랩과 임의 반복횟수에 의한 부분 성공이 없다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-02-DECIDED-001",
+        "Content Digest": "sha256:78c069c6bcd5f2e31da2cb2c76f770b41bdb09eeb253958aec596c3145e4964d"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-02-OPEN-001",
+          "Content Digest": "sha256:0500793d39869995ab4f3c0962435fa158703105dba65ac23a53ced69484b546"
+        },
+        "Policy Statement": "현재 무기·파편의 실제 시작 효과와 무조건 부여 효과에서 출발해 더 활성화할 효과가 없을 때까지 최소 활성 집합을 구한다. 긍정 A/B 순환은 입력 오류가 아니라 seed 없을 때 휴면이다. 시작점 제거 뒤 과거 활성 효과만으로 스스로 유지하지 않는다. 슬롯 순서·사본 UUID 정렬이 활성 결과를 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-02-001",
+          "Content Digest": "sha256:9723e482e4e207a24f0be4ee319eb5699545daa6c4728935b0ecfda2228a9577"
+        },
+        "Observable Policy Acceptance": [
+          "무seed A/B는 둘 다 휴면, 각 실제 seed의 추가로 도달 가능한 효과만 활성이고 seed 제거 뒤 다시 휴면이다.",
+          "같은 사본 집합의 모든 장착 순서에서 최종 효과·값·휴면 이유가 같으며 자기 부트스트랩과 임의 반복횟수에 의한 부분 성공이 없다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-02-001",
+        "Content Digest": "sha256:ba84b6023634f5244634d2450179e8db35155f4fe38416ebef0ca1a3965601f2"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-02",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 조건과 비활성;H04§4.2/A15-02;T28",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "현재 무기·파편의 실제 시작 효과와 무조건 부여 효과에서 출발해 더 활성화할 효과가 없을 때까지 최소 활성 집합을 구한다. 긍정 A/B 순환은 입력 오류가 아니라 seed 없을 때 휴면이다. 시작점 제거 뒤 과거 활성 효과만으로 스스로 유지하지 않는다. 슬롯 순서·사본 UUID 정렬이 활성 결과를 바꾸지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-02",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-02-OPEN-001",
+          "Content Digest": "sha256:0500793d39869995ab4f3c0962435fa158703105dba65ac23a53ced69484b546"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-02-001",
+          "Content Digest": "sha256:9723e482e4e207a24f0be4ee319eb5699545daa6c4728935b0ecfda2228a9577"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-03-OPEN-001",
+        "Content Digest": "sha256:f798ff1c2e57376e5576996c0e3296eb9785e0c540ea3ed1af14ad191edcfe01"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "새 grant는 공개된 실행 가능한 비반응 primitive/유한 Flow로 구성한다. 한 구성에서 생성 가능한 효과 identity 집합과 의존 평가가 유한함을 게시 전에 입증한다. 부정 순환·끝없이 새 identity를 만드는 재귀·자기 변경 때문에 안정된 해석을 입증할 수 없는 authoring은 구체적 typed 진단으로 거절한다. 단순 긍정 상호조건을 일괄 거절하지 않는다. U10 반응 subscriber를 이 단계에서 지원한다고 표시하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-03-001",
+        "Content Digest": "sha256:adde7875597b40961e62bd86390c5eb1645ab9fcc09e11eedd7537783b305a31"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-03"
+        ],
+        "Decision Name": "유한 grant와 부정 의존 거절",
+        "Exact Decision": "새 grant는 공개된 실행 가능한 비반응 primitive/유한 Flow로 구성한다. 한 구성에서 생성 가능한 효과 identity 집합과 의존 평가가 유한함을 게시 전에 입증한다. 부정 순환·끝없이 새 identity를 만드는 재귀·자기 변경 때문에 안정된 해석을 입증할 수 없는 authoring은 구체적 typed 진단으로 거절한다. 단순 긍정 상호조건을 일괄 거절하지 않는다. U10 반응 subscriber를 이 단계에서 지원한다고 표시하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§4.2/A15-01,02,03;R15§3,7;T28",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§4.2/A15-01,02,03;R15§3,7;T28",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "유한성은 안전한 게시 계약이며 gameplay 공통 발동 상한과 구분한다.",
+        "Impact": [
+          "새 폭발 효과를 유물 A가 부여하고 B가 그 실제 생성 효과를 선택·강화해 정상 시전 피해로 나타난다.",
+          "NOT cycle·재귀 grant·입증 불가능한 구조 의존은 부분 게시 없이 거절하고, 유효한 긍정 순환은 seed 의미대로 종료한다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-03-DECIDED-001",
+        "Content Digest": "sha256:568679e2bdc4be8c113b08cafd6bffd8e5d342843073a8a59b106a7ada155444"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-03-OPEN-001",
+          "Content Digest": "sha256:f798ff1c2e57376e5576996c0e3296eb9785e0c540ea3ed1af14ad191edcfe01"
+        },
+        "Policy Statement": "새 grant는 공개된 실행 가능한 비반응 primitive/유한 Flow로 구성한다. 한 구성에서 생성 가능한 효과 identity 집합과 의존 평가가 유한함을 게시 전에 입증한다. 부정 순환·끝없이 새 identity를 만드는 재귀·자기 변경 때문에 안정된 해석을 입증할 수 없는 authoring은 구체적 typed 진단으로 거절한다. 단순 긍정 상호조건을 일괄 거절하지 않는다. U10 반응 subscriber를 이 단계에서 지원한다고 표시하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-03-001",
+          "Content Digest": "sha256:adde7875597b40961e62bd86390c5eb1645ab9fcc09e11eedd7537783b305a31"
+        },
+        "Observable Policy Acceptance": [
+          "새 폭발 효과를 유물 A가 부여하고 B가 그 실제 생성 효과를 선택·강화해 정상 시전 피해로 나타난다.",
+          "NOT cycle·재귀 grant·입증 불가능한 구조 의존은 부분 게시 없이 거절하고, 유효한 긍정 순환은 seed 의미대로 종료한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-03-001",
+        "Content Digest": "sha256:3d446c444501a87cdef96b31de0b776a08ebfa676ee1252dbd82941615cac0e4"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-03",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§4.2/A15-01,02,03;R15§3,7;T28",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "새 grant는 공개된 실행 가능한 비반응 primitive/유한 Flow로 구성한다. 한 구성에서 생성 가능한 효과 identity 집합과 의존 평가가 유한함을 게시 전에 입증한다. 부정 순환·끝없이 새 identity를 만드는 재귀·자기 변경 때문에 안정된 해석을 입증할 수 없는 authoring은 구체적 typed 진단으로 거절한다. 단순 긍정 상호조건을 일괄 거절하지 않는다. U10 반응 subscriber를 이 단계에서 지원한다고 표시하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-03",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-03-OPEN-001",
+          "Content Digest": "sha256:f798ff1c2e57376e5576996c0e3296eb9785e0c540ea3ed1af14ad191edcfe01"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-03-001",
+          "Content Digest": "sha256:adde7875597b40961e62bd86390c5eb1645ab9fcc09e11eedd7537783b305a31"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-OPEN-001",
+        "Content Digest": "sha256:133db082141f51d8e323d5cef9e479e5310bb80d7858886a07bdbfd7e0807d42"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "작성자가 선택·변경할 속성은 실제 executor와 연결된 명시 typed capability로 공개한다. 이번 범위는 기존 damage amount와 생성 효과, 효과별 피해 footprint, 지원 대상 구조, shared shield 초기량, regular basic 피해·속도 값 및 필요한 구조 recipe다. effect와 carrier/action의 범위를 구분하고 본편 전용 임의 필드나 문자열 경로를 public write 권한으로 노출하지 않는다. 변형 뒤 없어진 속성을 여전히 지원한다고 표시하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-04-001",
+        "Content Digest": "sha256:e2829eb8c433d75627a4d6335d76beb5e35a27cb9378806e2a2007379084bd00"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-04"
+        ],
+        "Decision Name": "공개 typed property와 지원 일치",
+        "Exact Decision": "작성자가 선택·변경할 속성은 실제 executor와 연결된 명시 typed capability로 공개한다. 이번 범위는 기존 damage amount와 생성 효과, 효과별 피해 footprint, 지원 대상 구조, shared shield 초기량, regular basic 피해·속도 값 및 필요한 구조 recipe다. effect와 carrier/action의 범위를 구분하고 본편 전용 임의 필드나 문자열 경로를 public write 권한으로 노출하지 않는다. 변형 뒤 없어진 속성을 여전히 지원한다고 표시하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "U09 D-03/C05/C06;R15;H09 C02/C04/C05;D04 범용 전환",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "U09 D-03/C05/C06;R15;H09 C02/C04/C05;D04 범용 전환",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "공개 범위는 실제 공통 계약으로 한정하되 필요한 세 공식 구조 사례를 숨기거나 미지원으로 미루지 않는다.",
+        "Impact": [
+          "공개 descriptor·validation·explain·실제 실행이 같은 속성과 타입을 사용하며 없는/비공개/단위 불일치 property는 명시 거절된다.",
+          "단일 지원에서 제거된 area 속성에 반경 modifier가 적용되거나 대상 선택 사거리·별도 회복이 함께 늘어나지 않는다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-DECIDED-001",
+        "Content Digest": "sha256:6a286758c18faad1ae41b28f0a14cfbc5ad60d740330ba054b51740176354e12"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-04-OPEN-001",
+          "Content Digest": "sha256:133db082141f51d8e323d5cef9e479e5310bb80d7858886a07bdbfd7e0807d42"
+        },
+        "Policy Statement": "작성자가 선택·변경할 속성은 실제 executor와 연결된 명시 typed capability로 공개한다. 이번 범위는 기존 damage amount와 생성 효과, 효과별 피해 footprint, 지원 대상 구조, shared shield 초기량, regular basic 피해·속도 값 및 필요한 구조 recipe다. effect와 carrier/action의 범위를 구분하고 본편 전용 임의 필드나 문자열 경로를 public write 권한으로 노출하지 않는다. 변형 뒤 없어진 속성을 여전히 지원한다고 표시하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-04-001",
+          "Content Digest": "sha256:e2829eb8c433d75627a4d6335d76beb5e35a27cb9378806e2a2007379084bd00"
+        },
+        "Observable Policy Acceptance": [
+          "공개 descriptor·validation·explain·실제 실행이 같은 속성과 타입을 사용하며 없는/비공개/단위 불일치 property는 명시 거절된다.",
+          "단일 지원에서 제거된 area 속성에 반경 modifier가 적용되거나 대상 선택 사거리·별도 회복이 함께 늘어나지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-04-001",
+        "Content Digest": "sha256:b510c3904af70a7880d4129ff91e761369d25edac255b9787dc77a6b94164348"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-04",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "U09 D-03/C05/C06;R15;H09 C02/C04/C05;D04 범용 전환",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "작성자가 선택·변경할 속성은 실제 executor와 연결된 명시 typed capability로 공개한다. 이번 범위는 기존 damage amount와 생성 효과, 효과별 피해 footprint, 지원 대상 구조, shared shield 초기량, regular basic 피해·속도 값 및 필요한 구조 recipe다. effect와 carrier/action의 범위를 구분하고 본편 전용 임의 필드나 문자열 경로를 public write 권한으로 노출하지 않는다. 변형 뒤 없어진 속성을 여전히 지원한다고 표시하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-04",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-04-OPEN-001",
+          "Content Digest": "sha256:133db082141f51d8e323d5cef9e479e5310bb80d7858886a07bdbfd7e0807d42"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-04-001",
+          "Content Digest": "sha256:e2829eb8c433d75627a4d6335d76beb5e35a27cb9378806e2a2007379084bd00"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-05-OPEN-001",
+        "Content Digest": "sha256:cca74c09ac87dbc50b114c068908c7db53ce3e5e5f58217911e6fa51108177ff"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "같은 typed 수치 property의 지원된 Add는 같은 단위로 합산하고 Scale의 같은 종류 증분은 합산하여 한 번 적용한다. Replace가 허용된 property는 대체 기준값에 Add 후 Scale을 적용한다. 서로 다른 Replace 또는 구조 write set 충돌은 원자 거절하며 동일 값·동일 의미의 중복 Replace는 한 결과로 합치고 기여 출처는 모두 남긴다. 비수치 구조는 허용 recipe만 변경한다. checked 계산과 해당 정수 단위의 한 번 절삭을 사용하고 overflow·음수 금지 범위·단위 오류를 조용히 clamp하지 않는다. 기존 damage flat→percent 의미와 다른 전투 공식은 보존한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-05-001",
+        "Content Digest": "sha256:691cca75c7a3f7afa194b43447171452cbd7e516657693c424e7a82f86aa45bc"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-05"
+        ],
+        "Decision Name": "수치 연산과 Replace 충돌",
+        "Exact Decision": "같은 typed 수치 property의 지원된 Add는 같은 단위로 합산하고 Scale의 같은 종류 증분은 합산하여 한 번 적용한다. Replace가 허용된 property는 대체 기준값에 Add 후 Scale을 적용한다. 서로 다른 Replace 또는 구조 write set 충돌은 원자 거절하며 동일 값·동일 의미의 중복 Replace는 한 결과로 합치고 기여 출처는 모두 남긴다. 비수치 구조는 허용 recipe만 변경한다. checked 계산과 해당 정수 단위의 한 번 절삭을 사용하고 overflow·음수 금지 범위·단위 오류를 조용히 clamp하지 않는다. 기존 damage flat→percent 의미와 다른 전투 공식은 보존한다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§4.2/A15-03;R15 typed Add/Scale/Replace;U08 numeric",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§4.2/A15-03;R15 typed Add/Scale/Replace;U08 numeric",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "H04의 비피해 산술 위임에 따라 property별 동일 단위 연산을 명시한다. 전투 저항·감쇄 전체의 산술을 교체하지 않는다.",
+        "Impact": [
+          "고정 독립 oracle와 순서 permutation으로 Add/Scale/동일 Replace의 결과가 같고 서로 다른 Replace는 어떤 UUID/장착 순서에서도 typed 거절된다.",
+          "타입·단위·범위/overflow 실패에서 이전 loadout·plan·저장·자원이 보존되고 유물 없는 기존 수치 결과는 같다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-05-DECIDED-001",
+        "Content Digest": "sha256:5a241fbbf70d1bc77e4dfffb4a641061d952fd29a8f2cdcbd92beaaa6027bb78"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-05-OPEN-001",
+          "Content Digest": "sha256:cca74c09ac87dbc50b114c068908c7db53ce3e5e5f58217911e6fa51108177ff"
+        },
+        "Policy Statement": "같은 typed 수치 property의 지원된 Add는 같은 단위로 합산하고 Scale의 같은 종류 증분은 합산하여 한 번 적용한다. Replace가 허용된 property는 대체 기준값에 Add 후 Scale을 적용한다. 서로 다른 Replace 또는 구조 write set 충돌은 원자 거절하며 동일 값·동일 의미의 중복 Replace는 한 결과로 합치고 기여 출처는 모두 남긴다. 비수치 구조는 허용 recipe만 변경한다. checked 계산과 해당 정수 단위의 한 번 절삭을 사용하고 overflow·음수 금지 범위·단위 오류를 조용히 clamp하지 않는다. 기존 damage flat→percent 의미와 다른 전투 공식은 보존한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-05-001",
+          "Content Digest": "sha256:691cca75c7a3f7afa194b43447171452cbd7e516657693c424e7a82f86aa45bc"
+        },
+        "Observable Policy Acceptance": [
+          "고정 독립 oracle와 순서 permutation으로 Add/Scale/동일 Replace의 결과가 같고 서로 다른 Replace는 어떤 UUID/장착 순서에서도 typed 거절된다.",
+          "타입·단위·범위/overflow 실패에서 이전 loadout·plan·저장·자원이 보존되고 유물 없는 기존 수치 결과는 같다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-05-001",
+        "Content Digest": "sha256:a85c4284acde2b5c2d657809662cfcaf6a093e06f87546f8e01f5622ee5cc47b"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-05",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§4.2/A15-03;R15 typed Add/Scale/Replace;U08 numeric",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "같은 typed 수치 property의 지원된 Add는 같은 단위로 합산하고 Scale의 같은 종류 증분은 합산하여 한 번 적용한다. Replace가 허용된 property는 대체 기준값에 Add 후 Scale을 적용한다. 서로 다른 Replace 또는 구조 write set 충돌은 원자 거절하며 동일 값·동일 의미의 중복 Replace는 한 결과로 합치고 기여 출처는 모두 남긴다. 비수치 구조는 허용 recipe만 변경한다. checked 계산과 해당 정수 단위의 한 번 절삭을 사용하고 overflow·음수 금지 범위·단위 오류를 조용히 clamp하지 않는다. 기존 damage flat→percent 의미와 다른 전투 공식은 보존한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-05",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-05-OPEN-001",
+          "Content Digest": "sha256:cca74c09ac87dbc50b114c068908c7db53ce3e5e5f58217911e6fa51108177ff"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-05-001",
+          "Content Digest": "sha256:691cca75c7a3f7afa194b43447171452cbd7e516657693c424e7a82f86aa45bc"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-06-OPEN-001",
+        "Content Digest": "sha256:029a7a1ef33b1f522efdd84ec849997fa8b214812658cf3b0371e2d4a0fea8ec"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "활성 집합과 변형 결과는 원형 정의와 구분되는 개인 불변 effective plan이다. 정상 지원 소비자들의 readiness/preview/명령·기본 시전, paused 접수와 queued/released projectile/area/지연 실행이 같은 선택된 plan과 기존 Snapshot/Live 의미를 사용한다. 같은 SkillId의 다른 직원·사본·형태·콘텐츠 세대가 캐시를 공유해 서로 영향을 주지 않는다. 현재 지원되지 않는 직원 active Auto API를 새 수용 전제로 만들지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-06-001",
+        "Content Digest": "sha256:443580647a8f54f8b740f2fc7b23f5e60afb8630e6f0f88c2077e502d40897c6"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-06"
+        ],
+        "Decision Name": "개인 불변 plan과 실제 소비",
+        "Exact Decision": "활성 집합과 변형 결과는 원형 정의와 구분되는 개인 불변 effective plan이다. 정상 지원 소비자들의 readiness/preview/명령·기본 시전, paused 접수와 queued/released projectile/area/지연 실행이 같은 선택된 plan과 기존 Snapshot/Live 의미를 사용한다. 같은 SkillId의 다른 직원·사본·형태·콘텐츠 세대가 캐시를 공유해 서로 영향을 주지 않는다. 현재 지원되지 않는 직원 active Auto API를 새 수용 전제로 만들지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 A14-04/A15-01/X03;U08 audit013 applicability;T13/T27",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 A14-04/A15-01/X03;U08 audit013 applicability;T13/T27",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "새 구조 plan도 U08에서 완료한 supported-consumer 및 released-owner 계약을 소비한다.",
+        "Impact": [
+          "같은 SkillId를 서로 다른 유물/형태로 쓰는 직원의 실제 즉시·지연 결과와 query가 각각의 독립 oracle와 일치하고 공유 원형은 불변이다.",
+          "Pause 접수→Resume와 plan 교체·source 종료 뒤 남은 허용 payload가 선택된 소유/평가 시점을 보존하며 stale generation/provider는 거절된다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-06-DECIDED-001",
+        "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-06-OPEN-001",
+          "Content Digest": "sha256:029a7a1ef33b1f522efdd84ec849997fa8b214812658cf3b0371e2d4a0fea8ec"
+        },
+        "Policy Statement": "활성 집합과 변형 결과는 원형 정의와 구분되는 개인 불변 effective plan이다. 정상 지원 소비자들의 readiness/preview/명령·기본 시전, paused 접수와 queued/released projectile/area/지연 실행이 같은 선택된 plan과 기존 Snapshot/Live 의미를 사용한다. 같은 SkillId의 다른 직원·사본·형태·콘텐츠 세대가 캐시를 공유해 서로 영향을 주지 않는다. 현재 지원되지 않는 직원 active Auto API를 새 수용 전제로 만들지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-06-001",
+          "Content Digest": "sha256:443580647a8f54f8b740f2fc7b23f5e60afb8630e6f0f88c2077e502d40897c6"
+        },
+        "Observable Policy Acceptance": [
+          "같은 SkillId를 서로 다른 유물/형태로 쓰는 직원의 실제 즉시·지연 결과와 query가 각각의 독립 oracle와 일치하고 공유 원형은 불변이다.",
+          "Pause 접수→Resume와 plan 교체·source 종료 뒤 남은 허용 payload가 선택된 소유/평가 시점을 보존하며 stale generation/provider는 거절된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-06-001",
+        "Content Digest": "sha256:34635b3c08481a639d60c71d909e55c5cdeebe95853208c2d6aaa928c9acab6c"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-06",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 A14-04/A15-01/X03;U08 audit013 applicability;T13/T27",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "활성 집합과 변형 결과는 원형 정의와 구분되는 개인 불변 effective plan이다. 정상 지원 소비자들의 readiness/preview/명령·기본 시전, paused 접수와 queued/released projectile/area/지연 실행이 같은 선택된 plan과 기존 Snapshot/Live 의미를 사용한다. 같은 SkillId의 다른 직원·사본·형태·콘텐츠 세대가 캐시를 공유해 서로 영향을 주지 않는다. 현재 지원되지 않는 직원 active Auto API를 새 수용 전제로 만들지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-06",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-06-OPEN-001",
+          "Content Digest": "sha256:029a7a1ef33b1f522efdd84ec849997fa8b214812658cf3b0371e2d4a0fea8ec"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-06-001",
+          "Content Digest": "sha256:443580647a8f54f8b740f2fc7b23f5e60afb8630e6f0f88c2077e502d40897c6"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-07-OPEN-001",
+        "Content Digest": "sha256:ca4d959eeac322103edf7c607f1b230e41d670d464362fa7e56d3254f070e34a"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-07",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "구조 recipe는 변경할 효과·속성과 보존할 carrier/대상 자격/원 출처/채널·action/비용·시간/권한을 명시한다. 여러 관련 효과를 함께 바꿔야 유효하면 원자 변환하고 최종 graph·참조·typed 값·실행 가능성을 다시 검증한다. footprint 변경이 공유 carrier의 다른 효과를 묵시 변경하지 않는다. source는 원 무기/파편/장비와 유물 기여를 구분한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-07-001",
+        "Content Digest": "sha256:60cea43e9a8b1def628da5881408fae3e18b0e487f28bd353c946be2bee9d223"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-07"
+        ],
+        "Decision Name": "구조 recipe의 write와 preserve",
+        "Exact Decision": "구조 recipe는 변경할 효과·속성과 보존할 carrier/대상 자격/원 출처/채널·action/비용·시간/권한을 명시한다. 여러 관련 효과를 함께 바꿔야 유효하면 원자 변환하고 최종 graph·참조·typed 값·실행 가능성을 다시 검증한다. footprint 변경이 공유 carrier의 다른 효과를 묵시 변경하지 않는다. source는 원 무기/파편/장비와 유물 기여를 구분한다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 A15-03/X03;T27;R15",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 A15-03/X03;T27;R15",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "수정 대상을 효과와 공유 실행 owner로 구분해 우연한 광역 패치를 막는다.",
+        "Impact": [
+          "손상된 참조·충돌 bundle·부적격 구조는 게시와 장착/전환을 부분 적용하지 않고 거절한다.",
+          "피해 범위만 바꾼 합성 스킬에서 자기 회복·다른 effect·carrier·채널·HP 비용·출처는 보존되고 최종 query와 실제 실행이 일치한다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-07-DECIDED-001",
+        "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-07",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-07-OPEN-001",
+          "Content Digest": "sha256:ca4d959eeac322103edf7c607f1b230e41d670d464362fa7e56d3254f070e34a"
+        },
+        "Policy Statement": "구조 recipe는 변경할 효과·속성과 보존할 carrier/대상 자격/원 출처/채널·action/비용·시간/권한을 명시한다. 여러 관련 효과를 함께 바꿔야 유효하면 원자 변환하고 최종 graph·참조·typed 값·실행 가능성을 다시 검증한다. footprint 변경이 공유 carrier의 다른 효과를 묵시 변경하지 않는다. source는 원 무기/파편/장비와 유물 기여를 구분한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-07-001",
+          "Content Digest": "sha256:60cea43e9a8b1def628da5881408fae3e18b0e487f28bd353c946be2bee9d223"
+        },
+        "Observable Policy Acceptance": [
+          "손상된 참조·충돌 bundle·부적격 구조는 게시와 장착/전환을 부분 적용하지 않고 거절한다.",
+          "피해 범위만 바꾼 합성 스킬에서 자기 회복·다른 effect·carrier·채널·HP 비용·출처는 보존되고 최종 query와 실제 실행이 일치한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-07-001",
+        "Content Digest": "sha256:9196cc9cddcb3e1025cea5e18b715e67f2a02527e5553bfbe622528d52635a3b"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-07",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 A15-03/X03;T27;R15",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "구조 recipe는 변경할 효과·속성과 보존할 carrier/대상 자격/원 출처/채널·action/비용·시간/권한을 명시한다. 여러 관련 효과를 함께 바꿔야 유효하면 원자 변환하고 최종 graph·참조·typed 값·실행 가능성을 다시 검증한다. footprint 변경이 공유 carrier의 다른 효과를 묵시 변경하지 않는다. source는 원 무기/파편/장비와 유물 기여를 구분한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-07",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-07-OPEN-001",
+          "Content Digest": "sha256:ca4d959eeac322103edf7c607f1b230e41d670d464362fa7e56d3254f070e34a"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-07-001",
+          "Content Digest": "sha256:60cea43e9a8b1def628da5881408fae3e18b0e487f28bd353c946be2bee9d223"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-OPEN-001",
+        "Content Digest": "sha256:1fce5dd8c9e78707229e7f4c487c34dda7f4fecc7fa751c2bba05b216f7672bb"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-08",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "범위 지원을 단일 지원으로 바꾸는 recipe는 원래 자격과 authored 지원 거리 안의 아군 한 명을 정상 수동 입력으로 선택한다. 태아는 시전자 제외, 포큐버스는 원래 허용된 시전자 포함 자격을 보존한다. 한 activation 동안 대상은 고정하며 자동 대체·중간 재지정·범위 밖 무제한 추종을 하지 않는다. 선택된 대상이 거리 밖이면 지원 membership을 제거하고 같은 activation에서 다시 유효 거리 안으로 오면 같은 잔량/owner에 재가입한다. 철수·전투불능·사망으로 대상 identity가 무효해지면 해당 연결을 종료하고 재배치된 새 전투 identity에 자동 이전하지 않는다. 원 source의 비용·channel·만료를 바꾸지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-08-001",
+        "Content Digest": "sha256:a8b25dbfc9c45ec7c186a937ee9fd344f67414ec873cf48d0b12878b56153471"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-08"
+        ],
+        "Decision Name": "단일 지원의 입력·거리·무효화",
+        "Exact Decision": "범위 지원을 단일 지원으로 바꾸는 recipe는 원래 자격과 authored 지원 거리 안의 아군 한 명을 정상 수동 입력으로 선택한다. 태아는 시전자 제외, 포큐버스는 원래 허용된 시전자 포함 자격을 보존한다. 한 activation 동안 대상은 고정하며 자동 대체·중간 재지정·범위 밖 무제한 추종을 하지 않는다. 선택된 대상이 거리 밖이면 지원 membership을 제거하고 같은 activation에서 다시 유효 거리 안으로 오면 같은 잔량/owner에 재가입한다. 철수·전투불능·사망으로 대상 identity가 무효해지면 해당 연결을 종료하고 재배치된 새 전투 identity에 자동 이전하지 않는다. 원 source의 비용·channel·만료를 바꾸지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D04 991–1072/1143–1151;D03 태아/포큐버스;H04§5 policy delegation",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D04 991–1072/1143–1151;D03 태아/포큐버스;H04§5 policy delegation",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "미정 입력 세부의 위임 결정이다. 무제한 추종·자동 retarget보다 원 지원 자격/범위와 activation 정체성을 보존한다.",
+        "Impact": [
+          "정상 선택·무자격/거리 밖 거절, 태아 자기 제외와 포큐버스 자기 허용, 대상 고정·이탈/복귀를 실제 명령과 효과로 검증한다.",
+          "대상 철수/사망/재배치·source 종료 뒤 stale 연결이 남지 않고 다른 아군으로 이전하거나 shield를 충전하지 않는다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-DECIDED-001",
+        "Content Digest": "sha256:dfafb9c4844ff0062349b8d2148b5e8ad81e67ffd4aa802fb8c8c93e774371e3"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-08-OPEN-001",
+          "Content Digest": "sha256:1fce5dd8c9e78707229e7f4c487c34dda7f4fecc7fa751c2bba05b216f7672bb"
+        },
+        "Policy Statement": "범위 지원을 단일 지원으로 바꾸는 recipe는 원래 자격과 authored 지원 거리 안의 아군 한 명을 정상 수동 입력으로 선택한다. 태아는 시전자 제외, 포큐버스는 원래 허용된 시전자 포함 자격을 보존한다. 한 activation 동안 대상은 고정하며 자동 대체·중간 재지정·범위 밖 무제한 추종을 하지 않는다. 선택된 대상이 거리 밖이면 지원 membership을 제거하고 같은 activation에서 다시 유효 거리 안으로 오면 같은 잔량/owner에 재가입한다. 철수·전투불능·사망으로 대상 identity가 무효해지면 해당 연결을 종료하고 재배치된 새 전투 identity에 자동 이전하지 않는다. 원 source의 비용·channel·만료를 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-08-001",
+          "Content Digest": "sha256:a8b25dbfc9c45ec7c186a937ee9fd344f67414ec873cf48d0b12878b56153471"
+        },
+        "Observable Policy Acceptance": [
+          "정상 선택·무자격/거리 밖 거절, 태아 자기 제외와 포큐버스 자기 허용, 대상 고정·이탈/복귀를 실제 명령과 효과로 검증한다.",
+          "대상 철수/사망/재배치·source 종료 뒤 stale 연결이 남지 않고 다른 아군으로 이전하거나 shield를 충전하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-08-001",
+        "Content Digest": "sha256:538b5e51256e1f9bed48498d4a53dabe8ef7452008e74b447fedc097f7da28d7"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-08",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D04 991–1072/1143–1151;D03 태아/포큐버스;H04§5 policy delegation",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "범위 지원을 단일 지원으로 바꾸는 recipe는 원래 자격과 authored 지원 거리 안의 아군 한 명을 정상 수동 입력으로 선택한다. 태아는 시전자 제외, 포큐버스는 원래 허용된 시전자 포함 자격을 보존한다. 한 activation 동안 대상은 고정하며 자동 대체·중간 재지정·범위 밖 무제한 추종을 하지 않는다. 선택된 대상이 거리 밖이면 지원 membership을 제거하고 같은 activation에서 다시 유효 거리 안으로 오면 같은 잔량/owner에 재가입한다. 철수·전투불능·사망으로 대상 identity가 무효해지면 해당 연결을 종료하고 재배치된 새 전투 identity에 자동 이전하지 않는다. 원 source의 비용·channel·만료를 바꾸지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-08",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-08-OPEN-001",
+          "Content Digest": "sha256:1fce5dd8c9e78707229e7f4c487c34dda7f4fecc7fa751c2bba05b216f7672bb"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-08-001",
+          "Content Digest": "sha256:a8b25dbfc9c45ec7c186a937ee9fd344f67414ec873cf48d0b12878b56153471"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-OPEN-001",
+        "Content Digest": "sha256:a7b7fcee377f8d0e1b2a63b7e9e495ad66ee3418d56fe01731662576547d5d5f"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-09",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "포큐버스 기본 구조는 시전자 activation 하나의 유한 잔량을 eligible 아군이 공유한다. 일반 단일 변형은 원래 source 초기량 계산의 결과 S를 한 번 2배로 하여 선택 recipient 하나만 소비한다. 대상 수만큼 복제·곱하지 않는다. source 생성 modifier는 원래대로 한 번만 적용하고 수혜자의 장비로 다시 증폭하지 않는다. 감쇄 후 기존 개인→공유 보호 순서, 초과분 HP, HP 비용 제외, 회복/Rest 무충전, 만료·소진·source 종료/재시전 교체를 보존한다. 4S 침식 비교안과 공식 S식·지속시간은 이 결정으로 확정하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-09-001",
+        "Content Digest": "sha256:e7370fa552706a7175ed6c21aa3587aa3458ad97fe9d20d5c8624afb5e358f99"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-09"
+        ],
+        "Decision Name": "포큐버스 공유 보호와 단일2S",
+        "Exact Decision": "포큐버스 기본 구조는 시전자 activation 하나의 유한 잔량을 eligible 아군이 공유한다. 일반 단일 변형은 원래 source 초기량 계산의 결과 S를 한 번 2배로 하여 선택 recipient 하나만 소비한다. 대상 수만큼 복제·곱하지 않는다. source 생성 modifier는 원래대로 한 번만 적용하고 수혜자의 장비로 다시 증폭하지 않는다. 감쇄 후 기존 개인→공유 보호 순서, 초과분 HP, HP 비용 제외, 회복/Rest 무충전, 만료·소진·source 종료/재시전 교체를 보존한다. 4S 침식 비교안과 공식 S식·지속시간은 이 결정으로 확정하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D04 단일전환;D03 포큐버스;H09 C04;R12 current contract",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D04 단일전환;D03 포큐버스;H09 C04;R12 current contract",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "2S는 채택된 구조이고 S의 미정 공식 밸런스는 representative authored 값으로 검증한다. 기존 source 계산 순서를 새 범용 additive 배율로 대체하지 않는다.",
+        "Impact": [
+          "독립 숫자로 기본 shared pool 소모와 단일2S 잔량·초과 HP를 검증하고 비선택 아군·수혜자 modifier·여러 membership이 원천을 증식하지 않는다.",
+          "source modifier 한 번·HP 비용 우회·일반 회복 무충전·선택 대상 이탈/복귀·source 종료/재시전에서 잔량과 owner 수명이 보존된다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-DECIDED-001",
+        "Content Digest": "sha256:063e99ff62df429e817c18f7eb9ea865293dacde62aeddab56b04015d07f9591"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-09-OPEN-001",
+          "Content Digest": "sha256:a7b7fcee377f8d0e1b2a63b7e9e495ad66ee3418d56fe01731662576547d5d5f"
+        },
+        "Policy Statement": "포큐버스 기본 구조는 시전자 activation 하나의 유한 잔량을 eligible 아군이 공유한다. 일반 단일 변형은 원래 source 초기량 계산의 결과 S를 한 번 2배로 하여 선택 recipient 하나만 소비한다. 대상 수만큼 복제·곱하지 않는다. source 생성 modifier는 원래대로 한 번만 적용하고 수혜자의 장비로 다시 증폭하지 않는다. 감쇄 후 기존 개인→공유 보호 순서, 초과분 HP, HP 비용 제외, 회복/Rest 무충전, 만료·소진·source 종료/재시전 교체를 보존한다. 4S 침식 비교안과 공식 S식·지속시간은 이 결정으로 확정하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-09-001",
+          "Content Digest": "sha256:e7370fa552706a7175ed6c21aa3587aa3458ad97fe9d20d5c8624afb5e358f99"
+        },
+        "Observable Policy Acceptance": [
+          "독립 숫자로 기본 shared pool 소모와 단일2S 잔량·초과 HP를 검증하고 비선택 아군·수혜자 modifier·여러 membership이 원천을 증식하지 않는다.",
+          "source modifier 한 번·HP 비용 우회·일반 회복 무충전·선택 대상 이탈/복귀·source 종료/재시전에서 잔량과 owner 수명이 보존된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-09-001",
+        "Content Digest": "sha256:f4af7d2826235146c0ffa7bb3da8511a0b0b16e370905abff767e878b0a64e21"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-09",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D04 단일전환;D03 포큐버스;H09 C04;R12 current contract",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "포큐버스 기본 구조는 시전자 activation 하나의 유한 잔량을 eligible 아군이 공유한다. 일반 단일 변형은 원래 source 초기량 계산의 결과 S를 한 번 2배로 하여 선택 recipient 하나만 소비한다. 대상 수만큼 복제·곱하지 않는다. source 생성 modifier는 원래대로 한 번만 적용하고 수혜자의 장비로 다시 증폭하지 않는다. 감쇄 후 기존 개인→공유 보호 순서, 초과분 HP, HP 비용 제외, 회복/Rest 무충전, 만료·소진·source 종료/재시전 교체를 보존한다. 4S 침식 비교안과 공식 S식·지속시간은 이 결정으로 확정하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-09",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-09-OPEN-001",
+          "Content Digest": "sha256:a7b7fcee377f8d0e1b2a63b7e9e495ad66ee3418d56fe01731662576547d5d5f"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-09-001",
+          "Content Digest": "sha256:e7370fa552706a7175ed6c21aa3587aa3458ad97fe9d20d5c8624afb5e358f99"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-10-OPEN-001",
+        "Content Digest": "sha256:2417fcb5fff20a6f025b5b5550823f41fc6eaad0f684b32429885aee5d3c1748"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-10",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "태아의 regular 기본 공격 피해 증가와 속도 가산은 기본20%/15, 일반 단일40%/20, 침식 단일80%/30이라는 각 상태의 최종값으로 교체한다. 이전 상태와 더하거나 모두 같은 배율을 곱하지 않는다. 범용 Attack stat·active 파편·장비 proc·공명·작업을 가속하지 않는다. 제공자는 시전자, 실제 공격/처치는 수혜자다. 원래 channel/lease·행동 제한·중단·Pause·자원/HP 비용 계약을 보존하고 이미 release된 공격을 소급 변경하지 않는다. 태아 전용 유물·미정 침식 패널티와 무기한 집중을 공식 채택하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-10-001",
+        "Content Digest": "sha256:b73630c9cdb3fcf5634439f5b398b0f642821fd416e76cc8cbae290560c50767"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-10"
+        ],
+        "Decision Name": "태아 상태값과 집중·비용 보존",
+        "Exact Decision": "태아의 regular 기본 공격 피해 증가와 속도 가산은 기본20%/15, 일반 단일40%/20, 침식 단일80%/30이라는 각 상태의 최종값으로 교체한다. 이전 상태와 더하거나 모두 같은 배율을 곱하지 않는다. 범용 Attack stat·active 파편·장비 proc·공명·작업을 가속하지 않는다. 제공자는 시전자, 실제 공격/처치는 수혜자다. 원래 channel/lease·행동 제한·중단·Pause·자원/HP 비용 계약을 보존하고 이미 release된 공격을 소급 변경하지 않는다. 태아 전용 유물·미정 침식 패널티와 무기한 집중을 공식 채택하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D03 태아3346–3488;D04 1074–1180;H09 C05;R11/R12",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D03 태아3346–3488;D04 1074–1180;H09 C05;R11/R12",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "세 상태 수치는 직접 합의이며 시험용 기간/비용/패널티를 공식 밸런스로 승격하지 않는다.",
+        "Impact": [
+          "실제 regular basic의20/40/80과 기준속도100에서115/120/130, 비대상 active/proc 불변 및 중복 source 비중첩을 독립 oracle로 검증한다.",
+          "집중 종료·거리 이탈·Hard CC·직접 중지·Pause와 작성된 HP 비용에서 원 소유/원자성/부족 실패가 유지된다. 침식 수치 fixture의 시험용 penalty와 공식 미정 penalty를 구분한다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-10-DECIDED-001",
+        "Content Digest": "sha256:04456b1876468aea254c4d0a0ea173328d4b95d2ff0eac490cd596e77bd5852c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-10",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-10-OPEN-001",
+          "Content Digest": "sha256:2417fcb5fff20a6f025b5b5550823f41fc6eaad0f684b32429885aee5d3c1748"
+        },
+        "Policy Statement": "태아의 regular 기본 공격 피해 증가와 속도 가산은 기본20%/15, 일반 단일40%/20, 침식 단일80%/30이라는 각 상태의 최종값으로 교체한다. 이전 상태와 더하거나 모두 같은 배율을 곱하지 않는다. 범용 Attack stat·active 파편·장비 proc·공명·작업을 가속하지 않는다. 제공자는 시전자, 실제 공격/처치는 수혜자다. 원래 channel/lease·행동 제한·중단·Pause·자원/HP 비용 계약을 보존하고 이미 release된 공격을 소급 변경하지 않는다. 태아 전용 유물·미정 침식 패널티와 무기한 집중을 공식 채택하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-10-001",
+          "Content Digest": "sha256:b73630c9cdb3fcf5634439f5b398b0f642821fd416e76cc8cbae290560c50767"
+        },
+        "Observable Policy Acceptance": [
+          "실제 regular basic의20/40/80과 기준속도100에서115/120/130, 비대상 active/proc 불변 및 중복 source 비중첩을 독립 oracle로 검증한다.",
+          "집중 종료·거리 이탈·Hard CC·직접 중지·Pause와 작성된 HP 비용에서 원 소유/원자성/부족 실패가 유지된다. 침식 수치 fixture의 시험용 penalty와 공식 미정 penalty를 구분한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-10-001",
+        "Content Digest": "sha256:350b063085da1387495f4a64c536b7e5cf277f310de4cf0f12ac38607688259a"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-10",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D03 태아3346–3488;D04 1074–1180;H09 C05;R11/R12",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "태아의 regular 기본 공격 피해 증가와 속도 가산은 기본20%/15, 일반 단일40%/20, 침식 단일80%/30이라는 각 상태의 최종값으로 교체한다. 이전 상태와 더하거나 모두 같은 배율을 곱하지 않는다. 범용 Attack stat·active 파편·장비 proc·공명·작업을 가속하지 않는다. 제공자는 시전자, 실제 공격/처치는 수혜자다. 원래 channel/lease·행동 제한·중단·Pause·자원/HP 비용 계약을 보존하고 이미 release된 공격을 소급 변경하지 않는다. 태아 전용 유물·미정 침식 패널티와 무기한 집중을 공식 채택하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-10",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-10-OPEN-001",
+          "Content Digest": "sha256:2417fcb5fff20a6f025b5b5550823f41fc6eaad0f684b32429885aee5d3c1748"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-10-001",
+          "Content Digest": "sha256:b73630c9cdb3fcf5634439f5b398b0f642821fd416e76cc8cbae290560c50767"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-11-OPEN-001",
+        "Content Digest": "sha256:544ec3bf1a345a646f9a30c6b39ff8857706c0e1f39c2e940669fd494f8250cc"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-11",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "풍운승려 구조 사례는 Physical 범위 bite 뒤 적에게 실제 HP 손실을 하나 이상 확정한 경우 시전자에게 한 번 자기 회복한다. 피해 footprint만 변형하고 치유 대상·횟수·기준량·carrier·원 출처는 보존한다. Staff를 Magic으로 바꾸지 않고 처치·피해량 비례 흡혈을 요구하지 않는다. 빈 범위·전부 무효/전부 보호막 흡수로 HP 손실0이면 회복하지 않는다. 회복은 살아 있고 회복 가능한 원 시전자에 기존 규칙대로 적용하며 부활/초과 shield를 추가하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-11-001",
+        "Content Digest": "sha256:0ff86a6a66c5d7be5d8f87b31284fec2f20382023f2117542b3a2a6e2c3cf4ac"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-11"
+        ],
+        "Decision Name": "풍운승려 피해 footprint와1회 자기회복",
+        "Exact Decision": "풍운승려 구조 사례는 Physical 범위 bite 뒤 적에게 실제 HP 손실을 하나 이상 확정한 경우 시전자에게 한 번 자기 회복한다. 피해 footprint만 변형하고 치유 대상·횟수·기준량·carrier·원 출처는 보존한다. Staff를 Magic으로 바꾸지 않고 처치·피해량 비례 흡혈을 요구하지 않는다. 빈 범위·전부 무효/전부 보호막 흡수로 HP 손실0이면 회복하지 않는다. 회복은 살아 있고 회복 가능한 원 시전자에 기존 규칙대로 적용하며 부활/초과 shield를 추가하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D03 풍운승려4066–4193;H09 C02;H04 A15-03;current FlowMetric/HpLost",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D03 풍운승려4066–4193;H09 C02;H04 A15-03;current FlowMetric/HpLost",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "유효 적중의 미정 경계는 기존 settled HpLost>0로 채택한다. resolved 대상 수/단순 접촉/보호막만 적중을 채택하지 않은 위임 결정이며 사용자 직접 답변이 아니다.",
+        "Impact": [
+          "피해 범위를 넓혀 적 여러 명을 맞혀도 회복은 시전자에게 한 번이고 다른 아군을 치유하거나 대상 수에 비례해 반복하지 않는다.",
+          "빈 범위·무적·완전 흡수·부분 흡수·처치/비처치에서 settled 실제 HP-loss 기준 분기가 맞고 Physical/source/최대HP clamp를 보존한다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-11-DECIDED-001",
+        "Content Digest": "sha256:580376ff9e1315f5802806dab3ef33b8726de7f18a09b5c58b55cf03d57bd345"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-11",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-11-OPEN-001",
+          "Content Digest": "sha256:544ec3bf1a345a646f9a30c6b39ff8857706c0e1f39c2e940669fd494f8250cc"
+        },
+        "Policy Statement": "풍운승려 구조 사례는 Physical 범위 bite 뒤 적에게 실제 HP 손실을 하나 이상 확정한 경우 시전자에게 한 번 자기 회복한다. 피해 footprint만 변형하고 치유 대상·횟수·기준량·carrier·원 출처는 보존한다. Staff를 Magic으로 바꾸지 않고 처치·피해량 비례 흡혈을 요구하지 않는다. 빈 범위·전부 무효/전부 보호막 흡수로 HP 손실0이면 회복하지 않는다. 회복은 살아 있고 회복 가능한 원 시전자에 기존 규칙대로 적용하며 부활/초과 shield를 추가하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-11-001",
+          "Content Digest": "sha256:0ff86a6a66c5d7be5d8f87b31284fec2f20382023f2117542b3a2a6e2c3cf4ac"
+        },
+        "Observable Policy Acceptance": [
+          "피해 범위를 넓혀 적 여러 명을 맞혀도 회복은 시전자에게 한 번이고 다른 아군을 치유하거나 대상 수에 비례해 반복하지 않는다.",
+          "빈 범위·무적·완전 흡수·부분 흡수·처치/비처치에서 settled 실제 HP-loss 기준 분기가 맞고 Physical/source/최대HP clamp를 보존한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-11-001",
+        "Content Digest": "sha256:1675e09e1ca6eb37133b32808ce8f28ed67a07b2094545f3d639bf835b82c8ff"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-11",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "D03 풍운승려4066–4193;H09 C02;H04 A15-03;current FlowMetric/HpLost",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "풍운승려 구조 사례는 Physical 범위 bite 뒤 적에게 실제 HP 손실을 하나 이상 확정한 경우 시전자에게 한 번 자기 회복한다. 피해 footprint만 변형하고 치유 대상·횟수·기준량·carrier·원 출처는 보존한다. Staff를 Magic으로 바꾸지 않고 처치·피해량 비례 흡혈을 요구하지 않는다. 빈 범위·전부 무효/전부 보호막 흡수로 HP 손실0이면 회복하지 않는다. 회복은 살아 있고 회복 가능한 원 시전자에 기존 규칙대로 적용하며 부활/초과 shield를 추가하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-11",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-11-OPEN-001",
+          "Content Digest": "sha256:544ec3bf1a345a646f9a30c6b39ff8857706c0e1f39c2e940669fd494f8250cc"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-11-001",
+          "Content Digest": "sha256:0ff86a6a66c5d7be5d8f87b31284fec2f20382023f2117542b3a2a6e2c3cf4ac"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-12-OPEN-001",
+        "Content Digest": "sha256:a018074a3db90020e9612cfc79ca48c4560df5b85a0a90e226c4f05c38767e4e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-12",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "생성/변형 효과에는 기여한 유물 사본·효과와 원 실행 제공자·source/copy/form/action·catalog generation의 관계를 보존한다. 관측 출처를 추가했다고 새 action/resource/reinput/진행 권한을 부여하지 않는다. 실행 가능한 원 provider와 정규 등록을 검증한다. 에고 침식에 유물 증폭·추가 효과를 적용하거나 억제된 부가효과를 우회 재활성화하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-12-001",
+        "Content Digest": "sha256:806d09c136365fd9efad897e89176ff8f06e8e2ce56304d2e4da912dd758523d"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-12"
+        ],
+        "Decision Name": "생성·변형 출처와 권한",
+        "Exact Decision": "생성/변형 효과에는 기여한 유물 사본·효과와 원 실행 제공자·source/copy/form/action·catalog generation의 관계를 보존한다. 관측 출처를 추가했다고 새 action/resource/reinput/진행 권한을 부여하지 않는다. 실행 가능한 원 provider와 정규 등록을 검증한다. 에고 침식에 유물 증폭·추가 효과를 적용하거나 억제된 부가효과를 우회 재활성화하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§5/X03;U08 source contract;relics 에고침식",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§5/X03;U08 source contract;relics 에고침식",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "선행 권한 경계를 새 효과 identity가 우회하지 않도록 한다.",
+        "Impact": [
+          "기본 효과와 생성 효과의 서로 다른 사본 기여를 실제 피해/보호/상태 결과에서 추적하고 위조·stale source/세대·권한은 거절한다.",
+          "유물 유무·새 구조 조합과 관계없이 에고 침식 및 기존 source/reinput/보스 진행 권한 회귀가 유지된다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-12-DECIDED-001",
+        "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-12",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-12-OPEN-001",
+          "Content Digest": "sha256:a018074a3db90020e9612cfc79ca48c4560df5b85a0a90e226c4f05c38767e4e"
+        },
+        "Policy Statement": "생성/변형 효과에는 기여한 유물 사본·효과와 원 실행 제공자·source/copy/form/action·catalog generation의 관계를 보존한다. 관측 출처를 추가했다고 새 action/resource/reinput/진행 권한을 부여하지 않는다. 실행 가능한 원 provider와 정규 등록을 검증한다. 에고 침식에 유물 증폭·추가 효과를 적용하거나 억제된 부가효과를 우회 재활성화하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-12-001",
+          "Content Digest": "sha256:806d09c136365fd9efad897e89176ff8f06e8e2ce56304d2e4da912dd758523d"
+        },
+        "Observable Policy Acceptance": [
+          "기본 효과와 생성 효과의 서로 다른 사본 기여를 실제 피해/보호/상태 결과에서 추적하고 위조·stale source/세대·권한은 거절한다.",
+          "유물 유무·새 구조 조합과 관계없이 에고 침식 및 기존 source/reinput/보스 진행 권한 회귀가 유지된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-12-001",
+        "Content Digest": "sha256:e41f914fb6edfc047eb1e4a77fbdd215b354c4816d89eac961d1c3fb9e92133c"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-12",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§5/X03;U08 source contract;relics 에고침식",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "생성/변형 효과에는 기여한 유물 사본·효과와 원 실행 제공자·source/copy/form/action·catalog generation의 관계를 보존한다. 관측 출처를 추가했다고 새 action/resource/reinput/진행 권한을 부여하지 않는다. 실행 가능한 원 provider와 정규 등록을 검증한다. 에고 침식에 유물 증폭·추가 효과를 적용하거나 억제된 부가효과를 우회 재활성화하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-12",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-12-OPEN-001",
+          "Content Digest": "sha256:a018074a3db90020e9612cfc79ca48c4560df5b85a0a90e226c4f05c38767e4e"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-12-001",
+          "Content Digest": "sha256:806d09c136365fd9efad897e89176ff8f06e8e2ce56304d2e4da912dd758523d"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-13-OPEN-001",
+        "Content Digest": "sha256:3e76bcddfd3d79030596eed240893a36f2e3fcfbf7ded06341eb31256c7d7b75"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-13",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "새 ID와 새 조합의 정상 외부 RON을 loader→validation/compile→등록→정상 유물 획득·장착→실제 명령·결과→조회 경로로 연결한다. query/explain은 활성/휴면 이유, 적용 대상·전후 property·기여 source와 지원 제한을 설명하되 권위를 만들지 않는다. 세 대표 구조는 실제로 실행 가능해야 하며 schema만 추가하거나 같은 내부 객체 주입으로 대신하지 않는다. 공식 전체 조우/획득 빈도·UI 완성을 주장하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-13-001",
+        "Content Digest": "sha256:65da35fe4799554b18d0c9aaa2c39e62adab6882fd685e035fc971af6165abf1"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-13"
+        ],
+        "Decision Name": "공개 RON·조회·진단",
+        "Exact Decision": "새 ID와 새 조합의 정상 외부 RON을 loader→validation/compile→등록→정상 유물 획득·장착→실제 명령·결과→조회 경로로 연결한다. query/explain은 활성/휴면 이유, 적용 대상·전후 property·기여 source와 지원 제한을 설명하되 권위를 만들지 않는다. 세 대표 구조는 실제로 실행 가능해야 하며 schema만 추가하거나 같은 내부 객체 주입으로 대신하지 않는다. 공식 전체 조우/획득 빈도·UI 완성을 주장하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 X01;U09 output/transition;R15§6,7;T13/T27",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 X01;U09 output/transition;R15§6,7;T13/T27",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기반 표현력을 실제 정상 경로로 닫고 미래 U10/U21/U26를 완료로 합치지 않는다.",
+        "Impact": [
+          "독립 새 ID grant→다른 유물 강화와 세 대표 구조가 정상 공개 경로에서 실제 결과를 만들고 query와 일치한다.",
+          "unknown property/잘못된 reference/type/충돌/미지원 reactive authoring은 정확한 source 위치·사유로 거절되고 부분 catalog 게시가 없다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-13-DECIDED-001",
+        "Content Digest": "sha256:6e7dc0cce79449e3a6bfdcf98ab7637fa87214d3b332f4e741b86d41b077bcb2"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-13",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-13-OPEN-001",
+          "Content Digest": "sha256:3e76bcddfd3d79030596eed240893a36f2e3fcfbf7ded06341eb31256c7d7b75"
+        },
+        "Policy Statement": "새 ID와 새 조합의 정상 외부 RON을 loader→validation/compile→등록→정상 유물 획득·장착→실제 명령·결과→조회 경로로 연결한다. query/explain은 활성/휴면 이유, 적용 대상·전후 property·기여 source와 지원 제한을 설명하되 권위를 만들지 않는다. 세 대표 구조는 실제로 실행 가능해야 하며 schema만 추가하거나 같은 내부 객체 주입으로 대신하지 않는다. 공식 전체 조우/획득 빈도·UI 완성을 주장하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-13-001",
+          "Content Digest": "sha256:65da35fe4799554b18d0c9aaa2c39e62adab6882fd685e035fc971af6165abf1"
+        },
+        "Observable Policy Acceptance": [
+          "독립 새 ID grant→다른 유물 강화와 세 대표 구조가 정상 공개 경로에서 실제 결과를 만들고 query와 일치한다.",
+          "unknown property/잘못된 reference/type/충돌/미지원 reactive authoring은 정확한 source 위치·사유로 거절되고 부분 catalog 게시가 없다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-13-001",
+        "Content Digest": "sha256:014f5f84505d1d1734e3e17afe0787b0216d17ed5b8bd7272cee166b3af2ddee"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-13",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04 X01;U09 output/transition;R15§6,7;T13/T27",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "새 ID와 새 조합의 정상 외부 RON을 loader→validation/compile→등록→정상 유물 획득·장착→실제 명령·결과→조회 경로로 연결한다. query/explain은 활성/휴면 이유, 적용 대상·전후 property·기여 source와 지원 제한을 설명하되 권위를 만들지 않는다. 세 대표 구조는 실제로 실행 가능해야 하며 schema만 추가하거나 같은 내부 객체 주입으로 대신하지 않는다. 공식 전체 조우/획득 빈도·UI 완성을 주장하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-13",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-13-OPEN-001",
+          "Content Digest": "sha256:3e76bcddfd3d79030596eed240893a36f2e3fcfbf7ded06341eb31256c7d7b75"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-13-001",
+          "Content Digest": "sha256:65da35fe4799554b18d0c9aaa2c39e62adab6882fd685e035fc971af6165abf1"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-14-OPEN-001",
+        "Content Digest": "sha256:2cc9981bfc4fb0fcaf9f19badc1e45c96b54ff7ed2cdb5c4771ddf532078d773"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-14",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "런 사본/슬롯/variant 저장은 U08의 소유를 유지하고 closure와 effective plan은 현재 검증된 콘텐츠·구성에서 재구성한다. current/checkpoint/entry/Continue/retreat의 비용·변형 동시 복원과 동일 런 generation pin을 보존한다. 아직 허용된 released owner는 끝날 때까지 유지하되 새 구성에 stale 효과를 재활성화하지 않는다. 생성효과/캐시/lease/pool의 생성·교체·취소·종료 참조를 회수한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-14-001",
+        "Content Digest": "sha256:08a6d176ad6a0cb1c0b41143116c2728b6fac1d591087056eebfdd34fb365360"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-14"
+        ],
+        "Decision Name": "사본·복원·세대와 수명",
+        "Exact Decision": "런 사본/슬롯/variant 저장은 U08의 소유를 유지하고 closure와 effective plan은 현재 검증된 콘텐츠·구성에서 재구성한다. current/checkpoint/entry/Continue/retreat의 비용·변형 동시 복원과 동일 런 generation pin을 보존한다. 아직 허용된 released owner는 끝날 때까지 유지하되 새 구성에 stale 효과를 재활성화하지 않는다. 생성효과/캐시/lease/pool의 생성·교체·취소·종료 참조를 회수한다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 상태보존;H04 X02/X03;U08/U07 contract",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 상태보존;H04 X02/X03;U08/U07 contract",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "저장된 유물 정체성을 보존하면서 plan과 battle-local 상태의 수명을 분리한다.",
+        "Impact": [
+          "동일한 사본·variant를 fresh Core/Continue/checkpoint/retreat로 복원하면 같은 활성·휴면·실제 효과가 나오며 missing/changed content와 forged graph는 원본 보존 거절이다.",
+          "반복 구성 전환·전투·release 종료 뒤 과거 owner가 불필요하게 남지 않고 seed 제거·직원 이전/사망 회수·clone은 독립된 올바른 현재 구성을 갖는다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-14-DECIDED-001",
+        "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-14",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-14-OPEN-001",
+          "Content Digest": "sha256:2cc9981bfc4fb0fcaf9f19badc1e45c96b54ff7ed2cdb5c4771ddf532078d773"
+        },
+        "Policy Statement": "런 사본/슬롯/variant 저장은 U08의 소유를 유지하고 closure와 effective plan은 현재 검증된 콘텐츠·구성에서 재구성한다. current/checkpoint/entry/Continue/retreat의 비용·변형 동시 복원과 동일 런 generation pin을 보존한다. 아직 허용된 released owner는 끝날 때까지 유지하되 새 구성에 stale 효과를 재활성화하지 않는다. 생성효과/캐시/lease/pool의 생성·교체·취소·종료 참조를 회수한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-14-001",
+          "Content Digest": "sha256:08a6d176ad6a0cb1c0b41143116c2728b6fac1d591087056eebfdd34fb365360"
+        },
+        "Observable Policy Acceptance": [
+          "동일한 사본·variant를 fresh Core/Continue/checkpoint/retreat로 복원하면 같은 활성·휴면·실제 효과가 나오며 missing/changed content와 forged graph는 원본 보존 거절이다.",
+          "반복 구성 전환·전투·release 종료 뒤 과거 owner가 불필요하게 남지 않고 seed 제거·직원 이전/사망 회수·clone은 독립된 올바른 현재 구성을 갖는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-14-001",
+        "Content Digest": "sha256:4bf060589bec1d664c4cd218a54ea5d31096ac65380ef7b88bb0c1ca2ac6eda1"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-14",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "relics 상태보존;H04 X02/X03;U08/U07 contract",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "런 사본/슬롯/variant 저장은 U08의 소유를 유지하고 closure와 effective plan은 현재 검증된 콘텐츠·구성에서 재구성한다. current/checkpoint/entry/Continue/retreat의 비용·변형 동시 복원과 동일 런 generation pin을 보존한다. 아직 허용된 released owner는 끝날 때까지 유지하되 새 구성에 stale 효과를 재활성화하지 않는다. 생성효과/캐시/lease/pool의 생성·교체·취소·종료 참조를 회수한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-14",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-14-OPEN-001",
+          "Content Digest": "sha256:2cc9981bfc4fb0fcaf9f19badc1e45c96b54ff7ed2cdb5c4771ddf532078d773"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-14-001",
+          "Content Digest": "sha256:08a6d176ad6a0cb1c0b41143116c2728b6fac1d591087056eebfdd34fb365360"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-15-OPEN-001",
+        "Content Digest": "sha256:436626feefc8640fc9e3e1971e65557d7e82b1fd424321323fb56fabde0091ef"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-15",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "closure 후보/plan·generated effect·payload·source/cache의 생성·보유·clone·rollback은 기존 resource admission과 retained 계량에 포함한다. 검증/게시·장착·변형·명령 중 한도·값·참조·늦은 실패가 생기면 기존 typed fault와 원자적 상태 보존을 따른다. 계산 종료를 위해 gameplay 총량/공통 proc cap을 신설하거나 기존한도·workload를 완화하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-15-001",
+        "Content Digest": "sha256:94308d92ad8878d53d888c71ca4714774a49bf911b1ebc877d24b77a31e338e3"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-15"
+        ],
+        "Decision Name": "예산·원자성·결정론",
+        "Exact Decision": "closure 후보/plan·generated effect·payload·source/cache의 생성·보유·clone·rollback은 기존 resource admission과 retained 계량에 포함한다. 검증/게시·장착·변형·명령 중 한도·값·참조·늦은 실패가 생기면 기존 typed fault와 원자적 상태 보존을 따른다. 계산 종료를 위해 gameplay 총량/공통 proc cap을 신설하거나 기존한도·workload를 완화하지 않는다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§5,7/X04;U07M/U08 budgets;T23",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§5,7/X04;U07M/U08 budgets;T23",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 안전 한도와 실제 비용을 보존하고 새로운 비용은 원시 전후로 설명한다.",
+        "Impact": [
+          "one-short/exact 경계와 누적 후보·plan 교체·late fault에서 실제 requested/accepted·retained가 정확하고 상태·RNG·ID·저장에 부분 commit이 없다.",
+          "같은 seed/구성·관측 off/on/saturated 및 다양한 장착 순서에서 권위 결과가 같고 source/lease/cache 해제 뒤 불필요한 retained 증가가 없다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-15-DECIDED-001",
+        "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-15",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-15-OPEN-001",
+          "Content Digest": "sha256:436626feefc8640fc9e3e1971e65557d7e82b1fd424321323fb56fabde0091ef"
+        },
+        "Policy Statement": "closure 후보/plan·generated effect·payload·source/cache의 생성·보유·clone·rollback은 기존 resource admission과 retained 계량에 포함한다. 검증/게시·장착·변형·명령 중 한도·값·참조·늦은 실패가 생기면 기존 typed fault와 원자적 상태 보존을 따른다. 계산 종료를 위해 gameplay 총량/공통 proc cap을 신설하거나 기존한도·workload를 완화하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-15-001",
+          "Content Digest": "sha256:94308d92ad8878d53d888c71ca4714774a49bf911b1ebc877d24b77a31e338e3"
+        },
+        "Observable Policy Acceptance": [
+          "one-short/exact 경계와 누적 후보·plan 교체·late fault에서 실제 requested/accepted·retained가 정확하고 상태·RNG·ID·저장에 부분 commit이 없다.",
+          "같은 seed/구성·관측 off/on/saturated 및 다양한 장착 순서에서 권위 결과가 같고 source/lease/cache 해제 뒤 불필요한 retained 증가가 없다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-15-001",
+        "Content Digest": "sha256:91e8a5abe32fa4b4041e2b2ddd6563f536c768b1e74bc55abcc2f0ed2ffafe87"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-15",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§5,7/X04;U07M/U08 budgets;T23",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "closure 후보/plan·generated effect·payload·source/cache의 생성·보유·clone·rollback은 기존 resource admission과 retained 계량에 포함한다. 검증/게시·장착·변형·명령 중 한도·값·참조·늦은 실패가 생기면 기존 typed fault와 원자적 상태 보존을 따른다. 계산 종료를 위해 gameplay 총량/공통 proc cap을 신설하거나 기존한도·workload를 완화하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-15",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-15-OPEN-001",
+          "Content Digest": "sha256:436626feefc8640fc9e3e1971e65557d7e82b1fd424321323fb56fabde0091ef"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-15-001",
+          "Content Digest": "sha256:94308d92ad8878d53d888c71ca4714774a49bf911b1ebc877d24b77a31e338e3"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-16-OPEN-001",
+        "Content Digest": "sha256:1ff9211328bc3a9c95474cb5cc7fc664ffe7a8505f7cab218d7b55c650a453c9"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-16",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "U08의 전체32 수용문장과 이전191 조건, 별도 R06 31행을 직접 소비되는 계약과 실제 변경 영향으로 인수한다. exact/입증된 비영향 증거는 재사용하며 바뀐 제품·입력·성능 경계만 필요한 검증으로 갱신한다. PC36/R05 원 workload/cap/hard guard와 shared-host 측정 한계를 보존한다. R05 peak-only 기존 경고를 숨기거나 모든 성능 PASS로 부르지 않는다. 20분 stress는 제외한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-16-001",
+        "Content Digest": "sha256:5db20e35801c14849bd05dcc32ac6f3e87863a9fd1b57dad901a7075561dbe35"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-16"
+        ],
+        "Decision Name": "선행 회귀와 성능 증거",
+        "Exact Decision": "U08의 전체32 수용문장과 이전191 조건, 별도 R06 31행을 직접 소비되는 계약과 실제 변경 영향으로 인수한다. exact/입증된 비영향 증거는 재사용하며 바뀐 제품·입력·성능 경계만 필요한 검증으로 갱신한다. PC36/R05 원 workload/cap/hard guard와 shared-host 측정 한계를 보존한다. R05 peak-only 기존 경고를 숨기거나 모든 성능 PASS로 부르지 않는다. 20분 stress는 제외한다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§7;current U08 whole audit013;U07M baseline",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§7;current U08 whole audit013;U07M baseline",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 테스트 작성자를 재표기하거나 역할 전환만으로 전체 재실행하지 않는다.",
+        "Impact": [
+          "선행223 조건과 별도31행의 affected/non-impact 근거가 현재 source 및 실제 nonzero 결과에 연결되고 영향받은 공개·fault·저장·수명 회귀를 검증한다.",
+          "PC 비시간 지표와 R05 원시 전후 비용·결정론·retained/allocator 범위를 비교하며 실패 원본·peak-only 경고·환경 한계를 보존한다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-16-DECIDED-001",
+        "Content Digest": "sha256:7a1c0650a19811a22789561d2588c1c784336cc624d10619efc6b4ba92c2e939"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-16",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-16-OPEN-001",
+          "Content Digest": "sha256:1ff9211328bc3a9c95474cb5cc7fc664ffe7a8505f7cab218d7b55c650a453c9"
+        },
+        "Policy Statement": "U08의 전체32 수용문장과 이전191 조건, 별도 R06 31행을 직접 소비되는 계약과 실제 변경 영향으로 인수한다. exact/입증된 비영향 증거는 재사용하며 바뀐 제품·입력·성능 경계만 필요한 검증으로 갱신한다. PC36/R05 원 workload/cap/hard guard와 shared-host 측정 한계를 보존한다. R05 peak-only 기존 경고를 숨기거나 모든 성능 PASS로 부르지 않는다. 20분 stress는 제외한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-16-001",
+          "Content Digest": "sha256:5db20e35801c14849bd05dcc32ac6f3e87863a9fd1b57dad901a7075561dbe35"
+        },
+        "Observable Policy Acceptance": [
+          "선행223 조건과 별도31행의 affected/non-impact 근거가 현재 source 및 실제 nonzero 결과에 연결되고 영향받은 공개·fault·저장·수명 회귀를 검증한다.",
+          "PC 비시간 지표와 R05 원시 전후 비용·결정론·retained/allocator 범위를 비교하며 실패 원본·peak-only 경고·환경 한계를 보존한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-16-001",
+        "Content Digest": "sha256:e85fded385a764b9f355210b5731e08284bdd1fac480afd524acaab66b4f608d"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-16",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "H04§7;current U08 whole audit013;U07M baseline",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "U08의 전체32 수용문장과 이전191 조건, 별도 R06 31행을 직접 소비되는 계약과 실제 변경 영향으로 인수한다. exact/입증된 비영향 증거는 재사용하며 바뀐 제품·입력·성능 경계만 필요한 검증으로 갱신한다. PC36/R05 원 workload/cap/hard guard와 shared-host 측정 한계를 보존한다. R05 peak-only 기존 경고를 숨기거나 모든 성능 PASS로 부르지 않는다. 20분 stress는 제외한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-16",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-16-OPEN-001",
+          "Content Digest": "sha256:1ff9211328bc3a9c95474cb5cc7fc664ffe7a8505f7cab218d7b55c650a453c9"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-16-001",
+          "Content Digest": "sha256:5db20e35801c14849bd05dcc32ac6f3e87863a9fd1b57dad901a7075561dbe35"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-17-OPEN-001",
+        "Content Digest": "sha256:fa1e4cfe95b65b7b1044ccbed9ace0cab6a988c57d5ba36e640cc2f29c4c72c1"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-17",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "정책/설계/제품/시험의 실제 전체 수용 조건과 원시 증거를 연결하고 evidence selection→predecessor impact→adaptation→coverage→자체검증→문서→exact target/격리 정역복원→비참여 전체 독립 감사를 순서대로 완료한다. 국소 컴파일·준비·자체시험 성공을 전체 완료로 취급하지 않는다. 독립 Complete/High/open0 및 출구 현재성 인수 후 U10 등 다음 승인 작업을 진행한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-17-001",
+        "Content Digest": "sha256:06f27e73cb433d9f538a72b0c1cd5745ff750f6166c251328263de7e2f9d6fa4"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRSA-17"
+        ],
+        "Decision Name": "전체 독립 완료와 후속 인수",
+        "Exact Decision": "정책/설계/제품/시험의 실제 전체 수용 조건과 원시 증거를 연결하고 evidence selection→predecessor impact→adaptation→coverage→자체검증→문서→exact target/격리 정역복원→비참여 전체 독립 감사를 순서대로 완료한다. 국소 컴파일·준비·자체시험 성공을 전체 완료로 취급하지 않는다. 독립 Complete/High/open0 및 출구 현재성 인수 후 U10 등 다음 승인 작업을 진행한다.",
+        "Decision Authority": "Existing user agreements applied; explicit H04 section5 in-scope policy discretion and current continuous authorization. Novel details (typed arithmetic, single-target lifecycle, HpLost hit gate) are AI delegated decisions, not direct user answers.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "current user request finalization/roles;GEX;U09 scope",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence",
+          "delegation_span": "H04 section5 구현 중 정책 결정 권한;current request preserves valid prior plans/delegation;CONTINUOUS_REQUEST 위임과 종료 경계"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "current user request finalization/roles;GEX;U09 scope",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "메인은 계획과 인수만 소유하고 제품/시험 작성이나 독립 완료 판정을 대행하지 않는다.",
+        "Impact": [
+          "구현·테스트 역할이 분리되고 모든 수용문장/필수차원/통합 경계의 실제 증거가 고정된 현재 target에 추적되며 실패·미실행을 숨기지 않는다.",
+          "격리 정·역 복원과 비참여 Astra/High의 전체 Goal 감사가 Complete/High/open0이고 출구 currentness 및 후속 문서 delta를 인수한다."
+        ],
+        "Alternatives not selected": "Silent last-writer/UUID winner;global mutable prototype;unconditional activation;unlimited target following;auto recipient replacement;untyped string patch;all properties public;all-state multiplier;full-absorb contact counted as HpLost;new official unresolved penalty/balance. Alternatives apply only to the corresponding decision.",
+        "Compatibility and data impact": "Existing source/saves/assets/evidence preserved. New structural recipes apply only where authored; old numeric behavior is required to remain. No user data deletion or bulk migration is authorized.",
+        "Revisability": "Implementation means may vary within this public meaning. Changed policy/acceptance returns to P2G-10 immutable successor before downstream freeze."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-17-DECIDED-001",
+        "Content Digest": "sha256:297fdd1f193921132ac36e9a4388cf4c184fd1683a39da321b6970fcf2d7e1a2"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-17",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-17-OPEN-001",
+          "Content Digest": "sha256:fa1e4cfe95b65b7b1044ccbed9ace0cab6a988c57d5ba36e640cc2f29c4c72c1"
+        },
+        "Policy Statement": "정책/설계/제품/시험의 실제 전체 수용 조건과 원시 증거를 연결하고 evidence selection→predecessor impact→adaptation→coverage→자체검증→문서→exact target/격리 정역복원→비참여 전체 독립 감사를 순서대로 완료한다. 국소 컴파일·준비·자체시험 성공을 전체 완료로 취급하지 않는다. 독립 Complete/High/open0 및 출구 현재성 인수 후 U10 등 다음 승인 작업을 진행한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-17-001",
+          "Content Digest": "sha256:06f27e73cb433d9f538a72b0c1cd5745ff750f6166c251328263de7e2f9d6fa4"
+        },
+        "Observable Policy Acceptance": [
+          "구현·테스트 역할이 분리되고 모든 수용문장/필수차원/통합 경계의 실제 증거가 고정된 현재 target에 추적되며 실패·미실행을 숨기지 않는다.",
+          "격리 정·역 복원과 비참여 Astra/High의 전체 Goal 감사가 Complete/High/open0이고 출구 currentness 및 후속 문서 delta를 인수한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-17-001",
+        "Content Digest": "sha256:0d6904413d8fc6f8b4a41f47d68cf411b9a82e0044741fc7975316a988452de6"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-17",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-001",
+            "IN-002",
+            "IN-003",
+            "IN-005",
+            "IN-010",
+            "IN-017"
+          ],
+          "span": "current user request finalization/roles;GEX;U09 scope",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "정책/설계/제품/시험의 실제 전체 수용 조건과 원시 증거를 연결하고 evidence selection→predecessor impact→adaptation→coverage→자체검증→문서→exact target/격리 정역복원→비참여 전체 독립 감사를 순서대로 완료한다. 국소 컴파일·준비·자체시험 성공을 전체 완료로 취급하지 않는다. 독립 Complete/High/open0 및 출구 현재성 인수 후 U10 등 다음 승인 작업을 진행한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSA-17",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-17-OPEN-001",
+          "Content Digest": "sha256:fa1e4cfe95b65b7b1044ccbed9ace0cab6a988c57d5ba36e640cc2f29c4c72c1"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-17-001",
+          "Content Digest": "sha256:06f27e73cb433d9f538a72b0c1cd5745ff750f6166c251328263de7e2f9d6fa4"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-18-001",
+        "Content Digest": "sha256:89b0f9d84979c419659c55b63f70192b4a55ad62916e04e2585745a32d05710f"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-18",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-002",
+            "IN-010"
+          ],
+          "span": "U10 owns;static activation does not assert event-chain completion"
+        },
+        "Candidate Statement": "Runtime reactive subscriber/fork/join/periodic ancestry",
+        "Disposition": "out_of_scope",
+        "Reason": "U10 owns;static activation does not assert event-chain completion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-19-001",
+        "Content Digest": "sha256:8e914d938f2d181154652fc5deb3ae4338ff8a74781d2d8092fc9fe9b8e8b4af"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-19",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-002",
+            "IN-010"
+          ],
+          "span": "U21/U26 and explicit current scope;representative authored values are test or delegated engineering values"
+        },
+        "Candidate Statement": "Final official numerical balance,unagreed corrupt penalties and complete encounter/catalogue/Unity",
+        "Disposition": "out_of_scope",
+        "Reason": "U21/U26 and explicit current scope;representative authored values are test or delegated engineering values"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSA-20-001",
+        "Content Digest": "sha256:909fdbe26c87e7be9efb692050dc7119a393182850f828ebd9e7d3998c4382b2"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSA-20",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-001",
+            "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "items": [
+            "IN-002",
+            "IN-010"
+          ],
+          "span": "Historical documents are policy inputs;actual U08 audit013 and P2G-20 source will establish current state"
+        },
+        "Candidate Statement": "Old H04/R15 preparation status as evidence of current implementation",
+        "Disposition": "not_a_policy_element",
+        "Reason": "Historical documents are policy inputs;actual U08 audit013 and P2G-20 source will establish current state"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRSA-002",
+        "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSA-001",
+          "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRSA-20261007",
+          "Policy Topic": "U09 유한 활성·속성 변형과 구조형 공식 사례",
+          "Requested Result": "bounded_pipeline P2G-00 through P2G-60, followed under existing user authorization by GEX implementation/testing/whole independent audit/correction and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+            "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+            "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Same-effect tag/property/exact ID/form AND, seeded finite activation and property/structural composition with explicit Replace conflicts",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 implementation and C05"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Agreed Porccubus shared-shield, fetus state transition and monk damage-footprint structural cases",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09/C06 and completion criteria"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Effective plan, generated-effect properties/source, dormant explanation, execution/protection/persistent states/query/copy/restore/same-run generation boundaries",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 together-transition and output columns"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Normal external RON and negative fixtures, applicable predecessor regressions, performance/resource lifetime, independent whole-goal completion",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 completion and current continuous request"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "U10 event subscriber/causal chains and other independent future roadmap cards, full shop/activity/UI implementation",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 output consumer U10 and U10/U16/U26 owners"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unseeded-cycle blanket input refusal, arbitrary activation gameplay cap, UUID-order silent Replace winner or automatic exposure of every builtin-only property",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 explicit exclusions and D-03 uncertainty"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Unity-first work, individual final-boss unique implementations, whole-roadmap detailed design and retroactive alteration of prior evidence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "Current user request and ROADMAP global scope"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSA-001",
+          "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRSA-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-01-DECIDED-001",
+            "Content Digest": "sha256:db0f8438376ca3136198d335e9e5205f26bce931ae0f5202a37af033f0a357bb"
+          },
+          "PE-CRSA-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-02-DECIDED-001",
+            "Content Digest": "sha256:78c069c6bcd5f2e31da2cb2c76f770b41bdb09eeb253958aec596c3145e4964d"
+          },
+          "PE-CRSA-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-03-DECIDED-001",
+            "Content Digest": "sha256:568679e2bdc4be8c113b08cafd6bffd8e5d342843073a8a59b106a7ada155444"
+          },
+          "PE-CRSA-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-04-DECIDED-001",
+            "Content Digest": "sha256:6a286758c18faad1ae41b28f0a14cfbc5ad60d740330ba054b51740176354e12"
+          },
+          "PE-CRSA-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-05-DECIDED-001",
+            "Content Digest": "sha256:5a241fbbf70d1bc77e4dfffb4a641061d952fd29a8f2cdcbd92beaaa6027bb78"
+          },
+          "PE-CRSA-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-06-DECIDED-001",
+            "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+          },
+          "PE-CRSA-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-07-DECIDED-001",
+            "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+          },
+          "PE-CRSA-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-08-DECIDED-001",
+            "Content Digest": "sha256:dfafb9c4844ff0062349b8d2148b5e8ad81e67ffd4aa802fb8c8c93e774371e3"
+          },
+          "PE-CRSA-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-09-DECIDED-001",
+            "Content Digest": "sha256:063e99ff62df429e817c18f7eb9ea865293dacde62aeddab56b04015d07f9591"
+          },
+          "PE-CRSA-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-10-DECIDED-001",
+            "Content Digest": "sha256:04456b1876468aea254c4d0a0ea173328d4b95d2ff0eac490cd596e77bd5852c"
+          },
+          "PE-CRSA-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-11-DECIDED-001",
+            "Content Digest": "sha256:580376ff9e1315f5802806dab3ef33b8726de7f18a09b5c58b55cf03d57bd345"
+          },
+          "PE-CRSA-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-12-DECIDED-001",
+            "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+          },
+          "PE-CRSA-13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-13-DECIDED-001",
+            "Content Digest": "sha256:6e7dc0cce79449e3a6bfdcf98ab7637fa87214d3b332f4e741b86d41b077bcb2"
+          },
+          "PE-CRSA-14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-14-DECIDED-001",
+            "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+          },
+          "PE-CRSA-15": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-15-DECIDED-001",
+            "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+          },
+          "PE-CRSA-16": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-16-DECIDED-001",
+            "Content Digest": "sha256:7a1c0650a19811a22789561d2588c1c784336cc624d10619efc6b4ba92c2e939"
+          },
+          "PE-CRSA-17": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-17-DECIDED-001",
+            "Content Digest": "sha256:297fdd1f193921132ac36e9a4388cf4c184fd1683a39da321b6970fcf2d7e1a2"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-01-001",
+            "Content Digest": "sha256:b1a00188db64fb601f2e67f42bb039959f5d53b5157fdf6804a265bb1953ee2b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-02-001",
+            "Content Digest": "sha256:9723e482e4e207a24f0be4ee319eb5699545daa6c4728935b0ecfda2228a9577"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-03-001",
+            "Content Digest": "sha256:adde7875597b40961e62bd86390c5eb1645ab9fcc09e11eedd7537783b305a31"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-04-001",
+            "Content Digest": "sha256:e2829eb8c433d75627a4d6335d76beb5e35a27cb9378806e2a2007379084bd00"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-05-001",
+            "Content Digest": "sha256:691cca75c7a3f7afa194b43447171452cbd7e516657693c424e7a82f86aa45bc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-06-001",
+            "Content Digest": "sha256:443580647a8f54f8b740f2fc7b23f5e60afb8630e6f0f88c2077e502d40897c6"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-07-001",
+            "Content Digest": "sha256:60cea43e9a8b1def628da5881408fae3e18b0e487f28bd353c946be2bee9d223"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-08-001",
+            "Content Digest": "sha256:a8b25dbfc9c45ec7c186a937ee9fd344f67414ec873cf48d0b12878b56153471"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-09-001",
+            "Content Digest": "sha256:e7370fa552706a7175ed6c21aa3587aa3458ad97fe9d20d5c8624afb5e358f99"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-10-001",
+            "Content Digest": "sha256:b73630c9cdb3fcf5634439f5b398b0f642821fd416e76cc8cbae290560c50767"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-11-001",
+            "Content Digest": "sha256:0ff86a6a66c5d7be5d8f87b31284fec2f20382023f2117542b3a2a6e2c3cf4ac"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-12-001",
+            "Content Digest": "sha256:806d09c136365fd9efad897e89176ff8f06e8e2ce56304d2e4da912dd758523d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-13-001",
+            "Content Digest": "sha256:65da35fe4799554b18d0c9aaa2c39e62adab6882fd685e035fc971af6165abf1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-14-001",
+            "Content Digest": "sha256:08a6d176ad6a0cb1c0b41143116c2728b6fac1d591087056eebfdd34fb365360"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-15-001",
+            "Content Digest": "sha256:94308d92ad8878d53d888c71ca4714774a49bf911b1ebc877d24b77a31e338e3"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-16-001",
+            "Content Digest": "sha256:5db20e35801c14849bd05dcc32ac6f3e87863a9fd1b57dad901a7075561dbe35"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-17-001",
+            "Content Digest": "sha256:06f27e73cb433d9f538a72b0c1cd5745ff750f6166c251328263de7e2f9d6fa4"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

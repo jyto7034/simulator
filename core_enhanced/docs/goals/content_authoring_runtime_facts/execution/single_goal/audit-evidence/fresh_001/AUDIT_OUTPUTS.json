@@ -1,0 +1,174 @@
+{
+  "audit": "R04 GEX-20 fresh initial 001",
+  "sealed_at_utc": "2026-09-11T01:56:02.533650+00:00",
+  "reviewer": "/root/r04_runtime_facts_fresh_audit",
+  "goal_set": "GS-CARF-P2G50-002",
+  "goal": "GOAL-CARF-01",
+  "phase": "PHASE-CARF-01",
+  "handoff": "HOF-CARF-P2G60-002",
+  "verdict": "Not Complete",
+  "currentness": "current / unchanged",
+  "implementation_target": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_002.json",
+    "sha256": "12dae8985bcb07f80f003e654d4076d4528683c3fe98631300300f39fd693d91",
+    "bytes": 1776538
+  },
+  "supplemental_inputs": [
+    {
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_005.json",
+        "sha256": "631c3aa01a8ef7b3303bc9b979e572c81fdb0e11e2d41915112baff98e548af2",
+        "bytes": 1564262
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_005.md",
+        "sha256": "ffed3caa83498b3064fe53fb9da42d96ebf25cb353bd5d74b90b49184b2491a3",
+        "bytes": 24345
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/AUDIT_OUTPUTS.json",
+        "sha256": "7a264d31561bff3c1522d726289352b19656bc59b068ca6ea25453001579c339",
+        "bytes": 4636
+      }
+    },
+    {
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_005.json",
+        "sha256": "a090b1856086f1c98c5d1630bb4464deb28b244eaed950514ce1132300fda57b",
+        "bytes": 1777763
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_004.md",
+        "sha256": "b504c1101f24f64467db7aa29bea91131cebc4ed1e3c1b24d306aca61b69151e",
+        "bytes": 22461
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/AUDIT_OUTPUTS.json",
+        "sha256": "19e00cee37f3d3db341cae8c39ab97d3f045dcda9884a97e65b03b2250c24006",
+        "bytes": 4060
+      }
+    },
+    {
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_003.json",
+        "sha256": "a9e68225527c259f5c1eca054b12a92982139ed041928001f436889b6c7fb16c",
+        "bytes": 1779675
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/COMPLETION_AUDIT_003.md",
+        "sha256": "86a4176ca5ca930f7e2fa1f9cbba66e22ba9fcf754df03b26d28fff1de5b37df",
+        "bytes": 26655
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/AUDIT_OUTPUTS.json",
+        "sha256": "5785fb50f8634a7e146efc35d610270c82312de28621ce436a01f100fa295ca0",
+        "bytes": 5818
+      }
+    }
+  ],
+  "entry_currentness": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/currentness_entry.json",
+    "sha256": "31458f3d3b338a9b5c5c654b008df4b8e44e908c84acbc926ef321234adadced",
+    "bytes": 3902
+  },
+  "closure_currentness": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/currentness_closure.json",
+    "sha256": "83ff60ee35d81589776704a3345dfcea42d5d721ebd70e3fbe0273c943a460bb",
+    "bytes": 3902
+  },
+  "blocking_findings": [
+    {
+      "id": "F01",
+      "criterion": "PER-CARF-E02-REVIEWED-001[0] / IVA-CARF-04 / C02 / I02",
+      "owner": "AG-CARF-01 and WP-CARF-03, same Goal correction GEX-10",
+      "summary": "Direct strike is allocated after damage calculation; required pre-formula identity is absent."
+    },
+    {
+      "id": "F02",
+      "criterion": "PER-CARF-E03-REVIEWED-001[1] / IVA-CARF-05 / C03 / I03 / C08 / I06",
+      "owner": "WP-CARF-03, same Goal correction GEX-10",
+      "summary": "Mapped area test hits at t100/t200 and expires at t300; required delayed-hit ActionHandle fixture is missing."
+    }
+  ],
+  "nonblocking_observations": [
+    {
+      "id": "O01",
+      "summary": "Evidence map skill_runtime_contract25 should say 15; full total 1361 is correct."
+    }
+  ],
+  "new_gameplay_executions": 0,
+  "new_builds": 0,
+  "owner_harness_reruns": 0,
+  "reused_owner_command_records": 26,
+  "reused_passing_individual_tests": 1361,
+  "audit_final_evidence_checks": 1130,
+  "audit_output_comparison_checks": 738,
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT.md",
+      "sha256": "ee2bda7d04444cd39c946ca1db7b58ca99a38bd456a11aa8ce937bc5d00cddf3",
+      "bytes": 39004
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/audit_observations.md",
+      "sha256": "cecc2de9fac563f1900075fb1cf9225a75b71899f331620bfae15b39e41dfe50",
+      "bytes": 1325
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/closure_identity_comparison.json",
+      "sha256": "fa35dce50d271a7021351abce711d0aae72841f12e3800ce6d41a705d2100166",
+      "bytes": 2932
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/currentness_closure.json",
+      "sha256": "83ff60ee35d81589776704a3345dfcea42d5d721ebd70e3fbe0273c943a460bb",
+      "bytes": 3902
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/currentness_entry.json",
+      "sha256": "31458f3d3b338a9b5c5c654b008df4b8e44e908c84acbc926ef321234adadced",
+      "bytes": 3902
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/evidence_review.json",
+      "sha256": "14dee0773e8a8d52c25b82559f426db31c3672377e9161ade947aeb8ea00de9b",
+      "bytes": 178506
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/evidence_review_initial.json",
+      "sha256": "b7a5f98f826703138cfd4dd4a54e26d47d3b622486917b8101a9b12cace5c8ba",
+      "bytes": 178706
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/finding_source_evidence.json",
+      "sha256": "fc322283094b1ba0a4b1f95d544b3ddc012b3138766b9ad305fd8ca6491bf60a",
+      "bytes": 25141
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/full164_test_rows.txt",
+      "sha256": "e3c47f2ba51ffcdf5133013467f07b98878d1f1e89a144c76913d28e265eddc4",
+      "bytes": 130397
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/output_review.json",
+      "sha256": "b94eb61a811e5b252b0b81523ae8a76697222fecbe08aff678907e31b94358d6",
+      "bytes": 81965
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/verify_currentness.py",
+      "sha256": "0698b51344a0203059a70bcae071d1eadcdf60551e1b70a53598de4b835c6409",
+      "bytes": 3268
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/verify_evidence.py",
+      "sha256": "6cd4420ced41e3c57d3bca1e601f603fe03d5762646d954af6f8ec9fb7f60d91",
+      "bytes": 7456
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_001/verify_outputs.py",
+      "sha256": "6a394fbf6e9c804bfec8e761af240e69ddc095133ffc8dae27a8485757b244ec",
+      "bytes": 6354
+    }
+  ],
+  "registry_self_excluded": true
+}

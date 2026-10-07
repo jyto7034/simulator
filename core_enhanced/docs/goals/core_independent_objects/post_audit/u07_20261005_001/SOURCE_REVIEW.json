@@ -1,0 +1,273 @@
+{
+  "direct_source_review": [
+    {
+      "group": "definitions",
+      "review_scope": "New strict definitions/compile and reference/shape/lifetime changes; full new object schema and scoped existing-owner deltas.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/ability/objects.rs",
+          "sha256": "7625fb9e3d2bbd7c7e5bdb864e74ef62704153121931e8af475b06938ed3cf9f"
+        },
+        {
+          "path": "core_enhanced/src/game/data/independent_object_data.rs",
+          "sha256": "6b65cf9eb84b040e5a3449492f6c7cc7e1037ad0d2775514f8025a1345d4f3e9"
+        },
+        {
+          "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+          "sha256": "97b04c7fdbd8ab73a75dd25e01a76a666a739ad3efc3ac5f076a62c6acb0f63e"
+        },
+        {
+          "path": "core_enhanced/src/game/data/skill_data.rs",
+          "sha256": "af053a5c82f5499ebb22776102ecd75a402b9265622a468afb1e7f9188cde3d1"
+        },
+        {
+          "path": "core_enhanced/src/game/ability/sustained.rs",
+          "sha256": "5eb4bbb235041bf9d3b15d5a19811ff6db45f7a4a44864c09a14288c98cc001d"
+        },
+        {
+          "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+          "sha256": "6f28f7bee12632d76deac56a5c81228d9d2500e9b47cb1480e8bb465aa4090e7"
+        },
+        {
+          "path": "core_enhanced/src/authoring/definition.rs",
+          "sha256": "e86f68fdc871a1fb26ad432e8943cb8552916ec9f33b0f99d9586688c2d1396b"
+        }
+      ]
+    },
+    {
+      "group": "creation_lifetime",
+      "review_scope": "Full new production owners and applicable existing kernel transaction/ledger callbacks; selected native/public creation/evolution/fault tests. F01 in evolution and retire bridge.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/battle/core/independent_objects.rs",
+          "sha256": "a8e3ac95f78d633ea837d7b1cc935192ad0f1e12e39e054b612051c0d956d5ae"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/object_creation.rs",
+          "sha256": "866c13ccbdf481319536829baff895c01197db1c457d4d15a3d36da6989bd0a9"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/object_evolution.rs",
+          "sha256": "4c426b007dad5a1913d39ac1e955adb57cfb3ea05b1fa6e8dc774982975b9606"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+          "sha256": "d71b818e63461a865792877d93735b8fa531685bc4e0c7e9a397a0764943ec61"
+        }
+      ]
+    },
+    {
+      "group": "spatial",
+      "review_scope": "Trap/contact production and changed ordinary attack/heal/target eligibility. Existing engagement preservation and wall proximity exclusion directly establish F01.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/battle/core/object_attack.rs",
+          "sha256": "028f9f3084075d128d9fdb81eaa8e511051ce7b42d7c50da3644079c511a8658"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+          "sha256": "b037f4949c437d52d4081cf40b41d06ea8a4e25cc41a4d402d9c5413af059b22"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/movement/planner.rs",
+          "sha256": "d68967c58e7b50db26dfa93f72cbedb727addc0da698a4522773131521067bd7"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/basic_attack.rs",
+          "sha256": "3cf968d2a70c94fcafca69a280fc2bddb2fe5811b7a460769c5c9d8d47b0f122"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/basic_heal.rs",
+          "sha256": "9af1fd0672757b8c7dff8f843aac08b1e9ea1b74a587e0057500b40b4741c129"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/targeting.rs",
+          "sha256": "4659f8ff859d47eb2b978987f27524d060156b7c4beb38d3090491b20d5cb72e"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/target_usefulness.rs",
+          "sha256": "8a0af5c42400f65b2b2a1a304387af6a7308e277c148e23c2da3983d77757002"
+        }
+      ]
+    },
+    {
+      "group": "pool_hp",
+      "review_scope": "Full segmented owner, changed sustained begin/end/reinput/absorb/recharge/form overlay and HP/retire/withdraw call chain. Baseline global withdrawal reset independently inspected in SOURCE_BEFORE archive.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/battle/core/sustained/segmented.rs",
+          "sha256": "89d26eb8f1e6a038594a6dc1320a65d05c51fb838fbcaa79a4f940c57eb8c5c2"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/sustained.rs",
+          "sha256": "0115ad2a39eb555eb48152d5d36338d78176981e96ef155a2c2691fb23aae80c"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+          "sha256": "a9e41f6c18619e4d93c3aab679f04d277b5e436d743165bfa5601bf60022c0c6"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+          "sha256": "a530c54d71a16c3c87b8b15b9d17d83819bc627911b4fbcf3b2794cd761e64a2"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/build.rs",
+          "sha256": "02963eaaea1f9c294751fe53ce7ca8574e9e3e44d7bf46e67b8125faa97afa3d"
+        }
+      ]
+    },
+    {
+      "group": "source_accounting",
+      "review_scope": "136-byte source optional Arc wrapper, borrowed manual serializer/retained payload/credential strip, action validation, manual/auto/reinput release, terminal/reset and extent/queue/CloneShape/charge forwarding/partial sort paths. Tests for1024JSON combinations, exact/short and late wrapper failure were read.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+          "sha256": "47b8f7d52d6ed0a90bb0db0446a4a6ddf248c988134224b0c3a060324d6d748e"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+          "sha256": "9d0b6d70000a7f371740990419ce14458477eb4fe22237ba7fa7d7df996880ed"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/sim.rs",
+          "sha256": "029401996a5d38dca2ba1461244be6bf0e97d5f94cfc93a2a313c8bd72db4fa7"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/queue.rs",
+          "sha256": "f7dc25ab042f231951ed79a490297c671b4a2b2f82281bce2da77123fa26c8cd"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/mod.rs",
+          "sha256": "9a343f322d6092d787e59e70bdfacf5ecedba42b87281460b5d4b37b3d77be55"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/types.rs",
+          "sha256": "ecd72efcbaa8d4af90a1f4c15200757cd930b72c99084cd27ebca6d4713f67b3"
+        },
+        {
+          "path": "core_enhanced/src/authoring/clone_shape.rs",
+          "sha256": "0a2655ed95b092c4e61fe6fdeaeaf17f09a44f89da5f51cac791dd78433ab70f"
+        },
+        {
+          "path": "core_enhanced/src/authoring/control.rs",
+          "sha256": "bba35e4e6f3b4d1f681d02e841ea84d751d1db969df6f43d26fd041b8b6f64c1"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+          "sha256": "844fbc8c2dcd7fd4bfe2e406851068b4e2eb5cea3204f8ca82bbe2f17fbc835d"
+        }
+      ]
+    },
+    {
+      "group": "public",
+      "review_scope": "Shared preview/query views and actual normal authoring trial, owned CoreApplication and real actor pending/reconnect producer-consumer tests, release CLI verifier source and raw outcomes.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/battle/core/object_query.rs",
+          "sha256": "384dde30fe90afec9cba49996bf6df0016a830678ad6a13895b9b7362a52dde1"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "sha256": "0af21d46fd182aa1bf760a26cdce23e8cf16da5603665d91d6cbae4cf585a179"
+        },
+        {
+          "path": "core_enhanced/src/game/world/state.rs",
+          "sha256": "79c42142104b6e8f21f76b5408bd96d3c2183c8b10c33a458d5db9079a51589a"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "sha256": "4b42cd230085ee14762d7eb6390cc12b4655b94219273f938045f79bcb1f0bd0"
+        },
+        {
+          "path": "core_enhanced/src/authoring/trial/tests/u07_objects.rs",
+          "sha256": "d2ecb24fda17c3ed68663abfe95a6accf7470aad2fd245c4aca62f69456f552a"
+        },
+        {
+          "path": "core_enhanced/src/game/world/tests/u07_objects.rs",
+          "sha256": "8cd69926cfa48eb482c7a2209ccfbcd6b651ccbebbb5004780befbf86871a9a9"
+        },
+        {
+          "path": "game_server/src/game/player_game_actor/handlers/tests/durable.rs",
+          "sha256": "c9dba855a8257525b5ff895dd76f32ccc54cf5fc9a55a6e9b2b4ebc816e8b5e5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_independent_objects/tools/public_objects.py",
+          "sha256": "ecd7958ded7815f5a8a1b2a85e20d3c018739f799e1027e378a010e18ff0fca1"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_independent_objects/tools/public_object_combat.py",
+          "sha256": "75e5fdeb371a80fe8cc196a5d468de696a1c29a66ce9df89bd1e4733fe30da30"
+        }
+      ]
+    },
+    {
+      "group": "baseline_tools",
+      "review_scope": "Full comparator/proof/summarizer and actual R05 workload/guards/parity/include/output branches. Audit independently recalculates raw caps and original archive membership; no performance rerun.",
+      "files": [
+        {
+          "path": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/compare_pc_cost_u07.py",
+          "sha256": "c9d41a8ba0e53096916d8f2517d5a5b77cc5230bb54ce9eb6a4369fc0df3f3a5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/r05_harness.py",
+          "sha256": "411d74a89d6bdf0567ea03b6182bf39111f6e5a3543308868ee927e4da2ad1ba"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/summarize_r05_current.py",
+          "sha256": "c2dd12c0cbbfbe2432766786ed8a7fc3cab4c222cb02677c0e75f52b45070d99"
+        },
+        {
+          "path": "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+          "sha256": "bbbae7691cdc824bf2828f59e18b9cd2205baacca6fdca48cf98bfdd64b1e0f4"
+        }
+      ]
+    },
+    {
+      "group": "canonical_and_data",
+      "review_scope": "Scoped authored consumers and durable contract additions checked against production and explicit fixture/unsupported limits. Canonical combat existing-relation rule remains unchanged.",
+      "files": [
+        {
+          "path": "game_resources/data/skills/base.ron",
+          "sha256": "8cfecd4db355aa40082ac0ebc463f73987a4c7e845a122f1d0b2b33ef6dd87f2"
+        },
+        {
+          "path": "game_resources/data/skill_fragments/base.ron",
+          "sha256": "655d1a59eba3865c1db920322026486d7f33dfdc3ec2f4aeda0fa5292578f1b7"
+        },
+        {
+          "path": "game_resources/data/summoned_units/base.ron",
+          "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+        },
+        {
+          "path": "core_enhanced/docs/core_runtime_contract.md",
+          "sha256": "f0c06020a6fa994419ac0320eb114d8988889b1fa2865169e2ecfd60ddf5bc06"
+        },
+        {
+          "path": "core_enhanced/docs/data_loading_contract.md",
+          "sha256": "a8546eed81d12ddda35b0ec7e87c64b34662e7e8d75000b3295f52f84ad03869"
+        },
+        {
+          "path": "core_enhanced/docs/skill_target_contract.md",
+          "sha256": "cfd54e330171c3c0c4824948619f23d8587f9978c8364449087b77fbe6ad8c38"
+        },
+        {
+          "path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+          "sha256": "a2d625fde6fc8a32d8ccb65ac6351b4751bceea6952b4186cd36ad644cb21c8d"
+        },
+        {
+          "path": "core_enhanced/docs/skills/live_content_index.md",
+          "sha256": "e67640573525325cfb123b00415e418ef3805debcdbce81316375bfc9060267c"
+        },
+        {
+          "path": "game_server/docs/unity_bridge_protocol.md",
+          "sha256": "1294166e2f4d2bf4e28aacafe4430f5760182e6982b4f4ea397f866dbbc783d5"
+        },
+        {
+          "path": "core_enhanced/docs/game_rules/combat.md",
+          "sha256": "f7fd43b1b629b6da82ca548f8c5da9472b47c680a8753c56e75510863b3a5fbc"
+        }
+      ]
+    }
+  ],
+  "scope_note": "Not a claim of every historical source line reread. Additional small touched producer/enum/event/DTO/test fixture diffs were inspected. Exact unchanged predecessor owners use U06 independent semantic review plus current integration evidence."
+}

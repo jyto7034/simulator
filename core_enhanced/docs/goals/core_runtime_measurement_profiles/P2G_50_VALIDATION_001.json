@@ -1,0 +1,22 @@
+{
+  "validator": "p2g50-goal-set-validator/1.3.0",
+  "quality_contract": 2,
+  "result": "failed",
+  "counts": {
+    "freeze_members": 10,
+    "phases": 1,
+    "final_execution_nodes": 5,
+    "goal_members": 1,
+    "executable_goal_members": 1,
+    "phase_to_goal_rows": 1,
+    "traceability_rows": 10,
+    "integration_rows": 10,
+    "validation_dimension_rows": 10
+  },
+  "failures": [
+    {
+      "code": "BASELINE_INITIAL_OWNER",
+      "detail": "undefined"
+    }
+  ]
+}

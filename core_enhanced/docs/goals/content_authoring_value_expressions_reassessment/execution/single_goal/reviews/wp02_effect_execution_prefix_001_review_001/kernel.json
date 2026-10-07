@@ -1,0 +1,18 @@
+{
+  "cwd": "/tmp/r06-prefix-review.WcaQXG",
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "-p",
+    "game_core",
+    "--release",
+    "--lib",
+    "game::value_expr::",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "exit_code": 0
+}

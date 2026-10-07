@@ -1,0 +1,173 @@
+{
+  "schema": "U08_ROOT_OPTIONAL_EXECUTION_ADDENDUM_031",
+  "recorded_at_utc": "2026-10-06T14:26:48.482081+00:00",
+  "status": "AUTHORIZED_AFTER49_FUNCTIONAL_NOT_EXECUTED",
+  "source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "source_files": 438,
+  "root030": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_030/RECORD.json",
+    "bytes": 8397,
+    "sha256": "2a255890c2c4564dfa92ef0924318b6eaa971b505f59b0e762f8eab9568ca302"
+  },
+  "original007_before": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/execution_harness_binding007/BEFORE.json",
+    "bytes": 1522218,
+    "sha256": "3331e5cd407de8d586f1ca7820fa3a1fd667dbdeab8f457ad7b0be50063803bf"
+  },
+  "final_probe_handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/HANDOFF.json",
+    "bytes": 4622,
+    "sha256": "df1686e5d6d37cc5722d0c76d6541ef8cc292fc36132ef6e9b8427b9762cb3c9"
+  },
+  "new_input_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/INPUT_MANIFEST.json",
+    "bytes": 35021,
+    "sha256": "3bb2c354b87ef1d7d2a17fb53e46c6b85848392c2981580d5ee780081ace0a4f"
+  },
+  "new_input_count": 115,
+  "regular_input_count_unchanged": 1322,
+  "readbacks": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/PROBE_READBACK.json",
+      "bytes": 6573,
+      "sha256": "aa8763d0ff342d986299c44dad41b6b7df437848e08dbbbdeddf4937f79f64c4"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/PROBE_READBACK_FINAL.json",
+      "bytes": 2675,
+      "sha256": "11d25f2f4b90c5a315b1d058ff18afc3f1ec5200cb7834356cff180d72db9f30"
+    }
+  ],
+  "selected_optional_role_id": "r06_resource_sum_public",
+  "receipt_label": "r06_resource_sum_publication007",
+  "command": [
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+    "r06_resource_sum_publication007",
+    "--",
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/probe.py",
+    "--input-manifest",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe001/INPUT_MANIFEST.json",
+    "--expected-input-sha256",
+    "3bb2c354b87ef1d7d2a17fb53e46c6b85848392c2981580d5ee780081ace0a4f"
+  ],
+  "counts": {
+    "mandatory": 57,
+    "mandatory_functional": 49,
+    "additional_optional_functional": 1,
+    "selected_total": 58,
+    "selected_functional": 50,
+    "performance": 8
+  },
+  "quiescence_contract": "PC and R05 separately bind exact50 selected functional receipt paths, all closed before measurement; include new probe.",
+  "interval_contract": "Preserve root030/007BEFORE/1322; add031ref plus separately bound115auxiliaryinputs actualbeforeafter/archive/binary, include optional execution in overall007closedinterval.",
+  "adaptation_contract": "Preserve historical129 exactpreimages; add actualselected distinct.py probe asnew_u08_tool; no duplicate dependency row when global007containsit.",
+  "sole_executor": "/root/u08_product_runner_resume gpt-6.1-sol/xhigh",
+  "root_role": "gpt-6-astra/high planning/read/docs only; no product/test execution or final independent audit",
+  "test_author": "/root/u08_test_author_resume gpt-6-astra/high author writer0 runner0",
+  "supplementary_author": "/root/u08_harness_author_resume gpt-6-astra/high newconfigdraft documents only",
+  "source_and_original_input_writers": 0,
+  "runner_ongoing": "Sol integrated007 mandatory functional roles",
+  "probe_executed": false,
+  "complete": false,
+  "independent_auditor": null,
+  "finalizers_authorized_now": false,
+  "documents": [
+    {
+      "before": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/docs_before/0_PLAN.md",
+        "bytes": 27481,
+        "sha256": "7f329e2247e3e5f93e38ff62b57fd6068b91df875f601f578c3d55409e48f8b4"
+      },
+      "after": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+        "bytes": 28149,
+        "sha256": "618d55b1442d54e2d00c73ca64ac23aeb7811f965b2c7dff476ac1282f94c533"
+      },
+      "diff": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/0_docs.diff",
+        "bytes": 1442,
+        "sha256": "3d4c266d2dad840ee5363d90fb2243c49249cb019dd7fc42b5afabd13c08eed9"
+      }
+    },
+    {
+      "before": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/docs_before/1_EXPERIMENT_NOTES.md",
+        "bytes": 94154,
+        "sha256": "b61bf5832f53927f611475ca9b2278822a6580bdf9eee3cacbebff320b269fcd"
+      },
+      "after": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+        "bytes": 94822,
+        "sha256": "4d2c93a48950ee2f169843856482a00328445dd71d02ce89668439d3075df98d"
+      },
+      "diff": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/1_docs.diff",
+        "bytes": 1451,
+        "sha256": "e752c5ffc2436a5fd57031e498ca9ddf59f2547d323acf2dd683a24a9bf66842"
+      }
+    },
+    {
+      "before": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/docs_before/2_ROADMAP_STATUS.md",
+        "bytes": 57852,
+        "sha256": "fb1da3b4c2c0525d1565f7747f26bf4cbb23770a11ab363efcd9fb1bd62165da"
+      },
+      "after": {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+        "bytes": 58502,
+        "sha256": "80b179570e3cc05997bcd33486a4cda89556c660780638d6a3def757a75477db"
+      },
+      "diff": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/2_docs.diff",
+        "bytes": 2325,
+        "sha256": "4fe1ac07797a51cb99d7a84a9642dfcf3b1a9677ab4eef266c08207fbbc51432"
+      }
+    },
+    {
+      "before": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/docs_before/3_ROADMAP.ko.md",
+        "bytes": 313218,
+        "sha256": "2f629247098ed195939ad647e602923fb79ec1c1a8a43e265bb47686a3c24372"
+      },
+      "after": {
+        "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+        "bytes": 313854,
+        "sha256": "795d6048cf3c9e89572c259d15f6cd66eb24dd1777795b68bb0b096fadcab625"
+      },
+      "diff": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/3_docs.diff",
+        "bytes": 1393,
+        "sha256": "cd41af2b6a15d8f31d4c5e6b1e38de03570dfdffcd3611ecfef44378843c6284"
+      }
+    },
+    {
+      "before": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/docs_before/4_HANDOFF_LATEST.ko.md",
+        "bytes": 17571,
+        "sha256": "d2ae78702a086ff8a8c47fba2c18f3159b43ebe761de12161fda8533459da739"
+      },
+      "after": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+        "bytes": 3000,
+        "sha256": "48928a6e77c657ccfc8b80c2a821a64b06d3af1bc75607b90330290f4311561a"
+      },
+      "diff": {
+        "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/4_docs.diff",
+        "bytes": 20817,
+        "sha256": "b042f9828b30e7a4e0753410612c2e10133f1d305b829b5caf9f5f668c5d2d3a"
+      }
+    }
+  ],
+  "previous_latest_archive": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261006_008.ko.md",
+    "bytes": 17571,
+    "sha256": "d2ae78702a086ff8a8c47fba2c18f3159b43ebe761de12161fda8533459da739"
+  },
+  "record_prose": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/RECORD.ko.md",
+    "bytes": 2993,
+    "sha256": "b119bd72f8b31e27c30513019f4985d687ab1e30c439dea7ae414c04dc0bb119"
+  }
+}

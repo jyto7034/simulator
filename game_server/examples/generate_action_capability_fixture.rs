@@ -1,14 +1,17 @@
-use game_core::game::{data::GameDataBuilder, world::GameCore};
+use game_core::{
+    application::{ApplicationSnapshotKind, CoreApplication},
+    game::data::GameDataBuilder,
+};
 use serde_json::json;
 
 fn main() {
-    let core = GameCore::new(GameDataBuilder::empty().build_arc(), 7);
+    let core = CoreApplication::new(GameDataBuilder::empty().build_arc(), 7);
     let state = core
-        .get_run_snapshot_json()
+        .snapshot(ApplicationSnapshotKind::Run)
         .expect("not-started capability fixture must serialize");
     let fixture = json!({
         "generator": "game_server/examples/generate_action_capability_fixture.rs",
-        "state": state,
+        "state": state.read_model().as_value(),
     });
 
     if let Some(path) = std::env::args().nth(1) {

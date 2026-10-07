@@ -1,0 +1,22 @@
+{
+  "start": "2026-09-25T15:36:09.216Z",
+  "end": "2026-09-25T15:36:31.731Z",
+  "cwd": "/tmp/r06-wp02-review.E34TyB",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--offline",
+    "--locked",
+    "--lib",
+    "game::battle::core::value_expr_runtime::tests::review_",
+    "--",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "code": 101,
+  "signal": null,
+  "log": "probe_production_death.log",
+  "sha256": "2ea94994b4bf508cd52d3fab2b816b87293900c1279afc82ba0d35205ff4044f"
+}

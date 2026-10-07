@@ -1,5 +1,6 @@
 use actix::{Actor, Addr, Context, Recipient, SpawnHandle};
-use game_core::game::{resources::GameState, world::GameCore};
+use game_core::application::{ApplicationSnapshotKind, CoreApplication};
+use serde::de::DeserializeOwned;
 use std::{
     sync::{Arc, Mutex},
     time::Duration,
@@ -9,7 +10,7 @@ use uuid::Uuid;
 
 use crate::game::load_balance_actor::{messages::Deregister, LoadBalanceActor};
 use crate::persistence::active_run_store::ActiveRunStore;
-use crate::persistence::encounter_compendium_store::EncounterCompendiumPersistence;
+use crate::persistence::player_profile_store::PlayerProfilePersistence;
 
 pub mod handlers;
 pub mod messages;
@@ -27,7 +28,7 @@ pub(crate) struct BattleEventDeliveryCursor {
 
 pub struct PlayerGameActor {
     pub(crate) player_id: Uuid,
-    pub(crate) game_core: GameCore,
+    pub(crate) game_core: CoreApplication,
     pub(crate) load_balance_addr: Addr<LoadBalanceActor>,
     pub(crate) active_session_id: Option<Uuid>,
     pub(crate) socket: Option<Recipient<PlayerGameServerMessage>>,
@@ -38,13 +39,14 @@ pub struct PlayerGameActor {
     pub(crate) disconnect_ttl: Duration,
     pub(crate) live_battle_tick_interval: Duration,
     pub(crate) active_run_store: Option<Arc<Mutex<ActiveRunStore>>>,
-    pub(crate) encounter_compendium_persistence: Option<Arc<Mutex<EncounterCompendiumPersistence>>>,
+    pub(crate) active_run_revision: Option<crate::persistence::active_run_store::ActiveRunRevision>,
+    pub(crate) player_profile_persistence: Option<Arc<Mutex<PlayerProfilePersistence>>>,
 }
 
 impl PlayerGameActor {
     pub fn new(
         player_id: Uuid,
-        game_core: GameCore,
+        game_core: CoreApplication,
         load_balance_addr: Addr<LoadBalanceActor>,
     ) -> Self {
         Self {
@@ -60,7 +62,8 @@ impl PlayerGameActor {
             disconnect_ttl: Duration::from_secs(300),
             live_battle_tick_interval: Duration::from_millis(100),
             active_run_store: None,
-            encounter_compendium_persistence: None,
+            active_run_revision: None,
+            player_profile_persistence: None,
         }
     }
 
@@ -69,11 +72,11 @@ impl PlayerGameActor {
         self
     }
 
-    pub fn with_encounter_compendium_persistence(
+    pub fn with_player_profile_persistence(
         mut self,
-        persistence: Arc<Mutex<EncounterCompendiumPersistence>>,
+        persistence: Arc<Mutex<PlayerProfilePersistence>>,
     ) -> Self {
-        self.encounter_compendium_persistence = Some(persistence);
+        self.player_profile_persistence = Some(persistence);
         self
     }
 
@@ -87,8 +90,27 @@ impl PlayerGameActor {
         self
     }
 
+    pub(crate) fn read_snapshot<T: DeserializeOwned>(
+        &self,
+        kind: ApplicationSnapshotKind,
+    ) -> Result<T, state::PlayerGameActorError> {
+        let snapshot = self.game_core.snapshot(kind)?;
+        serde_json::from_value(snapshot.read_model().as_value().clone()).map_err(|error| {
+            state::PlayerGameActorError::new("serialization_failed", error.to_string())
+        })
+    }
+
+    pub(crate) fn read_player_profile(
+        &self,
+    ) -> Result<
+        game_core::game::encounter_compendium::PlayerProfileState,
+        state::PlayerGameActorError,
+    > {
+        self.read_snapshot(ApplicationSnapshotKind::PlayerProfile)
+    }
+
     pub(crate) fn has_active_live_battle(&self) -> bool {
-        matches!(self.game_core.get_state(), GameState::InBattle { .. })
+        self.game_core.has_active_battle()
     }
 }
 
@@ -100,9 +122,20 @@ impl Actor for PlayerGameActor {
     }
 
     fn stopped(&mut self, _ctx: &mut Self::Context) {
-        if let Some(persistence) = self.encounter_compendium_persistence.as_ref() {
+        if let Some(persistence) = self
+            .player_profile_persistence
+            .as_ref()
+            .filter(|_| self.game_core.battle_fault().is_none())
+        {
             if let Ok(mut persistence) = persistence.lock() {
-                persistence.merge_and_persist(self.game_core.encounter_compendium_profile());
+                match self.read_player_profile() {
+                    Ok(profile) => {
+                        persistence.merge_and_persist(profile);
+                    }
+                    Err(error) => {
+                        tracing::warn!(code = %error.code, "profile snapshot failed at actor stop")
+                    }
+                }
             }
         }
         self.load_balance_addr.do_send(Deregister {

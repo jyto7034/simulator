@@ -1,0 +1,72 @@
+{
+  "record_id": "ATR-CARF-R04-RESUME-001",
+  "captured_at": "2026-09-12T23:46:32+09:00",
+  "cwd": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "goal_set_ref": "GS-CARF-P2G50-002",
+  "goal_id": "GOAL-CARF-01",
+  "phase_id": "PHASE-CARF-01",
+  "phase_plan_ref": "PP-CARF-P2G40-004",
+  "handoff_ref": "HOF-CARF-P2G60-002",
+  "gex_revision": "2026-09-12-gex-r5",
+  "authorization": "Selected R05 and directly impacted R01 through R05 audit restoration only under AUTORUN single-r-v3; R06 and later work excluded.",
+  "reviewer": {
+    "identity": "/root/r05_independent_reviewer",
+    "role": "read-only completion reviewer",
+    "independence": "No R01-R05 implementation, correction, repair, test-authoring, or target003/currentness-record authorship; this pass writes audit artifacts only. Conversation context was inherited and is not represented as process isolation.",
+    "sequential_pass_permission": "GEX r5 permits the same implementation-nonparticipant reviewer to inspect related Goals in separate exact Goal/target/pass records."
+  },
+  "effective_target": {
+    "representation": "historical complete manifest anchor plus explicit current governance replacements and additions; no predecessor member is dropped",
+    "anchor": {
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_TARGET_003.json",
+      "record_id": "ATR-CARL-R05-003",
+      "sha256": "3e469213f0b21195a6622f76479613524e46ab5e15646eb6810c9caef8cb99da",
+      "bytes": 5959471,
+      "manifest_count": 15685,
+      "canonical_manifest_sha256": "603cf745d59c303b5c3f5bdc6f33aad926cc328570f10349dd3f2e697a010bbe",
+      "historical_disposition": "immutable gex-r4 target; stale as a direct current target, retained as full-scope membership anchor"
+    },
+    "governance_overrides": [
+      {"path": "core_enhanced/docs/goal_execution_pipeline(1).md", "sha256": "7b8bbcb9b57ea2d0cb4ed847bb69158fcad164764cfdb738417611392195702a", "bytes": 111663},
+      {"path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md", "sha256": "0d4bc87b608e68d0af519381a152dbf8914d48a43c6b99ffbee6add8ceb42ee4", "bytes": 30582},
+      {"path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md", "sha256": "2daf04148d2c101284d6ba6352ffb28d97dbebfcc5630560c7dfccbcd60cad45", "bytes": 25978}
+    ],
+    "additions": [
+      {"path": "core_enhanced/docs/roadmaps/content_authoring/records/AUDIT_EFFICIENCY_CHANGE_001.ko.md", "sha256": "a4f0c4e9442da4c8266178f9cbcfa25ee80ff180380248cbd6dec323e565c031", "bytes": 6107},
+      {"path": "core_enhanced/docs/roadmaps/content_authoring/records/R05_AUDIT_RESUME_GUIDE_001.ko.md", "sha256": "8de3c9f09d8315dad8d58241db0e8f1489100e91d0fab3f17fd9582424bc37c3", "bytes": 9215},
+      {"path": "core_enhanced/docs/roadmaps/content_authoring/records/AUDIT_EFFICIENCY_APPLY_001.ko.md", "sha256": "4c7ddae0890f0e0da74881704a97425570724d5be3c1c22aad4fd4d46c57a830", "bytes": 7452},
+      {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/AUDIT_RESUME_CURRENTNESS_001.json", "sha256": "7d6841ed8c0a044fbc3a33c74cc6dbf024a062ce9dedb9be0378cc265e10591a", "bytes": 5997},
+      {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/AUDIT_RESUME_CURRENTNESS_TOOL_001.js", "sha256": "57fd5739f36003f94bb78ab04db37a3f952222e22a69991b68ee3c46054f34ce", "bytes": 1673},
+      {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/AUDIT_SUCCESSOR_VERIFY_001.js", "sha256": "099ed911b39feeb7c869bafb8bf0790baafabb3086a43f919984c0b886278ab1", "bytes": 3247},
+      {"path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_RESUME_001.json", "sha256": "1d554a0d19485f4a78af2cfd89a6f1bc835b84f66bf47c658583e764f59948be", "bytes": 6416},
+      {"path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_ENTRY_RESUME_001.json", "sha256": "1dbb5cbd2c467df9e330d65e10e80f1e06d764c17d2c4bb86e2be38088188cae", "bytes": 1016},
+      {"path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_RESUME_001.md", "sha256": "f28b41a8f2eddce270eabff34899b3f1f36e34d993777b744f3fec638cb91eb5", "bytes": 9401},
+      {"path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_CLOSURE_RESUME_001.json", "sha256": "2b5afddb3b01aec298270acae51c5768fb7e0f1b7ec79f16df45931024b3f5eb", "bytes": 943},
+      {"path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_RESUME_001.json", "sha256": "80e11db68a7434bc37f885f270329d5c6c869f6c8e02b7f1c072512f719159c9", "bytes": 7452},
+      {"path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_ENTRY_RESUME_001.json", "sha256": "2043c0be9b593199e9888084d7833fb13b0ec7fab9bf0d4ed6a57545f23efe4c", "bytes": 822},
+      {"path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_RESUME_001.md", "sha256": "3fa2d9c702b9beb58c34ce7e2fbadde89c96b5f0494206925388e53c9715a2d8", "bytes": 8517},
+      {"path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_CLOSURE_RESUME_001.json", "sha256": "37a57258d3056856923432fc5e01319f92c5d14693f95369551c4652ad23f305", "bytes": 956},
+      {"path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_RESUME_001.json", "sha256": "33b67727609531c7841142abb40796de0d82a6428b3bb57e4c4e782ba723e58a", "bytes": 8332},
+      {"path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_ENTRY_RESUME_001.json", "sha256": "72df51309928ef37bae25efac747f27f8bd23669776a9c59d2aed341e283cc55", "bytes": 850},
+      {"path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/COMPLETION_AUDIT_RESUME_001.md", "sha256": "fe33b6b63878d3c0b801d389a4b7ed41f2520cff3d65ec22ecd62d2b6475de45", "bytes": 8608},
+      {"path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_CLOSURE_RESUME_001.json", "sha256": "6d2be5e1b4c5d849333e4605e8808a5dafc767f7334d6e0d3453c2b7211787d0", "bytes": 916}
+    ],
+    "effective_member_count": 15703,
+    "mutable_exclusions": ["core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md", "this target and its entry/closure/report outputs", "later R05 successor target and audit outputs"]
+  },
+  "pass_inputs": {
+    "original_goal": {"path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_GOAL_SET_002.ko.md", "sha256": "6155bed50349fb1dc2f1c251bbc46b630d8165384c1b0970fc2ed62e6a8cbc90", "bytes": 42542, "authority": "technical-correction successor 002; Goal Set 001 is superseded"},
+    "last_positive_target": {"path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_005.json", "sha256": "9d4be8c4371fb2967f1fa39facff9a457cfc6c6c2a69f4daefa25decd4a0f3c9", "bytes": 4709541},
+    "last_positive_report": {"path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT_003.md", "sha256": "eb648d01f9a7509653bfcdc1990cd91ce4bb55df4bcf6c68e62fdf024fd3217d", "bytes": 28409, "verdict": "historical Complete / High on target005"},
+    "stale_pending_capture": {"path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_006.json", "sha256": "80abba73b8ee54b52bcd0d215293ff9cebdbb201955d0fa9ca1359bd9269e0df", "bytes": 5959171, "disposition": "historical gex-r4 capture without a verdict; not used as this pass target"},
+    "current_prerequisites": ["ATR-CAMEC-R01-RESUME-001 / Complete / High / closure passed", "ATR-CAPG-R02-RESUME-001 / Complete / High / closure passed", "ATR-CATP-R03-RESUME-001 / Complete / High / closure passed"],
+    "cumulative_source": {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/IMPLEMENTATION_INPUT_003.json", "sha256": "339bccc01651584844a7f13ab59cba36132ded31dfc71f72ef8a8fee638366c2", "checked_files": 349},
+    "impact": {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/PREDECESSOR_IMPACT_002.md", "sha256": "a42b867669db8c6add22f1e6e81d5b0bf336eb7be515b00823a4004a58cd0338"},
+    "correction_delta": {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/CORRECTION_SOURCE_DELTA_002.json", "sha256": "8405f0234d23e924c96f68868550b184dacd1ed7b86383d73b5d869aca57079b"},
+    "validation": {"path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/CORRECTION_VALIDATION_001.json", "sha256": "9ed85ed67ed9b42b31bf219e00d0f547bda7628c2fccf4949b779eb5ed0c9e42"}
+  },
+  "entry_state": "frozen; verdict unset",
+  "closure_rule": "Re-run AUDIT_SUCCESSOR_VERIFY_001.js at entry and closure. Any mismatch, missing original criterion, blocking unknown, independence violation, or noncurrent R01-R03 prerequisite prevents Complete / High. Historical targets and verdicts remain immutable."
+}

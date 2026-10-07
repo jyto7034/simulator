@@ -1,0 +1,1946 @@
+{
+  "playback_samples_003": {
+    "normal_default_none": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "24ec50287c3407f6e2841e01980c81859cf1eafe3a552f058413d1bfa51acf16",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744678,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222018,
+          "live_requested_bytes": 790626,
+          "successful_allocations": 1753298,
+          "successful_reallocations": 119195,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1829550,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222018,
+          "live_requested_bytes": 1882502,
+          "successful_allocations": 1838206,
+          "successful_reallocations": 119903,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1091876,
+        "peak_requested_bytes": 4155777,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_default_normal": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 17,
+      "final_states": 1,
+      "sample_sha256": "1b6ad09367741ccc17412eb178c2da9824ead42a04efeaa74217d1fba873161b",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744582,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222024,
+          "live_requested_bytes": 790632,
+          "successful_allocations": 1753202,
+          "successful_reallocations": 119194,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1831344,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222024,
+          "live_requested_bytes": 1882636,
+          "successful_allocations": 1840001,
+          "successful_reallocations": 120066,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1092004,
+        "peak_requested_bytes": 4156303,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_default_detached": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "eb29e74db602e85dcbb17398a320b481f0853b46cbe57aa59601e69b0edab3ed",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744645,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222030,
+          "live_requested_bytes": 790638,
+          "successful_allocations": 1753265,
+          "successful_reallocations": 119215,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1830080,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222030,
+          "live_requested_bytes": 1870109,
+          "successful_allocations": 1838729,
+          "successful_reallocations": 119938,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1079471,
+        "peak_requested_bytes": 4156181,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_default_full": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 17,
+      "final_states": 1,
+      "sample_sha256": "3fb69e08dda02bc199ab2d7f2775edd7f9108dba52b56d341477a48604e9284a",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744716,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222018,
+          "live_requested_bytes": 790626,
+          "successful_allocations": 1753336,
+          "successful_reallocations": 119240,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1831274,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222018,
+          "live_requested_bytes": 1882630,
+          "successful_allocations": 1839931,
+          "successful_reallocations": 120112,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1092004,
+        "peak_requested_bytes": 4156169,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev16_none": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "df465a962daf85eeadabba46f2bb42d35f41c1c3846d73a3a126cd2e03da2342",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744721,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 790739,
+          "successful_allocations": 1753342,
+          "successful_reallocations": 119277,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1829645,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 1882615,
+          "successful_allocations": 1838302,
+          "successful_reallocations": 119983,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1091876,
+        "peak_requested_bytes": 4155890,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev16_normal": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 17,
+      "final_states": 1,
+      "sample_sha256": "a26e08fec9cf7ac4453d64e5e8ed392b2f04b02a5426e489154c311f240d9ce6",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744789,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222137,
+          "live_requested_bytes": 790745,
+          "successful_allocations": 1753410,
+          "successful_reallocations": 119271,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1831619,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222137,
+          "live_requested_bytes": 1882749,
+          "successful_allocations": 1840277,
+          "successful_reallocations": 120143,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1092004,
+        "peak_requested_bytes": 4156416,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev16_detached": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "a82d806a960875ccc602e45d1b5a97876844ed2a139a2170265ab73ccc648812",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744784,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222143,
+          "live_requested_bytes": 790751,
+          "successful_allocations": 1753405,
+          "successful_reallocations": 119229,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1830049,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222143,
+          "live_requested_bytes": 1870222,
+          "successful_allocations": 1838699,
+          "successful_reallocations": 119952,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1079471,
+        "peak_requested_bytes": 4156294,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev16_full": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 17,
+      "final_states": 1,
+      "sample_sha256": "e6303b73c8f9f496ede5ac83e610fa346b05722d392748bb2792350d0d23c7f9",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744760,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 790739,
+          "successful_allocations": 1753381,
+          "successful_reallocations": 119257,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1831581,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 1882743,
+          "successful_allocations": 1840239,
+          "successful_reallocations": 120129,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1092004,
+        "peak_requested_bytes": 4156282,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev32_none": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "1db3ff23139c6ae54e39fcebf6c3daf23e6a4fae3703246e0450b8bc7f574458",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744907,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 790739,
+          "successful_allocations": 1753528,
+          "successful_reallocations": 119275,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1829941,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 1882615,
+          "successful_allocations": 1838598,
+          "successful_reallocations": 119983,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1091876,
+        "peak_requested_bytes": 4155890,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev32_normal": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 17,
+      "final_states": 1,
+      "sample_sha256": "1d3f0130e2204ad73dbea86639f35080d36cb51ba38f65a4fe0b7c4074d74a1b",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744772,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222137,
+          "live_requested_bytes": 790745,
+          "successful_allocations": 1753393,
+          "successful_reallocations": 119276,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1831455,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222137,
+          "live_requested_bytes": 1882749,
+          "successful_allocations": 1840113,
+          "successful_reallocations": 120148,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1092004,
+        "peak_requested_bytes": 4156416,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev32_detached": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "aedd632287504b038edff584c138e7355cf10302fb02e45639bff49436549dfe",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744686,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222143,
+          "live_requested_bytes": 790751,
+          "successful_allocations": 1753307,
+          "successful_reallocations": 119197,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1830076,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222143,
+          "live_requested_bytes": 1870222,
+          "successful_allocations": 1838726,
+          "successful_reallocations": 119921,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1079471,
+        "peak_requested_bytes": 4156294,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "normal_dev32_full": {
+      "accepted": 13,
+      "rejected": 4,
+      "native_seen": 17,
+      "final_states": 1,
+      "sample_sha256": "9382acdcc73ff4fb5b227895227ae745a41f12b2aec4d15f5c6a81c734af69fc",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1744729,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 790739,
+          "successful_allocations": 1753350,
+          "successful_reallocations": 119227,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1831368,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5222131,
+          "live_requested_bytes": 1882743,
+          "successful_allocations": 1840026,
+          "successful_reallocations": 120100,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1092004,
+        "peak_requested_bytes": 4156282,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "queue_none": {
+      "accepted": 1100,
+      "rejected": 0,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "e7ec4ffe508a530c18796d797d99da21d2171576373460c3b007153cfb9e531b",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1766634,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381033,
+          "live_requested_bytes": 1949641,
+          "successful_allocations": 1779627,
+          "successful_reallocations": 119258,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1876963,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381033,
+          "live_requested_bytes": 3057645,
+          "successful_allocations": 1889992,
+          "successful_reallocations": 139096,
+          "successful_zeroed_allocations": 742
+        },
+        "live_delta_bytes": 1108004,
+        "peak_requested_bytes": 3764313,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "queue_normal": {
+      "accepted": 1100,
+      "rejected": 0,
+      "native_seen": 1100,
+      "final_states": 1,
+      "sample_sha256": "9ec5450671b60aa6531958f5e97c101e1ee6e8218cc25e4dc76d2a7c76f168e5",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1766561,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381039,
+          "live_requested_bytes": 1949647,
+          "successful_allocations": 1779554,
+          "successful_reallocations": 119316,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1984691,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381039,
+          "live_requested_bytes": 3057651,
+          "successful_allocations": 1997720,
+          "successful_reallocations": 150154,
+          "successful_zeroed_allocations": 742
+        },
+        "live_delta_bytes": 1108004,
+        "peak_requested_bytes": 3764711,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "queue_detached": {
+      "accepted": 1100,
+      "rejected": 0,
+      "native_seen": 0,
+      "final_states": 1,
+      "sample_sha256": "685d634be1ce107872e3a3a34b42661f828f080cbc38bf08c83afff31342b543",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1766560,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381045,
+          "live_requested_bytes": 1949653,
+          "successful_allocations": 1779553,
+          "successful_reallocations": 119263,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1903290,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381045,
+          "live_requested_bytes": 3045252,
+          "successful_allocations": 1916312,
+          "successful_reallocations": 140201,
+          "successful_zeroed_allocations": 742
+        },
+        "live_delta_bytes": 1095599,
+        "peak_requested_bytes": 3764717,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "queue_full": {
+      "accepted": 1100,
+      "rejected": 0,
+      "native_seen": 1024,
+      "final_states": 1,
+      "sample_sha256": "075490c7f5f87b0413a28bb3cdbe437979baa3b5a07f8a436ae58be607a4722b",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1766550,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381033,
+          "live_requested_bytes": 1949641,
+          "successful_allocations": 1779543,
+          "successful_reallocations": 119247,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1979056,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6381033,
+          "live_requested_bytes": 3057645,
+          "successful_allocations": 1992085,
+          "successful_reallocations": 149401,
+          "successful_zeroed_allocations": 742
+        },
+        "live_delta_bytes": 1108004,
+        "peak_requested_bytes": 3764705,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "profile_isolation": {
+      "accepted": 26,
+      "rejected": 8,
+      "native_seen": 34,
+      "final_states": 2,
+      "sample_sha256": "05d4787dd3a876025fcb1a96134b988d154abc13b47a3e075785f3b00ce72abd",
+      "profile_caps": [
+        16777216,
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 3489319,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5999474,
+          "live_requested_bytes": 1568074,
+          "successful_allocations": 3506516,
+          "successful_reallocations": 238480,
+          "successful_zeroed_allocations": 1484
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 3662855,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 6429137,
+          "live_requested_bytes": 2662853,
+          "successful_allocations": 3680112,
+          "successful_reallocations": 240212,
+          "successful_zeroed_allocations": 1488
+        },
+        "live_delta_bytes": 1094779,
+        "peak_requested_bytes": 6429137,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_actor_default": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "5eb322410cbad6fc1fdcaa98f0cde3ba46adc6132a4ac8db73ce6c28094ce7c8",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748020,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287463,
+          "live_requested_bytes": 847462,
+          "successful_allocations": 1756816,
+          "successful_reallocations": 119230,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1948075,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8725744,
+          "live_requested_bytes": 1939594,
+          "successful_allocations": 1956908,
+          "successful_reallocations": 121409,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8725744,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_actor_dev16": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "89b411a4743df0dfdd9fa0ccfd2fcb7ddd4c23cbe157198c7f53654543717cae",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748075,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287576,
+          "live_requested_bytes": 847575,
+          "successful_allocations": 1756872,
+          "successful_reallocations": 119194,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1948128,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8725857,
+          "live_requested_bytes": 1939707,
+          "successful_allocations": 1956962,
+          "successful_reallocations": 121373,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8725857,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_actor_dev32": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "3de706d77114c533340aaafc41d1378cbf0f9f73bf8bdbf24008cf246937dadd",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748125,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287576,
+          "live_requested_bytes": 847575,
+          "successful_allocations": 1756922,
+          "successful_reallocations": 119207,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1948180,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8725857,
+          "live_requested_bytes": 1939707,
+          "successful_allocations": 1957014,
+          "successful_reallocations": 121386,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8725857,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_small_default": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "2132f5dcb091ac54dc77c5e28ab0fef64dbb24fb821df319c9af1738c73402f2",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748051,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287598,
+          "live_requested_bytes": 847468,
+          "successful_allocations": 1756847,
+          "successful_reallocations": 119237,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1943058,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8606953,
+          "live_requested_bytes": 1939600,
+          "successful_allocations": 1951891,
+          "successful_reallocations": 121412,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8606953,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_small_dev16": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "b0960a3f61fcf59df53ea61595026f55c9df4623beb9e3ccac4d4d6d95eda2a2",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748187,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287711,
+          "live_requested_bytes": 847581,
+          "successful_allocations": 1756984,
+          "successful_reallocations": 119222,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1943194,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8607066,
+          "live_requested_bytes": 1939713,
+          "successful_allocations": 1952028,
+          "successful_reallocations": 121397,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8607066,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_small_dev32": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "65d30b82125ad6ba83856be486b8d1e9353a7746beec86af3e80a34ffe9798ce",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748151,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287711,
+          "live_requested_bytes": 847581,
+          "successful_allocations": 1756948,
+          "successful_reallocations": 119250,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1943160,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8607066,
+          "live_requested_bytes": 1939713,
+          "successful_allocations": 1951994,
+          "successful_reallocations": 121425,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8607066,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_ice_default": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "601325c815e4e4d14b827762da9b13f6231325092c1153d4374391d3a0b5bcdb",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1747993,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287449,
+          "live_requested_bytes": 847450,
+          "successful_allocations": 1756789,
+          "successful_reallocations": 119241,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1945655,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8603569,
+          "live_requested_bytes": 1939582,
+          "successful_allocations": 1954488,
+          "successful_reallocations": 121417,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8603569,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_ice_dev16": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "929dd5dd16a5b483de1ec12dd7d09eecb4c2bce7820368964c585e52526a227d",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748102,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287562,
+          "live_requested_bytes": 847563,
+          "successful_allocations": 1756899,
+          "successful_reallocations": 119262,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1945761,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8603682,
+          "live_requested_bytes": 1939695,
+          "successful_allocations": 1954595,
+          "successful_reallocations": 121438,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8603682,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "objects_ice_dev32": {
+      "accepted": 32,
+      "rejected": 0,
+      "native_seen": 29,
+      "final_states": 1,
+      "sample_sha256": "bee1b04c8f9b65465856a2022a4c352281666d5bfb8fd4b326307c7c74313b92",
+      "profile_caps": [
+        33554432
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748072,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5287562,
+          "live_requested_bytes": 847563,
+          "successful_allocations": 1756869,
+          "successful_reallocations": 119237,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1945734,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 8603682,
+          "live_requested_bytes": 1939695,
+          "successful_allocations": 1954568,
+          "successful_reallocations": 121413,
+          "successful_zeroed_allocations": 746
+        },
+        "live_delta_bytes": 1092132,
+        "peak_requested_bytes": 8603682,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    }
+  },
+  "lifecycle_samples_003": {
+    "area_none": {
+      "accepted": 87,
+      "rejected": 0,
+      "native_seen": 0,
+      "final_states": 3,
+      "sample_sha256": "d7b828bdc0957557c7ddfb54b883053048367fabc8f063364f1d284a83bc5e11",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1723595,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 4982757,
+          "live_requested_bytes": 749431,
+          "successful_allocations": 1731663,
+          "successful_reallocations": 118601,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2350179,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9320550,
+          "live_requested_bytes": 1842075,
+          "successful_allocations": 2358283,
+          "successful_reallocations": 124001,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1092644,
+        "peak_requested_bytes": 9320550,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "area_normal": {
+      "accepted": 87,
+      "rejected": 0,
+      "native_seen": 75,
+      "final_states": 3,
+      "sample_sha256": "0fd920c5df342dc0063f354eddb5a09073bfd6130a61384ba4bd1d01e65e31fd",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1723534,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 4982763,
+          "live_requested_bytes": 749437,
+          "successful_allocations": 1731602,
+          "successful_reallocations": 118586,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2359220,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9321460,
+          "live_requested_bytes": 1842593,
+          "successful_allocations": 2367325,
+          "successful_reallocations": 124737,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1093156,
+        "peak_requested_bytes": 9321460,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "area_detached": {
+      "accepted": 87,
+      "rejected": 0,
+      "native_seen": 0,
+      "final_states": 3,
+      "sample_sha256": "9e63c09cbb32f4464aa0fbc3e7b56a80c7c11e07ae16169872c4634209498aeb",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1723520,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 4982769,
+          "live_requested_bytes": 749443,
+          "successful_allocations": 1731588,
+          "successful_reallocations": 118570,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2352395,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9320954,
+          "live_requested_bytes": 1829682,
+          "successful_allocations": 2360492,
+          "successful_reallocations": 124041,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1080239,
+        "peak_requested_bytes": 9320954,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "area_full": {
+      "accepted": 87,
+      "rejected": 0,
+      "native_seen": 75,
+      "final_states": 3,
+      "sample_sha256": "1c3733b3ddec11ad681c6a1f6169b9c70a2fcb2105a0ed2f1799e766b29a783d",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1723538,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 4982757,
+          "live_requested_bytes": 749431,
+          "successful_allocations": 1731606,
+          "successful_reallocations": 118594,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2359220,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9320942,
+          "live_requested_bytes": 1842587,
+          "successful_allocations": 2367325,
+          "successful_reallocations": 124744,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1093156,
+        "peak_requested_bytes": 9320942,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "ttl_none": {
+      "accepted": 93,
+      "rejected": 0,
+      "native_seen": 0,
+      "final_states": 3,
+      "sample_sha256": "bb4f273519d31c773afd4e443f865870abaa435874c25d71684ac5483d1eb886",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1747997,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5285148,
+          "live_requested_bytes": 845147,
+          "successful_allocations": 1756779,
+          "successful_reallocations": 119253,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2261336,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 7793506,
+          "live_requested_bytes": 1937791,
+          "successful_allocations": 2270154,
+          "successful_reallocations": 124428,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1092644,
+        "peak_requested_bytes": 7793506,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "ttl_normal": {
+      "accepted": 93,
+      "rejected": 0,
+      "native_seen": 78,
+      "final_states": 3,
+      "sample_sha256": "1b42f245c69fb2871c23a72a2e24e0b65ce42c9ad27c13153615e0854c5d764c",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748010,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5285154,
+          "live_requested_bytes": 845153,
+          "successful_allocations": 1756792,
+          "successful_reallocations": 119228,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2270917,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 7794416,
+          "live_requested_bytes": 1938309,
+          "successful_allocations": 2279736,
+          "successful_reallocations": 125187,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1093156,
+        "peak_requested_bytes": 7794416,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "ttl_detached": {
+      "accepted": 93,
+      "rejected": 0,
+      "native_seen": 0,
+      "final_states": 3,
+      "sample_sha256": "7873042aee3de2c7e65fd3f1f17b31ecb97651ab87ae077afb7979d083dfcdd3",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1748046,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5285160,
+          "live_requested_bytes": 845159,
+          "successful_allocations": 1756828,
+          "successful_reallocations": 119222,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2263838,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 7793910,
+          "live_requested_bytes": 1925398,
+          "successful_allocations": 2272649,
+          "successful_reallocations": 124475,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1080239,
+        "peak_requested_bytes": 7793910,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "ttl_full": {
+      "accepted": 93,
+      "rejected": 0,
+      "native_seen": 78,
+      "final_states": 3,
+      "sample_sha256": "2d01fd219aa082f7d0563a837494b7212b70ee8a62f6e57c3cd13df2edd3c3c9",
+      "profile_caps": [
+        8388608
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1747982,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5285148,
+          "live_requested_bytes": 845147,
+          "successful_allocations": 1756764,
+          "successful_reallocations": 119243,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2270886,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 7793898,
+          "live_requested_bytes": 1938303,
+          "successful_allocations": 2279705,
+          "successful_reallocations": 125202,
+          "successful_zeroed_allocations": 754
+        },
+        "live_delta_bytes": 1093156,
+        "peak_requested_bytes": 7793898,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "low_strict": {
+      "accepted": 11,
+      "rejected": 1,
+      "native_seen": 10,
+      "final_states": 1,
+      "sample_sha256": "167335e0778496b44c8763782591b041a5ab082a0a601343ea458a20dc6b519d",
+      "profile_caps": [
+        262144
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1747783,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5242538,
+          "live_requested_bytes": 802537,
+          "successful_allocations": 1756447,
+          "successful_reallocations": 119257,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1794547,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5242538,
+          "live_requested_bytes": 1894349,
+          "successful_allocations": 1803248,
+          "successful_reallocations": 120029,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1091812,
+        "peak_requested_bytes": 3888450,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    "low_dev16": {
+      "accepted": 12,
+      "rejected": 0,
+      "native_seen": 10,
+      "final_states": 1,
+      "sample_sha256": "0c755509238cb43a7a08c90bcca1571f001b77ffe600f5f102cbb47be6f46087",
+      "profile_caps": [
+        16777216
+      ],
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1747790,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5242534,
+          "live_requested_bytes": 802533,
+          "successful_allocations": 1756454,
+          "successful_reallocations": 119229,
+          "successful_zeroed_allocations": 742
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1807193,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 5242534,
+          "live_requested_bytes": 1894345,
+          "successful_allocations": 1815894,
+          "successful_reallocations": 120065,
+          "successful_zeroed_allocations": 744
+        },
+        "live_delta_bytes": 1091812,
+        "peak_requested_bytes": 4517923,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    }
+  },
+  "host_phases": [
+    {
+      "case": "default_none",
+      "phase": "initial",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 20,
+      "profile": "a7b932aa614c11c8adf2b0e43c35c89f841056d877b78800e935d4d0c61f4a49",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1818928,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9764240,
+          "live_requested_bytes": 5443053,
+          "successful_allocations": 1828683,
+          "successful_reallocations": 120470,
+          "successful_zeroed_allocations": 790
+        },
+        "live_delta_bytes": 5394297,
+        "peak_requested_bytes": 9764240,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "default_none",
+      "phase": "restarted",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 36,
+      "profile": "a7b932aa614c11c8adf2b0e43c35c89f841056d877b78800e935d4d0c61f4a49",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1861470,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9764240,
+          "live_requested_bytes": 6491368,
+          "successful_allocations": 1874788,
+          "successful_reallocations": 120463,
+          "successful_zeroed_allocations": 811
+        },
+        "live_delta_bytes": 6442612,
+        "peak_requested_bytes": 9764240,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "default_normal",
+      "phase": "initial",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 20,
+      "profile": "a7b932aa614c11c8adf2b0e43c35c89f841056d877b78800e935d4d0c61f4a49",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1874790,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9764244,
+          "live_requested_bytes": 8137395,
+          "successful_allocations": 1893702,
+          "successful_reallocations": 149567,
+          "successful_zeroed_allocations": 1123
+        },
+        "live_delta_bytes": 8088639,
+        "peak_requested_bytes": 9764244,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "default_normal",
+      "phase": "restarted",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 36,
+      "profile": "a7b932aa614c11c8adf2b0e43c35c89f841056d877b78800e935d4d0c61f4a49",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1965938,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9910223,
+          "live_requested_bytes": 6678919,
+          "successful_allocations": 1977506,
+          "successful_reallocations": 167331,
+          "successful_zeroed_allocations": 1168
+        },
+        "live_delta_bytes": 6630163,
+        "peak_requested_bytes": 9910223,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "dev16_normal",
+      "phase": "initial",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 20,
+      "profile": "0e671249acb1429b46d0983fe1a9eb0faf57209022cc8722d17b2d31e790e26f",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1886314,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9764359,
+          "live_requested_bytes": 7039330,
+          "successful_allocations": 1901397,
+          "successful_reallocations": 153445,
+          "successful_zeroed_allocations": 1123
+        },
+        "live_delta_bytes": 6990574,
+        "peak_requested_bytes": 9764359,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "dev16_normal",
+      "phase": "restarted",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 36,
+      "profile": "0e671249acb1429b46d0983fe1a9eb0faf57209022cc8722d17b2d31e790e26f",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1951351,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9929214,
+          "live_requested_bytes": 8100381,
+          "successful_allocations": 1970066,
+          "successful_reallocations": 162535,
+          "successful_zeroed_allocations": 1172
+        },
+        "live_delta_bytes": 8051625,
+        "peak_requested_bytes": 9929214,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "dev32_normal",
+      "phase": "initial",
+      "exit": 0,
+      "shutdown_signal": "SIGINT",
+      "messages": 20,
+      "profile": "9f3d54cce97c8c9368e09a0e1d178f3719870262313dd316ac9127cdb0b0cd14",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 1875242,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9764359,
+          "live_requested_bytes": 7037960,
+          "successful_allocations": 1890332,
+          "successful_reallocations": 147992,
+          "successful_zeroed_allocations": 1123
+        },
+        "live_delta_bytes": 6989204,
+        "peak_requested_bytes": 9764359,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    },
+    {
+      "case": "dev32_normal",
+      "phase": "restarted",
+      "exit": 0,
+      "shutdown_signal": "SIGTERM",
+      "messages": 36,
+      "profile": "9f3d54cce97c8c9368e09a0e1d178f3719870262313dd316ac9127cdb0b0cd14",
+      "window": {
+        "baseline": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 0,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 48756,
+          "live_requested_bytes": 48756,
+          "successful_allocations": 93,
+          "successful_reallocations": 0,
+          "successful_zeroed_allocations": 0
+        },
+        "boundary_updates_unavailable": false,
+        "end": {
+          "concurrent_snapshot": true,
+          "counter_overflowed": false,
+          "deallocations": 2026528,
+          "failed_allocations": 0,
+          "failed_reallocations": 0,
+          "instrumented": true,
+          "lifetime_peak_requested_bytes": 9931310,
+          "live_requested_bytes": 6142202,
+          "successful_allocations": 2032663,
+          "successful_reallocations": 193823,
+          "successful_zeroed_allocations": 1168
+        },
+        "live_delta_bytes": 6093446,
+        "peak_requested_bytes": 9931310,
+        "retiring_hooks_at_end": 0,
+        "scope": "process allocator requested bytes; concurrent boundary snapshots; includes observer and other sessions; excludes allocator fragmentation and OS RSS"
+      }
+    }
+  ],
+  "low_profile": {
+    "hard": [
+      {
+        "accepted_growth_bytes": 246328,
+        "accepted_total_bytes": 262029,
+        "aggregation_overflowed": false,
+        "cumulative_request_overflowed": false,
+        "first_hard_exceed": {
+          "kind": "cumulative_growth",
+          "limit_bytes": 262144,
+          "overflowed": false,
+          "requested_bytes": 262165,
+          "site": "queued_fact_source"
+        },
+        "first_soft_exceed": {
+          "kind": "cumulative_growth",
+          "limit_bytes": 262144,
+          "overflowed": false,
+          "requested_bytes": 262165,
+          "site": "queued_fact_source"
+        },
+        "max_cumulative_requested_bytes": 262165,
+        "max_owner_requested_bytes": 15701,
+        "multiple_policies": false,
+        "native_scopes": 1,
+        "owner_hard_bytes": 262144,
+        "owner_request_overflowed": false,
+        "profile_warning_bytes": 262144,
+        "seed_accepted_bytes": 15701,
+        "seed_attempted_bytes": 15701
+      }
+    ],
+    "soft": [
+      {
+        "accepted_growth_bytes": 619212,
+        "accepted_total_bytes": 634913,
+        "aggregation_overflowed": false,
+        "cumulative_request_overflowed": false,
+        "first_hard_exceed": null,
+        "first_soft_exceed": {
+          "kind": "cumulative_growth",
+          "limit_bytes": 262144,
+          "overflowed": false,
+          "requested_bytes": 262165,
+          "site": "queued_fact_source"
+        },
+        "max_cumulative_requested_bytes": 634913,
+        "max_owner_requested_bytes": 35461,
+        "multiple_policies": false,
+        "native_scopes": 1,
+        "owner_hard_bytes": 16777216,
+        "owner_request_overflowed": false,
+        "profile_warning_bytes": 262144,
+        "seed_accepted_bytes": 15701,
+        "seed_attempted_bytes": 15701
+      }
+    ]
+  },
+  "at_utc": "2026-10-05T18:04:56.977113+00:00",
+  "errors": [],
+  "scope": "Read-only independently decoded actual CLI JSONL and host messages/details. Low262144 warning/hard sample is explicitly separate from deployment8MiB; exact8/16/32MiB boundaries use native tests. Shared process allocator/RSS not attributed to individual session."
+}

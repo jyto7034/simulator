@@ -1,0 +1,2558 @@
+{
+  "goal": "GOAL-CIOB-01",
+  "goal_set": "GS-CIOB-001",
+  "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+  "frozen_policy_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CIOB-001",
+    "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+  },
+  "status": "GEX-10 self-verification; GEX-20 independent audit pending",
+  "acceptances": [
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-01-REVIEWED-001",
+        "Content Digest": "sha256:2f7a91d9afbe6c7bc10195a98df7b3d708ab34cc8c82b80269e1e95b66fcf38d"
+      },
+      "Observable Policy Acceptance": [
+        "같은 공개 생성 능력을 아군과 적 source에서 실행하여 올바른 진영/대상/종류별 능력을 확인한다.",
+        "생성·진화·파괴·TTL 뒤에도 wave/보상/도감 원장과 required victory가 임의로 늘지 않으며 기존 boss summon 회귀가 유지된다."
+      ],
+      "validation_refs": [
+        "V01"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-02-REVIEWED-001",
+        "Content Digest": "sha256:5bd40920431daf5d86760ff4c6c27334d8f0697767c341a6bc78ea15f8e900d5"
+      },
+      "Observable Policy Acceptance": [
+        "여러 생성 중 후반 타일/정의/예산 실패에 비용·HP·pool·객체·ID·fact가 부분 반영되지 않는다.",
+        "정상 재시도/중복은 한 번만 생성하며 payload 충돌·fault 재시도·clone 분기에서 identity와 settlement가 일관된다."
+      ],
+      "validation_refs": [
+        "V02"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-03-REVIEWED-001",
+        "Content Digest": "sha256:195156f7b62f05aa42bc587dafcdbdd97690f1db7c9de9e8233564cfff58ca81"
+      },
+      "Observable Policy Acceptance": [
+        "경계/범위 밖·무효 타일·복수 점유·다른 source 작은 친구·큰 친구 재중첩은 입력 거절과 비용 불변이다.",
+        "작성 상한의 exact/one-over, source A/B 독립과 소멸 뒤 생존 슬롯 회수, 진화의1슬롯 유지가 정상 명령/query에서 일치한다."
+      ],
+      "validation_refs": [
+        "V03"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-04-REVIEWED-001",
+        "Content Digest": "sha256:05e2bde5229bd493e98f9484bb3ae53a2606883a446cbe0c6f6bc8d573c2c66d"
+      },
+      "Observable Policy Acceptance": [
+        "아군/적 actor의 대상 선택·공격·정지/이동과 실제 HP 결과를 외부 작성 입력으로 실행한다.",
+        "부모 철수 뒤 독립 actor의 정상 수명과 자신의 source attribution이 유지되며 직원 배치 상한/공명/명령을 대리하지 않는다."
+      ],
+      "validation_refs": [
+        "V04"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-05-REVIEWED-001",
+        "Content Digest": "sha256:4137404f9a183ae0a81efe0b2ec6d772020d37787a41b338aa03e50effaa0547"
+      },
+      "Observable Policy Acceptance": [
+        "정상 RON의 독립 field가 실제 주기/범위/대상에 효과를 내고 Pause·부모 철수·TTL 경계에서 정해진 횟수만 실행한다.",
+        "HP/점유/이동이 없는 field는 해당 능력을 가진 것으로 query되거나 타격·치유·배치 blocker가 되지 않는다."
+      ],
+      "validation_refs": [
+        "V05"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-06-REVIEWED-001",
+        "Content Digest": "sha256:63fc6f5da98e0b0e2f8dae818afea69a01f5fa2c23a3c3f93f8e420eb54acb13"
+      },
+      "Observable Policy Acceptance": [
+        "정상 기본·개화 파편의 실제 명령으로 작은/큰 친구가 생성되고 작은 단일·큰 광역 공격과 소멸 결과가 관측된다.",
+        "대상 없음/공중 등 부적격/대상 소실·동시 trigger에서 공격 불가능한 친구가 남고 성공한 친구만1회 공격·소모된다.",
+        "생성 후 caster 장비/능력치·철수 변화가 이미 소유한 피해 snapshot을 고치지 않고 피해 출처와 파편 copy가 보존된다."
+      ],
+      "validation_refs": [
+        "V06"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-07-REVIEWED-001",
+        "Content Digest": "sha256:154e637211c4c674cde21c7ae6c2661730f25d1a7d56d097b1ec698c73e53fc5"
+      },
+      "Observable Policy Acceptance": [
+        "작은→큰에 객체1개·같은 타일·생존1슬롯, 정확한 두 시전 비용과 개화 한 시전의 차이를 확인한다.",
+        "진화 직후 이전 timer/trigger가 새 형태를 삭제·공격시키지 않으며 clone의 형태 전환은 원본과 독립이다.",
+        "HP형 진화의 증가/감소에서 no-free-heal/clamp가 적용되고 변환 실패는 이전 상태/비용을 보존한다."
+      ],
+      "validation_refs": [
+        "V07"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-08-REVIEWED-001",
+        "Content Digest": "sha256:82e3c4a652caa5c5b4bc2cd6f05e0f2c01e49aaf0fbba7caf0faf59ce2417d85"
+      },
+      "Observable Policy Acceptance": [
+        "source 삭제/철수/사망·다른 copy 재배치 뒤 Persist/Despawn 두 계약과 실제 결과 provenance를 확인한다.",
+        "독립 생성물이 살아 있어도 생성 skill의 사용 잠금이 끝나고 양수 공명 획득이 재개되며 오래된 actor/copy를 새 source로 잘못 연결하지 않는다."
+      ],
+      "validation_refs": [
+        "V08"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-09-REVIEWED-001",
+        "Content Digest": "sha256:da0455e8922dcd48428e76738f92abe3d2a21ff80704218481ad3142d29e6179"
+      },
+      "Observable Policy Acceptance": [
+        "동시 TTL/피격/소모와 source 제거의 중복 cleanup에서 실제 결과1회와 stale 무해를 확인한다.",
+        "종료·반복 생성/소멸 뒤 활성 객체·queue/source 보유와 allocator 비용이 수명에 맞게 회수되고 원래 안전 한도를 통과한다."
+      ],
+      "validation_refs": [
+        "V09"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-10-REVIEWED-001",
+        "Content Digest": "sha256:606913978ba139dc13b4cc5ef723b33f63b7e5d30d0acf620019712b2268e268"
+      },
+      "Observable Policy Acceptance": [
+        "H100/P150에서 스택2·분리50·잔량100·벽HP50이며 P100/P1/0와 한 번의 여러 구간 피해를 확인한다.",
+        "pool 흡수/초과 피해·저지 감소가 중복 감쇄·가짜 HP-loss/proc 없이 실제 query와 일치한다.",
+        "다른 source/pool·일반 회복은 잔량을 임의 변경하지 않고 실패 생성은 pool/저지/객체 전체를 복원한다."
+      ],
+      "validation_refs": [
+        "V10"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-11-REVIEWED-001",
+        "Content Digest": "sha256:986fb1dc5cd7e5953f6887b5cea556d616b746e9c6571c285263d12f5f1b1642"
+      },
+      "Observable Policy Acceptance": [
+        "일반 Shield와 빈 pool에서 실제 비용/벽HP, shield/parry/HP1 비영향 및 lethal 경계 거절을 정상 명령으로 확인한다.",
+        "HP 비용 후 의도된 생성 failure/fault와 여러 placement 실패에서 원래 HP/pool/facts/IDs를 되돌리고 정상 재시도는 한 번 소비한다."
+      ],
+      "validation_refs": [
+        "V11"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-12-REVIEWED-001",
+        "Content Digest": "sha256:232cda78f25ee003702459b0d8b71191673b0cacd4b61a3c14af3620fbca0a13"
+      },
+      "Observable Policy Acceptance": [
+        "정상 작성 얼음벽/고기벽에 지상 적이 실제 이동 segment에서 정지·공격·파괴·경로 재개하고 공중 적은 통과한다.",
+        "벽을 치유/직원 명령/시체/보상 대상으로 오인하지 않으며 snapshot 방어와 피격 결과를 query할 수 있다.",
+        "source 철수 뒤 벽이 남고 실제 정상 CoreApplication/authoring trial에서 생성→피격→제거를 소비한다."
+      ],
+      "validation_refs": [
+        "V12"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-13-REVIEWED-001",
+        "Content Digest": "sha256:2e29f155bee3b49ee8b951375a3d169c6bb7a1081dab5cb2027ba1701e549af8"
+      },
+      "Observable Policy Acceptance": [
+        "직원/HP형 생성물의 maxHP 증가·감소·0과 원인 있음/없음에서 순서·중복 없는 종료·attribution을 확인한다.",
+        "기존 직접 Kill/특수 kill/비용/보호/actual HP-loss 회귀가 새 객체 도입 뒤 유지된다."
+      ],
+      "validation_refs": [
+        "V13"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-14-REVIEWED-001",
+        "Content Digest": "sha256:82cc503a0d081908cce1caacc39f84652b03ef652a7eb8264872c1e5ee5aa31e"
+      },
+      "Observable Policy Acceptance": [
+        "Pause 중 유효 접수/뒤의 타일점유 또는 HP변화/재개를 실행해 후발 생성 실패와 접수 공명·새 비용 무반영을 구분한다.",
+        "CC/철수/취소 전후 미방출0개·방출 Persist 유지, child 생존 중 U05 충전 재개를 확인한다."
+      ],
+      "validation_refs": [
+        "V14"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-15-REVIEWED-001",
+        "Content Digest": "sha256:5dd1037a4be0e36eaa393b00de0bcfad773e3d0b6e7d65224ad0d2ecf770137a"
+      },
+      "Observable Policy Acceptance": [
+        "반복 preview/query는 완전 무변경이고 실제 명령의 비용/위치/형태/거절과 일치한다.",
+        "stale preview 후 변경된 타일·HP·pool·source 상태에서 명시 거절하며 같은 actor 재접속으로 정확한 객체 상태를 조회한다."
+      ],
+      "validation_refs": [
+        "V15"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-16-REVIEWED-001",
+        "Content Digest": "sha256:b3545dc2bf7eb0c3d5205721abc59aa82511cf058df31413d35807cb7e146679"
+      },
+      "Observable Policy Acceptance": [
+        "Pause/0.5/설정/재접속과 같은시각 TTL·타격·진화·출처삭제·승리에서 순서와 결과가 결정적이다.",
+        "같은 seed/input을 다른 container/pack 순서와 log/observation 모드에서 실행해 동일한 실제 결과를 확인한다."
+      ],
+      "validation_refs": [
+        "V16"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-17-REVIEWED-001",
+        "Content Digest": "sha256:96a013806c600a0a53810128b34dc77bb8760bedaae27c5dd0e652407f50a4d3"
+      },
+      "Observable Policy Acceptance": [
+        "생성/진화/부상 pool/expiry 대기 clone·rollback·같은actor reconnect의 독립성과 exactly-once를 검증한다.",
+        "실제 host Continue/SavePoint/미지원 원본보호 회귀와 새 정상 정의의 저장/복원 consumer를 통과한다."
+      ],
+      "validation_refs": [
+        "V17"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-18-REVIEWED-001",
+        "Content Digest": "sha256:c8ce70db7c094ba3ab9464e276f04d12ed2a3e1583e428465efcb7f2e379f343"
+      },
+      "Observable Policy Acceptance": [
+        "정상 외부 RON→validate→compile→trial/API→실제 결과/query에 각 capability의 nonzero 성공과 strict negative 사례가 있다.",
+        "기본/개화 친구·얼음벽·HPfallback/분절분리 consumer의 실제 명령과 종단 결과를 검증하고 지원 목록/문서가 실제 포트와 일치한다."
+      ],
+      "validation_refs": [
+        "V18"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-19-REVIEWED-001",
+        "Content Digest": "sha256:74e460307af1188d5314c7afb5a9f41a7ebf4a08c48c9fadaa1b9d976ca97362"
+      },
+      "Observable Policy Acceptance": [
+        "작은 새상태 크기/clone/queue/원자 fault 검증 후 native/full suite·public bounds·5모드 fault·observer/allocator와 PC/R05를 현재 영향에 맞춰 검증한다.",
+        "예산 exact/one-under·실패원본·회수·숫자oracle이 추적되며 구현 guardrail8개를 독립 확인한다."
+      ],
+      "validation_refs": [
+        "V19"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-20-REVIEWED-001",
+        "Content Digest": "sha256:2c506fc816b6293159ffe76766905576773521df44a5cac402d45c159edc8958"
+      },
+      "Observable Policy Acceptance": [
+        "각 조건/차원의 실제 command·selector·nonzero 결과·raw/currentness와 범위 제외가 추적되고 current integrated target이 정역 복원된다.",
+        "전체 목표의 독립 Complete/High와 open finding0 이후에만 U08 정상 진입으로 인수한다."
+      ],
+      "validation_refs": [
+        "V20"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    }
+  ],
+  "validations": [
+    {
+      "id": "V01",
+      "requirement": [
+        "같은 공개 생성 능력을 아군과 적 source에서 실행하여 올바른 진영/대상/종류별 능력을 확인한다.",
+        "생성·진화·파괴·TTL 뒤에도 wave/보상/도감 원장과 required victory가 임의로 늘지 않으며 기존 boss summon 회귀가 유지된다."
+      ],
+      "core_selectors": [
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+        "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+        "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+        "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+        "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+        "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+        "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+        "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+        "game::battle::core::object_creation::tests::u07_object_actor_and_wall_adapters_follow_actual_side_and_capabilities",
+        "game::battle::core::object_creation::tests::u07_object_terminal_finalize_reclaims_live_owners_and_next_battle_resets_ledger"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_actor_and_wall_adapters_follow_actual_side_and_capabilities": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_terminal_finalize_reclaims_live_owners_and_next_battle_resets_ledger": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V02",
+      "requirement": [
+        "여러 생성 중 후반 타일/정의/예산 실패에 비용·HP·pool·객체·ID·fact가 부분 반영되지 않는다.",
+        "정상 재시도/중복은 한 번만 생성하며 payload 충돌·fault 재시도·clone 분기에서 identity와 settlement가 일관된다."
+      ],
+      "core_selectors": [
+        "game::battle::core::object_creation::tests::native_u07_object_evolution_late_queue_fault_restores_form_counter_and_retry",
+        "game::battle::core::object_creation::tests::native_u07_object_late_retained_fault_rolls_back_batch_and_retries",
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry",
+        "game::battle::core::object_creation::tests::u07_f01_actor_own_ground_contact_survives_and_airborne_form_releases",
+        "game::battle::core::object_creation::tests::u07_f01_evolution_clone_late_queue_refusal_rolls_back_contacts_and_retry",
+        "game::battle::core::object_creation::tests::u07_object_creation_batch_replay_conflict_and_expiry_are_atomic"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::object_creation::tests::native_u07_object_evolution_late_queue_fault_restores_form_counter_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_object_late_retained_fault_rolls_back_batch_and_retries": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_own_ground_contact_survives_and_airborne_form_releases": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_evolution_clone_late_queue_refusal_rolls_back_contacts_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_creation_batch_replay_conflict_and_expiry_are_atomic": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V03",
+      "requirement": [
+        "경계/범위 밖·무효 타일·복수 점유·다른 source 작은 친구·큰 친구 재중첩은 입력 거절과 비용 불변이다.",
+        "작성 상한의 exact/one-over, source A/B 독립과 소멸 뒤 생존 슬롯 회수, 진화의1슬롯 유지가 정상 명령/query에서 일치한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::independent_objects::tests::u07_object_owner_counter_clone_and_stale_removal",
+        "game::battle::core::object_creation::tests::u07_object_actor_path_is_checked_against_actual_battlefield_before_creation",
+        "game::battle::core::object_creation::tests::u07_object_creation_batch_replay_conflict_and_expiry_are_atomic",
+        "game::battle::core::object_creation::tests::u07_object_every_offset_must_be_within_cast_reach",
+        "game::battle::core::object_creation::tests::u07_object_evolution_replay_and_foreign_copy_are_atomic"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::independent_objects::tests::u07_object_owner_counter_clone_and_stale_removal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_actor_path_is_checked_against_actual_battlefield_before_creation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_creation_batch_replay_conflict_and_expiry_are_atomic": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_every_offset_must_be_within_cast_reach": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_evolution_replay_and_foreign_copy_are_atomic": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V04",
+      "requirement": [
+        "아군/적 actor의 대상 선택·공격·정지/이동과 실제 HP 결과를 외부 작성 입력으로 실행한다.",
+        "부모 철수 뒤 독립 actor의 정상 수명과 자신의 source attribution이 유지되며 직원 배치 상한/공명/명령을 대리하지 않는다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+        "game::battle::core::object_creation::tests::u07_object_actor_and_wall_adapters_follow_actual_side_and_capabilities",
+        "game::battle::core::object_creation::tests::u07_object_actor_auto_cast_binds_own_cast_and_keeps_creation_cast",
+        "game::battle::core::object_creation::tests::u07_object_actor_basic_attack_has_own_action_and_creation_observation",
+        "game::battle::core::object_creation::tests::u07_object_path_actor_moves_on_both_sides_without_employee_stance"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_actor_and_wall_adapters_follow_actual_side_and_capabilities": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_actor_auto_cast_binds_own_cast_and_keeps_creation_cast": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_actor_basic_attack_has_own_action_and_creation_observation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_path_actor_moves_on_both_sides_without_employee_stance": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V05",
+      "requirement": [
+        "정상 RON의 독립 field가 실제 주기/범위/대상에 효과를 내고 Pause·부모 철수·TTL 경계에서 정해진 횟수만 실행한다.",
+        "HP/점유/이동이 없는 field는 해당 능력을 가진 것으로 query되거나 타격·치유·배치 blocker가 되지 않는다."
+      ],
+      "core_selectors": [
+        "game::battle::core::tests::control_status_hard_cc_preserves_released_area_runtime",
+        "game::battle::core::tests::native_action_area_observes_accept_release_control_finish_and_actual_settlement",
+        "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+        "game::battle::core::tests::resolved_area_tick_rebuilds_live_members_for_each_occurrence",
+        "game::battle::core::tests::withdraw_preserves_ground_fixed_area_and_ends_follow_areas"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::tests::control_status_hard_cc_preserves_released_area_runtime": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_area_observes_accept_release_control_finish_and_actual_settlement": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::resolved_area_tick_rebuilds_live_members_for_each_occurrence": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::withdraw_preserves_ground_fixed_area_and_ends_follow_areas": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_independent_area_003"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V06",
+      "requirement": [
+        "정상 기본·개화 파편의 실제 명령으로 작은/큰 친구가 생성되고 작은 단일·큰 광역 공격과 소멸 결과가 관측된다.",
+        "대상 없음/공중 등 부적격/대상 소실·동시 trigger에서 공격 불가능한 친구가 남고 성공한 친구만1회 공격·소모된다.",
+        "생성 후 caster 장비/능력치·철수 변화가 이미 소유한 피해 snapshot을 고치지 않고 피해 출처와 파편 copy가 보존된다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+        "game::battle::core::object_creation::tests::u07_object_same_time_traps_are_stable_and_ttl_wins_before_contact",
+        "game::battle::core::object_creation::tests::u07_object_trap_attacks_after_source_removal_and_consumes_only_on_hit",
+        "game::battle::core::object_creation::tests::u07_object_trigger_without_damage_target_waits_and_shield_zero_hit_consumes",
+        "game::battle::core::object_creation::tests::u07_official_base_second_cast_evolves_and_awakened_cast_creates_big",
+        "game::battle::core::object_creation::tests::u07_official_small_hits_one_stable_target_big_hits_area_and_ignores_air"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_same_time_traps_are_stable_and_ttl_wins_before_contact": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_trap_attacks_after_source_removal_and_consumes_only_on_hit": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_trigger_without_damage_target_waits_and_shield_zero_hit_consumes": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_base_second_cast_evolves_and_awakened_cast_creates_big": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_small_hits_one_stable_target_big_hits_area_and_ignores_air": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V07",
+      "requirement": [
+        "작은→큰에 객체1개·같은 타일·생존1슬롯, 정확한 두 시전 비용과 개화 한 시전의 차이를 확인한다.",
+        "진화 직후 이전 timer/trigger가 새 형태를 삭제·공격시키지 않으며 clone의 형태 전환은 원본과 독립이다.",
+        "HP형 진화의 증가/감소에서 no-free-heal/clamp가 적용되고 변환 실패는 이전 상태/비용을 보존한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::object_creation::tests::native_u07_object_evolution_late_queue_fault_restores_form_counter_and_retry",
+        "game::battle::core::object_creation::tests::u07_f01_actor_evolution_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_actor_own_ground_contact_survives_and_airborne_form_releases",
+        "game::battle::core::object_creation::tests::u07_f01_wall_evolution_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_object_evolution_hp_forms_preserve_health_and_clamp_without_new_slot",
+        "game::battle::core::object_creation::tests::u07_object_evolution_public_two_casts_keep_id_and_pay_each_use",
+        "game::battle::core::object_creation::tests::u07_object_evolution_replay_and_foreign_copy_are_atomic",
+        "game::battle::core::object_creation::tests::u07_official_base_second_cast_evolves_and_awakened_cast_creates_big"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::object_creation::tests::native_u07_object_evolution_late_queue_fault_restores_form_counter_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_evolution_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_own_ground_contact_survives_and_airborne_form_releases": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_evolution_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_evolution_hp_forms_preserve_health_and_clamp_without_new_slot": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_evolution_public_two_casts_keep_id_and_pay_each_use": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_evolution_replay_and_foreign_copy_are_atomic": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_base_second_cast_evolves_and_awakened_cast_creates_big": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V08",
+      "requirement": [
+        "source 삭제/철수/사망·다른 copy 재배치 뒤 Persist/Despawn 두 계약과 실제 결과 provenance를 확인한다.",
+        "독립 생성물이 살아 있어도 생성 skill의 사용 잠금이 끝나고 양수 공명 획득이 재개되며 오래된 actor/copy를 새 source로 잘못 연결하지 않는다."
+      ],
+      "core_selectors": [
+        "game::battle::core::independent_objects::tests::u07_object_origin_releases_parent_credentials",
+        "game::battle::core::object_creation::tests::u07_object_cleanup_only_cascades_actor_sources_without_attacking",
+        "game::battle::core::object_creation::tests::u07_object_public_tile_cast_rejects_before_resonance_and_releases_use_after_creation",
+        "game::battle::core::object_creation::tests::u07_object_source_removal_policy_reconciles_all_kinds",
+        "game::battle::core::object_creation::tests::u07_object_trap_attacks_after_source_removal_and_consumes_only_on_hit"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::independent_objects::tests::u07_object_origin_releases_parent_credentials": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_cleanup_only_cascades_actor_sources_without_attacking": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_public_tile_cast_rejects_before_resonance_and_releases_use_after_creation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_source_removal_policy_reconciles_all_kinds": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_trap_attacks_after_source_removal_and_consumes_only_on_hit": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V09",
+      "requirement": [
+        "동시 TTL/피격/소모와 source 제거의 중복 cleanup에서 실제 결과1회와 stale 무해를 확인한다.",
+        "종료·반복 생성/소멸 뒤 활성 객체·queue/source 보유와 allocator 비용이 수명에 맞게 회수되고 원래 안전 한도를 통과한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::independent_objects::tests::u07_object_owner_counter_clone_and_stale_removal",
+        "game::battle::core::object_creation::tests::u07_f01_actor_expiry_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_actor_source_despawn_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_wall_expiry_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_wall_source_despawn_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_object_creation_batch_replay_conflict_and_expiry_are_atomic",
+        "game::battle::core::object_creation::tests::u07_object_max_hp_zero_and_direct_kill_remove_once_without_death_fact",
+        "game::battle::core::object_creation::tests::u07_object_same_time_traps_are_stable_and_ttl_wins_before_contact",
+        "game::battle::core::object_creation::tests::u07_object_terminal_finalize_reclaims_live_owners_and_next_battle_resets_ledger"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::independent_objects::tests::u07_object_owner_counter_clone_and_stale_removal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_expiry_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_source_despawn_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_expiry_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_source_despawn_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_creation_batch_replay_conflict_and_expiry_are_atomic": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_max_hp_zero_and_direct_kill_remove_once_without_death_fact": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_same_time_traps_are_stable_and_ttl_wins_before_contact": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_terminal_finalize_reclaims_live_owners_and_next_battle_resets_ledger": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V10",
+      "requirement": [
+        "H100/P150에서 스택2·분리50·잔량100·벽HP50이며 P100/P1/0와 한 번의 여러 구간 피해를 확인한다.",
+        "pool 흡수/초과 피해·저지 감소가 중복 감쇄·가짜 HP-loss/proc 없이 실제 query와 일치한다.",
+        "다른 source/pool·일반 회복은 잔량을 임의 변경하지 않고 실패 생성은 pool/저지/객체 전체를 복원한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry",
+        "game::battle::core::object_creation::tests::u07_segmented_damage_absorbs_once_then_spills_only_remainder_to_hp",
+        "game::battle::core::object_creation::tests::u07_segmented_damage_and_detachment_release_only_excess_blocked_enemies",
+        "game::battle::core::object_creation::tests::u07_segmented_fallback_health_cost_bypasses_shield_parry_and_survival",
+        "game::battle::core::object_creation::tests::u07_segmented_foreign_copy_uses_health_fallback_without_consuming_other_pool",
+        "game::battle::core::object_creation::tests::u07_segmented_ordinary_shield_priority_healing_expiry_and_clone_are_independent",
+        "game::battle::core::object_creation::tests::u07_segmented_public_fallback_rejects_lethal_before_payment_and_late_failure_is_normal",
+        "game::battle::core::object_creation::tests::u07_segmented_public_producer_duplicate_rejection_and_preview_are_read_only",
+        "game::battle::core::object_creation::tests::u07_segmented_strict_schema_rejects_zero_overflow_and_wrong_consumer_kind",
+        "game::battle::core::object_creation::tests::u07_segmented_top_detachment_uses_one_balance_and_actual_wall_health"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_damage_absorbs_once_then_spills_only_remainder_to_hp": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_damage_and_detachment_release_only_excess_blocked_enemies": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_fallback_health_cost_bypasses_shield_parry_and_survival": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_foreign_copy_uses_health_fallback_without_consuming_other_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_ordinary_shield_priority_healing_expiry_and_clone_are_independent": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_public_fallback_rejects_lethal_before_payment_and_late_failure_is_normal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_public_producer_duplicate_rejection_and_preview_are_read_only": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_strict_schema_rejects_zero_overflow_and_wrong_consumer_kind": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_top_detachment_uses_one_balance_and_actual_wall_health": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V11",
+      "requirement": [
+        "일반 Shield와 빈 pool에서 실제 비용/벽HP, shield/parry/HP1 비영향 및 lethal 경계 거절을 정상 명령으로 확인한다.",
+        "HP 비용 후 의도된 생성 failure/fault와 여러 placement 실패에서 원래 HP/pool/facts/IDs를 되돌리고 정상 재시도는 한 번 소비한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry",
+        "game::battle::core::object_creation::tests::u07_official_meat_wall_uses_exact_equipped_weapon_pool_across_fragment_source",
+        "game::battle::core::object_creation::tests::u07_segmented_fallback_health_cost_bypasses_shield_parry_and_survival",
+        "game::battle::core::object_creation::tests::u07_segmented_public_fallback_rejects_lethal_before_payment_and_late_failure_is_normal"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_meat_wall_uses_exact_equipped_weapon_pool_across_fragment_source": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_fallback_health_cost_bypasses_shield_parry_and_survival": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_public_fallback_rejects_lethal_before_payment_and_late_failure_is_normal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V12",
+      "requirement": [
+        "정상 작성 얼음벽/고기벽에 지상 적이 실제 이동 segment에서 정지·공격·파괴·경로 재개하고 공중 적은 통과한다.",
+        "벽을 치유/직원 명령/시체/보상 대상으로 오인하지 않으며 snapshot 방어와 피격 결과를 query할 수 있다.",
+        "source 철수 뒤 벽이 남고 실제 정상 CoreApplication/authoring trial에서 생성→피격→제거를 소비한다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+        "game::battle::core::object_creation::tests::u07_f01_actor_evolution_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_expired_own_wall_releases_only_its_contact_and_route_resumes",
+        "game::battle::core::object_creation::tests::u07_f01_wall_evolution_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_object_hp_zero_retires_without_unit_death_and_wall_rejects_heal",
+        "game::battle::core::object_creation::tests::u07_object_wall_stops_actual_segment_then_basic_attack_destroys_and_route_resumes",
+        "game::battle::core::object_creation::tests::u07_official_wall_preview_and_actual_hp_cost_defenses_match"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect"
+      ],
+      "selector_receipts": {
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_evolution_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_expired_own_wall_releases_only_its_contact_and_route_resumes": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_evolution_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_hp_zero_retires_without_unit_death_and_wall_rejects_heal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_wall_stops_actual_segment_then_basic_attack_destroys_and_route_resumes": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_wall_preview_and_actual_hp_cost_defenses_match": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect": [
+          "integrated_host_default008",
+          "integrated_host_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V13",
+      "requirement": [
+        "직원/HP형 생성물의 maxHP 증가·감소·0과 원인 있음/없음에서 순서·중복 없는 종료·attribution을 확인한다.",
+        "기존 직접 Kill/특수 kill/비용/보호/actual HP-loss 회귀가 새 객체 도입 뒤 유지된다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+        "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+        "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+        "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+        "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+        "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+        "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+        "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+        "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+        "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+        "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+        "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+        "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+        "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+        "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+        "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+        "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+        "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+        "game::battle::core::boss_runtime::tests::r12_shielded_employee_attack_grants_no_charge_and_lifesteals_only_hp_loss",
+        "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+        "game::battle::core::commands::tests::runtime_max_health_modifier_decision_table_preserves_hp_death_and_provenance",
+        "game::battle::core::commands::tests::runtime_max_health_modifier_without_a_clamp_emits_no_hp_event_or_heal",
+        "game::battle::core::commands::tests::sourced_lethal_max_health_modifier_runs_cleanup_and_nested_death_heals_once",
+        "game::battle::core::object_creation::tests::u07_object_evolution_hp_forms_preserve_health_and_clamp_without_new_slot",
+        "game::battle::core::object_creation::tests::u07_object_max_hp_zero_and_direct_kill_remove_once_without_death_fact",
+        "game::data::validation::tests::r12_passive_guard_requires_bounded_policy_and_parry_in_every_selected_form",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_shielded_employee_attack_grants_no_charge_and_lifesteals_only_hp_loss": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::commands::tests::runtime_max_health_modifier_decision_table_preserves_hp_death_and_provenance": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::commands::tests::runtime_max_health_modifier_without_a_clamp_emits_no_hp_event_or_heal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::commands::tests::sourced_lethal_max_health_modifier_runs_cleanup_and_nested_death_heals_once": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_evolution_hp_forms_preserve_health_and_clamp_without_new_slot": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_max_hp_zero_and_direct_kill_remove_once_without_death_fact": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::data::validation::tests::r12_passive_guard_requires_bounded_policy_and_parry_in_every_selected_form": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V14",
+      "requirement": [
+        "Pause 중 유효 접수/뒤의 타일점유 또는 HP변화/재개를 실행해 후발 생성 실패와 접수 공명·새 비용 무반영을 구분한다.",
+        "CC/철수/취소 전후 미방출0개·방출 Persist 유지, child 생존 중 U05 충전 재개를 확인한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::object_creation::tests::u07_object_public_tile_cast_rejects_before_resonance_and_releases_use_after_creation",
+        "game::battle::core::object_creation::tests::u07_segmented_public_fallback_rejects_lethal_before_payment_and_late_failure_is_normal",
+        "game::battle::core::tests::control_status_hard_cc_cancels_manual_focus_and_releases_owned_locks",
+        "game::battle::core::tests::withdraw_cancels_queued_unreleased_skill_step"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect"
+      ],
+      "selector_receipts": {
+        "game::battle::core::object_creation::tests::u07_object_public_tile_cast_rejects_before_resonance_and_releases_use_after_creation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_public_fallback_rejects_lethal_before_payment_and_late_failure_is_normal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::control_status_hard_cc_cancels_manual_focus_and_releases_owned_locks": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::withdraw_cancels_queued_unreleased_skill_step": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect": [
+          "integrated_host_default008",
+          "integrated_host_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V15",
+      "requirement": [
+        "반복 preview/query는 완전 무변경이고 실제 명령의 비용/위치/형태/거절과 일치한다.",
+        "stale preview 후 변경된 타일·HP·pool·source 상태에서 명시 거절하며 같은 actor 재접속으로 정확한 객체 상태를 조회한다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+        "game::battle::core::object_creation::tests::u07_object_public_tile_cast_rejects_before_resonance_and_releases_use_after_creation",
+        "game::battle::core::object_creation::tests::u07_official_meat_wall_uses_exact_equipped_weapon_pool_across_fragment_source",
+        "game::battle::core::object_creation::tests::u07_official_wall_preview_and_actual_hp_cost_defenses_match",
+        "game::battle::core::object_creation::tests::u07_segmented_public_producer_duplicate_rejection_and_preview_are_read_only"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect"
+      ],
+      "selector_receipts": {
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_public_tile_cast_rejects_before_resonance_and_releases_use_after_creation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_meat_wall_uses_exact_equipped_weapon_pool_across_fragment_source": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_wall_preview_and_actual_hp_cost_defenses_match": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_public_producer_duplicate_rejection_and_preview_are_read_only": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect": [
+          "integrated_host_default008",
+          "integrated_host_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_combat_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V16",
+      "requirement": [
+        "Pause/0.5/설정/재접속과 같은시각 TTL·타격·진화·출처삭제·승리에서 순서와 결과가 결정적이다.",
+        "같은 seed/input을 다른 container/pack 순서와 log/observation 모드에서 실행해 동일한 실제 결과를 확인한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::object_creation::tests::u07_f01_actor_evolution_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_actor_expiry_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_actor_own_ground_contact_survives_and_airborne_form_releases",
+        "game::battle::core::object_creation::tests::u07_f01_actor_source_despawn_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_evolution_clone_late_queue_refusal_rolls_back_contacts_and_retry",
+        "game::battle::core::object_creation::tests::u07_f01_expired_own_wall_releases_only_its_contact_and_route_resumes",
+        "game::battle::core::object_creation::tests::u07_f01_refresh_admission_exact_and_one_short_leave_candidate_unchanged",
+        "game::battle::core::object_creation::tests::u07_f01_refresh_history_overflow_refuses_before_discovery_and_mutation",
+        "game::battle::core::object_creation::tests::u07_f01_refresh_returns_authoring_segmented_capacity_sticky_fault",
+        "game::battle::core::object_creation::tests::u07_f01_wall_evolution_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_wall_expiry_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_f01_wall_source_despawn_preserves_unrelated_contacts",
+        "game::battle::core::object_creation::tests::u07_object_cleanup_only_cascades_actor_sources_without_attacking",
+        "game::battle::core::object_creation::tests::u07_object_same_time_traps_are_stable_and_ttl_wins_before_contact",
+        "game::battle::core::object_creation::tests::u07_object_terminal_finalize_reclaims_live_owners_and_next_battle_resets_ledger",
+        "game::battle::enums::tests::owned_clone_shape_queue_all_variants_preserve_native_order_and_payloads"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::object_creation::tests::u07_f01_actor_evolution_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_expiry_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_own_ground_contact_survives_and_airborne_form_releases": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_actor_source_despawn_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_evolution_clone_late_queue_refusal_rolls_back_contacts_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_expired_own_wall_releases_only_its_contact_and_route_resumes": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_refresh_admission_exact_and_one_short_leave_candidate_unchanged": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_refresh_history_overflow_refuses_before_discovery_and_mutation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_refresh_returns_authoring_segmented_capacity_sticky_fault": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_evolution_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_expiry_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_wall_source_despawn_preserves_unrelated_contacts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_cleanup_only_cascades_actor_sources_without_attacking": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_same_time_traps_are_stable_and_ttl_wins_before_contact": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_terminal_finalize_reclaims_live_owners_and_next_battle_resets_ledger": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::enums::tests::owned_clone_shape_queue_all_variants_preserve_native_order_and_payloads": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V17",
+      "requirement": [
+        "생성/진화/부상 pool/expiry 대기 clone·rollback·같은actor reconnect의 독립성과 exactly-once를 검증한다.",
+        "실제 host Continue/SavePoint/미지원 원본보호 회귀와 새 정상 정의의 저장/복원 consumer를 통과한다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+        "game::battle::core::object_creation::tests::u07_object_evolution_public_two_casts_keep_id_and_pay_each_use",
+        "game::battle::core::object_creation::tests::u07_segmented_ordinary_shield_priority_healing_expiry_and_clone_are_independent",
+        "game::world::tests::u07_objects::u07_public_official_owned_forms_preview_cast_paused_reconnect_clone_and_continue"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect"
+      ],
+      "selector_receipts": {
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_evolution_public_two_casts_keep_id_and_pay_each_use": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_ordinary_shield_priority_healing_expiry_and_clone_are_independent": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::u07_objects::u07_public_official_owned_forms_preview_cast_paused_reconnect_clone_and_continue": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect": [
+          "integrated_host_default008",
+          "integrated_host_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_continuation_003",
+        "public_rewind_003",
+        "final_fault_003_websocket"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V18",
+      "requirement": [
+        "정상 외부 RON→validate→compile→trial/API→실제 결과/query에 각 capability의 nonzero 성공과 strict negative 사례가 있다.",
+        "기본/개화 친구·얼음벽·HPfallback/분절분리 consumer의 실제 명령과 종단 결과를 검증하고 지원 목록/문서가 실제 포트와 일치한다."
+      ],
+      "core_selectors": [
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+        "game::battle::core::object_creation::tests::u07_object_opcode_strict_inputs_and_missing_definition_are_rejected",
+        "game::battle::core::object_creation::tests::u07_object_zero_trap_target_limit_is_rejected_by_strict_catalog",
+        "game::battle::core::object_creation::tests::u07_official_base_second_cast_evolves_and_awakened_cast_creates_big",
+        "game::battle::core::object_creation::tests::u07_official_meat_wall_uses_exact_equipped_weapon_pool_across_fragment_source",
+        "game::battle::core::object_creation::tests::u07_official_small_hits_one_stable_target_big_hits_area_and_ignores_air",
+        "game::battle::core::object_creation::tests::u07_official_wall_preview_and_actual_hp_cost_defenses_match",
+        "game::battle::core::object_creation::tests::u07_segmented_strict_schema_rejects_zero_overflow_and_wrong_consumer_kind",
+        "game::data::independent_object_data::tests::u07_object_evolution_rejects_cycle_foreign_family_kind_and_limit_drift",
+        "game::data::independent_object_data::tests::u07_object_positive_limits_hp_and_duplicate_uuid_are_not_normalized",
+        "game::data::independent_object_data::tests::u07_object_schema_preserves_absent_catalog_bytes_and_strict_roundtrip"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_opcode_strict_inputs_and_missing_definition_are_rejected": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_object_zero_trap_target_limit_is_rejected_by_strict_catalog": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_base_second_cast_evolves_and_awakened_cast_creates_big": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_meat_wall_uses_exact_equipped_weapon_pool_across_fragment_source": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_small_hits_one_stable_target_big_hits_area_and_ignores_air": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_official_wall_preview_and_actual_hp_cost_defenses_match": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_segmented_strict_schema_rejects_zero_overflow_and_wrong_consumer_kind": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::data::independent_object_data::tests::u07_object_evolution_rejects_cycle_foreign_family_kind_and_limit_drift": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::data::independent_object_data::tests::u07_object_positive_limits_hp_and_duplicate_uuid_are_not_normalized": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::data::independent_object_data::tests::u07_object_schema_preserves_absent_catalog_bytes_and_strict_roundtrip": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "public_objects_004",
+        "public_object_schema_003",
+        "public_schema_003",
+        "public_starter_schema_004"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V19",
+      "requirement": [
+        "작은 새상태 크기/clone/queue/원자 fault 검증 후 native/full suite·public bounds·5모드 fault·observer/allocator와 PC/R05를 현재 영향에 맞춰 검증한다.",
+        "예산 exact/one-under·실패원본·회수·숫자oracle이 추적되며 구현 guardrail8개를 독립 확인한다."
+      ],
+      "core_selectors": [
+        "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+        "application::fault_tests::trusted_swap_deployment_references_fault_for_either_missing_native_unit",
+        "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once",
+        "authoring::clone_shape::tests::owned_clone_shape_monolith_requires_provenance_and_preserves_native_history",
+        "authoring::projection::tests::public_projection_counts_before_first_value_and_preserves_native_numbers",
+        "game::battle::core::boss_runtime::tests::native_u07_reinput_wrapper_late_fault_restores_consumed_activation_cast_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::independent_objects::tests::u07_object_owner_counter_clone_and_stale_removal",
+        "game::battle::core::movement::rapier_backend::tests::authoring_clone_admits_retained_history_before_native_copy_and_preserves_continuation",
+        "game::battle::core::movement::rapier_backend::tests::clone_history_includes_removed_population_and_pair_growth_and_resets_only_with_native_owners",
+        "game::battle::core::movement::rapier_backend::tests::native_empty_joint_sets_are_lazy_and_clone_removal_is_independent",
+        "game::battle::core::object_creation::tests::native_u07_form_and_expiry_queue_scans_debit_once_before_pruning",
+        "game::battle::core::object_creation::tests::native_u07_form_overlay_scan_debits_once_before_validation",
+        "game::battle::core::object_creation::tests::native_u07_object_and_pool_scans_debit_once_at_exact_work_boundary",
+        "game::battle::core::object_creation::tests::native_u07_object_evolution_late_queue_fault_restores_form_counter_and_retry",
+        "game::battle::core::object_creation::tests::native_u07_object_late_retained_fault_rolls_back_batch_and_retries",
+        "game::battle::core::object_creation::tests::native_u07_object_offsets_and_reach_refuse_before_materialization_or_mutation",
+        "game::battle::core::object_creation::tests::native_u07_retained_object_request_and_adapter_scans_debit_once_before_walk",
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry",
+        "game::battle::core::object_creation::tests::u07_f01_refresh_admission_exact_and_one_short_leave_candidate_unchanged",
+        "game::battle::core::object_creation::tests::u07_f01_refresh_history_overflow_refuses_before_discovery_and_mutation",
+        "game::battle::core::object_creation::tests::u07_f01_refresh_returns_authoring_segmented_capacity_sticky_fault",
+        "game::battle::core::queue::tests::native_packed_queue_preserves_mixed_priority_and_admits_shared_unpack",
+        "game::battle::core::queue::tests::native_queued_fact_owner_is_lazy_shared_and_admitted_before_allocation",
+        "game::battle::core::resonance_runtime::tests::u05_native_use_scans_refuse_at_their_budget_boundary_without_mutation",
+        "game::battle::core::resonance_runtime::tests::u05_pulse_and_use_counter_overflows_restore_native_boundary_and_retry",
+        "game::battle::core::resonance_runtime::tests::u05_use_state_survives_controlled_clone_and_native_admission_failure",
+        "game::battle::core::runtime_facts::tests::native_active_cow_keeps_nested_steps_and_deliveries_independent_on_failure_and_retry",
+        "game::battle::core::runtime_facts::tests::native_summary_cow_admits_detachment_in_native_and_authoring_scopes",
+        "game::battle::core::tests::application_unit_map_history_survives_native_clone_and_runtime_reset",
+        "game::battle::core::tests::native_action_area_observes_accept_release_control_finish_and_actual_settlement",
+        "game::battle::core::tests::native_action_cloned_battle_has_independent_cancel_and_completion",
+        "game::battle::core::tests::native_action_discarded_request_and_result_take_restore_authority",
+        "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover",
+        "game::battle::core::tests::native_action_pending_death_preserves_cast_end_cost_without_release",
+        "game::battle::core::tests::native_action_piercing_empty_final_expiry_closes_carrier_without_releasing_gate",
+        "game::battle::core::tests::native_action_projectile_first_hit_is_at_300_after_accept_0_release_100",
+        "game::battle::core::tests::native_action_result_admission_rejects_before_focus_and_queue_mutation",
+        "game::battle::core::tests::native_action_withdraw_before_release_and_after_release_have_distinct_progress",
+        "game::battle::core::tests::native_clock_only_step_stages_only_execution_and_preserves_failure_prefix",
+        "game::battle::core::tests::native_predeath_limit_rejects_lethal_mutation_and_recovers_after_actual_expiry",
+        "game::battle::core::tests::native_timestamp_buffer_reuses_range_rows_and_preserves_failure_prefix_and_spawn_order",
+        "game::battle::core::tests::owned_clone_shape_complete_battle_admission_precedes_native_copy_and_keeps_continuation",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::evaluation_respects_remaining_native_work_and_recovers_next_operation",
+        "game::battle::core::value_expr_runtime::tests::resolved_member_preparation_admits_exact_native_extent_before_copy",
+        "game::battle::enums::tests::owned_clone_shape_queue_all_variants_preserve_native_order_and_payloads",
+        "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries",
+        "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation",
+        "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault",
+        "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard",
+        "game::battle::runtime_facts::u07_source_storage_tests::native_u07_source_retained_payload_is_priced_while_clone_shares_wrapper",
+        "game::battle::runtime_facts::u07_source_storage_tests::native_u07_source_wrapper_exact_admission_refuses_before_replacing_origin_or_clone",
+        "game::combat_setup::battlefield_plan::u07_preview_accounting_tests::native_u07_preview_count_sort_and_copy_debit_once_before_materialization",
+        "game::data::independent_object_data::tests::u07_object_compiled_clone_is_independent_and_admitted_before_copy",
+        "game::resource::store::tests::native_clone_budget_prices_store_before_copying_or_mutating",
+        "game::world::tests::combat::native_runtime_facts_preserve_actual_same_definition_inventory_copies_through_player_drafts",
+        "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit",
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+        "owned_collections::tests::entry_keeps_native_lookup_and_factory_behavior_and_values_can_mutate",
+        "owned_collections::tests::retained_history_survives_churn_clear_and_native_clone_without_changing_map_semantics",
+        "owned_collections::tests::unused_vacant_entry_keeps_native_reservation_in_clone_history",
+        "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "application::fault_tests::trusted_swap_deployment_references_fault_for_either_missing_native_unit": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once": [
+          "integrated_core_observation008"
+        ],
+        "authoring::clone_shape::tests::owned_clone_shape_monolith_requires_provenance_and_preserves_native_history": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "authoring::projection::tests::public_projection_counts_before_first_value_and_preserves_native_numbers": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::native_u07_reinput_wrapper_late_fault_restores_consumed_activation_cast_queue_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::independent_objects::tests::u07_object_owner_counter_clone_and_stale_removal": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::movement::rapier_backend::tests::authoring_clone_admits_retained_history_before_native_copy_and_preserves_continuation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::movement::rapier_backend::tests::clone_history_includes_removed_population_and_pair_growth_and_resets_only_with_native_owners": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::movement::rapier_backend::tests::native_empty_joint_sets_are_lazy_and_clone_removal_is_independent": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_form_and_expiry_queue_scans_debit_once_before_pruning": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_form_overlay_scan_debits_once_before_validation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_object_and_pool_scans_debit_once_at_exact_work_boundary": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_object_evolution_late_queue_fault_restores_form_counter_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_object_late_retained_fault_rolls_back_batch_and_retries": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_object_offsets_and_reach_refuse_before_materialization_or_mutation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_retained_object_request_and_adapter_scans_debit_once_before_walk": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::native_u07_segmented_late_spawn_fault_restores_pool_health_facts_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_refresh_admission_exact_and_one_short_leave_candidate_unchanged": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_refresh_history_overflow_refuses_before_discovery_and_mutation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::object_creation::tests::u07_f01_refresh_returns_authoring_segmented_capacity_sticky_fault": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::queue::tests::native_packed_queue_preserves_mixed_priority_and_admits_shared_unpack": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::queue::tests::native_queued_fact_owner_is_lazy_shared_and_admitted_before_allocation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_native_use_scans_refuse_at_their_budget_boundary_without_mutation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_pulse_and_use_counter_overflows_restore_native_boundary_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_use_state_survives_controlled_clone_and_native_admission_failure": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::runtime_facts::tests::native_active_cow_keeps_nested_steps_and_deliveries_independent_on_failure_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::runtime_facts::tests::native_summary_cow_admits_detachment_in_native_and_authoring_scopes": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::application_unit_map_history_survives_native_clone_and_runtime_reset": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_area_observes_accept_release_control_finish_and_actual_settlement": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_cloned_battle_has_independent_cancel_and_completion": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_discarded_request_and_result_take_restore_authority": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_pending_death_preserves_cast_end_cost_without_release": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_piercing_empty_final_expiry_closes_carrier_without_releasing_gate": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_projectile_first_hit_is_at_300_after_accept_0_release_100": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_result_admission_rejects_before_focus_and_queue_mutation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_action_withdraw_before_release_and_after_release_have_distinct_progress": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_clock_only_step_stages_only_execution_and_preserves_failure_prefix": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_predeath_limit_rejects_lethal_mutation_and_recovers_after_actual_expiry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::native_timestamp_buffer_reuses_range_rows_and_preserves_failure_prefix_and_spawn_order": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::tests::owned_clone_shape_complete_battle_admission_precedes_native_copy_and_keeps_continuation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::value_expr_runtime::tests::evaluation_respects_remaining_native_work_and_recovers_next_operation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::core::value_expr_runtime::tests::resolved_member_preparation_admits_exact_native_extent_before_copy": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::enums::tests::owned_clone_shape_queue_all_variants_preserve_native_order_and_payloads": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::runtime_facts::u07_source_storage_tests::native_u07_source_retained_payload_is_priced_while_clone_shares_wrapper": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::battle::runtime_facts::u07_source_storage_tests::native_u07_source_wrapper_exact_admission_refuses_before_replacing_origin_or_clone": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::combat_setup::battlefield_plan::u07_preview_accounting_tests::native_u07_preview_count_sort_and_copy_debit_once_before_materialization": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::data::independent_object_data::tests::u07_object_compiled_clone_is_independent_and_admitted_before_copy": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::resource::store::tests::native_clone_budget_prices_store_before_copying_or_mutating": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::combat::native_runtime_facts_preserve_actual_same_definition_inventory_copies_through_player_drafts": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "owned_collections::tests::entry_keeps_native_lookup_and_factory_behavior_and_values_can_mutate": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "owned_collections::tests::retained_history_survives_churn_clear_and_native_clone_without_changing_map_semantics": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "owned_collections::tests::unused_vacant_entry_keeps_native_reservation_in_clone_history": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ],
+        "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation": [
+          "integrated_core_default008",
+          "integrated_core_fixtures008",
+          "integrated_core_observation008"
+        ]
+      },
+      "direct_receipts": [
+        "integrated_fmt008",
+        "integrated_check008",
+        "integrated_event_log008",
+        "integrated_clippy_core008",
+        "integrated_clippy_host008",
+        "integrated_heap008",
+        "compat_pc_prepare_010",
+        "compat_pc_005",
+        "compat_pc_gameplay_005",
+        "compat_pc_cost_005",
+        "compat_r05_prepare_005",
+        "compat_r05_summary_005",
+        "compat_r05_dependencies_005",
+        "public_guards003",
+        "public_guards_allocator003",
+        "release_build_004",
+        "f01_focused_004",
+        "f01_native_001",
+        "f01_charge_scan_002",
+        "compat_prepared_public_003",
+        "compat_prepared_boundary_003",
+        "compat_input_validation_003",
+        "compat_default_parity_003",
+        "compat_public_oracle_003",
+        "compat_public_trace_004",
+        "compat_public_cli_003",
+        "compat_public_profile_003",
+        "compat_public_boundary_003",
+        "compat_public_api_003",
+        "public_schema_003",
+        "public_independent_area_003",
+        "public_continuation_003",
+        "public_rewind_003",
+        "public_object_schema_003",
+        "public_starter_schema_004",
+        "public_objects_004",
+        "public_object_combat_004",
+        "final_fault_003_build_on",
+        "final_fault_003_none",
+        "final_fault_003_detached",
+        "final_fault_003_queue_full",
+        "final_fault_003_on",
+        "final_fault_003_websocket",
+        "final_fault_003_build_off",
+        "final_fault_003_off",
+        "compat_r05_005"
+      ],
+      "status": "implementation self-verification; independent completion verdict pending"
+    },
+    {
+      "id": "V20",
+      "requirement": [
+        "각 조건/차원의 실제 command·selector·nonzero 결과·raw/currentness와 범위 제외가 추적되고 current integrated target이 정역 복원된다.",
+        "전체 목표의 독립 Complete/High와 open finding0 이후에만 U08 정상 진입으로 인수한다."
+      ],
+      "core_selectors": [],
+      "host_selectors": [],
+      "selector_receipts": {},
+      "direct_receipts": [],
+      "status": "implementation self-verification; independent completion verdict pending"
+    }
+  ],
+  "required_dimensions": {
+    "success": [
+      "V01",
+      "V04",
+      "V05",
+      "V06",
+      "V07",
+      "V10",
+      "V11",
+      "V12",
+      "V15",
+      "V17",
+      "V18"
+    ],
+    "invalid_input": [
+      "V02",
+      "V03",
+      "V07",
+      "V10",
+      "V11",
+      "V14",
+      "V18"
+    ],
+    "failure_rollback": [
+      "V02",
+      "V07",
+      "V10",
+      "V11",
+      "V14",
+      "V17",
+      "V19"
+    ],
+    "retry_idempotency": [
+      "V02",
+      "V07",
+      "V09",
+      "V14"
+    ],
+    "ordering_concurrency": [
+      "V06",
+      "V09",
+      "V12",
+      "V13",
+      "V16"
+    ],
+    "boundary_empty_max": [
+      "V03",
+      "V06",
+      "V10",
+      "V11",
+      "V13",
+      "V19"
+    ],
+    "disconnect_restart_persistence": [
+      "V08",
+      "V09",
+      "V17"
+    ],
+    "live_data": [
+      "V01",
+      "V04",
+      "V05",
+      "V06",
+      "V12",
+      "V18"
+    ],
+    "producer_consumer": [
+      "V02",
+      "V10",
+      "V11",
+      "V15",
+      "V17",
+      "V18",
+      "V19"
+    ],
+    "legacy_fallback_absence": [
+      "V01",
+      "V04",
+      "V08",
+      "V10",
+      "V12",
+      "V13",
+      "V18",
+      "V19"
+    ]
+  },
+  "suite_counts": {
+    "integrated_core_default008": {
+      "passed": 1865,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_fixtures008": {
+      "passed": 1865,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_observation008": {
+      "passed": 1874,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_default008": {
+      "passed": 93,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_observation008": {
+      "passed": 101,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "receipt_bindings": {
+    "integrated_core_default008": {
+      "receipt_sha256": "7a8cea201baba56661d99a4ee8956b611e2518e045062e9139bb34fbb264d483",
+      "log_sha256": "010507b96f5f9e960b551b605621cd2753247cde92f59687d7c45542d1dba28e",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_core_fixtures008": {
+      "receipt_sha256": "68f2b5e4a9672ef70394163c7149b098e56b366418d28e8ffd49f566dfdf1590",
+      "log_sha256": "2cc9f8a93973d362b7f1413010c4cc7137d4c6b03ff4201611ab42d0157dbcc5",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_core_observation008": {
+      "receipt_sha256": "43822c2e6974290d80144a306ac715fa83fb89a6fe6756c974abdbcc7705444d",
+      "log_sha256": "9f3624255593778625ebdaa47b3281bdf3e380a245a0d738ecee23d4294b2a92",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_host_default008": {
+      "receipt_sha256": "daa4ce779f4cbbfefcde67564923ae384197ec522267fc80547708d3c535850e",
+      "log_sha256": "d9cbb4ee56d8b26ecb8d1d5e9a4f9d1ee087349cdaf2e94e7f4317c2adab187a",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_host_observation008": {
+      "receipt_sha256": "6a8e8b7d33b7804033e6a67baeb2b679db8e5478cfc7bb9df9d081ebce4781fd",
+      "log_sha256": "70714f33420e5cb8486f5d82b57f673d3ce773b5ee591283c232faf7d8744303",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_fmt008": {
+      "receipt_sha256": "1f04a8c62a3b5dbff3425213bda9423b018476d551526b2842b5c0bae369f8e2",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_check008": {
+      "receipt_sha256": "07dab295e8e738f9ca4dcde4076da2bdeade8e910423cfbb83696e915b887252",
+      "log_sha256": "f5d8e95e747aee45df16f21e6fe5610cacd39321083c15c0fd1c09fe470b8046",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_event_log008": {
+      "receipt_sha256": "fca775d65e57a28ea66c14f258e2408e17cff9a0ffc6e08d60557eb33e8f373c",
+      "log_sha256": "930aa88ccac96e37ea808297bb54dcf196bfa240e1a340a012456306eceaf86f",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_clippy_core008": {
+      "receipt_sha256": "3e23e172c2458b22303ec6746d07fd767bd7f07484edc647bcdc01c95982a53a",
+      "log_sha256": "fd361ecf8f5bb70b443fc7c11d45173f6efb653e1c3eb46d11d894c671085b66",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_clippy_host008": {
+      "receipt_sha256": "6fe06e474915437c32896d10223e1afc2f8e9bd3efd46dae15de1a73afe86321",
+      "log_sha256": "0da365d2884af3efc1f44e60ab034524832a625adbc25ba2cd4ef92a9acd0e39",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "integrated_heap008": {
+      "receipt_sha256": "52dd25b2cd6fc8758578c37a74d36d8787c2e705fab6ad33b732fc4e1560c128",
+      "log_sha256": "2bd1152928a2784f20ed8d303a933dd23f408816d42dba015fd33a8a3bbabfab",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_pc_prepare_010": {
+      "receipt_sha256": "bb1694850d1057ec2637cc24e2f6d4d04e4517f609f1f9cb83d5723c88f2b0c4",
+      "log_sha256": "4d07e02bbb9abe78a60fbe185681c872d83ef06cab45167605f961d03a1e995b",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_pc_005": {
+      "receipt_sha256": "d26fb9e51e6c8582f69794272f7fbc270a1954e289f355e9bec5debf951bb0b4",
+      "log_sha256": "d870bbc5bd5202151463c19b951cc522757db8a269fda84746c04f80d7a7e411",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_pc_gameplay_005": {
+      "receipt_sha256": "785e14495c90a1916bc3154bc86eda804aa2357acb20cc27bd04b5d9ddac4622",
+      "log_sha256": "b72326276d410d212da19355ae1659ad2d8a3f2cf7487c4e1a5e171c41086298",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_pc_cost_005": {
+      "receipt_sha256": "007af8c40fa1e26f80736ba7878c3a871ed267386dfcab9eed6c135645d18ad1",
+      "log_sha256": "38ad4479f319612227780a7bc4cd3e3d9a786d579235cac0b8975d2b1d61abdc",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_r05_prepare_005": {
+      "receipt_sha256": "4dceaa40a62dad931d1728337ae0986d251b6f952e714d7204e29c03a5c2b2ec",
+      "log_sha256": "533235cc9de4a6e73e572df97fcda234181d2c27730c4b6de1b30f2837c69fc4",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_r05_summary_005": {
+      "receipt_sha256": "1f1d7732d5821eb377d73abba9c0db0f3bdf52bcbdb879185bd3e5edc257e831",
+      "log_sha256": "b4a3141ce3c6349ad8b428fd2e613dc9d35edb951adf6f6dcbf093fd5617c989",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_r05_dependencies_005": {
+      "receipt_sha256": "baa02cc6532457a8a778adf7ee46493eb906d2703241cb2959b4166dc4a4e101",
+      "log_sha256": "92e43a10faaad2bb9d93842f7a9fda07ef0f19474cf57b8af36f028a3399ef0d",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_guards003": {
+      "receipt_sha256": "c92a34bef45699d1a807ac235f6cdfe8e6a3b1343363a959fa1deb294b2dad7e",
+      "log_sha256": "32fc16a7a6340bb7bf391ab4835a3cb04aa744a099a886a4e07d1105d1543fc6",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_guards_allocator003": {
+      "receipt_sha256": "faff59fd3f4292139760425a712d6f7f045d021e6b9c9fbc28aa98cd1589dbb8",
+      "log_sha256": "67a1c431c61500c4b5013c9378886d443f35813d78611d1caf7b1773a7bf362e",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "release_build_004": {
+      "receipt_sha256": "61f089d5214e02828c44fd0b5c3a4498fa5f5afe84eb6fe86049c2f8c784a02e",
+      "log_sha256": "3ceac00406b6cc8bdd245f9006658624f25ee235c3f047c73a9e1506dc943052",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "f01_focused_004": {
+      "receipt_sha256": "359ca9e7451e9ff1a498c177253394b6b847b551fd9071c3786f06e4e234709b",
+      "log_sha256": "2f036652e589164defe41624d022df5158976235f6464a1faf371212d15ea587",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "f01_native_001": {
+      "receipt_sha256": "ee6dd8b2a11cea93fbdbaf8cbae5bc0121d2bb21910c6ca7658e80578973d010",
+      "log_sha256": "2fde4391909bbbf6f20d959972563ea700b170f5bd2fbcddee3221967ac3b0f0",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "f01_charge_scan_002": {
+      "receipt_sha256": "f3d784ade0d5f36ee70dc19c4155f78ce0acc375c9b9dfaf7994e46df5a059ad",
+      "log_sha256": "1861ef952d57051482f1f59429c0e1591e1d9e86118ac7f157e1902804bb34b5",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_prepared_public_003": {
+      "receipt_sha256": "a9e242d41be2089aaf475e24af37ad7c3e07a66985a7afb27b5d7e3f42b19366",
+      "log_sha256": "d9cefa0a1a69097e6addf4a8a76ba9b56e8013847370a7a33b9082852b373383",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_prepared_boundary_003": {
+      "receipt_sha256": "b79988f4ad0613f6f7927f5ccfc7ad3c6e258dc6320c67a58272d985171aee93",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_input_validation_003": {
+      "receipt_sha256": "88abb7c6b723aac6fb4a68aa5fd5b2f6cdd009973dd3b811aa138938e4a6e10c",
+      "log_sha256": "1dbd428054495fc7077e34361a2d176669b86b1f1e44f5e86c01fc32be649415",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_default_parity_003": {
+      "receipt_sha256": "8df733a9ec2d17be47ecfe19e4265193670a753f0f53ade62a3a9c1373cff90d",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_public_oracle_003": {
+      "receipt_sha256": "099d85e02f708834e211d9e25168de3ef24205506a46a4bdcfefc3f88e1ceaea",
+      "log_sha256": "121a45b42199e7b0b7b55029c73db411e89c84eaaddc1b0b34807e4b39b58e8f",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_public_trace_004": {
+      "receipt_sha256": "e72394249ebdb03b0ede649858f036998248cf0a5ed282b7886a24bbbda26d21",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_public_cli_003": {
+      "receipt_sha256": "7c30618c382e3cc10b6d6def38b07bba079128ae79871730d615a3529873070a",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_public_profile_003": {
+      "receipt_sha256": "1a03ebae161938fd8c5eb584cd353c46aca28a23f79621454459f34cd22aa6cf",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_public_boundary_003": {
+      "receipt_sha256": "8c6f8c8e44e786267da3fc3ba4066c508548ad5d7bc35352b30835a929165404",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_public_api_003": {
+      "receipt_sha256": "b93d2652bec8c378d59b18897dc504cad343491acedb53c63860282fc9a5250b",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_schema_003": {
+      "receipt_sha256": "4935df856ebd679a8d8114c6cc2f3b9f3dd91355e4a1a423b72cbd5cfa666daf",
+      "log_sha256": "dd634f9ec7d27de0d42d470908207a672c93c37379cbf1c6b39b4bcfeee6443a",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_independent_area_003": {
+      "receipt_sha256": "d821d05ea188dcf8488f711a45b5d658f0d67134a71f1b6c94f2d1f81f00bc1c",
+      "log_sha256": "e0378cc2ffdca28f216f2198c9139da3dd77946c54299e0f04486fd09ded6132",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_continuation_003": {
+      "receipt_sha256": "916519d02f0f63bf724f510145236123deb06892d95bd37be94c51eb79a00f44",
+      "log_sha256": "299506b13068897a2ac22d7a62be96b50ea9aa401ea36b315b1ebe546a730566",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_rewind_003": {
+      "receipt_sha256": "606fa9433f4bcc4ded8f1cd37ee9f93d92e33a4596737675b78d94d3e59f3dfb",
+      "log_sha256": "5df0fa017ad25e175ef6343b0f373e328970c2a1f5f590a43e60c98e5940d29a",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_object_schema_003": {
+      "receipt_sha256": "e9e2a93af40be71868e17801159d669d21410e99539d460c6972ad59ee906110",
+      "log_sha256": "b4832c8122b1da80c12e882acac5b931ca4f2ebd47e4b06c2270b4cca344b4f2",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_starter_schema_004": {
+      "receipt_sha256": "66f6279d1d4bece97cecba496c07f2e17156758051c6d4deb0f80bced33398a1",
+      "log_sha256": "fe78404281f43501c42c002ac53fe10814de4278e0357483cffc05b97f3f5a6e",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_objects_004": {
+      "receipt_sha256": "e0469f8c0bcab4ffb46c15343b870e56c818bfa9085b6e275755c839be278b4c",
+      "log_sha256": "29bc2ec5c9da7fac0bbd182e1357e79792c0175dcaf48bcd90c1e1d270e11d4d",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "public_object_combat_004": {
+      "receipt_sha256": "e001513e861d15c718ffea3f50fb72f3a40503d93b686961d7310ac683b7e371",
+      "log_sha256": "052e3e481a69d3d7c0115adf506738f24c885b9ed5724f058f5123476f9e51ed",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_build_on": {
+      "receipt_sha256": "2388e59c1eb4d0f24dcb37c1c0957a5d266fca9cf4334a84a571cc732b662177",
+      "log_sha256": "37f97b774ebed1b76c660525f6ceba3fac021ee3d28be574bd2bcc01dd32148d",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_none": {
+      "receipt_sha256": "a9326763b13edcb3a3e748b387cb8f8fedd63d15a9d36e1155163dec9d7e4d64",
+      "log_sha256": "6d9c5013a50799bf99519ca715259a67fb160749cc0b652703df6e5a078dd7d6",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_detached": {
+      "receipt_sha256": "88625a8f8ffa43dcc1592ca8d6ca8f6dc712cdf6891224a05449fa0a85ea33ae",
+      "log_sha256": "6d9c5013a50799bf99519ca715259a67fb160749cc0b652703df6e5a078dd7d6",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_queue_full": {
+      "receipt_sha256": "3d664acf53d7278c3eeac828e672fffa734d1a306e9d04bc13392570148a6f9d",
+      "log_sha256": "4b797e988d5c644965557d9e35a619bf87128606fb43218b497609140ca61118",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_on": {
+      "receipt_sha256": "54f438cbba4cd23184e8828153320fdc7022d7df5cbddda9a1771eba73adfa87",
+      "log_sha256": "346a432b07a11e0383fd044ab1cddbb353783369c46a123e749d06e15b69d692",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_websocket": {
+      "receipt_sha256": "2b538913e2241d9f8d16a75a4639935405836ed6eb7459df37475651fa76dbec",
+      "log_sha256": "f3d7273a1b38ea4e4be92e3e22e8d3178a69c9434e1800eb0aad8a3344aa471e",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_build_off": {
+      "receipt_sha256": "cfe715235edcb0a0647ef987f96430950b142ee643ceac7c9574606017fd61bf",
+      "log_sha256": "c6ec2f240306199debe2577eb04503940751c7e4ccb600594f32009578adf18f",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "final_fault_003_off": {
+      "receipt_sha256": "606c7efcab94f8380788f951669ba218d0097e47edbda4d76086db5aaf5b0380",
+      "log_sha256": "6d9c5013a50799bf99519ca715259a67fb160749cc0b652703df6e5a078dd7d6",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 0
+    },
+    "compat_r05_005": {
+      "receipt_sha256": "20918489a6bdaa8999ded9b182159d9ddd4ccc983ccd7eac1e463f47d58d3de7",
+      "log_sha256": "35670612864e77b81c3c8a5ff8ac5e9aebdb1cb7db5524fbaba80cdcb20ff076",
+      "source_sha256": "886d427882319b3147260f394f1204acf903af654f772709bdaaa045f1c62146",
+      "raw_exit_code": 101
+    }
+  },
+  "state_inventory": "STATE_INVENTORY.md",
+  "predecessor_impact_sha256": "9631e1d47bc93e8189c74edba8192242c42883ada5d6d214e77675709583db51",
+  "public_summaries": {
+    "prepared_host": "execution/single_goal/compatibility/current_001/public_probe_003/RESULT.json",
+    "prepared_boundary": "execution/single_goal/compatibility/current_001/boundary_003/RESULT.json",
+    "input_validation": "execution/single_goal/compatibility/current_001/input_validation_003/SUMMARY.json",
+    "defaults": "execution/single_goal/compatibility/current_001/evidence/DEFAULT_NUMBERS_003.json",
+    "oracle": "execution/single_goal/compatibility/current_001/evidence/public_after_003/SUMMARY.json",
+    "trace": "execution/single_goal/compatibility/current_001/evidence/public_after_003_trace/SUMMARY.json",
+    "cli": "execution/single_goal/compatibility/current_001/evidence/cli_current_003/CLI_FINAL_SUMMARY_002.json",
+    "profile": "execution/single_goal/compatibility/current_001/evidence/public_profile_003/SUMMARY.json",
+    "boundary": "execution/single_goal/compatibility/current_001/evidence/public_boundary_003/SUMMARY.json",
+    "api": "execution/single_goal/compatibility/current_001/evidence/public_api_003/RESULT.json",
+    "starter": "evidence/public_starter_schema_004/SUMMARY.json",
+    "schema": "evidence/public_schema_003/SUMMARY.json",
+    "area": "evidence/public_independent_area_003/SUMMARY.json",
+    "continuation": "evidence/public_continuation_003/SUMMARY.json",
+    "rewind": "evidence/public_rewind_003/SUMMARY.json",
+    "object_schema": "evidence/public_object_schema_003/SUMMARY.json",
+    "objects": "evidence/public_objects_004/SUMMARY.json",
+    "object_combat": "evidence/public_object_combat_004/SUMMARY.json",
+    "fault": "evidence/final_fault_003_SUMMARY.json",
+    "fault_websocket": "evidence/public_fault_final_003/SUMMARY.json",
+    "public_cost_guards": "evidence/public_guards003_raw.json",
+    "public_allocator_guards": "evidence/public_guards_allocator003_raw.json"
+  },
+  "pc_comparison": {
+    "gameplay_sha256": "b72326276d410d212da19355ae1659ad2d8a3f2cf7487c4e1a5e171c41086298",
+    "cost_sha256": "ec350bfdfb793ba6d235cc8159a95c4ff4fc46cc1edf56a033e7761b1143fda5",
+    "raw_sha256": "889ed424183f0930d05524b6d5fcb13fa38bc4ffc9234413617a4db001824c61",
+    "claim": "All576 immediateU06 non-timing fields are exact except the measured200-byte empty-owner retained extent/admission and same200 requested delta in the original5 typed refusals. Work, clone, allocation count/bytes, evaluator usage/work, gameplay/facts/logs, completion and error code/site/cap are exact. Kernel synthetic costs remain exact. All repeated samples have identical non-timing observations within each observer condition. Unknown deltas/new refusals fail."
+  },
+  "r05_summary": {
+    "path": "compatibility/current_001/evidence/R05_SUMMARY_CURRENT_005.json",
+    "sha256": "b4a3141ce3c6349ad8b428fd2e613dc9d35edb951adf6f6dcbf093fd5617c989"
+  },
+  "compatibility_adaptation_sha256": "a1e86f8faa9e388788fa4adbe1a733fbacd6a6430282ce8480b5be531eecbc3b",
+  "limitations": [
+    "Local Linux CoreApplication, real host actor, stock WebSocket and process/file boundaries. No Unity or deployed service claim.",
+    "Only inherited R05 concurrent-peak warning and20minute stress exclusion apply; no numeric cap changed.",
+    "Object tests use normal grants/equipment/copies, with explicitly recorded readiness, reward, unlocked-form and standalone wall fixtures. No new recipe/reward or infection producer claim.",
+    "Shared action/CC/work gates retain generic regression evidence; selector links do not claim every Cartesian combination was separately run.",
+    "V20 Complete/High and unresolved-findings gate is reserved for independent audit; no dependent U08 work before it.",
+    "PC elapsed times are shared-host observations; the original R05 allocation-instrumented run has latency_gate_applicable=false. Raw latency results remain visible, and no numeric allocation ceiling or exception was changed."
+  ],
+  "performance_environments": [
+    {
+      "path": "compatibility/current_001/evidence/PERFORMANCE_ENVIRONMENT_005_pc.json",
+      "sha256": "61ad511a9ee98c0af7292434a6777fbd9260df78c67b2094ab101415ca17a292",
+      "phase": "pc",
+      "other_training_present": true,
+      "timing_claim": "Shared-host raw observations only; allocation observer is process/thread scoped. PC gameplay, typed refusal and full non-timing parity are checked separately; inherited R05 allocation instrumentation disables its latency gate. No numeric ceiling changes."
+    },
+    {
+      "path": "compatibility/current_001/evidence/PERFORMANCE_ENVIRONMENT_005_r05.json",
+      "sha256": "2221687cb058e3044eab3bd6c4627ee2f8654d118a2e07aa64964379f55f0a8e",
+      "phase": "r05",
+      "other_training_present": true,
+      "timing_claim": "Shared-host raw observations only; allocation observer is process/thread scoped. PC gameplay, typed refusal and full non-timing parity are checked separately; inherited R05 allocation instrumentation disables its latency gate. No numeric ceiling changes."
+    }
+  ],
+  "audit_correction": {
+    "path": "core_enhanced/docs/goals/core_independent_objects/evidence/f01_correction_001/RECORD.json",
+    "sha256": "9ee4677af71b0b40a800e09aa69ff3e7f946a016fd16b2ae511900172af41477",
+    "finding": "U07-F01",
+    "closed_audit_sha256": "68d6c1dc6efff4ad5d6d3299f7c9225f783d258551f1ca57c14190c9746c3801"
+  },
+  "withdrawn_investigation": {
+    "path": "core_enhanced/docs/goals/core_independent_objects/evidence/f01_correction_002/RECORD.json",
+    "sha256": "91d2b9f8dedadafbf045f021c740e759f7ca8806350829ebacc0670d76596e58",
+    "claim": "Normal HP0 evolution premise refuted; own test changes selectively restored to the exact passed source; no additional product guard."
+  },
+  "compatibility_adaptation": {
+    "path": "compatibility/current_001/ADAPTATION_FINAL_003.json",
+    "sha256": "a1e86f8faa9e388788fa4adbe1a733fbacd6a6430282ce8480b5be531eecbc3b"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "references": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_g5_stage001/RESULT.json",
+      "sha256": "797831f7ceab67fe758097040c118e1d9e0400c63f996f7d29ebc391a849ba1f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_g5_stage001/FINAL_SOURCE.json",
+      "sha256": "8061b527921c8e938314655a6d14534478934bc1321dba7b51cb04c944b3aab0"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_021/RECORD.json",
+      "sha256": "1af623ae907ce7a537373c6bc8e72990d400e90cfae8dc14f68e3ebb9c8b6d4f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_g5_host003.json",
+      "sha256": "7cc3a0370e5b8214d5eb181218eecf217a42532437fc18c2a667d13c6409b349"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_g5_retreat002.json",
+      "sha256": "a9a9ab6208eee5fc84f261d751c593177f4da7a7fe994304aaf30a8b418c9cfd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_g5_wire002.json",
+      "sha256": "d9b9108b76478a592ba23f175bf0c441803026385c1368c23dedc8bf209900b8"
+    }
+  ]
+}

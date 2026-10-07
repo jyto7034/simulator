@@ -1,0 +1,28 @@
+{
+  "freeze": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CRSO-001",
+    "Content Digest": "sha256:1ef9392053bcb243fb8bb4d00d2c44736131da703720f413471a2148600d828d"
+  },
+  "phase_plan": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CRSO-001",
+    "Content Digest": "sha256:0afeeb9809f90b980f447d895428337d003be5364ad7e3f7848eac6ea0798fbd"
+  },
+  "goal_set": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CRSO-001",
+    "Content Digest": "sha256:fa28492e599d2b64e850ead4284a668d83e69a3b145c03f8821ec5103aaabe41"
+  },
+  "handoff": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HA-CRSO-001",
+    "Content Digest": "sha256:f0b6e4693a05b9d633e0531af434f954eb1b2f5474656c0bd15b4cd72a5dcc3e"
+  },
+  "all_composite_links_exact": true,
+  "phase_count": 2,
+  "work_package_count": 7,
+  "integration_count": 13,
+  "acceptance_count": 12,
+  "dimension_count": 20
+}

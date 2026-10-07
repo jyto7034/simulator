@@ -1,0 +1,14 @@
+{
+  "ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CRSA-002",
+    "Content Digest": "sha256:37f5ad7d31323a856a8bb7a919a8b9f8d6e85f60abaf8e647e9124c9208e98b3"
+  },
+  "canonical_digest_method": "SHA256 UTF-8/LF Markdown except Goal Set Ref envelope line",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_50_GOAL_SET_002.ko.md",
+    "bytes": 26885,
+    "sha256": "4779972d65386a3ba65eed96e6b3068283c7944e4e3d0bd0e744fff8f37f3105"
+  },
+  "status": "candidate pending actual quality2 validator and O50 complete result"
+}

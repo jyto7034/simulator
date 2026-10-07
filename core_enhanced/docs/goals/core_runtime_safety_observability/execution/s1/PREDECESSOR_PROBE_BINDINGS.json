@@ -1,0 +1,62 @@
+[
+  {
+    "source": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/public_probe.py",
+    "source_sha256": "22599e96f0882d28e1a1a09e3929ac188c0aa1660731815111ca904dcca6ed20",
+    "successor": "core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_probe.py",
+    "successor_sha256": "8aa5cdd7b8ad44538488e513ece1f0b4afd3fcbb191b890ad95f2ee997f25d3f",
+    "changes": "paths and receipt/source shape only; original oracle assertions unchanged",
+    "replaced": [
+      "import run\n"
+    ]
+  },
+  {
+    "source": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/public_trace_probe.py",
+    "source_sha256": "8662b3c53da7482c3097b143a650e2afe2468e1461806b08e2f92817233d7a45",
+    "successor": "core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_trace_probe.py",
+    "successor_sha256": "8662b3c53da7482c3097b143a650e2afe2468e1461806b08e2f92817233d7a45",
+    "changes": "paths and receipt/source shape only; original oracle assertions unchanged",
+    "replaced": []
+  },
+  {
+    "source": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/public_cli.py",
+    "source_sha256": "fd3c4480930aed5be85707d65146a33022501323d1f699bad87de8e389bd0b66",
+    "successor": "core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_cli.py",
+    "successor_sha256": "73c531b479e43c09caf938c95a9abf8e1bc6d22177aa7f3216387460daca369f",
+    "changes": "paths and receipt/source shape only; original oracle assertions unchanged",
+    "replaced": [
+      "H=Path(__file__).resolve().parent;",
+      "E=H/'evidence'/'cli_current'"
+    ]
+  },
+  {
+    "source": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/prepare_pc.py",
+    "source_sha256": "0f14980f1dddc98c6abb4387835e46e412d5bf756c249acbef9a89c1a2e85678",
+    "successor": "core_enhanced/docs/goals/core_runtime_safety_observability/tools/prepare_pc.py",
+    "successor_sha256": "337d48ccbeb61345bff1bb543ee36de01d3b706d1b1af31283013ddb5c87bb96",
+    "changes": "paths and receipt/source shape only; original oracle assertions unchanged",
+    "replaced": [
+      "HERE = Path(__file__).resolve().parent",
+      "FILES = [row[0] for row in runner.identity()['files']]"
+    ]
+  },
+  {
+    "source": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/summarize_r05_002.py",
+    "source_sha256": "d9684dc0ba4c6fd0050d81bf865705794dfc2b0483bfc30f3be010abf36d1f58",
+    "successor": "core_enhanced/docs/goals/core_runtime_safety_observability/tools/summarize_r05_002.py",
+    "successor_sha256": "2513afcc950d804feb13c3500f28ec81d364b6808a55a4a0d2184eeb5bfa06b3",
+    "changes": "paths and receipt/source shape only; original oracle assertions unchanged",
+    "replaced": [
+      "HERE = Path(__file__).resolve().parent",
+      "E = HERE / 'evidence'",
+      "receipt['source_before']['digest'] == receipt['source_after']['digest']",
+      "'source_digest': receipt['source_after']['digest']"
+    ]
+  },
+  {
+    "source": "core_enhanced/tools/authoring_cli_external_probe.py",
+    "source_sha256": "18696c10b10b88af38926d3cd7fe8ea1f367f9db724b296169bf151d42ffa79f",
+    "successor": "core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_api_cli_probe.py",
+    "successor_sha256": "9466d28cfc882a7b2dc66330d7b8e1a4ae3facee822d674a37cb4d9bc3e73f71",
+    "changes": "Cargo target and release binary paths only; all original API/CLI/negative privacy oracles retained"
+  }
+]

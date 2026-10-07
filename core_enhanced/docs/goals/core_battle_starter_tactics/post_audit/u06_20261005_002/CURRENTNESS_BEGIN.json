@@ -1,0 +1,29 @@
+{
+  "at_utc": "2026-10-04T19:28:59.831948+00:00",
+  "manifest_sha256": "5b8f77ebe3cc5ffd16ac9f852058c652818f5ef23a6ffafa142dd8128e0b365b",
+  "product_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+  "membership_count": 3123,
+  "source_count": 392,
+  "record_count": 2593,
+  "reference_count": 142,
+  "archive_counts": {
+    "SOURCE_BEFORE": 385,
+    "SOURCE_AFTER": 392,
+    "RECORDS": 2593,
+    "REFERENCES": 142,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_BEFORE.tar.gz": 375,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_AFTER.tar.gz": 377,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/RECORDS.tar.gz": 2992,
+    "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/REFERENCES.tar.gz": 166,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_001/SOURCE_BEFORE.tar.gz": 385,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_001/SOURCE_AFTER.tar.gz": 392,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_001/RECORDS.tar.gz": 2215,
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_001/REFERENCES.tar.gz": 72
+  },
+  "attribution": {
+    "tracked/clean": 37,
+    "tracked/dirty": 188,
+    "untracked": 2898
+  },
+  "errors": []
+}

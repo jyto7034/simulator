@@ -1,0 +1,18 @@
+{
+  "vcs_revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "target_changed_paths": [
+    "core_enhanced/src/application/fault_tests.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/sustained.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/combat.rs"
+  ],
+  "target_added_paths": [],
+  "auditor_product_mutations": [],
+  "auditor_writes": [
+    "core_enhanced/docs/goals/core_runtime_fault_isolation/post_audit/u03_20261004_003/**",
+    "/tmp/u03-f02-closure-audit/**"
+  ],
+  "cache_effect": "Only debug test build for bounded independent probe; release binaries unchanged and freshly hashed. Original source/frozen records/prior audits/status untouched.",
+  "source_basis": "All367 SOURCE_AFTER members exact before audit-only append snippets. Current frozen membership checked again at END."
+}

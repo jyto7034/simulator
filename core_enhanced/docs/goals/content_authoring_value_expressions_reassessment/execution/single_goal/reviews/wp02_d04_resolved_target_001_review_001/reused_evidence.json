@@ -1,0 +1,37 @@
+{
+  "check_all_targets_001": {
+    "exit_code": 0,
+    "test_passed": 0,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  },
+  "focused_value_expr_001": {
+    "exit_code": 0,
+    "test_passed": 74,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  },
+  "all_targets_native_001": {
+    "exit_code": 0,
+    "test_passed": 1500,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  },
+  "clippy_all_targets_001": {
+    "exit_code": 0,
+    "test_passed": 0,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  },
+  "changed_region_format_001": {
+    "exit_code": 0,
+    "test_passed": 0,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  },
+  "r05_guard_001": {
+    "exit_code": 0,
+    "test_passed": 0,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  },
+  "d04_workload_001": {
+    "exit_code": 0,
+    "test_passed": 1,
+    "digest": "4c63ca018cd39d50e4a896711debaaf7970dc2636841a77eb74457f83313582f"
+  }
+}

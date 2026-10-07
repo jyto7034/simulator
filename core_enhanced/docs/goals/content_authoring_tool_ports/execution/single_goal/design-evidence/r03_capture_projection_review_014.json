@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "report_id": "r03_capture_projection_review_014",
+  "kind": "bounded_readonly_source_review",
+  "completion_audit": false,
+  "scope": "capture_shape macro and five projection capture owners, direct rollback/provenance consumers and two focused tests",
+  "capture_started_at_utc": "2026-09-10T10:18:33.239700+00:00",
+  "close_at_utc": "2026-09-10T10:22:21.653252+00:00",
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "sha256": "09e3e6d28bb427d64868fde4d2b96d44b17e911b956b04eeca9f62341497942c",
+      "bytes": 40546,
+      "captured_at_utc": "2026-09-10T10:18:33.239700+00:00",
+      "inspected_spans": [
+        [
+          17,
+          34
+        ],
+        [
+          125,
+          269
+        ],
+        [
+          969,
+          1070
+        ]
+      ],
+      "close_sha256": "09e3e6d28bb427d64868fde4d2b96d44b17e911b956b04eeca9f62341497942c",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "bytes": 21650,
+      "captured_at_utc": "2026-09-10T10:18:33.239700+00:00",
+      "inspected_spans": [
+        [
+          155,
+          288
+        ],
+        [
+          370,
+          413
+        ]
+      ],
+      "close_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "aa6492e023ef52b368dff21587903f093c7b7e34bcc5a23daeeef1b50549231f",
+      "bytes": 74098,
+      "captured_at_utc": "2026-09-10T10:18:33.239700+00:00",
+      "inspected_spans": [
+        [
+          132,
+          205
+        ],
+        [
+          385,
+          440
+        ],
+        [
+          538,
+          627
+        ],
+        [
+          1855,
+          1925
+        ],
+        [
+          1974,
+          1984
+        ]
+      ],
+      "close_sha256": "aa6492e023ef52b368dff21587903f093c7b7e34bcc5a23daeeef1b50549231f",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/grant_state.rs",
+      "sha256": "35f4b7225ae37f6fdf490629610186680d0377432005e8bafd38498af50a0982",
+      "bytes": 3116,
+      "captured_at_utc": "2026-09-10T10:18:33.239700+00:00",
+      "inspected_spans": [
+        [
+          1,
+          99
+        ]
+      ],
+      "close_sha256": "35f4b7225ae37f6fdf490629610186680d0377432005e8bafd38498af50a0982",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "7857bb8a1363f928b37a8e168274ee724537fef12b69d8265e5d5a5069075445",
+      "bytes": 62823,
+      "captured_at_utc": "2026-09-10T10:18:33.239700+00:00",
+      "inspected_spans": [
+        [
+          614,
+          642
+        ],
+        [
+          784,
+          803
+        ]
+      ],
+      "close_sha256": "7857bb8a1363f928b37a8e168274ee724537fef12b69d8265e5d5a5069075445",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "sha256": "7701eeb7b4559f89d6eb440bce993d0837cae747393120455c84d278d76fdace",
+      "bytes": 447765,
+      "captured_at_utc": "2026-09-10T10:19:16.103708+00:00",
+      "inspected_spans": [
+        [
+          688,
+          726
+        ],
+        [
+          12505,
+          12655
+        ]
+      ],
+      "close_sha256": "7701eeb7b4559f89d6eb440bce993d0837cae747393120455c84d278d76fdace",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+      "bytes": 10330,
+      "captured_at_utc": "2026-09-10T10:19:16.103708+00:00",
+      "inspected_spans": [
+        [
+          9,
+          145
+        ]
+      ],
+      "close_sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6",
+      "bytes": 18104,
+      "captured_at_utc": "2026-09-10T10:19:16.103708+00:00",
+      "inspected_spans": [
+        [
+          157,
+          179
+        ],
+        [
+          316,
+          331
+        ],
+        [
+          396,
+          417
+        ]
+      ],
+      "close_sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "e5ad247acbcf9d4f9939712f426c1305acc87989ad3a11e9c53dc0dc32aeadcc",
+      "bytes": 10733,
+      "captured_at_utc": "2026-09-10T10:19:16.103708+00:00",
+      "inspected_spans": [
+        [
+          169,
+          215
+        ]
+      ],
+      "close_sha256": "e5ad247acbcf9d4f9939712f426c1305acc87989ad3a11e9c53dc0dc32aeadcc",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/monolith.rs",
+      "sha256": "9b156c16daba1fe7f528f136a00a136c2e3ddbfd52adae4af0751942722e23db",
+      "bytes": 24806,
+      "captured_at_utc": "2026-09-10T10:21:24.435168+00:00",
+      "inspected_spans": [
+        [
+          90,
+          144
+        ]
+      ],
+      "close_sha256": "9b156c16daba1fe7f528f136a00a136c2e3ddbfd52adae4af0751942722e23db",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/owned_collections.rs",
+      "sha256": "9591a49e57393a61bd525b5d3220e204af8d9f8c0d5a784089f6df631ad428f7",
+      "bytes": 11401,
+      "captured_at_utc": "2026-09-10T10:21:24.435168+00:00",
+      "inspected_spans": [
+        [
+          14,
+          52
+        ]
+      ],
+      "close_sha256": "9591a49e57393a61bd525b5d3220e204af8d9f8c0d5a784089f6df631ad428f7",
+      "drift": false
+    }
+  ],
+  "drift_count": 0,
+  "findings": [
+    {
+      "id": "CP014-F01",
+      "severity": "medium",
+      "title": "Fresh fixed fields are missing from completed-candidate native storage admission",
+      "primary": {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "span": [
+          226,
+          251
+        ],
+        "sha256": "09e3e6d28bb427d64868fde4d2b96d44b17e911b956b04eeca9f62341497942c"
+      },
+      "affected_owners": [
+        {
+          "path": "core_enhanced/src/game/world/state.rs",
+          "span": [
+            168,
+            195
+          ],
+          "missing_slots": 8
+        },
+        {
+          "path": "core_enhanced/src/game/world/state.rs",
+          "span": [
+            622,
+            625
+          ],
+          "missing_slots": 1
+        }
+      ],
+      "model_basis": "Root explicitly confirmed completed candidate native storage as intended model during review.",
+      "impact": "Same max_clone_slots permits U capture-reported slots while completed object's native visitor accounts U+1 or U+8.",
+      "minimal_fix": "Construct fixed fresh values once after entry poll, borrow their native fixed shape for admission, move them into Self; fresh empty sets use separate fresh_sets list and capacity proof, not a generic HashSet CloneShape.",
+      "test_gap": "Self-reported usage reused as exact cap cannot discover the omitted fixed shapes; compare completed candidate's independently visited shape.",
+      "root_disposition": "Accepted planned correction and independent shape oracle; not observed in captured source and not marked closed."
+    }
+  ],
+  "other_observations": [
+    "Borrowed expression bindings are evaluated once and shared by admission/Clone in five inspected owners.",
+    "Unknown Monolith provenance fails closed; capture/restore does not clone or rewind TLS ledger.",
+    "Late-error rollback test reaches mutation and checks UUID/economy/profile/TLS, but source run=None does not test a Monolith-retaining transaction.",
+    "No additional concrete production defect found in bounded slice."
+  ],
+  "limits": [
+    "No full Goal/whole clone approval.",
+    "No independent execution of root-reported focused068/world320.",
+    "Current tests do not independently observe no Clone call before admission; source order inspected.",
+    "Future or later concurrent root fixes not reviewed."
+  ],
+  "performed": [
+    "source read",
+    "source SHA256 initial/close comparison"
+  ],
+  "not_performed": [
+    "source/docs/Git mutation",
+    "cargo/build/test execution",
+    "completion audit"
+  ],
+  "report_path": "/tmp/r03_capture_projection_review_014.md"
+}

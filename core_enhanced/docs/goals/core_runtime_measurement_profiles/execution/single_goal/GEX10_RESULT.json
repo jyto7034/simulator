@@ -1,0 +1,80 @@
+{
+  "goal": "GOAL-CMRP-01",
+  "goal_set": "GS-CMRP-001",
+  "phase": "PHASE-CMRP-01",
+  "mode": "goal-run",
+  "source_sha256": "f2144e9a4c5ddeb41245799294a75b41de9d843018cb2166f711b7f07821cda8",
+  "handoff_ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HA-CMRP-001",
+    "Content Digest": "sha256:9508c4529d1ea98c3f38443be380e79d963e8d320501be08746d66a2b55ab57b"
+  },
+  "state": "Implementation and self-verification complete; independent GEX20 pending",
+  "goal_status": "Not independently Complete",
+  "independent_audit": false,
+  "execution_nodes": [
+    {
+      "id": "WP-CMRP-PROFILE",
+      "status": "implemented and current self-verified"
+    },
+    {
+      "id": "WP-CMRP-ACCOUNTING",
+      "status": "implemented and current self-verified"
+    },
+    {
+      "id": "WP-CMRP-COLLECTOR",
+      "status": "implemented and current self-verified"
+    },
+    {
+      "id": "WP-CMRP-PLAYBACK",
+      "status": "implemented and current self-verified"
+    },
+    {
+      "id": "WP-CMRP-VERIFY",
+      "status": "implemented and current self-verified"
+    }
+  ],
+  "selection": {
+    "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/EVIDENCE_SELECTION.json",
+    "sha256": "7ac942bfe0f01d09b5ed2bedd20297092bd7b322842b5b1c5091aca46b816f1e",
+    "bytes": 39521
+  },
+  "coverage": {
+    "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/COVERAGE.json",
+    "sha256": "797cdf76732f7a5909c4814be98fca81466669e2f75b04670ce422a1a6b31ba5",
+    "bytes": 100050
+  },
+  "predecessor_impact": {
+    "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/PREDECESSOR_IMPACT.json",
+    "sha256": "2a9feb8888a77e2197b0b3070bcf2d093f536f492d23503870af9c784784dfe6",
+    "bytes": 897266
+  },
+  "compatibility_adaptation": {
+    "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/compatibility/current_001/ADAPTATION_FINAL.json",
+    "sha256": "ccde7310dd9d686bb4932840ffec8be57e8b2b9d05b4b72a97056f1a8c1e50c0",
+    "bytes": 341241
+  },
+  "canonical_documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/README.md",
+      "sha256": "cc265220f7a3c6f776837fcc7821cc3411b4897b9c5d446e4d5f8ab1b5b194d4",
+      "bytes": 12389
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "sha256": "aa33a42ba85048cbb917ab612a47d8da2dcbd6413629d7c33168e4d05b241499",
+      "bytes": 191920
+    },
+    {
+      "path": "game_server/config/observability/README.md",
+      "sha256": "7e511b675250c016c6e130a999fea52611f75ce0ef0bc241be4f20c7f7c06fc4",
+      "bytes": 6961
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/STATE_INVENTORY.md",
+      "sha256": "2f2c0d8d8b3ddd0b461fb01ef670814aae07897efc8d62d213bac2dcb1cdbcc4",
+      "bytes": 4265
+    }
+  ],
+  "next": "Freeze exact target; nonparticipant GPT-6 Astra/High audits whole goal. Sol corrects findings only after pass closure. No U08 before Complete/High/open0."
+}

@@ -1,0 +1,552 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CAVER-SCOPE30-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAVER-SCOPE20-001",
+          "Content Digest": null
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CAVER-SCOPE20-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-P2G30-001",
+          "Content Digest": null
+        },
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E01-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E02-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E03-REVIEWED-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E04-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E05-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E06-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E07-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E08-REVIEWED-003",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAVER-E09-REVIEWED-003",
+            "Content Digest": null
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E03-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E07-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E08-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAVER-E09-001",
+            "Content Digest": null
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E01-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "서로 다른 unit의 Add/Sum/Max와 unit을 잃는 Multiply/Ratio가 publication 전에 거부된다.",
+              "0나눗셈·checked overflow와 rounding 미지정 lossy division이 typed error이며 gameplay state를 변경하지 않는다.",
+              "같은 입력·rounding·compiled generation은 같은 값을 내고 외부 code eval을 사용하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E02-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "release 뒤 source stat을 바꿔도 Snapshot 식의 전달 결과는 변하지 않고, 명시적 Live 식만 소비 시점 값을 읽는다.",
+              "snapshot과 live가 같은 authored field에서 모호하게 혼합되거나 필요한 context가 없으면 publication 또는 실행이 명시적으로 거부된다.",
+              "snapshot 캡처와 live read 모두 exact action/source-copy/target context를 보존한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E03-REVIEWED-SCOPE-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "Max(5,3,2)=5이고 Sum(5,3,2)=10이며 Max(empty)는 error, Count/Sum(empty)는 0이다.",
+              "서로 다른 owner/target/tile unit을 묵시적으로 합치지 않고 explicit grouping이 없으면 거부한다.",
+              "같은 member set은 입력 순서와 hash iteration에 무관하게 같은 결과를 내며 budget 초과는 부분 적용하지 않는다.",
+              "ResolvedTargets는 진영·실제 직원·명시적 착용 슬롯의 실제 장비 사본별 grouping을 지원한다. 직원 grouping은 실제 Employee만 입력으로 허용하며 소환물을 소환자 직원에게 자동 합산하지 않는다.",
+              "적용 불가능한 member는 제작자의 명시적 조건으로만 집계 입력에서 제외한다. 조건 없이 섞으면 validation 또는 실행 typed error이며 원 타격 대상 변경·부분 적용·silent skip이 없다.",
+              "유닛의 지정 슬롯 actual equipment copy 관계와 효과·상태의 source equipment copy 관계를 구별한다. definition/첫 장비/대상 장비를 출처 사본으로 대신하지 않는다.",
+              "R06은 이미 resolve된 유닛 집계와 명시적 필터까지 완료한다. 효과·상태 집합의 출처별 조회·집계는 R11 조회 기반 및 최초 실제 소비자/R17 통합에 배정하고 R06에서 지원 완료로 표시하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E04-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "employee/weapon/modifier 입력으로 final Attack 100이 되면 weapon 40을 다시 더하지 않으며 각 입력을 제거했을 때 그 입력만 빠진다.",
+              "SpellPower만 바꾸면 SpellPower 참조 식만 변하고 Physical/Magic damage type 자체나 Attack 참조 식은 바뀌지 않는다.",
+              "같은 definition의 서로 다른 owned equipment enhancement가 definition UUID 합산으로 중복 적용되지 않고 actual copy binding을 따른다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E05-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "동일 resource definition이라도 owner/lifetime/lease가 다른 값은 혼합되지 않고 식 평가만으로 balance/revision이 변하지 않는다.",
+              "다른 attempt·stale occurrence·not settled result 참조가 거부되며 0이나 마지막 값으로 fallback하지 않는다.",
+              "current/max/missing HP와 elapsed/remaining time이 구분되고 source/target context 불일치가 명시적으로 진단된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E06-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "동일 base interval과 points는 scale_attack_interval_ms와 같은 interval을 만들며 0 points/base interval은 publication 전에 거부된다.",
+              "AttackSpeedPoints 변경은 basic attack interval만 바꾸고 spell/area/projectile timer에는 영향이 없다.",
+              "point와 millisecond unit은 식의 compatible unit으로 오인되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E07-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "runtime·preview·explain이 같은 expression/source fingerprint에서 같은 값과 source trace를 내고 별도 계산식을 유지하지 않는다.",
+              "저장 round-trip 뒤 owned enhancement/growth 입력과 final stat이 유지되며 transient action/result handle을 유효한 persistent ref처럼 복원하지 않는다.",
+              "effective input 변경은 관련 cache/fingerprint를 바꾸지만 기존 Certified final weight나 공식 model을 새로 승인하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E08-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "public RON의 positive fixture가 실제 runtime consumer까지 실행되고 unknown/unsupported/unit/depth/node/cardinality/overflow fixtures가 typed error로 거부된다.",
+              "budget 한계 바로 아래는 성공하고 한계 초과는 publication 또는 action mutation 전에 실패하며 safety limit가 공식 balance 수치로 표시되지 않는다.",
+              "0 tests·skip·fixture-only/private builder 또는 빈 executor가 supported/complete로 보고되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E09-REVIEWED-003",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "기존 literal pack/save가 동일 결과로 로드·실행되고 unsupported new expression은 명시적 진단을 내며 silent fallback하지 않는다.",
+              "T06의 typed error·snapshot·single composition과 R06 해당 T18/T27 source-copy/cache 경계가 actual nonzero tests와 fresh audit로 추적된다.",
+              "R07/R19 기능과 미정 Replace conflict/공식 weight는 R06 완료로 표시되지 않는다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E01-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E02-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E03-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E04-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E05-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E06-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E07-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E08-SCOPE-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAVER-E09-SCOPE-001",
+            "Content Digest": null
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAVER-SCOPE20-001",
+          "Content Digest": null
+        },
+        "Binding Completeness Evidence": {
+          "reviewed_elements": [
+            "CAVER-E01",
+            "CAVER-E02",
+            "CAVER-E03",
+            "CAVER-E04",
+            "CAVER-E05",
+            "CAVER-E06",
+            "CAVER-E07",
+            "CAVER-E08",
+            "CAVER-E09"
+          ],
+          "bindings": [
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E01-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E02-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E03-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E04-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E05-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E06-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E07-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E08-SCOPE-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CAVER-E09-SCOPE-001",
+              "Content Digest": null
+            }
+          ],
+          "coverage": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/successors/r06_scope_20260927_001/REVIEW_AND_PLAN.ko.md",
+            "sha256": "9e06d966e024ec95a7392c3e1c6e4cf8cd79b8a07841a9b39b2ea130dd2950a4",
+            "selector": "§3/5"
+          },
+          "new_boundary_tests": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/successors/r06_scope_20260927_001/IMPLEMENTATION_REQUEST.ko.md",
+            "sha256": "dea8a850380671bc66b283ea59972e843d562087744245435f966f9f7954fa83",
+            "selector": "§5 O01–O15"
+          }
+        },
+        "Applicable Change/Obligation Basis": {
+          "Applicable Change Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "PFC-CAVER-OWNER-20260927-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "PFC-CAVER-COST-20260927-001",
+              "Content Digest": null
+            }
+          ],
+          "Applicable P2G-30 Obligation Key Set": [
+            {
+              "Container Ref": {
+                "Artifact Type": "Change Obligation Declaration",
+                "Artifact ID": "COD-CAVER-OWNER-20260927-001",
+                "Content Digest": null
+              },
+              "Obligation ID": "O30"
+            },
+            {
+              "Container Ref": {
+                "Artifact Type": "Change Obligation Declaration",
+                "Artifact ID": "COD-CAVER-COST-20260927-001",
+                "Content Digest": null
+              },
+              "Obligation ID": "O30"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CAVER-OWNER-20260927-001",
+              "Content Digest": null
+            },
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CAVER-COST-20260927-001",
+              "Content Digest": null
+            }
+          ]
+        },
+        "Resolved Prerequisite Evidence": {
+          "review_body": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/successors/r06_scope_20260927_001/REVIEW_AND_PLAN.ko.md",
+            "sha256": "9e06d966e024ec95a7392c3e1c6e4cf8cd79b8a07841a9b39b2ea130dd2950a4"
+          },
+          "policy_user_approval": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/successors/r06_scope_20260927_001/REVIEW_AND_PLAN.ko.md",
+            "sha256": "9e06d966e024ec95a7392c3e1c6e4cf8cd79b8a07841a9b39b2ea130dd2950a4",
+            "selector": "§1"
+          },
+          "source_currentness": {
+            "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/successors/r06_scope_20260927_001/SOURCE_EVIDENCE.json",
+            "sha256": "4ceb2ed5c89eb5f796f5eb90de602580c1a1700350f950e2b08fb9d73dd6433b"
+          }
+        },
+        "Known Unknown Set": [
+          "Exact Rust type names and slot projection accessor are implementation choices; preserve U01–U04.",
+          "D07/WP03/WP04, old raw V7 compatibility, actual cost/clone behavior and final independent audit remain required.",
+          "R11/R17 effect/status query is routed, not supported by this R06 target."
+        ],
+        "Compatibility/Migration Disposition": "Preserve legacy literal/saved meaning; D07 zero omission and old raw V7 fixture mandatory before implementation completion. No automatic migration/deletion or changed-content identity bypass."
+      }
+    }
+  ],
+  "complete_stage_result": {
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CAVER-SCOPE30-001",
+      "Content Digest": null
+    },
+    "P2G-30 Resolution Record Ref Set": [
+      {
+        "Artifact Type": "Resolution Record",
+        "Artifact ID": "RR-CAVER-OWNER-SCOPE30-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Resolution Record",
+        "Artifact ID": "RR-CAVER-COST-SCOPE30-001",
+        "Content Digest": null
+      }
+    ],
+    "Freeze Membership Set": [
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E01-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E02-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E03-REVIEWED-SCOPE-001",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E04-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E05-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E06-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E07-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E08-REVIEWED-003",
+          "Content Digest": null
+        }
+      },
+      {
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAVER-SCOPE30-001",
+          "Content Digest": null
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAVER-E09-REVIEWED-003",
+          "Content Digest": null
+        }
+      }
+    ]
+  }
+}

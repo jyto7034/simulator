@@ -1,0 +1,8 @@
+{
+  "finding": "BASELINE_INITIAL_OWNER missing explicit current goal ID",
+  "correction": "Add GOAL-CMRP-01 as current owner of predecessor baseline reuse; no scope/design/acceptance change",
+  "preimage": "evidence/P2G_50_CANDIDATE_001.ko.md",
+  "failed_receipt": "P2G_50_VALIDATION_001.json",
+  "successor_receipt": "P2G_50_VALIDATION_002.json",
+  "raw_exit": 0
+}

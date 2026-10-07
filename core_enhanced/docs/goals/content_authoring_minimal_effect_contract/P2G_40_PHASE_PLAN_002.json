@@ -1,0 +1,301 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CAMEC-P2G40-002",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CAMEC-P2G40-001",
+          "Content Digest": null
+        },
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CAMEC-P2G30-001",
+          "Content Digest": null
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G20-001",
+            "Content Digest": null
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CAMEC-P2G30-001",
+            "Content Digest": null
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CAMEC-01",
+            "selectors": {
+              "implementation": [
+                "CAMEC-E02",
+                "CAMEC-E03",
+                "CAMEC-E04",
+                "CAMEC-E06"
+              ],
+              "supporting": [
+                "CAMEC-E01",
+                "CAMEC-E05"
+              ]
+            },
+            "disposition": "member of AG-CAMEC-01",
+            "boundary": "작성·compile·검증 owner. `skill_data` raw→validated와 `live_ron` publication에서 효과 identity/tag/typed property, action owner, SourceMap과 읽기 전용 지원 descriptor/index를 일관되게 구성한다.",
+            "expected_change": "L01–03의 작성 주소/효과별 query와 진단, 기존 executor에 대응한 literal Damage/Heal/Instant 지원 정보. 태그는 op 권한이 아니며 action-owned 속성은 effect scalar와 구분한다.",
+            "prerequisites": "현재 opaque publication; WP-CAMEC-02의 실제 consumer·catalog와 공동 전환",
+            "validation_completion": "유효 입력은 metadata/실행 정의가 한 token에 연결, invalid/unsupported·중복·carrier 오용은 원문 주소로 거부. 기존 다른 op는 실제 지원을 보존하고 미검증 조합을 지원 목록으로 광고하지 않음.",
+            "unknown": "정확한 schema version/타입/field locator는 구현 선택. 공개 지원 조합별 완전성은 WP-CAMEC-03과 검증."
+          },
+          {
+            "id": "WP-CAMEC-02",
+            "selectors": {
+              "implementation": [
+                "CAMEC-E01",
+                "CAMEC-E04",
+                "CAMEC-E05"
+              ],
+              "supporting": [
+                "CAMEC-E02",
+                "CAMEC-E03",
+                "CAMEC-E06"
+              ]
+            },
+            "disposition": "member of AG-CAMEC-01",
+            "boundary": "실행·직접 consumer와 catalog 전환 owner. 기존 `ability`/`skill`/`battle` command 경로, fragment SkillId, equipment proc, range preview와 projectile/area helper를 새 작성 metadata publication에 연결한다.",
+            "expected_change": "최신 embedded manifest/RON 및 공통 타입을 직접 생성하는 기존 fixture를 함께 맞춘다. cast/step 및 effect별 작성 출처를 연결하되 기존 source·순서·대상·타격 수·취소 의미를 보존한다.",
+            "prerequisites": "WP-CAMEC-01의 새 compiler/주소 출력; 기존 executor·SkillId·checkpoint 경계",
+            "validation_completion": "현재 다른 op·spatial consumer 회귀와 compile 확인, Damage→별도 Self Heal step의 기존 결과 보존. signed Heal/HP-loss gate/ModifyDamage/signal 의미를 바꾸지 않음. definition index를 영구 사본 ID로 저장하지 않음.",
+            "unknown": "모든 실제 직접 call site와 fixture의 exact 수정 위치는 구현 시 확인. wrapper/cutover의 기존 시험 보수까지 이 node가 소유."
+          },
+          {
+            "id": "WP-CAMEC-03",
+            "selectors": {
+              "validation_only": [
+                "CAMEC-E01",
+                "CAMEC-E02",
+                "CAMEC-E03",
+                "CAMEC-E04",
+                "CAMEC-E05",
+                "CAMEC-E06"
+              ]
+            },
+            "disposition": "standalone",
+            "boundary": "새 계약의 durable 통합 fixture·지원 조합/관찰 oracle owner. 게임 의미를 새로 정하지 않고 AG-CAMEC-01이 공개한 계약을 core/headless 테스트 입구에서 검증한다.",
+            "expected_change": "V01–06을 재현 가능한 정상·거부·경계 fixture와 완료 evidence로 만든다. descriptor→compiler→executor 및 diagnostic/source 관찰을 연결한다.",
+            "prerequisites": "AG-CAMEC-01의 compile 가능한 단일 publication과 기존 게임 fixture. 후보 API를 이미 존재하는 것처럼 호출하지 않음.",
+            "validation_completion": "아래 IVA 전부 실행·관찰하고 누락된 지원 조합/빈 성공·출처 단절·상태 변경을 실패 처리. 실패의 production 교정은 AG-CAMEC-01 소유자가 같은 Phase 안에서 수행 후 관련 재검증.",
+            "unknown": "신규 fixture/테스트 함수 이름과 실행 filter는 구현 뒤 실제 이름으로 기록. 현재는 새 시험 작성·실행 0."
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CAMEC-01",
+            "to": "WP-CAMEC-02",
+            "type": "schema_data / producer_consumer",
+            "evidence": "Review B01–04/L01/L04: 새 raw 문법·metadata/publication을 runtime와 최신 RON이 함께 소비",
+            "broken": "parser 없는 새 RON 또는 주소/실행 정의 불일치"
+          },
+          {
+            "from": "WP-CAMEC-02",
+            "to": "WP-CAMEC-01",
+            "type": "producer_consumer / migration_compatibility",
+            "evidence": "Review §3 direct consumer/L04: 최신 parser는 actual catalog·generated preview·공유 wrapper 호출자가 맞아야 publish 가능",
+            "broken": "구형 catalog 로드 실패, 무시된 metadata 또는 새 descriptor와 실제 executor의 불일치"
+          },
+          {
+            "from": "WP-CAMEC-01",
+            "to": "WP-CAMEC-03",
+            "type": "validation",
+            "evidence": "V02–04의 지원 descriptor·typed 오류·효과 query가 통합 oracle의 실제 입력",
+            "broken": "미구현 API를 시험했다고 주장하거나 파싱만으로 실행 지원을 판정"
+          },
+          {
+            "from": "WP-CAMEC-02",
+            "to": "WP-CAMEC-03",
+            "type": "validation",
+            "evidence": "V01/V05–06의 runtime·직접 consumer·취소·저장 비변경 관찰",
+            "broken": "신규 fixture가 출처·실행 결과·공유 consumer 회귀를 검증하지 못함"
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CAMEC-01",
+            "members": [
+              "WP-CAMEC-01",
+              "WP-CAMEC-02"
+            ],
+            "evidence": "최신 작성 schema·embedded RON·실행 정의·직접 소비자·기존 fixture가 하나의 유효한 publication을 만드는 최소 전환. 분리 완료하면 reader/input mismatch 또는 지원 metadata와 실제 실행 불일치가 생긴다. 저장 포맷 전환이나 외부팩/전체 VM은 이 group에 포함하지 않음."
+          }
+        ],
+        "standalone": [
+          "WP-CAMEC-03"
+        ],
+        "phases": [
+          {
+            "id": "PHASE-CAMEC-01",
+            "primary": [
+              "CAMEC-E01",
+              "CAMEC-E02",
+              "CAMEC-E03",
+              "CAMEC-E04",
+              "CAMEC-E05",
+              "CAMEC-E06"
+            ],
+            "supporting_relations": "별도 supporting Phase 없음. WP별 supporting/validation relation은 위 표 소유.",
+            "nodes": [
+              "AG-CAMEC-01",
+              "WP-CAMEC-03"
+            ],
+            "dependencies": "현재 Freeze/Review와 기존 publication·executor; 내부 AG 완료 결과를 검증 node가 소비",
+            "exit_acceptance": "Freeze의 모든 acceptance를 아래 IVA에 따라 실제 검증. 새 문법·catalog·direct consumer 단일 전환, 구현/API·실행 출처·오류 위치·지원 조합의 일치와 기존 의미 보존."
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CAMEC-01",
+            "state": "최신 schema에서 검증한 metadata+실행 정의가 한 token으로 공개되고 기존 SkillId/cast/command/저장 수명은 유지. 뒤 Phase 없이 사용 가능.",
+            "checks": "단일 publication authority; 실패 시 token 없음; 모든 direct consumer/기존 fixture 동시 전환; old/new grammar 이중 경로 없음; effect source와 cast source 구분; 기존 상태·취소/늦은 step 보존. 새 저장 state/포맷·live reload·배포 rollback은 N/A.",
+            "evidence": "AG-CAMEC-01의 compile/로드·기존 회귀와 WP-CAMEC-03의 IVA 전부. 개인 저장 파일 대신 격리 fixture 사용.",
+            "limitation": "계획상 경계는 Review와 일치. 실제 구현·시험 전이므로 runtime 유효성 PASS 아님. 필수 표준 Receipt 통과 전 current Plan으로 선택하지 않음."
+          }
+        ],
+        "cyclic_sccs": [
+          {
+            "members": [
+              "WP-CAMEC-01",
+              "WP-CAMEC-02"
+            ],
+            "disposition": "coimplement_atomic",
+            "boundary": "AG-CAMEC-01로 결합. edge를 삭제하거나 미완성 fallback으로 우회하지 않음.",
+            "evidence": "Review §3/L04의 schema·catalog·runtime publication 동시 전환",
+            "result": "condensation 뒤 AG-CAMEC-01 → WP-CAMEC-03, acyclic; 기계 검사의 실제 결과는 단계 결과에 기록"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CAMEC-01",
+            "source": "IVA-CAMEC-01 / CAMEC-E01[0,1], E02[1]; Review V01/V04",
+            "disposition": "assigned_execution_node",
+            "locator": "`skill_runtime_contract`의 `run_battle`와 기존 `hit_gated_self_heal_and_buff_stack_repeat_attack_work_together`를 바탕으로 다른 step의 상수 Damage→Self Heal fixture 작성. metadata를 제외한 기존 실행 결과·순서와 재조합/unsupported 분기를 대조.",
+            "nodes": [
+              "WP-CAMEC-03"
+            ],
+            "phases": [
+              "PHASE-CAMEC-01"
+            ],
+            "prerequisite": "AG-CAMEC-01의 단일 publication",
+            "evidence": "공식 HP 식/accepted-hit 정책을 새로 결정하지 않음. 테스트 이름·명령은 구현 후 실제 filter로 기록."
+          },
+          {
+            "id": "IVA-CAMEC-02",
+            "source": "IVA-CAMEC-02 / CAMEC-E02[0], E03[2], E06[0]; Review V02/V04",
+            "disposition": "assigned_execution_node",
+            "locator": "`skill_data` contract fixture와 `live_ron::bundle_validation_returns_typed_skill_contract_errors` 확장. 중복 주소·음수 Damage·dangling 참조·unsupported op/property·carrier 오용에 source/object/action/effect/field 원인을 assert. 공개 descriptor의 실제 지원 조합마다 compiler/executor 결과 대조.",
+            "nodes": [
+              "WP-CAMEC-03"
+            ],
+            "phases": [
+              "PHASE-CAMEC-01"
+            ],
+            "prerequisite": "AG-CAMEC-01의 descriptor·typed validator·원문 위치",
+            "evidence": "태그가 op를 허용하지 않음. 동적 스크립트·임의 property eval·OS/network/file 실행 입구 부재를 코드 경계와 거부 fixture로 확인."
+          },
+          {
+            "id": "IVA-CAMEC-03",
+            "source": "IVA-CAMEC-03 / CAMEC-E03[0,1], E04[1]; Review V03",
+            "disposition": "assigned_execution_node",
+            "locator": "같은 effect AND와 두 effect 존재를 서로 다른 fixture로 판별. 특정 원형/형태 ID 선택과 일반 tag predicate 분리. Damage scalar 검사·변경이 다른 Self Heal payload/대상을 바꾸지 않고 공유 carrier 요청은 영향 주소가 있는 진단인지 확인.",
+            "nodes": [
+              "WP-CAMEC-03"
+            ],
+            "phases": [
+              "PHASE-CAMEC-01"
+            ],
+            "prerequisite": "AG-CAMEC-01의 effect/action 주소와 최소 query/진단 seam",
+            "evidence": "지원되지 않은 고급 carrier 변형이나 유물 활성 closure를 통과 fixture로 만들지 않음."
+          },
+          {
+            "id": "IVA-CAMEC-04",
+            "source": "IVA-CAMEC-04 / CAMEC-E04[0,1]; Review V01/V05",
+            "disposition": "assigned_execution_node",
+            "locator": "작성 원형/추가 효과의 source와 effect 태그 주소를 fixture에서 구분. runtime caster/cast/proc origin 연결을 대조하고 fragment/equipment SkillId·range preview·projectile/area shared command 경로의 metadata 연결 회귀를 기록.",
+            "nodes": [
+              "WP-CAMEC-03"
+            ],
+            "phases": [
+              "PHASE-CAMEC-01"
+            ],
+            "prerequisite": "AG-CAMEC-01의 source 전달",
+            "evidence": "최소 metadata 표현/연결 검증. 유물 영구 사본·실제 부여/연쇄 runtime 구현 완료 claim 없음."
+          },
+          {
+            "id": "IVA-CAMEC-05",
+            "source": "IVA-CAMEC-05 / CAMEC-E05[0,1], E02[0]; Review V02/V04/V06",
+            "disposition": "assigned_execution_node",
+            "locator": "유효 embedded 최신 bundle 로드, invalid bundle의 token 미반환, old/new 문법 병렬 성공 부재와 direct fixture 동시 전환을 검사. checkpoint capture/restore 기존 fixture로 정의 index가 새 영구 key가 되지 않았음을 확인.",
+            "nodes": [
+              "WP-CAMEC-03"
+            ],
+            "phases": [
+              "PHASE-CAMEC-01"
+            ],
+            "prerequisite": "AG-CAMEC-01 cutover 완료",
+            "evidence": "개인 저장 접근/삭제/자동 변환 없음. 기존 V4/V5 reader의 제거 또는 미래 호환 인증을 요구하지 않음."
+          },
+          {
+            "id": "IVA-CAMEC-06",
+            "source": "IVA-CAMEC-06 / Freeze TR30-03/04; Review V01/V05/V06",
+            "disposition": "assigned_execution_node",
+            "locator": "cast 완료·철수 뒤 늦은 step, HP-loss gate Pending/terminal, signed Heal, step ModifyDamage와 tactical resource signal, effect 순서·타격 수를 기존 fixture 관찰과 대조. invalid publication이 gameplay state를 부분 변경하지 않는 경계 확인.",
+            "nodes": [
+              "WP-CAMEC-03"
+            ],
+            "phases": [
+              "PHASE-CAMEC-01"
+            ],
+            "prerequisite": "AG-CAMEC-01과 보존한 기존 executor/상태 fixture",
+            "evidence": "기존 actual 보존 검사. 새 accepted-hit·비동기 handle·저장/배포 전환 의미는 별도 owner."
+          }
+        ],
+        "Shared Contract Handoff": "| Local boundary / source | Meaning owner and producer/consumer | Implementing / validating node | Availability and remaining technical choice |\n| --- | --- | --- | --- |\n| SC01 작성 주소/SourceMap — Review L01/L02, Freeze E02/E04 | 정책은 해당 Decision. compiler가 definition/action/effect 원문 주소를 만들고 diagnostics/runtime가 소비. runtime caster/cast/proc 발생 source를 정의 ID와 합치지 않음. | AG-CAMEC-01 / WP-CAMEC-03 | 아직 설계안. AG 내 producer/consumer 합치고 통합 oracle 확보 후 사용 가능. 타입·container·field encoding은 경계 불변인 구현 선택. |\n| SC02 effect predicate/property와 carrier — Review L02/L03, Freeze E01/E03/E06 | compiler/지원 정보가 typed 지원과 owner를 선언. query/consumer는 같은 effect AND와 다른 effect 존재를 구분하며 태그로 실행 권한을 얻지 않음. | AG-CAMEC-01 / WP-CAMEC-03 | 기존 전체 selector API가 있다고 가정하지 않음. 최소 주소/판별·진단 계약만 구현. 미지원 carrier 변형은 관련 주소로 거부; 새 유물 activation/closure는 후속 owner. |\n| SC03 공개·실행·수명 — Review L04/§3, Freeze E01/E04/E05 | loader의 opaque token authority와 기존 step/command executor 재사용. 하나의 schema/cutover, 효과 순서·cast 취소·checkpoint 수명 보존. | AG-CAMEC-01 / WP-CAMEC-03 | 기존 token/SkillId는 현재 존재. 새 metadata 연결은 AG 완료 뒤 사용 가능. 기존 V4/V5 reader를 유지하며 새 generation/사본 key는 추가하지 않음. |",
+        "Known Unknown/Limitations": "KU30-01의 정확한 작성 문법·Rust 타입·source locator와 consumer 호출 형태는 AG-CAMEC-01 구현 owner가 상세 설계하고, 신규 fixture/지원 조합별 실제 증거는 WP-CAMEC-03이 소유한다. 내부 선택은 위 책임·동시 전환·완료 경계를 바꾸지 않아야 한다. 공개 의미/수명/취소/상태 소유가 달라지면 해당 P2G owner로 반환한다.\n\nKU30-02–05는 기존 Freeze의 owner/범위를 유지한다. R/F 콘텐츠 초안·공식 수치/태그·외부팩/사본·보스 graph 전체를 현재 정책 또는 실제 지원으로 확정하지 않는다. 이 후보의 구조 검사와 의미 검토는 게임 실행·새 GEX 감사·배포 검증을 대신하지 않는다.",
+        "Source Design": {
+          "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_CANDIDATE_001.ko.md",
+          "sha256": "3754f18ddadb96ef8dcb8919a3cdbbfe396045218d3b9da3627373d053220476",
+          "sections": [
+            "Entry Evidence and Design Basis",
+            "Work Package Set",
+            "Dependency Graph",
+            "Cyclic SCC Disposition Set",
+            "Atomic Group Set",
+            "Ordered Phase Set",
+            "Intermediate-State Audit",
+            "Shared Contract Handoff",
+            "Integration Validation Ownership Map",
+            "Known Unknown Ownership"
+          ],
+          "transition": "구조/정책/ownership 변화 없음. 동일 후보를 명시적 관계 JSON으로 직렬화하고 새 validator version으로 검사할 successor."
+        }
+      }
+    }
+  ],
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CAMEC-P2G40-002",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0"
+}

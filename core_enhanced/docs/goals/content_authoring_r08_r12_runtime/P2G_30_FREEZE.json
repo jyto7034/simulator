@@ -1,0 +1,245 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CARX-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CARX-001",
+          "Content Digest": null
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CARX-001",
+          "Content Digest": null
+        },
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARX-E01-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARX-E02-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARX-E03-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARX-E04-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARX-E05-REVIEWED-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARX-E06-REVIEWED-001",
+            "Content Digest": null
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARX-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARX-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARX-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARX-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARX-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARX-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CARX-E01-REVIEWED-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "A08-01",
+              "A08-02",
+              "A08-03",
+              "A08-04",
+              "A08-05",
+              "A08-06",
+              "A08-07"
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CARX-E02-REVIEWED-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "A09-01",
+              "A09-02",
+              "A09-03",
+              "A09-04",
+              "A09-05",
+              "A09-06",
+              "A09-07",
+              "A09-08",
+              "A09-09",
+              "A09-10"
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CARX-E03-REVIEWED-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "A10-01",
+              "A10-02",
+              "A10-03",
+              "A10-04",
+              "A10-05",
+              "A10-06",
+              "A10-07",
+              "A10-08",
+              "A10-09"
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CARX-E04-REVIEWED-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "A11-01",
+              "A11-02",
+              "A11-03",
+              "A11-04",
+              "A11-05",
+              "A11-06",
+              "A11-07",
+              "A11-08",
+              "A11-09"
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CARX-E05-REVIEWED-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "A12-01",
+              "A12-02",
+              "A12-03",
+              "A12-04",
+              "A12-05",
+              "A12-06",
+              "A12-07",
+              "A12-08",
+              "A12-09",
+              "A12-10"
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CARX-E06-REVIEWED-001",
+              "Content Digest": null
+            },
+            "Observable Policy Acceptance": [
+              "X01",
+              "X02",
+              "X03",
+              "X04",
+              "X05",
+              "X06",
+              "X07",
+              "X08",
+              "X09",
+              "X10"
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CARX-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CARX-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CARX-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CARX-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CARX-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CARX-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CARX-001",
+          "Content Digest": null
+        },
+        "Binding Completeness Evidence": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CARX-001",
+          "Content Digest": null
+        },
+        "Lifecycle Disposition": "current",
+        "Predecessor Freeze": null,
+        "Applicable Change/Obligation Basis": [],
+        "Known Unknowns": "Implementation and actual costs not yet validated; no prerequisite audit gap remains",
+        "Compatibility/Migration Disposition": "flat steps lower into same flow; explicit durable schema conversion only; old source preserved"
+      }
+    }
+  ]
+}

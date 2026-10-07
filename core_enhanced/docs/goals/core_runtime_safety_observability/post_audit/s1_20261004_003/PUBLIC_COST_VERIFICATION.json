@@ -1,0 +1,63 @@
+{
+  "public_oracles": [
+    {
+      "case": "early_cancel",
+      "events": 83,
+      "steps": {
+        "marker": 5051
+      },
+      "hp_events": 0,
+      "trace_equal": true
+    },
+    {
+      "case": "cancel",
+      "events": 88,
+      "steps": {
+        "projectile": 5300,
+        "marker": 6501
+      },
+      "hp_events": 1,
+      "trace_equal": true
+    },
+    {
+      "case": "detach",
+      "events": 92,
+      "steps": {
+        "projectile": 5300,
+        "marker": 6501,
+        "area": 6885
+      },
+      "hp_events": 3,
+      "trace_equal": true
+    },
+    {
+      "case": "inflight_cancel",
+      "events": 88,
+      "steps": {
+        "projectile": 5300,
+        "marker": 5501
+      },
+      "hp_events": 1,
+      "trace_equal": true
+    },
+    {
+      "case": "state_exit",
+      "events": 88,
+      "steps": {
+        "projectile": 5300,
+        "marker": 6501
+      },
+      "hp_events": 1,
+      "trace_equal": true
+    }
+  ],
+  "trace_cases": 5,
+  "cli_commands": 45,
+  "pc_source_copy_current": true,
+  "pc_measurement_hook_paths": [
+    "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+    "core_enhanced/src/game/battle/runtime_control.rs"
+  ],
+  "pc_hook_archive_sha256": "1b3b149180db5aaa1504fff275b9b955e22609afb5c4b314f1ce3b45c9539d5f",
+  "r05_classifier_reexecuted": true
+}

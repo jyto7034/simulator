@@ -1,0 +1,20 @@
+{
+  "result": "FROZEN_TARGET_ARCHIVES_DELTA_AND_CURRENTNESS_VERIFIED",
+  "manifest_sha256": "8ac6a2c6197ce19e1e841d52128758b14b8079762a11536620131884fa344370",
+  "source_files": 322,
+  "evidence_files": 34,
+  "modified_from_entry": [
+    "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+    "core_enhanced/src/game/value_expr/eval.rs",
+    "core_enhanced/src/game/value_expr/mod.rs"
+  ],
+  "added_from_entry": [],
+  "deleted_from_entry": [],
+  "predecessor_frozen_source_drift": [
+    "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+    "core_enhanced/src/game/value_expr/eval.rs",
+    "core_enhanced/src/game/value_expr/mod.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/src/game/world/tests/resource_lifetimes.rs"
+  ]
+}

@@ -1,0 +1,503 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CRSO-001",
+        "Content Digest": "sha256:0afeeb9809f90b980f447d895428337d003be5364ad7e3f7848eac6ea0798fbd"
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRSO-001",
+          "Content Digest": "sha256:1ef9392053bcb243fb8bb4d00d2c44736131da703720f413471a2148600d828d"
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSO-005",
+            "Content Digest": "sha256:5358dab491e3b0c6288bc80c0dc711e79ece7ebb41ae5f59c998094849e97328"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSO-001",
+            "Content Digest": "sha256:1ef9392053bcb243fb8bb4d00d2c44736131da703720f413471a2148600d828d"
+          }
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "multi_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CRSO-CONFIG",
+            "selectors": {
+              "implementation": [
+                "PE-CRSO-01",
+                "PE-CRSO-02",
+                "PE-CRSO-03"
+              ]
+            },
+            "boundary": "trusted immutable runtime_safety DTO/parser/embedded RON and native/execution/expression/trial default-ceiling separation",
+            "expected_change": "TD01: bounded parse, path/field errors, single default source, raw/effective identity, no process-global mutable profile",
+            "prerequisite": "U01 audited current source; exact default inventory",
+            "validation": "V01–03 parser/default/identity boundary tests",
+            "unknown": "concrete Rust type names selected at GEX preparation"
+          },
+          {
+            "id": "WP-CRSO-CORE",
+            "selectors": {
+              "implementation": [
+                "PE-CRSO-04",
+                "PE-CRSO-06",
+                "PE-CRSO-07"
+              ],
+              "supporting": [
+                "PE-CRSO-03"
+              ]
+            },
+            "boundary": "ValidatedGameData profile→catalog/plan→CoreApplication→BattleCore first spawn/restore/history/query",
+            "expected_change": "TD02/04: immutable generation admission identity; all expression consumers and bounded history routes; host profile restore",
+            "prerequisite": "WP-CRSO-CONFIG validated typed profile",
+            "validation": "V03–04,V06–07 isolated profiles, first spawn, nested rollback and history",
+            "unknown": "profile threading through existing fixture constructors; no meaning change permitted"
+          },
+          {
+            "id": "WP-CRSO-PORTS",
+            "selectors": {
+              "implementation": [
+                "PE-CRSO-05"
+              ],
+              "supporting": [
+                "PE-CRSO-04",
+                "PE-CRSO-06"
+              ]
+            },
+            "boundary": "actual server bootstrap/actor/public command/result/snapshot/checkpoint/persistence rollback and author_content API/CLI",
+            "expected_change": "TD02/03 public application adapter with bound opaque transaction capability; CLI common profile option and receipts",
+            "prerequisite": "WP-CRSO-CORE generation/runtime profile contract; baseline server compiler errors",
+            "validation": "V04–06,V08 actual server and CLI/public API contract tests",
+            "unknown": "minimal opaque persistence transition API must preserve exact revision/session and monotonic profile"
+          },
+          {
+            "id": "WP-CRSO-S1VERIFY",
+            "selectors": {
+              "validation_only": [
+                "PE-CRSO-01",
+                "PE-CRSO-02",
+                "PE-CRSO-03",
+                "PE-CRSO-04",
+                "PE-CRSO-05",
+                "PE-CRSO-06",
+                "PE-CRSO-07",
+                "PE-CRSO-12"
+              ]
+            },
+            "boundary": "S1 final public integration/current source regressions and immutable reversible audit target",
+            "expected_change": "durable V01–08,V12 integration fixtures and full verification; independent Astra High audit before S2",
+            "prerequisite": "three S1 implementation owners integrated",
+            "validation": "all required S1 conditions; exact source/input/lock/toolchain receipts; source restore forward/reverse; independent audit closure",
+            "unknown": "current PC/R05 measured costs remain actual results, not guessed thresholds"
+          },
+          {
+            "id": "WP-CRSO-OBSERVE",
+            "selectors": {
+              "implementation": [
+                "PE-CRSO-08",
+                "PE-CRSO-11"
+              ],
+              "supporting": [
+                "PE-CRSO-10",
+                "PE-CRSO-12"
+              ]
+            },
+            "boundary": "optional Core operation summary/commit gauge/attempt stats/interval peaks/lifecycle cleanup",
+            "expected_change": "TD05 constant-cost existing-ledger seam and bounded nonblocking queue; rollback outside counters, commit-only state",
+            "prerequisite": "independently audited S1; operation owner/limits contracts stable",
+            "validation": "V09–10 peak, fault once, nested attempt, rollback, termination/drop/selection, disabled parity",
+            "unknown": "exact queue/batch sizes recorded and bounded in GEX"
+          },
+          {
+            "id": "WP-CRSO-EXPORT",
+            "selectors": {
+              "implementation": [
+                "PE-CRSO-09",
+                "PE-CRSO-10"
+              ],
+              "supporting": [
+                "PE-CRSO-08",
+                "PE-CRSO-11"
+              ]
+            },
+            "boundary": "host metrics/exporter worker, finite registry/buckets, observability.ron, Prometheus/Grafana provisioning",
+            "expected_change": "TD06 synchronous upkeep after bounded batch; collector absence boundedness; opt-in loopback and actual graph",
+            "prerequisite": "WP-CRSO-OBSERVE bounded summary contract",
+            "validation": "V09–11 real exporter/Grafana, finite labels/ring, queue full and scrape stopped",
+            "unknown": "local official binaries or available container used for actual service test"
+          },
+          {
+            "id": "WP-CRSO-S2VERIFY",
+            "selectors": {
+              "implementation": [
+                "PE-CRSO-12"
+              ],
+              "validation_only": [
+                "PE-CRSO-08",
+                "PE-CRSO-09",
+                "PE-CRSO-10",
+                "PE-CRSO-11"
+              ],
+              "supporting": [
+                "PE-CRSO-01",
+                "PE-CRSO-02",
+                "PE-CRSO-03",
+                "PE-CRSO-04",
+                "PE-CRSO-05",
+                "PE-CRSO-06",
+                "PE-CRSO-07"
+              ]
+            },
+            "boundary": "final S2 off/on impact regression/cost pairs, dashboard evidence and independent target freeze",
+            "expected_change": "durable V09–12 plus changed S1 seams, actual measurements, archive restoration and independent audit",
+            "prerequisite": "WP-CRSO-OBSERVE and WP-CRSO-EXPORT complete; S1 source currentness",
+            "validation": "full final core/host baseline; all U02 acceptance; off/on faults/RNG/events and storage cleanup; no 20minute test",
+            "unknown": "observed overhead recorded without arbitrary new pass thresholds"
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CRSO-CONFIG",
+            "to": "WP-CRSO-CORE",
+            "type": "producer_consumer",
+            "evidence": "Core requires a validated profile before generation/start",
+            "broken": "Core requires a validated profile before generation/start; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-CORE",
+            "to": "WP-CRSO-PORTS",
+            "type": "producer_consumer",
+            "evidence": "actual host/CLI require generation/application injection",
+            "broken": "actual host/CLI require generation/application injection; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-CONFIG",
+            "to": "WP-CRSO-S1VERIFY",
+            "type": "validation",
+            "evidence": "default/parser acceptance needs final source",
+            "broken": "default/parser acceptance needs final source; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-CORE",
+            "to": "WP-CRSO-S1VERIFY",
+            "type": "validation",
+            "evidence": "runtime/restore/history acceptance needs final source",
+            "broken": "runtime/restore/history acceptance needs final source; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-PORTS",
+            "to": "WP-CRSO-S1VERIFY",
+            "type": "validation",
+            "evidence": "real caller path must exist",
+            "broken": "real caller path must exist; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-S1VERIFY",
+            "to": "WP-CRSO-OBSERVE",
+            "type": "release_rollout",
+            "evidence": "user requires independent predecessor audit before dependent implementation",
+            "broken": "user requires independent predecessor audit before dependent implementation; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-OBSERVE",
+            "to": "WP-CRSO-EXPORT",
+            "type": "producer_consumer",
+            "evidence": "exporter consumes fixed operation summary",
+            "broken": "exporter consumes fixed operation summary; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-OBSERVE",
+            "to": "WP-CRSO-S2VERIFY",
+            "type": "validation",
+            "evidence": "attempt/commit source must be final",
+            "broken": "attempt/commit source must be final; ignoring this prevents the dependent contract from being established"
+          },
+          {
+            "from": "WP-CRSO-EXPORT",
+            "to": "WP-CRSO-S2VERIFY",
+            "type": "validation",
+            "evidence": "external graph and bounded storage need final exporter",
+            "broken": "external graph and bounded storage need final exporter; ignoring this prevents the dependent contract from being established"
+          }
+        ],
+        "atomic_groups": [],
+        "standalone": [
+          "WP-CRSO-CONFIG",
+          "WP-CRSO-CORE",
+          "WP-CRSO-PORTS",
+          "WP-CRSO-S1VERIFY",
+          "WP-CRSO-OBSERVE",
+          "WP-CRSO-EXPORT",
+          "WP-CRSO-S2VERIFY"
+        ],
+        "cyclic_sccs": [],
+        "phases": [
+          {
+            "id": "PHASE-CRSO-S1",
+            "primary": [
+              "PE-CRSO-01",
+              "PE-CRSO-02",
+              "PE-CRSO-03",
+              "PE-CRSO-04",
+              "PE-CRSO-05",
+              "PE-CRSO-06",
+              "PE-CRSO-07"
+            ],
+            "supporting": [
+              "PE-CRSO-12"
+            ],
+            "nodes": [
+              "WP-CRSO-CONFIG",
+              "WP-CRSO-CORE",
+              "WP-CRSO-PORTS",
+              "WP-CRSO-S1VERIFY"
+            ],
+            "exit": "S1 settings and actual ports complete, reversible current target, independent audit Complete/High; metrics still absent"
+          },
+          {
+            "id": "PHASE-CRSO-S2",
+            "primary": [
+              "PE-CRSO-08",
+              "PE-CRSO-09",
+              "PE-CRSO-10",
+              "PE-CRSO-11",
+              "PE-CRSO-12"
+            ],
+            "supporting": [
+              "PE-CRSO-01",
+              "PE-CRSO-02",
+              "PE-CRSO-03",
+              "PE-CRSO-04",
+              "PE-CRSO-05",
+              "PE-CRSO-06",
+              "PE-CRSO-07"
+            ],
+            "nodes": [
+              "WP-CRSO-OBSERVE",
+              "WP-CRSO-EXPORT",
+              "WP-CRSO-S2VERIFY"
+            ],
+            "exit": "bounded observation and actual Grafana complete, final regressions and independent audit passed"
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CRSO-S1",
+            "state": "all actual settings consumers and persistence use one validated profile; no metrics dependency",
+            "checks": "single authority/default/identity, pre-spawn limits, old save/CLI semantics, server compiler baseline repaired",
+            "evidence": "V01–08 and V12 plus independent S1 audit",
+            "limitation": "S2 observation absent; S1 remains valid without it"
+          },
+          {
+            "phase": "PHASE-CRSO-S2",
+            "state": "same gameplay settings with optional bounded observer and external standard graph",
+            "checks": "no exporter feedback/blocking, failed attempts versus committed gauges, finite buffer/labels and cleanup",
+            "evidence": "V09–12 + relevant S1 revalidation and independent S2 audit",
+            "limitation": "no arbitrary new cap or 20minute evidence"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CRSO-V01-S1",
+            "source": "CODE_REVIEW_001.ko.md V01; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V01",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V02-S1",
+            "source": "CODE_REVIEW_001.ko.md V02; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V02",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V03-S1",
+            "source": "CODE_REVIEW_001.ko.md V03; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V03",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V04-S1",
+            "source": "CODE_REVIEW_001.ko.md V04; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V04",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V05-S1",
+            "source": "CODE_REVIEW_001.ko.md V05; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V05",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V06-S1",
+            "source": "CODE_REVIEW_001.ko.md V06; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V06",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V07-S1",
+            "source": "CODE_REVIEW_001.ko.md V07; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V07",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V08-S1",
+            "source": "CODE_REVIEW_001.ko.md V08; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V08",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V09-S2",
+            "source": "CODE_REVIEW_001.ko.md V09; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S2VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S2"
+            ],
+            "locator": "execution/s2/COVERAGE.json V09",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S2 source"
+          },
+          {
+            "id": "IVA-CRSO-V10-S2",
+            "source": "CODE_REVIEW_001.ko.md V10; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S2VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S2"
+            ],
+            "locator": "execution/s2/COVERAGE.json V10",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S2 source"
+          },
+          {
+            "id": "IVA-CRSO-V11-S2",
+            "source": "CODE_REVIEW_001.ko.md V11; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S2VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S2"
+            ],
+            "locator": "execution/s2/COVERAGE.json V11",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S2 source"
+          },
+          {
+            "id": "IVA-CRSO-V12-S1",
+            "source": "CODE_REVIEW_001.ko.md V12; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S1VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S1"
+            ],
+            "locator": "execution/s1/COVERAGE.json V12",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S1 source"
+          },
+          {
+            "id": "IVA-CRSO-V12-S2",
+            "source": "CODE_REVIEW_001.ko.md V12; Frozen acceptance selectors",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRSO-S2VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRSO-S2"
+            ],
+            "locator": "execution/s2/COVERAGE.json V12",
+            "evidence": "actual nonzero test/CLI/service execution; exact source/config/input/seed/lock/toolchain; expected and observed outputs; raw failure preserved",
+            "prerequisite": "final integrated S2 source"
+          }
+        ],
+        "Known Unknown/Limitations": "GEX concrete APIs and measurements pending; each WP owns its durable fixtures and immutable evidence. No deployed/remote compatibility claim."
+      }
+    }
+  ],
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CRSO-001",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0"
+}

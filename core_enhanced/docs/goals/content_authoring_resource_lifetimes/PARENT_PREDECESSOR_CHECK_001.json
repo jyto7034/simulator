@@ -1,0 +1,129 @@
+{
+  "kind": "external parent AUTORUN predecessor consumption; not a P2G source observation",
+  "selected_scope": "R05 minimal P2G after actual R04 closure",
+  "R04_actual_acceptance": {
+    "kind": "external root acceptance of actual separate R04 fresh FINAL; no independent P2G Ref",
+    "actual_final_received": true,
+    "reviewed_full_report": true,
+    "reviewed_source_review": true,
+    "verdict": "Complete / High",
+    "goal_set_ref": "GS-CARF-P2G50-002",
+    "goal_id": "GOAL-CARF-01",
+    "phase_id": "PHASE-CARF-01",
+    "handoff_ref": "HOF-CARF-P2G60-002",
+    "sealed_outputs": [
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT_002.md",
+        "bytes": 27155,
+        "sha256": "566a3dc2aafdc9075a8067904c762fca7508c333b4eafd25e61ac6100218043a"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/attribution_review.json",
+        "bytes": 149873,
+        "sha256": "73d8767821483a0e8e2c6e032fff406241c9b457bdf7f303a875cf1c98fc1180"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/currentness_closure.json",
+        "bytes": 52267,
+        "sha256": "6082473f0f320ac871e7644320afa16213ff6c3432c7754a0701a7de1293db4f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/currentness_entry.json",
+        "bytes": 52265,
+        "sha256": "eebbc88eefb22bd19a2e2996d38672e4ad94d4a207c1b0154bd3095d74338aa5"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/evidence_review.json",
+        "bytes": 48368,
+        "sha256": "4e7580ce05497776c3db6cd86ef0071d2425a4f1b2f0326ec49e73652c795ba8"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/evidence_review_reader_initial.json",
+        "bytes": 48593,
+        "sha256": "1e36f5c6b6c39e949eed901162c42e9c64f77f651040785dd3b80db9e3d6df46"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/full209_test_rows.txt",
+        "bytes": 130602,
+        "sha256": "0d8dd12bb6a0f35a17329018e5cdaec1ab28a3d4fec6c214b550a04f3bd13407"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/output_review.json",
+        "bytes": 81965,
+        "sha256": "844272c452a87b164830f185138845f3ff6e97886331fa0a2f9c38d52b720a14"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/public_guard_review.json",
+        "bytes": 4820,
+        "sha256": "64ea2726a0e91c04f0e56ec4db5b1c77910b3ceca19494c27a92a81d60ee6870"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/reader_attempts.md",
+        "bytes": 1520,
+        "sha256": "229cacae5c48787bd8d3684629c85c5aca7d635205349e920172412d910d7b0d"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/report_review.json",
+        "bytes": 2519,
+        "sha256": "921f3e0f0f8158352e3f2529fa92d23209b5f6ce17a2feec8fc748d24043386f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/source_review.md",
+        "bytes": 12169,
+        "sha256": "3de49f0117f8be5256943764c058f914be696c8d0d611550f284ee51885e8411"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/verify_attribution.py",
+        "bytes": 5191,
+        "sha256": "a70ef8335cc3bcae77c51f7bfe1704de0eb06bd12b1bf5670a3db1c0f6e15179"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/verify_currentness.py",
+        "bytes": 4201,
+        "sha256": "95df8dee4cedb4402854e54bfee5f0bbaf2a9de5bc80b54220af8a82a3d46a82"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/verify_evidence.py",
+        "bytes": 6037,
+        "sha256": "71ed638f3a19a9cfc61266d456ce1f13dc0dc62eb6bed1c38fcc262c42447b29"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/verify_outputs.py",
+        "bytes": 6482,
+        "sha256": "14faa1e5faa3a4f1a2936b4eb1ffcc757d69c2c9f4eae69478032257e49397ee"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/verify_public_guards.py",
+        "bytes": 2994,
+        "sha256": "a7ffe2aba71da1ad8d8474d923771cf32be00b2bcff96ab0f679134946925b3a"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/audit-evidence/fresh_002/AUDIT_OUTPUTS.json",
+        "sha256": "3254d0e0a1ba8350fdfdb3767711fd45eb7524a4988bbf65a76162fd658c2bb7",
+        "bytes": 5419
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_003.json",
+        "sha256": "a599773bc1f084a46c55b01ddf3a37e2ab47f10323080d5c67df3bceeff6b4c8",
+        "bytes": 2088659
+      }
+    ],
+    "root_validation": {
+      "registered_outputs": 17,
+      "target_members": 4361,
+      "absences": 2,
+      "default_binaries": 3,
+      "auditor_entry_closure_distinct_files": 6928,
+      "predecessor_registered_outputs": 47,
+      "entry_closure_equal": true,
+      "no_intervening_source_mutation": true
+    },
+    "nonblocking_observations": [
+      "O-R04-002-01",
+      "O-R04-002-02"
+    ],
+    "parent_not_complete": "R05-R24 remain; R04 Single Goal closure is not parent completion",
+    "accepted_at_utc": "2026-09-11T03:39:23.675627+00:00"
+  },
+  "note": "R05 implementation remains unactivated. Parent lookahead policy/source interpretations are not bootstrap policy-basis decisions."
+}

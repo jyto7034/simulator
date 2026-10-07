@@ -1,0 +1,90 @@
+{
+  "observed_at": "2026-09-09T18:34:41.527448+00:00",
+  "binary_sha256": "c68f5a7fc6a786d9d3222cee7905881c96609c984bed104b8bb79dc4929b6e36",
+  "fixture_original": {
+    "b/policy.ron": "425d828700ad5e31876cba928b4811d70e74ab7997bdb892eda66f2896cb6e72",
+    "b/pack.ron": "6f6312fc9398d06614b06e17002852e002ba6aec7279e625eb2cc07d69faa96e",
+    "b/user-notes.bin": "5c528ae9f147afabcfea3a04af5df5f1712d2714a48fa6e7d22a26a7b664323f",
+    "official/pack.ron": "8f7e58097af9dfb2e151d7c53fd1d02364d96cb9a66c807edeb6b01e92cad991",
+    "official/data/visual_novels/base.ron": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f",
+    "official/data/boss_omen/chains.ron": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0",
+    "official/data/pve/encounters.ron": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde",
+    "official/data/buffs/base.ron": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b",
+    "official/data/skills/base.ron": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5",
+    "official/data/summoned_units/base.ron": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0",
+    "official/data/map/facility_templates.ron": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c",
+    "official/data/map/battlefield_templates.ron": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f",
+    "official/data/map/node_assignment_profiles.ron": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3",
+    "official/data/map/node_definitions.ron": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7",
+    "official/data/map/battlefield_archetypes.ron": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9",
+    "official/data/equipments/base.ron": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088",
+    "official/data/visual_novel_triggers/base.ron": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875",
+    "official/data/enemies/corroded_employees.ron": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154",
+    "official/data/enemies/corroded_wave_presets.ron": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751",
+    "official/data/consumables/base.ron": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a",
+    "official/data/employees/definitions.ron": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01",
+    "official/data/abnormalities/base.ron": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474",
+    "official/data/run/policy.ron": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31",
+    "official/data/boss_runtime/base.ron": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04",
+    "official/data/skill_fragments/base.ron": "19d781da6675927931344c0bc5272ebd673cf59a3df94f5dbd577c1d667b3e74",
+    "official/data/events/shops/base.ron": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297",
+    "official/data/events/story/base.ron": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242",
+    "official/data/events/rewards/base.ron": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  "only_mutated_input": "b/policy.ron",
+  "mutated_sha256": "49431264eb1fe8f6e8655c714d924a9f31d9cd58208b5a5d3a572d628dff4be0",
+  "mutation_locator": "combat_difficulty.profiles[1].ordinary_bands[0].tuning.extra_waves[0].spawn_zone_ids[0]",
+  "commands": [
+    {
+      "name": "diagnostic2_valid_b",
+      "command": [
+        "/mnt/f/work/simulator/target/release/consume_content_pack",
+        "/tmp/capg-r02-fresh-source-probe-002/live_data",
+        "official",
+        "b"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "47114bd58892669be334d1f9dec35784206c6bdf41e7f372fd90126b91f16a81",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diagnostic2_invalid_b_1",
+      "command": [
+        "/mnt/f/work/simulator/target/release/consume_content_pack",
+        "/tmp/capg-r02-fresh-source-probe-002/live_data",
+        "official",
+        "b"
+      ],
+      "exit_code": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2e754e47c656089052637bed59f590c1430d4edfadfbef97174a8a5df3e5509c"
+    },
+    {
+      "name": "diagnostic2_invalid_b_2",
+      "command": [
+        "/mnt/f/work/simulator/target/release/consume_content_pack",
+        "/tmp/capg-r02-fresh-source-probe-002/live_data",
+        "official",
+        "b"
+      ],
+      "exit_code": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "2e754e47c656089052637bed59f590c1430d4edfadfbef97174a8a5df3e5509c"
+    },
+    {
+      "name": "diagnostic2_restored_b",
+      "command": [
+        "/mnt/f/work/simulator/target/release/consume_content_pack",
+        "/tmp/capg-r02-fresh-source-probe-002/live_data",
+        "official",
+        "b"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "47114bd58892669be334d1f9dec35784206c6bdf41e7f372fd90126b91f16a81",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_inputs_restored": true,
+  "source_fidelity_observation": "Both negative release executions identify official/data/pve/encounters.ron encounters[0]; actual invalid winning definition resides in b/policy.ron. Diagnostics omit b/policy.ron and the contributing source list.",
+  "contract_oracle_pass": false
+}

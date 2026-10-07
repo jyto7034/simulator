@@ -1,0 +1,194 @@
+{
+  "schema": "independent_cfg_boundary_controls_v1",
+  "cases": [
+    {
+      "id": "enum_variant_product_function_negative",
+      "before": "enum Route { Live, #[cfg(test)] TestFixture, }\nfn behavior_owner() -> u8 { 1 }\n",
+      "after": "enum Route { Live, #[cfg(test)] TestFixture, }\nfn behavior_owner() -> u8 { 2 }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(test)] TestFixture"
+      ]
+    },
+    {
+      "id": "enum_variant_body_positive",
+      "before": "enum Route { Live, #[cfg(test)] TestFixture, }\nfn behavior_owner() -> u8 { 1 }\n",
+      "after": "enum Route { Live, #[cfg(test)] ChangedFixture, }\nfn behavior_owner() -> u8 { 1 }\n",
+      "expected": "changed"
+    },
+    {
+      "id": "match_arm_neighbor_negative",
+      "before": "fn owner(x: Route) -> u8 { match x { #[cfg(test)] Route::Fixture => 7, Route::Live => 1, } }\n",
+      "after": "fn owner(x: Route) -> u8 { match x { #[cfg(test)] Route::Fixture => 7, Route::Live => 2, } }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(test)] Route::Fixture => 7,"
+      ]
+    },
+    {
+      "id": "match_arm_body_positive",
+      "before": "fn owner(x: Route) -> u8 { match x { #[cfg(test)] Route::Fixture => 7, Route::Live => 1, } }\n",
+      "after": "fn owner(x: Route) -> u8 { match x { #[cfg(test)] Route::Fixture => 8, Route::Live => 1, } }\n",
+      "expected": "changed"
+    },
+    {
+      "id": "semicolon_module_boundary_negative",
+      "before": "#[cfg(test)] mod regression;\nfn production() { call_a(); }\n",
+      "after": "#[cfg(test)] mod regression;\nfn production() { call_b(); }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(test)] mod regression;"
+      ]
+    },
+    {
+      "id": "registration_change_positive",
+      "before": "#[cfg(test)] mod regression;\nfn production() { call_a(); }\n",
+      "after": "#[cfg(test)] mod other_regression;\nfn production() { call_a(); }\n",
+      "expected": "changed"
+    },
+    {
+      "id": "semicolon_items_and_initializer_negative",
+      "before": "#[cfg(test)] use super::helper;\n#[cfg(test)] struct Unit;\n#[cfg(test)] struct Pair(u8, u16);\n#[cfg(test)] const N: u8 = { 1 };\nfn production() { live_a(); }\n",
+      "after": "#[cfg(test)] use super::helper;\n#[cfg(test)] struct Unit;\n#[cfg(test)] struct Pair(u8, u16);\n#[cfg(test)] const N: u8 = { 1 };\nfn production() { live_b(); }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(test)] use super::helper;",
+        "#[cfg(test)] struct Unit;",
+        "#[cfg(test)] struct Pair(u8, u16);",
+        "#[cfg(test)] const N: u8 = { 1 };"
+      ]
+    },
+    {
+      "id": "field_and_field_value_negative",
+      "before": "struct S { live: u8, #[cfg(test)] fixture: u16, }\nfn make() -> S { S { live: 1, #[cfg(any(test, debug_assertions))] fixture: 2, } }\n",
+      "after": "struct S { live: u8, #[cfg(test)] fixture: u16, }\nfn make() -> S { S { live: 3, #[cfg(any(test, debug_assertions))] fixture: 2, } }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(test)] fixture: u16",
+        "#[cfg(any(test, debug_assertions))] fixture: 2"
+      ]
+    },
+    {
+      "id": "field_value_positive",
+      "before": "struct S { live: u8, #[cfg(test)] fixture: u16, }\nfn make() -> S { S { live: 1, #[cfg(any(test, debug_assertions))] fixture: 2, } }\n",
+      "after": "struct S { live: u8, #[cfg(test)] fixture: u16, }\nfn make() -> S { S { live: 1, #[cfg(any(test, debug_assertions))] fixture: 4, } }\n",
+      "expected": "changed"
+    },
+    {
+      "id": "local_and_expr_block_negative",
+      "before": "fn f() { #[cfg(any(test, feature = \"fixture\"))] let n = { call(1); 2 }; #[cfg(test)] { observe(n); } live(3); }\n",
+      "after": "fn f() { #[cfg(any(test, feature = \"fixture\"))] let n = { call(1); 2 }; #[cfg(test)] { observe(n); } live(4); }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(any(test, feature = \"fixture\"))] let n = { call(1); 2 };",
+        "#[cfg(test)] { observe(n); }"
+      ]
+    },
+    {
+      "id": "nested_module_product_negative",
+      "before": "#[cfg(all(test, unix))] mod tests { fn helper() { nested({ 1 }); } #[test] fn checks() { helper(); } }\nfn live() { 2 }\n",
+      "after": "#[cfg(all(test, unix))] mod tests { fn helper() { nested({ 1 }); } #[test] fn checks() { helper(); } }\nfn live() { 3 }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(all(test, unix))] mod tests { fn helper() { nested({ 1 }); } #[test] fn checks() { helper(); } }"
+      ]
+    },
+    {
+      "id": "nested_helper_body_positive",
+      "before": "#[cfg(all(test, unix))] mod tests { fn helper() { nested({ 1 }); } #[test] fn checks() { helper(); } }\nfn live() { 2 }\n",
+      "after": "#[cfg(all(test, unix))] mod tests { fn helper() { nested({ 4 }); } #[test] fn checks() { helper(); } }\nfn live() { 2 }\n",
+      "expected": "changed"
+    },
+    {
+      "id": "comments_strings_chars_lifetimes_negative",
+      "before": "// #[cfg(test)] this is not an attribute\n/* nested /* #[cfg(test)] */ comment */\nfn product<'a>(s: &'a str) -> &'a str { let _ = r###\"#[cfg(test)] { ; }\"###; let _ = br#\"#[cfg(test)]\"#; let _ = \"\\\" #[cfg(test)]\"; let _ = '{'; let _ = '\\''; 'outer: loop { break 'outer; } s }\n#[cfg(any(test, debug_assertions, feature = \"test-fixtures\"))]\nfn helper<'a>(s: &'a str) { /* } /* { */ } */ let _ = s; let _ = '\\u{7d}'; }\n",
+      "after": "// #[cfg(test)] this is not an attribute\n/* nested /* #[cfg(test)] */ comment */\nfn product<'a>(s: &'a str) -> &'a str { let _ = r###\"#[cfg(test)] { ; }\"###; let _ = br#\"#[cfg(test)]\"#; let _ = \"\\\" #[cfg(test)]\"; let _ = '{'; let _ = '\\''; 'outer: loop { break 'outer ; } s }\n#[cfg(any(test, debug_assertions, feature = \"test-fixtures\"))]\nfn helper<'a>(s: &'a str) { /* } /* { */ } */ let _ = s; let _ = '\\u{7d}'; }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(any(test, debug_assertions, feature = \"test-fixtures\"))]\nfn helper<'a>(s: &'a str) { /* } /* { */ } */ let _ = s; let _ = '\\u{7d}'; }"
+      ]
+    },
+    {
+      "id": "utf8_span_columns_negative",
+      "before": "const LABEL: &str = \"한글😀\"; #[cfg(test)] fn 검사() { let x = \"é\"; assert_eq!(x, \"é\"); }\nfn live() { 1 }\n",
+      "after": "const LABEL: &str = \"한글😀\"; #[cfg(test)] fn 검사() { let x = \"é\"; assert_eq!(x, \"é\"); }\nfn live() { 2 }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": [
+        "#[cfg(test)] fn 검사() { let x = \"é\"; assert_eq!(x, \"é\"); }"
+      ]
+    },
+    {
+      "id": "negative_test_predicate_is_production",
+      "before": "#[cfg(not(any(test, debug_assertions)))] fn release_only() { 1 }\nfn live() { 2 }\n",
+      "after": "#[cfg(not(any(test, debug_assertions)))] fn release_only() { 3 }\nfn live() { 2 }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": []
+    },
+    {
+      "id": "test_string_is_not_bare_test_cfg",
+      "before": "#[cfg(feature = \"test\")] fn named_feature() { 1 }\n",
+      "after": "#[cfg(feature = \"test\")] fn named_feature() { 2 }\n",
+      "expected": "unchanged",
+      "expected_before_outer_texts": []
+    },
+    {
+      "id": "direct_test_attribute_positive",
+      "before": "#[test] fn direct_test() { assert_eq!(1, 1); }\n",
+      "after": "#[test] fn direct_test() { assert_eq!(1, 2); }\n",
+      "expected": "changed"
+    },
+    {
+      "id": "opaque_macro_requires_review",
+      "before": "macro_rules! make { () => { #[cfg(test)] fn hidden() { 1 } }; } fn live() { 2 }\n",
+      "after": "macro_rules! make { () => { #[cfg(test)] fn hidden() { 1 } }; } fn live() { 3 }\n",
+      "expected": "review"
+    },
+    {
+      "id": "cfg_attr_requires_review",
+      "before": "#[cfg_attr(test, ignore)] fn generated_attr() { 1 } fn live() { 2 }\n",
+      "after": "#[cfg_attr(test, ignore)] fn generated_attr() { 1 } fn live() { 3 }\n",
+      "expected": "review"
+    },
+    {
+      "id": "malformed_rust_requires_review",
+      "before": "#[cfg(test)] fn broken( {",
+      "after": "#[cfg(test)] fn broken( { }",
+      "expected": "review"
+    }
+  ],
+  "graph_cases": [
+    {
+      "id": "shared_test_production_module_registration",
+      "sources": {
+        "crate/src/lib.rs": "#[cfg(any(test, debug_assertions))] pub mod core;\n#[cfg(not(any(test, debug_assertions)))] pub(crate) mod core;",
+        "crate/src/core.rs": "pub fn live() {}"
+      },
+      "expected_protected_paths": []
+    },
+    {
+      "id": "external_private_test_module_descendants",
+      "sources": {
+        "crate/src/lib.rs": "#[cfg(test)] #[path=\"private_probe.rs\"] mod probe;",
+        "crate/src/private_probe.rs": "mod support; #[test] fn smoke() {}",
+        "crate/src/private_probe/support.rs": "pub fn helper() {}"
+      },
+      "expected_protected_paths": [
+        "crate/src/private_probe.rs",
+        "crate/src/private_probe/support.rs"
+      ]
+    },
+    {
+      "id": "integration_test_crate_root_resolution",
+      "sources": {
+        "crate/tests/integration.rs": "mod common; mod nested { mod support; }",
+        "crate/tests/common/mod.rs": "pub fn helper() {}",
+        "crate/tests/nested/support.rs": "pub fn helper() {}"
+      },
+      "expected_protected_paths": [
+        "crate/tests/common/mod.rs",
+        "crate/tests/integration.rs",
+        "crate/tests/nested/support.rs"
+      ]
+    }
+  ]
+}

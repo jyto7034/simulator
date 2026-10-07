@@ -3,12 +3,40 @@ use uuid::Uuid;
 
 use crate::game::data::equipment_data::EquipmentType;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum SlotLayoutKind {
     /// Weapon/Armor/Accessory 1개씩
     ByType,
     /// 타입 무시, 총 3개
     Any3,
+}
+
+/// Address of one equipment slot in the layout observed for a battle entry.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum EquipmentSlotAddress {
+    Weapon,
+    Armor,
+    Accessory,
+    Any3(u8),
+}
+
+impl EquipmentSlotAddress {
+    pub const fn is_valid(self) -> bool {
+        match self {
+            Self::Any3(index) => index < 3,
+            Self::Weapon | Self::Armor | Self::Accessory => true,
+        }
+    }
+
+    pub const fn belongs_to(self, layout: SlotLayoutKind) -> bool {
+        matches!(
+            (layout, self),
+            (
+                SlotLayoutKind::ByType,
+                Self::Weapon | Self::Armor | Self::Accessory
+            ) | (SlotLayoutKind::Any3, Self::Any3(0..=2))
+        )
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -95,6 +123,39 @@ impl ItemSlot {
 
     pub fn contains_instance(&self, instance_uuid: Uuid) -> bool {
         self.iter().any(|r| r.instance_uuid == instance_uuid)
+    }
+
+    pub fn contains_equipment_type(&self, equipment_type: EquipmentType) -> bool {
+        self.iter()
+            .any(|equipped| equipped.equipment_type == equipment_type)
+    }
+
+    pub(crate) fn validate_checkpoint_state(&self) -> bool {
+        let structurally_valid = match &self.layout {
+            SlotLayout::ByType {
+                weapon,
+                armor,
+                accessory,
+            } => {
+                weapon
+                    .as_ref()
+                    .is_none_or(|item| item.equipment_type == EquipmentType::Weapon)
+                    && armor
+                        .as_ref()
+                        .is_none_or(|item| item.equipment_type == EquipmentType::Armor)
+                    && accessory
+                        .as_ref()
+                        .is_none_or(|item| item.equipment_type == EquipmentType::Accessory)
+            }
+            SlotLayout::Any3 { items } => items.len() <= 3,
+        };
+        if !structurally_valid {
+            return false;
+        }
+
+        let mut instances = std::collections::HashSet::new();
+        self.iter()
+            .all(|equipped| instances.insert(equipped.instance_uuid))
     }
 
     /// 장착.
@@ -212,6 +273,37 @@ impl ItemSlot {
         }
     }
 
+    /// Iterates equipped items in the same order as [`Self::iter`], retaining
+    /// the address from the currently observed layout.
+    pub fn iter_with_address(
+        &self,
+    ) -> Box<dyn Iterator<Item = (EquipmentSlotAddress, &EquippedRef)> + '_> {
+        match &self.layout {
+            SlotLayout::ByType {
+                weapon,
+                armor,
+                accessory,
+            } => Box::new(
+                weapon
+                    .iter()
+                    .map(|item| (EquipmentSlotAddress::Weapon, item))
+                    .chain(armor.iter().map(|item| (EquipmentSlotAddress::Armor, item)))
+                    .chain(
+                        accessory
+                            .iter()
+                            .map(|item| (EquipmentSlotAddress::Accessory, item)),
+                    ),
+            ),
+            SlotLayout::Any3 { items } => {
+                Box::new(items.iter().enumerate().map(|(index, item)| {
+                    let index =
+                        u8::try_from(index).expect("ItemSlot Any3 length is bounded to three");
+                    (EquipmentSlotAddress::Any3(index), item)
+                }))
+            }
+        }
+    }
+
     pub fn switch_layout(&mut self, kind: SlotLayoutKind) -> Result<(), ItemSlotError> {
         if self.layout_kind() == kind {
             return Ok(());
@@ -323,5 +415,52 @@ mod tests {
         // ByType iter order is Weapon -> Armor -> Accessory, and Any3 preserves insertion order.
         let items: Vec<EquippedRef> = slot.iter().copied().collect();
         assert_eq!(items, vec![weapon, armor]);
+    }
+
+    #[test]
+    fn addressed_iteration_preserves_by_type_holes_and_item_order() {
+        let mut slot = ItemSlot::new(SlotLayoutKind::ByType);
+        let armor = equipped(2, 11, EquipmentType::Armor);
+        let accessory = equipped(3, 12, EquipmentType::Accessory);
+        slot.equip(armor, true).unwrap();
+        slot.equip(accessory, true).unwrap();
+
+        let addressed: Vec<_> = slot
+            .iter_with_address()
+            .map(|(address, item)| (address, *item))
+            .collect();
+        assert_eq!(
+            addressed,
+            vec![
+                (EquipmentSlotAddress::Armor, armor),
+                (EquipmentSlotAddress::Accessory, accessory),
+            ]
+        );
+        assert_eq!(
+            slot.iter().copied().collect::<Vec<_>>(),
+            addressed.iter().map(|(_, item)| *item).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn addressed_iteration_uses_observed_any3_indices() {
+        let mut slot = ItemSlot::new(SlotLayoutKind::Any3);
+        let weapon = equipped(1, 10, EquipmentType::Weapon);
+        let armor = equipped(2, 11, EquipmentType::Armor);
+        slot.equip(weapon, true).unwrap();
+        slot.equip(armor, true).unwrap();
+
+        assert_eq!(
+            slot.iter_with_address()
+                .map(|(address, item)| (address, *item))
+                .collect::<Vec<_>>(),
+            vec![
+                (EquipmentSlotAddress::Any3(0), weapon),
+                (EquipmentSlotAddress::Any3(1), armor),
+            ]
+        );
+        assert!(EquipmentSlotAddress::Any3(2).belongs_to(SlotLayoutKind::Any3));
+        assert!(!EquipmentSlotAddress::Any3(3).is_valid());
+        assert!(!EquipmentSlotAddress::Weapon.belongs_to(SlotLayoutKind::Any3));
     }
 }

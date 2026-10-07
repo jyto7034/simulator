@@ -1,0 +1,247 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CRSA-002",
+        "Content Digest": "sha256:95fa1282add973d728bf925e7e3e1d9002064b87d85815b9d18aed3870d8135c"
+      },
+      "payload": {
+        "Predecessor Handoff Artifact Ref": {
+          "Artifact Type": "Handoff Artifact",
+          "Artifact ID": "HA-CRSA-001",
+          "Content Digest": "sha256:1c9609c24969fe4acf542e71514b4e903895a71207a652f304a2a2321b2f68dc"
+        },
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-006",
+            "Content Digest": "sha256:e22c3273e5b20175874521d9fbb211783127976d576be0e6030a809200f60c07"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSA-002",
+            "Content Digest": "sha256:bcd1b24a819049da710e3a1e5eedf38f0c1c5839a3398f46fae7b06ec48699cb"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRSA-002",
+            "Content Digest": "sha256:af30b19c7c1fde03e8f21932d3ab3a484c9cd0370a02b1e90c703ed5cf41cd4e"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CRSA-003",
+            "Content Digest": "sha256:57ef6192a7ab017042bb6f185161866ccc13a52db2f34694d6f13c60b89cd894"
+          },
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        },
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRSA-002",
+          "Content Digest": "sha256:bcd1b24a819049da710e3a1e5eedf38f0c1c5839a3398f46fae7b06ec48699cb"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CRSA-002",
+          "Content Digest": "sha256:af30b19c7c1fde03e8f21932d3ab3a484c9cd0370a02b1e90c703ed5cf41cd4e"
+        },
+        "Goal Set Ref": {
+          "Artifact Type": "Goal Set",
+          "Artifact ID": "GS-CRSA-003",
+          "Content Digest": "sha256:57ef6192a7ab017042bb6f185161866ccc13a52db2f34694d6f13c60b89cd894"
+        },
+        "Remaining Gap/Blocker/Limitation Summary": "Required policy/source gap0. CODE_REVIEW002, DESIGN001 nonshield plus DESIGN_DELTA002 and TEST_PLAN_DELTA002 define the actual reviewed proposals and test seams. Concrete schema/Flow graft/plan-local catalog/finite proof/private runtime plan owner/personal group and measured costs remain implementation work, not completed behavior. Baseline001 preserves438 exact source and58 valid inherited receipts; initial rerun unnecessary. Actual runtime and all223+separate31 impact must be closed. Guest has no current type; normal owned Employee eligibility only. Official personal shield formula/coefficient/final range/duration/normal-corrupt balance/penalty unadopted; representative fixtures demonstrate functionality. Preserve generic shared/recharge and legacy aura, source/SnapshotLive/cost, current saves and admission/cap/workload. Retain R05 peak-only warning and shared-host/native historical SHA limits.",
+        "Scope/Authorization Boundary": "P2G authors exact successor plan/Goal/Handoff; it does not activate a Goal, mutate product or establish runtime completion. Separate current IN001 continuous request authorizes GEX implementation/testing/correction/whole independent audit/roadmap continuation with Root planning only, Sol/xhigh product+integrated runner, Astra/high tests+focused runner and nonparticipant Astra/high final audit. No new user stage approval required.",
+        "Out-of-Scope Summary": "Unity first; individual final-boss unique implementations; U10 reactive subscribers before U09 closure; official held balances; new live-battle disk resume; unauthorized mutation/cost/deployment.",
+        "Applicable P2G-60 Obligation Key Set": [
+          {
+            "Container Ref": {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            },
+            "Obligation ID": "O60"
+          }
+        ],
+        "P2G-60 Resolution Record Ref Set": [],
+        "Resolution publication boundary": "Self-resolution depends on exact Handoff Ref; complete result owns its ref to avoid canonical hash cycle.",
+        "Resolved Prerequisite Evidence": [
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RES-CRSA-CHG001-O10-001",
+            "Content Digest": "sha256:7c7be8d42bd39c1dc3c2d0663aa6b5f8f6968e6fbdea09e2015355862d18b001"
+          },
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RES-CRSA-CHG001-O20-001",
+            "Content Digest": "sha256:645a9c8b505798909ce796e015c6688a54e3097033b3d14ee7ccedd50b6d6f8a"
+          },
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RES-CRSA-CHG001-O30-001",
+            "Content Digest": "sha256:ebd0cd99837712c1917be991ea26e69cd7307f3c42483f37abf966486267b0cb"
+          },
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RES-CRSA-CHG001-O40-001",
+            "Content Digest": "sha256:15ae1a8f36de22c21c011259ef1842658375cf7d1242afe62a15b5f232e011b6"
+          },
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RES-CRSA-CHG001-O50-001",
+            "Content Digest": "sha256:07e848b62596836918935f04492e69129d265c5a98cca914b5771ae2c0bd5d9e"
+          }
+        ],
+        "Lifecycle Disposition": "current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Resolution Record",
+        "Artifact ID": "RES-CRSA-CHG001-O60-001",
+        "Content Digest": "sha256:38392b25e77eb56b695907b2bfe19f7a9ee3801824690251170e2444e2510d2c"
+      },
+      "payload": {
+        "Obligation Key": {
+          "Container Ref": {
+            "Artifact Type": "Change Obligation Declaration",
+            "Artifact ID": "COD-CRSA-001",
+            "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+          },
+          "Obligation ID": "O60"
+        },
+        "Owner Stage": "P2G-60",
+        "Exact Resolved Prerequisite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-006",
+            "Content Digest": "sha256:e22c3273e5b20175874521d9fbb211783127976d576be0e6030a809200f60c07"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSA-002",
+            "Content Digest": "sha256:bcd1b24a819049da710e3a1e5eedf38f0c1c5839a3398f46fae7b06ec48699cb"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRSA-002",
+            "Content Digest": "sha256:af30b19c7c1fde03e8f21932d3ab3a484c9cd0370a02b1e90c703ed5cf41cd4e"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CRSA-003",
+            "Content Digest": "sha256:57ef6192a7ab017042bb6f185161866ccc13a52db2f34694d6f13c60b89cd894"
+          },
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        },
+        "Exact Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-006",
+            "Content Digest": "sha256:e22c3273e5b20175874521d9fbb211783127976d576be0e6030a809200f60c07"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSA-002",
+            "Content Digest": "sha256:bcd1b24a819049da710e3a1e5eedf38f0c1c5839a3398f46fae7b06ec48699cb"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRSA-002",
+            "Content Digest": "sha256:af30b19c7c1fde03e8f21932d3ab3a484c9cd0370a02b1e90c703ed5cf41cd4e"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CRSA-003",
+            "Content Digest": "sha256:57ef6192a7ab017042bb6f185161866ccc13a52db2f34694d6f13c60b89cd894"
+          },
+          "Handoff Artifact Ref": {
+            "Artifact Type": "Handoff Artifact",
+            "Artifact ID": "HA-CRSA-002",
+            "Content Digest": "sha256:95fa1282add973d728bf925e7e3e1d9002064b87d85815b9d18aed3870d8135c"
+          },
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        },
+        "Resolution Artifact Ref": {
+          "Artifact Type": "Handoff Artifact",
+          "Artifact ID": "HA-CRSA-002",
+          "Content Digest": "sha256:95fa1282add973d728bf925e7e3e1d9002064b87d85815b9d18aed3870d8135c"
+        },
+        "Resolution Evidence": {
+          "prerequisites": [
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RES-CRSA-CHG001-O10-001",
+              "Content Digest": "sha256:7c7be8d42bd39c1dc3c2d0663aa6b5f8f6968e6fbdea09e2015355862d18b001"
+            },
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RES-CRSA-CHG001-O20-001",
+              "Content Digest": "sha256:645a9c8b505798909ce796e015c6688a54e3097033b3d14ee7ccedd50b6d6f8a"
+            },
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RES-CRSA-CHG001-O30-001",
+              "Content Digest": "sha256:ebd0cd99837712c1917be991ea26e69cd7307f3c42483f37abf966486267b0cb"
+            },
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RES-CRSA-CHG001-O40-001",
+              "Content Digest": "sha256:15ae1a8f36de22c21c011259ef1842658375cf7d1242afe62a15b5f232e011b6"
+            },
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RES-CRSA-CHG001-O50-001",
+              "Content Digest": "sha256:07e848b62596836918935f04492e69129d265c5a98cca914b5771ae2c0bd5d9e"
+            }
+          ],
+          "17policy_to_onePhase_to_oneGoal_exact": true,
+          "latest_personal_shield_semantics_and_reuse_limits_preserved": true,
+          "remaining_applicable_unresolved_obligations": [],
+          "product_execution_not_claimed": true
+        }
+      }
+    }
+  ]
+}

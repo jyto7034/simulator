@@ -1,0 +1,76 @@
+{
+  "kind": "external complete stage report",
+  "Selected Stage": "P2G-40",
+  "Execution Status": "completed",
+  "Phase Plan Ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CARF-P2G40-002",
+    "Content Digest": null
+  },
+  "Phase Plan Validation Receipt Ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CARF-P2G40-002",
+    "Content Digest": null
+  },
+  "Bound Final Policy Freeze Ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CARF-P2G30-001",
+    "Content Digest": null
+  },
+  "Lifecycle": "current",
+  "P2G-40 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "Goal Structure Fact": "single_phase",
+  "artifact_files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_002.json",
+      "sha256": "a1720004d7eacf388fd1e54de8659221849e241957f7d18037974753028e0fc6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_VALIDATION_RECEIPT_002.json",
+      "sha256": "ddb4e5278b0b748a5d20a1e19ce23bd80d7ff6a1234445fba7fa2892c66f8c26"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_DESIGN_002.ko.md",
+      "sha256": "38d936e9b13d5ab324a561ed12d85acc1b014c4778aeaac6091d56325f5620cb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_CANDIDATE_CORRECTION_001.json",
+      "sha256": "6753860cb53b1c6290bb4f331c003beccfb639d18d3905ded9cae44f78e38816"
+    }
+  ],
+  "actual_standard_validation": {
+    "generator_exit_code": 0,
+    "generator_status": "created",
+    "validator_exit_code": 0,
+    "validator": "p2g40-receipt-validator/1.2.0",
+    "result": "passed",
+    "failures": [],
+    "counts": {
+      "freeze_members": 5,
+      "work_packages": 3,
+      "dependency_edges": 4,
+      "cyclic_sccs": 1,
+      "atomic_groups": 1,
+      "final_execution_nodes": 2,
+      "phases": 1,
+      "audit_rows": 1,
+      "integration_rows": 10
+    },
+    "commands": [
+      "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --write-receipt --plan core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_002.json --freeze core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json --receipt core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_VALIDATION_RECEIPT_002.json",
+      "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_002.json --freeze core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json --receipt core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_VALIDATION_RECEIPT_002.json"
+    ]
+  },
+  "semantic_review": {
+    "root": "WP01 facts/source and WP02 action/attempt have actual bidirectional producer-consumer/transaction need, grouped without changing command transaction; WP03 durable validation belongs same independently complete phase. All 20 acceptance and 10 IVA assigned; SC01–06 ownership/availability explicit, future R absent.",
+    "separate_reviewer": "/root/r04_p2g20_semantic_review; same-model no-fork read-only planning review, no runtime audit",
+    "reviewer_result": "No blocking issue. Mutual dependency/AG and one-phase validation closure agree with CRA; all 20 acceptance mapped; no new gameplay/save/deployment authority or unsupported success.",
+    "publication_blockers": []
+  },
+  "noncurrent_predecessor": "PP-CARF-P2G40-001 preserved with actual parser rejection; never current; successor002 only corrects typed receipt ref/identity locator",
+  "Next Stage": "P2G-50",
+  "New User Request Required": false,
+  "new_gameplay_execution_count": 0,
+  "recorded_at_utc": "2026-09-10T19:31:53.572195+00:00"
+}

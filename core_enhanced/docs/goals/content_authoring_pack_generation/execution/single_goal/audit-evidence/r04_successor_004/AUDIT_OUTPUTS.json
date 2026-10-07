@@ -1,0 +1,83 @@
+{
+  "at_utc": "2026-09-11T01:10:45.619878+00:00",
+  "goal_set_ref": "GS-CAPG-P2G50-001",
+  "goal_id": "GOAL-CAPG-01",
+  "record_id": "ATR-CAPG-R02-005",
+  "reviewer": "/root/r02_r04_fresh_audit; separate same-model agent, no fork or implementation participation",
+  "verdict": "Complete / High",
+  "currentness": "current / unchanged",
+  "target": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_005.json",
+  "target_sha256": "a090b1856086f1c98c5d1630bb4464deb28b244eaed950514ce1132300fda57b",
+  "entry_closure_identical": true,
+  "manifest_members": 4194,
+  "required_absences": 2,
+  "external_inventories": 39,
+  "external_files": 2515,
+  "default_binaries": 3,
+  "required_R01_outputs_verified": 13,
+  "full_owner_tests_reused": 1361,
+  "original_R02_test_rows": 72,
+  "fresh_gameplay_executions": 0,
+  "source_evidence_checks": 925,
+  "consumer_checks": 274,
+  "stream_identity_checks": 117,
+  "registered_output_count": 11,
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_004.md",
+      "sha256": "b504c1101f24f64467db7aa29bea91131cebc4ed1e3c1b24d306aca61b69151e",
+      "bytes": 22461
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/audit_observations.md",
+      "sha256": "6259e626acfaa3f2e3a68302cca639f97a5fcce836e6cf78206137ef96b03957",
+      "bytes": 4074
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/closure_comparison.json",
+      "sha256": "80c66d9be57f47b9e30bfa8b464a19357f057f0e49c42b84a86c888e81e2b844",
+      "bytes": 379
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/consumer_review.json",
+      "sha256": "66d3a159c3119df4e19b37449ff7558b7ab7dee50d4cb1c698e127f7d98ea361",
+      "bytes": 35674
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/currentness_closure.json",
+      "sha256": "1f7e3c89665ba1414e97ac05f192be581203ba7d74693fdf8038f069a7038883",
+      "bytes": 8508295
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/currentness_entry.json",
+      "sha256": "5f60f7b0c7b661d29a3657360ff92d2f0daf44e73c5f8c61bf825c6e88a6a4a8",
+      "bytes": 8508293
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/evidence_review.json",
+      "sha256": "e75ed67701467ebe6182907d1686942fc8bd4b8738bc67f5c375799786a6c2ca",
+      "bytes": 174385
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/seal_outputs.py",
+      "sha256": "fa0621367e11ed7645b6ab66a777f142019a3ce8d984f60c8e30df45a66e5ace",
+      "bytes": 2836
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/verify_consumers.py",
+      "sha256": "bcf4ce45206777a4ef62a6c2c698aa1331bc250c592dc260814b5d221c4a3cfe",
+      "bytes": 7247
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/verify_currentness.py",
+      "sha256": "beaced770e65fdcdcd28ba8eb51f3ee57d5555b9512fe25720e220e912772a5f",
+      "bytes": 3901
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_successor_004/verify_evidence.py",
+      "sha256": "257b6e7e8674cf6353973b395172be181b38b1f7a1177f97f9e54dfbe84f9c35",
+      "bytes": 5316
+    }
+  ],
+  "self_exclusion": "Registry excludes itself from recursive identity list; all registered outputs verified after writing."
+}

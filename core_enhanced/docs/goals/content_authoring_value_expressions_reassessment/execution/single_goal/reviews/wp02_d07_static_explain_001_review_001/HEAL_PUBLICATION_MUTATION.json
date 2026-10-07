@@ -1,0 +1,8 @@
+{
+  "base": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/segments/wp02_d07_static_explain_001/evidence/cli_current/packs",
+  "file": "official/data/skills/base.ron",
+  "replace_first": "Heal(amount: 45)",
+  "with": "HealExpr(amount: (moment: Snapshot, root: Const((value: 45, unit: Magnitude))))",
+  "before_sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5",
+  "after_sha256": "20dd161b4715c4827601503bee58a7ad188fff8b7b388c1f21e5e07a0aed5777"
+}

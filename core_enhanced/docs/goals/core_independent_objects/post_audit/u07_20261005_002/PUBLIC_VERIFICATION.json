@@ -1,0 +1,221 @@
+{
+  "at_utc": "2026-10-05T13:26:20.219819+00:00",
+  "summary_records": [
+    {
+      "name": "prepared_host",
+      "path": "execution/single_goal/compatibility/current_001/public_probe_003/RESULT.json",
+      "sha256": "9ef1dd09133c0af9597b1d4bfec0633b15713c4ae0ed8646cc53df230565f82d",
+      "recorded_passed": null
+    },
+    {
+      "name": "prepared_boundary",
+      "path": "execution/single_goal/compatibility/current_001/boundary_003/RESULT.json",
+      "sha256": "2f5cd759613cefd3be715a750232234cecb55389fa8a8f37fa6dffffda60f4b2",
+      "recorded_passed": true
+    },
+    {
+      "name": "input_validation",
+      "path": "execution/single_goal/compatibility/current_001/input_validation_003/SUMMARY.json",
+      "sha256": "9a98b42d029790ec0bfc7deeafea6bdd232a1e598ecc5517e6a1a396059a57df",
+      "recorded_passed": true
+    },
+    {
+      "name": "defaults",
+      "path": "execution/single_goal/compatibility/current_001/evidence/DEFAULT_NUMBERS_003.json",
+      "sha256": "6f88aa312cf26fc92d9e17b5552ab83047253b94a038bca36c0a651300fb18d5",
+      "recorded_passed": true
+    },
+    {
+      "name": "oracle",
+      "path": "execution/single_goal/compatibility/current_001/evidence/public_after_003/SUMMARY.json",
+      "sha256": "b2fa67e1d3615d9a276bd76106bafdb2e6c2dd4a6cc890d0e069c8171431a7f7",
+      "recorded_passed": 5
+    },
+    {
+      "name": "trace",
+      "path": "execution/single_goal/compatibility/current_001/evidence/public_after_003_trace/SUMMARY.json",
+      "sha256": "f12ed487354a5626f1fe9b34bfd5b8eeadb1d8d899ea98ce23a067b437e50abf",
+      "recorded_passed": null
+    },
+    {
+      "name": "cli",
+      "path": "execution/single_goal/compatibility/current_001/evidence/cli_current_003/CLI_FINAL_SUMMARY_002.json",
+      "sha256": "cdfcfc6e738ee2591fdccc59be9dcbe91b814397654057a8378925ec5373ea46",
+      "recorded_passed": null
+    },
+    {
+      "name": "profile",
+      "path": "execution/single_goal/compatibility/current_001/evidence/public_profile_003/SUMMARY.json",
+      "sha256": "42c302ee4b0a9488bbae17467e7004d9c29c980ae4cad4fafa9caa7e3d60f7ad",
+      "recorded_passed": true
+    },
+    {
+      "name": "boundary",
+      "path": "execution/single_goal/compatibility/current_001/evidence/public_boundary_003/SUMMARY.json",
+      "sha256": "d1f977dcc93514b6c6e1fa1e312ce3a218167e718579dc5cf84a4a8aca464e21",
+      "recorded_passed": true
+    },
+    {
+      "name": "api",
+      "path": "execution/single_goal/compatibility/current_001/evidence/public_api_003/RESULT.json",
+      "sha256": "6e797bb95f7dcfb7b8d9543082eb9591af04b4937f8cb922a08644b0f6bea3c3",
+      "recorded_passed": true
+    },
+    {
+      "name": "starter",
+      "path": "evidence/public_starter_schema_004/SUMMARY.json",
+      "sha256": "fd9abb48ba012297b2a6884e9487f9e13a198886ec9f48b9d3658225b0330291",
+      "recorded_passed": true
+    },
+    {
+      "name": "schema",
+      "path": "evidence/public_schema_003/SUMMARY.json",
+      "sha256": "734272fc88f124f4a94dde803be8acb9149d6906211da18fa924197fcea94a3a",
+      "recorded_passed": true
+    },
+    {
+      "name": "area",
+      "path": "evidence/public_independent_area_003/SUMMARY.json",
+      "sha256": "e70758428ae410c03978a148273a549ca713f12f0395743531b450a7f42a183d",
+      "recorded_passed": true
+    },
+    {
+      "name": "continuation",
+      "path": "evidence/public_continuation_003/SUMMARY.json",
+      "sha256": "3db6548fe2953e8c23e6427db3a7fd366bf060895b19c49b9730c6cd22859873",
+      "recorded_passed": true
+    },
+    {
+      "name": "rewind",
+      "path": "evidence/public_rewind_003/SUMMARY.json",
+      "sha256": "59ad9cd1a0c3d5a264798f0a9930e850da4c960a0fb0f32086e8905553029697",
+      "recorded_passed": true
+    },
+    {
+      "name": "object_schema",
+      "path": "evidence/public_object_schema_003/SUMMARY.json",
+      "sha256": "598245b0ee15622fb1ab4b9de868258c81b88bbdd32c844c6544209f1e0aa194",
+      "recorded_passed": true
+    },
+    {
+      "name": "objects",
+      "path": "evidence/public_objects_004/SUMMARY.json",
+      "sha256": "16e4802de5cf50ec70e2052db33d0719f3b00cf80cf435f5d946f7b0bd3152ae",
+      "recorded_passed": true
+    },
+    {
+      "name": "object_combat",
+      "path": "evidence/public_object_combat_004/SUMMARY.json",
+      "sha256": "cc8c8c2b207771f5b4b2382ff7467081ee9080ed6cc292de675e0d9b2a13c618",
+      "recorded_passed": true
+    },
+    {
+      "name": "fault",
+      "path": "evidence/final_fault_003_SUMMARY.json",
+      "sha256": "da4e9f05c276f3ac457a422de60c30f369b023576197a06cf823bf3504495f95",
+      "recorded_passed": true
+    },
+    {
+      "name": "fault_websocket",
+      "path": "evidence/public_fault_final_003/SUMMARY.json",
+      "sha256": "2390aba96c98b08a9d3a7bdc21916b7f844cccecfaac8c3dd2485153ce5ae9ee",
+      "recorded_passed": true
+    },
+    {
+      "name": "public_cost_guards",
+      "path": "evidence/public_guards003_raw.json",
+      "sha256": "e63ec13adb5f72a4c0ee260dc82e5178f59d74dfee85c75f2e12c46a57098607",
+      "recorded_passed": null
+    },
+    {
+      "name": "public_allocator_guards",
+      "path": "evidence/public_guards_allocator003_raw.json",
+      "sha256": "f83b2578fdcc95974a9bc2999ffb981bb036dac53acc66a23b528daab85c6b1c",
+      "recorded_passed": null
+    }
+  ],
+  "input_hash_checks": 1509,
+  "objects": [
+    {
+      "case": "actor",
+      "definition": "u07_trial_actor",
+      "epoch": 1,
+      "max_health": 100,
+      "raw_sha256": "54c09332fb518bae59118ba9cf6295cac96c8960284b2030c4e03cd521684094"
+    },
+    {
+      "case": "small",
+      "definition": "laetitia_big_friend",
+      "epoch": 2,
+      "max_health": null,
+      "raw_sha256": "bd90096f2d32f608b2ad1076572d04880a3e80464d4defe8823753750835285f"
+    },
+    {
+      "case": "big",
+      "definition": "laetitia_big_friend",
+      "epoch": 1,
+      "max_health": null,
+      "raw_sha256": "a4e1c0b4320127eb3870f5ffca24cefa045abafab611bf2a55ad3f76f2733bee"
+    },
+    {
+      "case": "ice",
+      "definition": "common_ice_wall",
+      "epoch": 1,
+      "max_health": 120,
+      "raw_sha256": "5e8066bc0b082cae515fed608e840461ff6199c7bd53d146a3d91484d626aee9"
+    },
+    {
+      "case": "fallback",
+      "definition": "melting_love_meat_wall",
+      "epoch": 1,
+      "max_health": 72,
+      "raw_sha256": "fc4a50423fbfadeb0463a2109963d780030a667334b7b24d4a948d8adfcce114"
+    },
+    {
+      "case": "segments",
+      "definition": "melting_love_meat_wall",
+      "epoch": 1,
+      "max_health": 50,
+      "raw_sha256": "8a3f8a8f42cd7046bf4a4c043fc50628ec726622232932a17feda726dce1dc53"
+    }
+  ],
+  "combat": [
+    {
+      "case": "ice",
+      "damage_count": 0,
+      "removal_count": 1,
+      "raw_sha256": "1354c67b84cb3226de1e54f32f45624af4dc601f1fc9ed35805eec248d478f9a"
+    },
+    {
+      "case": "small",
+      "damage_count": 1,
+      "removal_count": 1,
+      "raw_sha256": "dbf6ecd76a29043d0005db88a235771428aaa6a2e456d40a1325d0bfd8f67a41"
+    },
+    {
+      "case": "actor",
+      "damage_count": 1,
+      "removal_count": 0,
+      "raw_sha256": "ffdf4f01ef860f3b1b8f5010dd6adefc18f7aa66f9e05093306ba31115bdb5f4"
+    }
+  ],
+  "strict_schema": [
+    {
+      "family": "object_schema",
+      "cases": 10,
+      "negative": 9
+    },
+    {
+      "family": "starter",
+      "cases": 11,
+      "negative": 7
+    },
+    {
+      "family": "schema",
+      "cases": 11,
+      "negative": 10
+    }
+  ],
+  "errors": [],
+  "scope": "Read-only independent raw outcome/identity/hash checks; no product execution."
+}

@@ -1,0 +1,12 @@
+{
+  "unchanged_outside_audit_directory": true,
+  "entry_sha256": "d1fcd068ad5be226ec46c10a9ef9fe52488c2beba981b331527a57e1e87ec871",
+  "exit_sha256": "0919fac7f7253d0a509150c10622ee172f263c40fdfc9bcdb9d07aaa994cf7cd",
+  "excluded_prefix": "core_enhanced/docs/goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/",
+  "target_attribution": {
+    "tracked/dirty": 187,
+    "tracked/clean": 36,
+    "untracked": 4240
+  },
+  "status_entries_outside_audit": 103751
+}

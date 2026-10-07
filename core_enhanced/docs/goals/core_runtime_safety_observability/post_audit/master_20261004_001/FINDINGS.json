@@ -1,0 +1,17 @@
+[
+  {
+    "id": "N02",
+    "severity": "Low",
+    "completion_blocking": false,
+    "owner": "GOAL-CRSO-S2 / GEX-10 documentation correction",
+    "path": "core_enhanced/docs/core_runtime_contract.md",
+    "line": 75,
+    "current_link": "goals/core_runtime_safety_observability/execution/s2/METRICS_AND_STORAGE.md",
+    "resolved": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/METRICS_AND_STORAGE.md",
+    "intended_current_contract": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/corrections/n01_metric_docs_001/METRICS_AND_STORAGE.md",
+    "runtime_affected": false,
+    "evidence": "The frozen N01 correction fixed the host README route, while this canonical Core contract still directs readers to the immutable historical counter definition. Existing-owner duplicate/out-of-order summaries do not increment expired in Worker::consume. Correct runtime behavior and current successor contract are already verified.",
+    "required_change": "In a separate authorized owner correction, update the canonical Core contract hyperlink to the existing N01 successor. Preserve historical contract bytes. Reassess target/currentness and affected audits; no runtime rerun is justified by this link-only delta.",
+    "verdict_effect": "Nonblocking documentation navigation precision; identical underlying N01 semantics were already classified low/nonblocking by the independent S2 audit. Correct current contract is reachable from the adjacent current host guide; metric behavior, required acceptance/dedup and validation remain unambiguous."
+  }
+]

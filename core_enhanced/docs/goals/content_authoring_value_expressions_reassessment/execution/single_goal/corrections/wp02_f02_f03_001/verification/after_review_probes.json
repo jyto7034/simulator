@@ -1,0 +1,19 @@
+{
+  "start": "2026-09-25T18:14:30.049476+00:00",
+  "end": "2026-09-25T18:16:23.608250+00:00",
+  "command": [
+    "cargo",
+    "test",
+    "--manifest-path",
+    "/tmp/r06-f02-f03-after.14j5mir0/core_enhanced/Cargo.toml",
+    "--offline",
+    "--release",
+    "--lib",
+    "review_",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "exit_code": 0,
+  "probe": "unchanged original reviewer probes"
+}

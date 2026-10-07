@@ -1,0 +1,509 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CRRP-001",
+        "Content Digest": "sha256:f47da26534a72cb0553742fa36ea59c8fc6bae01cdf45b8d686cb72143a82a5b"
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRRP-001",
+          "Content Digest": "sha256:107a5385639211cb4687f1414bf94085b379f14fd2e2a551c435bcf9c259d06c"
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRRP-005",
+            "Content Digest": "sha256:6594f43116416406ba9a159653a2015234fd44668ab1a532895df91b4cb672d5"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRRP-001",
+            "Content Digest": "sha256:107a5385639211cb4687f1414bf94085b379f14fd2e2a551c435bcf9c259d06c"
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CRRP-RESULT",
+            "selectors": {
+              "implementation": [
+                "PE-CRRP-01",
+                "PE-CRRP-02",
+                "PE-CRRP-03",
+                "PE-CRRP-10"
+              ],
+              "supporting": [
+                "PE-CRRP-07",
+                "PE-CRRP-12",
+                "PE-CRRP-13",
+                "PE-CRRP-15"
+              ]
+            },
+            "boundary": "sole combat/employee/grant/node owner→immediate settled result/choice receipt→ack/query/capability",
+            "expected_change": "TD01/02: immediate full settlement, defeat consume/no retry, pending fixed candidate/context and at-most-once claim; compact current receipt, no full runtime log persistence",
+            "prerequisite": "U03 Complete/High; exact Freeze001 and RQ01/RQ06 current source",
+            "validation": "V01,V02,V07,V12; result visible and settled before ack; ChooseOne2/0, actual employee/death/consumable effects",
+            "unknown": "exact Rust receipt/helper spelling within reviewed owner; no second grant engine"
+          },
+          {
+            "id": "WP-CRRP-RESTORE",
+            "selectors": {
+              "implementation": [
+                "PE-CRRP-04",
+                "PE-CRRP-05",
+                "PE-CRRP-06",
+                "PE-CRRP-07",
+                "PE-CRRP-08",
+                "PE-CRRP-09"
+              ],
+              "supporting": [
+                "PE-CRRP-01",
+                "PE-CRRP-03",
+                "PE-CRRP-10",
+                "PE-CRRP-11",
+                "PE-CRRP-13",
+                "PE-CRRP-14",
+                "PE-CRRP-15"
+              ]
+            },
+            "boundary": "node pre-entry/battle-entry/confirmed state→stable Continue and separate single SavePoint codec/read/write",
+            "expected_change": "TD03/04: current-state payload, all unfinished-node rollback, success retreat2 overlay only for Continue, explicit load3/monotonic metadata, first-SavePoint-independent Continue",
+            "prerequisite": "RESULT receipt/choice meaning; existing RunCheckpoint capture and validators; current schema identity/RNG/resource accounting",
+            "validation": "V03–06,V10,V11,V14; every introduced state at each restore boundary; invalid identity/schema rejection",
+            "unknown": "immutable cache layout and shared validator extraction within review; no future gameplay state"
+          },
+          {
+            "id": "WP-CRRP-DURABLE",
+            "selectors": {
+              "implementation": [
+                "PE-CRRP-12",
+                "PE-CRRP-13",
+                "PE-CRRP-14"
+              ],
+              "supporting": [
+                "PE-CRRP-01",
+                "PE-CRRP-03",
+                "PE-CRRP-04",
+                "PE-CRRP-06",
+                "PE-CRRP-07",
+                "PE-CRRP-08",
+                "PE-CRRP-09",
+                "PE-CRRP-11",
+                "PE-CRRP-15"
+              ]
+            },
+            "boundary": "exclusive CoreApplication prepare→actual file commit intent/revision→profile/active publish/recovery; command/tick consumed together",
+            "expected_change": "TD05–07: reuse sole transaction owner and existing journal IO; versioned conditional publish including terminal tombstone, current recovery copy, strict original protection and pre/post-intent failure separation",
+            "prerequisite": "RESULT/RESTORE durable state; actual V4/V9 and V3/profile source; no remote compatibility claim",
+            "validation": "V09–12,V15; subprocess crashes each stage, two-actor choice/stale-write/ABA, accepted recovery pending, strict unsupported and no partial grants",
+            "unknown": "concrete journal checkpoints/IO error fixture names in GEX; platform execution Linux only"
+          },
+          {
+            "id": "WP-CRRP-HOST",
+            "selectors": {
+              "implementation": [
+                "PE-CRRP-11"
+              ],
+              "supporting": [
+                "PE-CRRP-01",
+                "PE-CRRP-02",
+                "PE-CRRP-03",
+                "PE-CRRP-04",
+                "PE-CRRP-06",
+                "PE-CRRP-07",
+                "PE-CRRP-09",
+                "PE-CRRP-12",
+                "PE-CRRP-13",
+                "PE-CRRP-14",
+                "PE-CRRP-15"
+              ]
+            },
+            "boundary": "stock ws/session actor→manual/tick/management→Core result/capability and durability state",
+            "expected_change": "TD05/08: all active finishing routes prepared+durable, reconnect pause distinct from Continue, stale writer gate, fault and IO recovery status, canonical DTO/document consumers",
+            "prerequisite": "Core prepared APIs and DURABLE coordinated result; existing U03 fault authority/observer",
+            "validation": "V08,V12,V15 actual public/socket transport and native fault contrasts; no runtime restart or fake commit",
+            "unknown": "host notification details within Core-owned meaning; no Unity UI implementation"
+          },
+          {
+            "id": "WP-CRRP-VERIFY",
+            "selectors": {
+              "implementation": [
+                "PE-CRRP-15"
+              ],
+              "validation_only": [
+                "PE-CRRP-01",
+                "PE-CRRP-02",
+                "PE-CRRP-03",
+                "PE-CRRP-04",
+                "PE-CRRP-05",
+                "PE-CRRP-06",
+                "PE-CRRP-07",
+                "PE-CRRP-08",
+                "PE-CRRP-09",
+                "PE-CRRP-10",
+                "PE-CRRP-11",
+                "PE-CRRP-12",
+                "PE-CRRP-13",
+                "PE-CRRP-14"
+              ]
+            },
+            "boundary": "integrated Core/host/file adapter; durable actual tests/probes, currentness and reversible freeze; independent audit",
+            "expected_change": "own V01–15 fixtures and execution,112 inherited +31 R06 impact, ten dimensions, exact before/after/archive restoration and independent Astra High audit/corrections",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source; predecessor baseline admitted by exact byte/publication binding",
+            "validation": "all15 frozen elements and15 seams; appropriate full Core/server matrix, actual stock ws/subprocess crashes/concurrent choices; audit Complete/High before U05",
+            "unknown": "actual measured results remain GEX work; prior R05 approved warning kept, no arbitrary performance threshold"
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CRRP-RESULT",
+            "to": "WP-CRRP-RESTORE",
+            "type": "persistence_lifetime",
+            "evidence": "result/choice fields must be present in current resume and rewind roots",
+            "broken": "Ignoring this edge breaks result/choice fields must be present in current resume and rewind roots"
+          },
+          {
+            "from": "WP-CRRP-RESULT",
+            "to": "WP-CRRP-DURABLE",
+            "type": "transaction",
+            "evidence": "host can accept one already planned settlement only through the sole prepared root",
+            "broken": "Ignoring this edge breaks host can accept one already planned settlement only through the sole prepared root"
+          },
+          {
+            "from": "WP-CRRP-RESTORE",
+            "to": "WP-CRRP-DURABLE",
+            "type": "schema_data",
+            "evidence": "actual active writer and reader must agree on current/SavePoint schema and monotonic exception",
+            "broken": "Ignoring this edge breaks actual active writer and reader must agree on current/SavePoint schema and monotonic exception"
+          },
+          {
+            "from": "WP-CRRP-DURABLE",
+            "to": "WP-CRRP-HOST",
+            "type": "producer_consumer",
+            "evidence": "automatic tick/manual/management must consume revision and pre/post-intent dispositions",
+            "broken": "Ignoring this edge breaks automatic tick/manual/management must consume revision and pre/post-intent dispositions"
+          },
+          {
+            "from": "WP-CRRP-RESULT",
+            "to": "WP-CRRP-HOST",
+            "type": "producer_consumer",
+            "evidence": "display/ack/capability must read already settled receipt",
+            "broken": "Ignoring this edge breaks display/ack/capability must read already settled receipt"
+          },
+          {
+            "from": "WP-CRRP-RESULT",
+            "to": "WP-CRRP-VERIFY",
+            "type": "validation",
+            "evidence": "actual immediate result and choice required",
+            "broken": "Ignoring this edge breaks actual immediate result and choice required"
+          },
+          {
+            "from": "WP-CRRP-RESTORE",
+            "to": "WP-CRRP-VERIFY",
+            "type": "validation",
+            "evidence": "real node/checkpoint/Continue roots required",
+            "broken": "Ignoring this edge breaks real node/checkpoint/Continue roots required"
+          },
+          {
+            "from": "WP-CRRP-DURABLE",
+            "to": "WP-CRRP-VERIFY",
+            "type": "validation",
+            "evidence": "actual file stages required for process crash fixture",
+            "broken": "Ignoring this edge breaks actual file stages required for process crash fixture"
+          },
+          {
+            "from": "WP-CRRP-HOST",
+            "to": "WP-CRRP-VERIFY",
+            "type": "validation",
+            "evidence": "real websocket actor/consumer required",
+            "broken": "Ignoring this edge breaks real websocket actor/consumer required"
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CRRP-RESULT-PERSISTENCE",
+            "members": [
+              "WP-CRRP-RESULT",
+              "WP-CRRP-RESTORE",
+              "WP-CRRP-DURABLE",
+              "WP-CRRP-HOST"
+            ],
+            "evidence": "Minimum simultaneous result/restore/schema/file/consumer cutover: core-only loses accepted results after process death, file-only lacks authoritative receipt/rollback roots, host-only retains old deferred settlement, schema-only breaks reader/writer. No intermediate part can claim S01–08 complete; no second transaction or reward engine."
+          }
+        ],
+        "standalone": [
+          "WP-CRRP-VERIFY"
+        ],
+        "cyclic_sccs": [],
+        "phases": [
+          {
+            "id": "PHASE-CRRP-01",
+            "primary": [
+              "PE-CRRP-01",
+              "PE-CRRP-02",
+              "PE-CRRP-03",
+              "PE-CRRP-04",
+              "PE-CRRP-05",
+              "PE-CRRP-06",
+              "PE-CRRP-07",
+              "PE-CRRP-08",
+              "PE-CRRP-09",
+              "PE-CRRP-10",
+              "PE-CRRP-11",
+              "PE-CRRP-12",
+              "PE-CRRP-13",
+              "PE-CRRP-14",
+              "PE-CRRP-15"
+            ],
+            "supporting": [],
+            "nodes": [
+              "AG-CRRP-RESULT-PERSISTENCE",
+              "WP-CRRP-VERIFY"
+            ],
+            "exit": "Current actual results/choices/retreat/Continue/SavePoint and file restart semantics agree across Core+host; all acceptance evidence and predecessor impact; exact independent Complete/High before U05"
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CRRP-01",
+            "state": "one immediate Core settlement with durable receipt/choice; all unfinished nodes restore same boundary; separate SavePoint load; actual adapter recovers exact accepted intent; stale writers and old formats cannot overwrite current rights",
+            "checks": "single authority/commit/grant owner; matching new reader/writer; pre/post intent semantics and tombstone revision; current profile union/loads remain monotonic; U03 fault gates and native/observation contracts; no future schemas/legacy reinterpretation",
+            "evidence": "V01–15,112 inherited conditions and separate31 R06,ten dimensions, public/stock ws/file crash tests and exact source restoration",
+            "limitation": "local Linux actual only, no remote deployed/Windows crash claim; future U14/15/17/20/21 states and Unity own later extension"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CRRP-V01",
+            "source": "CODE_REVIEW_001.ko.md V01; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V01",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V02",
+            "source": "CODE_REVIEW_001.ko.md V02; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V02",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V03",
+            "source": "CODE_REVIEW_001.ko.md V03; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V03",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V04",
+            "source": "CODE_REVIEW_001.ko.md V04; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V04",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V05",
+            "source": "CODE_REVIEW_001.ko.md V05; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V05",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V06",
+            "source": "CODE_REVIEW_001.ko.md V06; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V06",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V07",
+            "source": "CODE_REVIEW_001.ko.md V07; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V07",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V08",
+            "source": "CODE_REVIEW_001.ko.md V08; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V08",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V09",
+            "source": "CODE_REVIEW_001.ko.md V09; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V09",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V10",
+            "source": "CODE_REVIEW_001.ko.md V10; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V10",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V11",
+            "source": "CODE_REVIEW_001.ko.md V11; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V11",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V12",
+            "source": "CODE_REVIEW_001.ko.md V12; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V12",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V13",
+            "source": "CODE_REVIEW_001.ko.md V13; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V13",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V14",
+            "source": "CODE_REVIEW_001.ko.md V14; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V14",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          },
+          {
+            "id": "IVA-CRRP-V15",
+            "source": "CODE_REVIEW_001.ko.md V15; exact Freeze acceptance/review mapping",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRRP-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRRP-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V15",
+            "evidence": "nonzero actual Core/public/host/file execution; exact source/data/config/toolchain/input/raw exit/expected vs actual; original negative receipts preserved",
+            "prerequisite": "AG-CRRP-RESULT-PERSISTENCE integrated current source"
+          }
+        ],
+        "Known Unknown/Limitations": "Implementation measurements and exact helper/fixture choices are bounded GEX work; required meaning/source known. No future schemas, deployed proof, new caps/rewards/legacy migration. Original artifacts preserved."
+      }
+    }
+  ],
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CRRP-001",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0"
+}

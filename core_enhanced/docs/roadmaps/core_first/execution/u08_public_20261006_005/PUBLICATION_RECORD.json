@@ -1,0 +1,23 @@
+{
+  "published_at_utc": "2026-10-06T05:48:35.639907+00:00",
+  "record_sha256": "3bf3003b3a5aaa8257b2bf829effae6a68eb3f3b8794464c1e1f90db92234ab4",
+  "before_archive_sha256": "0d37b9259a0a3bbeee45324ae62bf0527963e6f1ae9ffa4d85d431c0748f4bc1",
+  "diff_sha256": "6d58f55e1a7836539bc2ac0be1ecaf96fe628a7b596262a406c50847a3f0b84f",
+  "evidence_sha256": "243b3d7164ff0a4f0e069fb9af29f28085f6fafc224fbc80f600bee62e6b0de2",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "before_sha256": "578945add1e836b950dac5f9138b7a210b5bee1fd52cf7928810148e9dda0666",
+      "after_sha256": "3f80ef589dd85906e366ee85d9726c98e4947e7268d970d6982b5bb4fc7c6082"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before_sha256": "c6cc2c9e0c429a949eff27f6d0bd097c324450a2ea3110b49fcba2b1d74e3e14",
+      "after_sha256": "0a22ea99d0078592292fc2c6473a1cc519f81f9872f36d52d1fd46d353f384bc"
+    }
+  ],
+  "last_verified_source": "ad76cd8138b96630bb45f47784bad2df9a9cab36608213a3df6c7303b1696756",
+  "live_source_status": "Astra Stage2 test writer active, product and runners HOLD",
+  "whole_goal_complete": false,
+  "source_changes_by_root": false
+}

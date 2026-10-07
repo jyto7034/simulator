@@ -155,13 +155,9 @@ fn live_skill_catalog_has_exact_reference_ownership() {
         .fragments
         .iter()
         .flat_map(|fragment| match &fragment.effect {
-            SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id,
-                upgrade_skill_ids,
-                awakened_skill_id,
-            } => std::iter::once(imitation_skill_id)
-                .chain(upgrade_skill_ids.values())
-                .chain(awakened_skill_id.iter())
+            SkillFragmentEffectDef::ActiveSkill { forms, .. } => forms
+                .values()
+                .map(|form| &form.skill_id)
                 .collect::<Vec<_>>(),
             SkillFragmentEffectDef::BasicAttackModifier { .. } => Vec::new(),
         })
@@ -204,14 +200,22 @@ fn live_skill_catalog_has_exact_reference_ownership() {
 #[test]
 fn live_content_index_lists_every_abnormality_derived_fragment() {
     let game_data = common::load_game_data_from_ron();
+    let reference_abnormality_ids = game_data
+        .pve_data
+        .encounters
+        .iter()
+        .filter(|encounter| encounter.is_reference_only())
+        .filter_map(|encounter| encounter.primary_abnormality_id())
+        .collect::<BTreeSet<_>>();
     let actual_fragment_ids = game_data
         .skill_fragment_data
         .fragments
         .iter()
         .filter(|fragment| {
             matches!(
-                fragment.origin,
-                Some(SkillFragmentOrigin::Abnormality { .. })
+                &fragment.origin,
+                Some(SkillFragmentOrigin::Abnormality { abnormality_id })
+                    if !reference_abnormality_ids.contains(abnormality_id.as_str())
             )
         })
         .map(|fragment| fragment.id.as_str().to_string())
@@ -293,10 +297,8 @@ fn a_rank_original_and_fragment_skills_are_independent_live_contracts() {
             .get_by_id(&SkillFragmentId::from(fragment_id))
             .unwrap_or_else(|| panic!("missing skill fragment '{fragment_id}'"));
         match &fragment.effect {
-            SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id, ..
-            } => assert_eq!(
-                imitation_skill_id.as_str(),
+            SkillFragmentEffectDef::ActiveSkill { forms, .. } => assert_eq!(
+                forms["base"].skill_id.as_str(),
                 fragment_skill_id,
                 "fragment '{fragment_id}' must point at its independent imitation skill"
             ),

@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-09-09T14:36:12.833163+00:00",
+  "explanation": "Two literal include inputs lie outside production source/test/data directories in VALIDATION_INPUT_002. Their identities remain available in the referenced frozen baseline; no fixture edit is inferred. Audited as direct validation dependencies, not excluded as unrelated docs.",
+  "inputs": [
+    {
+      "path": "core_enhanced/docs/audit/live_skill_catalog_manifest.ron",
+      "sha256": "5689b2172a56721bb8976f07b4e4a9a2ad3866d0720380d8bf0a9cf0e59f1525",
+      "baseline_sha256": "5689b2172a56721bb8976f07b4e4a9a2ad3866d0720380d8bf0a9cf0e59f1525",
+      "unchanged": true,
+      "consumer": "core_enhanced/tests/live_skill_catalog_audit.rs",
+      "identity_owner": "AUDIT_TARGET_001.baseline -> BASELINE_001.scope_hashes; baseline is also a hashed target member"
+    },
+    {
+      "path": "core_enhanced/docs/skills/live_content_index.md",
+      "sha256": "2b548f27636e84e59dcf353899a3d6dff34f312407d51f664f978a2fb51b7e5a",
+      "baseline_sha256": "2b548f27636e84e59dcf353899a3d6dff34f312407d51f664f978a2fb51b7e5a",
+      "unchanged": true,
+      "consumer": "core_enhanced/tests/live_skill_catalog_audit.rs",
+      "identity_owner": "AUDIT_TARGET_001.baseline -> BASELINE_001.scope_hashes; baseline is also a hashed target member"
+    }
+  ]
+}

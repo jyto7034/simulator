@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-12T10:43:25.026344+00:00",
+  "stage": "ENTRY",
+  "target": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_007.json",
+  "target_sha256": "9c9737b6ab314134e0c39ddac995eaab27b0605be23d64e4722bc830d905fe96",
+  "manifest_rows": 12951,
+  "unique_paths": 12951,
+  "bytes_hashed": 2235762737,
+  "canonical_recomputed": "d839e50fb7668ffb5ffda9ed6527f3e6529af53d54db3417a3ee519cfdb5863d",
+  "canonical_expected": "d839e50fb7668ffb5ffda9ed6527f3e6529af53d54db3417a3ee519cfdb5863d",
+  "external_actual": [],
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "failures": [],
+  "status": "current / unchanged"
+}

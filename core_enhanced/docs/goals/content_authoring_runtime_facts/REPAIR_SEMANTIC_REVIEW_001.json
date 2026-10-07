@@ -1,0 +1,45 @@
+{
+  "reviewers": [
+    {
+      "identity": "r04_p2g20_semantic_review",
+      "role": "separate same-model bounded read-only source/meaning/actual candidate review",
+      "confirmed": [
+        "death/withdraw difference and pending resonance behavior",
+        "piercing expiry actual removal vs old gate callback",
+        "successor WR002 exact policy inheritance and sole COD002 projection/DS001",
+        "new binding/Freeze/Plan source correction and same20acceptance/Phase",
+        "external own-Resolution avoids canonical reference cycle"
+      ],
+      "findings": [
+        "missing Freeze003 external membership relation",
+        "mutable Working Policy still points to old/withdrawn candidates"
+      ]
+    },
+    {
+      "identity": "root",
+      "role": "writer follow-up/reference checker and standard validation",
+      "resolved": [
+        "P30RESULT004 adds5exactmembershiprows; prior RESULT003 incomplete",
+        "mutable head synchronized below",
+        "standardP40generate+defaultbothpassed",
+        "REPAIR_REFERENCE_CHECK001 selected106artifacts no duplicate/unresolved/cycle and policy/acceptance/source exact checks"
+      ]
+    }
+  ],
+  "publication_blockers": [],
+  "limitations": "Planning correction review; no new runtime implementation, tests or GEX completion audit",
+  "evidence": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/REPAIR_REFERENCE_CHECK_001.json",
+      "sha256": "d986b4e3d1d1f6b5cfb823bb0039532a27dfdf5eaff21f25d8e2550ee809ebff"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_RESULT_004.json",
+      "sha256": "3fe49e73b12e9037625e8ba34bf6220f5726aa8f60fcaa76d029a84106c37089"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_VALIDATION_RECEIPT_004.json",
+      "sha256": "eace847ce9c2bac2af0be3773bfd07adf16e1f81ad710cc0f7dc83f6b8aba8a9"
+    }
+  ]
+}

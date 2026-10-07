@@ -1,0 +1,72 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSA-005",
+    "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+  },
+  "Result Composite Basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRSA-005",
+      "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+    },
+    "Final Policy Freeze Ref": null,
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [
+      {
+        "Artifact Type": "Post-Freeze Change Record",
+        "Artifact ID": "CHG-CRSA-001",
+        "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+      }
+    ],
+    "Authoritative Change Obligation Declaration Ref Set": [
+      {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRSA-001",
+        "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+      }
+    ]
+  },
+  "Applicable P2G-10 Obligation Key Set": [
+    {
+      "Container Ref": {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRSA-001",
+        "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+      },
+      "Obligation ID": "O10"
+    }
+  ],
+  "P2G-10 Resolution Record Ref Set": [
+    {
+      "Artifact Type": "Resolution Record",
+      "Artifact ID": "RES-CRSA-CHG001-O10-001",
+      "Content Digest": "sha256:7c7be8d42bd39c1dc3c2d0663aa6b5f8f6968e6fbdea09e2015355862d18b001"
+    }
+  ],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "checks": {
+    "applicable_change_population": "CHG001 only; prior declaration entry population evidence reused; no new change discovered",
+    "authoritative_declaration_exact": true,
+    "14_unchanged_policy_refs": true,
+    "changed_elements": 3,
+    "decisions": 17,
+    "observable_acceptance_statements": 34,
+    "open_questions": 0,
+    "held_official_values_not_decided": true,
+    "no_product_test_mutation": true
+  },
+  "finding_triage": [
+    {
+      "id": "F-CHG001",
+      "classification": "material_policy",
+      "disposition": "Latest agreement directly replaces shared/range/2S meaning. Detailed functional choices closed under explicit H04 gameplay delegation.",
+      "effect": "O10 resolved; O20–60 pending, no current GEX execution-ready handoff."
+    }
+  ],
+  "next": "P2G-20 targeted material review plus exact reuse/rebinding for unchanged14."
+}

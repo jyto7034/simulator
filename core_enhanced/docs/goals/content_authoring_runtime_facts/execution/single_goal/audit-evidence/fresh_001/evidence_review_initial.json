@@ -1,0 +1,6151 @@
+{
+  "pass": false,
+  "checks": [
+    {
+      "check": "baseline:Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/core_runtime_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/data_loading_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/game_rulebook.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/CODE_REVIEW_001.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_00_INITIAL_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_00_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_10_FACT_CHECK.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_10_FACT_EVIDENCE_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_10_POLICY_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_10_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_PLAN_CORRECTION_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_READING.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_REVIEW_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SEMANTIC_REVIEW_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SOURCE_EVIDENCE_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SOURCE_PLAN_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_SOURCE_PLAN_002.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_CANDIDATE_CORRECTION_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_002.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_DESIGN_001.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_DESIGN_002.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_VALIDATION_RECEIPT_002.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_AUTHORING_REVIEW_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_GOAL_SET_001.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_60_HANDOFF_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_60_RESULT_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/PARENT_PREDECESSOR_CHECK_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/goals/content_authoring_runtime_facts/WORKING_POLICY.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/docs/skill_target_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/evidence/P01_PERFORMANCE_BASELINE.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/clone_shape.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/compiled.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/definition.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/diagnostic.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/output.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/preview.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/projection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/query.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/resolve.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/trace.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/trial.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/authoring/view.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/author_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/consume_content_pack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/generate_event_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/generate_inventory_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/generate_shop_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/bin/package_official_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/ability/authoring/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/ability/authoring.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/ability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/battlefield/field.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/battlefield/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/buffs.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/cooldown.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/basic_attack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/build.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/death_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/field_work.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/ids.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/blocking.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/engine.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/path.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/planner.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/steering.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/movement/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/projectile_math.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/queue.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/resonance_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/sim.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/spatial.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/tactical_relocation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/tactical_swap.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/target_usefulness.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/targeting.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/damage.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/event_log.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/ids.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/recording.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/result_stats.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/skill_source.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/stat_pipeline.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/tile_range.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/battle/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/behavior.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/boss_omen.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_power.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_preview/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_preview/template.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_preview/threat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_preview/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_preview/validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/balance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/defense_object.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/mission_policy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/rewards.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/combat_setup/scenario_groups.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/abnormality_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/boss_omen_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/boss_runtime_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/consumable_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/canonical.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/diagnostic_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/packaging.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/raw/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/raw.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/resolver/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/resolver.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/schema.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/content_pack/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/corroded_employee_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/corroded_wave_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/employee_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/equipment_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/event_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/live_ron.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/pve_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/reward_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/run_policy_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/shop_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/skill_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/skill_fragment_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/summoned_unit_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/visual_novel_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/determinism.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/employee.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/employee_psychology.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/encounter_compendium.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/encounter_progression.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/events/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/events/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/growth.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/managers/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/managers/uuid_manager.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/executor.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/facility_generator.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/progression.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/session.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/map/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/monolith.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/range_preview.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/recruitment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/board.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/economy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/equipment_loadout.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/inventory.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/item_slot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/selection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/resources/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/reward.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/reward_policy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/skill_fragment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/stats.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/visual_novel.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/wave_resolution.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/action_capability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/active_run.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/admin/catalog.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/admin/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/admin/fixtures.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/admin/grants.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/admin/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/admin.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/authoring_lifecycle.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/battle_capability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/combat_trace.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/event_node.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/grant_state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/headquarters.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/helpers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/maintenance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/map_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/map_encounters.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/node_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/reward.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/shop.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/content_generation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/equipment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/map_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/node_sessions.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/visual_novel_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world/visual_novel_triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/game/world.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/lib.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/src/owned_collections.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/common/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/live_item_skill_activation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/live_skill_catalog_audit.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/ron_loading.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_runtime_contract.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/common/board.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/common/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/common/query.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/common/run.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/common/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/common/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/little_red.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/melting_love.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/nothing_there.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test/white_night.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tests/skill_test_suite.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/application_authority_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/application_authority_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/application_authority_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/application_authority_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/application_authority_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/application_authority_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_buff_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_cli_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_combat_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_combat_fixture.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_delivery_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_invalid_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_preview_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_resource_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/examples/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/examples/cost.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/examples/inspection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/examples/invalid.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/examples/replacement.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/examples/source_receipt.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/authoring_trial_api_probe/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/battle_kernel_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/battle_kernel_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/battle_kernel_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/battle_kernel_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/battle_kernel_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/content_pack_release_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/core_public_projection_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/core_public_projection_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/core_public_projection_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/core_public_projection_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/core_public_projection_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/core_public_projection_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/external_pack_probe.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/history_result_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/history_result_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/history_result_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/history_result_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/history_result_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/history_result_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/public_api_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/src/p01_exact_replay.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/runtime_architecture_preservation/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/validated_data_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/validated_data_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/validated_data_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/validated_data_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/validated_data_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:core_enhanced/tools/validated_data_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/abnormalities/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/boss_omen/chains.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/boss_runtime/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/buffs/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/bundle.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/consumables/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/employees/definitions.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/enemies/corroded_employees.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/enemies/corroded_wave_presets.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/equipments/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/events/rewards/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/events/shops/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/events/story/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/map/battlefield_archetypes.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/map/battlefield_templates.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/map/facility_templates.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/map/node_assignment_profiles.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/map/node_definitions.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/pve/encounters.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/run/policy.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/skill_fragments/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/skills/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/summoned_units/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/visual_novel_triggers/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "baseline:game_resources/data/visual_novels/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/docs/core_runtime_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/docs/data_loading_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/docs/skill_target_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/clone_shape.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/compiled.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/definition.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/diagnostic.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/output.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/preview.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/projection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/query.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/resolve.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/trace.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/trial.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/authoring/view.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/author_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/consume_content_pack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/generate_event_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/generate_inventory_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/generate_shop_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/bin/package_official_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/ability/authoring/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/ability/authoring.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/ability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/battlefield/field.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/battlefield/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/buffs.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/cooldown.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/basic_attack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/build.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/death_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/field_work.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/ids.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/blocking.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/engine.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/path.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/planner.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/steering.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/movement/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/projectile_math.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/queue.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/resonance_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/sim.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/spatial.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/tactical_relocation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/tactical_swap.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/target_usefulness.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/targeting.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/damage.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/event_log.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/ids.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/recording.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/result_stats.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/runtime_control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/runtime_facts.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/skill_source.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/stat_pipeline.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/tile_range.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/battle/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/behavior.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/boss_omen.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_power.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_preview/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_preview/template.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_preview/threat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_preview/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_preview/validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/balance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/defense_object.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/mission_policy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/rewards.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/combat_setup/scenario_groups.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/abnormality_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/boss_omen_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/boss_runtime_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/consumable_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/canonical.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/diagnostic_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/packaging.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/raw/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/raw.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/resolver/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/resolver.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/schema.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/content_pack/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/corroded_employee_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/corroded_wave_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/employee_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/equipment_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/event_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/live_ron.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/pve_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/reward_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/run_policy_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/shop_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/skill_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/skill_fragment_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/summoned_unit_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/visual_novel_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/determinism.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/employee.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/employee_psychology.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/encounter_compendium.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/encounter_progression.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/events/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/events/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/growth.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/managers/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/managers/uuid_manager.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/executor.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/facility_generator.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/progression.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/session.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/map/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/monolith.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/range_preview.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/recruitment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/board.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/economy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/equipment_loadout.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/inventory.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/item_slot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/selection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/resources/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/reward.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/reward_policy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/skill_fragment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/stats.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/visual_novel.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/wave_resolution.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/action_capability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/active_run.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/admin/catalog.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/admin/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/admin/fixtures.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/admin/grants.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/admin/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/admin.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/authoring_lifecycle.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/battle_capability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/combat_trace.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/event_node.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/grant_state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/headquarters.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/helpers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/maintenance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/map_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/map_encounters.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/node_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/reward.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/shop.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/content_generation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/equipment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/map_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/node_sessions.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/visual_novel_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world/visual_novel_triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/game/world.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/lib.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/src/owned_collections.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/common/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/live_item_skill_activation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/live_skill_catalog_audit.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/ron_loading.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_runtime_contract.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/common/board.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/common/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/common/query.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/common/run.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/common/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/common/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/little_red.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/melting_love.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/nothing_there.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test/white_night.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tests/skill_test_suite.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/EXTERNAL_PACK_PROBES.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/application_authority_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/application_authority_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/application_authority_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/application_authority_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/application_authority_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/application_authority_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_buff_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_cli_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_combat_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_combat_fixture.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_delivery_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_invalid_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_preview_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_resource_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_runtime_fact_source_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_runtime_facts_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/cost.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/inspection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/invalid.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/replacement.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/runtime_application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/examples/source_receipt.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/authoring_trial_api_probe/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/battle_kernel_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/battle_kernel_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/battle_kernel_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/battle_kernel_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/battle_kernel_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/content_pack_release_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/core_public_projection_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/core_public_projection_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/core_public_projection_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/core_public_projection_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/core_public_projection_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/core_public_projection_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/external_pack_probe.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/history_result_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/history_result_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/history_result_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/history_result_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/history_result_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/history_result_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/public_api_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/examples/native_fact_budget.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/examples/native_fact_footprint.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/src/p01_exact_replay.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_preservation/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_preservation/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_preservation/src/bin/verify_feature_manifest.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/runtime_architecture_preservation/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/validated_data_api_audit/invalid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/validated_data_api_audit/invalid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/validated_data_api_audit/invalid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/validated_data_api_audit/valid/Cargo.lock",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/validated_data_api_audit/valid/Cargo.toml",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:core_enhanced/tools/validated_data_api_audit/valid/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/abnormalities/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/boss_omen/chains.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/boss_runtime/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/buffs/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/bundle.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/consumables/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/employees/definitions.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/enemies/corroded_employees.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/enemies/corroded_wave_presets.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/equipments/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/events/rewards/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/events/shops/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/events/story/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/map/battlefield_archetypes.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/map/battlefield_templates.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/map/facility_templates.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/map/node_assignment_profiles.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/map/node_definitions.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/pve/encounters.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/run/policy.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/skill_fragments/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/skills/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/summoned_units/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/visual_novel_triggers/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "final_archive:game_resources/data/visual_novels/base.ron",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/docs/core_runtime_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/docs/data_loading_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/docs/skill_target_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/clone_shape.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/compiled.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/definition.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/diagnostic.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/output.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/preview.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/projection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/query.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/resolve.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/trace.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/trial.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/authoring/view.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/author_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/consume_content_pack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/generate_event_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/generate_inventory_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/generate_shop_contract_fixture.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/bin/package_official_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/ability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/ability/authoring.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/ability/authoring/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/battlefield/field.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/battlefield/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/buffs.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/cooldown.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/basic_attack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/build.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/death_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/field_work.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/ids.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/blocking.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/engine.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/path.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/planner.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/steering.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/movement/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/projectile_math.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/queue.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/resonance_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/sim.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/spatial.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/tactical_relocation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/tactical_swap.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/target_usefulness.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/targeting.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/damage.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/event_log.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/ids.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/recording.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/result_stats.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/runtime_control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/runtime_facts.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/scenario.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/skill_source.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/stat_pipeline.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/tile_range.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/battle/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/behavior.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/boss_omen.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_power.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_preview/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_preview/template.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_preview/threat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_preview/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_preview/validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/balance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/defense_object.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/mission_policy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/rewards.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/combat_setup/scenario_groups.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/abnormality_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/boss_omen_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/boss_runtime_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/consumable_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/canonical.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/diagnostic_tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/packaging.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/raw.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/raw/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/resolver.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/resolver/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/schema.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/content_pack/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/corroded_employee_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/corroded_wave_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/employee_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/equipment_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/event_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/live_ron.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/pve_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/reward_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/run_policy_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/shop_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/skill_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/skill_fragment_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/summoned_unit_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/visual_novel_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/determinism.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/employee.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/employee_psychology.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/encounter_compendium.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/encounter_progression.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/events/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/events/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/growth.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/managers/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/managers/uuid_manager.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/executor.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/facility_generator.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/progression.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/session.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/map/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/monolith.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/range_preview.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/recruitment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/board.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/economy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/equipment_loadout.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/inventory.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/item_slot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/selection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/resources/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/reward.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/reward_policy.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/skill_fragment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/stats.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/visual_novel.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/wave_resolution.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/action_capability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/active_run.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/admin.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/admin/catalog.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/admin/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/admin/fixtures.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/admin/grants.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/admin/tests.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/authoring_lifecycle.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/battle_capability.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/combat_trace.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/event_node.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/grant_state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/headquarters.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/helpers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/maintenance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/map_content.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/map_encounters.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/node_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/reward.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/shop.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/content_generation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/equipment.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/facility.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/map_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/node_sessions.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/visual_novel_flow.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/game/world/visual_novel_triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/lib.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/src/owned_collections.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_runtime_fact_source_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_runtime_facts_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/cost.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/inspection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/invalid.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/replacement.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/runtime_application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/examples/source_receipt.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/authoring_trial_api_probe/src/main.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/runtime_architecture_final_validation/examples/native_fact_budget.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "input007:core_enhanced/tools/runtime_architecture_final_validation/examples/native_fact_footprint.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/docs/core_runtime_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/docs/data_loading_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/docs/goals/content_authoring_runtime_facts/WORKING_POLICY.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/docs/skill_target_contract.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/authoring/clone_shape.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/authoring/control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/authoring/query.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/authoring/view.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/cooldown.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/basic_attack.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/build.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/commands.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/death_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/field_work.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/movement/blocking.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/movement/engine.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/queue.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/sim.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/tactical_relocation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/tactical_swap.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/targeting.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/triggers.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/damage.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/enums.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/event_log.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/mod.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/runtime_control.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/runtime_facts.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/skill_source.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/stat_pipeline.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/tile_range.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/battle/types.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/behavior.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/events/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/resources/selection.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/world/application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/world/authoring_observation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/world/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/world/snapshot.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/world/state.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/game/world/tests/combat.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/src/owned_collections.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tests/live_item_skill_activation.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tools/authoring_runtime_fact_source_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tools/authoring_runtime_facts_external_probe.py",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tools/authoring_trial_api_probe/examples/cost.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tools/authoring_trial_api_probe/examples/runtime_application.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tools/runtime_architecture_final_validation/examples/native_fact_budget.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "attribution:core_enhanced/tools/runtime_architecture_final_validation/examples/native_fact_footprint.rs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "patch_exact",
+      "pass": false,
+      "detail": {
+        "files": 63,
+        "sha256": "2858cff6fb309636d402a39a0934044e5f6e4bd8c9e7c676c356a30f909b3c39"
+      }
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_WORKING_PREPARATION_002.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_003.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_004.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_GOAL_SET_002.ko.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_RESULT_002.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_AUTHORING_REVIEW_002.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/DECLARATION_SUCCESSOR_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "handoff:core_enhanced/docs/goals/content_authoring_runtime_facts/REPAIR_CANDIDATE_DISPOSITION_001.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "one receipt 164",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_full164.json",
+      "pass": true,
+      "detail": "cargo test --locked --offline -p game_core"
+    },
+    {
+      "check": "one receipt 165",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_finalallocbuild165.json",
+      "pass": true,
+      "detail": "cargo build --release --offline --locked --manifest-path core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml --target-dir target/capg-api --bin final_performance --example native_fact_budget --features allocation-observer"
+    },
+    {
+      "check": "one receipt 167",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_finalbudget167.json",
+      "pass": true,
+      "detail": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/native_fact_budget_final_001 core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/finalbudget167.json"
+    },
+    {
+      "check": "one receipt 168",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_finalalloc168.json",
+      "pass": true,
+      "detail": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/kernel_final_alloc core_enhanced/evidence/P01_PERFORMANCE_BASELINE.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json"
+    },
+    {
+      "check": "one receipt 170",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_guards170.json",
+      "pass": true,
+      "detail": "python3 /tmp/r04_guards170.py"
+    },
+    {
+      "check": "one receipt 171",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_alltargets171.json",
+      "pass": true,
+      "detail": "cargo check --locked --offline -p game_core --all-targets"
+    },
+    {
+      "check": "one receipt 172",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_release172.json",
+      "pass": true,
+      "detail": "cargo build --locked --offline --release -p game_core --lib --no-default-features --bin author_content --bin package_official_content --bin consume_content_pack"
+    },
+    {
+      "check": "one receipt 173",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_examples173.json",
+      "pass": true,
+      "detail": "cargo build --release --offline --locked --manifest-path core_enhanced/tools/authoring_trial_api_probe/Cargo.toml --target-dir target --examples"
+    },
+    {
+      "check": "one receipt 174",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_pack174.json",
+      "pass": true,
+      "detail": "python3 core_enhanced/tools/content_pack_release_probe.py --repository /mnt/f/work/simulator --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002"
+    },
+    {
+      "check": "one receipt 175",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_cli175.json",
+      "pass": true,
+      "detail": "python3 core_enhanced/tools/authoring_cli_external_probe.py --repository /mnt/f/work/simulator --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_002"
+    },
+    {
+      "check": "one receipt 176",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_api176.json",
+      "pass": true,
+      "detail": "python3 core_enhanced/tools/public_api_external_probe.py --repository /mnt/f/work/simulator --pack-root core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002/live_data --pack official --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_002"
+    },
+    {
+      "check": "one receipt 177",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_diagnostic177.json",
+      "pass": true,
+      "detail": "python3 /tmp/r04_diagnostic177.py"
+    },
+    {
+      "check": "one receipt 178",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_source178.json",
+      "pass": true,
+      "detail": "target/release/examples/source_receipt core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002/fixture core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002/fixture/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002/api"
+    },
+    {
+      "check": "one receipt 179",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_external179.json",
+      "pass": true,
+      "detail": "python3 core_enhanced/tools/authoring_runtime_facts_external_probe.py --repository . --fixture core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001 --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002"
+    },
+    {
+      "check": "one receipt 180",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_source180.json",
+      "pass": true,
+      "detail": "python3 core_enhanced/tools/authoring_runtime_fact_source_probe.py --repository . --runtime-output core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002 --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_002"
+    },
+    {
+      "check": "one receipt 181",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_application181.json",
+      "pass": true,
+      "detail": "target/release/examples/runtime_application core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/packs core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/selection.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/off/RESULT.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_APPLICATION_002.json"
+    },
+    {
+      "check": "one receipt 182",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_cost182.json",
+      "pass": true,
+      "detail": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/cost_plain core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/packs core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/selection.json core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/api/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/plain.json"
+    },
+    {
+      "check": "one receipt 183",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_cost_build183.json",
+      "pass": true,
+      "detail": "cargo build --locked --offline --release --manifest-path core_enhanced/tools/authoring_trial_api_probe/Cargo.toml --target-dir target --example cost --features allocation-observer"
+    },
+    {
+      "check": "one receipt 184",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_cost184.json",
+      "pass": true,
+      "detail": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/cost_alloc core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/packs core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/selection.json core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/api/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/alloc.json"
+    },
+    {
+      "check": "one receipt 185",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_combat185.json",
+      "pass": true,
+      "detail": [
+        "python3",
+        "core_enhanced/tools/authoring_combat_external_probe.py",
+        "--repository",
+        ".",
+        "--fixture",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture",
+        "--discovery",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/discovery_a",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002"
+      ]
+    },
+    {
+      "check": "one receipt 186",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_resource186.json",
+      "pass": true,
+      "detail": [
+        "python3",
+        "core_enhanced/tools/authoring_resource_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002"
+      ]
+    },
+    {
+      "check": "one receipt 187",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_buff187.json",
+      "pass": true,
+      "detail": [
+        "python3",
+        "core_enhanced/tools/authoring_buff_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--previous-resource-result",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_002"
+      ]
+    },
+    {
+      "check": "one receipt 188",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_invalid188.json",
+      "pass": true,
+      "detail": [
+        "python3",
+        "core_enhanced/tools/authoring_invalid_external_probe.py",
+        "--repository",
+        ".",
+        "--official-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_002"
+      ]
+    },
+    {
+      "check": "one receipt 189",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_delivery189.json",
+      "pass": true,
+      "detail": [
+        "python3",
+        "core_enhanced/tools/authoring_delivery_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_002"
+      ]
+    },
+    {
+      "check": "one receipt 190",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_preview190.json",
+      "pass": true,
+      "detail": [
+        "python3",
+        "core_enhanced/tools/authoring_preview_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_002"
+      ]
+    },
+    {
+      "check": "one receipt 191",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "command:r04_replacement191.json",
+      "pass": true,
+      "detail": [
+        "/mnt/f/work/simulator/target/release/examples/replacement",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_002"
+      ]
+    },
+    {
+      "check": "full164 individual nonzero tests",
+      "pass": true,
+      "detail": {
+        "actual_test_rows": 1361,
+        "summaries": [
+          [
+            "1309",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "4",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "4",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "25",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "15",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "4",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ]
+      }
+    },
+    {
+      "check": "full164 all failures/omissions zero",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "full164 exact groups",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "skill_runtime_contract actual15",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "kernel source ORDINARY_GUARDS_003/kernel_plain.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "P01 baseline ORDINARY_GUARDS_003/kernel_plain.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "ORDINARY_GUARDS_003/kernel_plain.json:event_heavy:p95",
+      "pass": true,
+      "detail": 13180868
+    },
+    {
+      "check": "ORDINARY_GUARDS_003/kernel_plain.json:event_heavy:baseline deterministic parity",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "ORDINARY_GUARDS_003/kernel_plain.json:event_heavy:latency guards",
+      "pass": true,
+      "detail": {
+        "permutation_p": 1.0,
+        "cap": 25000000
+      }
+    },
+    {
+      "check": "ORDINARY_GUARDS_003/kernel_plain.json:concurrent_sessions:p95",
+      "pass": true,
+      "detail": 8182800
+    },
+    {
+      "check": "ORDINARY_GUARDS_003/kernel_plain.json:concurrent_sessions:baseline deterministic parity",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "ORDINARY_GUARDS_003/kernel_plain.json:concurrent_sessions:latency guards",
+      "pass": true,
+      "detail": {
+        "permutation_p": 1.0,
+        "cap": 10000000
+      }
+    },
+    {
+      "check": "kernel source CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "P01 baseline CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json:event_heavy:p95",
+      "pass": true,
+      "detail": 12680473
+    },
+    {
+      "check": "CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json:event_heavy:baseline deterministic parity",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json:event_heavy:original allocation guards",
+      "pass": true,
+      "detail": {
+        "actual": {
+          "operations": 41660,
+          "peak": 255622,
+          "retained": 255622
+        },
+        "original_caps": {
+          "operations": 70671,
+          "peak": 276174,
+          "retained": 276174
+        }
+      }
+    },
+    {
+      "check": "CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json:concurrent_sessions:p95",
+      "pass": true,
+      "detail": 7202246
+    },
+    {
+      "check": "CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json:concurrent_sessions:baseline deterministic parity",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json:concurrent_sessions:original allocation guards",
+      "pass": true,
+      "detail": {
+        "actual": {
+          "operations": 367088,
+          "peak": 9018492,
+          "retained": 4196928
+        },
+        "original_caps": {
+          "operations": 389240,
+          "peak": 9030188,
+          "retained": 4196928
+        }
+      }
+    },
+    {
+      "check": "budget kernel identity",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search nonzero",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget baseline 5000ms",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search success",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget search typed failure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "check": "budget endpoint clone_slots",
+      "pass": true,
+      "detail": {
+        "minimum": 843279,
+        "one_less_fault": {
+          "code": "clone_limit",
+          "limit": 843278,
+          "requested": 843279,
+          "site": "fact_clone_slots"
+        }
+      }
+    },
+    {
+      "check": "budget endpoint work",
+      "pass": true,
+      "detail": {
+        "minimum": 2600736,
+        "one_less_fault": {
+          "code": "work_limit",
+          "limit": 2600735,
+          "requested": 2600736,
+          "site": "source_carrier_scan"
+        }
+      }
+    },
+    {
+      "check": "budget endpoint retained_bytes",
+      "pass": true,
+      "detail": {
+        "minimum": 6090008,
+        "one_less_fault": {
+          "code": "retained_byte_limit",
+          "limit": 6090007,
+          "requested": 6090008,
+          "site": "queued_fact_source"
+        }
+      }
+    },
+    {
+      "check": "budget raw log complete boundaries",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "total_checks": 1130,
+  "failed": [
+    {
+      "check": "patch_exact",
+      "pass": false,
+      "detail": {
+        "files": 63,
+        "sha256": "2858cff6fb309636d402a39a0934044e5f6e4bd8c9e7c676c356a30f909b3c39"
+      }
+    }
+  ],
+  "owner_commands_reused": [
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_full164.json",
+      "command": "cargo test --locked --offline -p game_core",
+      "exit_code": 0,
+      "raw_log": "r04_full164.log",
+      "log_sha256": "a7f2094e315e7302646ea5428d1e96c33262072d98c59051e28a39c04f0f4929",
+      "scope": "R04 engineering validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_finalallocbuild165.json",
+      "command": "cargo build --release --offline --locked --manifest-path core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml --target-dir target/capg-api --bin final_performance --example native_fact_budget --features allocation-observer",
+      "exit_code": 0,
+      "raw_log": "r04_finalallocbuild165.log",
+      "log_sha256": "41e141a5fbe9dde73f16616daa3423ef5c6db7e169f9bbdd697e0384033eca4c",
+      "scope": "R04 engineering validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_finalbudget167.json",
+      "command": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/native_fact_budget_final_001 core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/finalbudget167.json",
+      "exit_code": 0,
+      "raw_log": "r04_finalbudget167.log",
+      "log_sha256": "bafb758a23a840efb964650d67de0ee56e6037bd02820eb0ae3de6efe99978a3",
+      "scope": "R04 INPUT007 validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_finalalloc168.json",
+      "command": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/kernel_final_alloc core_enhanced/evidence/P01_PERFORMANCE_BASELINE.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/CLONE_CAP_CHARACTERIZATION_001/finalalloc168.json",
+      "exit_code": 0,
+      "raw_log": "r04_finalalloc168.log",
+      "log_sha256": "403595cfe67522475468470fed9c9cdca5abfd0785905f2c2f29724809c53013",
+      "scope": "R04 INPUT007 validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_guards170.json",
+      "command": "python3 /tmp/r04_guards170.py",
+      "exit_code": 0,
+      "raw_log": "r04_guards170.log",
+      "log_sha256": "d7ed4a3361f2c111d77d8d57bdbb5e8557c9ce98cbb965f8c4aedfbe1d85c89a",
+      "scope": "R04 INPUT007 validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_alltargets171.json",
+      "command": "cargo check --locked --offline -p game_core --all-targets",
+      "exit_code": 0,
+      "raw_log": "r04_alltargets171.log",
+      "log_sha256": "b7700e18aebace422f917d53e50326c2ad3d0eb61b695f88ba9375e39a8707db",
+      "scope": "R04 INPUT007 validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_release172.json",
+      "command": "cargo build --locked --offline --release -p game_core --lib --no-default-features --bin author_content --bin package_official_content --bin consume_content_pack",
+      "exit_code": 0,
+      "raw_log": "r04_release172.log",
+      "log_sha256": "195bbf5b61545158dc9782d7d171eaa6d2ef0359666947f9bb929df75c47c6b6",
+      "scope": "R04 INPUT007 validation; no closure/audit"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_examples173.json",
+      "command": "cargo build --release --offline --locked --manifest-path core_enhanced/tools/authoring_trial_api_probe/Cargo.toml --target-dir target --examples",
+      "exit_code": 0,
+      "raw_log": "r04_examples173.log",
+      "log_sha256": "4ce5a9e4a2588758b6969bd3fde7788198041f890472378f84ba2abcd8863d04",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:25:51.111197+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_pack174.json",
+      "command": "python3 core_enhanced/tools/content_pack_release_probe.py --repository /mnt/f/work/simulator --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002",
+      "exit_code": 0,
+      "raw_log": "r04_pack174.log",
+      "log_sha256": "6cda9ea729d15656836f38c4ed4d4821e0e70adbadb33132d3a1736148881ec6",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:25:58.334341+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_cli175.json",
+      "command": "python3 core_enhanced/tools/authoring_cli_external_probe.py --repository /mnt/f/work/simulator --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_002",
+      "exit_code": 0,
+      "raw_log": "r04_cli175.log",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:26:31.635446+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_api176.json",
+      "command": "python3 core_enhanced/tools/public_api_external_probe.py --repository /mnt/f/work/simulator --pack-root core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002/live_data --pack official --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_002",
+      "exit_code": 0,
+      "raw_log": "r04_api176.log",
+      "log_sha256": "9a0506ff4b8800b3fff63f7c46f2ed1dea5635dac6afbd1e819cfc3246af01ee",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:27:43.664284+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_diagnostic177.json",
+      "command": "python3 /tmp/r04_diagnostic177.py",
+      "exit_code": 0,
+      "raw_log": "r04_diagnostic177.log",
+      "log_sha256": "8fe190d4a6cad5c82e150dbe3787689c47fde8972fbcce63a6555914b2a64962",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:27:53.104349+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_source178.json",
+      "command": "target/release/examples/source_receipt core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002/fixture core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002/fixture/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002/api",
+      "exit_code": 0,
+      "raw_log": "r04_source178.log",
+      "log_sha256": "e163dc4689c280afaf0a6b330a885e6a36ecf7bdd2fbae8bb816c6c7ac1f1306",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:28:14.865066+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_external179.json",
+      "command": "python3 core_enhanced/tools/authoring_runtime_facts_external_probe.py --repository . --fixture core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001 --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002",
+      "exit_code": 0,
+      "raw_log": "r04_external179.log",
+      "log_sha256": "47a81fce8d46154c57aa281f9038206d5e6eb8eeac2143db7e27e00ff4014480",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:28:19.576255+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_source180.json",
+      "command": "python3 core_enhanced/tools/authoring_runtime_fact_source_probe.py --repository . --runtime-output core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002 --output-dir core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_002",
+      "exit_code": 0,
+      "raw_log": "r04_source180.log",
+      "log_sha256": "8221a2ab54867f4f056d010ca0fbabb9c5fa50f3a991e43ae1e3eee6b0ff9f6a",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:28:20.447661+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_application181.json",
+      "command": "target/release/examples/runtime_application core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/packs core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/selection.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002/off/RESULT.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_APPLICATION_002.json",
+      "exit_code": 0,
+      "raw_log": "r04_application181.log",
+      "log_sha256": "b9ddfdfbc2986562b646d3de847a107ac4782cf0009d66bb84997ded8656f121",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:28:20.841002+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_cost182.json",
+      "command": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/cost_plain core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/packs core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/selection.json core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/api/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/plain.json",
+      "exit_code": 0,
+      "raw_log": "r04_cost182.log",
+      "log_sha256": "192f0536c1e5c470e27bff00911e6d25523186ef7587e4864eac00b7395e8c26",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:28:58.574159+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_cost_build183.json",
+      "command": "cargo build --locked --offline --release --manifest-path core_enhanced/tools/authoring_trial_api_probe/Cargo.toml --target-dir target --example cost --features allocation-observer",
+      "exit_code": 0,
+      "raw_log": "r04_cost_build183.log",
+      "log_sha256": "aad99d7a16bf675771fd9fac5e72d31adebb42d47f4d704af12bb8488dbfbf31",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:29:01.172713+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_cost184.json",
+      "command": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/cost_alloc core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/packs core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/selection.json core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004/api/scenario.json core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002/alloc.json",
+      "exit_code": 0,
+      "raw_log": "r04_cost184.log",
+      "log_sha256": "e6fb2d263461270c7686f61c7c8152d7398ce0973df80afaa7748dbe23c08535",
+      "scope": "Current R04 INPUT007 validation; separate closure/audit pending",
+      "observed_at": "2026-09-11T00:29:27.190909+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_combat185.json",
+      "command": [
+        "python3",
+        "core_enhanced/tools/authoring_combat_external_probe.py",
+        "--repository",
+        ".",
+        "--fixture",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture",
+        "--discovery",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/discovery_a",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_combat185.log",
+      "log_sha256": "d677b4ffc5221626c6dd7e39b2297bec9f45d4f2353732c89d2e3ad4515df8c4",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:30:07.830061+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_resource186.json",
+      "command": [
+        "python3",
+        "core_enhanced/tools/authoring_resource_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_resource186.log",
+      "log_sha256": "52b8f17026feafd20142b3029ee49daa6d01aab9fbf158a013d62ed94117c423",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:30:13.581114+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_buff187.json",
+      "command": [
+        "python3",
+        "core_enhanced/tools/authoring_buff_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--previous-resource-result",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_buff187.log",
+      "log_sha256": "7546eb70d2ddb7e6c88f200bdcb8c7fdac069ff751df7f2badcb9cb629287ff6",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:30:19.363805+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_invalid188.json",
+      "command": [
+        "python3",
+        "core_enhanced/tools/authoring_invalid_external_probe.py",
+        "--repository",
+        ".",
+        "--official-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_invalid188.log",
+      "log_sha256": "2c7c14f674176706f6d06a79e9fa95be3f186f839a50c58539b5c45975b4b4b6",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:30:56.403847+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_delivery189.json",
+      "command": [
+        "python3",
+        "core_enhanced/tools/authoring_delivery_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_delivery189.log",
+      "log_sha256": "172e10bace696af73a823362fc565d27bf8f439bbf4c5ef47fb9923f5b17c10a",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:31:03.613660+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_preview190.json",
+      "command": [
+        "python3",
+        "core_enhanced/tools/authoring_preview_external_probe.py",
+        "--repository",
+        ".",
+        "--prototype-pack",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture/a/official",
+        "--scenario",
+        "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/replay001/scenario.json",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_preview190.log",
+      "log_sha256": "4a90ef7bbd66d8e5a5cd961555c1296d2d3c5dc4f2fa56aa0883f99662c6aa18",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:31:08.535912+00:00"
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/r04_replacement191.json",
+      "command": [
+        "/mnt/f/work/simulator/target/release/examples/replacement",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_001/fixture",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_002"
+      ],
+      "exit_code": 0,
+      "raw_log": "r04_replacement191.log",
+      "log_sha256": "89c706b5e34dc4f4b380e576e43ff22055a20c9151df635d0d3ffecf1c1687a9",
+      "input": "IMPLEMENTATION_INPUT_007.json",
+      "at_utc": "2026-09-11T00:31:26.808409+00:00"
+    }
+  ],
+  "new_gameplay_executions": 0,
+  "scope": "read-only reconstruction of captured source, command/results, original guards and native budget; not a new owner run"
+}

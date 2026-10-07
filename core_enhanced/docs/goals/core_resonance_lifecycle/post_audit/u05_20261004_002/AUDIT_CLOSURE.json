@@ -1,0 +1,126 @@
+{
+  "closed_at_utc": "2026-10-04T14:13:11.781397+00:00",
+  "reviewer": "/root/u05_completion_audit_002; implementation nonparticipant; GPT-6 Astra / High",
+  "goal": "GOAL-CRSL-01",
+  "goal_set": "GS-CRSL-001",
+  "verdict": "Complete",
+  "confidence": "High",
+  "whole_single_phase": true,
+  "target_manifest_sha256": "0d31d3036b42a088bc764cb7841d36f1544324ab56a8929db4437ce03b85319c",
+  "entry": {
+    "at_utc": "2026-10-04T14:05:18.406148+00:00",
+    "manifest_sha256": "0d31d3036b42a088bc764cb7841d36f1544324ab56a8929db4437ce03b85319c",
+    "membership_count": 3511,
+    "target_artifacts_count": 13,
+    "product_membership_count": 368,
+    "product_sha256": "3129db450b14515564da3845313cf0ce1539e9f99c032c89788a3a5fe840d283",
+    "combined_source_canonical_count": 377,
+    "combined_sha256": "44cb47a6d5a09934534e8b797c4263e0d9b9fdb017f8106d0e31246917203437",
+    "errors": [],
+    "passed": true,
+    "state": "current / unchanged"
+  },
+  "exit": {
+    "at_utc": "2026-10-04T14:11:16.874644+00:00",
+    "manifest_sha256": "0d31d3036b42a088bc764cb7841d36f1544324ab56a8929db4437ce03b85319c",
+    "membership_count": 3511,
+    "target_artifacts_count": 13,
+    "product_membership_count": 368,
+    "product_sha256": "3129db450b14515564da3845313cf0ce1539e9f99c032c89788a3a5fe840d283",
+    "combined_source_canonical_count": 377,
+    "combined_sha256": "44cb47a6d5a09934534e8b797c4263e0d9b9fdb017f8106d0e31246917203437",
+    "errors": [],
+    "passed": true,
+    "state": "current / unchanged"
+  },
+  "F01": "Closed for new target002; original audit001 Not Complete / High unchanged",
+  "open_findings": [],
+  "freeze_release": "Root may release U05 audit freeze on receipt. Whole-Goal Complete / High satisfies U06 predecessor gate under existing continuous authorization.",
+  "files": [
+    {
+      "path": "AUDIT_REQUEST.md",
+      "bytes": 5287,
+      "sha256": "4933db9ad14687701f528d0733b26d3e420921b762803250e086eeec8233d29d"
+    },
+    {
+      "path": "CHECKER_NOTES.md",
+      "bytes": 459,
+      "sha256": "bef366afc2b4ce456cb3704702cb6092bcfe8cadfff3af74f79c598d28616bbc"
+    },
+    {
+      "path": "COMPLETION_AUDIT.md",
+      "bytes": 14569,
+      "sha256": "e82c49dd37905a8fbe2d02be842c90c8bbe23a1d71fa4161afb80176c9fe7a75"
+    },
+    {
+      "path": "CONDITION_REVIEW.json",
+      "bytes": 635712,
+      "sha256": "04f182d6ff3b3877e115f8c1ef51ee91f6bd440f836855f3959c9d83f66baaf4"
+    },
+    {
+      "path": "CURRENTNESS_ENTRY.json",
+      "bytes": 522,
+      "sha256": "777b63e82e425da06e33126b1768d0afcb642c185cb02c33de1f1e5b49d79fb4"
+    },
+    {
+      "path": "CURRENTNESS_EXIT.json",
+      "bytes": 522,
+      "sha256": "248b09f7122e8492038aabc7cd85647235c9e868e5817cb1ee123bded530981c"
+    },
+    {
+      "path": "EVIDENCE_VERIFICATION.json",
+      "bytes": 319604,
+      "sha256": "0accec478cd41cc72aff5b24b483c4b6a7f5d11c342125479721bcc04f3ab950"
+    },
+    {
+      "path": "MIGRATION_VERIFICATION.json",
+      "bytes": 34709,
+      "sha256": "a52d5eb4351a50e1a3c5e78c48229ef265fc7e450e7114dcb0e3c3ca589fe33d"
+    },
+    {
+      "path": "NUMERICAL_REUSE.json",
+      "bytes": 4089,
+      "sha256": "a247253f84bc3b535cf73f205fbb7398452a2d6edb1263d0e07385f8309438ca"
+    },
+    {
+      "path": "RESTORE_FORWARD.log",
+      "bytes": 5507,
+      "sha256": "9e313f8014ec6fb68639031a5f017a6e24373a4ae3384d320aff1bde10b9e339"
+    },
+    {
+      "path": "RESTORE_REVERSE.log",
+      "bytes": 5507,
+      "sha256": "9e313f8014ec6fb68639031a5f017a6e24373a4ae3384d320aff1bde10b9e339"
+    },
+    {
+      "path": "RESTORE_VERIFICATION.json",
+      "bytes": 389,
+      "sha256": "4ff399558bf9c50437a746844c25d4355efae1313540dd084b9b71a3a0a7d7b1"
+    },
+    {
+      "path": "build_condition_record.py",
+      "bytes": 6901,
+      "sha256": "3374577f6a6f6ca19387066a4c8c535afa02c881ddf907c6f08a0500e73bd2d3"
+    },
+    {
+      "path": "check_currentness.py",
+      "bytes": 2650,
+      "sha256": "c91f75ce9524efd4b9ebc7ca39ebad36ca93470f6ad5965d33b6071b51e01be0"
+    },
+    {
+      "path": "check_migration.py",
+      "bytes": 5053,
+      "sha256": "f2a0d8fb6a995353994afe32399f39eaa82987a76ef55899a370ceaf72f202fd"
+    },
+    {
+      "path": "check_restore.py",
+      "bytes": 1458,
+      "sha256": "f3063107ffaa71e38acd5c90b24d320a6d4fb72e1bf1d5584d8048370c1a7df5"
+    },
+    {
+      "path": "verify_evidence.py",
+      "bytes": 6154,
+      "sha256": "280c7a2d6d0a97f1f7d04ece33cbce9d3cbcf9c6cbf7c98f7ff36b6a19670cf6"
+    }
+  ]
+}

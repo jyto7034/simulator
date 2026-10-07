@@ -24,8 +24,8 @@ fn run_snapshot_exposes_inactive_visual_novel_as_explicit_null() {
 
 #[test]
 fn live_game_data_loads_run_start_visual_novel_triggers() {
-    let game_data =
-        GameDataBase::load_live_embedded().expect("embedded live gameplay RON must be valid");
+    let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid");
 
     let standard = game_data
         .visual_novel_trigger_data
@@ -131,7 +131,7 @@ fn run_start_session_blocking_is_owned_only_by_the_matching_trigger() {
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
         .with_visual_novel_triggers(triggers)
-        .with_equipment(vec![starter_equipment_meta()])
+        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
@@ -164,15 +164,18 @@ fn missing_run_start_visual_novel_trigger_fails_start_new_game() {
     let game_data = GameDataBuilder::empty()
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
-        .with_equipment(vec![starter_equipment_meta()])
+        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
         .build_arc();
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
+    let before = non_battle_state_without_profile_fingerprint(&core);
+    let before_profile = core.player_profile();
+    let before_run_seed = core.run_seed;
 
-    let err = core
+    let first_error = core
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
@@ -183,8 +186,25 @@ fn missing_run_start_visual_novel_trigger_fails_start_new_game() {
         .unwrap_err();
 
     assert!(
-        matches!(err, GameError::InvalidStaticData(message) if message.contains("missing RunStart visual novel trigger"))
+        matches!(&first_error, GameError::InvalidStaticData(message) if message.contains("missing RunStart visual novel trigger"))
     );
+    assert_eq!(non_battle_state_without_profile_fingerprint(&core), before);
+    assert_eq!(core.player_profile(), before_profile);
+    assert_eq!(core.run_seed, before_run_seed);
+
+    let retry_error = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Standard,
+                replace_active_run: false,
+            },
+        )
+        .unwrap_err();
+    assert_eq!(format!("{retry_error:?}"), format!("{first_error:?}"));
+    assert_eq!(non_battle_state_without_profile_fingerprint(&core), before);
+    assert_eq!(core.player_profile(), before_profile);
+    assert_eq!(core.run_seed, before_run_seed);
 }
 
 #[test]
@@ -625,8 +645,36 @@ fn game_core_projects_context_capabilities_and_revalidates_on_state_transition()
 }
 
 #[test]
+fn endless_start_requires_completed_standard_tutorial_without_mutating_run_state() {
+    let mut core = GameCore::new(empty_game_data(), 123);
+    let player_id = Uuid::from_u128(1);
+
+    let error = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Endless,
+                replace_active_run: false,
+            },
+        )
+        .unwrap_err();
+
+    assert!(matches!(
+        error,
+        GameError::TutorialCompletionRequired {
+            game_mode: GameMode::Endless
+        }
+    ));
+    assert_eq!(error.code(), "standard_tutorial_completion_required");
+    assert!(core.state.run.is_none());
+    assert!(core.state.pending_game_mode.is_none());
+    assert!(matches!(core.get_state(), GameState::NotStarted));
+}
+
+#[test]
 fn start_new_game_uses_requested_game_mode_when_run_is_created() {
     let mut core = GameCore::new(empty_game_data(), 123);
+    core.state.player_profile.standard_tutorial_completed = true;
     let player_id = Uuid::from_u128(1);
 
     let start = core
@@ -764,70 +812,35 @@ fn employee_definition_profile_json_preserves_authored_and_run_identities() {
 }
 
 #[test]
-fn start_new_game_initializes_abnormality_research_snapshot_from_live_catalog() {
+fn start_new_game_omits_removed_abnormality_research_snapshot() {
     let game_data = live_game_data_from_ron();
-    let expected_entries = game_data.abnormality_data.items.len();
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
 
     start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
 
     let snapshot = core.get_run_snapshot_json().unwrap();
-    let research = &snapshot["abnormality_research"];
-    assert_eq!(research["all_response_complete"], false);
-    assert_eq!(
-        research["entries"]
-            .as_array()
-            .expect("research entries")
-            .len(),
-        expected_entries
-    );
-    assert!(research["entries"].as_array().unwrap().iter().all(|entry| {
-        entry["research_points"] == 0
-            && entry["research_required"] == 100
-            && entry["response_complete"] == false
-            && entry["suppression_wins"] == 0
-            && entry["unique_fragment_granted"] == false
-            && entry["response_complete_skill_fragment_id"].is_string()
-    }));
+    assert!(snapshot.get("abnormality_research").is_none());
 }
 
 #[test]
-fn run_checkpoint_preserves_abnormality_run_state() {
+fn run_checkpoint_preserves_encounter_progression_graph() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
-    let abnormality_id = core
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .abnormality_research
-        .entries
-        .keys()
-        .next()
-        .cloned()
-        .expect("live research entry");
+    let reward_source_id = core.game_data.pve_data.reward_sources[0]
+        .reward_source_id
+        .clone();
     {
-        let entry = core
-            .state
-            .run
-            .as_mut()
-            .unwrap()
-            .abnormality_research
-            .entries
-            .get_mut(&abnormality_id)
-            .unwrap();
-        entry.research_points = 80;
-        entry.suppression_wins = 2;
-        entry.last_encountered_floor = Some(1);
+        let progression = &mut core.state.run.as_mut().unwrap().encounter_progression;
+        progression
+            .completed_reward_source_ids
+            .insert(reward_source_id.clone());
+        progression
+            .mastered_elite_cycle
+            .remaining_source_ids
+            .push(reward_source_id.clone());
     }
-    core.state
-        .run
-        .as_mut()
-        .unwrap()
-        .abnormality_encounter_history
-        .record_appearance(&abnormality_id, 1);
     let event_node_id = MapNodeId::new(Uuid::from_u128(0xC0FFEE));
     {
         let run = core.state.run.as_mut().unwrap();
@@ -845,6 +858,7 @@ fn run_checkpoint_preserves_abnormality_run_state() {
                 node_id: event_node_id,
                 event_id: crate::game::data::event_data::EventId::new("white_night_confession_01"),
                 current_scene_id: crate::game::data::event_data::EventSceneId::new("choice"),
+                relic_corruption_selections: None,
                 committed_check: Some(crate::game::resources::EventCommittedCheckState {
                     source_scene_id: crate::game::data::event_data::EventSceneId::new("choice"),
                     choice_id: crate::game::data::event_data::EventChoiceId::new("listen"),
@@ -878,28 +892,15 @@ fn run_checkpoint_preserves_abnormality_run_state() {
         blocking: true,
         presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
     });
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     {
-        let entry = core
-            .state
-            .run
-            .as_mut()
-            .unwrap()
-            .abnormality_research
-            .entries
-            .get_mut(&abnormality_id)
-            .unwrap();
-        entry.research_points = 0;
-        entry.suppression_wins = 0;
-        entry.last_encountered_floor = None;
+        let progression = &mut core.state.run.as_mut().unwrap().encounter_progression;
+        progression.completed_reward_source_ids.clear();
+        progression
+            .mastered_elite_cycle
+            .remaining_source_ids
+            .clear();
     }
-    core.state
-        .run
-        .as_mut()
-        .unwrap()
-        .abnormality_encounter_history
-        .last_appeared_floor_by_abnormality
-        .clear();
     core.state.run.as_mut().unwrap().boss_omen.active = None;
     core.state.run.as_mut().unwrap().event_sessions.clear();
     core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
@@ -919,28 +920,14 @@ fn run_checkpoint_preserves_abnormality_run_state() {
     core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
         .unwrap();
 
-    let restored = core
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .abnormality_research
-        .entries
-        .get(&abnormality_id)
-        .unwrap();
-    assert_eq!(restored.research_points, 80);
-    assert_eq!(restored.suppression_wins, 2);
-    assert_eq!(restored.last_encountered_floor, Some(1));
-    assert_eq!(
-        core.state
-            .run
-            .as_ref()
-            .unwrap()
-            .abnormality_encounter_history
-            .last_appeared_floor(&abnormality_id),
-        Some(1)
-    );
     let restored_run = core.state.run.as_ref().unwrap();
+    assert!(restored_run
+        .completed_reward_source_ids
+        .contains(&reward_source_id));
+    assert_eq!(
+        restored_run.mastered_elite_cycle.remaining_source_ids,
+        vec![reward_source_id]
+    );
     let restored_omen = restored_run
         .boss_omen
         .active
@@ -973,7 +960,42 @@ fn run_checkpoint_preserves_abnormality_run_state() {
 
 #[test]
 fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 123);
+    let base = live_game_data_from_ron();
+    let mut triggers = base.visual_novel_trigger_data.triggers.clone();
+    for (id, policy) in [
+        (
+            "persistent_before_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::PersistAcrossCheckpointLoad,
+        ),
+        (
+            "persistent_after_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::PersistAcrossCheckpointLoad,
+        ),
+        (
+            "rewind_before_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::RewindWithRunCheckpoint,
+        ),
+        (
+            "rewind_after_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::RewindWithRunCheckpoint,
+        ),
+    ] {
+        let mut trigger = triggers[0].clone();
+        trigger.id = VisualNovelTriggerId::new(id);
+        trigger.source = VisualNovelTriggerSource::MapNodeEntered {
+            category: MapNodeCategory::SavePoint,
+            kind_id: MapNodeKindId::new("save_point"),
+        };
+        trigger.repeat = VisualNovelTriggerRepeat::OncePerRun;
+        trigger.checkpoint_policy = policy;
+        triggers.push(trigger);
+    }
+    let mut core = GameCore::new(
+        GameDataBuilder::from_validated(&crate::game::data::ValidatedGameData::from(base))
+            .with_visual_novel_triggers(VisualNovelTriggerDatabase::new(triggers))
+            .build_arc(),
+        123,
+    );
     let player_id = Uuid::from_u128(1);
     start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
 
@@ -1002,7 +1024,7 @@ fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() 
         .visual_novel_triggers
         .checkpoint_rewind_consumed
         .insert(rewind_before.clone());
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
 
     core.state
         .visual_novel_triggers
@@ -1012,6 +1034,30 @@ fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() 
         .visual_novel_triggers
         .checkpoint_rewind_consumed
         .insert(rewind_after);
+
+    core.refresh_continue_after_operation(super::super::application::ApplicationRoute::Behavior(
+        ActionKind::CompleteNode,
+    ))
+    .unwrap();
+    let current_history = core.state.visual_novel_triggers.clone();
+    for _ in 0..3 {
+        let export = core.export_active_run_checkpoint().unwrap().unwrap();
+        let mut restarted = GameCore::new(core.game_data.clone(), 999);
+        restarted
+            .continue_from_active_run_checkpoint(
+                player_id,
+                &export.core_payload_json,
+                export.loads_used,
+                export.run_peak_certified_power,
+            )
+            .unwrap();
+        assert_eq!(restarted.state.visual_novel_triggers, current_history);
+        assert_eq!(
+            restarted.export_active_run_checkpoint().unwrap().unwrap(),
+            export
+        );
+        core = restarted;
+    }
 
     core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
         .unwrap();
@@ -1060,17 +1106,32 @@ fn start_new_game_creates_starter_employee_roster_and_equipment() {
     for employee_id in employee_ids {
         let employee = roster.get(&employee_id).unwrap();
         let equipped: Vec<_> = employee.loadout.item_slot.iter().collect();
-        assert_eq!(equipped.len(), 1);
-        let equipped_ref = equipped[0];
-        let owned = core
-            .inventory()
-            .unwrap()
-            .equipments
-            .get_item(&equipped_ref.instance_uuid)
-            .expect("starter equipment should exist in inventory");
-        assert_eq!(owned.meta.id, "standard_armor");
-        assert_eq!(owned.equipped_to, Some(employee_id));
+        assert_eq!(equipped.len(), 2);
+        let equipped_ids = equipped
+            .iter()
+            .map(|equipped_ref| {
+                let owned = core
+                    .inventory()
+                    .unwrap()
+                    .equipments
+                    .get_item(&equipped_ref.instance_uuid)
+                    .expect("starter equipment should exist in inventory");
+                assert_eq!(owned.equipped_to, Some(employee_id));
+                owned.meta.id.as_str()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            equipped_ids,
+            vec!["standard_training_sword", "standard_armor"]
+        );
     }
+    assert!(
+        core.state
+            .inventory
+            .validate_checkpoint_state(&core.state.roster)
+            .is_ok(),
+        "starter assignment must leave both equipment ledgers consistent"
+    );
 
     let snapshot = core.get_run_snapshot_json().unwrap();
     assert!(
@@ -1111,12 +1172,15 @@ fn employee_roster_snapshot_exposes_gameplay_status_and_loadout_without_display_
         "display order is owned by Unity and must not be projected by Core"
     );
     let equipped_items = employee["equipped_items"].as_array().unwrap();
-    assert_eq!(equipped_items.len(), 1);
-    assert_eq!(equipped_items[0]["definition_id"], "standard_armor");
+    assert_eq!(equipped_items.len(), 2);
     assert_eq!(
-        employee["combat_profile"]["deployment_affinity"],
-        "ground_only"
+        equipped_items[0]["definition_id"],
+        "standard_training_sword"
     );
+    assert_eq!(equipped_items[1]["definition_id"], "standard_armor");
+    assert!(employee["combat_profile"]
+        .get("deployment_affinity")
+        .is_none());
     assert_eq!(
         employee["combat_profile"]["effective_deployment_affinity"],
         "ground_only"
@@ -1166,6 +1230,59 @@ fn employee_roster_snapshot_projects_derived_condition_and_typed_reason_priority
 }
 
 #[test]
+fn weaponless_employee_remains_safezone_visible_and_rearms_from_authored_profile() {
+    let mut core = GameCore::new(empty_game_data(), 0xA11C_E002);
+    let player_id = Uuid::from_u128(0xA11C_E002);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let weapon_instance_uuid = force_unequip_employee_weapon(&mut core, employee_uuid);
+
+    let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+    let employee = snapshot["employees"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|employee| employee["uuid"] == json!(employee_uuid))
+        .expect("weaponless employee remains in the safe-zone roster");
+    assert_eq!(employee["eligibility"]["combat"]["eligible"], true);
+    assert_eq!(
+        employee["combat_profile"]["effective_profile_error"]["code"],
+        "weapon_required"
+    );
+    assert_eq!(
+        employee["combat_profile"]["effective_weapon_profile"],
+        Value::Null
+    );
+    assert!(!core
+        .roster()
+        .unwrap()
+        .get(&employee_uuid)
+        .unwrap()
+        .is_battle_deployable());
+
+    core.handle_equip_item(weapon_instance_uuid, employee_uuid)
+        .expect("safe-zone weapon attachment must remain available");
+    let rearmed = core.roster().unwrap().get(&employee_uuid).unwrap();
+    assert!(rearmed.is_battle_deployable());
+    let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+    let employee = snapshot["employees"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|employee| employee["uuid"] == json!(employee_uuid))
+        .unwrap();
+    assert_eq!(
+        employee["combat_profile"]["effective_weapon_profile"]["weapon_archetype"],
+        "Sword"
+    );
+    assert_eq!(
+        employee["combat_profile"]["effective_deployment_affinity"],
+        "ground_only"
+    );
+    assert!(employee["combat_profile"]["effective_profile_error"].is_null());
+}
+
+#[test]
 fn employee_roster_snapshot_surfaces_effective_profile_errors() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
@@ -1175,6 +1292,18 @@ fn employee_roster_snapshot_surfaces_effective_profile_errors() {
 
     {
         let employee = core.roster_mut().unwrap().get_mut(&employee_id).unwrap();
+        let starter_weapon_uuid = employee
+            .loadout
+            .item_slot
+            .iter()
+            .find(|equipped| equipped.equipment_type == EquipmentType::Weapon)
+            .map(|equipped| equipped.instance_uuid)
+            .expect("starter employee is armed");
+        employee
+            .loadout
+            .item_slot
+            .remove_by_instance(starter_weapon_uuid)
+            .unwrap();
         employee
             .loadout
             .item_slot

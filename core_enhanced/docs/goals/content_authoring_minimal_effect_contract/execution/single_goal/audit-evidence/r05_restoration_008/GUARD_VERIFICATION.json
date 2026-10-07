@@ -1,0 +1,139 @@
+{
+  "passed": true,
+  "recomputed_original_guards": [
+    {
+      "mode": "plain",
+      "seam": "run_snapshot",
+      "samples": 101,
+      "p95_ns": 217321,
+      "cap_ns": 500000,
+      "bytes": 48493,
+      "bytecap": 65536
+    },
+    {
+      "mode": "plain",
+      "seam": "checkpoint_export",
+      "samples": 101,
+      "p95_ns": 7647,
+      "cap_ns": 100000,
+      "bytes": 18215,
+      "bytecap": 32768
+    },
+    {
+      "mode": "plain",
+      "seam": "event_heavy",
+      "p95_ns": 13229225,
+      "cap_ns": 25000000,
+      "original_event_hash": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+      "allocation_comparisons": []
+    },
+    {
+      "mode": "plain",
+      "seam": "concurrent_sessions",
+      "p95_ns": 7782094,
+      "cap_ns": 10000000,
+      "original_event_hash": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+      "allocation_comparisons": []
+    },
+    {
+      "mode": "alloc",
+      "seam": "run_snapshot",
+      "samples": 101,
+      "p95_ns": 211163,
+      "cap_ns": 500000,
+      "bytes": 48493,
+      "bytecap": 65536
+    },
+    {
+      "mode": "alloc",
+      "seam": "checkpoint_export",
+      "samples": 101,
+      "p95_ns": 7790,
+      "cap_ns": 100000,
+      "bytes": 18215,
+      "bytecap": 32768
+    },
+    {
+      "mode": "alloc",
+      "seam": "event_heavy",
+      "p95_ns": 12852968,
+      "cap_ns": 25000000,
+      "original_event_hash": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+      "allocation_comparisons": [
+        {
+          "dimension": "allocation_operations",
+          "baseline_cap": 70671,
+          "current_max": 41692
+        },
+        {
+          "dimension": "peak_requested_bytes",
+          "baseline_cap": 276174,
+          "current_max": 255718
+        },
+        {
+          "dimension": "retained_requested_bytes",
+          "baseline_cap": 276174,
+          "current_max": 255718
+        }
+      ]
+    },
+    {
+      "mode": "alloc",
+      "seam": "concurrent_sessions",
+      "p95_ns": 6719653,
+      "cap_ns": 10000000,
+      "original_event_hash": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+      "allocation_comparisons": [
+        {
+          "dimension": "allocation_operations",
+          "baseline_cap": 389240,
+          "current_max": 370168
+        },
+        {
+          "dimension": "peak_requested_bytes",
+          "baseline_cap": 9030188,
+          "current_max": 9025562
+        },
+        {
+          "dimension": "retained_requested_bytes",
+          "baseline_cap": 4196928,
+          "current_max": 4196928
+        }
+      ]
+    }
+  ],
+  "native_search_cases": 67,
+  "native_boundaries": [
+    {
+      "dimension": "clone_slots",
+      "minimum": 836889,
+      "fault": {
+        "code": "clone_limit",
+        "limit": 836888,
+        "requested": 836889,
+        "site": "fact_clone_slots"
+      }
+    },
+    {
+      "dimension": "work",
+      "minimum": 2590144,
+      "fault": {
+        "code": "work_limit",
+        "limit": 2590143,
+        "requested": 2590144,
+        "site": "source_carrier_scan"
+      }
+    },
+    {
+      "dimension": "retained_bytes",
+      "minimum": 6107520,
+      "fault": {
+        "code": "retained_byte_limit",
+        "limit": 6107519,
+        "requested": 6107520,
+        "site": "queued_fact_source"
+      }
+    }
+  ],
+  "claims": "Original thresholds and baseline hashes unchanged. Allocator requested bytes are not RSS. No benchmark reexecution."
+}

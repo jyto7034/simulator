@@ -1,0 +1,21 @@
+{
+  "start": "2026-09-25T17:52:20.109Z",
+  "end": "2026-09-25T17:52:20.471Z",
+  "cwd": "/tmp/r06-f01-r01-review.d7WUvr",
+  "command": [
+    "cargo",
+    "test",
+    "--manifest-path",
+    "/tmp/r06-f01-r01-review.d7WUvr/core_enhanced/Cargo.toml",
+    "--offline",
+    "--release",
+    "--lib",
+    "game::battle::core::value_expr_runtime::tests::",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "code": 0,
+  "signal": null,
+  "probe_sha256": "c3503fdb33a50758a1e8115c47d3424c48430d981e9319568e15647cb1b1f04b"
+}

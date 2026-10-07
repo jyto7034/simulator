@@ -1,0 +1,172 @@
+{
+  "actual_diagnostic_parity": [
+    {
+      "name": "syntax",
+      "phase": "parse",
+      "code": "ron_parse",
+      "source": "official/data/skills/base.ron",
+      "position": {
+        "line": 1,
+        "column": 24
+      },
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "unclosed",
+      "phase": "structure",
+      "code": "content_structure",
+      "source": "official/data/skills/base.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "unknown_field",
+      "phase": "parse",
+      "code": "ron_parse",
+      "source": "official/data/skills/base.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "malformed_manifest",
+      "phase": "parse",
+      "code": "ron_parse",
+      "source": "official/pack.ron",
+      "position": null,
+      "pack": null,
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "contract",
+      "phase": "structure",
+      "code": "content_contract_unsupported",
+      "source": "official/pack.ron",
+      "position": null,
+      "pack": "official",
+      "expected": {
+        "authoring": 1,
+        "catalog_schema": 2,
+        "execution": 1,
+        "fingerprint": 1,
+        "pack_format": 1
+      },
+      "actual": {
+        "authoring": 1,
+        "catalog_schema": 2,
+        "execution": 999,
+        "fingerprint": 1,
+        "pack_format": 1
+      }
+    },
+    {
+      "name": "capability",
+      "phase": "structure",
+      "code": "content_capability_unsupported",
+      "source": "official/pack.ron",
+      "position": null,
+      "pack": "official",
+      "expected": [
+        "gameplay_catalogs_v2",
+        "literal_effect_authoring_v1",
+        "boss_runtime_v1",
+        "summoned_units_v1"
+      ],
+      "actual": "unsupported_authoring_probe"
+    },
+    {
+      "name": "final_reference",
+      "phase": "final_validation",
+      "code": "content_validation",
+      "source": "official/data/summoned_units/base.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "summon_compile",
+      "phase": "compile",
+      "code": "content_compile",
+      "source": "official/data/summoned_units/base.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "boss_compile",
+      "phase": "compile",
+      "code": "content_compile",
+      "source": "official/data/boss_runtime/base.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "ambiguous",
+      "phase": "resolution",
+      "code": "content_resolution",
+      "source": "selection",
+      "position": null,
+      "pack": null,
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "generated_policy",
+      "phase": "generated_setup",
+      "code": "generated_setup",
+      "source": "official/data/run/policy.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "custom_generated_policy",
+      "phase": "generated_setup",
+      "code": "generated_setup",
+      "source": "custom/policy.ron",
+      "position": null,
+      "pack": "custom",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "custom_generated_boss",
+      "phase": "generated_setup",
+      "code": "generated_setup",
+      "source": "official/data/pve/encounters.ron",
+      "position": null,
+      "pack": "official",
+      "expected": null,
+      "actual": null
+    }
+  ],
+  "replacement": {
+    "failed_attempts": 54,
+    "acquisition_failures": 6,
+    "replacement_failures": 48,
+    "successful_replacements": 3,
+    "a_continuation_replays": 3,
+    "b_completed_replays": 3
+  },
+  "expired_old_external_actual": [
+    "/tmp/capg-r02-release-ab-002/source",
+    "/tmp/capg-r02-release-ab-002/live_data",
+    "/tmp/capg-r02-release-ab-003/source",
+    "/tmp/capg-r02-release-ab-003/live_data",
+    "/tmp/capg-r02-release-ab-005/source",
+    "/tmp/capg-r02-release-ab-005/live_data",
+    "/tmp/capg-r02-source-recheck-004/live_data"
+  ],
+  "currentness_verified": "entry and closure all three targets unchanged"
+}

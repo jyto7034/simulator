@@ -1,0 +1,23 @@
+[
+  {
+    "path": "/tmp/r06-f02-r01-sim-before.rs",
+    "exit": 1,
+    "diff_hunks": 13,
+    "log": "docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f02_r01_001/verification/rustfmt_baseline_sim.log",
+    "sha256": "7b5767c770f09ba52ddd6a8ea8ce88baef52d1960edad886e2ccfc7ac1db131b"
+  },
+  {
+    "path": "src/game/battle/core/sim.rs",
+    "exit": 1,
+    "diff_hunks": 13,
+    "log": "docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f02_r01_001/verification/rustfmt_sim.rs.log",
+    "sha256": "a618452355cb9493e017acbcdd9f044a72111b4980b583ef189f467972e5c5d9"
+  },
+  {
+    "path": "src/game/battle/core/runtime_facts.rs",
+    "exit": 0,
+    "diff_hunks": 0,
+    "log": "docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f02_r01_001/verification/rustfmt_runtime_facts.rs.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

@@ -1,0 +1,298 @@
+{
+  "stage": "P2G-10",
+  "outcome": "completed",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CAMEC-P2G00-001",
+    "Content Digest": null
+  },
+  "Current Working Checkpoint Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CAMEC-P2G10-001",
+    "Content Digest": null
+  },
+  "Candidate Disposition Effective View": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-01-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-02-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-03-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-04-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-05-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-06-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-07-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-08-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-09-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-10-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-11-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-12-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-13-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-14-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CAMEC-15-001",
+      "Content Digest": null
+    }
+  ],
+  "Finding Triage Log": [
+    {
+      "Finding ID": "T10-01",
+      "Affected elements": [
+        "CAMEC-E01"
+      ],
+      "Finding": "既存 사용자 결정 인수",
+      "Primary classification": "material_policy",
+      "Disposition": "기존 exact 기록 의미로 decided; 재승인 또는 초안 포괄 승인 없음",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E01-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-02",
+      "Affected elements": [
+        "CAMEC-E02"
+      ],
+      "Finding": "既存 사용자 결정 인수",
+      "Primary classification": "material_policy",
+      "Disposition": "기존 exact 기록 의미로 decided; 재승인 또는 초안 포괄 승인 없음",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E02-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-03",
+      "Affected elements": [
+        "CAMEC-E03"
+      ],
+      "Finding": "既存 사용자 결정 인수",
+      "Primary classification": "material_policy",
+      "Disposition": "기존 exact 기록 의미로 decided; 재승인 또는 초안 포괄 승인 없음",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E03-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-04",
+      "Affected elements": [
+        "CAMEC-E04"
+      ],
+      "Finding": "既存 사용자 결정 인수",
+      "Primary classification": "material_policy",
+      "Disposition": "기존 exact 기록 의미로 decided; 재승인 또는 초안 포괄 승인 없음",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E04-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-05",
+      "Affected elements": [
+        "CAMEC-E05"
+      ],
+      "Finding": "既存 사용자 결정 인수",
+      "Primary classification": "material_policy",
+      "Disposition": "기존 exact 기록 의미로 decided; 재승인 또는 초안 포괄 승인 없음",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E05-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-06",
+      "Affected elements": [
+        "CAMEC-E06"
+      ],
+      "Finding": "既存 사용자 결정 인수",
+      "Primary classification": "material_policy",
+      "Disposition": "기존 exact 기록 의미로 decided; 재승인 또는 초안 포괄 승인 없음",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E06-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-07",
+      "Candidate": "CAND-CAMEC-07",
+      "Finding": "효과/행동 주소·typed descriptor·SourceMap·unsupported 최소 지원 목록",
+      "Primary classification": "technical_decision",
+      "Disposition": "기존 E01–04를 실현하는 검토 후보. R의 타입명·공개 문법·전체 기능 채택 승인이 아님. 현재 소비자가 못하는 조합을 지원한다고 표시하지 않는 기술적 진단을 설계한다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-07-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-08",
+      "Candidate": "CAND-CAMEC-08",
+      "Finding": "15축·효과별 태그·태그와 실제 변경 속성 구분",
+      "Primary classification": "technical_decision",
+      "Disposition": "E03–04의 효과 판별 의미를 점검할 예시/분석 틀. COV-R016/020의 합의 라벨은 독립 승인 증거가 아니며 원문의 초안 상태를 유지한다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-08-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-09",
+      "Candidate": "CAND-CAMEC-09",
+      "Finding": "같은 효과 태그 조건과 서로 다른 효과 존재 조건, 공유 carrier",
+      "Primary classification": "technical_decision",
+      "Disposition": "태그 판별 대상의 혼동을 검출할 시험·설계 후보. 실제 selector 언어/허용 조합과 carrier 변형 gameplay를 확정하지 않는다. A02 제안은 P2G-20에서 코드 대조한다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-09-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-10",
+      "Candidate": "CAND-CAMEC-10",
+      "Finding": "property 표·새 효과 조합 예",
+      "Primary classification": "technical_decision",
+      "Disposition": "E02–04 지원 계약의 참고 사례. 모든 표의 기능을 첫 slice에 지원한다고 승격하지 않는다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-10-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-11",
+      "Candidate": "CAND-CAMEC-11",
+      "Finding": "무기 수치 유물·기본 공격 치유/주기/계산",
+      "Primary classification": "out_of_scope",
+      "Disposition": "수치와 해당 스케줄러/변형은 PG03/CA05/08/12 owner. 현재는 기존 상수 Damage/Heal/Instant의 지원 계약을 검토하므로 이 수치를 결정하지 않아도 된다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-11-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-12",
+      "Candidate": "CAND-CAMEC-12",
+      "Finding": "수도승 피해+자기 회복, 개화·침식",
+      "Primary classification": "technical_decision",
+      "Disposition": "분리된 두 효과를 표현하는 구조 시험 후보만 사용. 최대HP 회복식·accepted hit·흡수 판정·공식 수치·개화/침식 구현을 현재 target에 추가하지 않는다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-12-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-13",
+      "Candidate": "CAND-CAMEC-13",
+      "Finding": "전체 typed AST/graph/IR와 고급 변형",
+      "Primary classification": "technical_decision",
+      "Disposition": "권장 구조 R을 코드에서 필요한 최소 L과 후속 범위로 구분한다. 전체 VM/후반 구현의 일괄 선행 승인 아님.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-13-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-14",
+      "Candidate": "CAND-CAMEC-14",
+      "Finding": "외부 팩·사본/개화·유물 연쇄·보스·서버/Unity 전체",
+      "Primary classification": "out_of_scope",
+      "Disposition": "선택 카드 O03–05에 따른 후속 owner. 직접 소비/저장 경계 조사는 포함하되 구현·모든 PG 폐쇄는 포함하지 않는다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-14-001",
+        "Content Digest": null
+      }
+    },
+    {
+      "Finding ID": "T10-15",
+      "Candidate": "CAND-CAMEC-15",
+      "Finding": "원문 상태·검토 권한과 콘텐츠 전체 확정 구분",
+      "Primary classification": "technical_decision",
+      "Disposition": "작업 권한·인수 기록이다. 사용자 질문 및 이번 실행 요청으로 새 gameplay Decision을 만들지 않는다.",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-15-001",
+        "Content Digest": null
+      }
+    }
+  ],
+  "Open Policy Question Log": [],
+  "Evidence Gap Log": [],
+  "verification": {
+    "method": "one-off local Python payload/reference/current-decision/acceptance/candidate coverage checks before publication",
+    "candidate_count": 15,
+    "promoted_count": 6,
+    "nonpromoted_count": 9,
+    "open_count": 0,
+    "is_p2g10_complete": true,
+    "runtime_tests_executed": 0
+  },
+  "source_status_limitation": "Decisionは明示された既存ユーザー決定の記録だけ。R/Fの草案一覧とCOVの合意ラベルは独立承認でない。過去会話原本の独立取得なし。",
+  "next": "P2G-20 within existing bounded authorization"
+}

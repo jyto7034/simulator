@@ -1,0 +1,39 @@
+{
+  "reviewer": "root writer; separate earlier source/Phase semantic review in REPAIR_SEMANTIC_REVIEW001",
+  "Goal Set Ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CARF-P2G50-002",
+    "Content Digest": null
+  },
+  "result": "passed",
+  "checks": [
+    "exact predecessorGS001 stale underCOD002/O50",
+    "currentWR002/Freeze003/PP004/PVR004 and all earlier resolutions",
+    "same stablePhase/Goal/2nodes/20acceptance10IVA10dimensions/C01–08",
+    "all current integration locators/evidence reproduced exactly",
+    "GF001/002 source currentness corrected; no gameplay gate mutation authorized",
+    "same boundary/consumer/lifetime/rollback/budget and actual validation obligations",
+    "canonicalcontract/directconsumer/freshreview remain required",
+    "Authored/NotActivated/No preserved"
+  ],
+  "publication_blockers": [],
+  "new_runtime_test_count": 0,
+  "inputs": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_GOAL_SET_002.ko.md",
+      "sha256": "6155bed50349fb1dc2f1c251bbc46b630d8165384c1b0970fc2ed62e6a8cbc90"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_RESULT_002.json",
+      "sha256": "3e43d04e260df4d9b1fbbf9ef40b9fe3a17a3216a16b880f49a5cf83fb009597"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_RESULT_004.json",
+      "sha256": "3fe49e73b12e9037625e8ba34bf6220f5726aa8f60fcaa76d029a84106c37089"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/REPAIR_SEMANTIC_REVIEW_001.json",
+      "sha256": "8a6c2d98d960339c3956945e82367f7ff0d697d341d72d62908ea4b856e0cf95"
+    }
+  ]
+}

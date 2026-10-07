@@ -1,14 +1,14 @@
-use game_core::game::{
-    behavior::{BehaviorResult, PlayerBehavior},
-    data::GameDataBase,
-    map::GameMode,
-    world::GameCore,
+use game_core::{
+    application::{
+        ApplicationCommand, ApplicationExecutionContext, ApplicationSnapshotKind, CoreApplication,
+    },
+    game::data::ValidatedGameData,
 };
 use serde_json::json;
 use uuid::Uuid;
 
 fn main() {
-    let game_data = GameDataBase::load_live_embedded()
+    let game_data = ValidatedGameData::load_live_embedded()
         .expect("embedded live employee definitions must be valid");
     let recruitment_definition = serde_json::to_value(
         game_data
@@ -19,43 +19,35 @@ fn main() {
             .expect("live catalog must contain a recruitment definition"),
     )
     .expect("recruitment definition must serialize");
-    let mut core = GameCore::new(game_data, 123);
+    let mut core = CoreApplication::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     let start = core
         .execute(
             player_id,
-            PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
-                replace_active_run: false,
-            },
+            ApplicationCommand::from_document(
+                json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":false})
+                    .into(),
+            )
+            .unwrap(),
+            ApplicationExecutionContext::default(),
         )
         .expect("run start must succeed");
-    let BehaviorResult::RunStartFlowStarted {
-        visual_novel: Some(visual_novel),
-        ..
-    } = start
-    else {
-        panic!("run start must expose the HQ briefing");
-    };
-    core.execute(
-        player_id,
-        PlayerBehavior::AdvanceVisualNovel {
-            session_id: visual_novel.session_id,
-            current_scene_id: game_core::game::data::visual_novel_data::VisualNovelSceneId::new(
-                visual_novel.current_scene_id,
-            ),
-        },
-    )
-    .expect("HQ briefing must advance to starter selection");
+    let visual_novel = &start.payload().as_value()["visual_novel"];
+    core.execute(player_id, ApplicationCommand::from_document(json!({
+        "type":"advance_visual_novel", "session_id":visual_novel["session_id"], "current_scene_id":visual_novel["current_scene_id"]
+    }).into()).unwrap(), ApplicationExecutionContext::default()).expect("HQ briefing must advance to starter selection");
 
     let selecting = core
-        .get_run_snapshot_json()
-        .expect("starter snapshot must serialize");
+        .snapshot(ApplicationSnapshotKind::Run)
+        .expect("starter snapshot must serialize")
+        .read_model()
+        .as_value()
+        .clone();
     let candidate = selecting["game_state_context"]["candidates"][0].clone();
     let required_count = selecting["game_state_context"]["required_count"]
         .as_u64()
         .expect("required_count must be numeric") as usize;
-    let employee_definition_ids = selecting["game_state_context"]["candidates"]
+    let employee_definition_ids: Vec<_> = selecting["game_state_context"]["candidates"]
         .as_array()
         .expect("starter candidates must be an array")
         .iter()
@@ -69,14 +61,16 @@ fn main() {
         .collect();
     core.execute(
         player_id,
-        PlayerBehavior::SelectStarterEmployees {
-            employee_definition_ids,
-        },
+        ApplicationCommand::from_document(json!({"type":"select_starter_employees","employee_definition_ids":employee_definition_ids}).into()).unwrap(),
+        ApplicationExecutionContext::default(),
     )
     .expect("starter selection must succeed");
     let running = core
-        .get_run_snapshot_json()
-        .expect("roster snapshot must serialize");
+        .snapshot(ApplicationSnapshotKind::Run)
+        .expect("roster snapshot must serialize")
+        .read_model()
+        .as_value()
+        .clone();
     let employee = &running["roster"]["employees"][0];
 
     let fixture = json!({

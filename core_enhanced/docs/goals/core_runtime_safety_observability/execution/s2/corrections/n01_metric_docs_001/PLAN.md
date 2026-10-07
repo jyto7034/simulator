@@ -1,0 +1,7 @@
+# GOAL-CRSO-S2 N01 documentation correction
+
+Canonical Phase execution directory remains execution/s2. This subordinate correction pass owns N01 from independent audit s2_20261004_001; that pass is closed Complete / High. The current correction's PLAN/EXPERIMENTS/EXPERIMENT_NOTES roles are these files, with the previous Phase record and all frozen archives preserved.
+
+The existing continuous authorization includes this GEX-10 correction and fresh independent GEX-20. No P2G policy meaning changes: observation dedup and loss behavior already satisfy the accepted contract. The actual Worker::consume branch at game_server/src/observability/mod.rs450 counts an absent owner as expired and ignores duplicate/out-of-order sequence without counting it. Correct the written metric description and point the local user guide at the corrected successor contract.
+
+The only member of the product input identity allowed to change is the Markdown user-guide link. All executable source, tests, configuration, Cargo lock, official inputs and operational documentation outside that link remain exact. Validate the exact delta and local links; reuse the independently verified source-bound runtime evidence condition by condition because every relevant execution input is identical. Do not rerun suites merely for the documentation link. Freeze a reversible source/records/reference target and obtain independent delta/currentness assessment before Master GEX-30.

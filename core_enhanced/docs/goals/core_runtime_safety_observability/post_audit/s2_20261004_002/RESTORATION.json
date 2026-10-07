@@ -1,0 +1,28 @@
+{
+  "SOURCE_BEFORE": {
+    "members": 365,
+    "exact_bytes_and_membership": true
+  },
+  "SOURCE_AFTER": {
+    "members": 365,
+    "exact_bytes_and_membership": true
+  },
+  "RECORDS": {
+    "members": 2106,
+    "exact_bytes_and_membership": true
+  },
+  "REFERENCES": {
+    "members": 144,
+    "exact_bytes_and_membership": true
+  },
+  "forward": {
+    "exact_bytes_and_membership": true,
+    "fuzz": 0,
+    "raw_exit": 0
+  },
+  "reverse": {
+    "exact_bytes_and_membership": true,
+    "fuzz": 0,
+    "raw_exit": 0
+  }
+}

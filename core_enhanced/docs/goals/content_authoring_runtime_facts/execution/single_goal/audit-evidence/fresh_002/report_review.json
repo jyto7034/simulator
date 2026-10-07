@@ -1,0 +1,121 @@
+{
+  "report_acceptance_rows": 20,
+  "exact_acceptance_members": [
+    [
+      "1",
+      "0"
+    ],
+    [
+      "1",
+      "1"
+    ],
+    [
+      "1",
+      "2"
+    ],
+    [
+      "1",
+      "3"
+    ],
+    [
+      "2",
+      "0"
+    ],
+    [
+      "2",
+      "1"
+    ],
+    [
+      "2",
+      "2"
+    ],
+    [
+      "2",
+      "3"
+    ],
+    [
+      "3",
+      "0"
+    ],
+    [
+      "3",
+      "1"
+    ],
+    [
+      "3",
+      "2"
+    ],
+    [
+      "3",
+      "3"
+    ],
+    [
+      "4",
+      "0"
+    ],
+    [
+      "4",
+      "1"
+    ],
+    [
+      "4",
+      "2"
+    ],
+    [
+      "5",
+      "0"
+    ],
+    [
+      "5",
+      "1"
+    ],
+    [
+      "5",
+      "2"
+    ],
+    [
+      "5",
+      "3"
+    ],
+    [
+      "5",
+      "4"
+    ]
+  ],
+  "current_review_results_pass": true,
+  "handoff_source_identities": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_WORKING_PREPARATION_002.json",
+      "sha256": "c5024550207690e70b508729ffa37a8408de3fe5e67c9f9125bb4482eff5d1cd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_003.json",
+      "sha256": "4433b4644ba030461f6cd89ec239ea0ec30c11d4e774069771d68c934c80b3f7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_004.json",
+      "sha256": "010ff8d812c0e6fa988f4dc289f318316245a8b255e43746f054b92d85f7a136"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_GOAL_SET_002.ko.md",
+      "sha256": "6155bed50349fb1dc2f1c251bbc46b630d8165384c1b0970fc2ed62e6a8cbc90"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_RESULT_002.json",
+      "sha256": "8fe1479d2a69e4b53cbef81e4d101c0c94c6dfec4566a8e4d930a2180414e71a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_AUTHORING_REVIEW_002.json",
+      "sha256": "4d694277f47baa9fafde4227065b85f687fcb7a7a6ac63fa283dad8f0e926520"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/DECLARATION_SUCCESSOR_001.json",
+      "sha256": "b2c00198c8bb46d88a8c8f3a91247f627d8fa1cfadb5b49ee23af634225e1cf4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/REPAIR_CANDIDATE_DISPOSITION_001.json",
+      "sha256": "3e4d950c2c0ed624beed9b20adfdb033bf570afc7047df2c8f74f095f83b33e3"
+    }
+  ],
+  "scope": "Report membership and actual Handoff source identity check; not a gameplay test."
+}

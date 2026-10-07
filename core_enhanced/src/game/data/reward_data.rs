@@ -21,8 +21,9 @@ pub enum RewardGrantKind {
     Consumable,
     SkillFragment,
     FragmentDust,
-    ResearchProgress,
     Narrative,
+    Relic,
+    RelicCorruptionCatalyst,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -55,9 +56,11 @@ impl RewardGrantKind {
                 RewardEffect::GrantConsumable { .. } => kinds.push(Self::Consumable),
                 RewardEffect::GrantSkillFragment { .. } => kinds.push(Self::SkillFragment),
                 RewardEffect::GrantFragmentDust { .. } => kinds.push(Self::FragmentDust),
-                RewardEffect::GrantSkillFragmentResearch { .. } => {
-                    kinds.push(Self::ResearchProgress)
+                RewardEffect::GrantRelic { .. } => kinds.push(Self::Relic),
+                RewardEffect::GrantRelicCorruptionCatalyst { .. } => {
+                    kinds.push(Self::RelicCorruptionCatalyst)
                 }
+                RewardEffect::GrantEquipmentDust { .. } => kinds.push(Self::Equipment),
             }
         }
         normalized_grant_kinds(kinds)
@@ -104,6 +107,8 @@ pub struct EquipmentRewardPoolFilter {
     pub rarity_max: Option<RiskLevel>,
     pub equipment_type_in: Vec<EquipmentType>,
     pub exclude_bound: bool,
+    #[serde(default)]
+    pub exclude_equipment_ids: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -145,6 +150,13 @@ impl EquipmentRewardPoolFilter {
         if self.exclude_bound && equipment.bound {
             return false;
         }
+        if self
+            .exclude_equipment_ids
+            .iter()
+            .any(|id| id == &equipment.id)
+        {
+            return false;
+        }
         if let Some(min) = self.rarity_min {
             if risk_rank(equipment.rarity) < risk_rank(min) {
                 return false;
@@ -175,6 +187,21 @@ fn risk_rank(risk: RiskLevel) -> u8 {
 }
 
 impl RewardDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(
+        rewards: Vec<RewardMetadata>,
+        pools: Vec<RewardPoolMetadata>,
+        equipment_pools: Vec<EquipmentRewardPoolMetadata>,
+    ) -> Self {
+        Self {
+            rewards,
+            pools,
+            equipment_pools,
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
+        }
+    }
+
     pub fn new(rewards: Vec<RewardMetadata>) -> Self {
         Self::new_with_pools(rewards, vec![])
     }
@@ -285,26 +312,6 @@ mod tests {
         assert_eq!(
             reward.grant_kinds(),
             vec![RewardGrantKind::Currency, RewardGrantKind::SkillFragment]
-        );
-    }
-
-    #[test]
-    fn skill_fragment_research_effect_infers_research_progress_tag() {
-        let reward = RewardMetadata {
-            id: "fragment_research_reward".to_string(),
-            uuid: Uuid::from_u128(3),
-            name: "Fragment Research".to_string(),
-            description: "Fragment research reward".to_string(),
-            icon: "icons/research.png".to_string(),
-            effects: vec![RewardEffect::GrantSkillFragmentResearch {
-                fragment_id: SkillFragmentId::from("fragment_test"),
-                amount: 3,
-            }],
-        };
-
-        assert_eq!(
-            reward.grant_kinds(),
-            vec![RewardGrantKind::ResearchProgress]
         );
     }
 

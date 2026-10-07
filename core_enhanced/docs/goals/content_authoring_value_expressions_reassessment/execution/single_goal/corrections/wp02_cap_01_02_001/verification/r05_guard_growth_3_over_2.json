@@ -1,0 +1,1127 @@
+{
+  "schema_version": 1,
+  "workload_version": "crar-final-performance/1",
+  "generated_at_unix_ms": 1790396310063,
+  "tool_source_sha256": "9ab90be6e9049ee443075b8dbb7c202c2961e9ebe506166893870f94a4165ae3",
+  "workload_input_sha256": "6e164237a488ad196e60e3b01d710177a325fe0a81105eb97f9f1b0b0e6967aa",
+  "allocation_observer_enabled": true,
+  "fixture_conversion_elapsed_ns": [
+    87643218,
+    79352099,
+    79460819,
+    79358977,
+    79551719
+  ],
+  "kernel_input": "one validated generation shared across all cores; raw fixture conversion measured separately",
+  "latency_gate_applicable": false,
+  "allocation_gate_applicable": true,
+  "baseline": {
+    "receipt_path": "evidence/P01_PERFORMANCE_BASELINE.json",
+    "receipt_sha256": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848",
+    "schema_version": 2,
+    "workload_version": "crar-preservation-baseline/2",
+    "tool_source_sha256": "64debfd6546afb617636caf520fcb9e8ee49acc1ee2377306cf8a19afbd8c631",
+    "workload_input_sha256": "8f35e4f7fe4852c182a9bc552e5013a2dbf7e89bafde9cb31307548f467236e3"
+  },
+  "environment": {
+    "os": "linux",
+    "arch": "x86_64",
+    "rust_profile": "release",
+    "logical_cpus": 32,
+    "affinity_policy": "linux coordinator=cpu30; lanes=cpu0,2,4,6,8,10,12,14"
+  },
+  "event_heavy": {
+    "repeatable": true,
+    "latency_raw_samples": [
+      {
+        "sample": 1,
+        "elapsed_ns": 12321824,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 2,
+        "elapsed_ns": 12276251,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 3,
+        "elapsed_ns": 12325198,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 4,
+        "elapsed_ns": 12238210,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 5,
+        "elapsed_ns": 12233737,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 6,
+        "elapsed_ns": 12267667,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 7,
+        "elapsed_ns": 12207802,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 8,
+        "elapsed_ns": 12421759,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 9,
+        "elapsed_ns": 12241149,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 10,
+        "elapsed_ns": 12387738,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 11,
+        "elapsed_ns": 12255562,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 12,
+        "elapsed_ns": 12238586,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 13,
+        "elapsed_ns": 12176223,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 14,
+        "elapsed_ns": 12303017,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 15,
+        "elapsed_ns": 12292358,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 16,
+        "elapsed_ns": 12255219,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 17,
+        "elapsed_ns": 12290108,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 18,
+        "elapsed_ns": 12235951,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 19,
+        "elapsed_ns": 12277024,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 20,
+        "elapsed_ns": 12283856,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 21,
+        "elapsed_ns": 12262624,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      }
+    ],
+    "allocation_raw_samples": [
+      {
+        "sample": 1,
+        "elapsed_ns": 12534214,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 1760,
+          "peak_live_bytes": 256934,
+          "peak_delta_bytes": 255174,
+          "end_live_bytes": 256934,
+          "retained_delta_bytes": 255174,
+          "allocation_count": 41442,
+          "deallocation_count": 40993,
+          "reallocation_count": 1944
+        }
+      },
+      {
+        "sample": 2,
+        "elapsed_ns": 12396561,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 1824,
+          "peak_live_bytes": 256998,
+          "peak_delta_bytes": 255174,
+          "end_live_bytes": 256998,
+          "retained_delta_bytes": 255174,
+          "allocation_count": 41442,
+          "deallocation_count": 40993,
+          "reallocation_count": 1944
+        }
+      },
+      {
+        "sample": 3,
+        "elapsed_ns": 12437959,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 1888,
+          "peak_live_bytes": 257062,
+          "peak_delta_bytes": 255174,
+          "end_live_bytes": 257062,
+          "retained_delta_bytes": 255174,
+          "allocation_count": 41442,
+          "deallocation_count": 40993,
+          "reallocation_count": 1944
+        }
+      },
+      {
+        "sample": 4,
+        "elapsed_ns": 12458685,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 1952,
+          "peak_live_bytes": 257126,
+          "peak_delta_bytes": 255174,
+          "end_live_bytes": 257126,
+          "retained_delta_bytes": 255174,
+          "allocation_count": 41442,
+          "deallocation_count": 40993,
+          "reallocation_count": 1944
+        }
+      },
+      {
+        "sample": 5,
+        "elapsed_ns": 12404326,
+        "event_count": 186,
+        "serialized_bytes": 65720,
+        "event_log_sha256": "2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+        "ability_steps": 8,
+        "projectile_launches": 4,
+        "projectile_impacts": 4,
+        "effect_events": 24,
+        "heap_allocation": {
+          "baseline_live_bytes": 2016,
+          "peak_live_bytes": 257190,
+          "peak_delta_bytes": 255174,
+          "end_live_bytes": 257190,
+          "retained_delta_bytes": 255174,
+          "allocation_count": 41442,
+          "deallocation_count": 40993,
+          "reallocation_count": 1944
+        }
+      }
+    ],
+    "nearest_rank_p95_ns": 12387738,
+    "absolute_cap_ns": 25000000,
+    "absolute_cap_pass": true,
+    "one_sided_exact_regression_p": 1.0,
+    "statistically_supported_regression": false,
+    "deterministic_baseline_parity": true,
+    "allocation_retained_peak_guard_pass": true
+  },
+  "concurrent_sessions": {
+    "repeatable": true,
+    "latency_raw_samples": [
+      {
+        "sample": 1,
+        "elapsed_ns": 6513565,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 2,
+        "elapsed_ns": 6378577,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 3,
+        "elapsed_ns": 6379222,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 4,
+        "elapsed_ns": 6401294,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 5,
+        "elapsed_ns": 6465971,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 6,
+        "elapsed_ns": 6146751,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 7,
+        "elapsed_ns": 8161664,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 8,
+        "elapsed_ns": 6533139,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 9,
+        "elapsed_ns": 6351267,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 10,
+        "elapsed_ns": 6346472,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 11,
+        "elapsed_ns": 6337068,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 12,
+        "elapsed_ns": 6339641,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 13,
+        "elapsed_ns": 6545678,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 14,
+        "elapsed_ns": 7811772,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 15,
+        "elapsed_ns": 6639846,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 16,
+        "elapsed_ns": 6695474,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 17,
+        "elapsed_ns": 6321874,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 18,
+        "elapsed_ns": 6602418,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 19,
+        "elapsed_ns": 6627394,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 20,
+        "elapsed_ns": 6443835,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      },
+      {
+        "sample": 21,
+        "elapsed_ns": 6596811,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 0,
+          "peak_live_bytes": 0,
+          "peak_delta_bytes": 0,
+          "end_live_bytes": 0,
+          "retained_delta_bytes": 0,
+          "allocation_count": 0,
+          "deallocation_count": 0,
+          "reallocation_count": 0
+        }
+      }
+    ],
+    "allocation_raw_samples": [
+      {
+        "sample": 1,
+        "elapsed_ns": 22756302,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 2080,
+          "peak_live_bytes": 8979720,
+          "peak_delta_bytes": 8977640,
+          "end_live_bytes": 4199008,
+          "retained_delta_bytes": 4196928,
+          "allocation_count": 364268,
+          "deallocation_count": 364202,
+          "reallocation_count": 6660
+        }
+      },
+      {
+        "sample": 2,
+        "elapsed_ns": 23105978,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 2144,
+          "peak_live_bytes": 8958117,
+          "peak_delta_bytes": 8955973,
+          "end_live_bytes": 4199072,
+          "retained_delta_bytes": 4196928,
+          "allocation_count": 364268,
+          "deallocation_count": 364202,
+          "reallocation_count": 6660
+        }
+      },
+      {
+        "sample": 3,
+        "elapsed_ns": 23205229,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 2208,
+          "peak_live_bytes": 8988750,
+          "peak_delta_bytes": 8986542,
+          "end_live_bytes": 4199136,
+          "retained_delta_bytes": 4196928,
+          "allocation_count": 364268,
+          "deallocation_count": 364202,
+          "reallocation_count": 6660
+        }
+      },
+      {
+        "sample": 4,
+        "elapsed_ns": 23793831,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 2272,
+          "peak_live_bytes": 8993153,
+          "peak_delta_bytes": 8990881,
+          "end_live_bytes": 4199200,
+          "retained_delta_bytes": 4196928,
+          "allocation_count": 364268,
+          "deallocation_count": 364202,
+          "reallocation_count": 6660
+        }
+      },
+      {
+        "sample": 5,
+        "elapsed_ns": 23066498,
+        "session_count": 64,
+        "lane_count": 8,
+        "step_count_per_session": 100,
+        "event_count": 11840,
+        "serialized_bytes": 3881088,
+        "combined_event_log_sha256": "68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9",
+        "heap_allocation": {
+          "baseline_live_bytes": 2336,
+          "peak_live_bytes": 9009529,
+          "peak_delta_bytes": 9007193,
+          "end_live_bytes": 4199264,
+          "retained_delta_bytes": 4196928,
+          "allocation_count": 364268,
+          "deallocation_count": 364202,
+          "reallocation_count": 6660
+        }
+      }
+    ],
+    "nearest_rank_p95_ns": 7811772,
+    "absolute_cap_ns": 10000000,
+    "absolute_cap_pass": true,
+    "one_sided_exact_regression_p": 1.0,
+    "statistically_supported_regression": false,
+    "deterministic_baseline_parity": true,
+    "allocation_retained_peak_guard_pass": true
+  }
+}

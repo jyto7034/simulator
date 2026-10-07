@@ -12,7 +12,6 @@ pub enum NaturalEliteOutcome {
     #[default]
     Unresolved,
     Victory,
-    Failed,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -23,7 +22,7 @@ pub struct MonolithProgress {
     pub purchased: bool,
     pub uses_remaining: u8,
     pub active_node_id: Option<MapNodeId>,
-    pub unique_fragment_granted: bool,
+    pub remanifestation_failed: bool,
     pub residual_created: bool,
 }
 
@@ -35,7 +34,7 @@ impl Default for MonolithProgress {
             purchased: false,
             uses_remaining: 0,
             active_node_id: None,
-            unique_fragment_granted: false,
+            remanifestation_failed: false,
             residual_created: false,
         }
     }
@@ -49,11 +48,12 @@ impl MonolithProgress {
     pub fn is_offer_eligible(&self) -> bool {
         self.natural_outcome == NaturalEliteOutcome::Victory
             && !self.purchased
+            && !self.remanifestation_failed
             && self.victories < MONOLITH_FINAL_STAGE
     }
 
     pub fn next_stage(&self) -> Option<u8> {
-        self.purchased
+        (self.purchased && !self.remanifestation_failed)
             .then_some(self.victories.saturating_add(1))
             .filter(|stage| (2..=MONOLITH_FINAL_STAGE).contains(stage))
     }
@@ -101,6 +101,61 @@ pub struct MonolithRunState {
     pub corrupted_monolith_acquired: bool,
 }
 
+impl crate::authoring::clone_shape::CloneShape for MonolithRunState {
+    fn visit_clone_shape(
+        &self,
+        meter: &mut crate::authoring::control::CloneMeter,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        use crate::authoring::control;
+        let Self {
+            progress_by_abnormality,
+            remanifestation_nodes,
+            residuals,
+            next_residual_sequence,
+            exchange_state,
+            exchange_shop_guarantee_issued,
+            next_floor_shop_guarantee_pending,
+            corrupted_monolith_acquired,
+        } = self;
+        meter.scan_storage(Some(1))?;
+        progress_by_abnormality.visit_clone_shape(meter)?;
+        // The candidate-owned lifetime insertion/import credit survives native
+        // copies, removals, drains and inner rollback. Each independent map
+        // contributes the full conservative bound before its bucket scan.
+        meter
+            .scan_storage(control::monolith_clone_bucket_bound().and_then(|n| n.checked_add(1)))?;
+        for (key, value) in remanifestation_nodes {
+            key.visit_clone_shape(meter)?;
+            value.visit_clone_shape(meter)?;
+        }
+        residuals.visit_clone_shape(meter)?;
+        next_residual_sequence.visit_clone_shape(meter)?;
+        exchange_state.visit_clone_shape(meter)?;
+        exchange_shop_guarantee_issued.visit_clone_shape(meter)?;
+        next_floor_shop_guarantee_pending.visit_clone_shape(meter)?;
+        corrupted_monolith_acquired.visit_clone_shape(meter)
+    }
+}
+crate::authoring::clone_shape::copy_shape!(NaturalEliteOutcome, MonolithExchangeState);
+crate::authoring::clone_shape::struct_shape!(MonolithProgress {
+    natural_outcome,
+    victories,
+    purchased,
+    uses_remaining,
+    active_node_id,
+    remanifestation_failed,
+    residual_created
+});
+crate::authoring::clone_shape::struct_shape!(MonolithRemanifestationNode {
+    abnormality_id,
+    encounter_id,
+    stage
+});
+crate::authoring::clone_shape::struct_shape!(MonolithResidual {
+    sequence,
+    source_abnormality_id
+});
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MonolithStateError {
     InvalidAbnormality,
@@ -116,7 +171,6 @@ pub enum MonolithStateError {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MonolithVictoryResolution {
     pub stage: u8,
-    pub grant_unique_fragment: bool,
     pub residual_created: bool,
 }
 
@@ -139,18 +193,6 @@ impl MonolithRunState {
         }
         progress.natural_outcome = NaturalEliteOutcome::Victory;
         progress.victories = 1;
-        Ok(())
-    }
-
-    pub fn record_natural_failure(
-        &mut self,
-        abnormality_id: &str,
-    ) -> Result<(), MonolithStateError> {
-        let progress = self.progress_mut(abnormality_id)?;
-        if progress.natural_outcome != NaturalEliteOutcome::Unresolved {
-            return Err(MonolithStateError::NaturalEliteAlreadyResolved);
-        }
-        progress.natural_outcome = NaturalEliteOutcome::Failed;
         Ok(())
     }
 
@@ -200,6 +242,7 @@ impl MonolithRunState {
             encounter_id: encounter_id.to_string(),
             stage,
         };
+        crate::authoring::control::monolith_inserted();
         self.remanifestation_nodes.insert(node_id, node.clone());
         Ok(node)
     }
@@ -231,12 +274,6 @@ impl MonolithRunState {
         progress.active_node_id = None;
         progress.victories = node.stage;
 
-        let grant_unique_fragment =
-            node.stage == MONOLITH_FINAL_STAGE && !progress.unique_fragment_granted;
-        if grant_unique_fragment {
-            progress.unique_fragment_granted = true;
-        }
-
         let residual_created = node.stage == MONOLITH_FINAL_STAGE
             && progress.uses_remaining == 1
             && !progress.residual_created;
@@ -262,7 +299,6 @@ impl MonolithRunState {
 
         Ok(MonolithVictoryResolution {
             stage: node.stage,
-            grant_unique_fragment,
             residual_created,
         })
     }
@@ -289,6 +325,8 @@ impl MonolithRunState {
             .get_mut(&node.abnormality_id)
             .ok_or(MonolithStateError::InvalidAbnormality)?;
         progress.active_node_id = None;
+        progress.uses_remaining = 0;
+        progress.remanifestation_failed = true;
         Ok(())
     }
 
@@ -324,17 +362,20 @@ impl MonolithRunState {
                 || progress.uses_remaining > initial_uses
                 || (progress.natural_outcome == NaturalEliteOutcome::Unresolved
                     && (progress.victories != 0 || progress.purchased))
-                || (progress.natural_outcome == NaturalEliteOutcome::Failed
-                    && (progress.victories != 0 || progress.purchased))
                 || (progress.natural_outcome == NaturalEliteOutcome::Victory
                     && progress.victories == 0)
                 || (progress.purchased && progress.natural_outcome != NaturalEliteOutcome::Victory)
                 || (progress.victories == MONOLITH_FINAL_STAGE
                     && (progress.uses_remaining != 0 || progress.active_node_id.is_some()))
-                || (progress.unique_fragment_granted && progress.victories != MONOLITH_FINAL_STAGE)
-                || (progress.residual_created
-                    && (!progress.unique_fragment_granted
-                        || progress.victories != MONOLITH_FINAL_STAGE))
+                || (progress.remanifestation_failed
+                    && (!progress.purchased
+                        || progress.natural_outcome != NaturalEliteOutcome::Victory
+                        || progress.victories == 0
+                        || progress.victories >= MONOLITH_FINAL_STAGE
+                        || progress.uses_remaining != 0
+                        || progress.active_node_id.is_some()
+                        || progress.residual_created))
+                || (progress.residual_created && progress.victories != MONOLITH_FINAL_STAGE)
             {
                 return Err(format!(
                     "monolith progress for '{abnormality_id}' violates stage/use/outcome invariants"
@@ -470,17 +511,35 @@ mod tests {
     }
 
     #[test]
-    fn natural_resolution_hard_excludes_and_only_victory_unlocks_purchase() {
+    fn only_natural_victory_excludes_unmastered_pool_and_unlocks_purchase() {
         let mut state = MonolithRunState::default();
-        state.record_natural_failure("failed").unwrap();
         state.record_natural_victory("won").unwrap();
 
-        assert!(state.progress("failed").unwrap().is_naturally_excluded());
-        assert!(!state.progress("failed").unwrap().is_offer_eligible());
         assert!(state.progress("won").unwrap().is_offer_eligible());
         assert_eq!(
             state.record_natural_victory("won"),
             Err(MonolithStateError::NaturalEliteAlreadyResolved)
+        );
+    }
+
+    #[test]
+    fn exhausted_remanifestation_failure_is_run_local_permanent() {
+        let mut state = MonolithRunState::default();
+        state.record_natural_victory("a").unwrap();
+        state.purchase("a", 3).unwrap();
+        state
+            .begin_remanifestation(node(1), "a", "elite_a")
+            .unwrap();
+
+        state.resolve_remanifestation_failure(node(1)).unwrap();
+
+        let progress = state.progress("a").unwrap();
+        assert!(progress.remanifestation_failed);
+        assert_eq!(progress.uses_remaining, 0);
+        assert!(!progress.is_usable());
+        assert_eq!(
+            state.begin_remanifestation(node(2), "a", "elite_a"),
+            Err(MonolithStateError::NotUsable)
         );
     }
 
@@ -520,7 +579,6 @@ mod tests {
             let resolution = state
                 .resolve_remanifestation_victory(node(index * 10 + 2), 4)
                 .unwrap();
-            assert!(resolution.grant_unique_fragment);
             assert!(resolution.residual_created);
         }
 

@@ -9,6 +9,23 @@ use crate::game::resources::InventoryItemDto;
 
 use super::*;
 
+fn serialized_equipment_ledgers(core: &GameCore) -> (serde_json::Value, serde_json::Value) {
+    (
+        serde_json::to_value(&core.state.roster).expect("roster should serialize"),
+        serde_json::to_value(&core.state.inventory).expect("inventory should serialize"),
+    )
+}
+
+fn assert_equipment_loadout_graph_valid(core: &GameCore) {
+    assert!(
+        core.state
+            .inventory
+            .validate_checkpoint_state(&core.state.roster)
+            .is_ok(),
+        "equipment reverse bindings and employee slots must remain a valid graph"
+    );
+}
+
 #[test]
 fn use_consumable_item_decrements_definition_stack_and_exposes_active_modifier_snapshot() {
     let consumable = consumable_meta(
@@ -90,7 +107,7 @@ fn use_consumable_item_decrements_definition_stack_and_exposes_active_modifier_s
 
     let snapshot = core.get_run_snapshot_json().unwrap();
     assert_eq!(snapshot["inventory"]["reserved_slot_count"], 50);
-    assert_eq!(snapshot["inventory"]["occupied_slot_count"], 4);
+    assert_eq!(snapshot["inventory"]["occupied_slot_count"], 7);
     assert_eq!(snapshot["inventory"]["consumables"][0]["quantity"], 1);
     assert_eq!(
         snapshot["inventory"]["consumables"][0]["uuid"],
@@ -439,6 +456,7 @@ fn equip_item_targets_employee_loadout_after_roster_initialization() {
         .first()
         .copied()
         .expect("starter employee");
+    let displaced_starter_uuid = force_unequip_employee_weapon(&mut core, employee_uuid);
 
     {
         let inventory = core.inventory_mut().unwrap();
@@ -458,7 +476,23 @@ fn equip_item_targets_employee_loadout_after_roster_initialization() {
     let BehaviorResult::EquipItem { result } = result else {
         panic!("expected equip item result");
     };
+    assert_eq!(result.requested_item_uuid, weapon_owned_uuid);
     assert_eq!(result.target_unit, employee_uuid);
+    assert!(matches!(
+        result.outcome,
+        EquipItemOutcomeDto::Equipped { item_uuid } if item_uuid == weapon_owned_uuid
+    ));
+    assert_eq!(
+        result
+            .inventory_diff
+            .updated
+            .iter()
+            .map(InventoryItemDto::uuid)
+            .collect::<Vec<_>>(),
+        vec![weapon_owned_uuid]
+    );
+    assert!(result.inventory_diff.added.is_empty());
+    assert!(result.inventory_diff.removed.is_empty());
     assert!(result
         .equipped_items
         .iter()
@@ -475,6 +509,15 @@ fn equip_item_targets_employee_loadout_after_roster_initialization() {
     let inventory = core.inventory().unwrap();
     let equipped_item = inventory.equipments.get_item(&weapon_owned_uuid).unwrap();
     assert_eq!(equipped_item.equipped_to, Some(employee_uuid));
+    assert_eq!(
+        inventory
+            .equipments
+            .get_item(&displaced_starter_uuid)
+            .unwrap()
+            .equipped_to,
+        None
+    );
+    assert_equipment_loadout_graph_valid(&core);
 
     let snapshot = core.get_employee_roster_snapshot_json().unwrap();
     let employees = snapshot["employees"].as_array().unwrap();
@@ -529,19 +572,41 @@ fn equipped_weapon_authors_block_capacity_for_every_current_archetype() {
     start_new_game_with_default_starters(&mut core, player_id);
 
     for employee_uuid in core.roster().unwrap().combat_eligible_employee_ids() {
-        let profile =
+        let weapon = core
+            .roster()
+            .unwrap()
+            .get(&employee_uuid)
+            .unwrap()
+            .loadout
+            .item_slot
+            .iter()
+            .find(|equipped| equipped.equipment_type == EquipmentType::Weapon)
+            .copied()
+            .expect("starter fixture must be armed");
+        core.roster_mut()
+            .unwrap()
+            .get_mut(&employee_uuid)
+            .unwrap()
+            .loadout
+            .item_slot
+            .remove_by_instance(weapon.instance_uuid)
+            .unwrap();
+        core.inventory_mut()
+            .unwrap()
+            .equipments
+            .get_item_mut(&weapon.instance_uuid)
+            .unwrap()
+            .equipped_to = None;
+        assert!(matches!(
             crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee(
                 core.roster().unwrap(),
                 core.inventory().unwrap(),
                 &core.state.skill_fragments,
                 &core.game_data,
                 employee_uuid,
-            )
-            .unwrap();
-        assert_eq!(
-            profile.block_capacity, 0,
-            "unarmed employees keep zero block capacity regardless of employee profile and armor"
-        );
+            ),
+            Err(GameError::WeaponRequired)
+        ));
     }
 
     let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
@@ -626,6 +691,7 @@ fn unequip_item_allows_unbound_equipment_in_safezone() {
         .first()
         .copied()
         .expect("starter employee");
+    force_unequip_employee_weapon(&mut core, employee_uuid);
     {
         let mut owned = OwnedEquipment::new(weapon_owned_uuid, Arc::new(weapon.clone()));
         owned.equipped_to = Some(employee_uuid);
@@ -663,6 +729,18 @@ fn unequip_item_allows_unbound_equipment_in_safezone() {
         panic!("expected unequip item result");
     };
     assert_eq!(result.item_uuid, weapon_owned_uuid);
+    assert_eq!(result.target_unit, employee_uuid);
+    assert_eq!(
+        result
+            .inventory_diff
+            .updated
+            .iter()
+            .map(InventoryItemDto::uuid)
+            .collect::<Vec<_>>(),
+        vec![weapon_owned_uuid]
+    );
+    assert!(result.inventory_diff.added.is_empty());
+    assert!(result.inventory_diff.removed.is_empty());
     assert_eq!(result.equipped_items.len(), 1);
     assert_eq!(
         result.equipped_items[0].base_uuid,
@@ -675,6 +753,7 @@ fn unequip_item_allows_unbound_equipment_in_safezone() {
     let equipped = employee.loadout.item_slot.iter().collect::<Vec<_>>();
     assert_eq!(equipped.len(), 1);
     assert_eq!(equipped[0].base_uuid, starter_equipment_meta().uuid);
+    assert_equipment_loadout_graph_valid(&core);
 }
 
 #[test]
@@ -695,6 +774,7 @@ fn unequip_item_rejects_bound_equipment_and_snapshot_exposes_reason() {
         .first()
         .copied()
         .expect("starter employee");
+    force_unequip_employee_weapon(&mut core, employee_uuid);
     {
         let mut owned = OwnedEquipment::new(weapon_owned_uuid, Arc::new(weapon.clone()));
         owned.equipped_to = Some(employee_uuid);
@@ -718,6 +798,8 @@ fn unequip_item_rejects_bound_equipment_and_snapshot_exposes_reason() {
             .unwrap();
     }
 
+    let before = serialized_equipment_ledgers(&core);
+
     let err = core
         .execute(
             player_id,
@@ -728,6 +810,8 @@ fn unequip_item_rejects_bound_equipment_and_snapshot_exposes_reason() {
         )
         .unwrap_err();
     assert!(matches!(err, GameError::InvalidAction));
+    assert_eq!(serialized_equipment_ledgers(&core), before);
+    assert_equipment_loadout_graph_valid(&core);
 
     let snapshot = core.get_run_snapshot_json().unwrap();
     assert_eq!(
@@ -929,7 +1013,15 @@ fn equip_item_replaces_occupied_slot_without_consuming_either_item() {
     assert_eq!(result.target_unit, employee_uuid);
     assert!(result.inventory_diff.removed.is_empty());
     assert!(result.inventory_diff.added.is_empty());
-    assert_eq!(result.inventory_diff.updated.len(), 2);
+    assert_eq!(
+        result
+            .inventory_diff
+            .updated
+            .iter()
+            .map(InventoryItemDto::uuid)
+            .collect::<Vec<_>>(),
+        vec![replacement_owned_uuid, original_owned_uuid]
+    );
     let serialized = serde_json::to_value(&result).expect("equip result should serialize");
     assert_eq!(
         serialized["outcome"]["Equipped"]["item_uuid"],
@@ -974,6 +1066,7 @@ fn equip_item_replaces_occupied_slot_without_consuming_either_item() {
     assert!(!equipped
         .iter()
         .any(|item| item.instance_uuid == original_owned_uuid));
+    assert_equipment_loadout_graph_valid(&core);
 }
 
 #[test]
@@ -1149,13 +1242,28 @@ fn dismantle_equipment_automatically_unequips_equipped_item() {
     assert!(preview.operations.dismantle.can_execute);
     assert!(preview.operations.dismantle.will_unequip);
 
-    core.execute(
-        player_id,
-        PlayerBehavior::DismantleEquipment {
-            item_uuid: owned_uuid,
-        },
-    )
-    .unwrap();
+    let result = core
+        .execute(
+            player_id,
+            PlayerBehavior::DismantleEquipment {
+                item_uuid: owned_uuid,
+            },
+        )
+        .unwrap();
+
+    let BehaviorResult::EquipmentDismantled {
+        item_uuid,
+        equipment_id,
+        inventory_diff,
+    } = result
+    else {
+        panic!("expected equipment dismantle result");
+    };
+    assert_eq!(item_uuid, owned_uuid);
+    assert_eq!(equipment_id, equipment.id);
+    assert_eq!(inventory_diff.removed, vec![owned_uuid]);
+    assert!(inventory_diff.updated.is_empty());
+    assert!(inventory_diff.added.is_empty());
 
     assert!(core
         .inventory()
@@ -1172,6 +1280,7 @@ fn dismantle_equipment_automatically_unequips_equipped_item() {
             .amount(&material.id),
         1
     );
+    assert_equipment_loadout_graph_valid(&core);
 }
 
 #[test]
@@ -1292,6 +1401,159 @@ fn enhance_equipment_is_maintenance_only_and_updates_owned_instance() {
     assert_eq!(owned.enhancement_level, 1);
 }
 
+fn duplicate_enhancement_cost_fixture(material_balance: u32) -> (GameCore, Uuid, Uuid, String) {
+    let unit_meta = abnormality_meta(1);
+    let equipment = equipment_meta(60, "duplicate_enhance_weapon", EquipmentType::Weapon);
+    let material = EquipmentMaterialMetadata {
+        id: "duplicate_enhance_dust".to_string(),
+        uuid: Uuid::from_u128(61),
+        name: "Duplicate Enhance Dust".to_string(),
+        description: "Aggregate enhancement fixture".to_string(),
+        material_type: EquipmentMaterialType::Fragment,
+        rarity: crate::game::enums::RiskLevel::ZAYIN,
+        equipment_type: Some(EquipmentType::Weapon),
+    };
+    let recipe = EquipmentEnhancementRecipeMetadata {
+        equipment_id: equipment.id.clone(),
+        max_level: 2,
+        costs_per_level: vec![
+            EquipmentMaterialCost {
+                material_id: material.id.clone(),
+                amount: 2,
+            },
+            EquipmentMaterialCost {
+                material_id: material.id.clone(),
+                amount: 2,
+            },
+        ],
+        modifiers_per_level: vec![StatModifier {
+            stat: StatId::Attack,
+            kind: StatModifierKind::Flat,
+            value: 3,
+        }],
+    };
+    let game_data = game_data_with_equipment_enhancement(
+        Arc::clone(&unit_meta),
+        vec![equipment.clone()],
+        vec![material.clone()],
+        vec![recipe],
+    );
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let owned_uuid = Uuid::from_u128(601);
+    {
+        let inventory = core.inventory_mut().unwrap();
+        inventory
+            .equipments
+            .add_item(OwnedEquipment::new(owned_uuid, Arc::new(equipment)))
+            .unwrap();
+        inventory
+            .equipment_materials
+            .add(&material.id, material_balance)
+            .unwrap();
+    }
+    let node_id = force_first_available_node(
+        &mut core,
+        MapNodeCategory::Maintenance,
+        "maintenance",
+        MapNodePayload::Maintenance,
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    (core, player_id, owned_uuid, material.id)
+}
+
+#[test]
+fn duplicate_material_rows_with_insufficient_aggregate_leave_enhancement_state_unchanged() {
+    let (mut core, player_id, owned_uuid, material_id) = duplicate_enhancement_cost_fixture(2);
+    let inventory_before = serde_json::to_value(core.inventory().unwrap()).unwrap();
+
+    let error = core
+        .execute(
+            player_id,
+            PlayerBehavior::EnhanceEquipment {
+                item_uuid: owned_uuid,
+            },
+        )
+        .expect_err("aggregate cost four must reject balance two");
+
+    assert_eq!(
+        serde_json::to_value(core.inventory().unwrap()).unwrap(),
+        inventory_before,
+        "a failed enhancement must not consume an earlier duplicate row"
+    );
+    assert!(matches!(
+        error,
+        GameError::ActionUnavailable {
+            action: ActionKind::EnhanceEquipment,
+            reason: ActionDisabledReasonCode::NoEligiblePayload,
+        }
+    ));
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipment_materials
+            .amount(&material_id),
+        2
+    );
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipments
+            .get_item(&owned_uuid)
+            .unwrap()
+            .enhancement_level,
+        0
+    );
+}
+
+#[test]
+fn duplicate_material_rows_with_exact_aggregate_consume_once_and_enhance_once() {
+    let (mut core, player_id, owned_uuid, material_id) = duplicate_enhancement_cost_fixture(4);
+
+    let result = core
+        .execute(
+            player_id,
+            PlayerBehavior::EnhanceEquipment {
+                item_uuid: owned_uuid,
+            },
+        )
+        .unwrap();
+    let BehaviorResult::EquipmentEnhanced {
+        enhancement_level,
+        inventory_diff,
+        ..
+    } = result
+    else {
+        panic!("expected one equipment enhancement result");
+    };
+
+    assert_eq!(enhancement_level, 1);
+    assert_eq!(inventory_diff.updated.len(), 1);
+    assert_eq!(inventory_diff.material_stacks.len(), 1);
+    assert_eq!(inventory_diff.material_stacks[0].material_id, material_id);
+    assert_eq!(inventory_diff.material_stacks[0].amount, 0);
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipments
+            .get_item(&owned_uuid)
+            .unwrap()
+            .enhancement_level,
+        1
+    );
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipment_materials
+            .amount(&material_id),
+        0
+    );
+}
+
 #[test]
 fn skill_fragment_actions_equip_and_unequip_employee_loadout() {
     let fragment = active_skill_fragment("test_active_fragment", 0xF00D, "test_active_skill");
@@ -1314,27 +1576,35 @@ fn skill_fragment_actions_equip_and_unequip_employee_loadout() {
         weapon,
         Uuid::from_u128(0xE001_0001),
     );
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     let equip_result = core
         .execute(
             player_id,
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
             },
         )
         .unwrap();
 
     let BehaviorResult::SkillFragmentLoadoutUpdated {
         employee_uuid: updated_employee,
-        equipped_fragment_ids,
+        active_copy_uuid,
     } = equip_result
     else {
         panic!("expected skill fragment loadout result");
     };
     assert_eq!(updated_employee, employee_uuid);
-    assert!(equipped_fragment_ids.iter().any(|id| id == &fragment.id));
+    assert_eq!(active_copy_uuid, Some(copy_uuid));
 
     let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
     let profile = employee
@@ -1350,18 +1620,17 @@ fn skill_fragment_actions_equip_and_unequip_employee_loadout() {
             player_id,
             PlayerBehavior::UnequipSkillFragment {
                 employee_uuid,
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
             },
         )
         .unwrap();
     let BehaviorResult::SkillFragmentLoadoutUpdated {
-        equipped_fragment_ids,
-        ..
+        active_copy_uuid, ..
     } = unequip_result
     else {
         panic!("expected skill fragment loadout result");
     };
-    assert!(!equipped_fragment_ids.iter().any(|id| id == &fragment.id));
+    assert_eq!(active_copy_uuid, None);
     let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
     let profile = employee
         .combat_profile_for_battle(
@@ -1384,12 +1653,20 @@ fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_
     let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     let weapon_instance_uuid = Uuid::from_u128(0xE0D0_0001);
     grant_and_equip_weapon(&mut core, employee_uuid, weapon, weapon_instance_uuid);
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid,
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -1401,18 +1678,38 @@ fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_
         employee.psychology.trust_score = 8;
     }
     let mut staged_inventory = core.state.inventory.clone();
+    let mut staged_fragments = core.state.skill_fragments.clone();
+    let expected_updated_ids = staged_roster
+        .get(&employee_uuid)
+        .unwrap()
+        .loadout
+        .item_slot
+        .iter()
+        .map(|equipped| equipped.instance_uuid)
+        .collect::<Vec<_>>();
 
     let diff = core
-        .recover_assets_for_new_deaths(&mut staged_roster, &mut staged_inventory)
+        .recover_assets_for_new_deaths(
+            &mut staged_roster,
+            &mut staged_inventory,
+            &mut staged_fragments,
+        )
         .unwrap();
 
     let dead = staged_roster.get(&employee_uuid).unwrap();
     assert!(dead.condition.is_dead());
     assert!(dead.loadout.item_slot.is_empty());
-    assert!(dead.skill_fragments.active_fragment_id().is_none());
+    assert!(dead.skill_fragments.active_copy_uuid().is_none());
     assert_eq!(dead.psychology.trust_score, 8);
     assert!(dead.psychology.memories.is_empty());
     assert_eq!(staged_roster.len(), core.state.roster.len());
+    assert_eq!(
+        diff.updated
+            .iter()
+            .map(InventoryItemDto::uuid)
+            .collect::<Vec<_>>(),
+        expected_updated_ids
+    );
     assert_eq!(
         staged_inventory
             .equipments
@@ -1426,13 +1723,16 @@ fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_
         InventoryItemDto::Equipment(equipment)
             if equipment.uuid == weapon_instance_uuid
     )));
+    assert!(staged_inventory
+        .validate_checkpoint_state(&staged_roster)
+        .is_ok());
 
     // Recovery is staged: until the enclosing result transaction commits, live state is untouched.
     let persistent = core.state.roster.get(&employee_uuid).unwrap();
     assert!(persistent.is_alive());
     assert_eq!(
-        persistent.skill_fragments.active_fragment_id(),
-        Some(&fragment.id)
+        persistent.skill_fragments.active_copy_uuid(),
+        Some(copy_uuid)
     );
     assert_eq!(
         core.state
@@ -1442,6 +1742,56 @@ fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_
             .unwrap()
             .equipped_to,
         Some(employee_uuid)
+    );
+}
+
+#[test]
+fn death_recovery_rejects_a_mismatched_reverse_binding_without_mutating_either_staged_ledger() {
+    let mut core = GameCore::new(empty_game_data(), 0xD3A7_0001);
+    let player_id = Uuid::from_u128(0xD3A7_0001);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let mismatched_item_uuid = core
+        .roster()
+        .unwrap()
+        .get(&employee_uuid)
+        .unwrap()
+        .loadout
+        .item_slot
+        .iter()
+        .next()
+        .unwrap()
+        .instance_uuid;
+
+    let mut staged_roster = core.state.roster.clone();
+    staged_roster
+        .get_mut(&employee_uuid)
+        .unwrap()
+        .condition
+        .physical_damage = MAX_PHYSICAL_DAMAGE;
+    let mut staged_inventory = core.state.inventory.clone();
+    let mut staged_fragments = core.state.skill_fragments.clone();
+    staged_inventory
+        .equipments
+        .get_item_mut(&mismatched_item_uuid)
+        .unwrap()
+        .equipped_to = None;
+    let roster_before = serde_json::to_value(&staged_roster).unwrap();
+    let inventory_before = serde_json::to_value(&staged_inventory).unwrap();
+
+    let error = core
+        .recover_assets_for_new_deaths(
+            &mut staged_roster,
+            &mut staged_inventory,
+            &mut staged_fragments,
+        )
+        .unwrap_err();
+
+    assert!(matches!(error, GameError::InvalidAction));
+    assert_eq!(serde_json::to_value(&staged_roster).unwrap(), roster_before);
+    assert_eq!(
+        serde_json::to_value(&staged_inventory).unwrap(),
+        inventory_before
     );
 }
 
@@ -1465,7 +1815,7 @@ fn skill_fragment_equip_rejects_unowned_fragment() {
             player_id,
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
-                fragment_id: fragment.id,
+                copy_uuid: Uuid::from_u128(0xFFFF),
             },
         )
         .unwrap_err();
@@ -1495,13 +1845,21 @@ fn skill_fragment_equip_requires_one_owned_copy_per_employee() {
         weapon,
         Uuid::from_u128(0xE020_0002),
     );
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid: employee_ids[0],
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -1511,18 +1869,26 @@ fn skill_fragment_equip_requires_one_owned_copy_per_employee() {
             player_id,
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid: employee_ids[1],
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
             },
         )
         .unwrap_err();
     assert!(matches!(err, GameError::InvalidAction));
 
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid: employee_ids[1],
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -1555,14 +1921,30 @@ fn global_exclusive_skill_fragment_rejects_second_employee_even_with_extra_copy(
         weapon,
         Uuid::from_u128(0xE021_0002),
     );
-    core.state.skill_fragments.add(&fragment).unwrap();
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let first_copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid: employee_ids[0],
-            fragment_id: fragment.id.clone(),
+            copy_uuid: first_copy_uuid,
         },
     )
     .unwrap();
@@ -1572,7 +1954,7 @@ fn global_exclusive_skill_fragment_rejects_second_employee_even_with_extra_copy(
             player_id,
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid: employee_ids[1],
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
             },
         )
         .unwrap_err();
@@ -1599,14 +1981,22 @@ fn skill_fragment_equip_rejects_incompatible_weapon_profile() {
         sword,
         Uuid::from_u128(0xE002_0001),
     );
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     let err = core
         .execute(
             player_id,
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
             },
         )
         .unwrap_err();
@@ -1633,7 +2023,7 @@ fn skill_fragment_equip_rejects_incompatible_weapon_profile() {
         .as_array()
         .unwrap()
         .iter()
-        .find(|entry| entry["id"] == json!(fragment.id))
+        .find(|entry| entry["copy_uuid"] == json!(copy_uuid))
         .unwrap();
     assert_eq!(compatibility["is_compatible"], false);
     assert_eq!(
@@ -1674,6 +2064,14 @@ fn equip_item_moves_equipped_item_between_employees_in_one_result() {
     core.handle_equip_item(displaced_uuid, target_employee)
         .unwrap();
 
+    let before_same_target = serialized_equipment_ledgers(&core);
+    let same_target_error = core
+        .handle_equip_item(moving_uuid, source_employee)
+        .unwrap_err();
+    assert!(matches!(same_target_error, GameError::InvalidAction));
+    assert_eq!(serialized_equipment_ledgers(&core), before_same_target);
+    assert_equipment_loadout_graph_valid(&core);
+
     let result = core
         .handle_equip_item(moving_uuid, target_employee)
         .unwrap();
@@ -1681,7 +2079,15 @@ fn equip_item_moves_equipped_item_between_employees_in_one_result() {
     let BehaviorResult::EquipItem { result } = result else {
         panic!("expected equip item result");
     };
-    assert_eq!(result.inventory_diff.updated.len(), 2);
+    assert_eq!(
+        result
+            .inventory_diff
+            .updated
+            .iter()
+            .map(InventoryItemDto::uuid)
+            .collect::<Vec<_>>(),
+        vec![moving_uuid, displaced_uuid]
+    );
     assert!(result.inventory_diff.added.is_empty());
     assert!(result.inventory_diff.removed.is_empty());
     assert_eq!(
@@ -1718,6 +2124,7 @@ fn equip_item_moves_equipped_item_between_employees_in_one_result() {
         .loadout
         .item_slot
         .contains_instance(moving_uuid));
+    assert_equipment_loadout_graph_valid(&core);
 }
 
 #[test]
@@ -1736,14 +2143,22 @@ fn skill_fragment_equip_accepts_matching_weapon_profile() {
     start_new_game_with_default_starters(&mut core, player_id);
     let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     grant_and_equip_weapon(&mut core, employee_uuid, gun, Uuid::from_u128(0xE003_0001));
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     let result = core
         .execute(
             player_id,
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
             },
         )
         .unwrap();
@@ -1772,12 +2187,20 @@ fn equipment_replacement_rejects_weapon_that_invalidates_active_fragment_atomica
     start_new_game_with_default_starters(&mut core, player_id);
     let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     grant_and_equip_weapon(&mut core, employee_uuid, gun, Uuid::from_u128(0xE008_0001));
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid,
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -1787,6 +2210,8 @@ fn equipment_replacement_rejects_weapon_that_invalidates_active_fragment_atomica
         .equipments
         .add_item(OwnedEquipment::new(sword_owned_uuid, Arc::new(sword)))
         .unwrap();
+
+    let before = serialized_equipment_ledgers(&core);
 
     let err = core
         .handle_equip_item(sword_owned_uuid, employee_uuid)
@@ -1802,6 +2227,8 @@ fn equipment_replacement_rejects_weapon_that_invalidates_active_fragment_atomica
                 SkillFragmentCompatibilityFailureCode::WeaponArchetypeMismatch
             ]
     ));
+    assert_eq!(serialized_equipment_ledgers(&core), before);
+    assert_equipment_loadout_graph_valid(&core);
     assert_eq!(
         core.inventory()
             .unwrap()
@@ -1823,26 +2250,35 @@ fn equipment_replacement_rejects_weapon_that_invalidates_active_fragment_atomica
 }
 
 #[test]
-fn skill_fragment_upgrade_consumes_fragment_dust_and_updates_progress() {
+fn skill_fragment_form_selection_requires_maintenance_and_preserves_dust() {
     let target = active_skill_fragment("upgrade_active_fragment", 0xF00F, "upgrade_skill");
     let game_data = game_data_with_skill_fragments(vec![target.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    core.state.skill_fragments.add(&target).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &target,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     let err = core
         .execute(
             player_id,
-            PlayerBehavior::UpgradeSkillFragment {
-                target_fragment_id: target.id.clone(),
+            PlayerBehavior::SelectSkillFragmentForm {
+                copy_uuid,
+                form_id: "base".into(),
             },
         )
         .unwrap_err();
     assert!(matches!(
         err,
         GameError::ActionUnavailable {
-            action: ActionKind::UpgradeSkillFragment,
+            action: ActionKind::SelectSkillFragmentForm,
             reason: ActionDisabledReasonCode::ContextIrrelevant,
         }
     ));
@@ -1862,45 +2298,53 @@ fn skill_fragment_upgrade_consumes_fragment_dust_and_updates_progress() {
     let result = core
         .execute(
             player_id,
-            PlayerBehavior::UpgradeSkillFragment {
-                target_fragment_id: target.id.clone(),
+            PlayerBehavior::SelectSkillFragmentForm {
+                copy_uuid,
+                form_id: "base".into(),
             },
         )
         .unwrap();
 
-    let BehaviorResult::SkillFragmentUpgraded {
-        target_fragment_id,
-        dust_spent,
-        remaining_dust,
-        progress,
-    } = result
-    else {
-        panic!("expected skill fragment upgrade result");
-    };
-    assert_eq!(target_fragment_id, target.id);
-    assert_eq!(dust_spent, 4);
-    assert_eq!(remaining_dust, 0);
-    assert_eq!(progress.upgrade_level, 1);
-    assert_eq!(progress.awakening_progress, 1);
+    assert!(matches!(
+        result,
+        BehaviorResult::SkillFragmentFormSelected { changed: false, .. }
+    ));
     assert_eq!(core.state.skill_fragments.count(&target.id), 1);
-    assert_eq!(core.state.skill_fragments.fragment_dust(), 0);
+    assert_eq!(core.state.skill_fragments.fragment_dust(), 4);
 }
 
 #[test]
-fn skill_fragment_dismantle_is_maintenance_only_and_grants_dust() {
+fn skill_fragment_dismantle_is_maintenance_only_and_grants_explicit_recipe() {
     let fragment = active_skill_fragment("dismantle_fragment", 0xF011, "dismantle_skill");
     let game_data = game_data_with_skill_fragments(vec![fragment.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    core.state.skill_fragments.add(&fragment).unwrap();
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let other_copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     let err = core
         .execute(
             player_id,
             PlayerBehavior::DismantleSkillFragment {
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
+                confirmed: true,
             },
         )
         .unwrap_err();
@@ -1927,26 +2371,25 @@ fn skill_fragment_dismantle_is_maintenance_only_and_grants_dust() {
         .execute(
             player_id,
             PlayerBehavior::DismantleSkillFragment {
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
+                confirmed: true,
             },
         )
         .unwrap();
 
     let BehaviorResult::SkillFragmentDismantled {
-        fragment_id,
-        remaining_count,
-        dust_gained,
-        total_dust,
+        definition_id,
+        enkephalin_gained,
+        ..
     } = result
     else {
-        panic!("expected skill fragment dismantle result");
+        panic!("expected dismantle");
     };
-    assert_eq!(fragment_id, fragment.id);
-    assert_eq!(remaining_count, 1);
-    assert_eq!(dust_gained, 2);
-    assert_eq!(total_dust, 2);
+    assert_eq!(definition_id, fragment.id);
+    assert_eq!(enkephalin_gained, 2);
     assert_eq!(core.state.skill_fragments.count(&fragment.id), 1);
-    assert_eq!(core.state.skill_fragments.fragment_dust(), 2);
+    assert!(core.state.skill_fragments.get(&other_copy_uuid).is_some());
+    assert_eq!(core.state.skill_fragments.fragment_dust(), 0);
 }
 
 #[test]
@@ -1965,13 +2408,29 @@ fn skill_fragment_dismantle_keeps_equipped_fragment_when_remaining_copy_allows_i
         weapon,
         Uuid::from_u128(0xE004_0001),
     );
-    core.state.skill_fragments.add(&fragment).unwrap();
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let bag_copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid,
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -1991,24 +2450,19 @@ fn skill_fragment_dismantle_keeps_equipped_fragment_when_remaining_copy_allows_i
         .execute(
             player_id,
             PlayerBehavior::DismantleSkillFragment {
-                fragment_id: fragment.id.clone(),
+                copy_uuid: bag_copy_uuid,
+                confirmed: false,
             },
         )
         .unwrap();
 
     assert!(matches!(
         result,
-        BehaviorResult::SkillFragmentDismantled {
-            remaining_count: 1,
-            ..
-        }
+        BehaviorResult::SkillFragmentDismantled { .. }
     ));
     let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
-    assert_eq!(
-        employee.skill_fragments.active_fragment_id(),
-        Some(&fragment.id)
-    );
-    assert_eq!(core.state.skill_fragments.fragment_dust(), 2);
+    assert_eq!(employee.skill_fragments.active_copy_uuid(), Some(copy_uuid));
+    assert_eq!(core.state.skill_fragments.fragment_dust(), 0);
 }
 
 #[test]
@@ -2018,7 +2472,15 @@ fn skill_fragment_dismantle_allows_last_copy() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
 
     let node_id = force_first_available_node(
         &mut core,
@@ -2035,17 +2497,15 @@ fn skill_fragment_dismantle_allows_last_copy() {
         .execute(
             player_id,
             PlayerBehavior::DismantleSkillFragment {
-                fragment_id: fragment.id.clone(),
+                copy_uuid,
+                confirmed: true,
             },
         )
         .unwrap();
 
     assert!(matches!(
         result,
-        BehaviorResult::SkillFragmentDismantled {
-            remaining_count: 0,
-            ..
-        }
+        BehaviorResult::SkillFragmentDismantled { .. }
     ));
     assert_eq!(core.state.skill_fragments.count(&fragment.id), 0);
 }

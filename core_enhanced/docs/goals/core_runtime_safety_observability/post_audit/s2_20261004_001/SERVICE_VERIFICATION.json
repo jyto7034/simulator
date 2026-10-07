@@ -1,0 +1,1528 @@
+{
+  "frames": [
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_rejections_total > 0\nStep: 1s",
+      "finite_samples": 3,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_rejections_total > 0\nStep: 1s",
+      "finite_samples": 3,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_active_battles\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: rate(core_runtime_commits_total[10s])\nStep: 1s",
+      "finite_samples": 3,
+      "positive_samples": 3
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 4,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 7,
+      "positive_samples": 7
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 7,
+      "positive_samples": 7
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 7,
+      "positive_samples": 7
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 7,
+      "positive_samples": 7
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_selected_usage{slot=\"0\",quantity=\"simulation_time_ms\",statistic=\"current\"} and on(slot) (core_runtime_selected_active == 1)\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 8
+    },
+    {
+      "source": "evidence/services/live006",
+      "expression": "Expr: core_runtime_selected_usage{slot=\"0\",quantity=\"accounted_extent_bytes\",statistic=\"current\"} and on(slot) (core_runtime_selected_active == 1)\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_rejections_total > 0\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_rejections_total > 0\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"active_actions\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"pending_events\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"accounted_extent_bytes\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_usage{quantity=\"projectiles\"}\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_active_battles\nStep: 1s",
+      "finite_samples": 34,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: rate(core_runtime_commits_total[10s])\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 33
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 9,
+      "positive_samples": 9
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))\nStep: 1s",
+      "finite_samples": 0,
+      "positive_samples": 0
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_selected_usage{slot=\"0\",quantity=\"simulation_time_ms\",statistic=\"current\"} and on(slot) (core_runtime_selected_active == 1)\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 30
+    },
+    {
+      "source": "evidence/services/render007",
+      "expression": "Expr: core_runtime_selected_usage{slot=\"0\",quantity=\"accounted_extent_bytes\",statistic=\"current\"} and on(slot) (core_runtime_selected_active == 1)\nStep: 1s",
+      "finite_samples": 33,
+      "positive_samples": 33
+    }
+  ],
+  "metric_sample_lines": 4197,
+  "reasons": {
+    "missing_battle_state_authority": 1.0,
+    "battle_runtime_work_limit": 1.0
+  },
+  "selection": [
+    1,
+    2,
+    1
+  ],
+  "termination_clears_active_selected": true,
+  "screenshots_reviewed": [
+    "render007/duration-distribution.png",
+    "render007/simulation-time.png"
+  ],
+  "scope": "Captured actual standard local services, not live current endpoint. Services stopped. live006 misleading duration filename is native panel12; actual wall-duration evidence is render007 panel11.",
+  "units_current_sum": 2,
+  "units_current_max": 1
+}

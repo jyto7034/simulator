@@ -1,14 +1,11 @@
-use game_core::game::{
-    behavior::{
-        EncounterCompendiumAbnormalitySnapshotDto, EncounterCompendiumCorrosionSnapshotDto,
-        EncounterCompendiumSnapshotDto,
-    },
-    data::GameDataBase,
+use game_core::game::behavior::{
+    EncounterCompendiumAbnormalitySnapshotDto, EncounterCompendiumCorrosionSnapshotDto,
+    EncounterCompendiumSnapshotDto,
 };
 use serde_json::json;
 
 fn main() {
-    let game_data = GameDataBase::load_live_embedded()
+    let game_data = game_core::game::data::ValidatedGameData::load_live_embedded()
         .expect("embedded live gameplay data must load for the compendium fixture");
     let abnormality = game_data
         .abnormality_data
@@ -28,7 +25,7 @@ fn main() {
     let snapshot = json!({
         "game_state_context": { "type": "viewing_map" },
         "action_capabilities": [],
-        "encounter_compendium_persistence": {
+        "player_profile_persistence": {
             "state": "clean",
             "dirty": false,
             "recovered_from_backup": false,
@@ -39,23 +36,20 @@ fn main() {
             abnormalities: vec![
                 EncounterCompendiumAbnormalitySnapshotDto {
                     abnormality_id: abnormality.id.clone(),
-                    discovered: true,
-                    defeated: true,
+                    registered: true,
                     name: Some(abnormality.name.clone()),
                     risk_level: Some(abnormality.risk_level),
                 },
                 EncounterCompendiumAbnormalitySnapshotDto {
                     abnormality_id: undiscovered_abnormality.id.clone(),
-                    discovered: false,
-                    defeated: false,
+                    registered: false,
                     name: None,
                     risk_level: None,
                 },
             ],
             corrosion_profiles: vec![EncounterCompendiumCorrosionSnapshotDto {
                 profile_id: corrosion_profile.id.clone(),
-                discovered: true,
-                defeated: false,
+                registered: true,
                 name: Some(corrosion_profile.name.clone()),
             }],
         },

@@ -1,0 +1,96 @@
+{
+  "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+  "fresh_receipts": [
+    "integrated_core_default009",
+    "integrated_core_fixtures009",
+    "integrated_core_observation009",
+    "integrated_host_default009",
+    "integrated_host_observation009",
+    "integrated_fmt009",
+    "integrated_check009",
+    "integrated_event_log009",
+    "integrated_clippy_core009",
+    "integrated_clippy_host009",
+    "integrated_heap009",
+    "f01_public_consumer_001",
+    "f01_reproduce_001",
+    "f01_public_release_build_001",
+    "public_starter_schema_003"
+  ],
+  "reused_receipts": [
+    "compat_pc_prepare_003",
+    "compat_pc_001",
+    "compat_pc_gameplay_001",
+    "compat_pc_cost_002",
+    "compat_r05_summary_001",
+    "public_guards001",
+    "public_guards_allocator001",
+    "compat_prepared_public_001",
+    "compat_prepared_boundary_001",
+    "compat_input_validation_001",
+    "compat_default_parity_001",
+    "compat_public_oracle_001",
+    "compat_public_trace_001",
+    "compat_public_cli_001",
+    "compat_public_profile_001",
+    "compat_public_boundary_001",
+    "compat_public_api_001",
+    "public_schema_001",
+    "public_independent_area_001",
+    "public_continuation_001",
+    "public_rewind_001",
+    "final_fault_001_build_on",
+    "final_fault_001_none",
+    "final_fault_001_detached",
+    "final_fault_001_queue_full",
+    "final_fault_001_on",
+    "final_fault_001_websocket",
+    "final_fault_001_build_off",
+    "final_fault_001_off",
+    "compat_r05_002"
+  ],
+  "counts": {
+    "integrated_core_default009": {
+      "passed": 1794,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_fixtures009": {
+      "passed": 1794,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_observation009": {
+      "passed": 1803,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_default009": {
+      "passed": 92,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_observation009": {
+      "passed": 100,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "evidence_reuse_sha256": "e972ad7284d1cbb5bf3fbbf5aafad499900f44e626bbf2b2a29eaf6c4f6f98d6",
+  "artifacts": {
+    "EVIDENCE_SELECTION.json": "5f75e475f5f0b4f466afab8d57a9c0355c69c14b83df790091a9d7a63ee98dab",
+    "PREDECESSOR_IMPACT.json": "122ee181d6a3f7133035abf432ce952ba511cfca242672b5abd97ce37782b377",
+    "COVERAGE.json": "47090eec9d65c9be7bdc47aa4962fcaba85187bd403e752452eb067f72dce9e9",
+    "SERVICE_REUSE.json": "46885410bc4a6f28c46f156c277d6da1934d29fb99ea2686d7437337e9654755",
+    "GEX_10_RESULT.json": "a6d0c8359ac250cbf274ecad409f2b7edd8c97f7e2bdefe100714ec53036ee2f"
+  },
+  "preserved_pre_f01_artifacts": {
+    "EVIDENCE_SELECTION.json": "928749441bc75e00c77489d29cb4a84bc88ac385cdd65b6c0364dc8d43e1e4c2",
+    "PREDECESSOR_IMPACT.json": "642e958acd7bf551165b0cf68395935bb33bd0cdf531e0532dea49e53ce70101",
+    "COVERAGE.json": "eb02e59914185f08c663575ef495aa87fd3cce100c8c0d3147855da3a11d9934",
+    "SERVICE_REUSE.json": "7baecbc50561371f6592a2f5098e199c72b501c399bf49e98de158bd196da7f4",
+    "GEX_10_RESULT.json": "bb139789c51a0d70a0d51c6a2dc49003a065c04deab7c1fa6e1484b855f6f836"
+  },
+  "canonical_docs": "All bound non-product source documents unchanged except ROADMAP progress preamble; ROADMAP from section0 onward byte-identical. Current status-only records are attributed separately.",
+  "independent_verdict_pending": true
+}

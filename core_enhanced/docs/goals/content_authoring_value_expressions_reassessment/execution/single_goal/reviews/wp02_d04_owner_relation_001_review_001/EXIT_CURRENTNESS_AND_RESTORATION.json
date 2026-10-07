@@ -1,0 +1,47 @@
+{
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/segments/wp02_d04_owner_relation_001/target/d04_owner_relation_001/MANIFEST.json",
+    "bytes": 160399,
+    "sha256": "c2e703c2a08e1fc38141d3d070e052d8207cd7aaf9790f650c685429728a2a9f"
+  },
+  "verification": {
+    "state": "CURRENTNESS_AND_BIDIRECTIONAL_RESTORATION_VERIFIED",
+    "source_count": 337,
+    "product_source_count": 333,
+    "changed_paths": [
+      "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "core_enhanced/src/game/battle/core/build.rs",
+      "core_enhanced/src/game/battle/core/commands.rs",
+      "core_enhanced/src/game/battle/core/field_work.rs",
+      "core_enhanced/src/game/battle/core/mod.rs",
+      "core_enhanced/src/game/battle/core/movement/engine.rs",
+      "core_enhanced/src/game/battle/core/movement/planner.rs",
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "core_enhanced/src/game/battle/core/targeting.rs",
+      "core_enhanced/src/game/battle/core/types.rs",
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "core_enhanced/src/game/battle/stat_pipeline.rs",
+      "core_enhanced/src/game/battle/types.rs",
+      "core_enhanced/src/game/combat_setup/boss_runtime.rs",
+      "core_enhanced/src/game/combat_setup/defense_object.rs",
+      "core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+      "core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "core_enhanced/src/game/events/combat.rs",
+      "core_enhanced/src/game/resources/item_slot.rs",
+      "core_enhanced/src/game/value_expr/compile.rs",
+      "core_enhanced/src/game/value_expr/eval.rs",
+      "core_enhanced/src/game/value_expr/mod.rs",
+      "core_enhanced/src/game/value_expr/parse.rs",
+      "core_enhanced/src/game/value_expr/tests.rs",
+      "core_enhanced/src/game/world/tests/combat.rs",
+      "core_enhanced/tests/live_item_skill_activation.rs",
+      "core_enhanced/tests/skill_runtime_contract.rs",
+      "core_enhanced/tests/skill_test/common/scenario.rs",
+      "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs"
+    ],
+    "record_count": 94
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CRSA-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CRSA-001",
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "110989d503541985c4150c28b902c9bc0447154063354b316f3f53daa40a8771"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CRSA-001",
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_30_FREEZE_001.json",
+    "sha256": "044486b15ccaf773f68cc9fd7425b1621b66595ad49c89e70bec33dfee7f6dea"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CRSA-003",
+    "review_batch_ref": "RB-CRSA-001",
+    "reviewed_source_basis_ref": "RSB-CRSA-001",
+    "code_review_binding_count": 17,
+    "bound_final_policy_freeze_ref": "FPF-CRSA-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 17,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CRSA-01",
+        "policy_element_revision_ref": "PER-CRSA-01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-02",
+        "policy_element_revision_ref": "PER-CRSA-02-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-03",
+        "policy_element_revision_ref": "PER-CRSA-03-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-04",
+        "policy_element_revision_ref": "PER-CRSA-04-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-05",
+        "policy_element_revision_ref": "PER-CRSA-05-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-06",
+        "policy_element_revision_ref": "PER-CRSA-06-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-07",
+        "policy_element_revision_ref": "PER-CRSA-07-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-08",
+        "policy_element_revision_ref": "PER-CRSA-08-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-09",
+        "policy_element_revision_ref": "PER-CRSA-09-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-10",
+        "policy_element_revision_ref": "PER-CRSA-10-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-11",
+        "policy_element_revision_ref": "PER-CRSA-11-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-12",
+        "policy_element_revision_ref": "PER-CRSA-12-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-13",
+        "policy_element_revision_ref": "PER-CRSA-13-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-14",
+        "policy_element_revision_ref": "PER-CRSA-14-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-15",
+        "policy_element_revision_ref": "PER-CRSA-15-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-16",
+        "policy_element_revision_ref": "PER-CRSA-16-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CRSA-17",
+        "policy_element_revision_ref": "PER-CRSA-17-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 17,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CRSA-01",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-02",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-03",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-04",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-05",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-06",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-07",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-08",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-09",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-10",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-11",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-12",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-13",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-14",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-15",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-16",
+        "phase_id": "PHASE-CRSA-01"
+      },
+      {
+        "element_id": "PE-CRSA-17",
+        "phase_id": "PHASE-CRSA-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 6,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 4,
+    "standalone_work_package_count": 2,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CRSA-RUNTIME": [
+        "WP-CRSA-SCHEMA",
+        "WP-CRSA-PLAN",
+        "WP-CRSA-CONSUMERS",
+        "WP-CRSA-LIFECYCLE"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CRSA-PUBLIC",
+      "WP-CRSA-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 6,
+    "edge_count": 18,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CRSA-CONSUMERS",
+        "WP-CRSA-LIFECYCLE",
+        "WP-CRSA-PLAN"
+      ]
+    ],
+    "final_execution_node_count": 3,
+    "condensation_edge_count": 3,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 3,
+    "assigned_once_count": 3,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CRSA-RUNTIME": "PHASE-CRSA-01",
+      "WP-CRSA-PUBLIC": "PHASE-CRSA-01",
+      "WP-CRSA-VERIFY": "PHASE-CRSA-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 17,
+    "mapped_count": 17,
+    "assigned_execution_node_count": 17,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRSA-001",
+      "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRSA-001",
+      "Content Digest": "sha256:2eafa0278ec9eab0dbb7e8a4175eacdea1957d4d53f55355a338fc4d324fe7d0"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_00_INITIAL_001.json",
+        "sha256": "0d8b1af9744bab22e7d3e901ba77c11e1b99e85fb9db66a29f31dc87af9d4c2b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_10_POLICY_001.json",
+        "sha256": "bf07f44ec61db203169d10a5b44ebbef17d960e89209154ba0f43a9f5d15f07c"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_20_REVIEW_001.json",
+        "sha256": "ccfd6fb772333fc9e6cb6f95a5cab64faf5e5abef9aa3d357d94116ce5924757"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "5dda4bba323fc511244416767437d977c0348422a6867b2e506db4980dbefba0"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "8bb8cb4cf440b82b18c54f3428e62f2b169f747fc8178406d14f70d355370f28"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_30_FREEZE_001.json",
+        "sha256": "044486b15ccaf773f68cc9fd7425b1621b66595ad49c89e70bec33dfee7f6dea"
+      }
+    ]
+  }
+}

@@ -1,0 +1,495 @@
+{
+  "schema": "read_only_design_helper_v1",
+  "status": "source_and_design_helper_only",
+  "not_formal_p2g_artifact": true,
+  "not_completion_audit": true,
+  "workspace": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "observed_at_utc": "2026-09-09T20:15:49.298514+00:00",
+  "working_revision": "WR-CATP-P2G10-001",
+  "source_plan": "RSP-CATP-P2G20-001",
+  "source_plan_sha256": "0aef3066029105968090bf1b9b6b6959486fb89954d2fd5bf374248c00a448ee",
+  "requirements": [
+    "RQ03",
+    "RQ04",
+    "RQ05"
+  ],
+  "files_written": [
+    "/tmp/r03_runtime_trace_review_001.md",
+    "/tmp/r03_runtime_trace_review_001.json"
+  ],
+  "production_mutations": [],
+  "tests_and_builds_executed": [],
+  "historical_evidence_reuse": "API002 and public guard/performance source read as code examples only; no execution/PASS claimed",
+  "source_hash_capture": "Raw final workspace bytes, no full read-interval before/after hash assertion",
+  "sources": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252",
+      "bytes": 18499,
+      "observed_spans_or_selectors": [
+        "§§3,7,8,9"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "sha256": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+      "bytes": 305702,
+      "observed_spans_or_selectors": [
+        "21–94",
+        "2159–2299",
+        "2927–2958",
+        "3261–3368"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_10_POLICY_001.json",
+      "sha256": "eea71a35d9f66ddcf3c5fb60d395ca65dd9ee6117813869e57b7d32c12c83fa6",
+      "bytes": 80486,
+      "observed_spans_or_selectors": [
+        "PER-CATP-E01..E06-DECIDED-001 policy/acceptance payloads"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_20_SOURCE_PLAN_001.json",
+      "sha256": "0aef3066029105968090bf1b9b6b6959486fb89954d2fd5bf374248c00a448ee",
+      "bytes": 16999,
+      "observed_spans_or_selectors": [
+        "RQ03,RQ04,RQ05"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/WORKING_POLICY.ko.md",
+      "sha256": "4ad4661e282421fb36f85b5f3c405f9616c6ea918109676dd76bfc9cc5657fa7",
+      "bytes": 2431,
+      "observed_spans_or_selectors": [
+        "current view"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+      "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+      "bytes": 3771,
+      "observed_spans_or_selectors": [
+        "§§1,3–7"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+      "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+      "bytes": 4968,
+      "observed_spans_or_selectors": [
+        "15,33,41,45,55,65"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+      "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+      "bytes": 6631,
+      "observed_spans_or_selectors": [
+        "46,56–59,65+"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "bytes": 44770,
+      "observed_spans_or_selectors": [
+        "142–218",
+        "220–240",
+        "780–1001"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/behavior.rs",
+      "sha256": "c38657dd64aeae18fbb6a4998cfeb65cc45b015a897f379360236b2b4c3e2552",
+      "bytes": 232858,
+      "observed_spans_or_selectors": [
+        "410–429",
+        "1536–1551",
+        "1670–1755",
+        "1839–1863",
+        "1903–1929",
+        "1980–2019",
+        "2964–3023"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "bytes": 34199,
+      "observed_spans_or_selectors": [
+        "236–347",
+        "714–838"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "sha256": "9eec3c8c6904f3473acbcfd66747f3717fa56b86772966327f75d689c6ec0554",
+      "bytes": 9266,
+      "observed_spans_or_selectors": [
+        "150–216"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "bytes": 70625,
+      "observed_spans_or_selectors": [
+        "145–190",
+        "381–437",
+        "507–545",
+        "816–829",
+        "1133–1233",
+        "1806–1845"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "0521f6860a8079ec8b6558dec2b46bacdaed410a079f91f609e05debb937d79b",
+      "bytes": 62192,
+      "observed_spans_or_selectors": [
+        "364–391",
+        "604–702"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "bytes": 129610,
+      "observed_spans_or_selectors": [
+        "252–271",
+        "300–423",
+        "636–688",
+        "1347–1406",
+        "1420–1568",
+        "1585–1688"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "bytes": 10224,
+      "observed_spans_or_selectors": [
+        "27–47",
+        "103–155",
+        "207–277"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat_trace.rs",
+      "sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092",
+      "bytes": 3153,
+      "observed_spans_or_selectors": [
+        "1–93"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "sha256": "b82bc924568b98acf5bc61620e3efc3f5b774303c91e2ee2f5127b5894f42e33",
+      "bytes": 52753,
+      "observed_spans_or_selectors": [
+        "224–285"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "sha256": "84936b0a6844316678a029d648abefd30055e345ce13b4924dcdc4e56c9dd32e",
+      "bytes": 4947,
+      "observed_spans_or_selectors": [
+        "23–68"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+      "sha256": "1b547511f1ef5842e6e524c948e56048b8780efd7e0dfc89b8a02f27114b45c5",
+      "bytes": 6224,
+      "observed_spans_or_selectors": [
+        "157–176"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "sha256": "e8416de11c5c0b7976e1355343f892b1951984d916ff714cc817d7e1b84037ef",
+      "bytes": 24495,
+      "observed_spans_or_selectors": [
+        "69–74",
+        "221",
+        "336",
+        "363–397"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "bytes": 6247,
+      "observed_spans_or_selectors": [
+        "10–55",
+        "157–180"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1",
+      "bytes": 870,
+      "observed_spans_or_selectors": [
+        "1–29"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "sha256": "e20c7ff9ab45a4797c615b744dbfc15848267af40b040f04a192ba6362ad2c5a",
+      "bytes": 45597,
+      "observed_spans_or_selectors": [
+        "41–44",
+        "76–102",
+        "378–521",
+        "596–651",
+        "751–769",
+        "1052–1095"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "bytes": 3082,
+      "observed_spans_or_selectors": [
+        "6–91"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "sha256": "e7abfa23ab3adba2c34dc6649830d8502614845603cac90399bada6e9b3910a0",
+      "bytes": 346102,
+      "observed_spans_or_selectors": [
+        "81–129",
+        "132–168"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "sha256": "ee52fbcd1f92c5730be3fa4e0d2d4dabca782c41721d66553cb0b60fa2b0c314",
+      "bytes": 125886,
+      "observed_spans_or_selectors": [
+        "60–89",
+        "300–361",
+        "383–495",
+        "1597–1665",
+        "1820–1948",
+        "1985–2145",
+        "2269–2340"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "sha256": "1ccd3ca9b7c87339d32f0c7c047f1532c52a5be2eb7007079e0a90ca654440f6",
+      "bytes": 199314,
+      "observed_spans_or_selectors": [
+        "136–162",
+        "455–519",
+        "535–576"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "bytes": 17929,
+      "observed_spans_or_selectors": [
+        "78–147"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "sha256": "8c586e5a98252579eb1093c24ac85304d1b27fff7d83cafb1b9e54966081eef5",
+      "bytes": 17318,
+      "observed_spans_or_selectors": [
+        "61–76"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "sha256": "214699763233c0bda691dbb3f3a46d7b64824b8ab315895cfc62f5d9e040ec77",
+      "bytes": 35589,
+      "observed_spans_or_selectors": [
+        "730–733",
+        "867–905"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "sha256": "ebfa24d1ddf878b19bac1bce8843d1675d9af6f455bbbdc306e4d3750a9f4c32",
+      "bytes": 27665,
+      "observed_spans_or_selectors": [
+        "475–489",
+        "658–689"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a",
+      "bytes": 45184,
+      "observed_spans_or_selectors": [
+        "38–138"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "sha256": "c2faa80ae08c04c294defdc2474765128b4d336e0be51d3d57145ae591e43cbf",
+      "bytes": 21904,
+      "observed_spans_or_selectors": [
+        "125–176",
+        "358–423",
+        "429–489"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "sha256": "b78fca9caefe3ebda1203686e3efc6f6dcb1f02e7b9cb2276280aea9532809a9",
+      "bytes": 4202,
+      "observed_spans_or_selectors": [
+        "14–45",
+        "76–92"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/determinism.rs",
+      "sha256": "73fbb8c9c472f8caa741b6678a00decce5e244ed9beaaaeb55b7fa93c8ff1549",
+      "bytes": 3454,
+      "observed_spans_or_selectors": [
+        "27–48"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+      "sha256": "029179ae0b7d715ae01001e377800ec128276616be1406204750be94915cd745",
+      "bytes": 4415,
+      "observed_spans_or_selectors": [
+        "1–120"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs",
+      "sha256": "2ca56c80aa812beb7903b626a29be2f62a5cde98ba142dbfc4957a1930852263",
+      "bytes": 24806,
+      "observed_spans_or_selectors": [
+        "1–55",
+        "124–167",
+        "280–298",
+        "388–442"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+      "sha256": "8a6ca491b6a80b7df34c583e4a1a7879baef5281b4bedf611c9839b7a4025984",
+      "bytes": 38223,
+      "observed_spans_or_selectors": [
+        "228–238",
+        "255–267",
+        "572–700 symbol search"
+      ],
+      "read_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    }
+  ],
+  "scoped_git_status": " M core_enhanced/src/game/battle/core/commands.rs\n M core_enhanced/src/game/battle/core/damage_runtime.rs\n M core_enhanced/src/game/battle/core/mod.rs\n M core_enhanced/src/game/battle/core/sim.rs\n M core_enhanced/src/game/battle/core/skill_runtime/area.rs\n M core_enhanced/src/game/battle/core/skill_runtime/cast.rs\n M core_enhanced/src/game/battle/core/skill_runtime/projectile.rs\n M core_enhanced/src/game/battle/core/types.rs\n M core_enhanced/src/game/battle/damage.rs\n M core_enhanced/src/game/battle/event_log.rs\n M core_enhanced/src/game/battle/recording.rs\n M core_enhanced/src/game/behavior.rs\n M core_enhanced/src/game/data/mod.rs\n M core_enhanced/src/game/managers/uuid_manager.rs\n M core_enhanced/src/game/world.rs\n M core_enhanced/src/game/world/active_run.rs\n M core_enhanced/src/game/world/combat.rs\n M core_enhanced/src/game/world/combat_trace.rs\n M core_enhanced/src/game/world/node_flow.rs\n M core_enhanced/src/game/world/state.rs\n?? core_enhanced/docs/goals/content_authoring_tool_ports/P2G_10_POLICY_001.json\n?? core_enhanced/docs/goals/content_authoring_tool_ports/P2G_20_SOURCE_PLAN_001.json\n?? core_enhanced/docs/goals/content_authoring_tool_ports/WORKING_POLICY.ko.md\n?? core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md\n?? core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md\n?? core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md\n?? core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md\n?? core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md\n?? core_enhanced/src/application.rs\n?? core_enhanced/src/game/ability/authoring.rs\n?? core_enhanced/src/game/battle/skill_source.rs\n?? core_enhanced/src/game/data/content_pack/mod.rs\n?? core_enhanced/src/game/data/content_pack/schema.rs\n?? core_enhanced/src/game/data/content_pack/snapshot.rs\n?? core_enhanced/src/game/world/application.rs\n?? core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs\n?? core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs\n?? core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs\n",
+  "findings": [
+    {
+      "id": "RUNTIME01",
+      "requirements": [
+        "RQ03"
+      ],
+      "kind": "current_fact_and_implementation_finding",
+      "claim": "Generic default-release public route exists; dynamic VN/starter/node/employee/battle authority must be preserved; API002 read source contains no nonzero advance."
+    },
+    {
+      "id": "RUNTIME02",
+      "requirements": [
+        "RQ03",
+        "RQ04"
+      ],
+      "kind": "implementation_finding",
+      "claim": "Default release drops final active battle provenance; authoring observation must be captured before active_battle removal or retained separately under bounded explicit lifetime."
+    },
+    {
+      "id": "RUNTIME03",
+      "requirements": [
+        "RQ03"
+      ],
+      "kind": "implementation_finding",
+      "claim": "Cast+site+target+time is not unique for repeats; existing damage/proc semantic identity must be preserved, additional observation-only application qualification is required where absent."
+    },
+    {
+      "id": "RUNTIME04",
+      "requirements": [
+        "RQ04"
+      ],
+      "kind": "implementation_finding",
+      "claim": "R02 StartNewGame generation atomicity is insufficient for R03 actual battle preparation; build candidate CoreApplication aggregate and swap only after real preparation."
+    },
+    {
+      "id": "RUNTIME05",
+      "requirements": [
+        "RQ05"
+      ],
+      "kind": "implementation_finding",
+      "claim": "Synchronous same-time bucket and until-time loop have no general execution budget/cancel checks; host step/clock caps alone cannot safely interrupt one call."
+    },
+    {
+      "id": "RUNTIME06",
+      "requirements": [
+        "RQ04",
+        "RQ05"
+      ],
+      "kind": "implementation_finding",
+      "claim": "Output allocation/serialization failure after core commit must not masquerade as a rejected operation; preserve trace on/off gameplay invariance and explicit incomplete history."
+    },
+    {
+      "id": "RUNTIME07",
+      "requirements": [
+        "RQ05"
+      ],
+      "kind": "remaining_implementation_measurement",
+      "claim": "Numeric authoring caps, actual fuel coverage, final output retention cost and generation reclamation require focused implementation measurements; no new measured bound or R23 completion claim."
+    }
+  ],
+  "proposals_owner": "Root P2G-20/GEX owner; not adopted policy or implemented behavior",
+  "report_path": "/tmp/r03_runtime_trace_review_001.md",
+  "report_sha256": "5f0a3ec32f9014ca73c8d5566024c85bd3485ad75d8a16c10c67f45fc9e89cdc"
+}

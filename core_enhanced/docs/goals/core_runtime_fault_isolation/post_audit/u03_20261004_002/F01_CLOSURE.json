@@ -1,0 +1,13 @@
+{
+  "finding": "F01 from u03_20261004_001",
+  "disposition": "Specific finding corrected; full Goal remains Not Complete because F02",
+  "production": "combat.rs trusted reconcile branches use invariant at static sites; state.rs lifecycle validation uses application_context; cause still leaves shared ordinary variants benign.",
+  "tests": [
+    "application::fault_tests::trusted_reconciliation_origins_fault_once_and_preserve_complete_root",
+    "application::fault_tests::trusted_reconciliation_fault_at_manual_deployment_retains_original_authority",
+    "application::fault_tests::ordinary_missing_employee_is_recoverable_at_the_real_public_producer",
+    "application::fault_tests::ordinary_invalid_targeting_action_is_recoverable_at_the_real_public_producer",
+    "application::fault_tests::trusted_origin_fault_ends_observation_once_without_committing_candidate"
+  ],
+  "evidence": "Current f01_final_core_default002/fixtures002/observation002 receipts and source reviewed; roots, 64 repeated gates and four origins covered. Existing private rollback test keeps replay assertions."
+}

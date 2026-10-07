@@ -1,0 +1,203 @@
+{
+  "status": "PASS_DOCUMENT_CHECKS_ONLY",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "bytes": 19664,
+      "sha256": "0f805c0de79d4055a044ae7c8d76e899f9c5525265322c4aab6fb56849d8dade"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_START_PROMPT_20260929.ko.md",
+      "bytes": 8733,
+      "sha256": "85aa738876f5d6881b321fae1ead9f360865e56cc5d2b5cf7cd6372160b2e047"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "bytes": 34391,
+      "sha256": "e4b483de91f87fa30dfb5e6657edb43501575128be328a0998d039cba1671d8c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_START_PROMPT_20260929.ko.md",
+      "bytes": 2632,
+      "sha256": "355cd186aee43814f248d1d088bb9fb64ec46d296d683b49c85f4601a1f9b986"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CODE_EVIDENCE_20260929.json",
+      "bytes": 4239,
+      "sha256": "6914a5ab07a06b53d535428ab2d05c81f64b9258029cd7df88ee70872b4c69bc"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "bytes": 34731,
+      "sha256": "85136ef9e7e48101da01ea4d788a486d2a7abbf56cac8af2a970149c7961ee5b"
+    }
+  ],
+  "links": [
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../goal_execution_pipeline(1).md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R07.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../game_rules_next/equipment-and-fragments.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../game_rules_next/open-decisions.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../game_rulebook.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "R06_R07_CODE_EVIDENCE_20260929.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../policy_to_goal_pipeline_revised_v2.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_START_PROMPT_20260929.ko.md",
+      "link": "R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../goal_execution_pipeline(1).md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../templates/IMPLEMENTATION_CHECKPOINT_REQUEST.template.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../../../roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../successors/r06_scope_20260927_001/PLAN_HANDOFF.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../successors/r06_scope_20260927_001/P2G_50_GOAL_SET.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../../../CODE_REVIEW_003.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../corrections/wp02_d07_b_f03_order_001/REVIEW_HANDOFF.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../corrections/wp02_d07_b_f03_order_001/target/d07_b_f03_order_001/MANIFEST.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "WP02_D07_B_CORRECTION_REQUEST_20260928.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "R06_COST_POLICY_UPDATE_20260927.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "R06_COMPLETION_CODE_EVIDENCE_20260929.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "R06_COMPLETION_DOCUMENT_VALIDATION_20260929.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../corrections/wp02_d07_b_f03_order_001/evidence/C07_OBS01.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../evidence/preimplementation/active_run_v7.pre_r06.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "link": "../evidence/preimplementation/PREIMPLEMENTATION_FIXTURES.json",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_START_PROMPT_20260929.ko.md",
+      "link": "R06_R07_CONTINUOUS_START_PROMPT_20260929.ko.md",
+      "exists": true
+    },
+    {
+      "document": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_START_PROMPT_20260929.ko.md",
+      "link": "R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+      "exists": true
+    }
+  ],
+  "source_files_matching_C07": 347,
+  "product_code_changed": false,
+  "product_tests_run": false,
+  "r07_plan_execution_started": false,
+  "independent_audit_performed": false,
+  "start_prompt_revision": "v2: self-contained cold-start implementer onboarding",
+  "start_prompt_explicit_paths_checked": [
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_R07_CONTINUOUS_IMPLEMENTATION_REQUEST_20260929.ko.md",
+    "core_enhanced/docs/goal_execution_pipeline(1).md",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/R06_COMPLETION_IMPLEMENTATION_REQUEST_20260929.ko.md",
+    "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md"
+  ],
+  "cold_start_content_checks": {
+    "project_and_workspace": true,
+    "ordered_reading": true,
+    "historical_baseline_not_forced_reset": true,
+    "scope_and_delegation": true,
+    "implementation_not_only_planning": true,
+    "final_audit_boundary": true
+  }
+}

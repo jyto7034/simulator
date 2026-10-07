@@ -1,0 +1,2873 @@
+{
+  "input": "pc_raw.json",
+  "summary": [
+    {
+      "family": "literal_battle_public_step",
+      "n": 100,
+      "chunk": 100,
+      "sources": 0,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 3.510609,
+        "p95": 3.574091,
+        "max": 3.574091
+      },
+      "requested_bytes": {
+        "min": 4018804,
+        "max": 4018804
+      },
+      "native_admitted_work_max": 45750,
+      "native_clone_slots_max": 5973,
+      "native_retained_admission_max": 343512,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "ee88dc75124ef029922a9d94e0d0e92b442c9ff432aa678b3177d546b420989a",
+        "allies": 12,
+        "before_log_sha256": "4bd522cda726813087d2462c9fdbe2a285e553b8d037024386cb9250a7236d95",
+        "burst_sources": 0,
+        "chunk_ms": 100,
+        "enemies": 100,
+        "error": null,
+        "family": "literal_battle_public_step",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 60,
+          "damage_mutations": 60,
+          "damage_strikes": 60,
+          "damaging_strikes": 60,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 60,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 1000,
+        "log_entries": 365,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 3476570,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            7219,
+            3132,
+            75024
+          ],
+          [
+            45750,
+            4827,
+            343512
+          ],
+          [
+            7231,
+            3138,
+            138712
+          ],
+          [
+            27506,
+            5973,
+            251448
+          ],
+          [
+            7231,
+            3138,
+            138712
+          ],
+          [
+            27506,
+            5973,
+            251448
+          ],
+          [
+            7231,
+            3138,
+            138712
+          ],
+          [
+            27506,
+            5973,
+            251448
+          ],
+          [
+            7231,
+            3138,
+            138712
+          ],
+          [
+            27506,
+            5973,
+            251448
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 134072,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 889841,
+          "requested_bytes_sum": null
+        },
+        "units": 112,
+        "warmup": false
+      }
+    },
+    {
+      "family": "literal_battle_public_step",
+      "n": 100,
+      "chunk": 1000,
+      "sources": 0,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 3.251517,
+        "p95": 3.290381,
+        "max": 3.290381
+      },
+      "requested_bytes": {
+        "min": 2924788,
+        "max": 2924788
+      },
+      "native_admitted_work_max": 191908,
+      "native_clone_slots_max": 44403,
+      "native_retained_admission_max": 843960,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "ee88dc75124ef029922a9d94e0d0e92b442c9ff432aa678b3177d546b420989a",
+        "allies": 12,
+        "before_log_sha256": "4bd522cda726813087d2462c9fdbe2a285e553b8d037024386cb9250a7236d95",
+        "burst_sources": 0,
+        "chunk_ms": 1000,
+        "enemies": 100,
+        "error": null,
+        "family": "literal_battle_public_step",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 60,
+          "damage_mutations": 60,
+          "damage_strikes": 60,
+          "damaging_strikes": 60,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 60,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 1000,
+        "log_entries": 365,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 3247989,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            191908,
+            44403,
+            843960
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 134072,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 882438,
+          "requested_bytes_sum": null
+        },
+        "units": 112,
+        "warmup": false
+      }
+    },
+    {
+      "family": "damage_burst_private_transaction",
+      "n": 100,
+      "chunk": 0,
+      "sources": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.134248,
+        "p95": 0.143733,
+        "max": 0.143733
+      },
+      "requested_bytes": {
+        "min": 2000488,
+        "max": 2000488
+      },
+      "native_admitted_work_max": 247525,
+      "native_clone_slots_max": 1568,
+      "native_retained_admission_max": 2020488,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "804d6bb07835a9ceca09493b5f266df8c90460050b536f09c6af51fb8cb39ce3",
+        "allies": 12,
+        "before_log_sha256": "4bd522cda726813087d2462c9fdbe2a285e553b8d037024386cb9250a7236d95",
+        "burst_sources": 1,
+        "chunk_ms": 0,
+        "enemies": 100,
+        "error": null,
+        "family": "damage_burst_private_transaction",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 100,
+          "damage_mutations": 100,
+          "damage_strikes": 100,
+          "damaging_strikes": 100,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": {
+            "hp_after": 999999,
+            "hp_before": 1000000,
+            "modifier_sources": [],
+            "ordinal": 99,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "True",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": null,
+                  "actor": "05437e54-0b29-4d4d-83db-f929b7ed78e6",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": null,
+              "actor": "05437e54-0b29-4d4d-83db-f929b7ed78e6",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 99,
+            "target": "ffda9fd5-3f07-484f-8653-633ea18a99bb",
+            "time_ms": 1,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": {
+            "hp_after": 999999,
+            "hp_before": 1000000,
+            "modifier_sources": [],
+            "ordinal": 99,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "True",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": null,
+                  "actor": "05437e54-0b29-4d4d-83db-f929b7ed78e6",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": null,
+              "actor": "05437e54-0b29-4d4d-83db-f929b7ed78e6",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 99,
+            "target": "ffda9fd5-3f07-484f-8653-633ea18a99bb",
+            "time_ms": 1,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 100,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 0,
+        "log_entries": 225,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 124562,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            247525,
+            1568,
+            2020488
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 219688,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 870248,
+          "requested_bytes_sum": null
+        },
+        "units": 112,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 100,
+      "sources": 1,
+      "reads": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.032275,
+        "p95": 0.03297,
+        "max": 0.03297
+      },
+      "requested_bytes": {
+        "min": 73600,
+        "max": 73600
+      },
+      "native_admitted_work_max": 14500,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 121099,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 100,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 1,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 768,
+          "work": 2
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 32275,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          14500,
+          0,
+          121099
+        ],
+        "reads_per_expr": 1,
+        "sample": 1,
+        "source_equivalent": 1,
+        "sum": 1000,
+        "target_equivalent": 100,
+        "total_expr_work": 200,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 100,
+      "sources": 1,
+      "reads": 128,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.822895,
+        "p95": 0.842377,
+        "max": 0.842377
+      },
+      "requested_bytes": {
+        "min": 5296000,
+        "max": 5296000
+      },
+      "native_admitted_work_max": 844100,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 6655499,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 100,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 128,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 66112,
+          "work": 130
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 822895,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          844100,
+          0,
+          6655499
+        ],
+        "reads_per_expr": 128,
+        "sample": 1,
+        "source_equivalent": 1,
+        "sum": 128000,
+        "target_equivalent": 100,
+        "total_expr_work": 13000,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 100,
+      "sources": 1,
+      "grouped": false,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.016512,
+        "p95": 0.01717,
+        "max": 0.01717
+      },
+      "requested_bytes": {
+        "min": 55136,
+        "max": 55136
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": false,
+        "last_expr_usage": {
+          "dynamic_members": 100,
+          "groups": 1,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 100,
+          "retained_bytes": 59072,
+          "work": 782
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 17107,
+          "requested_bytes_sum": null
+        },
+        "members": 100,
+        "repetitions": 1,
+        "sample": 1,
+        "sum": 1000,
+        "total_expr_work": 782,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 100,
+      "sources": 1,
+      "grouped": true,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.025578,
+        "p95": 0.027844,
+        "max": 0.027844
+      },
+      "requested_bytes": {
+        "min": 74120,
+        "max": 74120
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": true,
+        "last_expr_usage": {
+          "dynamic_members": 100,
+          "groups": 100,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 100,
+          "retained_bytes": 177872,
+          "work": 882
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 25714,
+          "requested_bytes_sum": null
+        },
+        "members": 100,
+        "repetitions": 1,
+        "sample": 1,
+        "sum": 1000,
+        "total_expr_work": 882,
+        "warmup": false
+      }
+    },
+    {
+      "family": "damage_burst_private_transaction",
+      "n": 100,
+      "chunk": 0,
+      "sources": 12,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.748785,
+        "p95": 0.771639,
+        "max": 0.771639
+      },
+      "requested_bytes": {
+        "min": 3426280,
+        "max": 3426280
+      },
+      "native_admitted_work_max": 438273,
+      "native_clone_slots_max": 1568,
+      "native_retained_admission_max": 3491232,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "63819cd84b6095b33d22896a665f6e91d75e5e7d09eeb8d813af8bce5b0f7a40",
+        "allies": 12,
+        "before_log_sha256": "4bd522cda726813087d2462c9fdbe2a285e553b8d037024386cb9250a7236d95",
+        "burst_sources": 12,
+        "chunk_ms": 0,
+        "enemies": 100,
+        "error": null,
+        "family": "damage_burst_private_transaction",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 1200,
+          "damage_mutations": 1200,
+          "damage_strikes": 1200,
+          "damaging_strikes": 1200,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": {
+            "hp_after": 999988,
+            "hp_before": 999989,
+            "modifier_sources": [],
+            "ordinal": 1199,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "True",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": null,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": null,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 1199,
+            "target": "ffda9fd5-3f07-484f-8653-633ea18a99bb",
+            "time_ms": 1,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": {
+            "hp_after": 999988,
+            "hp_before": 999989,
+            "modifier_sources": [],
+            "ordinal": 1199,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "True",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": null,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": null,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 1199,
+            "target": "ffda9fd5-3f07-484f-8653-633ea18a99bb",
+            "time_ms": 1,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 1200,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 0,
+        "log_entries": 1325,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 744334,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            438273,
+            1568,
+            3491232
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 236672,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 898266,
+          "requested_bytes_sum": null
+        },
+        "units": 112,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 100,
+      "sources": 12,
+      "reads": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.308046,
+        "p95": 0.320354,
+        "max": 0.320354
+      },
+      "requested_bytes": {
+        "min": 883200,
+        "max": 883200
+      },
+      "native_admitted_work_max": 174000,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 1353099,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1200,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 1,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 768,
+          "work": 2
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 307972,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          174000,
+          0,
+          1353099
+        ],
+        "reads_per_expr": 1,
+        "sample": 1,
+        "source_equivalent": 12,
+        "sum": 12000,
+        "target_equivalent": 100,
+        "total_expr_work": 2400,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 100,
+      "sources": 12,
+      "reads": 128,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })"
+      ],
+      "elapsed_ms": {
+        "p50": 1.039677,
+        "p95": 1.105352,
+        "max": 1.105352
+      },
+      "requested_bytes": {
+        "min": 6676352,
+        "max": 6676352
+      },
+      "native_admitted_work_max": 1066718,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 8384171,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 126,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })",
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 128,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 66112,
+          "work": 130
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1039677,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          1066718,
+          0,
+          8384171
+        ],
+        "reads_per_expr": 128,
+        "sample": 1,
+        "source_equivalent": 12,
+        "sum": 161280,
+        "target_equivalent": 100,
+        "total_expr_work": 16380,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 100,
+      "sources": 12,
+      "grouped": false,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.160328,
+        "p95": 0.166524,
+        "max": 0.166524
+      },
+      "requested_bytes": {
+        "min": 661632,
+        "max": 661632
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 12,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": false,
+        "last_expr_usage": {
+          "dynamic_members": 100,
+          "groups": 1,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 100,
+          "retained_bytes": 59072,
+          "work": 782
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 165372,
+          "requested_bytes_sum": null
+        },
+        "members": 100,
+        "repetitions": 12,
+        "sample": 1,
+        "sum": 12000,
+        "total_expr_work": 9384,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 100,
+      "sources": 12,
+      "grouped": true,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.246883,
+        "p95": 0.264045,
+        "max": 0.264045
+      },
+      "requested_bytes": {
+        "min": 889440,
+        "max": 889440
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 12,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": true,
+        "last_expr_usage": {
+          "dynamic_members": 100,
+          "groups": 100,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 100,
+          "retained_bytes": 177872,
+          "work": 882
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 264045,
+          "requested_bytes_sum": null
+        },
+        "members": 100,
+        "repetitions": 12,
+        "sample": 1,
+        "sum": 12000,
+        "total_expr_work": 10584,
+        "warmup": false
+      }
+    },
+    {
+      "family": "literal_battle_public_step",
+      "n": 300,
+      "chunk": 100,
+      "sources": 0,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 9.604008,
+        "p95": 9.789703,
+        "max": 9.789703
+      },
+      "requested_bytes": {
+        "min": 13105540,
+        "max": 13105540
+      },
+      "native_admitted_work_max": 55750,
+      "native_clone_slots_max": 10773,
+      "native_retained_admission_max": 362712,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "52e25a0603c44ee0d15e3ccde1105c79445a4c8cefdeda837e2c8158749beb1a",
+        "allies": 12,
+        "before_log_sha256": "653b0cb430c6511e6af188e6d3d61d57c785da832adf1c562dbd4ef5220f9003",
+        "burst_sources": 0,
+        "chunk_ms": 100,
+        "enemies": 300,
+        "error": null,
+        "family": "literal_battle_public_step",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 60,
+          "damage_mutations": 60,
+          "damage_strikes": 60,
+          "damaging_strikes": 60,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 60,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 1000,
+        "log_entries": 565,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 9522057,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            17219,
+            7932,
+            111824
+          ],
+          [
+            55750,
+            9627,
+            362712
+          ],
+          [
+            17231,
+            7938,
+            157912
+          ],
+          [
+            37506,
+            10773,
+            270648
+          ],
+          [
+            17231,
+            7938,
+            157912
+          ],
+          [
+            37506,
+            10773,
+            270648
+          ],
+          [
+            17231,
+            7938,
+            157912
+          ],
+          [
+            37506,
+            10773,
+            270648
+          ],
+          [
+            17231,
+            7938,
+            157912
+          ],
+          [
+            37506,
+            10773,
+            270648
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 153272,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 2940337,
+          "requested_bytes_sum": null
+        },
+        "units": 312,
+        "warmup": false
+      }
+    },
+    {
+      "family": "literal_battle_public_step",
+      "n": 300,
+      "chunk": 1000,
+      "sources": 0,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 8.901809,
+        "p95": 9.057952,
+        "max": 9.057952
+      },
+      "requested_bytes": {
+        "min": 9095740,
+        "max": 9095740
+      },
+      "native_admitted_work_max": 291908,
+      "native_clone_slots_max": 92403,
+      "native_retained_admission_max": 880760,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "52e25a0603c44ee0d15e3ccde1105c79445a4c8cefdeda837e2c8158749beb1a",
+        "allies": 12,
+        "before_log_sha256": "653b0cb430c6511e6af188e6d3d61d57c785da832adf1c562dbd4ef5220f9003",
+        "burst_sources": 0,
+        "chunk_ms": 1000,
+        "enemies": 300,
+        "error": null,
+        "family": "literal_battle_public_step",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 60,
+          "damage_mutations": 60,
+          "damage_strikes": 60,
+          "damaging_strikes": 60,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": {
+            "hp_after": 999995,
+            "hp_before": 999996,
+            "modifier_sources": [],
+            "ordinal": 59,
+            "requested_damage": 1,
+            "segments": [
+              {
+                "calculated_damage": 1,
+                "damage_type": "Physical",
+                "ordinal": 0,
+                "raw_damage": 1,
+                "source": {
+                  "action_ordinal": 59,
+                  "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null
+                }
+              }
+            ],
+            "source": {
+              "action_ordinal": 59,
+              "actor": "fdb88864-7533-4a61-9aa4-88e2005ddaa4",
+              "authored": null,
+              "cast": null,
+              "equipment": null
+            },
+            "strike": 59,
+            "target": "5d1e7ee8-3adb-448d-aa09-803c5408990f",
+            "time_ms": 1000,
+            "unattributed_modifiers": {
+              "armor_penetration_flat": 0,
+              "armor_penetration_percent": 0,
+              "crit_chance_percent": 0,
+              "crit_damage_percent": 0,
+              "damage_amp_percent": 0,
+              "damage_reduction_percent": 0,
+              "magic_damage_amp_percent": 0,
+              "magic_damage_reduction_percent": 0,
+              "magic_resist_penetration_flat": 0,
+              "magic_resist_penetration_percent": 0,
+              "physical_damage_amp_percent": 0,
+              "physical_damage_reduction_percent": 0,
+              "true_damage_amp_percent": 0,
+              "true_damage_reduction_percent": 0
+            }
+          },
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 60,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 1000,
+        "log_entries": 565,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 8916030,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            291908,
+            92403,
+            880760
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 153272,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 2930102,
+          "requested_bytes_sum": null
+        },
+        "units": 312,
+        "warmup": false
+      }
+    },
+    {
+      "family": "damage_burst_private_transaction",
+      "n": 300,
+      "chunk": 0,
+      "sources": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"actor_row_reserve\", limit: Some(8388608), requested: Some(8423888) })"
+      ],
+      "elapsed_ms": {
+        "p50": 0.301439,
+        "p95": 0.365451,
+        "max": 0.365451
+      },
+      "requested_bytes": {
+        "min": 8525027,
+        "max": 8525027
+      },
+      "native_admitted_work_max": 1048792,
+      "native_clone_slots_max": 3968,
+      "native_retained_admission_max": 8352648,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "653b0cb430c6511e6af188e6d3d61d57c785da832adf1c562dbd4ef5220f9003",
+        "allies": 12,
+        "before_log_sha256": "653b0cb430c6511e6af188e6d3d61d57c785da832adf1c562dbd4ef5220f9003",
+        "burst_sources": 1,
+        "chunk_ms": 0,
+        "enemies": 300,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"actor_row_reserve\", limit: Some(8388608), requested: Some(8423888) })",
+        "family": "damage_burst_private_transaction",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 0,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 0,
+        "log_entries": 325,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 277086,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            1048792,
+            3968,
+            8352648
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 107184,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 2973608,
+          "requested_bytes_sum": null
+        },
+        "units": 312,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 300,
+      "sources": 1,
+      "reads": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.082069,
+        "p95": 0.097046,
+        "max": 0.097046
+      },
+      "requested_bytes": {
+        "min": 220800,
+        "max": 220800
+      },
+      "native_admitted_work_max": 43500,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 345099,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 300,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 1,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 768,
+          "work": 2
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 82279,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          43500,
+          0,
+          345099
+        ],
+        "reads_per_expr": 1,
+        "sample": 1,
+        "source_equivalent": 1,
+        "sum": 3000,
+        "target_equivalent": 300,
+        "total_expr_work": 600,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 300,
+      "sources": 1,
+      "reads": 128,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })"
+      ],
+      "elapsed_ms": {
+        "p50": 1.047564,
+        "p95": 1.107591,
+        "max": 1.107591
+      },
+      "requested_bytes": {
+        "min": 6676352,
+        "max": 6676352
+      },
+      "native_admitted_work_max": 1066718,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 8384171,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 126,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })",
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 128,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 66112,
+          "work": 130
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1040938,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          1066718,
+          0,
+          8384171
+        ],
+        "reads_per_expr": 128,
+        "sample": 1,
+        "source_equivalent": 1,
+        "sum": 161280,
+        "target_equivalent": 300,
+        "total_expr_work": 16380,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 300,
+      "sources": 1,
+      "grouped": false,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.042538,
+        "p95": 0.052563,
+        "max": 0.052563
+      },
+      "requested_bytes": {
+        "min": 201840,
+        "max": 201840
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": false,
+        "last_expr_usage": {
+          "dynamic_members": 300,
+          "groups": 1,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 300,
+          "retained_bytes": 171872,
+          "work": 2554
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 41477,
+          "requested_bytes_sum": null
+        },
+        "members": 300,
+        "repetitions": 1,
+        "sample": 1,
+        "sum": 3000,
+        "total_expr_work": 2554,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 300,
+      "sources": 1,
+      "grouped": true,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.073754,
+        "p95": 0.08502,
+        "max": 0.08502
+      },
+      "requested_bytes": {
+        "min": 241272,
+        "max": 241272
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": true,
+        "last_expr_usage": {
+          "dynamic_members": 300,
+          "groups": 300,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 300,
+          "retained_bytes": 530672,
+          "work": 2854
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 74548,
+          "requested_bytes_sum": null
+        },
+        "members": 300,
+        "repetitions": 1,
+        "sample": 1,
+        "sum": 3000,
+        "total_expr_work": 2854,
+        "warmup": false
+      }
+    },
+    {
+      "family": "damage_burst_private_transaction",
+      "n": 300,
+      "chunk": 0,
+      "sources": 12,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"actor_row_reserve\", limit: Some(8388608), requested: Some(8423888) })"
+      ],
+      "elapsed_ms": {
+        "p50": 0.301429,
+        "p95": 0.4013,
+        "max": 0.4013
+      },
+      "requested_bytes": {
+        "min": 8525027,
+        "max": 8525027
+      },
+      "native_admitted_work_max": 1048792,
+      "native_clone_slots_max": 3968,
+      "native_retained_admission_max": 8352648,
+      "result_hash_variants": 1,
+      "example": {
+        "after_log_sha256": "653b0cb430c6511e6af188e6d3d61d57c785da832adf1c562dbd4ef5220f9003",
+        "allies": 12,
+        "before_log_sha256": "653b0cb430c6511e6af188e6d3d61d57c785da832adf1c562dbd4ef5220f9003",
+        "burst_sources": 12,
+        "chunk_ms": 0,
+        "enemies": 300,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"actor_row_reserve\", limit: Some(8388608), requested: Some(8423888) })",
+        "family": "damage_burst_private_transaction",
+        "final_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "hp_loss": 0,
+        "initial_facts": {
+          "cost_mutations": 0,
+          "damage_hp_lost": 0,
+          "damage_mutations": 0,
+          "damage_strikes": 0,
+          "damaging_strikes": 0,
+          "deaths": 0,
+          "heal_mutations": 0,
+          "healing_delta": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_nonzero_cost": null,
+          "latest_nonzero_damage": null,
+          "latest_nonzero_heal": null,
+          "latest_resource_change": null,
+          "resource_change_delta": 0,
+          "resource_change_mutations": 0,
+          "resource_spent": 0
+        },
+        "last_time_ms": 0,
+        "log_entries": 325,
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 296184,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          [
+            1048792,
+            3968,
+            8352648
+          ]
+        ],
+        "queue_at_end": 25,
+        "retained_extent_at_end": 107184,
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 2925825,
+          "requested_bytes_sum": null
+        },
+        "units": 312,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 300,
+      "sources": 12,
+      "reads": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.927955,
+        "p95": 0.962844,
+        "max": 0.962844
+      },
+      "requested_bytes": {
+        "min": 2649600,
+        "max": 2649600
+      },
+      "native_admitted_work_max": 522000,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 4041099,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 3600,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 1,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 768,
+          "work": 2
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 901984,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          522000,
+          0,
+          4041099
+        ],
+        "reads_per_expr": 1,
+        "sample": 1,
+        "source_equivalent": 12,
+        "sum": 36000,
+        "target_equivalent": 300,
+        "total_expr_work": 7200,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 300,
+      "sources": 12,
+      "reads": 128,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })"
+      ],
+      "elapsed_ms": {
+        "p50": 1.057077,
+        "p95": 1.226844,
+        "max": 1.226844
+      },
+      "requested_bytes": {
+        "min": 6676352,
+        "max": 6676352
+      },
+      "native_admitted_work_max": 1066718,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 8384171,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 126,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })",
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 128,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 66112,
+          "work": 130
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1023530,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          1066718,
+          0,
+          8384171
+        ],
+        "reads_per_expr": 128,
+        "sample": 1,
+        "source_equivalent": 12,
+        "sum": 161280,
+        "target_equivalent": 300,
+        "total_expr_work": 16380,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 300,
+      "sources": 12,
+      "grouped": false,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.467212,
+        "p95": 0.542702,
+        "max": 0.542702
+      },
+      "requested_bytes": {
+        "min": 2422080,
+        "max": 2422080
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 12,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": false,
+        "last_expr_usage": {
+          "dynamic_members": 300,
+          "groups": 1,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 300,
+          "retained_bytes": 171872,
+          "work": 2554
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 466326,
+          "requested_bytes_sum": null
+        },
+        "members": 300,
+        "repetitions": 12,
+        "sample": 1,
+        "sum": 36000,
+        "total_expr_work": 30648,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 300,
+      "sources": 12,
+      "grouped": true,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.790372,
+        "p95": 0.802772,
+        "max": 0.802772
+      },
+      "requested_bytes": {
+        "min": 2895264,
+        "max": 2895264
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 12,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": true,
+        "last_expr_usage": {
+          "dynamic_members": 300,
+          "groups": 300,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 300,
+          "retained_bytes": 530672,
+          "work": 2854
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 792738,
+          "requested_bytes_sum": null
+        },
+        "members": 300,
+        "repetitions": 12,
+        "sample": 1,
+        "sum": 36000,
+        "total_expr_work": 34248,
+        "warmup": false
+      }
+    },
+    {
+      "family": "battle",
+      "n": 500,
+      "chunk": 100,
+      "sources": 0,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })"
+      ],
+      "elapsed_ms": {
+        "p50": 1.003344,
+        "p95": 1.276948,
+        "max": 1.276948
+      },
+      "requested_bytes": {
+        "min": 11542659,
+        "max": 11542659
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "burst_sources": 0,
+        "chunk_ms": 100,
+        "enemies": 500,
+        "family": "battle",
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 905229,
+          "requested_bytes_sum": null
+        },
+        "setup_error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })",
+        "warmup": false
+      }
+    },
+    {
+      "family": "battle",
+      "n": 500,
+      "chunk": 1000,
+      "sources": 0,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })"
+      ],
+      "elapsed_ms": {
+        "p50": 0.970639,
+        "p95": 1.133361,
+        "max": 1.133361
+      },
+      "requested_bytes": {
+        "min": 11542659,
+        "max": 11542659
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "burst_sources": 0,
+        "chunk_ms": 1000,
+        "enemies": 500,
+        "family": "battle",
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 924556,
+          "requested_bytes_sum": null
+        },
+        "setup_error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })",
+        "warmup": false
+      }
+    },
+    {
+      "family": "battle",
+      "n": 500,
+      "chunk": 0,
+      "sources": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })"
+      ],
+      "elapsed_ms": {
+        "p50": 0.982163,
+        "p95": 1.038983,
+        "max": 1.038983
+      },
+      "requested_bytes": {
+        "min": 11542659,
+        "max": 11542659
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "burst_sources": 1,
+        "chunk_ms": 0,
+        "enemies": 500,
+        "family": "battle",
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 922920,
+          "requested_bytes_sum": null
+        },
+        "setup_error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })",
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 500,
+      "sources": 1,
+      "reads": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.131944,
+        "p95": 0.13697,
+        "max": 0.13697
+      },
+      "requested_bytes": {
+        "min": 368000,
+        "max": 368000
+      },
+      "native_admitted_work_max": 72500,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 569099,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 500,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 1,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 768,
+          "work": 2
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 132137,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          72500,
+          0,
+          569099
+        ],
+        "reads_per_expr": 1,
+        "sample": 1,
+        "source_equivalent": 1,
+        "sum": 5000,
+        "target_equivalent": 500,
+        "total_expr_work": 1000,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 500,
+      "sources": 1,
+      "reads": 128,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })"
+      ],
+      "elapsed_ms": {
+        "p50": 1.042757,
+        "p95": 1.118868,
+        "max": 1.118868
+      },
+      "requested_bytes": {
+        "min": 6676352,
+        "max": 6676352
+      },
+      "native_admitted_work_max": 1066718,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 8384171,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 126,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })",
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 128,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 66112,
+          "work": 130
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1065209,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          1066718,
+          0,
+          8384171
+        ],
+        "reads_per_expr": 128,
+        "sample": 1,
+        "source_equivalent": 1,
+        "sum": 161280,
+        "target_equivalent": 500,
+        "total_expr_work": 16380,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 500,
+      "sources": 1,
+      "grouped": false,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.065337,
+        "p95": 0.072008,
+        "max": 0.072008
+      },
+      "requested_bytes": {
+        "min": 248640,
+        "max": 248640
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": false,
+        "last_expr_usage": {
+          "dynamic_members": 500,
+          "groups": 1,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 500,
+          "retained_bytes": 284672,
+          "work": 4258
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 65265,
+          "requested_bytes_sum": null
+        },
+        "members": 500,
+        "repetitions": 1,
+        "sample": 1,
+        "sum": 5000,
+        "total_expr_work": 4258,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 500,
+      "sources": 1,
+      "grouped": true,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.125923,
+        "p95": 0.149097,
+        "max": 0.149097
+      },
+      "requested_bytes": {
+        "min": 354696,
+        "max": 354696
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 1,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": true,
+        "last_expr_usage": {
+          "dynamic_members": 500,
+          "groups": 500,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 500,
+          "retained_bytes": 883472,
+          "work": 4758
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 124233,
+          "requested_bytes_sum": null
+        },
+        "members": 500,
+        "repetitions": 1,
+        "sample": 1,
+        "sum": 5000,
+        "total_expr_work": 4758,
+        "warmup": false
+      }
+    },
+    {
+      "family": "battle",
+      "n": 500,
+      "chunk": 0,
+      "sources": 12,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })"
+      ],
+      "elapsed_ms": {
+        "p50": 0.99629,
+        "p95": 1.130209,
+        "max": 1.130209
+      },
+      "requested_bytes": {
+        "min": 11542659,
+        "max": 11542659
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "burst_sources": 12,
+        "chunk_ms": 0,
+        "enemies": 500,
+        "family": "battle",
+        "sample": 1,
+        "setup": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 868859,
+          "requested_bytes_sum": null
+        },
+        "setup_error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"queued_event_slots\", limit: Some(8388608), requested: Some(8402680) })",
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 500,
+      "sources": 12,
+      "reads": 1,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 1.504752,
+        "p95": 1.554545,
+        "max": 1.554545
+      },
+      "requested_bytes": {
+        "min": 4416000,
+        "max": 4416000
+      },
+      "native_admitted_work_max": 870000,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 6729099,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 6000,
+        "error": null,
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 1,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 768,
+          "work": 2
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1554545,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          870000,
+          0,
+          6729099
+        ],
+        "reads_per_expr": 1,
+        "sample": 1,
+        "source_equivalent": 12,
+        "sum": 60000,
+        "target_equivalent": 500,
+        "total_expr_work": 12000,
+        "warmup": false
+      }
+    },
+    {
+      "family": "live_adapter_repetition_synthetic",
+      "n": 500,
+      "sources": 12,
+      "reads": 128,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [
+        "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })"
+      ],
+      "elapsed_ms": {
+        "p50": 1.035593,
+        "p95": 1.102812,
+        "max": 1.102812
+      },
+      "requested_bytes": {
+        "min": 6676352,
+        "max": 6676352
+      },
+      "native_admitted_work_max": 1066718,
+      "native_clone_slots_max": 0,
+      "native_retained_admission_max": 8384171,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 126,
+        "error": "BattleRuntimeFault(BattleRuntimeFault { code: RetainedByteLimit, site: \"value_expr_evaluation_retained\", limit: Some(8388608), requested: Some(8408747) })",
+        "family": "live_adapter_repetition_synthetic",
+        "last_expr_usage": {
+          "dynamic_members": 0,
+          "groups": 0,
+          "peak_stack_values": 128,
+          "peak_task_frames": 1,
+          "raw_members": 0,
+          "retained_bytes": 66112,
+          "work": 130
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1081539,
+          "requested_bytes_sum": null
+        },
+        "native_usage": [
+          1066718,
+          0,
+          8384171
+        ],
+        "reads_per_expr": 128,
+        "sample": 1,
+        "source_equivalent": 12,
+        "sum": 161280,
+        "target_equivalent": 500,
+        "total_expr_work": 16380,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 500,
+      "sources": 12,
+      "grouped": false,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 0.756451,
+        "p95": 0.78096,
+        "max": 0.78096
+      },
+      "requested_bytes": {
+        "min": 2983680,
+        "max": 2983680
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 12,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": false,
+        "last_expr_usage": {
+          "dynamic_members": 500,
+          "groups": 1,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 500,
+          "retained_bytes": 284672,
+          "work": 4258
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 762747,
+          "requested_bytes_sum": null
+        },
+        "members": 500,
+        "repetitions": 12,
+        "sample": 1,
+        "sum": 60000,
+        "total_expr_work": 51096,
+        "warmup": false
+      }
+    },
+    {
+      "family": "kernel_resolved_aggregate_synthetic",
+      "n": 500,
+      "sources": 12,
+      "grouped": true,
+      "samples": 11,
+      "allocation_samples": 3,
+      "errors": [],
+      "elapsed_ms": {
+        "p50": 1.348307,
+        "p95": 1.413636,
+        "max": 1.413636
+      },
+      "requested_bytes": {
+        "min": 4256352,
+        "max": 4256352
+      },
+      "native_admitted_work_max": null,
+      "native_clone_slots_max": null,
+      "native_retained_admission_max": null,
+      "result_hash_variants": 0,
+      "example": {
+        "completed": 12,
+        "error": null,
+        "family": "kernel_resolved_aggregate_synthetic",
+        "grouped_per_tile": true,
+        "last_expr_usage": {
+          "dynamic_members": 500,
+          "groups": 500,
+          "peak_stack_values": 1,
+          "peak_task_frames": 3,
+          "raw_members": 500,
+          "retained_bytes": 883472,
+          "work": 4758
+        },
+        "measurement": {
+          "allocation_observer": false,
+          "allocation_requests": null,
+          "elapsed_ns": 1324329,
+          "requested_bytes_sum": null
+        },
+        "members": 500,
+        "repetitions": 12,
+        "sample": 1,
+        "sum": 60000,
+        "total_expr_work": 57096,
+        "warmup": false
+      }
+    }
+  ]
+}

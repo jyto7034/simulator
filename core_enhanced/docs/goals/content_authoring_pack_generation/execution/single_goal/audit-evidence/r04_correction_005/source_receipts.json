@@ -1,0 +1,77 @@
+{
+  "new_gameplay_runs": 0,
+  "checks": [
+    {
+      "name": "actual source counts",
+      "pass": true
+    },
+    {
+      "name": "a complete receipt parity on",
+      "pass": true
+    },
+    {
+      "name": "a complete receipt parity gap",
+      "pass": true
+    },
+    {
+      "name": "a actual source off",
+      "pass": true
+    },
+    {
+      "name": "a actual source on",
+      "pass": true
+    },
+    {
+      "name": "a actual source gap",
+      "pass": true
+    },
+    {
+      "name": "b complete receipt parity on",
+      "pass": true
+    },
+    {
+      "name": "b complete receipt parity gap",
+      "pass": true
+    },
+    {
+      "name": "b actual source off",
+      "pass": true
+    },
+    {
+      "name": "b actual source on",
+      "pass": true
+    },
+    {
+      "name": "b actual source gap",
+      "pass": true
+    },
+    {
+      "name": "actual replacement attempts count",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "source_receipt_counts": {
+    "a_independent_continuations": 3,
+    "b_independent_replays": 3,
+    "exact_initial_next_step_rejection": 3,
+    "exact_ready_boundaries": 3,
+    "failed_replacements": 36,
+    "off_on_gap_receipts_equal_per_source": true,
+    "only_source_receipt_differs_across_equal_byte_length_inputs": true,
+    "passed": true,
+    "post_load_caller_edit_proofs": 3,
+    "same_semantic_different_bytes": true,
+    "successful_replacements": 3
+  },
+  "replacement_counts": {
+    "a_continuation_replays": 3,
+    "acquisition_failures": 6,
+    "b_completed_replays": 3,
+    "failed_attempts": 54,
+    "modes": 3,
+    "passed": true,
+    "replacement_failures": 48,
+    "successful_replacements": 3
+  }
+}

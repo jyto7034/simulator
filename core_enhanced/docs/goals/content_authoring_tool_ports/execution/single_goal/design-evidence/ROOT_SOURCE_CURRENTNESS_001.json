@@ -1,0 +1,5 @@
+{
+  "helper_sources": 35,
+  "drift": [],
+  "method": "raw source hash comparison after root diagnostics slice; helper report itself read fully; semantic review not inferred from hash"
+}

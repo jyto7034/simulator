@@ -1,0 +1,69 @@
+{
+  "kind": "external P2G-40 validator attempt evidence; not a Validation Receipt",
+  "started_at": "2026-09-09T06:30:35.936181+00:00",
+  "finished_at": "2026-09-09T06:30:35.997459+00:00",
+  "argv": [
+    "node",
+    "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+    "--write-receipt",
+    "--plan",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_CANDIDATE_001.ko.md",
+    "--freeze",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+    "--receipt",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_001.json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "generator": "p2g40-receipt-generator/1.1.0",
+    "status": "not_written",
+    "receipt": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_001.json",
+    "validation": {
+      "validator": "p2g40-receipt-validator/1.1.0",
+      "result": "failed",
+      "counts": {
+        "freeze_members": 0,
+        "work_packages": 3,
+        "dependency_edges": 4,
+        "cyclic_sccs": 1,
+        "atomic_groups": 1,
+        "final_execution_nodes": 2,
+        "phases": 1,
+        "audit_rows": 1,
+        "integration_rows": 6
+      },
+      "failures": [
+        {
+          "code": "REF_FREEZE",
+          "detail": "FPF-CAMEC-P2G30-001 / null / FPF-CAMEC-P2G30-001"
+        },
+        {
+          "code": "FREEZE_MEMBERS",
+          "detail": "no ordered Freeze member revisions parsed"
+        },
+        {
+          "code": "WP_SELECTOR_EMPTY",
+          "detail": "WP-CAMEC-01"
+        },
+        {
+          "code": "WP_SELECTOR_EMPTY",
+          "detail": "WP-CAMEC-02"
+        },
+        {
+          "code": "WP_SELECTOR_EMPTY",
+          "detail": "WP-CAMEC-03"
+        }
+      ]
+    }
+  },
+  "stderr": "",
+  "input_sha256": {
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_CANDIDATE_001.ko.md": "3754f18ddadb96ef8dcb8919a3cdbbfe396045218d3b9da3627373d053220476",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json": "64bbe82d782b7f556c97899a024427d39884554516de5be37c9d427c4f97cfaf",
+    "core_enhanced/docs/tools/validate_p2g40_receipt.mjs": "c75be6b741b3a64165f970e31168a9460ebed1c31aea746cefce03fd81e52c53"
+  },
+  "inputs_unchanged_after_execution": true,
+  "receipt_created": false,
+  "default_validation_executed": false,
+  "default_validation_not_executed_reason": "generation returned not_written; no Receipt exists to validate"
+}

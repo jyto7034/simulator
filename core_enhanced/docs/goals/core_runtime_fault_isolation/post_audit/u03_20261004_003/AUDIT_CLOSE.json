@@ -1,0 +1,47 @@
+{
+  "closed_at_utc": "2026-10-04T04:26:38.570080+00:00",
+  "verdict": "Complete",
+  "confidence": "High",
+  "goal_set": "GS-CRFI-001",
+  "goal": "GOAL-CRFI-01",
+  "phase": "PHASE-CRFI-01",
+  "audit_kind": "independent whole single-phase GEX-20 successor",
+  "reviewer": "GPT-6 Astra / High; implementation nonparticipant",
+  "target_manifest_sha256": "76fd812b8ab094050302e36c72abd19ab629091bfce8cd4330be3bc8ab1c552b",
+  "product_sha256": "0e8194aca0984ec11c5a5a3068cffe32f16ab187912249a3083e0ae0c0271979",
+  "union_sha256": "aa5e95252d575f3506b639f6deba68d0181750a68250b40191bd998b07bd9fd5",
+  "required_scope": {
+    "acceptances": 12,
+    "validations": 12,
+    "dimensions": 10,
+    "inherited_conditions": 100,
+    "original_R06_acceptances": 31
+  },
+  "open_findings": [],
+  "closed_findings": [
+    "F01",
+    "F02"
+  ],
+  "remaining_required_work_in_scope": [],
+  "product_mutations": [],
+  "GEX_30_executed": false,
+  "status_mutated": false,
+  "audit_files": {
+    "COMPLETION_AUDIT.md": "57d3b7ff15885ec871b1f5e66b2322c8401b2a0acab1d36ed91a5261d9c0f672",
+    "CONDITION_REVIEW.json": "aa825a8cd95953f59b8b3216397191fd30adccc4ae918f68efb1a9f5539bba2c",
+    "PREDECESSOR_REVIEW.json": "b4a1f5eb50346bdf90daae9f6c8452711da1fce53df523ada0b3ab0e69c210fc",
+    "FINDINGS.json": "934d6d872bf2874b1a669b74ff59012ee8ac2a8dd79b1bf2bdd1aa820b622c4a",
+    "SOURCE_REVIEW.md": "f38c092215107586b983915c01f8508c4d34df46980877e45a60fdb9fe3bba5c",
+    "ENTRY_CURRENTNESS.json": "d8413847048e4647a04689f37e28f52c5fe77acdc84630ea82434db3701ba18e",
+    "END_CURRENTNESS.json": "ee6eded53c2ccb6465a03cc97582712d54a6b353835fe7ed9ec998473f44c69c",
+    "RESTORATION.json": "c553b7fbd07845f08bf99bce0ab8b3ecb5462e277eb89da4b4b385be6024b987",
+    "EVIDENCE_BINDINGS.json": "7a9a2e9f9f854f2511f04fe001da335df1e54e82e7c362f69e58f3e502f1f8b5",
+    "TRANSITIVE_CLOSURE.json": "0597068e2f52cc5284f6cdbe33a08569be046d363e96bb5010580758d476e7d0",
+    "EXTRA_INPUTS.json": "b58de4e7d5329a121f9880ce314267fdccbd14cb90945de93ccbdaf82ec68d51",
+    "INHERITED_SELECTOR_SOURCE.json": "baa2e5673c3f334dd3aaa0679c91a01b9be021348a5af807de01887c8e401785",
+    "NUMERIC_REVIEW.json": "8b086770cf502c6e510eb039a96a4e3e83819925f0896e240248bde8360a101d",
+    "F02_CLOSURE_PROBE.json": "6af58c43616503b7fed1cb80f55acce760bb590d3a3917a948352501a7f215ab",
+    "f02_closure_probe.log": "e9a4b60f3e60d952a5853cc9f7d7971f61b126367b81aa03befdea82d1ac6e52",
+    "DIRTY_ATTRIBUTION.json": "0f4533e12d13c15c864227e78b776185d050a20036bd321fe0264041a5641c9b"
+  }
+}

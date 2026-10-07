@@ -1,0 +1,7 @@
+{
+  "created_at_utc": "2026-10-06T03:50:12.240238+00:00",
+  "artifact": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_001/API_AND_OWNERSHIP_001.ko.md",
+  "sha256": "1725c3b4d7af508f68525a7216f3f25463a36254a2a8a892c07a64898b3bb31c",
+  "parent_record_sha256": "6112b7b9765937e5d5a6d675a732c67cca199492801f9de1e532e10b9637a962",
+  "status": "product and separate test authoring unlocked; all execution held"
+}

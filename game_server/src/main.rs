@@ -1,20 +1,24 @@
 use actix::Actor;
 use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
-use game_core::game::data::GameDataBase;
 use game_server::{
     env::Settings,
     game::{load_balance_actor::LoadBalanceActor, player_game_actor::session::PlayerGameSession},
     init_retry_config,
     persistence::{
         active_run_store::ActiveRunStore,
-        encounter_compendium_store::{EncounterCompendiumPersistence, EncounterCompendiumStore},
+        player_profile_store::{PlayerProfilePersistence, PlayerProfileStore},
     },
     AppState, LoggerManager,
 };
 use std::{sync::Arc, time::Duration};
 use tracing::{error, info};
 use uuid::Uuid;
+
+#[cfg(feature = "runtime-measurement")]
+#[global_allocator]
+static ALLOCATOR: game_server::runtime_measurement::CountingAllocator<'static, std::alloc::System> =
+    game_server::runtime_measurement::process_allocator();
 
 #[get("/game")]
 async fn player_game_ws_route(
@@ -33,6 +37,8 @@ async fn player_game_ws_route(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    #[cfg(feature = "runtime-measurement")]
+    let measurement_window = game_server::runtime_measurement::begin_process_window().ok();
     // 1. 환경변수 로드
     dotenv::dotenv().ok();
 
@@ -47,7 +53,11 @@ async fn main() -> std::io::Result<()> {
     init_retry_config(&settings.retry).await;
     info!("Retry config initialized");
 
-    let game_data = load_game_data_from_ron()?;
+    let game_data = game_server::bootstrap::load_game_data(&settings)?;
+    info!(
+        runtime_safety_sha256 = game_data.runtime_safety().effective_sha256(),
+        "Runtime safety profile selected"
+    );
     info!("Game data loaded for meta-game sessions");
 
     // 10. LoadBalanceActor 시작
@@ -55,20 +65,23 @@ async fn main() -> std::io::Result<()> {
         .persistence
         .active_run_directory()
         .map_err(std::io::Error::other)?;
-    let encounter_compendium_directory = settings
+    let player_profile_directory = settings
         .persistence
-        .encounter_compendium_directory()
+        .player_profile_directory()
         .map_err(std::io::Error::other)?;
     let active_run_store = ActiveRunStore::open(&active_run_directory)
         .map_err(|error| std::io::Error::other(error.to_string()))?;
-    let encounter_compendium_store =
-        EncounterCompendiumStore::open(&encounter_compendium_directory)
-            .map_err(|error| std::io::Error::other(error.to_string()))?;
-    let encounter_compendium_persistence =
-        EncounterCompendiumPersistence::bootstrap(encounter_compendium_store);
-    let load_balance_addr =
-        LoadBalanceActor::with_persistence(active_run_store, encounter_compendium_persistence)
-            .start();
+    let player_profile_store = PlayerProfileStore::open(&player_profile_directory)
+        .map_err(|error| std::io::Error::other(error.to_string()))?;
+    let player_profile_persistence = PlayerProfilePersistence::bootstrap(player_profile_store);
+    #[cfg(feature = "runtime-observation")]
+    let observation = game_server::observability::from_environment();
+    let load_balance =
+        LoadBalanceActor::with_persistence(active_run_store, player_profile_persistence);
+    #[cfg(feature = "runtime-observation")]
+    let load_balance =
+        load_balance.with_observation(observation.as_ref().map(|(handle, _guard)| handle.clone()));
+    let load_balance_addr = load_balance.start();
     info!("LoadBalanceActor started");
 
     let current_run_id = Uuid::new_v4();
@@ -104,10 +117,10 @@ async fn main() -> std::io::Result<()> {
 
     // 17. 종료 신호 대기
     let server_handle = server.handle();
-    tokio::select! {
+    let shutdown_result = tokio::select! {
         res = server => {
             error!("Server exited unexpectedly");
-            return res;
+            res
         },
 
         _ = tokio::signal::ctrl_c() => {
@@ -116,17 +129,18 @@ async fn main() -> std::io::Result<()> {
             // Graceful shutdown
             server_handle.stop(true).await;
             info!("System has shut down gracefully");
+            Ok(())
         },
+    };
+
+    #[cfg(feature = "runtime-measurement")]
+    drop(observation);
+    #[cfg(feature = "runtime-measurement")]
+    if let Some(window) = measurement_window {
+        println!(
+            "{}",
+            serde_json::json!({"process_measurement_window": window.finish()})
+        );
     }
-
-    Ok(())
-}
-
-fn load_game_data_from_ron() -> std::io::Result<Arc<GameDataBase>> {
-    GameDataBase::load_live_embedded().map_err(|error| {
-        std::io::Error::new(
-            std::io::ErrorKind::InvalidData,
-            format!("invalid embedded gameplay RON: {error}"),
-        )
-    })
+    shutdown_result
 }

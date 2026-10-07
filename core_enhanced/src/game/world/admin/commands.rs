@@ -5,7 +5,7 @@ use crate::game::enums::RewardMode;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
-pub enum AdminCommand {
+pub(crate) enum AdminCommand {
     AdminDumpState,
     AdminDumpSelectedEvent,
     AdminDumpInventory,
@@ -54,6 +54,17 @@ pub enum AdminCommand {
     },
     AdminGrantEquipmentMaterial {
         material_id: String,
+        amount: u32,
+    },
+    AdminGrantRelic {
+        definition_id: String,
+        #[serde(default = "default_admin_count")]
+        count: u32,
+    },
+    AdminGrantRelicCorruptionCatalyst {
+        amount: u32,
+    },
+    AdminGrantEquipmentDust {
         amount: u32,
     },
     AdminGrantFragmentDust {

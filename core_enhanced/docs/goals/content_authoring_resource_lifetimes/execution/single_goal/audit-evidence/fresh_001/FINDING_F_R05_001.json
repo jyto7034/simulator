@@ -1,0 +1,1661 @@
+{
+  "finding": "F-R05-001",
+  "status": "required source correction",
+  "verdict": "Not Complete",
+  "method": "Independent source-level deterministic control-flow and error-flow proof; no runtime panic reproduction was executed.",
+  "entry": "public authoring::validate with a valid nonempty resource catalog and valid nonzero finite ExecutionLimits.max_work",
+  "witness": [
+    "Let P be cumulative work after raw final validation and constructor index checks, immediately before the repeated ResourceCatalog::validate charge in GameDataBase::new.",
+    "Choose max_work=P, or any admitted value in [P,P+n-1] for n>0 resource definitions. The successful default-load prefix fixes P deterministically; all preceding charges fit and the next charge does not.",
+    "ResourceCatalog::validate returns ResourceDefinitionError::Control after authoring::control::charge latches authoring_work_limit; GameDataBase::new calls expect on that error.",
+    "The panic escapes content_pack publication and control::run_with_provenance, which directly invokes operation() and has no panic conversion; the promised Result<AuthoringContent, AuthoringError> does not return a typed failure.",
+    "A second repeated fallible scan, SkillDatabase::validate_resource_references, has the same expect error boundary. It charges even skills with no typed resource operations.",
+    "Cancellation becoming visible at either repeated scan also returns an error into expect. This is a source-path consequence; no timing-based cancellation experiment is claimed."
+  ],
+  "existing_test_gap": "controlled_external_load_uses_the_same_token_and_exact_generated_work_boundary checks full-load work and full-load minus one in GeneratedSetup; it does not exhaust work inside these earlier FinalValidation constructor scans. Existing eight typed execution limits target first-cost, terminal and Complete, not this publication interval.",
+  "execution_limitations": "Current author_content CLI uses AuthoringLimits::default and offers no arbitrary load-work budget argument. Its --help usage was inspected (exit 2); no pack run or panic reproducer was invoked. New source, fixture or builds were prohibited in this separated audit.",
+  "owner": "R05 GEX-10, GS-CARL-P2G50-001 / GOAL-CARL-01 / PHASE-CARL-01; AG-CARL-01 (WP-CARL-03 publication/constructor), WP-CARL-04 focused durable regression.",
+  "required_correction": "Preserve finite validation and cancellation semantics while propagating constructor/publication errors through the typed public result, or otherwise remove the invalid fallibility assumption with equivalent strict admission. Add a nonzero valid external-pack focused regression at the constructor scan budget boundary; verify no unwind, typed phase/site/code, no publication or replacement, prior generation unchanged and subsequent valid attempt succeeds.",
+  "source_excerpts": [
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "source_sha256": "e2e16896c5ef9b070c3cb22a7795f0294df787bbadb969b993d2ab69003e589a",
+      "first_line": 123,
+      "last_line": 174,
+      "lines": [
+        {
+          "line": 123,
+          "text": "pub fn validate("
+        },
+        {
+          "line": 124,
+          "text": "    root: &Path,"
+        },
+        {
+          "line": 125,
+          "text": "    selection: &ContentSelection,"
+        },
+        {
+          "line": 126,
+          "text": "    limits: &AuthoringLimits,"
+        },
+        {
+          "line": 127,
+          "text": "    cancellation: &CancellationToken,"
+        },
+        {
+          "line": 128,
+          "text": ") -> Result<AuthoringContent, AuthoringError> {"
+        },
+        {
+          "line": 129,
+          "text": "    let hard = InputLimits::default();"
+        },
+        {
+          "line": 130,
+          "text": "    for (site, requested, ceiling) in ["
+        },
+        {
+          "line": 131,
+          "text": "        (\"max_packs\", limits.input.max_packs, hard.max_packs),"
+        },
+        {
+          "line": 132,
+          "text": "        (\"max_files\", limits.input.max_files, hard.max_files),"
+        },
+        {
+          "line": 133,
+          "text": "        ("
+        },
+        {
+          "line": 134,
+          "text": "            \"max_file_bytes\","
+        },
+        {
+          "line": 135,
+          "text": "            limits.input.max_file_bytes,"
+        },
+        {
+          "line": 136,
+          "text": "            hard.max_file_bytes,"
+        },
+        {
+          "line": 137,
+          "text": "        ),"
+        },
+        {
+          "line": 138,
+          "text": "        ("
+        },
+        {
+          "line": 139,
+          "text": "            \"max_total_bytes\","
+        },
+        {
+          "line": 140,
+          "text": "            limits.input.max_total_bytes,"
+        },
+        {
+          "line": 141,
+          "text": "            hard.max_total_bytes,"
+        },
+        {
+          "line": 142,
+          "text": "        ),"
+        },
+        {
+          "line": 143,
+          "text": "        ("
+        },
+        {
+          "line": 144,
+          "text": "            \"max_dependency_edges\","
+        },
+        {
+          "line": 145,
+          "text": "            limits.input.max_dependency_edges,"
+        },
+        {
+          "line": 146,
+          "text": "            hard.max_dependency_edges,"
+        },
+        {
+          "line": 147,
+          "text": "        ),"
+        },
+        {
+          "line": 148,
+          "text": "        (\"max_nesting\", limits.input.max_nesting, hard.max_nesting),"
+        },
+        {
+          "line": 149,
+          "text": "    ] {"
+        },
+        {
+          "line": 150,
+          "text": "        if requested == 0 || requested > ceiling {"
+        },
+        {
+          "line": 151,
+          "text": "            return Err(AuthoringError::Execution {"
+        },
+        {
+          "line": 152,
+          "text": "                diagnostic: ExecutionFailure {"
+        },
+        {
+          "line": 153,
+          "text": "                    code: \"authoring_limits_invalid\","
+        },
+        {
+          "line": 154,
+          "text": "                    phase: ExecutionPhase::Acquisition,"
+        },
+        {
+          "line": 155,
+          "text": "                    site,"
+        },
+        {
+          "line": 156,
+          "text": "                    limit: Some(ceiling as u64),"
+        },
+        {
+          "line": 157,
+          "text": "                    requested: Some(requested as u64),"
+        },
+        {
+          "line": 158,
+          "text": "                },"
+        },
+        {
+          "line": 159,
+          "text": "            });"
+        },
+        {
+          "line": 160,
+          "text": "        }"
+        },
+        {
+          "line": 161,
+          "text": "    }"
+        },
+        {
+          "line": 162,
+          "text": "    let (result, validation_usage) = control::run("
+        },
+        {
+          "line": 163,
+          "text": "        &limits.execution,"
+        },
+        {
+          "line": 164,
+          "text": "        cancellation,"
+        },
+        {
+          "line": 165,
+          "text": "        ExecutionPhase::Acquisition,"
+        },
+        {
+          "line": 166,
+          "text": "        || content_pack::load(root, selection, &limits.input),"
+        },
+        {
+          "line": 167,
+          "text": "    )"
+        },
+        {
+          "line": 168,
+          "text": "    .map_err(|diagnostic| AuthoringError::Execution { diagnostic })?;"
+        },
+        {
+          "line": 169,
+          "text": "    let token = result.map_err(|diagnostic| AuthoringError::Content { diagnostic })?;"
+        },
+        {
+          "line": 170,
+          "text": "    Ok(AuthoringContent {"
+        },
+        {
+          "line": 171,
+          "text": "        token,"
+        },
+        {
+          "line": 172,
+          "text": "        validation_usage,"
+        },
+        {
+          "line": 173,
+          "text": "    })"
+        },
+        {
+          "line": 174,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "source_sha256": "5e8638daa77594ecac9bee432996dbeea0d32605e000c354d3a84dd16e7559e2",
+      "first_line": 215,
+      "last_line": 254,
+      "lines": [
+        {
+          "line": 215,
+          "text": "pub(crate) fn run_with_provenance<T>("
+        },
+        {
+          "line": 216,
+          "text": "    limits: &ExecutionLimits,"
+        },
+        {
+          "line": 217,
+          "text": "    cancellation: &CancellationToken,"
+        },
+        {
+          "line": 218,
+          "text": "    phase: ExecutionPhase,"
+        },
+        {
+          "line": 219,
+          "text": "    native_storage: NativeStorageProvenance,"
+        },
+        {
+          "line": 220,
+          "text": "    operation: impl FnOnce() -> T,"
+        },
+        {
+          "line": 221,
+          "text": ") -> Result<(T, ExecutionUsage, NativeStorageProvenance), ExecutionFailure> {"
+        },
+        {
+          "line": 222,
+          "text": "    limits.validate(phase)?;"
+        },
+        {
+          "line": 223,
+          "text": "    ACTIVE.with(|slot| {"
+        },
+        {
+          "line": 224,
+          "text": "        let mut slot = slot.borrow_mut();"
+        },
+        {
+          "line": 225,
+          "text": "        if slot.is_some() {"
+        },
+        {
+          "line": 226,
+          "text": "            return Err(ExecutionFailure {"
+        },
+        {
+          "line": 227,
+          "text": "                code: \"authoring_nested_attempt\","
+        },
+        {
+          "line": 228,
+          "text": "                phase,"
+        },
+        {
+          "line": 229,
+          "text": "                site: \"attempt_entry\","
+        },
+        {
+          "line": 230,
+          "text": "                limit: None,"
+        },
+        {
+          "line": 231,
+          "text": "                requested: None,"
+        },
+        {
+          "line": 232,
+          "text": "            });"
+        },
+        {
+          "line": 233,
+          "text": "        }"
+        },
+        {
+          "line": 234,
+          "text": "        *slot = Some(Attempt {"
+        },
+        {
+          "line": 235,
+          "text": "            limits: limits.clone(),"
+        },
+        {
+          "line": 236,
+          "text": "            cancellation: cancellation.clone(),"
+        },
+        {
+          "line": 237,
+          "text": "            phase,"
+        },
+        {
+          "line": 238,
+          "text": "            usage: ExecutionUsage::default(),"
+        },
+        {
+          "line": 239,
+          "text": "            failure: None,"
+        },
+        {
+          "line": 240,
+          "text": "            native_storage,"
+        },
+        {
+          "line": 241,
+          "text": "        });"
+        },
+        {
+          "line": 242,
+          "text": "        Ok(())"
+        },
+        {
+          "line": 243,
+          "text": "    })?;"
+        },
+        {
+          "line": 244,
+          "text": "    let _guard = ScopeGuard;"
+        },
+        {
+          "line": 245,
+          "text": "    inspect(\"attempt_entry\", |_| Ok(()))?;"
+        },
+        {
+          "line": 246,
+          "text": "    let value = operation();"
+        },
+        {
+          "line": 247,
+          "text": "    inspect(\"attempt_acceptance\", |_| Ok(()))?;"
+        },
+        {
+          "line": 248,
+          "text": "    let (usage, native_storage) = ACTIVE.with(|slot| {"
+        },
+        {
+          "line": 249,
+          "text": "        let slot = slot.borrow();"
+        },
+        {
+          "line": 250,
+          "text": "        let attempt = slot.as_ref().expect(\"live scope\");"
+        },
+        {
+          "line": 251,
+          "text": "        (attempt.usage.clone(), attempt.native_storage)"
+        },
+        {
+          "line": 252,
+          "text": "    });"
+        },
+        {
+          "line": 253,
+          "text": "    Ok((value, usage, native_storage))"
+        },
+        {
+          "line": 254,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "source_sha256": "5e8638daa77594ecac9bee432996dbeea0d32605e000c354d3a84dd16e7559e2",
+      "first_line": 310,
+      "last_line": 354,
+      "lines": [
+        {
+          "line": 310,
+          "text": "fn inspect("
+        },
+        {
+          "line": 311,
+          "text": "    site: &'static str,"
+        },
+        {
+          "line": 312,
+          "text": "    work: impl FnOnce(&mut Attempt) -> Result<(), (&'static str, u64, u64)>,"
+        },
+        {
+          "line": 313,
+          "text": ") -> Result<(), ExecutionFailure> {"
+        },
+        {
+          "line": 314,
+          "text": "    ACTIVE.with(|slot| {"
+        },
+        {
+          "line": 315,
+          "text": "        let mut slot = slot.borrow_mut();"
+        },
+        {
+          "line": 316,
+          "text": "        let Some(attempt) = slot.as_mut() else {"
+        },
+        {
+          "line": 317,
+          "text": "            return Ok(());"
+        },
+        {
+          "line": 318,
+          "text": "        };"
+        },
+        {
+          "line": 319,
+          "text": "        if let Some(failure) = &attempt.failure {"
+        },
+        {
+          "line": 320,
+          "text": "            return Err(failure.clone());"
+        },
+        {
+          "line": 321,
+          "text": "        }"
+        },
+        {
+          "line": 322,
+          "text": "        let failure = if attempt.cancellation.is_cancelled() {"
+        },
+        {
+          "line": 323,
+          "text": "            Some(ExecutionFailure {"
+        },
+        {
+          "line": 324,
+          "text": "                code: \"authoring_cancelled\","
+        },
+        {
+          "line": 325,
+          "text": "                phase: attempt.phase,"
+        },
+        {
+          "line": 326,
+          "text": "                site,"
+        },
+        {
+          "line": 327,
+          "text": "                limit: None,"
+        },
+        {
+          "line": 328,
+          "text": "                requested: None,"
+        },
+        {
+          "line": 329,
+          "text": "            })"
+        },
+        {
+          "line": 330,
+          "text": "        } else {"
+        },
+        {
+          "line": 331,
+          "text": "            work(attempt)"
+        },
+        {
+          "line": 332,
+          "text": "                .err()"
+        },
+        {
+          "line": 333,
+          "text": "                .map(|(code, limit, requested)| ExecutionFailure {"
+        },
+        {
+          "line": 334,
+          "text": "                    code,"
+        },
+        {
+          "line": 335,
+          "text": "                    phase: attempt.phase,"
+        },
+        {
+          "line": 336,
+          "text": "                    site,"
+        },
+        {
+          "line": 337,
+          "text": "                    limit: Some(limit),"
+        },
+        {
+          "line": 338,
+          "text": "                    requested: Some(requested),"
+        },
+        {
+          "line": 339,
+          "text": "                })"
+        },
+        {
+          "line": 340,
+          "text": "        };"
+        },
+        {
+          "line": 341,
+          "text": "        match failure {"
+        },
+        {
+          "line": 342,
+          "text": "            Some(failure) => {"
+        },
+        {
+          "line": 343,
+          "text": "                attempt.failure = Some(failure.clone());"
+        },
+        {
+          "line": 344,
+          "text": "                Err(failure)"
+        },
+        {
+          "line": 345,
+          "text": "            }"
+        },
+        {
+          "line": 346,
+          "text": "            None => Ok(()),"
+        },
+        {
+          "line": 347,
+          "text": "        }"
+        },
+        {
+          "line": 348,
+          "text": "    })"
+        },
+        {
+          "line": 349,
+          "text": "}"
+        },
+        {
+          "line": 350,
+          "text": ""
+        },
+        {
+          "line": 351,
+          "text": "fn domain(failure: ExecutionFailure) -> GameError {"
+        },
+        {
+          "line": 352,
+          "text": "    GameError::InvalidStaticData(failure.to_string())"
+        },
+        {
+          "line": 353,
+          "text": "}"
+        },
+        {
+          "line": 354,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "source_sha256": "5e8638daa77594ecac9bee432996dbeea0d32605e000c354d3a84dd16e7559e2",
+      "first_line": 536,
+      "last_line": 552,
+      "lines": [
+        {
+          "line": 536,
+          "text": "pub(crate) fn charge(units: u64, site: &'static str) -> Result<(), GameError> {"
+        },
+        {
+          "line": 537,
+          "text": "    inspect(site, |attempt| {"
+        },
+        {
+          "line": 538,
+          "text": "        let requested = attempt.usage.work.checked_add(units).ok_or(("
+        },
+        {
+          "line": 539,
+          "text": "            \"authoring_work_limit\","
+        },
+        {
+          "line": 540,
+          "text": "            attempt.limits.max_work,"
+        },
+        {
+          "line": 541,
+          "text": "            u64::MAX,"
+        },
+        {
+          "line": 542,
+          "text": "        ))?;"
+        },
+        {
+          "line": 543,
+          "text": "        if requested > attempt.limits.max_work {"
+        },
+        {
+          "line": 544,
+          "text": "            return Err((\"authoring_work_limit\", attempt.limits.max_work, requested));"
+        },
+        {
+          "line": 545,
+          "text": "        }"
+        },
+        {
+          "line": 546,
+          "text": "        attempt.usage.work = requested;"
+        },
+        {
+          "line": 547,
+          "text": "        Ok(())"
+        },
+        {
+          "line": 548,
+          "text": "    })"
+        },
+        {
+          "line": 549,
+          "text": "    .map_err(domain)?;"
+        },
+        {
+          "line": 550,
+          "text": "    crate::game::battle::runtime_control::charge(units, site)"
+        },
+        {
+          "line": 551,
+          "text": "}"
+        },
+        {
+          "line": 552,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "source_sha256": "77621d26586d47f12f24b5fe822cfd2c3684493e6b5779f7ac6c467620fa1551",
+      "first_line": 114,
+      "last_line": 145,
+      "lines": [
+        {
+          "line": 114,
+          "text": "        Resource::Definitions,"
+        },
+        {
+          "line": 115,
+          "text": "        0,"
+        },
+        {
+          "line": 116,
+          "text": "        resolved.definitions.len(),"
+        },
+        {
+          "line": 117,
+          "text": "        \"final_definitions\","
+        },
+        {
+          "line": 118,
+          "text": "    )"
+        },
+        {
+          "line": 119,
+          "text": "    .map_err(control_error)?;"
+        },
+        {
+          "line": 120,
+          "text": "    let identity = ContentIdentity {"
+        },
+        {
+          "line": 121,
+          "text": "        contract: ContentContract::current(),"
+        },
+        {
+          "line": 122,
+          "text": "        semantic_sha256: format!(\"{:x}\", Sha256::digest(resolved.semantic_bytes()?)),"
+        },
+        {
+          "line": 123,
+          "text": "    };"
+        },
+        {
+          "line": 124,
+          "text": "    let sources = raw::SourceTable::from_definitions(&resolved.definitions);"
+        },
+        {
+          "line": 125,
+          "text": "    control::metadata_size(&(&sources.0, &resolved.writers)).map_err(control_error)?;"
+        },
+        {
+          "line": 126,
+          "text": "    let _phase = control::phase(ExecutionPhase::FinalValidation);"
+        },
+        {
+          "line": 127,
+          "text": "    let validated = raw::assemble(resolved.definitions)?"
+        },
+        {
+          "line": 128,
+          "text": "        .into_validated()"
+        },
+        {
+          "line": 129,
+          "text": "        .map_err(|error| sources.relocate(error))?;"
+        },
+        {
+          "line": 130,
+          "text": "    let database = Arc::new(GameDataBase::from_validated_live_catalogs(validated));"
+        },
+        {
+          "line": 131,
+          "text": "    database"
+        },
+        {
+          "line": 132,
+          "text": "        .try_validate_generated_combat_preview_contracts()"
+        },
+        {
+          "line": 133,
+          "text": "        .map_err(|error| sources.relocate(error))?;"
+        },
+        {
+          "line": 134,
+          "text": "    control::poll(\"content_publication\").map_err(control_error)?;"
+        },
+        {
+          "line": 135,
+          "text": "    Ok(ValidatedGameData(Arc::new(ContentGeneration {"
+        },
+        {
+          "line": 136,
+          "text": "        database,"
+        },
+        {
+          "line": 137,
+          "text": "        identity,"
+        },
+        {
+          "line": 138,
+          "text": "        source_receipt: snapshot.receipt,"
+        },
+        {
+          "line": 139,
+          "text": "        source_metadata: Some(ContentSourceMetadata {"
+        },
+        {
+          "line": 140,
+          "text": "            definitions: sources.0,"
+        },
+        {
+          "line": 141,
+          "text": "            writers: resolved.writers,"
+        },
+        {
+          "line": 142,
+          "text": "        }),"
+        },
+        {
+          "line": 143,
+          "text": "    })))"
+        },
+        {
+          "line": 144,
+          "text": "}"
+        },
+        {
+          "line": 145,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "source_sha256": "7df59d903392021ba19818de5c97c664b9a84cb7f21469ee647de9bf0012656a",
+      "first_line": 857,
+      "last_line": 928,
+      "lines": [
+        {
+          "line": 857,
+          "text": "    fn from_validated_live_catalogs(validated: live_ron::ValidatedGameplayRon) -> Self {"
+        },
+        {
+          "line": 858,
+          "text": "        let live_ron::ValidatedGameplayRon {"
+        },
+        {
+          "line": 859,
+          "text": "            parsed,"
+        },
+        {
+          "line": 860,
+          "text": "            boss_runtime,"
+        },
+        {
+          "line": 861,
+          "text": "        } = validated;"
+        },
+        {
+          "line": 862,
+          "text": "        let live_ron::ParsedGameplayRon {"
+        },
+        {
+          "line": 863,
+          "text": "            shops: shops_db,"
+        },
+        {
+          "line": 864,
+          "text": "            rewards: rewards_db,"
+        },
+        {
+          "line": 865,
+          "text": "            events: event_db,"
+        },
+        {
+          "line": 866,
+          "text": "            visual_novels: visual_novel_db,"
+        },
+        {
+          "line": 867,
+          "text": "            visual_novel_triggers: visual_novel_trigger_db,"
+        },
+        {
+          "line": 868,
+          "text": "            boss_omen_chains: boss_omen_db,"
+        },
+        {
+          "line": 869,
+          "text": "            boss_runtime: _,"
+        },
+        {
+          "line": 870,
+          "text": "            summoned_units: _,"
+        },
+        {
+          "line": 871,
+          "text": "            resources: resource_catalog,"
+        },
+        {
+          "line": 872,
+          "text": "            abnormalities: abnormalities_db,"
+        },
+        {
+          "line": 873,
+          "text": "            corroded_employees: corroded_employee_db,"
+        },
+        {
+          "line": 874,
+          "text": "            corroded_wave_presets: corroded_wave_db,"
+        },
+        {
+          "line": 875,
+          "text": "            employee_definitions: employee_definition_db,"
+        },
+        {
+          "line": 876,
+          "text": "            equipment: equipments_db,"
+        },
+        {
+          "line": 877,
+          "text": "            consumables: consumables_db,"
+        },
+        {
+          "line": 878,
+          "text": "            buffs: buffs_db,"
+        },
+        {
+          "line": 879,
+          "text": "            skills: skill_db,"
+        },
+        {
+          "line": 880,
+          "text": "            skill_fragments: skill_fragment_db,"
+        },
+        {
+          "line": 881,
+          "text": "            pve_encounters: pve_db,"
+        },
+        {
+          "line": 882,
+          "text": "            run_policy,"
+        },
+        {
+          "line": 883,
+          "text": "            map_catalogs,"
+        },
+        {
+          "line": 884,
+          "text": "        } = parsed;"
+        },
+        {
+          "line": 885,
+          "text": "        let abnormality_data = Arc::new(abnormalities_db);"
+        },
+        {
+          "line": 886,
+          "text": "        let corroded_employee_data = Arc::new(corroded_employee_db);"
+        },
+        {
+          "line": 887,
+          "text": "        let corroded_wave_data = Arc::new(corroded_wave_db);"
+        },
+        {
+          "line": 888,
+          "text": "        let employee_definition_data = Arc::new(employee_definition_db);"
+        },
+        {
+          "line": 889,
+          "text": "        let consumable_data = Arc::new(consumables_db);"
+        },
+        {
+          "line": 890,
+          "text": "        let equipment_data = Arc::new(equipments_db);"
+        },
+        {
+          "line": 891,
+          "text": "        let shop_data = Arc::new(shops_db);"
+        },
+        {
+          "line": 892,
+          "text": "        let reward_data = Arc::new(rewards_db);"
+        },
+        {
+          "line": 893,
+          "text": "        let event_data = Arc::new(event_db);"
+        },
+        {
+          "line": 894,
+          "text": "        let visual_novel_data = Arc::new(visual_novel_db);"
+        },
+        {
+          "line": 895,
+          "text": "        let visual_novel_trigger_data = Arc::new(visual_novel_trigger_db);"
+        },
+        {
+          "line": 896,
+          "text": "        let pve_data = Arc::new(pve_db);"
+        },
+        {
+          "line": 897,
+          "text": "        let boss_omen_data = Arc::new(boss_omen_db);"
+        },
+        {
+          "line": 898,
+          "text": "        let boss_runtime_data = Arc::new(boss_runtime);"
+        },
+        {
+          "line": 899,
+          "text": "        let run_policy = Arc::new(run_policy);"
+        },
+        {
+          "line": 900,
+          "text": "        let skill_data = Arc::new(skill_db);"
+        },
+        {
+          "line": 901,
+          "text": "        let buff_data = Arc::new(buffs_db);"
+        },
+        {
+          "line": 902,
+          "text": "        let skill_fragment_data = Arc::new(skill_fragment_db);"
+        },
+        {
+          "line": 903,
+          "text": "        let resource_data = Arc::new(resource_catalog);"
+        },
+        {
+          "line": 904,
+          "text": "        Self::new(GameDataBaseParts {"
+        },
+        {
+          "line": 905,
+          "text": "            map_catalogs,"
+        },
+        {
+          "line": 906,
+          "text": "            abnormality_data,"
+        },
+        {
+          "line": 907,
+          "text": "            corroded_employee_data,"
+        },
+        {
+          "line": 908,
+          "text": "            corroded_wave_data,"
+        },
+        {
+          "line": 909,
+          "text": "            employee_definition_data,"
+        },
+        {
+          "line": 910,
+          "text": "            consumable_data,"
+        },
+        {
+          "line": 911,
+          "text": "            equipment_data,"
+        },
+        {
+          "line": 912,
+          "text": "            shop_data,"
+        },
+        {
+          "line": 913,
+          "text": "            reward_data,"
+        },
+        {
+          "line": 914,
+          "text": "            event_data,"
+        },
+        {
+          "line": 915,
+          "text": "            visual_novel_data,"
+        },
+        {
+          "line": 916,
+          "text": "            visual_novel_trigger_data,"
+        },
+        {
+          "line": 917,
+          "text": "            pve_data,"
+        },
+        {
+          "line": 918,
+          "text": "            boss_omen_data,"
+        },
+        {
+          "line": 919,
+          "text": "            boss_runtime_data,"
+        },
+        {
+          "line": 920,
+          "text": "            run_policy,"
+        },
+        {
+          "line": 921,
+          "text": "            skill_data,"
+        },
+        {
+          "line": 922,
+          "text": "            buff_data,"
+        },
+        {
+          "line": 923,
+          "text": "            skill_fragment_data,"
+        },
+        {
+          "line": 924,
+          "text": "            resource_data,"
+        },
+        {
+          "line": 925,
+          "text": "        })"
+        },
+        {
+          "line": 926,
+          "text": "    }"
+        },
+        {
+          "line": 927,
+          "text": ""
+        },
+        {
+          "line": 928,
+          "text": "    fn new(parts: GameDataBaseParts) -> Self {"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "source_sha256": "7df59d903392021ba19818de5c97c664b9a84cb7f21469ee647de9bf0012656a",
+      "first_line": 951,
+      "last_line": 977,
+      "lines": [
+        {
+          "line": 951,
+          "text": ""
+        },
+        {
+          "line": 952,
+          "text": "        abnormality_data.validate_indexes();"
+        },
+        {
+          "line": 953,
+          "text": "        corroded_employee_data.validate_indexes();"
+        },
+        {
+          "line": 954,
+          "text": "        corroded_wave_data.validate_indexes();"
+        },
+        {
+          "line": 955,
+          "text": "        employee_definition_data.validate_indexes();"
+        },
+        {
+          "line": 956,
+          "text": "        consumable_data.validate_indexes();"
+        },
+        {
+          "line": 957,
+          "text": "        equipment_data.validate_indexes();"
+        },
+        {
+          "line": 958,
+          "text": "        shop_data.validate_indexes();"
+        },
+        {
+          "line": 959,
+          "text": "        reward_data.validate_indexes();"
+        },
+        {
+          "line": 960,
+          "text": "        event_data.validate_indexes();"
+        },
+        {
+          "line": 961,
+          "text": "        visual_novel_data.validate_indexes();"
+        },
+        {
+          "line": 962,
+          "text": "        visual_novel_trigger_data.validate_indexes();"
+        },
+        {
+          "line": 963,
+          "text": "        pve_data.validate_indexes();"
+        },
+        {
+          "line": 964,
+          "text": "        boss_omen_data.validate_indexes();"
+        },
+        {
+          "line": 965,
+          "text": "        pve_data"
+        },
+        {
+          "line": 966,
+          "text": "            .validate_boss_runtime_references(&boss_runtime_data)"
+        },
+        {
+          "line": 967,
+          "text": "            .expect(\"invalid PvE Boss Runtime binding\");"
+        },
+        {
+          "line": 968,
+          "text": "        run_policy"
+        },
+        {
+          "line": 969,
+          "text": "            .validate_contract()"
+        },
+        {
+          "line": 970,
+          "text": "            .expect(\"run policy data must satisfy contract\");"
+        },
+        {
+          "line": 971,
+          "text": "        skill_data.validate_indexes();"
+        },
+        {
+          "line": 972,
+          "text": "        buff_data.validate_indexes();"
+        },
+        {
+          "line": 973,
+          "text": "        skill_fragment_data.validate_indexes();"
+        },
+        {
+          "line": 974,
+          "text": "        resource_data.validate().expect(\"validated resource catalog\");"
+        },
+        {
+          "line": 975,
+          "text": "        skill_data.validate_resource_references(&resource_data).expect(\"validated resource references\");"
+        },
+        {
+          "line": 976,
+          "text": "        validation::validate_data_references("
+        },
+        {
+          "line": 977,
+          "text": "            &abnormality_data,"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/resource/mod.rs",
+      "source_sha256": "3839de15329daf55a40c63822787ea61ad38ce2413bdfa23e8983ed12697e019",
+      "first_line": 127,
+      "last_line": 149,
+      "lines": [
+        {
+          "line": 127,
+          "text": "impl ResourceCatalog {"
+        },
+        {
+          "line": 128,
+          "text": "    pub fn validate(&self) -> Result<(), ResourceDefinitionError> {"
+        },
+        {
+          "line": 129,
+          "text": "        if self.resources.len() > MAX_RESOURCE_DEFINITIONS {"
+        },
+        {
+          "line": 130,
+          "text": "            return Err(ResourceDefinitionError::TooManyDefinitions);"
+        },
+        {
+          "line": 131,
+          "text": "        }"
+        },
+        {
+          "line": 132,
+          "text": "        crate::authoring::control::charge("
+        },
+        {
+          "line": 133,
+          "text": "            self.resources.len() as u64,"
+        },
+        {
+          "line": 134,
+          "text": "            \"resource_catalog_validation\","
+        },
+        {
+          "line": 135,
+          "text": "        )"
+        },
+        {
+          "line": 136,
+          "text": "        .map_err(|error| ResourceDefinitionError::Control(error.code()))?;"
+        },
+        {
+          "line": 137,
+          "text": "        let mut ids = BTreeSet::new();"
+        },
+        {
+          "line": 138,
+          "text": "        for definition in &self.resources {"
+        },
+        {
+          "line": 139,
+          "text": "            definition.validate()?;"
+        },
+        {
+          "line": 140,
+          "text": "            if !ids.insert(&definition.id) {"
+        },
+        {
+          "line": 141,
+          "text": "                return Err(ResourceDefinitionError::DuplicateId(definition.id.clone()));"
+        },
+        {
+          "line": 142,
+          "text": "            }"
+        },
+        {
+          "line": 143,
+          "text": "        }"
+        },
+        {
+          "line": 144,
+          "text": "        Ok(())"
+        },
+        {
+          "line": 145,
+          "text": "    }"
+        },
+        {
+          "line": 146,
+          "text": "}"
+        },
+        {
+          "line": 147,
+          "text": ""
+        },
+        {
+          "line": 148,
+          "text": "#[derive(Debug, Clone, PartialEq, Eq)]"
+        },
+        {
+          "line": 149,
+          "text": "pub enum ResourceDefinitionError {"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "source_sha256": "1af05397600e8463be20ced190c3f0ba03b527c6c7c148bfe5635038261ec7ec",
+      "first_line": 133,
+      "last_line": 159,
+      "lines": [
+        {
+          "line": 133,
+          "text": "    pub(crate) fn validate_resource_references(&self, catalog: &crate::game::resource::ResourceCatalog)"
+        },
+        {
+          "line": 134,
+          "text": "        -> Result<(), crate::game::data::DataValidationError>"
+        },
+        {
+          "line": 135,
+          "text": "    {"
+        },
+        {
+          "line": 136,
+          "text": "        for (skill_index, skill) in self.skills.iter().enumerate() {"
+        },
+        {
+          "line": 137,
+          "text": "            let charge = |work, site| crate::authoring::control::charge(work, site)"
+        },
+        {
+          "line": 138,
+          "text": "                .map_err(|error| super::DataValidationError::at(skill.id.as_str(), \"steps\", error.code()));"
+        },
+        {
+          "line": 139,
+          "text": "            charge(1, \"resource_reference_skill\")?;"
+        },
+        {
+          "line": 140,
+          "text": "            for (step_index, step) in skill.steps.iter().enumerate() {"
+        },
+        {
+          "line": 141,
+          "text": "                charge(1, \"resource_reference_step\")?;"
+        },
+        {
+          "line": 142,
+          "text": "                for (effect_index, effect) in step.effects.iter().enumerate() {"
+        },
+        {
+          "line": 143,
+          "text": "                    charge(1, \"resource_reference_effect\")?;"
+        },
+        {
+          "line": 144,
+          "text": "                    if let SkillEffectDef::Resources { operations } = &effect.op {"
+        },
+        {
+          "line": 145,
+          "text": "                        for (index, operation) in operations.iter().enumerate() {"
+        },
+        {
+          "line": 146,
+          "text": "                            charge(catalog.resources.len() as u64 + 1, \"resource_reference_lookup\")?;"
+        },
+        {
+          "line": 147,
+          "text": "                            let path = format!(\"skills[{skill_index}].steps[{step_index}].effects[{effect_index}].op.Resources.operations[{index}]\");"
+        },
+        {
+          "line": 148,
+          "text": "                            let definition = catalog.resources.iter().find(|def| def.id == operation.resource)"
+        },
+        {
+          "line": 149,
+          "text": "                                .ok_or_else(|| super::DataValidationError::at(skill.id.as_str(), format!(\"{path}.resource\"),"
+        },
+        {
+          "line": 150,
+          "text": "                                    format!(\"unknown resource '{}'\", operation.resource.as_str())))?;"
+        },
+        {
+          "line": 151,
+          "text": "                            definition.validate_selector(operation.owner).map_err(|error|"
+        },
+        {
+          "line": 152,
+          "text": "                                super::DataValidationError::at(skill.id.as_str(), format!(\"{path}.owner\"), error.to_string()))?;"
+        },
+        {
+          "line": 153,
+          "text": "                        }"
+        },
+        {
+          "line": 154,
+          "text": "                    }"
+        },
+        {
+          "line": 155,
+          "text": "                }"
+        },
+        {
+          "line": 156,
+          "text": "            }"
+        },
+        {
+          "line": 157,
+          "text": "        }"
+        },
+        {
+          "line": 158,
+          "text": "        Ok(())"
+        },
+        {
+          "line": 159,
+          "text": "    }"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/tests.rs",
+      "source_sha256": "2c656e7d17598456cbc5f5be900e8ff7bc663a01457b491e0b8172224462fa18",
+      "first_line": 23,
+      "last_line": 64,
+      "lines": [
+        {
+          "line": 23,
+          "text": "#[test]"
+        },
+        {
+          "line": 24,
+          "text": "fn controlled_external_load_uses_the_same_token_and_exact_generated_work_boundary() {"
+        },
+        {
+          "line": 25,
+          "text": "    let fixture = ExternalFixture::official();"
+        },
+        {
+          "line": 26,
+          "text": "    let plain = fixture.load();"
+        },
+        {
+          "line": 27,
+          "text": "    let mut limits = AuthoringLimits::default();"
+        },
+        {
+          "line": 28,
+          "text": "    let controlled = attempt(&fixture, &limits).unwrap();"
+        },
+        {
+          "line": 29,
+          "text": "    assert_eq!(controlled.token().identity(), plain.identity());"
+        },
+        {
+          "line": 30,
+          "text": "    assert_eq!(controlled.token().source_receipt(), plain.source_receipt());"
+        },
+        {
+          "line": 31,
+          "text": "    let usage = controlled.validation_usage();"
+        },
+        {
+          "line": 32,
+          "text": "    println!("
+        },
+        {
+          "line": 33,
+          "text": "        \"actual_authoring_validation_usage={}\","
+        },
+        {
+          "line": 34,
+          "text": "        serde_json::to_string(usage).unwrap()"
+        },
+        {
+          "line": 35,
+          "text": "    );"
+        },
+        {
+          "line": 36,
+          "text": "    assert!(usage.work > 0);"
+        },
+        {
+          "line": 37,
+          "text": "    assert!(usage.pending_events_peak > 0);"
+        },
+        {
+          "line": 38,
+          "text": "    assert!(usage.retained_entities_peak > 0);"
+        },
+        {
+          "line": 39,
+          "text": "    assert!(usage.metadata_bytes_peak > 0);"
+        },
+        {
+          "line": 40,
+          "text": "    assert_eq!("
+        },
+        {
+          "line": 41,
+          "text": "        usage.definitions_peak,"
+        },
+        {
+          "line": 42,
+          "text": "        plain.source_metadata().unwrap().definitions().len()"
+        },
+        {
+          "line": 43,
+          "text": "    );"
+        },
+        {
+          "line": 44,
+          "text": "    limits.execution.max_work = usage.work;"
+        },
+        {
+          "line": 45,
+          "text": "    assert_eq!("
+        },
+        {
+          "line": 46,
+          "text": "        attempt(&fixture, &limits).unwrap().validation_usage(),"
+        },
+        {
+          "line": 47,
+          "text": "        usage"
+        },
+        {
+          "line": 48,
+          "text": "    );"
+        },
+        {
+          "line": 49,
+          "text": "    limits.execution.max_work -= 1;"
+        },
+        {
+          "line": 50,
+          "text": "    let rejected = failure(attempt(&fixture, &limits));"
+        },
+        {
+          "line": 51,
+          "text": "    assert_eq!(rejected.code, \"authoring_work_limit\");"
+        },
+        {
+          "line": 52,
+          "text": "    assert_eq!(rejected.phase, ExecutionPhase::GeneratedSetup);"
+        },
+        {
+          "line": 53,
+          "text": "    assert_eq!(controlled.token().identity(), plain.identity());"
+        },
+        {
+          "line": 54,
+          "text": "    // Failed control must not poison the ordinary loader or the next attempt."
+        },
+        {
+          "line": 55,
+          "text": "    assert_eq!(fixture.load().identity(), plain.identity());"
+        },
+        {
+          "line": 56,
+          "text": "    assert_eq!("
+        },
+        {
+          "line": 57,
+          "text": "        attempt(&fixture, &AuthoringLimits::default())"
+        },
+        {
+          "line": 58,
+          "text": "            .unwrap()"
+        },
+        {
+          "line": 59,
+          "text": "            .token()"
+        },
+        {
+          "line": 60,
+          "text": "            .identity(),"
+        },
+        {
+          "line": 61,
+          "text": "        plain.identity()"
+        },
+        {
+          "line": 62,
+          "text": "    );"
+        },
+        {
+          "line": 63,
+          "text": "}"
+        },
+        {
+          "line": 64,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/bin/author_content.rs",
+      "source_sha256": "1caa9bdf4aebda3e64ce3978ef16c373dc014d03030cb29a843bd76ea5241e79",
+      "first_line": 143,
+      "last_line": 153,
+      "lines": [
+        {
+          "line": 143,
+          "text": "        )?)"
+        },
+        {
+          "line": 144,
+          "text": "    } else {"
+        },
+        {
+          "line": 145,
+          "text": "        None"
+        },
+        {
+          "line": 146,
+          "text": "    };"
+        },
+        {
+          "line": 147,
+          "text": "    let cancellation = CancellationToken::default();"
+        },
+        {
+          "line": 148,
+          "text": "    let limits = authoring::AuthoringLimits::default();"
+        },
+        {
+          "line": 149,
+          "text": "    let content = authoring::validate(&args.root, &selection, &limits, &cancellation)?;"
+        },
+        {
+          "line": 150,
+          "text": "    let document = match args.operation {"
+        },
+        {
+          "line": 151,
+          "text": "        Operation::Validate => {"
+        },
+        {
+          "line": 152,
+          "text": "            authoring::validation_receipt(&content, &limits.execution, &cancellation)?"
+        },
+        {
+          "line": 153,
+          "text": "        }"
+        }
+      ]
+    }
+  ]
+}

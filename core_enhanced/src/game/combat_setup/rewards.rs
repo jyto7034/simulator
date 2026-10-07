@@ -4,6 +4,7 @@
 //! policy at battle/reward resolution boundaries.
 
 use crate::game::{
+    battle::types::{BattleOutcomeId, BattleVerdict},
     behavior::GameError,
     combat_preview::{CombatMissionVariant, CombatNodeType},
     data::{pve_data::PveEncounter, GameDataBase},
@@ -12,6 +13,117 @@ use crate::game::{
     reward::RewardOption,
     reward_policy::CombatRewardPolicy,
 };
+
+#[derive(Debug, Clone)]
+pub struct ResolvedCombatOutcomePolicy {
+    pub outcome_id: BattleOutcomeId,
+    pub verdict: BattleVerdict,
+    pub reward_mode: RewardMode,
+    pub rewards: Vec<RewardOption>,
+    pub grant_node_bonus: bool,
+    pub advance_encounter_progression: bool,
+}
+
+pub(crate) fn resolve_combat_outcome_policies(
+    game_data: &GameDataBase,
+    encounter: &PveEncounter,
+    authored_policy: Option<&crate::game::map::AuthoredCombatNodePolicy>,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    reward_multiplier_percent: u32,
+) -> Result<Vec<ResolvedCombatOutcomePolicy>, GameError> {
+    let mut resolved = Vec::with_capacity(encounter.terminal_outcomes.len());
+    for outcome in &encounter.terminal_outcomes {
+        let base_policy = encounter
+            .outcome_policies
+            .iter()
+            .find(|policy| policy.outcome_id == outcome.id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "encounter '{}' has no policy for outcome '{}'",
+                    encounter.id, outcome.id
+                ))
+            })?;
+        let authored_outcome = authored_policy.and_then(|policy| {
+            policy
+                .outcome_policies
+                .iter()
+                .find(|candidate| candidate.outcome_id == outcome.id)
+        });
+        if authored_policy.is_some() && authored_outcome.is_none() {
+            return Err(GameError::InvalidStaticData(format!(
+                "node policy does not cover encounter '{}' outcome '{}'",
+                encounter.id, outcome.id
+            )));
+        }
+
+        let mut rewards = match authored_outcome {
+            Some(policy) => policy
+                .reward_ids
+                .iter()
+                .map(|reward_id| {
+                    game_data
+                        .reward_data
+                        .get_by_id(reward_id)
+                        .map(RewardOption::from_metadata)
+                        .ok_or(GameError::EventNotFound)
+                })
+                .collect::<Result<Vec<_>, _>>()?,
+            None => base_policy
+                .reward_uuids
+                .iter()
+                .map(|reward_uuid| {
+                    game_data
+                        .reward_data
+                        .get_by_uuid(reward_uuid)
+                        .map(RewardOption::from_metadata)
+                        .ok_or(GameError::EventNotFound)
+                })
+                .collect::<Result<Vec<_>, _>>()?,
+        };
+        let (grant_node_bonus, advance_encounter_progression) = authored_outcome.map_or(
+            (
+                base_policy.grant_node_bonus,
+                base_policy.advance_encounter_progression,
+            ),
+            |policy| {
+                (
+                    policy.grant_node_bonus,
+                    policy.advance_encounter_progression,
+                )
+            },
+        );
+        CombatRewardPolicy::for_mission(node_type, mission_variant)
+            .validate_rewards(&rewards)
+            .map_err(GameError::InvalidStaticData)?;
+        if grant_node_bonus {
+            apply_combat_reward_multiplier(&mut rewards, reward_multiplier_percent)?;
+        }
+        if outcome.verdict == BattleVerdict::Defeat
+            && (!rewards.is_empty() || grant_node_bonus || advance_encounter_progression)
+        {
+            return Err(GameError::InvalidStaticData(format!(
+                "Defeat outcome '{}' cannot grant rewards, node bonus, or progression",
+                outcome.id
+            )));
+        }
+        resolved.push(ResolvedCombatOutcomePolicy {
+            outcome_id: BattleOutcomeId::new(outcome.id.clone()),
+            verdict: outcome.verdict,
+            reward_mode: base_policy.reward_mode,
+            rewards,
+            grant_node_bonus,
+            advance_encounter_progression,
+        });
+    }
+    if authored_policy.is_some_and(|policy| policy.outcome_policies.len() != resolved.len()) {
+        return Err(GameError::InvalidStaticData(format!(
+            "node policy outcome count does not match encounter '{}'",
+            encounter.id
+        )));
+    }
+    Ok(resolved)
+}
 
 /// Applies the fixed reward budget authored on a manifested combat node.
 ///
@@ -32,12 +144,13 @@ pub(crate) fn apply_combat_reward_multiplier(
         for effect in &mut reward.effects {
             match effect {
                 RewardEffect::GrantEnkephalin { amount }
-                | RewardEffect::GrantFragmentDust { amount } => {
+                | RewardEffect::GrantFragmentDust { amount }
+                | RewardEffect::GrantRelicCorruptionCatalyst { amount }
+                | RewardEffect::GrantEquipmentDust { amount } => {
                     *amount = scaled_reward_amount(*amount, multiplier_percent)?;
                 }
                 RewardEffect::GrantExperience { amount, .. }
-                | RewardEffect::GrantEquipmentMaterial { amount, .. }
-                | RewardEffect::GrantSkillFragmentResearch { amount, .. } => {
+                | RewardEffect::GrantEquipmentMaterial { amount, .. } => {
                     *amount = scaled_reward_amount(*amount, multiplier_percent)?;
                 }
                 RewardEffect::GrantConsumable { quantity, .. } => {
@@ -45,7 +158,8 @@ pub(crate) fn apply_combat_reward_multiplier(
                 }
                 RewardEffect::GrantEquipment { .. }
                 | RewardEffect::GrantEquipmentFromPool { .. }
-                | RewardEffect::GrantSkillFragment { .. } => {}
+                | RewardEffect::GrantSkillFragment { .. }
+                | RewardEffect::GrantRelic { .. } => {}
             }
         }
     }
@@ -72,8 +186,30 @@ pub(crate) fn resolve_combat_rewards_from_encounter(
     node_type: Option<CombatNodeType>,
     mission_variant: Option<CombatMissionVariant>,
 ) -> Result<(RewardMode, Vec<RewardOption>), GameError> {
-    let mut rewards = Vec::with_capacity(encounter.reward_uuids.len());
-    for reward_uuid in &encounter.reward_uuids {
+    let policy = encounter
+        .terminal_outcomes
+        .iter()
+        .filter(|outcome| outcome.verdict == crate::game::battle::types::BattleVerdict::Victory)
+        .min_by(|left, right| {
+            right
+                .priority
+                .cmp(&left.priority)
+                .then_with(|| left.id.cmp(&right.id))
+        })
+        .and_then(|outcome| {
+            encounter
+                .outcome_policies
+                .iter()
+                .find(|policy| policy.outcome_id == outcome.id)
+        })
+        .ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "combat encounter '{}' has no Victory outcome policy",
+                encounter.id
+            ))
+        })?;
+    let mut rewards = Vec::with_capacity(policy.reward_uuids.len());
+    for reward_uuid in &policy.reward_uuids {
         let reward = game_data
             .reward_data
             .get_by_uuid(reward_uuid)
@@ -90,7 +226,7 @@ pub(crate) fn resolve_combat_rewards_from_encounter(
             .map_err(GameError::InvalidStaticData)?;
     }
 
-    Ok((encounter.reward_mode, rewards))
+    Ok((policy.reward_mode, rewards))
 }
 
 #[cfg(test)]
@@ -189,4 +325,116 @@ mod tests {
             }]
         );
     }
+
+    #[test]
+    fn standard_tutorial_pools_and_authored_combat_rewards_are_exact() {
+        let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+            .expect("live data must load");
+        for (pool_id, reward_id) in [
+            ("tutorial_f1_training_budget", "training_budget_reward"),
+            ("tutorial_f3_salvage", "field_equipment_salvage_reward"),
+            ("tutorial_f3_budget", "large_enkephalin_reward"),
+        ] {
+            assert_eq!(
+                game_data
+                    .reward_data
+                    .pool_by_id(pool_id)
+                    .expect("tutorial pool")
+                    .reward_ids,
+                [reward_id.to_string()]
+            );
+        }
+
+        let encounter = game_data
+            .pve_data
+            .get_by_id("suppress_nothing_there")
+            .unwrap();
+        let authored_policy = crate::game::map::AuthoredCombatNodePolicy {
+            outcome_policies: vec![
+                crate::game::map::AuthoredCombatOutcomePolicy {
+                    outcome_id: "victory".to_string(),
+                    reward_ids: vec![
+                        "enkephalin_reward".to_string(),
+                        "field_equipment_salvage_reward".to_string(),
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                },
+                crate::game::map::AuthoredCombatOutcomePolicy {
+                    outcome_id: "defeat_all_players".to_string(),
+                    reward_ids: Vec::new(),
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                },
+            ],
+            actor_stat_overrides: Vec::new(),
+        };
+        let policies = resolve_combat_outcome_policies(
+            &game_data,
+            encounter,
+            Some(&authored_policy),
+            CombatNodeType::Boss,
+            CombatMissionVariant::Boss,
+            100,
+        )
+        .unwrap();
+        let victory = policies
+            .iter()
+            .find(|policy| policy.verdict == BattleVerdict::Victory)
+            .expect("resolved Victory policy");
+        assert_eq!(
+            victory.reward_mode,
+            crate::game::enums::RewardMode::ClaimAll
+        );
+        assert_eq!(
+            victory
+                .rewards
+                .iter()
+                .map(|reward| reward.id.as_str())
+                .collect::<Vec<_>>(),
+            ["enkephalin_reward", "field_equipment_salvage_reward"]
+        );
+    }
+
+    #[test]
+    fn live_outcome_resolution_is_exhaustive_and_defeat_is_non_positive() {
+        let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+            .expect("live data must load");
+        let encounter = game_data
+            .pve_data
+            .get_by_id("suppress_nothing_there")
+            .expect("live encounter");
+        let policies = resolve_combat_outcome_policies(
+            &game_data,
+            encounter,
+            None,
+            CombatNodeType::Boss,
+            CombatMissionVariant::Boss,
+            100,
+        )
+        .expect("live outcome policies must resolve");
+
+        assert_eq!(policies.len(), encounter.terminal_outcomes.len());
+        for outcome in &encounter.terminal_outcomes {
+            let policy = policies
+                .iter()
+                .find(|policy| policy.outcome_id.as_str() == outcome.id)
+                .expect("every terminal outcome must resolve exactly once");
+            assert_eq!(policy.verdict, outcome.verdict);
+            if outcome.verdict == BattleVerdict::Defeat {
+                assert!(policy.rewards.is_empty());
+                assert!(!policy.grant_node_bonus);
+                assert!(!policy.advance_encounter_progression);
+            }
+        }
+    }
 }
+
+crate::authoring::clone_shape::struct_shape!(ResolvedCombatOutcomePolicy {
+    outcome_id,
+    verdict,
+    reward_mode,
+    rewards,
+    grant_node_bonus,
+    advance_encounter_progression
+});

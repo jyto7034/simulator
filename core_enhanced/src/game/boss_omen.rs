@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::{Deserialize, Serialize};
 use tracing::warn;
 
@@ -12,19 +14,21 @@ use crate::game::{
     map::{
         FacilityCapstoneEntryInput, FacilityCapstoneRequest, FacilityMapGenerator,
         FacilityTerminalResolution, GameMode, MapNodeCategory, MapNodeId, MapNodeOmenOverlayDto,
-        MapNodePayload, MapNodeState, MapNodeVisibility, MapProgression, MapSlotId, MapTemplateId,
-        RunMap, RunProgression,
+        MapNodePayload, MapProgression, MapSlotId, MapTemplateId, RunMap, RunProgression,
     },
     skill_fragment::SkillFragmentInventory,
 };
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BossOmenRunState {
     pub provisional: Option<ProvisionalBossOmenState>,
     pub active: Option<ActiveBossOmenState>,
     pub placed_source: Option<PlacedBossOmenSourceState>,
     pub forced_boss: Option<ForcedBossOmenNodeState>,
-    pub skipped_chain_ids: Vec<BossOmenChainId>,
+    pub cycle_index: u64,
+    pub remaining_chain_ids: Vec<BossOmenChainId>,
+    pub completed_chain_ids: BTreeSet<BossOmenChainId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -111,10 +115,26 @@ impl BossOmenRunState {
             .is_some_and(|placed| !placed.confirmed && self.active.is_none());
         if ignored_first_source {
             if let Some(provisional) = self.provisional.take() {
-                self.skipped_chain_ids.push(provisional.chain_id);
+                self.defer_chain(&provisional.chain_id);
             }
             self.placed_source = None;
         }
+    }
+
+    pub fn handle_source_failure(&mut self, node_id: MapNodeId) -> bool {
+        let Some(placed) = self.placed_source.take() else {
+            return false;
+        };
+        if placed.node_id != node_id {
+            self.placed_source = Some(placed);
+            return false;
+        }
+        if self.active.is_none() {
+            if let Some(provisional) = self.provisional.take() {
+                self.defer_chain(&provisional.chain_id);
+            }
+        }
+        true
     }
 
     pub fn consume_completed_source(&mut self, node_id: MapNodeId) {
@@ -149,16 +169,161 @@ impl BossOmenRunState {
     }
 
     pub fn clear_after_forced_boss_victory(&mut self, node_id: MapNodeId) {
-        if self
+        if let Some(chain_id) = self
             .forced_boss
             .as_ref()
-            .is_some_and(|forced| forced.node_id == node_id)
+            .filter(|forced| forced.node_id == node_id)
+            .map(|forced| forced.chain_id.clone())
         {
+            self.remaining_chain_ids.retain(|id| id != &chain_id);
+            self.completed_chain_ids.insert(chain_id);
             self.provisional = None;
             self.active = None;
             self.placed_source = None;
             self.forced_boss = None;
         }
+    }
+
+    fn ensure_cycle(&mut self, game_data: &GameDataBase, run_seed: u64) {
+        if !self.remaining_chain_ids.is_empty()
+            || self.provisional.is_some()
+            || self.active.is_some()
+            || self.forced_boss.is_some()
+        {
+            return;
+        }
+        let cycle_seed =
+            determinism::seed_with_namespace(run_seed ^ self.cycle_index, 0x424F_4D45_4E5F_4359);
+        let mut members = game_data
+            .boss_omen_data
+            .chains
+            .iter()
+            .map(|chain| chain.id.clone())
+            .collect::<Vec<_>>();
+        members.sort_by_key(|chain_id| {
+            determinism::seed_with_namespace(
+                cycle_seed ^ stable_text_hash(chain_id.as_str()),
+                0x424F_4D45_4E5F_4F52,
+            )
+        });
+        self.remaining_chain_ids = members;
+        self.cycle_index = self.cycle_index.saturating_add(1);
+    }
+
+    fn defer_chain(&mut self, chain_id: &BossOmenChainId) {
+        let Some(index) = self
+            .remaining_chain_ids
+            .iter()
+            .position(|candidate| candidate == chain_id)
+        else {
+            return;
+        };
+        let chain_id = self.remaining_chain_ids.remove(index);
+        self.remaining_chain_ids.push(chain_id);
+    }
+
+    pub fn validate_checkpoint_state(
+        &self,
+        game_data: &GameDataBase,
+        node_exists: impl Fn(MapNodeId) -> bool,
+    ) -> Result<(), String> {
+        let authored_ids = game_data
+            .boss_omen_data
+            .chains
+            .iter()
+            .map(|chain| chain.id.as_str())
+            .collect::<std::collections::HashSet<_>>();
+        let mut remaining = std::collections::HashSet::new();
+        for chain_id in &self.remaining_chain_ids {
+            if !authored_ids.contains(chain_id.as_str()) || !remaining.insert(chain_id.as_str()) {
+                return Err(format!(
+                    "BossOmen cycle contains unknown or duplicate chain '{}'",
+                    chain_id.as_str()
+                ));
+            }
+        }
+        if self
+            .completed_chain_ids
+            .iter()
+            .any(|chain_id| !authored_ids.contains(chain_id.as_str()))
+        {
+            return Err("BossOmen completed ledger references unknown chain".to_string());
+        }
+        if self.provisional.is_some() && self.active.is_some() {
+            return Err("BossOmen cannot be provisional and active simultaneously".to_string());
+        }
+        let current_chain_id = self
+            .active
+            .as_ref()
+            .map(|active| &active.chain_id)
+            .or_else(|| {
+                self.provisional
+                    .as_ref()
+                    .map(|provisional| &provisional.chain_id)
+            });
+        if current_chain_id.is_some_and(|chain_id| {
+            !self.remaining_chain_ids.contains(chain_id)
+                || !authored_ids.contains(chain_id.as_str())
+        }) {
+            return Err("BossOmen current chain is outside the current cycle".to_string());
+        }
+        if let Some(active) = &self.active {
+            let chain = game_data
+                .boss_omen_data
+                .get_by_id(active.chain_id.as_str())
+                .ok_or_else(|| "BossOmen active chain is missing".to_string())?;
+            if active.boss_abnormality_id != chain.boss_abnormality_id
+                || active.next_step_index != active.completed_steps.len()
+                || active.next_step_index > chain.steps.len()
+                || active
+                    .completed_steps
+                    .iter()
+                    .zip(chain.steps.iter())
+                    .any(|(actual, expected)| actual != &expected.id)
+            {
+                return Err("BossOmen active step ledger is inconsistent".to_string());
+            }
+        }
+        if let Some(placed) = &self.placed_source {
+            if !node_exists(placed.node_id)
+                || current_chain_id != Some(&placed.chain_id)
+                || !game_data
+                    .boss_omen_data
+                    .get_by_id(placed.chain_id.as_str())
+                    .and_then(|chain| chain.steps.get(placed.step_index))
+                    .is_some_and(|step| {
+                        step.id == placed.step_id && step.source_kind == placed.source_kind
+                    })
+            {
+                return Err("BossOmen placed source is inconsistent".to_string());
+            }
+        }
+        if let Some(forced) = &self.forced_boss {
+            let Some(active) = &self.active else {
+                return Err("BossOmen forced boss has no active chain".to_string());
+            };
+            let chain = game_data
+                .boss_omen_data
+                .get_by_id(forced.chain_id.as_str())
+                .ok_or_else(|| "BossOmen forced chain is missing".to_string())?;
+            if !node_exists(forced.node_id)
+                || forced.chain_id != active.chain_id
+                || forced.boss_abnormality_id != chain.boss_abnormality_id
+                || forced.encounter_id != chain.boss_encounter_id
+                || active.completed_steps.len() < chain.required_steps as usize
+            {
+                return Err("BossOmen forced boss state is inconsistent".to_string());
+            }
+        }
+        if self.cycle_index == 0
+            && (!self.remaining_chain_ids.is_empty()
+                || self.provisional.is_some()
+                || self.active.is_some()
+                || self.forced_boss.is_some())
+        {
+            return Err("BossOmen initialized state must have a positive cycle index".to_string());
+        }
+        Ok(())
     }
 }
 
@@ -176,15 +341,15 @@ pub fn apply_boss_omen_to_map(
     if run_progression.game_mode != GameMode::Endless {
         return;
     }
+    state.ensure_cycle(game_data, run_progression.run_seed);
     if state.active.is_some() {
         apply_active_chain_step(map, run_progression, game_data, state);
         return;
     }
     if state.provisional.is_none() {
-        if !has_awakened_skill_fragment(skill_fragments) {
-            return;
-        }
-        let Some(chain) = select_provisional_chain(run_progression, game_data, state) else {
+        let Some(chain) =
+            select_provisional_chain(run_progression, skill_fragments, game_data, state)
+        else {
             return;
         };
         state.provisional = Some(ProvisionalBossOmenState {
@@ -286,64 +451,47 @@ pub fn complete_forced_boss_with_exit_gate(
         return Ok(false);
     }
 
-    let gate_node_ids = map
-        .terminals
-        .iter()
-        .filter(|terminal| terminal.resolution == FacilityTerminalResolution::BossOmenExitGate)
-        .map(|terminal| terminal.node_id)
-        .collect::<Vec<_>>();
-    if gate_node_ids.is_empty() {
+    if !progression.reveal_terminal_nodes(map, FacilityTerminalResolution::BossOmenExitGate)? {
         return Ok(false);
     }
-    for gate_node_id in &gate_node_ids {
-        let gate = map
-            .node_mut(*gate_node_id)
-            .ok_or(crate::game::map::MapProgressionError::MissingNode)?;
-        gate.state = MapNodeState::Available;
-        gate.visibility = MapNodeVisibility::Revealed;
-    }
-    progression.available_node_ids = gate_node_ids;
-    progression
-        .available_node_ids
-        .sort_by_key(|node_id| node_id.0.as_u128());
     state.clear_after_forced_boss_victory(forced_boss_id);
     Ok(true)
 }
 
-fn has_awakened_skill_fragment(skill_fragments: &SkillFragmentInventory) -> bool {
-    skill_fragments
-        .progress_entries()
-        .any(|(_, progress)| progress.awakened)
-}
-
 fn select_provisional_chain<'a>(
     run_progression: &RunProgression,
+    skill_fragments: &SkillFragmentInventory,
     game_data: &'a GameDataBase,
     state: &BossOmenRunState,
 ) -> Option<&'a BossOmenChain> {
-    let mut candidates = game_data
-        .boss_omen_data
-        .chains
+    state
+        .remaining_chain_ids
         .iter()
+        .filter_map(|chain_id| game_data.boss_omen_data.get_by_id(chain_id.as_str()))
         .filter(|chain| run_progression.floor_index() >= chain.min_floor)
-        .filter(|chain| !state.skipped_chain_ids.contains(&chain.id))
-        .collect::<Vec<_>>();
-    if candidates.is_empty() && !state.skipped_chain_ids.is_empty() {
-        candidates = game_data
-            .boss_omen_data
-            .chains
-            .iter()
-            .filter(|chain| run_progression.floor_index() >= chain.min_floor)
-            .collect::<Vec<_>>();
-    }
-    candidates.sort_by(|left, right| left.id.as_str().cmp(right.id.as_str()));
-    if candidates.is_empty() {
-        return None;
-    }
-    let seed =
-        determinism::seed_with_namespace(run_progression.current_floor_seed(), 0x424F_4D45_4E31);
-    let index = (seed as usize) % candidates.len();
-    Some(candidates[index])
+        .filter(|chain| {
+            chain
+                .dependencies
+                .iter()
+                .all(|dependency| state.completed_chain_ids.contains(dependency))
+        })
+        .filter(|chain| {
+            chain.required_fragment.as_ref().is_none_or(|required| {
+                skill_fragments.contains(&required.fragment_id)
+                    && (!required.awakening_required
+                        || skill_fragments.any_form_unlocked(&required.fragment_id, "awakened"))
+            })
+        })
+        .next()
+}
+
+fn stable_text_hash(value: &str) -> u64 {
+    value
+        .as_bytes()
+        .iter()
+        .fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
+            (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3)
+        })
 }
 
 fn apply_active_chain_step(
@@ -532,3 +680,120 @@ fn select_overlay_node(
     });
     candidates.first().map(|node| node.id)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use uuid::Uuid;
+
+    fn node(value: u128) -> MapNodeId {
+        MapNodeId::new(Uuid::from_u128(value))
+    }
+
+    fn placed(chain_id: &str, node_id: MapNodeId) -> PlacedBossOmenSourceState {
+        PlacedBossOmenSourceState {
+            node_id,
+            chain_id: BossOmenChainId::new(chain_id),
+            boss_abnormality_id: format!("abnormality_{chain_id}"),
+            step_id: BossOmenStepId::new("step_1"),
+            step_index: 0,
+            source_kind: BossOmenSourceKind::Combat,
+            hint_id: "hint".to_string(),
+            title_id: "title".to_string(),
+            description_id: "description".to_string(),
+            event_id: None,
+            encounter_id: Some("source_encounter".to_string()),
+            confirmed: true,
+        }
+    }
+
+    #[test]
+    fn provisional_failure_requeues_but_active_failure_retains_same_step() {
+        let mut provisional = BossOmenRunState {
+            remaining_chain_ids: vec![BossOmenChainId::new("a"), BossOmenChainId::new("b")],
+            provisional: Some(ProvisionalBossOmenState {
+                chain_id: BossOmenChainId::new("a"),
+                boss_abnormality_id: "abnormality_a".to_string(),
+                step_index: 0,
+            }),
+            placed_source: Some(placed("a", node(1))),
+            ..Default::default()
+        };
+        assert!(provisional.handle_source_failure(node(1)));
+        assert!(provisional.provisional.is_none());
+        assert_eq!(
+            provisional
+                .remaining_chain_ids
+                .iter()
+                .map(BossOmenChainId::as_str)
+                .collect::<Vec<_>>(),
+            vec!["b", "a"]
+        );
+
+        let active_state = ActiveBossOmenState {
+            chain_id: BossOmenChainId::new("a"),
+            boss_abnormality_id: "abnormality_a".to_string(),
+            next_step_index: 1,
+            completed_steps: vec![BossOmenStepId::new("step_1")],
+        };
+        let mut active = BossOmenRunState {
+            remaining_chain_ids: vec![BossOmenChainId::new("a"), BossOmenChainId::new("b")],
+            active: Some(active_state.clone()),
+            placed_source: Some(PlacedBossOmenSourceState {
+                step_index: 1,
+                ..placed("a", node(2))
+            }),
+            ..Default::default()
+        };
+        assert!(active.handle_source_failure(node(2)));
+        assert_eq!(active.active, Some(active_state));
+        assert!(active.placed_source.is_none());
+        assert_eq!(
+            active
+                .remaining_chain_ids
+                .iter()
+                .map(BossOmenChainId::as_str)
+                .collect::<Vec<_>>(),
+            vec!["a", "b"]
+        );
+    }
+
+    #[test]
+    fn forced_boss_victory_consumes_cycle_member_and_records_run_completion() {
+        let mut state = BossOmenRunState {
+            remaining_chain_ids: vec![BossOmenChainId::new("a")],
+            active: Some(ActiveBossOmenState {
+                chain_id: BossOmenChainId::new("a"),
+                boss_abnormality_id: "abnormality_a".to_string(),
+                next_step_index: 1,
+                completed_steps: vec![BossOmenStepId::new("step_1")],
+            }),
+            forced_boss: Some(ForcedBossOmenNodeState {
+                node_id: node(1),
+                chain_id: BossOmenChainId::new("a"),
+                boss_abnormality_id: "abnormality_a".to_string(),
+                encounter_id: "boss_a".to_string(),
+            }),
+            ..Default::default()
+        };
+
+        state.clear_after_forced_boss_victory(node(1));
+
+        assert!(state.remaining_chain_ids.is_empty());
+        assert!(state
+            .completed_chain_ids
+            .contains(&BossOmenChainId::new("a")));
+        assert!(state.active.is_none());
+        assert!(state.forced_boss.is_none());
+    }
+}
+
+crate::authoring::clone_shape::struct_shape!(BossOmenRunState {
+    provisional,
+    active,
+    placed_source,
+    forced_boss,
+    cycle_index,
+    remaining_chain_ids,
+    completed_chain_ids
+});

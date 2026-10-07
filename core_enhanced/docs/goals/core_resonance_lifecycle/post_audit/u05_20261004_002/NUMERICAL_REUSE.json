@@ -1,0 +1,115 @@
+{
+  "at_utc": "2026-10-04T14:10:30.204769+00:00",
+  "prior_cost_review": {
+    "path": "core_enhanced/docs/goals/core_resonance_lifecycle/post_audit/u05_20261004_001/PC_ACCOUNTING_RECHECK.json",
+    "sha256": "8bae9e26dc50765ff244f9d37a75939efdd33665429953e3ed8a4f3248f7b6e4"
+  },
+  "raw_bindings": {
+    "before": {
+      "path": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json",
+      "sha256": "59fe0fb11a6e8566447b1d7b2389ef0c25cb85c3cbd62a7f5e0476f29998cdae"
+    },
+    "after": {
+      "path": "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/evidence/pc_raw_current_003.json",
+      "sha256": "d0017b1f69c8c196a0a41c404d32d9cf32ff624d5dd56f4dfc46ba88cee577f7"
+    }
+  },
+  "source_basis": {
+    "core_enhanced/src/game/battle/core/types.rs": "ae6fd09bc72f249725f77649fb013b824db19d4fbe6d1e804532c10ad305eb9a",
+    "core_enhanced/src/game/battle/runtime_facts.rs": "e561564e411a74c4636e35882a335e22d77414de23644ffe606ff62a0c69e043",
+    "core_enhanced/src/authoring/clone_shape.rs": "0a2655ed95b092c4e61fe6fdeaeaf17f09a44f89da5f51cac791dd78433ab70f"
+  },
+  "rows": 576,
+  "claim": "All non-timing fields equal after ONLY the explicit per-row state-size/source-traversal adjustments below; actual costs are not unchanged.",
+  "excluded": [
+    "setup.elapsed_ns",
+    "measurement.elapsed_ns"
+  ],
+  "current_toolchain": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+  },
+  "reuse_judgment": "Reuse independent audit001 all576 raw-row accounting review: comparator/raw/source and product identities unchanged. New mutation is exclusively documents. Costs increased; historical strict failure and original96 log mismatches remain preserved. Gameplay36 conditions and original numeric guards remain separately mandatory.",
+  "R05": {
+    "source_digest": "3129db450b14515564da3845313cf0ce1539e9f99c032c89788a3a5fe840d283",
+    "raw_sha256": "ea440b1040c919d8f3b793cd10904ec7dac5aeceab142fb52439125a3097c78f",
+    "baseline_sha256": "117d96eeee8d0ce75a1a648074653d681f6bca89e70ac6ee8f3d59e8b289c497",
+    "raw_exit_code": 101,
+    "classification": "warning_concurrent_peak_only",
+    "concurrent_peak_excess_bytes": 466821,
+    "other_hard_guard_failures": [],
+    "event_heavy": {
+      "caps": {
+        "operations": 70671,
+        "retained": 276174,
+        "peak": 276174
+      },
+      "peak_samples": [
+        267527,
+        267527,
+        267527,
+        267527,
+        267527
+      ],
+      "max_peak_bytes": 267527,
+      "operations": [
+        44194,
+        44194,
+        44194,
+        44194,
+        44194
+      ],
+      "retained_samples": [
+        263238,
+        263238,
+        263238,
+        263238,
+        263238
+      ],
+      "original_allocation_guard_pass": true,
+      "repeatable": true,
+      "parity": true,
+      "latency_gate_applicable": false,
+      "p95_ns": 16053858,
+      "latency_absolute_cap_pass_observation": true,
+      "latency_regression_observation": false
+    },
+    "concurrent_sessions": {
+      "caps": {
+        "operations": 389240,
+        "retained": 4196928,
+        "peak": 9030188
+      },
+      "peak_samples": [
+        9262348,
+        9362400,
+        9385313,
+        9374449,
+        9497009
+      ],
+      "max_peak_bytes": 9497009,
+      "operations": [
+        370928,
+        370928,
+        370928,
+        370928,
+        370928
+      ],
+      "retained_samples": [
+        4196928,
+        4196928,
+        4196928,
+        4196928,
+        4196928
+      ],
+      "original_allocation_guard_pass": false,
+      "repeatable": true,
+      "parity": true,
+      "latency_gate_applicable": false,
+      "p95_ns": 12289201,
+      "latency_absolute_cap_pass_observation": false,
+      "latency_regression_observation": false
+    }
+  },
+  "passed": true
+}

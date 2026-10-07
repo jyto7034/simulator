@@ -1,6 +1,7 @@
 use crate::game::{
     battle::types::{BattleUnitStatScale, DeploymentAffinity},
     combat_setup::mission_policy::CombatMissionPolicy,
+    data::pve_data::PveWaveActivationData,
     enums::{RiskLevel, Tier},
     map::{MapNodeCategory, MapNodeId},
     resources::Position,
@@ -190,7 +191,7 @@ pub struct SpawnWaveEnemyEntry {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SpawnWave {
     pub id: String,
-    pub time_ms: u32,
+    pub activation: PveWaveActivationData,
     pub spawn_zone_ids: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub route_id: Option<String>,
@@ -238,6 +239,8 @@ pub struct BattlefieldGenerationRequest<'a> {
     pub category: MapNodeCategory,
     pub encounter_id: Option<&'a str>,
     pub seed: u64,
+    /// Retained for public source compatibility. Battlefield generation deliberately
+    /// derives combat tuning from manifested difficulty, never from the current Floor.
     pub floor_index: u32,
 }
 
@@ -277,3 +280,27 @@ pub struct CombatPreview {
     #[serde(skip)]
     pub enemy_stat_scale: BattleUnitStatScale,
 }
+
+crate::authoring::clone_shape::struct_shape!(CombatPreview {
+    node_id,
+    encounter_id,
+    battlefield_template_id,
+    node_type,
+    mission_variant,
+    survive_timer_ms,
+    mission_risk,
+    archetype,
+    size_class,
+    width,
+    height,
+    tiles,
+    valid_tiles,
+    deployment_zones,
+    spawn_zones,
+    routes,
+    spawn_waves,
+    obstacles,
+    enemy_briefing,
+    threat_warnings,
+    enemy_stat_scale
+});

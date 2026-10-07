@@ -1,0 +1,36 @@
+{
+  "target_sha256": "24bd3b7e748b94037b2ec57822a7b7ef2b67406b9d2635a3a23a6b3eac7ba8bf",
+  "source_files_unchanged": 333,
+  "records_verified": 40,
+  "artifacts_verified": 5,
+  "archive_exact": true,
+  "pc_copied_built_run_identity_verified": true,
+  "focused_passed": 74,
+  "probe_source_sha256": "61dc901738ed1e5ab4d24f99f43a7f25a7c456f533fd5d45474acc8921183249",
+  "test_only_bindings": [
+    {
+      "run": "projectile_probes_001.json",
+      "exit_code": 101,
+      "source_sha256": "24bd3b7e748b94037b2ec57822a7b7ef2b67406b9d2635a3a23a6b3eac7ba8bf",
+      "log_sha256": "44cc30f3e2a1615bee255502fc3b85b656a33170d66cfb775adb2a602f746bfd"
+    },
+    {
+      "run": "target_locked_success_001.json",
+      "exit_code": 0,
+      "source_sha256": "24bd3b7e748b94037b2ec57822a7b7ef2b67406b9d2635a3a23a6b3eac7ba8bf",
+      "log_sha256": "7dc1eeef0a67bdb0b0b86148a525fc8ae257128f586dc3dc8cbd66c839cfdf52"
+    },
+    {
+      "run": "area_success_001.json",
+      "exit_code": 0,
+      "source_sha256": "24bd3b7e748b94037b2ec57822a7b7ef2b67406b9d2635a3a23a6b3eac7ba8bf",
+      "log_sha256": "462978470bf05dba119c4277b2c042c5af2df9041562fd209a419d35a6ab432a"
+    },
+    {
+      "run": "predecessor_control/scalar_projectiles_001.json",
+      "exit_code": 0,
+      "source_sha256": "b16697bfe8c518944f0bddcf800b0f1e005ed639edd6fe915e4d96c726a6e1f4",
+      "log_sha256": "a4e398d60930b6bdfb9553df1edf28c489fdba19d73faacccf414089ba0148e9"
+    }
+  ]
+}

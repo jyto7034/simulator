@@ -1,5 +1,6 @@
 [package]
 name = "game_server"
+default-run = "game_server"
 version.workspace = true
 edition.workspace = true
 description.workspace = true
@@ -28,6 +29,13 @@ lazy_static = "1.5.0"
 ron = "0.5.1"
 
 game_core = { path = "../core_enhanced" }
+metrics = { version = "=0.24.6", optional = true }
+metrics-exporter-prometheus = { version = "=0.18.3", default-features = false, features = ["http-listener"], optional = true }
+crossbeam-epoch = { version = "=0.9.21", optional = true }
+
+[features]
+runtime-measurement = ["runtime-observation"]
+runtime-observation = ["game_core/runtime-observation", "dep:metrics", "dep:metrics-exporter-prometheus", "dep:crossbeam-epoch"]
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }

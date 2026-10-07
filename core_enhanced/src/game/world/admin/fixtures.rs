@@ -98,9 +98,8 @@ impl GameCore {
         let consumed_node_id = MapNodeId::new(self.state.uuid_manager.next(ADMIN_NODE_NS));
         debug_assert_eq!(consumed_node_id, node_id);
         let run = self.run_state_mut()?;
-        run.map.nodes.push(node);
-        run.map_progression.current_node_id = Some(node_id);
-        run.map_progression.available_node_ids = vec![node_id];
+        run.map_progression
+            .activate_detached_fixture_node(&mut run.map, node);
         self.state.node_session = Some(session.clone());
         Ok(session)
     }
@@ -224,17 +223,17 @@ impl GameCore {
                 .ok_or(GameError::MissingResource("MapNode"))?;
             node.kind_id = MapNodeKindId::new("save_point");
             node.category = MapNodeCategory::SavePoint;
-            node.state = MapNodeState::Unavailable;
-            node.visibility = MapNodeVisibility::Revealed;
             node.payload = MapNodePayload::SavePoint;
             node.omen = None;
             node.combat_difficulty = None;
-            let session = NodeSession::from(&*node);
-            run.map_progression.current_node_id = Some(node_id);
-            run.map_progression.available_node_ids.clear();
             run.map_progression
-                .completed_node_ids
-                .retain(|completed| *completed != node_id);
+                .activate_authored_fixture_node(&mut run.map, node_id)
+                .map_err(|_| GameError::MissingResource("MapNode"))?;
+            let session = NodeSession::from(
+                run.map
+                    .node(node_id)
+                    .ok_or(GameError::MissingResource("MapNode"))?,
+            );
             run.event_sessions.remove(&node_id);
             run.shop_sessions.remove(&node_id);
             run.combat_previews.remove(&node_id);

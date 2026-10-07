@@ -9,8 +9,8 @@ use crate::game::{
     battle::{
         scenario::{ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef, ScenarioUnitSpawn},
         types::{
-            BattleEquipmentEnhancement, BattleUnitDraft, BattleUnitSource, BattleUnitThreatClass,
-            EmployeeBattleStartCondition, UnitCombatProfile,
+            BattleEquipmentBinding, BattleEquipmentEnhancement, BattleUnitDraft, BattleUnitSource,
+            BattleUnitThreatClass, EmployeeBattleStartCondition, UnitCombatProfile,
         },
     },
     behavior::GameError,
@@ -99,6 +99,46 @@ pub(crate) fn effective_combat_profile_for_employee(
     )
 }
 
+/// The same final battle projection as spawning, with only the equipped relic
+/// penalties appended. Persistent and certified profiles use their old paths.
+pub(crate) fn effective_combat_profile_for_employee_with_relics(
+    roster: &EmployeeRoster,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    relics: &crate::game::relic::RelicInventory,
+    game_data: &GameDataBase,
+    employee_uuid: Uuid,
+) -> Result<UnitCombatProfile, GameError> {
+    let mut profile = effective_combat_profile_for_employee(
+        roster,
+        inventory,
+        skill_fragments,
+        game_data,
+        employee_uuid,
+    )?;
+    if relics
+        .employee_slots(employee_uuid)
+        .iter()
+        .any(Option::is_some)
+    {
+        let draft = battle_unit_draft_for_employee_with_availability(
+            roster,
+            inventory,
+            skill_fragments,
+            game_data,
+            employee_uuid,
+            false,
+        )?;
+        profile.stats = crate::game::battle::core::relic_numeric::penalize_employee_stats(
+            relics,
+            game_data,
+            employee_uuid,
+            draft.effective_stats(game_data)?,
+        )?;
+    }
+    Ok(profile)
+}
+
 pub(crate) fn effective_combat_profile_for_employee_with_item_slot(
     employee: &Employee,
     inventory: &Inventory,
@@ -117,6 +157,54 @@ pub(crate) fn effective_combat_profile_for_employee_with_item_slot(
     .combat_profile(game_data)
 }
 
+/// Builds a safe-zone-only profile for skill-fragment compatibility checks.
+/// A missing weapon remains explicit (`weapon_profile == None`) so this helper
+/// cannot be used as a battle gameplay source.
+pub(crate) fn skill_fragment_compatibility_profile_for_employee_with_item_slot(
+    employee: &Employee,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &GameDataBase,
+    item_slot: &ItemSlot,
+) -> Result<UnitCombatProfile, GameError> {
+    let mut profile =
+        employee.combat_profile_for_battle(&game_data.skill_fragment_data, skill_fragments)?;
+    let mut weapon_profile = None;
+    for equipped in item_slot.iter() {
+        let owned = inventory
+            .equipments
+            .get_item(&equipped.instance_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?;
+        if owned.meta.uuid != equipped.base_uuid {
+            return Err(GameError::InvalidStaticData(
+                "equipped copy/base identity mismatch".into(),
+            ));
+        }
+        let equipment = game_data
+            .equipment_data
+            .get_by_uuid(&equipped.base_uuid)
+            .ok_or(GameError::MissingResource("EquipmentMetadata"))?;
+        if equipment.equipment_type != crate::game::data::equipment_data::EquipmentType::Weapon {
+            continue;
+        }
+        let next = equipment.weapon_profile.as_ref().ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "weapon equipment '{}' is missing weapon_profile",
+                equipment.id
+            ))
+        })?;
+        if weapon_profile.replace(next).is_some() {
+            return Err(GameError::InvalidStaticData(
+                "employee loadout contains multiple equipped weapons".to_string(),
+            ));
+        }
+    }
+    if let Some(weapon_profile) = weapon_profile {
+        profile.apply_weapon_profile(weapon_profile)?;
+    }
+    Ok(profile)
+}
+
 pub(crate) fn certified_combat_profile_for_employee(
     employee: &Employee,
     inventory: &Inventory,
@@ -126,8 +214,12 @@ pub(crate) fn certified_combat_profile_for_employee(
     let equipped_items = employee
         .loadout
         .item_slot
-        .iter()
-        .map(|equipped| equipped.base_uuid)
+        .iter_with_address()
+        .map(|(slot, equipped)| BattleEquipmentBinding {
+            base_uuid: equipped.base_uuid,
+            persistent_copy_uuid: Some(equipped.instance_uuid),
+            slot: Some(slot),
+        })
         .collect::<Vec<_>>();
     let equipped_item_enhancements = employee
         .loadout
@@ -138,8 +230,14 @@ pub(crate) fn certified_combat_profile_for_employee(
                 .equipments
                 .get_item(&equipped.instance_uuid)
                 .ok_or(GameError::InventoryItemNotFound)?;
+            if owned.meta.uuid != equipped.base_uuid {
+                return Err(GameError::InvalidStaticData(
+                    "equipped copy/base identity mismatch".into(),
+                ));
+            }
             Ok(BattleEquipmentEnhancement {
                 base_uuid: equipped.base_uuid,
+                persistent_copy_uuid: Some(equipped.instance_uuid),
                 enhancement_level: owned.enhancement_level,
             })
         })
@@ -157,6 +255,7 @@ pub(crate) fn certified_combat_profile_for_employee(
         level: employee.battle_tier(game_data.run_policy.as_ref()),
         stat_scale: Default::default(),
         growth_stacks: employee.combat_profile.growth_stacks.clone(),
+        equipment_layout: Some(employee.loadout.item_slot.layout_kind()),
         equipped_items,
         equipped_item_enhancements,
         employee_start_condition: None,
@@ -167,7 +266,7 @@ pub(crate) fn certified_combat_profile_for_employee(
     Ok(profile)
 }
 
-fn battle_unit_draft_for_employee_with_availability(
+pub(crate) fn battle_unit_draft_for_employee_with_availability(
     roster: &EmployeeRoster,
     inventory: &Inventory,
     skill_fragments: &SkillFragmentInventory,
@@ -198,9 +297,13 @@ fn battle_unit_draft_for_employee_from_item_slot(
     game_data: &GameDataBase,
     item_slot: &ItemSlot,
 ) -> Result<BattleUnitDraft, GameError> {
-    let equipped_items: Vec<Uuid> = item_slot
-        .iter()
-        .map(|equipped| equipped.base_uuid)
+    let equipped_items: Vec<BattleEquipmentBinding> = item_slot
+        .iter_with_address()
+        .map(|(slot, equipped)| BattleEquipmentBinding {
+            base_uuid: equipped.base_uuid,
+            persistent_copy_uuid: Some(equipped.instance_uuid),
+            slot: Some(slot),
+        })
         .collect();
     let equipped_item_enhancements = item_slot
         .iter()
@@ -209,8 +312,14 @@ fn battle_unit_draft_for_employee_from_item_slot(
                 .equipments
                 .get_item(&equipped.instance_uuid)
                 .ok_or(GameError::InventoryItemNotFound)?;
+            if owned.meta.uuid != equipped.base_uuid {
+                return Err(GameError::InvalidStaticData(
+                    "equipped copy/base identity mismatch".into(),
+                ));
+            }
             Ok(BattleEquipmentEnhancement {
                 base_uuid: equipped.base_uuid,
+                persistent_copy_uuid: Some(equipped.instance_uuid),
                 enhancement_level: owned.enhancement_level,
             })
         })
@@ -225,6 +334,7 @@ fn battle_unit_draft_for_employee_from_item_slot(
         level: employee.battle_tier(game_data.run_policy.as_ref()),
         stat_scale: Default::default(),
         growth_stacks: employee.combat_profile.growth_stacks.clone(),
+        equipment_layout: Some(item_slot.layout_kind()),
         equipped_items,
         equipped_item_enhancements,
         employee_start_condition: Some(EmployeeBattleStartCondition {

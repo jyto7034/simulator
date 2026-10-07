@@ -1,0 +1,24 @@
+{
+  "verdict": "Complete",
+  "confidence": "High",
+  "open_findings": [],
+  "closed_findings": [
+    {
+      "id": "F01",
+      "prior_audit": "u03_20261004_001",
+      "disposition": "Closed: actual trusted employee/lifecycle/owned-result origin typed; ordinary caller refusal retained; public complete-root/repeat/observer evidence current."
+    },
+    {
+      "id": "F02",
+      "prior_audit": "u03_20261004_002",
+      "disposition": "Closed: present trusted Goodbye definition, admitted cast deadline and equivalent retained deployment lookup repaired; exact original independent probes now2/2 pass plus current durable first/second deployment/root/observer/private controls."
+    }
+  ],
+  "nonfinding_adjudications": [
+    {
+      "candidate": "BeginSustained consumed error result in commands.rs",
+      "assessment": "Self-only Parry/Overlay/shared Shield/Channel target mismatches are rejected by skill_data.rs public validation. Channel membership/active/work eligibility can change and remains a normal refusal. Native hard/authoring failures populate first-fault ledger; enclosing poll prevents candidate publication despite local is_err/break. No blanket promotion warranted."
+    }
+  ],
+  "new_policy_waivers": []
+}

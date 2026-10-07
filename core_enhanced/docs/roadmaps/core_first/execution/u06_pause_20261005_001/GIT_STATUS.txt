@@ -1,0 +1,466 @@
+ M Cargo.lock
+ D core_enhanced/.cargo/config.toml
+ M core_enhanced/Cargo.toml
+ M core_enhanced/docs/README.md
+ M core_enhanced/docs/audit/live_skill_catalog_manifest.ron
+ M core_enhanced/docs/core_runtime_contract.md
+ M core_enhanced/docs/data_loading_contract.md
+ M core_enhanced/docs/decisions/elite_monolith_remanifestation_compendium_policy_draft_2026-07-26.md
+ M core_enhanced/docs/decisions/employee_domain_policy_2026-07-17.md
+ M core_enhanced/docs/decisions/event_employee_check_dice_policy_2026-07-17.md
+ M core_enhanced/docs/decisions/facility_map_and_node_manifestation_policy_2026-07-25_26.md
+ M core_enhanced/docs/decisions/local_encounter_compendium_persistence_policy_draft_2026-07-25.md
+ M core_enhanced/docs/decisions/save_point_trauma_recovery_policy_draft_2026-07-25.md
+ D core_enhanced/docs/engineering_workflow.md
+ D core_enhanced/docs/game_design_overview.ko.md
+ M core_enhanced/docs/game_rulebook.md
+ D core_enhanced/docs/goal_completion_review_guide.md
+ D core_enhanced/docs/probe_registry.md
+ M core_enhanced/docs/skill_target_contract.md
+ D core_enhanced/docs/skills/abnormality_skill_design_notes.ko.md
+ M core_enhanced/docs/skills/lobotomy_content_catalog.md
+ M core_enhanced/docs/skills/skill_fragment_system.md
+ M core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs
+ M core_enhanced/src/bin/generate_event_contract_fixture.rs
+ M core_enhanced/src/bin/generate_inventory_contract_fixture.rs
+ D core_enhanced/src/bin/generate_research_delivery_contract_fixture.rs
+ M core_enhanced/src/bin/generate_shop_contract_fixture.rs
+ M core_enhanced/src/game/ability.rs
+ D core_enhanced/src/game/abnormality_research.rs
+ M core_enhanced/src/game/battle/battlefield/field.rs
+ M core_enhanced/src/game/battle/battlefield/mod.rs
+ M core_enhanced/src/game/battle/buffs.rs
+ M core_enhanced/src/game/battle/cooldown.rs
+ M core_enhanced/src/game/battle/core/basic_attack.rs
+ M core_enhanced/src/game/battle/core/basic_attack_projectile.rs
+ M core_enhanced/src/game/battle/core/build.rs
+ M core_enhanced/src/game/battle/core/commands.rs
+ M core_enhanced/src/game/battle/core/damage_runtime.rs
+ M core_enhanced/src/game/battle/core/death_runtime.rs
+ M core_enhanced/src/game/battle/core/ids.rs
+ M core_enhanced/src/game/battle/core/mod.rs
+ M core_enhanced/src/game/battle/core/movement/blocking.rs
+ M core_enhanced/src/game/battle/core/movement/engine.rs
+ M core_enhanced/src/game/battle/core/movement/lifecycle.rs
+ M core_enhanced/src/game/battle/core/movement/mod.rs
+ M core_enhanced/src/game/battle/core/movement/planner.rs
+ M core_enhanced/src/game/battle/core/movement/rapier_backend.rs
+ M core_enhanced/src/game/battle/core/movement/steering.rs
+ M core_enhanced/src/game/battle/core/movement/types.rs
+ M core_enhanced/src/game/battle/core/projectile_math.rs
+ M core_enhanced/src/game/battle/core/resonance_runtime.rs
+ M core_enhanced/src/game/battle/core/sim.rs
+ M core_enhanced/src/game/battle/core/skill_runtime/area.rs
+ M core_enhanced/src/game/battle/core/skill_runtime/cast.rs
+ M core_enhanced/src/game/battle/core/skill_runtime/mod.rs
+ M core_enhanced/src/game/battle/core/skill_runtime/projectile.rs
+ M core_enhanced/src/game/battle/core/spatial.rs
+ M core_enhanced/src/game/battle/core/target_usefulness.rs
+ M core_enhanced/src/game/battle/core/targeting.rs
+ M core_enhanced/src/game/battle/core/triggers.rs
+ M core_enhanced/src/game/battle/core/types.rs
+ M core_enhanced/src/game/battle/damage.rs
+ D core_enhanced/src/game/battle/death.rs
+ M core_enhanced/src/game/battle/enums.rs
+ M core_enhanced/src/game/battle/event_log.rs
+ M core_enhanced/src/game/battle/mod.rs
+ M core_enhanced/src/game/battle/recording.rs
+ M core_enhanced/src/game/battle/result_stats.rs
+ M core_enhanced/src/game/battle/scenario.rs
+ M core_enhanced/src/game/battle/stat_pipeline.rs
+ M core_enhanced/src/game/battle/tile_range.rs
+ M core_enhanced/src/game/battle/types.rs
+ D core_enhanced/src/game/battle/validation/attacks.rs
+ D core_enhanced/src/game/battle/validation/auto_attack.rs
+ D core_enhanced/src/game/battle/validation/autocast.rs
+ D core_enhanced/src/game/battle/validation/battlefield.rs
+ D core_enhanced/src/game/battle/validation/buffs.rs
+ D core_enhanced/src/game/battle/validation/deaths.rs
+ D core_enhanced/src/game/battle/validation/focus.rs
+ D core_enhanced/src/game/battle/validation/mod.rs
+ D core_enhanced/src/game/battle/validation/parent.rs
+ D core_enhanced/src/game/battle/validation/spawns.rs
+ D core_enhanced/src/game/battle/validation/state.rs
+ D core_enhanced/src/game/battle/validation/types.rs
+ D core_enhanced/src/game/battle/validation/unit_stats.rs
+ D core_enhanced/src/game/battle/validation/validator.rs
+ M core_enhanced/src/game/behavior.rs
+ M core_enhanced/src/game/boss_omen.rs
+ M core_enhanced/src/game/combat_power.rs
+ M core_enhanced/src/game/combat_preview/mod.rs
+ M core_enhanced/src/game/combat_preview/types.rs
+ M core_enhanced/src/game/combat_preview/validation.rs
+ M core_enhanced/src/game/combat_setup/battlefield_plan.rs
+ M core_enhanced/src/game/combat_setup/defense_object.rs
+ M core_enhanced/src/game/combat_setup/enemy_spawns.rs
+ M core_enhanced/src/game/combat_setup/mission_policy.rs
+ M core_enhanced/src/game/combat_setup/mod.rs
+ M core_enhanced/src/game/combat_setup/player_spawns.rs
+ M core_enhanced/src/game/combat_setup/rewards.rs
+ M core_enhanced/src/game/combat_setup/scenario_groups.rs
+ M core_enhanced/src/game/data/abnormality_data.rs
+ M core_enhanced/src/game/data/boss_omen_data.rs
+ M core_enhanced/src/game/data/consumable_data.rs
+ M core_enhanced/src/game/data/corroded_employee_data.rs
+ M core_enhanced/src/game/data/corroded_wave_data.rs
+ M core_enhanced/src/game/data/employee_data.rs
+ M core_enhanced/src/game/data/equipment_data.rs
+ M core_enhanced/src/game/data/event_data.rs
+ M core_enhanced/src/game/data/live_ron.rs
+ M core_enhanced/src/game/data/mod.rs
+ M core_enhanced/src/game/data/pve_data.rs
+ M core_enhanced/src/game/data/reward_data.rs
+ M core_enhanced/src/game/data/run_policy_data.rs
+ M core_enhanced/src/game/data/shop_data.rs
+ M core_enhanced/src/game/data/skill_data.rs
+ M core_enhanced/src/game/data/skill_fragment_data.rs
+ M core_enhanced/src/game/data/validation.rs
+ M core_enhanced/src/game/data/visual_novel_data.rs
+ M core_enhanced/src/game/data/visual_novel_trigger_data.rs
+ M core_enhanced/src/game/employee.rs
+ M core_enhanced/src/game/encounter_compendium.rs
+ M core_enhanced/src/game/events/combat.rs
+ M core_enhanced/src/game/growth.rs
+ M core_enhanced/src/game/managers/uuid_manager.rs
+ M core_enhanced/src/game/map/facility.rs
+ M core_enhanced/src/game/map/facility_generator.rs
+ M core_enhanced/src/game/map/mod.rs
+ M core_enhanced/src/game/map/progression.rs
+ M core_enhanced/src/game/map/types.rs
+ M core_enhanced/src/game/mod.rs
+ M core_enhanced/src/game/monolith.rs
+ D core_enhanced/src/game/pve_bonus_objectives.rs
+ M core_enhanced/src/game/range_preview.rs
+ M core_enhanced/src/game/recruitment.rs
+ M core_enhanced/src/game/resources/inventory.rs
+ M core_enhanced/src/game/resources/item_slot.rs
+ M core_enhanced/src/game/resources/mod.rs
+ M core_enhanced/src/game/resources/selection.rs
+ M core_enhanced/src/game/resources/state.rs
+ M core_enhanced/src/game/reward.rs
+ M core_enhanced/src/game/reward_policy.rs
+ M core_enhanced/src/game/skill_fragment.rs
+ M core_enhanced/src/game/stats.rs
+ M core_enhanced/src/game/visual_novel.rs
+ M core_enhanced/src/game/wave_resolution.rs
+ M core_enhanced/src/game/world.rs
+ M core_enhanced/src/game/world/action_capability.rs
+ M core_enhanced/src/game/world/active_run.rs
+ M core_enhanced/src/game/world/admin.rs
+ M core_enhanced/src/game/world/admin/commands.rs
+ M core_enhanced/src/game/world/admin/fixtures.rs
+ M core_enhanced/src/game/world/admin/grants.rs
+ M core_enhanced/src/game/world/admin/tests.rs
+ M core_enhanced/src/game/world/battle_capability.rs
+ M core_enhanced/src/game/world/combat.rs
+ M core_enhanced/src/game/world/combat_trace.rs
+ M core_enhanced/src/game/world/event_node.rs
+ M core_enhanced/src/game/world/facility.rs
+ M core_enhanced/src/game/world/headquarters.rs
+ M core_enhanced/src/game/world/helpers.rs
+ M core_enhanced/src/game/world/maintenance.rs
+ M core_enhanced/src/game/world/map_content.rs
+ M core_enhanced/src/game/world/map_encounters.rs
+ M core_enhanced/src/game/world/node_flow.rs
+ M core_enhanced/src/game/world/reward.rs
+ M core_enhanced/src/game/world/shop.rs
+ M core_enhanced/src/game/world/snapshot.rs
+ M core_enhanced/src/game/world/state.rs
+ M core_enhanced/src/game/world/tests/combat.rs
+ M core_enhanced/src/game/world/tests/equipment.rs
+ M core_enhanced/src/game/world/tests/facility.rs
+ M core_enhanced/src/game/world/tests/map_flow.rs
+ M core_enhanced/src/game/world/tests/mod.rs
+ M core_enhanced/src/game/world/tests/node_sessions.rs
+ M core_enhanced/src/game/world/tests/snapshots_and_start.rs
+ M core_enhanced/src/game/world/visual_novel_flow.rs
+ M core_enhanced/src/game/world/visual_novel_triggers.rs
+ M core_enhanced/src/lib.rs
+ D core_enhanced/src/main.rs
+ M core_enhanced/tests/common/mod.rs
+ M core_enhanced/tests/live_item_skill_activation.rs
+ M core_enhanced/tests/live_skill_catalog_audit.rs
+ M core_enhanced/tests/ron_loading.rs
+ M core_enhanced/tests/skill_runtime_contract.rs
+ M core_enhanced/tests/skill_test/common/query.rs
+ M core_enhanced/tests/skill_test/common/scenario.rs
+ M core_enhanced/tests/skill_test/common/types.rs
+ D core_enhanced/tests/test_actor/mod.rs
+ M game_resources/data/abnormalities/base.ron
+ M game_resources/data/boss_omen/chains.ron
+ M game_resources/data/bundle.ron
+ M game_resources/data/consumables/base.ron
+ M game_resources/data/employees/definitions.ron
+ M game_resources/data/enemies/corroded_employees.ron
+ M game_resources/data/equipments/base.ron
+ M game_resources/data/events/rewards/base.ron
+ M game_resources/data/map/facility_templates.ron
+ M game_resources/data/map/node_assignment_profiles.ron
+ M game_resources/data/pve/encounters.ron
+ M game_resources/data/run/policy.ron
+ M game_resources/data/skill_fragments/base.ron
+ M game_resources/data/skills/base.ron
+ M game_server/Cargo.toml
+ M game_server/config/development.toml
+ M game_server/config/production.toml
+ M game_server/docs/unity_bridge_protocol.md
+ M game_server/examples/generate_action_capability_fixture.rs
+ M game_server/examples/generate_battle_revision_fixture.rs
+ M game_server/examples/generate_employee_profile_contract_fixture.rs
+ M game_server/src/env.rs
+ M game_server/src/game/load_balance_actor/handlers.rs
+ M game_server/src/game/load_balance_actor/messages.rs
+ M game_server/src/game/load_balance_actor/mod.rs
+ M game_server/src/game/player_game_actor/handlers.rs
+ M game_server/src/game/player_game_actor/messages.rs
+ M game_server/src/game/player_game_actor/mod.rs
+ M game_server/src/game/player_game_actor/session.rs
+ M game_server/src/game/player_game_actor/state.rs
+ M game_server/src/lib.rs
+ M game_server/src/main.rs
+ M game_server/src/persistence/active_run_store.rs
+ D game_server/src/persistence/encounter_compendium_store.rs
+ M game_server/src/persistence/mod.rs
+?? .cache/
+?? config/
+?? core_enhanced/core_enhanced/
+?? core_enhanced/docs/BATTLE_SHOWCASE.ko.md
+?? core_enhanced/docs/architecture/
+?? core_enhanced/docs/archive/game_rulebook_legacy_2026-10-04.md
+?? core_enhanced/docs/archive/game_rulebook_next_2026-09-10.md
+?? core_enhanced/docs/archive/goal_execution_pipeline.md
+?? core_enhanced/docs/archive/policy_to_goal_pipeline.md
+?? core_enhanced/docs/audit/current_runtime_architecture_deep_review_criteria.ko.md
+?? core_enhanced/docs/audit/current_runtime_structural_integrity_audit_criteria.ko.md
+?? core_enhanced/docs/decisions/defense_route_tactical_command_policy_2026-08-06.md
+?? core_enhanced/docs/decisions/game_rulebook_next_expedition_2026-09-27.md
+?? core_enhanced/docs/decisions/game_rulebook_next_recovery_2026-09-27.md
+?? core_enhanced/docs/decisions/game_rulebook_next_restructure_2026-09-26.md
+?? core_enhanced/docs/game_intro_ppt_brief.ko.md
+?? core_enhanced/docs/game_rules/
+?? core_enhanced/docs/goal_execution_pipeline(1).md
+?? core_enhanced/docs/goals/boss_runtime_implementation_readiness_audit/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_00_execution_preflight/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_01_battle_lifecycle_correctness/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_02_catalog_and_typed_setup/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_03_runtime_kernel_and_target_movement/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_04_track_and_rejoin_vertical_slice/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_05_live_reference_boss/
+?? core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_07_completion_audit/
+?? core_enhanced/docs/goals/conditional_wave_and_boss_summon_contract_alignment_audit/
+?? core_enhanced/docs/goals/conditional_wave_and_boss_summon_policy/
+?? core_enhanced/docs/goals/content_authoring_fragment_copies/
+?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/
+?? core_enhanced/docs/goals/content_authoring_pack_generation/
+?? core_enhanced/docs/goals/content_authoring_r08_r12_runtime/
+?? core_enhanced/docs/goals/content_authoring_r13_r16_runtime/
+?? core_enhanced/docs/goals/content_authoring_resource_lifetimes/
+?? core_enhanced/docs/goals/content_authoring_runtime_facts/
+?? core_enhanced/docs/goals/content_authoring_tool_ports/
+?? core_enhanced/docs/goals/content_authoring_value_expressions/
+?? core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/
+?? core_enhanced/docs/goals/core_battle_starter_tactics/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_final_catalog_consolidation/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_master/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_00_surface_inventory/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_01_live_data_loading_and_validation/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_02_run_map_and_persistence/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_03_roster_inventory_and_economy/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_04_interactive_node_and_visual_novel/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_05_combat_preview_and_setup/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_06_battle_lifecycle_and_result/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_07_battle_spatial_and_tactical/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_08_battle_effects_and_stats/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_09_battle_targeting_and_delivery/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_10_command_projection_and_server_seam/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_final_catalog_consolidation/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_master/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_00_current_tree_delta_inventory/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_01_live_data_loading_and_publication/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_02_run_map_and_persistence/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_03_roster_inventory_and_economy/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_04_interactive_node_and_visual_novel/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_05_combat_preview_setup_and_boss_publication/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_06_battle_lifecycle_result_and_boss_scheduling/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_07_battle_spatial_tactical_and_boss_movement/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_08_battle_effects_stats_and_boss_leaf_seams/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_09_battle_targeting_delivery_and_projectiles/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_10_command_projection_server_and_boss_boundary/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_master/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_01_p09_c08/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_02_f_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_03_p02_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_04_p03_c02/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_05_p04_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_06_p05_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_07_p06_c05/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_08_p07_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_09_p07_c02/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_10_p08_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_11_p08_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_12_p08_c02/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_13_p08_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_14_p09_c02/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_15_p09_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_16_p09_c06/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_17_p09_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_18_p09_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_19_p01_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_20_p02_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_21_p02_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_22_p03_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_23_p03_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_24_p04_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_25_f_c02/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_26_p04_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_27_p05_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_28_p08_c05/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_29_p09_c05/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_30_p10_c01/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_31_p10_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_32_p10_c05/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_33_p10_c02/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_34_p10_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_35_p10_c07/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_36_p05_c05/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_37_p06_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_38_p08_c06/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_39_p07_c03/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_40_p07_c04/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_41_p06_c06/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_42_p06_c07/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_43_p09_c07/
+?? core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_44_p10_c06/
+?? core_enhanced/docs/goals/core_resonance_lifecycle/
+?? core_enhanced/docs/goals/core_result_persistence/
+?? core_enhanced/docs/goals/core_runtime_fault_isolation/
+?? core_enhanced/docs/goals/core_runtime_safety_observability/
+?? core_enhanced/docs/goals/current_runtime_architecture_deep_review/
+?? core_enhanced/docs/goals/current_runtime_architecture_remediation/
+?? core_enhanced/docs/goals/current_runtime_audit_consolidation/
+?? core_enhanced/docs/goals/current_runtime_structural_integrity_audit/
+?? core_enhanced/docs/goals/current_runtime_transaction_kernel_foundation/
+?? core_enhanced/docs/goals/defense_route_tactical_command_master/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_00_policy_baseline/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_01_withdraw_redeploy_lifecycle/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_02_hard_cc_silence_capability/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_03_tactical_resource_authority/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_04_weapon_tactical_contract/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_05_stance_tile_effects/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_06_relocation_occupancy/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_07_atomic_swap/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_08_manual_skill_targeting/
+?? core_enhanced/docs/goals/defense_route_tactical_command_phase_09_field_work_integration/
+?? core_enhanced/docs/goals/game_rulebook_full_runtime_alignment_audit/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_master/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_01_monolith_tuning/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_02_encounter_progression_v4/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_03_fixed_standard_and_profile/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_04_mastered_elite_sweep/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_preflight/
+?? core_enhanced/docs/goals/game_rulebook_policy_implementation_readiness_audit/
+?? core_enhanced/docs/goals/game_rulebook_runtime_alignment_audit/
+?? core_enhanced/docs/goals/grant_experience_per_recipient_policy_implementation/
+?? core_enhanced/docs/goals/policy_to_implementation_manual_consolidation/
+?? core_enhanced/docs/goals/policy_to_implementation_manual_r4_correction/
+?? core_enhanced/docs/goals/policy_to_implementation_manual_state_machine_correction/
+?? core_enhanced/docs/goals/project_architecture_map/
+?? core_enhanced/docs/plans/
+?? core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md
+?? core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md
+?? core_enhanced/docs/project_map.ko.md
+?? core_enhanced/docs/reviews/
+?? core_enhanced/docs/roadmaps/
+?? core_enhanced/docs/skills/abnormality_design_notes.ko.md
+?? core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md
+?? core_enhanced/docs/skills/run_relic_content_design_notes.ko.md
+?? core_enhanced/docs/skills/skill_authoring_model.ko.md
+?? "core_enhanced/docs/skills/\353\247\210\355\203\204\353\240\210\355\215\274\353\237\260\354\212\244.jpg"
+?? core_enhanced/docs/templates/
+?? core_enhanced/docs/tmp/
+?? core_enhanced/docs/tools/
+?? core_enhanced/docs/ui-layout/
+?? core_enhanced/evidence/
+?? core_enhanced/src/application.rs
+?? core_enhanced/src/application/
+?? core_enhanced/src/authoring/
+?? core_enhanced/src/bin/author_content.rs
+?? core_enhanced/src/bin/consume_content_pack.rs
+?? core_enhanced/src/bin/package_official_content.rs
+?? core_enhanced/src/game/ability/
+?? core_enhanced/src/game/battle/core/amount_observation.rs
+?? core_enhanced/src/game/battle/core/authoring_observation.rs
+?? core_enhanced/src/game/battle/core/basic_heal.rs
+?? core_enhanced/src/game/battle/core/boss_action_cancellation_tests.rs
+?? core_enhanced/src/game/battle/core/boss_action_tests.rs
+?? core_enhanced/src/game/battle/core/boss_runtime.rs
+?? core_enhanced/src/game/battle/core/corrosion.rs
+?? core_enhanced/src/game/battle/core/field_work.rs
+?? core_enhanced/src/game/battle/core/queue.rs
+?? core_enhanced/src/game/battle/core/resonance_runtime/
+?? core_enhanced/src/game/battle/core/resource_runtime.rs
+?? core_enhanced/src/game/battle/core/runtime_facts.rs
+?? core_enhanced/src/game/battle/core/skill_runtime/flow.rs
+?? core_enhanced/src/game/battle/core/spawn_kernel.rs
+?? core_enhanced/src/game/battle/core/summon_runtime.rs
+?? core_enhanced/src/game/battle/core/sustained.rs
+?? core_enhanced/src/game/battle/core/tactical_relocation.rs
+?? core_enhanced/src/game/battle/core/tactical_stance.rs
+?? core_enhanced/src/game/battle/core/tactical_swap.rs
+?? core_enhanced/src/game/battle/core/tests/
+?? core_enhanced/src/game/battle/core/value_expr_runtime.rs
+?? core_enhanced/src/game/battle/core/value_expr_runtime/
+?? core_enhanced/src/game/battle/core/wave_runtime.rs
+?? core_enhanced/src/game/battle/runtime_control.rs
+?? core_enhanced/src/game/battle/runtime_facts.rs
+?? core_enhanced/src/game/battle/skill_source.rs
+?? core_enhanced/src/game/battle/stat_pipeline/
+?? core_enhanced/src/game/combat_setup/boss_runtime.rs
+?? core_enhanced/src/game/data/boss_runtime_data.rs
+?? core_enhanced/src/game/data/content_pack/
+?? core_enhanced/src/game/data/summoned_unit_data.rs
+?? core_enhanced/src/game/encounter_progression.rs
+?? core_enhanced/src/game/resource/
+?? core_enhanced/src/game/resources/equipment_loadout.rs
+?? core_enhanced/src/game/skill_fragment/
+?? core_enhanced/src/game/value_expr/
+?? core_enhanced/src/game/world/active_run/
+?? core_enhanced/src/game/world/application.rs
+?? core_enhanced/src/game/world/authoring_lifecycle.rs
+?? core_enhanced/src/game/world/authoring_observation.rs
+?? core_enhanced/src/game/world/grant_state.rs
+?? core_enhanced/src/game/world/mastered_elite_sweep.rs
+?? core_enhanced/src/game/world/resource_runtime.rs
+?? core_enhanced/src/game/world/tests/checkpoint_validation.rs
+?? core_enhanced/src/game/world/tests/content_generation.rs
+?? core_enhanced/src/game/world/tests/mastered_elite_sweep.rs
+?? core_enhanced/src/game/world/tests/r07_copies.rs
+?? core_enhanced/src/game/world/tests/r09_combat.inc.rs
+?? core_enhanced/src/game/world/tests/resource_lifetimes.rs
+?? core_enhanced/src/game/world/tests/u04_continuation.inc.rs
+?? core_enhanced/src/owned_collections.rs
+?? core_enhanced/src/runtime_observation.rs
+?? core_enhanced/src/runtime_safety.rs
+?? core_enhanced/src/runtime_safety/
+?? core_enhanced/tests/author_content_cli_arguments.rs
+?? core_enhanced/tests/battle_showcase.rs
+?? core_enhanced/tests/fixtures/
+?? core_enhanced/tools/
+?? exports/
+?? game_resources/data/boss_runtime/
+?? game_resources/data/resources/
+?? game_resources/data/summoned_units/
+?? game_server/config/observability.ron
+?? game_server/config/observability/
+?? game_server/examples/fault_runtime.rs
+?? game_server/examples/observe_runtime.rs
+?? game_server/logs/app.log.2026-08-09
+?? game_server/src/bootstrap.rs
+?? game_server/src/game/player_game_actor/handlers/
+?? game_server/src/observability/
+?? game_server/src/persistence/player_profile_store.rs
+?? game_server/src/persistence/player_profile_store/
+?? game_server/src/test_support.rs
+?? package-lock.json
+?? package.json

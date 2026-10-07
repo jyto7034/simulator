@@ -30,10 +30,6 @@ fn default_resonance_lock_ms() -> u64 {
     1000
 }
 
-fn default_attack_range_units() -> f32 {
-    1.0
-}
-
 pub const DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS: u32 = 200;
 
 fn default_attack_windup_ms() -> u32 {
@@ -91,10 +87,54 @@ impl Default for MovementDef {
     }
 }
 
+/// Basic healing shares cadence and action locks, but never enters damage resolution.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub enum BasicAttackAction {
+    #[default]
+    Damage,
+    Heal {
+        flat: u32,
+        spell_power_percent: u32,
+        footprint: Option<TileRangePattern>,
+    },
+}
+
+impl BasicAttackAction {
+    pub fn is_damage(&self) -> bool {
+        matches!(self, Self::Damage)
+    }
+
+    pub fn is_heal(&self) -> bool {
+        matches!(self, Self::Heal { .. })
+    }
+
+    pub(crate) fn validate_delivery(
+        &self,
+        delivery: &DeliveryDef,
+    ) -> Result<(), BasicAttackValidationError> {
+        if let Self::Heal { footprint, .. } = self {
+            if !matches!(delivery, DeliveryDef::Instant) {
+                return Err(BasicAttackValidationError::new(
+                    "action",
+                    "Heal requires Instant delivery",
+                ));
+            }
+            if let Some(pattern) = footprint {
+                pattern
+                    .validate()
+                    .map_err(|cause| BasicAttackValidationError::new("action.footprint", cause))?;
+            }
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BasicAttackDef {
-    #[serde(default = "default_attack_range_units")]
-    pub range_units: f32,
+    #[serde(default, skip_serializing_if = "BasicAttackAction::is_damage")]
+    pub action: BasicAttackAction,
     #[serde(default)]
     pub range_policy: TileRangePolicy,
     #[serde(default)]
@@ -117,10 +157,11 @@ pub struct BasicAttackDef {
     pub delivery: DeliveryDef,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct AuthoredBasicAttackDef {
-    range_units: f32,
+    #[serde(default, skip_serializing_if = "BasicAttackAction::is_damage")]
+    action: BasicAttackAction,
     range_policy: TileRangePolicy,
     defense_tile_range: RequiredOption<TileRangePattern>,
     damage_type: DamageType,
@@ -133,7 +174,8 @@ pub(crate) struct AuthoredBasicAttackDef {
     delivery: DeliveryDef,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
+#[serde(transparent)]
 struct RequiredOption<T>(Option<T>);
 
 impl<'de, T> Deserialize<'de> for RequiredOption<T>
@@ -151,7 +193,7 @@ where
 impl From<AuthoredBasicAttackDef> for BasicAttackDef {
     fn from(value: AuthoredBasicAttackDef) -> Self {
         Self {
-            range_units: value.range_units,
+            action: value.action,
             range_policy: value.range_policy,
             defense_tile_range: value.defense_tile_range.0,
             damage_type: value.damage_type,
@@ -169,7 +211,7 @@ impl From<AuthoredBasicAttackDef> for BasicAttackDef {
 impl Default for BasicAttackDef {
     fn default() -> Self {
         Self {
-            range_units: default_attack_range_units(),
+            action: BasicAttackAction::Damage,
             range_policy: TileRangePolicy::Pattern,
             defense_tile_range: None,
             damage_type: default_basic_attack_damage_type(),
@@ -192,45 +234,58 @@ impl BasicAttackDef {
         }
     }
 
-    pub(crate) fn try_validate_runtime_contract(&self) -> Result<(), String> {
+    pub(crate) fn try_validate_runtime_contract(&self) -> Result<(), BasicAttackValidationError> {
+        self.action.validate_delivery(&self.delivery)?;
         if self.interval_ms == 0 {
-            return Err("interval_ms must be greater than zero".to_string());
+            return Err(BasicAttackValidationError::new(
+                "interval_ms",
+                "interval_ms must be greater than zero",
+            ));
         }
         match self.range_policy {
             TileRangePolicy::Pattern => {
                 if let Some(pattern) = &self.defense_tile_range {
-                    pattern
-                        .validate()
-                        .map_err(|error| format!("has invalid defense_tile_range: {error}"))?;
+                    pattern.validate().map_err(|error| {
+                        BasicAttackValidationError::new(
+                            "defense_tile_range",
+                            format!("has invalid defense_tile_range: {error}"),
+                        )
+                    })?;
                 }
             }
             TileRangePolicy::WholeFieldValidTiles => {
                 if self.defense_tile_range.is_some() {
-                    return Err(
-                        "uses WholeFieldValidTiles and must not also define defense_tile_range"
-                            .to_string(),
-                    );
+                    return Err(BasicAttackValidationError::new(
+                        "defense_tile_range",
+                        "uses WholeFieldValidTiles and must not also define defense_tile_range",
+                    ));
                 }
             }
         }
-        if matches!(&self.delivery, DeliveryDef::TileArea { .. }) {
-            return Err(
-                "delivery must be Instant or Projectile; TileArea is skill-only".to_string(),
-            );
-        }
-        if matches!(
-            &self.delivery,
-            DeliveryDef::Projectile {
-                hit_policy: crate::game::ability::ProjectileHitPolicy::DirectionalCollision,
-                ..
-            }
-        ) {
-            return Err(
-                "delivery must not use DirectionalCollision; collision projectiles are skill-only"
-                    .to_string(),
-            );
-        }
+        self.delivery
+            .try_validate_basic_attack_consumer_contract()
+            .map_err(|error| {
+                BasicAttackValidationError::new(
+                    format!("delivery.{}", error.field_suffix),
+                    error.cause,
+                )
+            })?;
         Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct BasicAttackValidationError {
+    pub field_suffix: String,
+    pub cause: String,
+}
+
+impl BasicAttackValidationError {
+    fn new(field_suffix: impl Into<String>, cause: impl Into<String>) -> Self {
+        Self {
+            field_suffix: field_suffix.into(),
+            cause: cause.into(),
+        }
     }
 }
 
@@ -326,18 +381,18 @@ impl<'de> Deserialize<'de> for AbnormalityDatabase {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "AbnormalityDatabase")]
 #[serde(deny_unknown_fields)]
-struct RawAbnormalityDatabase {
-    items: Vec<RawAbnormalityMetadata>,
+pub(crate) struct RawAbnormalityDatabase {
+    pub(crate) items: Vec<RawAbnormalityMetadata>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "AbnormalityMetadata")]
 #[serde(deny_unknown_fields)]
-struct RawAbnormalityMetadata {
-    id: String,
+pub(crate) struct RawAbnormalityMetadata {
+    pub(crate) id: String,
     uuid: Uuid,
     name: String,
     risk_level: RiskLevel,
@@ -363,7 +418,7 @@ struct RawAbnormalityMetadata {
 }
 
 impl RawAbnormalityDatabase {
-    fn into_database(self) -> AbnormalityDatabase {
+    pub(crate) fn into_database(self) -> AbnormalityDatabase {
         AbnormalityDatabase {
             items: self
                 .items
@@ -447,11 +502,11 @@ impl AbnormalityDatabase {
             }
             item.basic_attack
                 .try_validate_runtime_contract()
-                .map_err(|cause| {
+                .map_err(|error| {
                     crate::game::data::DataValidationError::at(
                         &item.id,
-                        format!("items[{item_index}].basic_attack"),
-                        cause,
+                        format!("items[{item_index}].basic_attack.{}", error.field_suffix),
+                        error.cause,
                     )
                 })?;
         }
@@ -533,7 +588,19 @@ mod tests {
         let error = basic_attack
             .try_validate_runtime_contract()
             .expect_err("TileArea basic attacks must reject");
-        assert!(error.contains("delivery must be Instant or Projectile"));
+        assert_eq!(error.field_suffix, "delivery.TileArea");
+        assert_eq!(
+            error.cause,
+            "TileArea delivery is skill-only for a basic-attack consumer"
+        );
+    }
+
+    #[test]
+    fn basic_attack_schema_rejects_removed_range_units() {
+        let error = ron::de::from_str::<BasicAttackDef>("(range_units: 1.0)")
+            .expect_err("removed scalar range must fail closed");
+
+        assert!(error.to_string().contains("range_units"));
     }
 
     #[test]
@@ -551,7 +618,6 @@ mod tests {
                         attack: 1,
                         defense: 0,
                         basic_attack: (
-                            range_units: 1.0,
                             range_policy: pattern,
                             defense_tile_range: None,
                             damage_type: Physical,

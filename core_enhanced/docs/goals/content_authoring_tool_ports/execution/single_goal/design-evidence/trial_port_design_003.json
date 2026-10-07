@@ -1,0 +1,299 @@
+{
+  "report_id": "r03_trial_port_design_003",
+  "kind": "bounded_read_only_implementation_design_not_completion_audit",
+  "created_utc": "2026-09-10T01:51:31.515359+00:00",
+  "repository": "/mnt/f/work/simulator",
+  "authorization": "root delegated AUTORUN_REQUEST.ko.md section 8 read-only helper",
+  "report": "/tmp/r03_trial_port_design_003.md",
+  "report_sha256": "3cc58bce2565c6e14e03ac7d4987caffcacc9ebec5224b4eb44cae6505308162",
+  "source_and_test_mutations": false,
+  "tests_or_builds_run": false,
+  "proposed_defaults_are_technical_candidates_not_approved_policy": true,
+  "source_capture_limit": "Actual read spans; first+close hashes only where recorded. Single close hash cannot establish no in-read drift. Root ongoing edits elsewhere not reviewed.",
+  "gaps": [
+    "TPD03-01 receipt self-usage serialization",
+    "TPD03-02 nested validate/run",
+    "TPD03-03 opaque fork",
+    "TPD03-04 startup and immediate terminal readiness",
+    "TPD03-05 source sidecar must not alter fingerprint",
+    "TPD03-06 compiled graph and authored precision",
+    "TPD03-07 transaction-aware observer isolation"
+  ],
+  "sources": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_50_GOAL_SET_001.ko.md",
+      "inspected_spans": [
+        "1-104",
+        "121-149"
+      ],
+      "first_explicit_sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "close_sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "close_bytes": 33683,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+      "inspected_spans": [
+        "1-87",
+        "102-205"
+      ],
+      "first_explicit_sha256": "3d9dee325189bf5e17c3d5c3de416745ac3e7ec2ec6594ca9d68644588966284",
+      "close_sha256": "d427b3c5afa03bb1f317cb01385317ecc1a5959455a12c8fafafcdd6f8e27026",
+      "close_bytes": 20844,
+      "drift": "changed_since_first_hash"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "inspected_spans": [
+        "1-218",
+        "220-359",
+        "411-456",
+        "562-590",
+        "686-726",
+        "781-1040"
+      ],
+      "first_explicit_sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "close_sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "close_bytes": 44770,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "inspected_spans": [
+        "1-116"
+      ],
+      "first_explicit_sha256": "fe4a6d69b11d0fcedc4e49625c760850dd12517cfd8a3eb6ca1da1c03c941ca6",
+      "close_sha256": "fe4a6d69b11d0fcedc4e49625c760850dd12517cfd8a3eb6ca1da1c03c941ca6",
+      "close_bytes": 3608,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "inspected_spans": [
+        "26-139",
+        "142-296",
+        "299-338",
+        "422-499"
+      ],
+      "first_explicit_sha256": "ad20a4e3a75a9bb16b402f50631559ae5028b760411a11b612d8945944461f8d",
+      "close_sha256": "ad20a4e3a75a9bb16b402f50631559ae5028b760411a11b612d8945944461f8d",
+      "close_bytes": 15764,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "inspected_spans": [
+        "1-143"
+      ],
+      "first_explicit_sha256": "cdca9db0f33f6590406162db40c8a238fe195f55c5e4754383fb86065fa03fab",
+      "close_sha256": "cdca9db0f33f6590406162db40c8a238fe195f55c5e4754383fb86065fa03fab",
+      "close_bytes": 7931,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "inspected_spans": [
+        "49-105",
+        "138-225"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "e6db361ad983b1fcb4f0a33b827b99ec2ecf4f62dfbbd51e578dfa874b71b7d7",
+      "close_bytes": 49036,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+      "inspected_spans": [
+        "1-35",
+        "67-100",
+        "154-198"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "3c44c1cb3fc4df3ef5ebea29cfbdb939a3614735ec77e2391f2ee4b4a1fd0616",
+      "close_bytes": 6993,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "inspected_spans": [
+        "1-83"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399",
+      "close_bytes": 17994,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "inspected_spans": [
+        "1-181"
+      ],
+      "first_explicit_sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "close_sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "close_bytes": 6247,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "inspected_spans": [
+        "1-248"
+      ],
+      "first_explicit_sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5",
+      "close_sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5",
+      "close_bytes": 65786,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "inspected_spans": [
+        "519-554",
+        "642-648",
+        "714-741",
+        "782-863"
+      ],
+      "first_explicit_sha256": "e75f62fbe07326411ac2625f1285b2dd7551592f29850976616c48fed6ab1cdf",
+      "close_sha256": "e75f62fbe07326411ac2625f1285b2dd7551592f29850976616c48fed6ab1cdf",
+      "close_bytes": 159741,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "inspected_spans": [
+        "31-176",
+        "210-290"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "close_bytes": 34199,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "inspected_spans": [
+        "1804-1836"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "close_bytes": 70625,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "inspected_spans": [
+        "128-220"
+      ],
+      "first_explicit_sha256": "eda3e77e4509368aec58228b8070b5d7edfdab6fc6f98ae036cb45e97ea7eafd",
+      "close_sha256": "eda3e77e4509368aec58228b8070b5d7edfdab6fc6f98ae036cb45e97ea7eafd",
+      "close_bytes": 9474,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "inspected_spans": [
+        "174-211",
+        "219-278"
+      ],
+      "first_explicit_sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "close_sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "close_bytes": 10224,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "inspected_spans": [
+        "636-696",
+        "1317-1410",
+        "1420-1439",
+        "1540-1645"
+      ],
+      "first_explicit_sha256": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "close_sha256": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "close_bytes": 129610,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "inspected_spans": [
+        "181-230"
+      ],
+      "first_explicit_sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66",
+      "close_sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66",
+      "close_bytes": 84303,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "inspected_spans": [
+        "1-38"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "close_bytes": 3082,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "inspected_spans": [
+        "20-68",
+        "748-775"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "e20c7ff9ab45a4797c615b744dbfc15848267af40b040f04a192ba6362ad2c5a",
+      "close_bytes": 45597,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "inspected_spans": [
+        "1-29"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1",
+      "close_bytes": 870,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "inspected_spans": [
+        "1-135",
+        "251-345",
+        "453-520",
+        "598-680"
+      ],
+      "first_explicit_sha256": "b32f1b9a9f47c7124d3944cf6bd409a6e514fb489ee36b9cbba8ea251177a542",
+      "close_sha256": "b32f1b9a9f47c7124d3944cf6bd409a6e514fb489ee36b9cbba8ea251177a542",
+      "close_bytes": 223840,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "inspected_spans": [
+        "179-280"
+      ],
+      "first_explicit_sha256": "c2faa80ae08c04c294defdc2474765128b4d336e0be51d3d57145ae591e43cbf",
+      "close_sha256": "c2faa80ae08c04c294defdc2474765128b4d336e0be51d3d57145ae591e43cbf",
+      "close_bytes": 21904,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/behavior.rs",
+      "inspected_spans": [
+        "1978-2025"
+      ],
+      "first_explicit_sha256": null,
+      "close_sha256": "c38657dd64aeae18fbb6a4998cfeb65cc45b015a897f379360236b2b4c3e2552",
+      "close_bytes": 232858,
+      "drift": "single_close_hash_only; source was read earlier, no atomic stable snapshot claimed"
+    },
+    {
+      "path": "core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+      "inspected_spans": [
+        "40-120"
+      ],
+      "first_explicit_sha256": "029179ae0b7d715ae01001e377800ec128276616be1406204750be94915cd745",
+      "close_sha256": "029179ae0b7d715ae01001e377800ec128276616be1406204750be94915cd745",
+      "close_bytes": 4415,
+      "drift": "unchanged_between_hashes"
+    }
+  ]
+}

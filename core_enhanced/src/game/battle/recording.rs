@@ -9,16 +9,29 @@ impl BattleCore {
     /// The method name still uses `event_log` because this is the battle-local
     /// chronological event log. The Unity transport exposes these entries as
     /// `battle_update.events_delta`, not as current-state data.
+    #[inline]
     pub(super) fn record_event_log(&mut self, time_ms: u64, event: BattleLogEvent) -> u64 {
+        if self.event_log.sequence_exhausted() {
+            return u64::MAX;
+        }
         let seq = self.event_log_seq;
-        self.event_log.entries.push(BattleEventLogEntry {
+        let entry = BattleEventLogEntry {
+            skill_effect_source: self.recording_skill_effect_source.clone(),
             time_ms,
             seq,
             cause: self.recording_cause().unwrap_or_default(),
             source_command_id: self.recording_source_command_id().map(str::to_owned),
             event,
-        });
-        self.event_log_seq += 1;
+        };
+        if self.result_stats_accumulator.should_observe(&entry.event) {
+            self.result_stats_accumulator.observe(&entry);
+        }
+        self.event_log.append(entry);
+        if let Some(next_seq) = self.event_log_seq.checked_add(1) {
+            self.event_log_seq = next_seq;
+        } else {
+            self.event_log.close_for_sequence_exhaustion();
+        }
         seq
     }
 

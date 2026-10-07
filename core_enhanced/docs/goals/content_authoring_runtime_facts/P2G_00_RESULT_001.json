@@ -1,0 +1,46 @@
+{
+  "kind": "external stage report; no independent Exact Artifact Ref",
+  "Selected Stage": "P2G-00",
+  "Execution Status": "completed",
+  "Entry Result": "eligible_new_document",
+  "Document Identity": "WPD-CARF-20260911",
+  "Physical Path": "core_enhanced/docs/goals/content_authoring_runtime_facts/WORKING_POLICY.ko.md",
+  "Path Occupancy Before Publication": "unoccupied (directory and WPD path absent)",
+  "Identity Search": {
+    "command": [
+      "rg",
+      "-l",
+      "-F",
+      "WPD-CARF-20260911",
+      "core_enhanced/docs/goals"
+    ],
+    "exit_code": 1,
+    "matches": []
+  },
+  "Published Artifact Ref Set": [
+    {
+      "Artifact Type": "Policy Intake Snapshot",
+      "Artifact ID": "PIS-CARF-P2G00-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CARF-P2G00-001",
+      "Content Digest": null
+    }
+  ],
+  "Validation": {
+    "passed": true,
+    "input_rows": 13,
+    "scope_items": 11,
+    "empty_initial_policy_basis": true,
+    "meaning_review_performed": false,
+    "only_initial_canonical_artifacts_published": true,
+    "prior_documents_unchanged": true
+  },
+  "Next Stage": "P2G-10",
+  "New User Request Required": false,
+  "Continuation Basis": "same user-adopted AUTORUN bounded scope",
+  "parent_predecessor_check": "PARENT_PREDECESSOR_CHECK_001.json",
+  "recorded_at_utc": "2026-09-10T18:49:46.119603+00:00"
+}

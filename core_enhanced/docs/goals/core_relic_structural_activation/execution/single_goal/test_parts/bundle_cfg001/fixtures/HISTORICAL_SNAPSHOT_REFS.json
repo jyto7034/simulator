@@ -1,0 +1,30 @@
+[
+  {
+    "snapshot": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/check012_application.rs",
+    "source": {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 23137,
+      "sha256": "6231ba3c66462ac44158d4d71cbc150645a35bf2d94db5a730627fd0976438ec"
+    },
+    "receipt": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check012.json",
+      "bytes": 179695,
+      "sha256": "6dc32e22cfa558855ee77c8e652607bb36231f38f23fc6e43f6169da182ddd07"
+    },
+    "reconstruction": "read-only snapshot, exact frozen check012 match"
+  },
+  {
+    "snapshot": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/check011_application.rs",
+    "source": {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 23089,
+      "sha256": "4ce0506b3af4f895e5b252ea6c59e41353148328a3abd8f4d23ff39f42ebbdc4"
+    },
+    "receipt": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check011.json",
+      "bytes": 179696,
+      "sha256": "898f5e06a6ab9c74ef84bfa152245abe33d8c142045c1a528b4c2957e75ea0b4"
+    },
+    "reconstruction": "literal production arm deletion from frozen check012, exact hash matched check011"
+  }
+]

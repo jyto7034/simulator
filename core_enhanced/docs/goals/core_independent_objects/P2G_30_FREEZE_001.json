@@ -1,0 +1,571 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CIOB-003",
+          "Content Digest": "sha256:b9f65c193e4cb512a5d6c41224896a65f3e4a0b12f8b66c2f6acafc457976f60"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CIOB-001",
+          "Content Digest": "sha256:9d337ce47259475bedf512d9321cc92e0055c1e531bd3f608b8ea5bafcf72771"
+        },
+        "Predecessor Freeze": null,
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-01-REVIEWED-001",
+            "Content Digest": "sha256:2f7a91d9afbe6c7bc10195a98df7b3d708ab34cc8c82b80269e1e95b66fcf38d"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-02-REVIEWED-001",
+            "Content Digest": "sha256:5bd40920431daf5d86760ff4c6c27334d8f0697767c341a6bc78ea15f8e900d5"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-03-REVIEWED-001",
+            "Content Digest": "sha256:195156f7b62f05aa42bc587dafcdbdd97690f1db7c9de9e8233564cfff58ca81"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-04-REVIEWED-001",
+            "Content Digest": "sha256:05e2bde5229bd493e98f9484bb3ae53a2606883a446cbe0c6f6bc8d573c2c66d"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-05-REVIEWED-001",
+            "Content Digest": "sha256:4137404f9a183ae0a81efe0b2ec6d772020d37787a41b338aa03e50effaa0547"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-06-REVIEWED-001",
+            "Content Digest": "sha256:63fc6f5da98e0b0e2f8dae818afea69a01f5fa2c23a3c3f93f8e420eb54acb13"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-07-REVIEWED-001",
+            "Content Digest": "sha256:154e637211c4c674cde21c7ae6c2661730f25d1a7d56d097b1ec698c73e53fc5"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-08-REVIEWED-001",
+            "Content Digest": "sha256:82e3c4a652caa5c5b4bc2cd6f05e0f2c01e49aaf0fbba7caf0faf59ce2417d85"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-09-REVIEWED-001",
+            "Content Digest": "sha256:da0455e8922dcd48428e76738f92abe3d2a21ff80704218481ad3142d29e6179"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-10-REVIEWED-001",
+            "Content Digest": "sha256:606913978ba139dc13b4cc5ef723b33f63b7e5d30d0acf620019712b2268e268"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-11-REVIEWED-001",
+            "Content Digest": "sha256:986fb1dc5cd7e5953f6887b5cea556d616b746e9c6571c285263d12f5f1b1642"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-12-REVIEWED-001",
+            "Content Digest": "sha256:232cda78f25ee003702459b0d8b71191673b0cacd4b61a3c14af3620fbca0a13"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-13-REVIEWED-001",
+            "Content Digest": "sha256:2e29f155bee3b49ee8b951375a3d169c6bb7a1081dab5cb2027ba1701e549af8"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-14-REVIEWED-001",
+            "Content Digest": "sha256:82cc503a0d081908cce1caacc39f84652b03ef652a7eb8264872c1e5ee5aa31e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-15-REVIEWED-001",
+            "Content Digest": "sha256:5dd1037a4be0e36eaa393b00de0bcfad773e3d0b6e7d65224ad0d2ecf770137a"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-16-REVIEWED-001",
+            "Content Digest": "sha256:b3545dc2bf7eb0c3d5205721abc59aa82511cf058df31413d35807cb7e146679"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-17-REVIEWED-001",
+            "Content Digest": "sha256:96a013806c600a0a53810128b34dc77bb8760bedaae27c5dd0e652407f50a4d3"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-18-REVIEWED-001",
+            "Content Digest": "sha256:c8ce70db7c094ba3ab9464e276f04d12ed2a3e1583e428465efcb7f2e379f343"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-19-REVIEWED-001",
+            "Content Digest": "sha256:74e460307af1188d5314c7afb5a9f41a7ebf4a08c48c9fadaa1b9d976ca97362"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CIOB-20-REVIEWED-001",
+            "Content Digest": "sha256:2c506fc816b6293159ffe76766905576773521df44a5cac402d45c159edc8958"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-01-001",
+            "Content Digest": "sha256:2ce954d4990215b19a9d150d2663b29b3c22e151c8fd78dc9b23694e645526bc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-02-001",
+            "Content Digest": "sha256:d67f7bdac7b5a7e7c45948d211793d297ea31825b6165d5b2e279f89c719d9fb"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-03-001",
+            "Content Digest": "sha256:00c8ae302acac9720d4a91152fc6c9e169fde54eeebfc08cfecd44905725d119"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-04-001",
+            "Content Digest": "sha256:c0eff0c85ebf180db8010f5e59bf2c093a11afb3f850741fbb89427abc6414e1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-05-001",
+            "Content Digest": "sha256:5a5e198157bfccbca3c3711e3284519ad5652b44217b3e77d03afba4b86c560a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-06-001",
+            "Content Digest": "sha256:ab8a25bf88e41fe66db687ae960214ad2616482fc8537a94865bef582b3bc668"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-07-001",
+            "Content Digest": "sha256:addd5571b1c969d887bf616de0207d230701f0cf7bda1d7acfc1bf09b0b97261"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-08-001",
+            "Content Digest": "sha256:c932d6dae9cddc7883c9467accddd5e52996dee77d2b2cb14544cc8ade4e7f13"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-09-001",
+            "Content Digest": "sha256:373d4acc7c6cf5c0917ba09015592a7f2f190da26c7cd7060f608533e8bfdee3"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-10-001",
+            "Content Digest": "sha256:f2c4ee88540463a4bfd385f3270ab35b2eba9a20ee391f0f023366329a65f8f2"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-11-001",
+            "Content Digest": "sha256:feb696e687088fd2c94305b7b89668ed530ec2b91b6ee1532478981f631f1c5a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-12-001",
+            "Content Digest": "sha256:d981123020c971ac075cb46400fd3787f46ebea0c8593073b6fd1d0f89aa5327"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-13-001",
+            "Content Digest": "sha256:140297511d2169bffee88a202b2e6e0f32ab6d59684d5efd69bcc19abb5c38dd"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-14-001",
+            "Content Digest": "sha256:2ed3304288607f686d2716d574bbc4188181d949e220c55b7583ded64dbc4b8a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-15-001",
+            "Content Digest": "sha256:d0bb571977549f9e16a7c3ad94e477257b47510bb0a73baa5388bf7455865e4c"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-16-001",
+            "Content Digest": "sha256:959816b7760a50a8b6c71b56f7a91360b4ba5be99e9d80c060eca9e1bf3c1492"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-17-001",
+            "Content Digest": "sha256:8f6526cb3d9d5becf232b5469dc906ad5e90f126b52c450c21dfd5bb9dfc068a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-18-001",
+            "Content Digest": "sha256:a1bc54f4d8c5b7a086372fcd74e1931eeb4604873b9446ae6a5b91482e7d7810"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-19-001",
+            "Content Digest": "sha256:14488a11258f678733fc0362367f429edf94b242503a3a5b51bd909408c7eb9d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CIOB-20-001",
+            "Content Digest": "sha256:e8fbb355012481f11c477864421478be279c5302065d97b3b8416389b09964ec"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-01-REVIEWED-001",
+              "Content Digest": "sha256:2f7a91d9afbe6c7bc10195a98df7b3d708ab34cc8c82b80269e1e95b66fcf38d"
+            },
+            "Observable Policy Acceptance": [
+              "같은 공개 생성 능력을 아군과 적 source에서 실행하여 올바른 진영/대상/종류별 능력을 확인한다.",
+              "생성·진화·파괴·TTL 뒤에도 wave/보상/도감 원장과 required victory가 임의로 늘지 않으며 기존 boss summon 회귀가 유지된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-02-REVIEWED-001",
+              "Content Digest": "sha256:5bd40920431daf5d86760ff4c6c27334d8f0697767c341a6bc78ea15f8e900d5"
+            },
+            "Observable Policy Acceptance": [
+              "여러 생성 중 후반 타일/정의/예산 실패에 비용·HP·pool·객체·ID·fact가 부분 반영되지 않는다.",
+              "정상 재시도/중복은 한 번만 생성하며 payload 충돌·fault 재시도·clone 분기에서 identity와 settlement가 일관된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-03-REVIEWED-001",
+              "Content Digest": "sha256:195156f7b62f05aa42bc587dafcdbdd97690f1db7c9de9e8233564cfff58ca81"
+            },
+            "Observable Policy Acceptance": [
+              "경계/범위 밖·무효 타일·복수 점유·다른 source 작은 친구·큰 친구 재중첩은 입력 거절과 비용 불변이다.",
+              "작성 상한의 exact/one-over, source A/B 독립과 소멸 뒤 생존 슬롯 회수, 진화의1슬롯 유지가 정상 명령/query에서 일치한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-04-REVIEWED-001",
+              "Content Digest": "sha256:05e2bde5229bd493e98f9484bb3ae53a2606883a446cbe0c6f6bc8d573c2c66d"
+            },
+            "Observable Policy Acceptance": [
+              "아군/적 actor의 대상 선택·공격·정지/이동과 실제 HP 결과를 외부 작성 입력으로 실행한다.",
+              "부모 철수 뒤 독립 actor의 정상 수명과 자신의 source attribution이 유지되며 직원 배치 상한/공명/명령을 대리하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-05-REVIEWED-001",
+              "Content Digest": "sha256:4137404f9a183ae0a81efe0b2ec6d772020d37787a41b338aa03e50effaa0547"
+            },
+            "Observable Policy Acceptance": [
+              "정상 RON의 독립 field가 실제 주기/범위/대상에 효과를 내고 Pause·부모 철수·TTL 경계에서 정해진 횟수만 실행한다.",
+              "HP/점유/이동이 없는 field는 해당 능력을 가진 것으로 query되거나 타격·치유·배치 blocker가 되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-06-REVIEWED-001",
+              "Content Digest": "sha256:63fc6f5da98e0b0e2f8dae818afea69a01f5fa2c23a3c3f93f8e420eb54acb13"
+            },
+            "Observable Policy Acceptance": [
+              "정상 기본·개화 파편의 실제 명령으로 작은/큰 친구가 생성되고 작은 단일·큰 광역 공격과 소멸 결과가 관측된다.",
+              "대상 없음/공중 등 부적격/대상 소실·동시 trigger에서 공격 불가능한 친구가 남고 성공한 친구만1회 공격·소모된다.",
+              "생성 후 caster 장비/능력치·철수 변화가 이미 소유한 피해 snapshot을 고치지 않고 피해 출처와 파편 copy가 보존된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-07-REVIEWED-001",
+              "Content Digest": "sha256:154e637211c4c674cde21c7ae6c2661730f25d1a7d56d097b1ec698c73e53fc5"
+            },
+            "Observable Policy Acceptance": [
+              "작은→큰에 객체1개·같은 타일·생존1슬롯, 정확한 두 시전 비용과 개화 한 시전의 차이를 확인한다.",
+              "진화 직후 이전 timer/trigger가 새 형태를 삭제·공격시키지 않으며 clone의 형태 전환은 원본과 독립이다.",
+              "HP형 진화의 증가/감소에서 no-free-heal/clamp가 적용되고 변환 실패는 이전 상태/비용을 보존한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-08-REVIEWED-001",
+              "Content Digest": "sha256:82e3c4a652caa5c5b4bc2cd6f05e0f2c01e49aaf0fbba7caf0faf59ce2417d85"
+            },
+            "Observable Policy Acceptance": [
+              "source 삭제/철수/사망·다른 copy 재배치 뒤 Persist/Despawn 두 계약과 실제 결과 provenance를 확인한다.",
+              "독립 생성물이 살아 있어도 생성 skill의 사용 잠금이 끝나고 양수 공명 획득이 재개되며 오래된 actor/copy를 새 source로 잘못 연결하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-09-REVIEWED-001",
+              "Content Digest": "sha256:da0455e8922dcd48428e76738f92abe3d2a21ff80704218481ad3142d29e6179"
+            },
+            "Observable Policy Acceptance": [
+              "동시 TTL/피격/소모와 source 제거의 중복 cleanup에서 실제 결과1회와 stale 무해를 확인한다.",
+              "종료·반복 생성/소멸 뒤 활성 객체·queue/source 보유와 allocator 비용이 수명에 맞게 회수되고 원래 안전 한도를 통과한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-10-REVIEWED-001",
+              "Content Digest": "sha256:606913978ba139dc13b4cc5ef723b33f63b7e5d30d0acf620019712b2268e268"
+            },
+            "Observable Policy Acceptance": [
+              "H100/P150에서 스택2·분리50·잔량100·벽HP50이며 P100/P1/0와 한 번의 여러 구간 피해를 확인한다.",
+              "pool 흡수/초과 피해·저지 감소가 중복 감쇄·가짜 HP-loss/proc 없이 실제 query와 일치한다.",
+              "다른 source/pool·일반 회복은 잔량을 임의 변경하지 않고 실패 생성은 pool/저지/객체 전체를 복원한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-11-REVIEWED-001",
+              "Content Digest": "sha256:986fb1dc5cd7e5953f6887b5cea556d616b746e9c6571c285263d12f5f1b1642"
+            },
+            "Observable Policy Acceptance": [
+              "일반 Shield와 빈 pool에서 실제 비용/벽HP, shield/parry/HP1 비영향 및 lethal 경계 거절을 정상 명령으로 확인한다.",
+              "HP 비용 후 의도된 생성 failure/fault와 여러 placement 실패에서 원래 HP/pool/facts/IDs를 되돌리고 정상 재시도는 한 번 소비한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-12-REVIEWED-001",
+              "Content Digest": "sha256:232cda78f25ee003702459b0d8b71191673b0cacd4b61a3c14af3620fbca0a13"
+            },
+            "Observable Policy Acceptance": [
+              "정상 작성 얼음벽/고기벽에 지상 적이 실제 이동 segment에서 정지·공격·파괴·경로 재개하고 공중 적은 통과한다.",
+              "벽을 치유/직원 명령/시체/보상 대상으로 오인하지 않으며 snapshot 방어와 피격 결과를 query할 수 있다.",
+              "source 철수 뒤 벽이 남고 실제 정상 CoreApplication/authoring trial에서 생성→피격→제거를 소비한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-13-REVIEWED-001",
+              "Content Digest": "sha256:2e29f155bee3b49ee8b951375a3d169c6bb7a1081dab5cb2027ba1701e549af8"
+            },
+            "Observable Policy Acceptance": [
+              "직원/HP형 생성물의 maxHP 증가·감소·0과 원인 있음/없음에서 순서·중복 없는 종료·attribution을 확인한다.",
+              "기존 직접 Kill/특수 kill/비용/보호/actual HP-loss 회귀가 새 객체 도입 뒤 유지된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-14-REVIEWED-001",
+              "Content Digest": "sha256:82cc503a0d081908cce1caacc39f84652b03ef652a7eb8264872c1e5ee5aa31e"
+            },
+            "Observable Policy Acceptance": [
+              "Pause 중 유효 접수/뒤의 타일점유 또는 HP변화/재개를 실행해 후발 생성 실패와 접수 공명·새 비용 무반영을 구분한다.",
+              "CC/철수/취소 전후 미방출0개·방출 Persist 유지, child 생존 중 U05 충전 재개를 확인한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-15-REVIEWED-001",
+              "Content Digest": "sha256:5dd1037a4be0e36eaa393b00de0bcfad773e3d0b6e7d65224ad0d2ecf770137a"
+            },
+            "Observable Policy Acceptance": [
+              "반복 preview/query는 완전 무변경이고 실제 명령의 비용/위치/형태/거절과 일치한다.",
+              "stale preview 후 변경된 타일·HP·pool·source 상태에서 명시 거절하며 같은 actor 재접속으로 정확한 객체 상태를 조회한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-16-REVIEWED-001",
+              "Content Digest": "sha256:b3545dc2bf7eb0c3d5205721abc59aa82511cf058df31413d35807cb7e146679"
+            },
+            "Observable Policy Acceptance": [
+              "Pause/0.5/설정/재접속과 같은시각 TTL·타격·진화·출처삭제·승리에서 순서와 결과가 결정적이다.",
+              "같은 seed/input을 다른 container/pack 순서와 log/observation 모드에서 실행해 동일한 실제 결과를 확인한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-17-REVIEWED-001",
+              "Content Digest": "sha256:96a013806c600a0a53810128b34dc77bb8760bedaae27c5dd0e652407f50a4d3"
+            },
+            "Observable Policy Acceptance": [
+              "생성/진화/부상 pool/expiry 대기 clone·rollback·같은actor reconnect의 독립성과 exactly-once를 검증한다.",
+              "실제 host Continue/SavePoint/미지원 원본보호 회귀와 새 정상 정의의 저장/복원 consumer를 통과한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-18-REVIEWED-001",
+              "Content Digest": "sha256:c8ce70db7c094ba3ab9464e276f04d12ed2a3e1583e428465efcb7f2e379f343"
+            },
+            "Observable Policy Acceptance": [
+              "정상 외부 RON→validate→compile→trial/API→실제 결과/query에 각 capability의 nonzero 성공과 strict negative 사례가 있다.",
+              "기본/개화 친구·얼음벽·HPfallback/분절분리 consumer의 실제 명령과 종단 결과를 검증하고 지원 목록/문서가 실제 포트와 일치한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-19-REVIEWED-001",
+              "Content Digest": "sha256:74e460307af1188d5314c7afb5a9f41a7ebf4a08c48c9fadaa1b9d976ca97362"
+            },
+            "Observable Policy Acceptance": [
+              "작은 새상태 크기/clone/queue/원자 fault 검증 후 native/full suite·public bounds·5모드 fault·observer/allocator와 PC/R05를 현재 영향에 맞춰 검증한다.",
+              "예산 exact/one-under·실패원본·회수·숫자oracle이 추적되며 구현 guardrail8개를 독립 확인한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CIOB-20-REVIEWED-001",
+              "Content Digest": "sha256:2c506fc816b6293159ffe76766905576773521df44a5cac402d45c159edc8958"
+            },
+            "Observable Policy Acceptance": [
+              "각 조건/차원의 실제 command·selector·nonzero 결과·raw/currentness와 범위 제외가 추적되고 current integrated target이 정역 복원된다.",
+              "전체 목표의 독립 Complete/High와 open finding0 이후에만 U08 정상 진입으로 인수한다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-01-001",
+            "Content Digest": "sha256:55180920cbe9addd6e18cf303444a27bfe572b9f64f7fa9d759ab787a53466f0"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-02-001",
+            "Content Digest": "sha256:fb801679c3dfcb7f37924dba7f7be92371aa80556ed7ed9113507200286e1847"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-03-001",
+            "Content Digest": "sha256:e1d593ad1d5e7145d5776fb971ef99af70e7b3c3097def9319fa8d5b3e620e2a"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-04-001",
+            "Content Digest": "sha256:3fc67a090629a61113de0c564d4016193ce9bf8bfaeb6be144c420b1b0c7e371"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-05-001",
+            "Content Digest": "sha256:b697ab27eba9775bc330884a93232c442f58e395fb4403bffecd4b22505f36db"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-06-001",
+            "Content Digest": "sha256:ec9db4b1be87b518a7dbfa2d3125007abb3dc7d022bbf2b58dbe461bf128a04f"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-07-001",
+            "Content Digest": "sha256:52f4ce1d4da27c1873d47c5581ccdf6ad24ce1ccbf4a30349cfffafe91a22aec"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-08-001",
+            "Content Digest": "sha256:f702b25f13c97389169e04ce3b758bc48620013e7e39a7013778526918006420"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-09-001",
+            "Content Digest": "sha256:d4568176e35465af32d38fbbe1f4206a38e092762f384bf193d099822d9973c4"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-10-001",
+            "Content Digest": "sha256:8f740545cad285eb9f30aa343b6d35d4fd0671f1f372b4c671190bea02b149cc"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-11-001",
+            "Content Digest": "sha256:35981261fc5b1a0aab9158ee5b23f749c6e39d51b3ce70cd280e5e6a86c6474d"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-12-001",
+            "Content Digest": "sha256:616d41dccb85e545ba71df3b271e14ec0cbd0117ca94daf27b62e653153b397f"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-13-001",
+            "Content Digest": "sha256:58ebb3182624f390e19ec552356ff773f6dfeabddc8319bdb93ebb8bbfce846d"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-14-001",
+            "Content Digest": "sha256:1e04563b84ef994da210f215545e5a017de845c2b990a8d0c4eca4d73e907db4"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-15-001",
+            "Content Digest": "sha256:ace131e9e31c3a2dc97474d6a1d7ca9096e2b2dbe62a68b4f2cbb2648dec8838"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-16-001",
+            "Content Digest": "sha256:bdb0ef81dfe9fa945a3d2f9bc78f31b63d3f18ee2ca90e119d3215aa17e919bc"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-17-001",
+            "Content Digest": "sha256:4731df10ec793be019bc3f080b40d0ba1e112ae9aab8402989dc04cb8e65a3dc"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-18-001",
+            "Content Digest": "sha256:91fa714806380ba3883d24883e195b4aaf629d77436a528ccd5b77dc7b424336"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-19-001",
+            "Content Digest": "sha256:6d7eb04cb1f9e9d592a1db72b9394c23c1725993ec2d7ea50a25d569633a6188"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CIOB-20-001",
+            "Content Digest": "sha256:a67d48040dcee80fc318f68278354370e0740820d85a555086ef830baf31cbeb"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CIOB-001",
+          "Content Digest": "sha256:db9f8fd4c6f53e0a7c9b63dce776ad30bb39e49f04d20bf6a35760be52973804"
+        },
+        "Binding Completeness Evidence": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CIOB-001",
+          "Content Digest": "sha256:246ba49437d166d5e003c619402c55fa7ce02f42791b54dacb6beba0a2ced833"
+        },
+        "Applicable Change/Obligation Basis": [],
+        "Resolved Prerequisite Evidence": [],
+        "Known Unknowns": "No required policy/source gap. Exact storage/schema/queue realization and runtime results remain bounded GEX work TD01–08. No remote/Unity execution claim.",
+        "Compatibility/Migration Disposition": "Strict independent object definitions and creation/evolution/pool/cost consumers cut over together. Existing boss summon, TileArea, damage/shield/HealthCost, U05 use and U04 pre-entry Continue remain authoritative. Separate object capabilities prevent employee/goal/heal/death authority leakage. Optional schema additions preserve absent serialization; supported writer/readers transition together. Live object/source/epoch/queue/pool clone and accounting are required; no new live-battle disk save or weakened numeric oracle.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

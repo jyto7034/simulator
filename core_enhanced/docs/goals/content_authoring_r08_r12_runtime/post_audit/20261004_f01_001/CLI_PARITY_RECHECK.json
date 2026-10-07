@@ -1,0 +1,56 @@
+[
+  {
+    "pack": "r06",
+    "public_results": 28,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r07_snapshot",
+    "public_results": 36,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r07_live",
+    "public_results": 36,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r10_snapshot",
+    "public_results": 29,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r10_live",
+    "public_results": 29,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r12_hello",
+    "public_results": 30,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r12_protection",
+    "public_results": 29,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r12_released",
+    "public_results": 27,
+    "amount_documents": 4,
+    "equal": true
+  },
+  {
+    "pack": "r12_effectssettled",
+    "public_results": 27,
+    "amount_documents": 4,
+    "equal": true
+  }
+]

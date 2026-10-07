@@ -1,0 +1,26 @@
+{
+  "before": {
+    "source_files_verified": 333,
+    "product_delta_paths": [],
+    "instrumentation_only_paths": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/battle/runtime_control.rs"
+    ]
+  },
+  "after": {
+    "source_files_verified": 333,
+    "product_delta_paths": [
+      "core_enhanced/src/authoring/control.rs",
+      "core_enhanced/src/game/battle/core/queue.rs",
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/battle/runtime_control.rs"
+    ],
+    "instrumentation_only_paths": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/battle/runtime_control.rs"
+    ]
+  },
+  "fixture_sha256": "096f011800275fe93e15ff230e333719b02137b318d8130a9c19b46110d2a11b",
+  "workload_unchanged": true
+}

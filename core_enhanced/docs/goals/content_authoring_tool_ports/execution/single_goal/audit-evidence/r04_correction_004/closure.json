@@ -1,0 +1,81 @@
+{
+  "captured_at": "2026-09-11T03:02:34.469530+00:00",
+  "target": {
+    "identity": {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_004.json",
+      "bytes": 2090470,
+      "sha256": "b59521416b76bec8487a9d9353645fc7a5e4bceb0b05818a179e78f2c1197cf1"
+    },
+    "members": 4368,
+    "absences": 2,
+    "external_inventories": 56,
+    "external_files": 3773,
+    "binaries": 3
+  },
+  "predecessors": [
+    {
+      "target": {
+        "identity": {
+          "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_006.json",
+          "bytes": 2086578,
+          "sha256": "a1f87aded22960fce13999d609c3d00f10ab4aa0c86423e63108313bc15b03af"
+        },
+        "members": 4362,
+        "absences": 2,
+        "external_inventories": 56,
+        "external_files": 3773,
+        "binaries": 3
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_006.md",
+        "sha256": "9875bb8fc93de29465ea444b062c233cbd2541233a21bc5f1853d4158aaf7208",
+        "bytes": 28554,
+        "kind": "current source/evidence"
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_correction_006/AUDIT_OUTPUTS.json",
+        "sha256": "2b75f9ffc58fc07b72a0c0a49c0ffb23ed9c77d06b37424231794db441d73386",
+        "bytes": 3721,
+        "kind": "current source/evidence"
+      },
+      "registered_outputs": 11,
+      "verdict": "Complete / High"
+    },
+    {
+      "target": {
+        "identity": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_006.json",
+          "bytes": 2088556,
+          "sha256": "3e57d1f541f7f1ac94ee9638c8cf2f6ff6821e2c81668350da698c2921f56ee1"
+        },
+        "members": 4365,
+        "absences": 2,
+        "external_inventories": 56,
+        "external_files": 3773,
+        "binaries": 3
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_005.md",
+        "sha256": "bfd82e5ee16b03394901ba1f1813bcc3c305d853401363cc85fccb1cdde7c5fe",
+        "bytes": 28428,
+        "kind": "current source/evidence"
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_correction_005/AUDIT_OUTPUTS.json",
+        "sha256": "b9842ae6c7f94cd0b995fd9829a66260f23514f69c84b8eca40ee3ca4eaa6896",
+        "bytes": 5582,
+        "kind": "current source/evidence"
+      },
+      "registered_outputs": 18,
+      "verdict": "Complete / High"
+    }
+  ],
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "toolchain": {
+    "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+    "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)"
+  },
+  "errors": [],
+  "currentness": "current / unchanged"
+}

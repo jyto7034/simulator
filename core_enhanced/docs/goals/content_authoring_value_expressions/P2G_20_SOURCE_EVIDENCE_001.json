@@ -1,0 +1,61 @@
+{
+  "kind": "Immutable exact source evidence for R06 P2G-20 bounded source review only",
+  "at": "2026-09-13T00:00:00+09:00",
+  "repository": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "workspace_state": "dirty Workspace Actual; selected bytes are fixed below and are not asserted to equal clean HEAD",
+  "input_working_revision": {"Artifact Type": "Working Revision", "Artifact ID": "WR-CAVE-P2G10-001", "Content Digest": null},
+  "source_plan": {"Artifact Type": "Review Scope/Source Requirement Plan", "Artifact ID": "RSP-CAVE-P2G20-001", "Content Digest": null},
+  "methods": [
+    "bounded function-body reads with sed",
+    "forward/reverse symbol and consumer searches with rg",
+    "SHA-256 and byte-count fixation",
+    "read-only comparison to the exact P2G-10 policy and R06/AT06/T06/T18/T27 contracts"
+  ],
+  "runtime_tests_executed": 0,
+  "files": [
+    {"path": "core_enhanced/Cargo.toml", "sha256": "245591602bcb8164bb5ed3f00500f484ff8336fa31b2973512374932fac7d16b", "bytes": 1750, "role": "crate/build target boundary"},
+    {"path": "core_enhanced/src/game/ability.rs", "sha256": "06d3dc66290422f51de0308ad84ba7c440729dd4aac3c73f6d3fc25c1e6a36db", "bytes": 38188, "role": "authored SkillEffectDef/step schema"},
+    {"path": "core_enhanced/src/game/ability/authoring.rs", "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a", "bytes": 6247, "role": "EffectSite/source/literal descriptor"},
+    {"path": "core_enhanced/src/game/data/skill_data.rs", "sha256": "1af05397600e8463be20ced190c3f0ba03b527c6c7c148bfe5635038261ec7ec", "bytes": 68092, "role": "skill parse/validation/reference/edit path"},
+    {"path": "core_enhanced/src/game/battle/core/sim.rs", "sha256": "a56f5259630b86e909028226c6f4d13f000a843416304d60da99cb95c7bb4043", "bytes": 152712, "role": "actual skill release/effect command producer"},
+    {"path": "core_enhanced/src/game/battle/core/target_usefulness.rs", "sha256": "b211d55c411bfef0ae5ede1183dcadee87723a736b5c17f9d461a5b99dd4e5d1", "bytes": 19464, "role": "independent quantitative preview consumer"},
+    {"path": "core_enhanced/src/game/battle/damage.rs", "sha256": "87f7596e29de5d0114f0a19637fb36b767d2cadf5a2f10c18bce55a4916f85f7", "bytes": 51197, "role": "damage snapshot/request/fact contract"},
+    {"path": "core_enhanced/src/game/battle/core/damage_runtime.rs", "sha256": "055c2ecfac0de87cf9c078eec64bd00b9cb5bedc46abf79f8fe9a8c263e9210b", "bytes": 28173, "role": "snapshot materialization owner"},
+    {"path": "core_enhanced/src/game/battle/runtime_facts.rs", "sha256": "37a893b79102d23562300bfc500b439e7a831c80c329e968f8f750a13a5eb07e", "bytes": 20603, "role": "ActionHandle/fact/result/source public contract"},
+    {"path": "core_enhanced/src/game/battle/core/runtime_facts.rs", "sha256": "2a66485ccbf2331f6999973441c29c78ef7f0761786a4b594fa9264d3a7fddf9", "bytes": 100000, "role": "exact-attempt query and transaction authority"},
+    {"path": "core_enhanced/src/game/resource/mod.rs", "sha256": "3839de15329daf55a40c63822787ea61ad38ce2413bdfa23e8983ed12697e019", "bytes": 9722, "role": "resource definition/owner selector schema"},
+    {"path": "core_enhanced/src/game/resource/runtime.rs", "sha256": "401cb130765652c95d6fdc7f499a967089e588affa500bc8384857fdc72951b0", "bytes": 12161, "role": "lifetime/context/delivery authority"},
+    {"path": "core_enhanced/src/game/resource/store.rs", "sha256": "236b5c03afcb6efaba90eff75c0a66b821c5cb873e8286bc9ffc64154074e64b", "bytes": 41351, "role": "lease validation/read-only value/store transaction"},
+    {"path": "core_enhanced/src/game/battle/core/resource_runtime.rs", "sha256": "e657614f2dc6abfae4f549c1ae6dd3c1df16cfa8b5d36870f6b985d11750144a", "bytes": 8716, "role": "actual source/target owner and scope resolution"},
+    {"path": "core_enhanced/src/game/stats.rs", "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269", "bytes": 18446, "role": "StatId/UnitStats/modifier arithmetic"},
+    {"path": "core_enhanced/src/game/growth.rs", "sha256": "cc752dbc450f64735f6cb0bc6078a930cff934be86ca6e97f6776ac4a23f7694", "bytes": 1575, "role": "persistent GrowthStack authority"},
+    {"path": "core_enhanced/src/game/battle/stat_pipeline.rs", "sha256": "f878fe6a68a7b33daadb4f691f57bf689586c89dc56d6fad8b40fb0e9cf9bff2", "bytes": 21048, "role": "effective/persistent stat composition"},
+    {"path": "core_enhanced/src/game/battle/types.rs", "sha256": "22ace9cb9cd31c41c426335191105ac109e4dd2700f400173f575f9ef74b26f9", "bytes": 38475, "role": "profile/draft/equipment projection/attack speed conversion"},
+    {"path": "core_enhanced/src/game/combat_setup/player_spawns.rs", "sha256": "5ece18f37c64c9aae29d3583f7b17274eec175cf25674f3b6cb1e99bb04dc55c", "bytes": 9897, "role": "inventory-to-battle/certified profile projection"},
+    {"path": "core_enhanced/src/game/data/equipment_data.rs", "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e", "bytes": 37726, "role": "weapon profile/enhancement schema and validation"},
+    {"path": "core_enhanced/src/game/resources/inventory.rs", "sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09", "bytes": 32545, "role": "OwnedEquipment instance/enhancement persistence and DTO"},
+    {"path": "core_enhanced/src/game/combat_power.rs", "sha256": "4815c9a1b4e1504495b8b334320092c05a13499896de8e94eb0120fb0f20015b", "bytes": 13360, "role": "Certified persistent input consumer"},
+    {"path": "core_enhanced/src/game/range_preview.rs", "sha256": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338", "bytes": 39937, "role": "spatial-only public range preview"},
+    {"path": "core_enhanced/src/authoring/query.rs", "sha256": "2513b619ec99e4ddd05c5f1b1f23eae6e798b609205863a3c0ccc572475691e6", "bytes": 16124, "role": "public describe/explain contract"},
+    {"path": "core_enhanced/src/authoring/control.rs", "sha256": "5e8638daa77594ecac9bee432996dbeea0d32605e000c354d3a84dd16e7559e2", "bytes": 24247, "role": "finite execution and admission budgets"},
+    {"path": "core_enhanced/src/game/data/content_pack/schema.rs", "sha256": "ba7d5c35d303793e2e52a3cd593a2ba811105ee8ba3e053ad1c2724baf720f31", "bytes": 7023, "role": "manifest capability and content contract"},
+    {"path": "core_enhanced/src/game/data/content_pack/resolver.rs", "sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399", "bytes": 17994, "role": "resolved-definition semantic fingerprint"},
+    {"path": "core_enhanced/src/game/data/content_pack/mod.rs", "sha256": "a89e499a3f3310d848d25cb68aa5fa1a0fe2e98dbeea483f70d15086b93239c8", "bytes": 8058, "role": "validated immutable publication"},
+    {"path": "core_enhanced/src/game/data/content_pack/raw.rs", "sha256": "bc44c2121aa494661ab03b203cb34085f13ac02dd20d284e43d3648a29b7b0fb", "bytes": 49968, "role": "resolved raw catalog assembly and source binding"},
+    {"path": "core_enhanced/src/game/data/mod.rs", "sha256": "6d452e52e11f5c10a4aa633ba1d3e2881ea2dab0f0561565f3a366781d35e6c5", "bytes": 56775, "role": "GameDataBase/ValidatedGameData/final cross-catalog validation"},
+    {"path": "core_enhanced/src/game/world/state.rs", "sha256": "e3a712be3d4ce5b132a06790aa2608e9c3ce7a9bfa1921c74c921e815bc703a3", "bytes": 77227, "role": "checkpoint inventory/roster/growth state boundary"},
+    {"path": "core_enhanced/src/game/world/active_run.rs", "sha256": "51432cd9f466938b97074fee310c270ac032bc8866d21235173a4dd4c469e52f", "bytes": 11476, "role": "latest-only V7 checkpoint codec/content identity validation"},
+    {"path": "game_resources/data/skills/base.ron", "sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5", "bytes": 44908, "role": "current official literal skill compatibility input"},
+    {"path": "game_resources/data/equipments/base.ron", "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088", "bytes": 71403, "role": "current official weapon/enhancement input"}
+  ],
+  "negative_search_observations": [
+    {"query": "ValueExpr", "scope": "core_enhanced/src/game", "result": "no definition or consumer"},
+    {"query": "SpellPower", "scope": "core_enhanced/src/game", "result": "no stat, profile, modifier or consumer"}
+  ],
+  "limitations": [
+    "Only listed relevant bodies and reverse references support the semantic claims; this is not whole-file certification.",
+    "No implementation/runtime/release/deployment test was run in P2G-20.",
+    "Source hashes become historical evidence once GEX changes production bytes."
+  ]
+}

@@ -1,0 +1,334 @@
+{
+  "schema": "CRSA_TEST_PLAN_TARGETED_DELTA_V2",
+  "recorded_at_utc": "2026-10-07T09:05:08.976367+00:00",
+  "status": "targeted_static_assistance_complete_proposed_oracles_not_executed",
+  "basis": {
+    "working_revision": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRSA-005",
+      "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+    },
+    "source_plan": {
+      "Artifact Type": "Review Scope/Source Requirement Plan",
+      "Artifact ID": "RSP-CRSA-003",
+      "Content Digest": "sha256:748cbefa6b4b7124378c7a3d9545e0d47e4e8c7072558e92d76090b444880a02"
+    },
+    "change": "CHG-CRSA-001",
+    "obligation": "COD-CRSA-001/O20",
+    "changed_policy_refs": [
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-DECIDED-002",
+        "Content Digest": "sha256:beb0db67e19e0e066568f9250b77ba6c28ab83cba1c300e06f76152225c05b05"
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-DECIDED-002",
+        "Content Digest": "sha256:541a4d003fcb43b5dd4cb6208dd522d2738ed78b87483790cd4b8b8eefa34138"
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-DECIDED-002",
+        "Content Digest": "sha256:c36136cc44069c8b1d723d8405c071f5e82c06fad0e9f9aac12f9a7c26ed416e"
+      }
+    ],
+    "scope": "RQ04 assistance only; Root owns formal O20 review/resolution and successor execution-ready handoff."
+  },
+  "preservation_and_invalidation": {
+    "preserved_files": {
+      "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/TEST_PLAN_001.json": "0326de1208a8b5e22cf578c861ac564a3bedfb4f26ba855f30a52e343fd6ee4d",
+      "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/TEST_PLAN_CORRECTIONS_001.json": "a9c2a7571883d8659390d039d90658b128701985a3bb515908286da1474d0bda",
+      "core_enhanced/docs/goals/core_relic_structural_activation/review_parts/TEST_SEAMS_REVIEW_001.json": "defc78aa084e1e01b444a39dd0fcd7fd6be2f2dd3ebb000537a65cd1a858b33d",
+      "core_enhanced/docs/goals/core_relic_structural_activation/review_parts/RUNTIME_REVIEW_001.json": "58850f2308557ca0e0e4dbe18ce8bce5830bbab6a4865f44448647af6462ee7b",
+      "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/DESIGN_001.md": "fc1c83e122c87ae056b73918386f8811b8a892a69bacf29f62111925398b02d9"
+    },
+    "historical_only": [
+      "Original T06 shared2S and TEST_PLAN001 shield-source/stage row, including CORRECTIONS001 C02 arithmetic, remain historical prior-basis proposals. Neither supplies current Porccubus evidence.",
+      "TEST_SEAMS_REVIEW001/TEST_PLAN001 T05 Porccubus range-out membership removal/rejoin balance and single shared-stage expectations are superseded. Fetus-specific portions remain applicable.",
+      "DESIGN001 shield sections are explicitly superseded-pending; its multiplier2, shared stage, shared membership and old recast assumptions are not current APIs or oracle inputs."
+    ],
+    "still_applicable": "CORRECTIONS001 C01 exclusive whole-file Astra authorship for every test registration; independent non-shield oracles and223+31 ID inventory remain reference material, with exact unchanged/affected source classification required."
+  },
+  "minimum_changes": {
+    "T05": "Split fetus channel membership from Porccubus cast-release personal grants. Porccubus retains shields on mere range exit and grants none on late entry/reentry. Selected single recipient still uses original eligibility/reach and identity; target invalidation ends only its shield.",
+    "T06": "Replace shared2S cases with P01-P05 below: independent personal values, source generation after typed amount, personal priority, whole-set replacement and per-recipient/provider lifecycle. No assumption of a new Normal/Corrupt ratio.",
+    "PE04_T04": "Descriptor/query/validation/executor must identify personal shield initial-generation amount separately from existing generic shared protection. Removing support area capability on single conversion cannot expand selection reach or sibling effect footprint."
+  },
+  "independent_cases": [
+    {
+      "id": "P01",
+      "groups": [
+        "T05",
+        "T06",
+        "T09"
+      ],
+      "case": "Release-time finite recipient set; independent balances and movement",
+      "input": "Representative authored reach R=2000000 data units, duration1000ms. At acceptance C(caster),A,L inside and B outside; before release B enters and L exits. At release C/A/B are eligible active player employees, one on Platform and the others on Ground. Enemy, Guest, summon/object and incapacitated controls are in range but ineligible. D enters only after release. Base200, typed Add40 and Scale+25%, then source generation+50%.",
+      "expected": "Release atomically creates exactly C/A/B personal shields of450 each (total1350); none for L/D or ineligible controls. A takes incoming800 at50% mitigation: A50, B450, C450. B takes600 at50%: B150, A50, C450. A then takes200 at50%: absorbs50, losesHP50 and only A shield ends. Moving B out/in or moving C does not change B150 or its original expiry. D never gets a shield without a new cast.",
+      "witness": "Per-recipient UnitInstanceId, distinct personal activation records, initial/remaining/expiry/source and actual ordered DamageFact/HP deltas. Capture acceptance and release positions to exclude acceptance-time selection. Other actors do not take unrelated hits.",
+      "reuse": [
+        "S1",
+        "S2",
+        "S5"
+      ]
+    },
+    {
+      "id": "P02",
+      "groups": [
+        "T03",
+        "T05",
+        "T06",
+        "T10"
+      ],
+      "case": "One selected recipient, authored enhancement, typed-before-source and source once",
+      "input": "Independent Normal single fixture replaces base with420, Add20, Scale+25%; Corrupt single replaces base with620, Add20, Scale+25%. Both then use source generation+50% exactly once. Select eligible A manually; keep C/B also in range. Recipients carry a differing generation modifier/stat through whatever supported successor mechanism implements the policy.",
+      "expected": "Normal=(420+20)*1.25*1.5=825; Corrupt=(620+20)*1.25*1.5=1200. Only selected A gets one shield. Same amounts with one or three eligible allies; no N multiplication or recipient re-amplification. For incoming1600 then100 at50% mitigation: Normal825→25→0 with HP losses0,25; Corrupt1200→400→350 with HP losses0,0. Area450 is (200+40)*1.25*1.5; applying source first would yield425, so that order is distinguishable.",
+      "controls": "Self selection is legal for Porccubus; enemy/out-of-reach/ineligible selection rejects without cost/new grant. Omitting an authored single enhancement must not silently introduce2S/4S. Exact missing-field default/rejection shape awaits successor schema; no numeric fallback is authorized.",
+      "reuse": [
+        "S1",
+        "S4"
+      ]
+    },
+    {
+      "id": "P03",
+      "groups": [
+        "T06",
+        "T12"
+      ],
+      "case": "Personal priority, creation-order ties and unchanged generic shared stage",
+      "input": "One target has personal H70 priority9; personal E30 priority5 created before Porccubus P450 priority5; personal L20 priority-1; generic R12 shared Q100 priority99. Each has a distinguishable original provider/effect. Incoming1400,50% mitigation.",
+      "expected": "Mitigated700 is absorbed in order H70,E30,P450,L20,Q100; HP loss30. All personal precede Q despite its higher priority. Equal-priority E precedes P by creation order. Other recipient shields and other-provider records are never merged into these balances.",
+      "cost_heal_controls": "In a separate nondepleted P450 fixture, actual nonlethal HP cost10 takesHP100→90 and leaves450; normal heal10 restoresHP100 and leaves450. Elapsed time before expiry never raises remaining. Test Rest only through a supported path: if it is outside battle, verify ended battle-local shields cannot be resurrected/refilled by Rest/Continue. Do not invent an in-battle Rest API or use explicit RechargeShield as the no-recharge oracle.",
+      "reuse": [
+        "S1"
+      ]
+    },
+    {
+      "id": "P04",
+      "groups": [
+        "T05",
+        "T06",
+        "T09",
+        "T11",
+        "T12"
+      ],
+      "case": "Same-source whole-set recast, unrelated sources and atomic failure",
+      "input": "At t0 source key K=(caster combat identity C, original fragment/equipment copy F, original effect G) grants C/A/B450 for1000ms. Consume A to50 and B to150. At t300 B is outside, D newly inside, C/A still inside. Recast K with unchanged amount450/duration1000. Independent shields from another provider, another original copy and another original effect also exist.",
+      "expected_success": "One atomic replacement removes all old K records, including B outside the new range, and installs exactly C/A/D450 expiring at1300. A becomes450, never500; B has no K shield; unrelated keys remain byte/value-equivalent. Old expiry at1000 cannot terminate new K records. New cast does not aggregate old residuals.",
+      "expected_failure": "Cancel before release or force late admission/fault after some candidate recipients are prepared: old K C450/A50/B150, unrelated shields, resonance/HP costs, RNG/ID, queue/action state and save roots remain as before the failed operation according to existing transaction semantics. No partial old removal or new grant. Retry with the admitted limit yields the exact successful set. Initial grant failure similarly publishes zero partial recipients.",
+      "witness": "Complete old/new provider-key→recipient set and per-record expiry/remaining, committed cast identity/cost, before/after public roots plus internal candidate/RNG/ID/retained checks. A new late multi-recipient-grant/replacement fault seam is required; old single shield absorption failure alone is insufficient.",
+      "reuse": [
+        "S3",
+        "S6"
+      ]
+    },
+    {
+      "id": "P05",
+      "groups": [
+        "T05",
+        "T06",
+        "T09",
+        "T11"
+      ],
+      "case": "Recipient/source lifetime and nonchannel post-release CC",
+      "input": "Independent C/A/B shields from one source plus another provider's shield on B. Exercise each target depletion, authored expiry, withdrawal/incapacitation/death, redeployment, source withdrawal/incapacitation/death and battle terminal independently. Apply HardCC and Silence after personal shield release while all identities remain active.",
+      "expected": "A invalidation ends only A's original-identity shield; B/C remain. Redeployed A receives nothing from the old cast. Source C invalidation ends every grant provided by C, leaving other-provider protection intact until its own conditions; battle terminal clears all battle-local shields. HardCC/Silence alone after release does not cancel already-created nonchannel shields. Ordinary attack/block capability is not suppressed by a fabricated channel; existing CC restrictions themselves still apply. Fetus remains a separate channel control with its unchanged range-out/rejoin and interruption behavior.",
+      "reuse": [
+        "S1",
+        "S2",
+        "S6"
+      ]
+    }
+  ],
+  "cross_group_delta": [
+    {
+      "groups": [
+        "T01",
+        "T02",
+        "T03",
+        "T04"
+      ],
+      "change": "Retain finite closure and397 arithmetic oracles. Replace shield capability fixture with personal generation. Add source-order450/825/1200 checks and reject unit/private/missing property/conflicting whole-set recipe before partial publication. Actual TileArea damage footprint is TileRangePattern recipe, not numeric SupportAreaRadius; retain this type distinction."
+    },
+    {
+      "groups": [
+        "T09",
+        "T10",
+        "T11"
+      ],
+      "change": "Normal external RON/Event/reward acquisition must execute P01/P02 plus public recipient/source records; private component setup is insufficient. Pin plan/provenance through release but select recipients at release, not acceptance. Continue/fresh Core rebuild plan and copy/form/generation, never restore active personal-grant records as durable state. Repeated casts/terminal/clone must release N recipient owners and keep unrelated owners independent."
+    },
+    {
+      "groups": [
+        "T12"
+      ],
+      "change": "Meter finite recipient scan and N candidate records, provenance/expiry/whole-set key and old+new temporary peak, including zero/one/many recipients. Add exact/one-short and late-grant/replacement rollback with old nonempty set. Do not adapt expected budget to actual output or relax limits."
+    },
+    {
+      "groups": [
+        "T08"
+      ],
+      "change": "Non-shield API proposal adds effect-scoped producer result. Add independent controls: biteHpLost0 with siblingHpLost17→heal0; biteHpLost1 with sibling0→one37; finite occurrence sequence0,1,0→heal counts0,1,0 (total37), not leakage from prior positive or parallel other producer. Two positive target/hit results in one bite occurrence still heal once37. Existing aggregate Compare must retain its old whole-node semantics; new EffectCompare/scoped representation is proposed until implemented."
+    },
+    {
+      "groups": [
+        "T07"
+      ],
+      "change": "Keep new regular-only versus legacy broad aura/Triggered/ExtraAttack controls and independent120/140/180,115/120/130 values. Proposed scope filtering must happen before same-family winner selection so inapplicable regular support cannot suppress an applicable legacy contributor during Triggered execution; add mixed-family-same-key control using existing independent inputs when APIs bind."
+    },
+    {
+      "groups": [
+        "E01",
+        "E02"
+      ],
+      "change": "Reuse223+31 IDs without relabeling authorship. Existing R12 shared result remains generic-shared regression only. Source/API/clone changes receive new actual impact and nonzero receipts after authorization. No new baseline/performance pass, no current freeze/whole-goal completion claim."
+    }
+  ],
+  "actual_reusable_seams": [
+    {
+      "id": "S1",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "symbols": [
+        "r12_configured_shield_core",
+        "r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+        "r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+        "r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance"
+      ],
+      "role": "Private component fixture and ordered absorption/cost witness; reuse mechanism, not old shared-policy expected values."
+    },
+    {
+      "id": "S2",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "symbols": [
+        "r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+        "r11_aura_scenario_summon_and_defense_object_never_become_members",
+        "r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+        "r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease"
+      ],
+      "role": "Existing movement/deployment/identity/CC controls; fetus keeps membership/channel semantics, new Porccubus must have opposite range-exit and post-release CC outcomes."
+    },
+    {
+      "id": "S3",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "symbols": [
+        "r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+        "r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "r12_shield_initial_scale_once_membership_recast_and_old_expiry"
+      ],
+      "role": "Atomic timestamp/admission/old-expiry patterns only. No current test proves creation or whole-set replacement of N independent personal grants."
+    },
+    {
+      "id": "S4",
+      "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+      "symbols": [
+        "u08_external_ron_normal_reward_and_declined_corruption_consume_authored_damage_in_real_hp",
+        "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+      ],
+      "role": "Actual normal external RON/Event/reward/equip/cast/save journey; adapt new fixture IDs and oracle independently. Admin entry/direct runtime setup remains a separate component scope."
+    },
+    {
+      "id": "S5",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "symbols": [
+        "r12_public_sustained_protection_amount_trace_and_cli_export"
+      ],
+      "role": "Public sustained/trace/export adapter; Latest alone cannot prove all recipient balances."
+    },
+    {
+      "id": "S6",
+      "path": "core_enhanced/src/game/world/tests/u08_carriers.rs",
+      "symbols": [
+        "repeated_battle_delayed_capture_and_terminal_cache_release_old_relic_owners",
+        "released_snapshot_projectile_survives_withdraw_and_unreleased_step_is_cancelled",
+        "ordinary_active_battle_rejects_relic_loadout_mutations_without_changing_any_root"
+      ],
+      "role": "Plan/payload/candidate/Weak-owner lifecycle and public-root preservation patterns, not proof of new personal-grant state."
+    }
+  ],
+  "observation_and_API_pending": [
+    "Existing sustained.rs::refresh_aura_members uses vec![record.target] for personal records; reconcile_sustained ends by target/source validity and expiry; absorb_sustained_shields sorts personal before shared, descending priority then activation order. These are reusable primitives, not implemented proof of release-time N grants or atomic whole-set recast.",
+    "Need successor concrete personal-grant schema, source-generation modifier path, whole-set identity and candidate commit interface. Existing view/source fields must expose enough original provider copy/effect and per-recipient source to distinguish unrelated keys and independently retained lifetimes. No invented replacement multiplier/default.",
+    "DESIGN001 non-shield proposals reviewed: compile_effective_plan/validate_effective_configuration/RequestRelicEffectivePlan version1, BasicAttackOccurrenceKind plus LegacyBasic/RegularBasic, TileRangePattern effect-local overlay and EffectCompare per (ActionHandle,Flow occurrence,EffectiveEffectKey). They remain proposed, not callable or runtime-verified. Expected numbers above come from literal policy-driven fixture inputs, not its illustrative RON.",
+    "Use per-recipient pre/post HP/shield and scoped action/producer witness, not only global latest_damage or AmountQuery::Latest. Serialize actual inspected records for durable comparator; do not claim missing raw payload from a PASS summary.",
+    "Existing four planned Rust files, six RON files and comparator suffice; no new registry or harness family is proposed by this delta. New registration remains Astra-only through explicit exclusive whole-file handover. No source writing until successor basis/GEX ownership authorization."
+  ],
+  "balance_and_validation": {
+    "representative_only": "200/40/25%,source+50%,450/825/1200,reach2000000,duration1000ms,priorities and cost10 are independent test inputs. No official formula/range/ratio/duration/penalty is decided. Normal825 is not old2S900 and Corrupt1200 is not old4S1800 relative to area450.",
+    "static_checks": "Fixed arithmetic, selector existence and document references checked only. No product evaluator, build, test, probe or performance execution.",
+    "new_files": 1,
+    "modified_existing_files": 0,
+    "old_reports_overwritten": false
+  },
+  "source_refs": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_10_POLICY_003.json",
+      "bytes": 49285,
+      "sha256": "f3390c1d4c621cb1840a52d4148bd9d0df9c4f219c98dff728582270a16a1dc3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_10_RESULT_003.json",
+      "bytes": 2674,
+      "sha256": "497cbb88a2a913da22236bbecba77893c201a568c2e62fe70af3f0bbb8f4b335"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/POST_FREEZE_CHANGE_001.json",
+      "bytes": 55154,
+      "sha256": "2e44269c1dae474202894a12dda36cffca3245085be4b962b9f2bb201f780c4d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_20_SOURCE_PLAN_003.json",
+      "bytes": 31583,
+      "sha256": "bf856772700ccd36471c3f855548e811cf974ffb738262b92a8a54976872d1d9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/TEST_PLAN_001.json",
+      "bytes": 40986,
+      "sha256": "0326de1208a8b5e22cf578c861ac564a3bedfb4f26ba855f30a52e343fd6ee4d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/TEST_PLAN_CORRECTIONS_001.json",
+      "bytes": 8026,
+      "sha256": "a9c2a7571883d8659390d039d90658b128701985a3bb515908286da1474d0bda"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/review_parts/TEST_SEAMS_REVIEW_001.json",
+      "bytes": 72449,
+      "sha256": "defc78aa084e1e01b444a39dd0fcd7fd6be2f2dd3ebb000537a65cd1a858b33d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/review_parts/RUNTIME_REVIEW_001.json",
+      "bytes": 55824,
+      "sha256": "58850f2308557ca0e0e4dbe18ce8bce5830bbab6a4865f44448647af6462ee7b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/DESIGN_001.md",
+      "bytes": 57779,
+      "sha256": "fc1c83e122c87ae056b73918386f8811b8a892a69bacf29f62111925398b02d9"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "bytes": 150764,
+      "sha256": "7b6a53ac55651be3cc02848563d988b45a985dc4ca039d400124a15003edd497"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sustained.rs",
+      "bytes": 83048,
+      "sha256": "0115ad2a39eb555eb48152d5d36338d78176981e96ef155a2c2691fb23aae80c"
+    },
+    {
+      "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+      "bytes": 58132,
+      "sha256": "03f99b3971b0bc19f467837548acf03c40ad616a3e23ad93e95483818e70857c"
+    },
+    {
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "bytes": 44963,
+      "sha256": "dfafb8b3e3300c4c47001d716858f09a8bfd4eb1fc278b70529abb1a93b08f4f"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/u08_carriers.rs",
+      "bytes": 70322,
+      "sha256": "017629c33273f45e75efd3742951f0ed216a900bc2d24377e282d45a9a8d9c4a"
+    }
+  ]
+}

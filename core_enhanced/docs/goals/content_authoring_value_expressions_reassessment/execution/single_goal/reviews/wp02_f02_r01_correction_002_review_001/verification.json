@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-09-26T03:33:00.965Z",
+  "target_sha256": "ae2c540157c9caa769febb56e2664da7be8b5807b917e4ecfcb685103aa5f0f7",
+  "isolated": "/tmp/r06-f02-r01-audit.SDwxhw",
+  "source_files_verified": 333,
+  "instrumentation_only_files": 1,
+  "reused_probe_bytes_verified": {
+    "original_probes.rs": "reviews/wp02_f02_f03_correction_001_review_001/original_probes.rs",
+    "cast_probes.rs": "reviews/wp02_f02_f03_correction_001_review_001/additional_probes.rs",
+    "producer_probes.rs": "corrections/wp02_f02_r01_001/verification/f02_r01_probes.rs"
+  },
+  "first_candidate_manifest_verified": true,
+  "predecessor_archives_verified": true,
+  "currentness_command": [
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f02_r01_001/verification/verify_target.py"
+  ],
+  "currentness": {
+    "result": "FROZEN_F02_R01_TARGET_AND_RESTORATION_VERIFIED",
+    "manifest_sha256": "ae2c540157c9caa769febb56e2664da7be8b5807b917e4ecfcb685103aa5f0f7",
+    "source_files": 333,
+    "evidence_files": 20,
+    "modified": [
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/sim.rs"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "REVIEW.md",
+      "bytes": 6198,
+      "sha256": "ac0bafec9472514c4c73fef7d17768b36c65de4c7821209e2df967f641e394f5"
+    },
+    {
+      "path": "adapter_regressions.json",
+      "bytes": 887,
+      "sha256": "4f616200f217ef213d7cefd8298ef6448ca43753a962a544561886bc29f06ba4"
+    },
+    {
+      "path": "adapter_regressions.log",
+      "bytes": 2693,
+      "sha256": "3cf75195a93697ad5da1b7e013df35c722d644fc9b5470da5e21b521770c7ec4"
+    },
+    {
+      "path": "additional_probes.rs",
+      "bytes": 3489,
+      "sha256": "8a4df17aeab75bb57065fc9327b150a13ac4693a19286f3aa701e0eefe1dfb50"
+    },
+    {
+      "path": "binding_probes.json",
+      "bytes": 820,
+      "sha256": "f3890e1ff8d595fb33062c8e5e8ea55dca04c8b0ff039bc9882be5c93f88bf8f"
+    },
+    {
+      "path": "binding_probes.log",
+      "bytes": 7087,
+      "sha256": "0185911099c5f1914f043c9f9c1ceccd1380ead718f5f675f2fdbc131ff49f56"
+    },
+    {
+      "path": "cast_probes.rs",
+      "bytes": 2877,
+      "sha256": "4c61e791150554df57a0a707507d2457b24a1da53d6fa6ab3a3fdadc6b18141d"
+    },
+    {
+      "path": "facts_regressions.json",
+      "bytes": 845,
+      "sha256": "7160d100933f7282810c6f0fe4202d57de890b56ce5c0a0252362f0b1a738bf5"
+    },
+    {
+      "path": "facts_regressions.log",
+      "bytes": 2041,
+      "sha256": "25a98c7bedb37794f22d459ca11373b7d29675a35bbb645fd9d369e90637a606"
+    },
+    {
+      "path": "kernel_regressions.json",
+      "bytes": 821,
+      "sha256": "189c5da1c0ee297e168d9d6f6d7a518723b9838bc157ad0a170ae1fa23ad3658"
+    },
+    {
+      "path": "kernel_regressions.log",
+      "bytes": 4485,
+      "sha256": "944e9a35872b72f8c707b60a68626665690fccd3c1bf02a24e959b093f9b979c"
+    },
+    {
+      "path": "original_probes.rs",
+      "bytes": 8123,
+      "sha256": "6529e4093f290316749b2fe852589ab6360300d563bc6ab19747d8f52e5e18db"
+    },
+    {
+      "path": "producer_probes.rs",
+      "bytes": 3791,
+      "sha256": "1c628b5d722475f7ae426df4fec6952e8729892c211a4a4a54033d469a95e6d4"
+    },
+    {
+      "path": "released_regressions.json",
+      "bytes": 848,
+      "sha256": "b01f0a4eeacd5f02fb9734edb28671c1099edbc2ad5d1edd1fa56f920beb80c8"
+    },
+    {
+      "path": "released_regressions.log",
+      "bytes": 2459,
+      "sha256": "f216b5abaca733d49d1aa410141b5691f137206180426bf5f3e9840b6d1ff1f2"
+    },
+    {
+      "path": "resource_regressions.json",
+      "bytes": 819,
+      "sha256": "477cf939fdfdbed752f5cba68d2483e394e79c0d8bbe16bc5f988b108361e92c"
+    },
+    {
+      "path": "resource_regressions.log",
+      "bytes": 3623,
+      "sha256": "25ef8336a5fe18573e68be2647ac1265e7cb05e620d53c1631cd2e5adb6fb46e"
+    },
+    {
+      "path": "run.mjs",
+      "bytes": 1423,
+      "sha256": "6aa7b0e28bc9c1f86babb6a168ba3ad5410c1d9f85e3922cc439d833ee61c0ff"
+    },
+    {
+      "path": "verify.mjs",
+      "bytes": 3906,
+      "sha256": "2cb4658dcab23aeac4922671beea500e9f0da632c8fc0ad839ddb14a0f03b245"
+    }
+  ]
+}

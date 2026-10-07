@@ -1,0 +1,73 @@
+{
+  "purpose": "D07 scope and next checkpoint implementation instruction, documentation only",
+  "checked_at_utc": "2026-09-27T11:10:54.739337+00:00",
+  "manifest_path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d04_owner_f01_001/target/d04_owner_f01_correction_001/MANIFEST.json",
+  "manifest_sha256": "58505bbcd34089b9c1ec3d70f4d9df4ca32a2397e1115c68386364e44514e549",
+  "source_file_count": 337,
+  "all_after_records_match_current": true,
+  "after_digest": "8aa03d6bd04f8d524fa61b465a9bd7a4171062a1190f615b794e20f915190f04",
+  "product_after_digest": "8f6a58059254d4db4dc726bc8aeb2a6c6ec348e9aef685052837df903fd94bcd",
+  "product_tests_run": false,
+  "code_read": [
+    {
+      "path": "core_enhanced/src/authoring/query.rs",
+      "sha256": "2513b619ec99e4ddd05c5f1b1f23eae6e798b609205863a3c0ccc572475691e6"
+    },
+    {
+      "path": "core_enhanced/src/authoring/compiled.rs",
+      "sha256": "c72e2bc6f9fe59319270a929d3f2f41dd50f2416b26e8c2ed44afc9df89734d3"
+    },
+    {
+      "path": "core_enhanced/src/authoring/preview.rs",
+      "sha256": "20cd42642a547fa73918bf991758bbff48077b77ad388302021b708e5fd3d182"
+    },
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "sha256": "9f2281193e8913befde760bd8a3a946b52e09b156fa87784132934f467dc0ad4"
+    },
+    {
+      "path": "core_enhanced/src/authoring/output.rs",
+      "sha256": "2951433ffb08b52568028b70485cc12992c3c172a064e44df4795b1a22c71ddb"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "a70d27e7605e76bb0df59f55802d08c13d226a2c4e3ae74dfebe4e090d58994c"
+    },
+    {
+      "path": "core_enhanced/src/authoring/tests.rs",
+      "sha256": "1b443c2478f9c1d65d27f27d404d589dd8ac1a91dff1e3f879a52afccd1aab87"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "a2eb8c52e7c52860287084fc2e1b0375197e6622134bcb458cc737e9b441235f"
+    },
+    {
+      "path": "core_enhanced/src/game/value_expr/catalog.rs",
+      "sha256": "348ba49e1ff3d5c3e4a37b939e9d92e0ceabd9f9f55f07aacffb265d36368d5e"
+    },
+    {
+      "path": "core_enhanced/src/game/value_expr/compile.rs",
+      "sha256": "72d856b3e9d1249a075bf61050a65cf15cf804b3e71e0d46b0e7ff7418122ae4"
+    },
+    {
+      "path": "core_enhanced/src/game/value_expr/mod.rs",
+      "sha256": "b8dd7c89a1c7eae7a2643e5afec46aaafa9fc70d047546ec063581876325be25"
+    },
+    {
+      "path": "core_enhanced/src/game/value_expr/eval.rs",
+      "sha256": "b6d56b8628dcf17dc692b3c1bdd15099c1f48a3ee9fa06e4f736f6b3954a7b5f"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "sha256": "8fbea162ef67d4ba5aa29d6b36253a56d544814a0fcc4b59b6eb9334174f6cd1"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/target_usefulness.rs",
+      "sha256": "2820ddd01ce40fdfc6a57c7f92720d80f75effbd09dc13a5c8c8bf606fa352ad"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "sha256": "568ca13368c4cac72f02f6cf53bca30d6c2ddf5e125ba1db98030ee5c605e3a5"
+    }
+  ]
+}

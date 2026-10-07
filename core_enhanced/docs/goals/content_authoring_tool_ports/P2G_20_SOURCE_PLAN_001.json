@@ -1,0 +1,347 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CATP-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CATP-P2G10-001",
+          "Content Digest": null
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E04-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "공통 production port·현재 지원 descriptor·정의/effect 설명의 actual authority와 delta",
+            "Source type/role": "Workspace Actual and explicitly identified local release evidence",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "src/application.rs; src/lib.rs; game/ability/authoring.rs; data/skill_data.rs; data/content_pack/mod.rs; registered binaries",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05"
+              ]
+            },
+            "Validation requirement": "공개 actual loading→validated token→application 호출과 descriptor/query source를 추적하고 CLI/API 공통 owner·지원/미지원·직접 소비·설명 범위를 구분"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "생산 단계별 structured diagnostic·정확한 winning source·관련 definition/field",
+            "Source type/role": "Workspace Actual and explicitly identified local release evidence",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "data/live_ron.rs; data/content_pack/{snapshot,raw,resolver,mod}.rs; data/validation.rs; skill_data.rs; application errors; source receipts",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05"
+              ]
+            },
+            "Validation requirement": "parse/structural/final/compile/generated/application 오류의 실제 producer와 현재 주소/pack/span 정보의 보존·소실 경로를 식별하고 문자열 재추론 없는 공통 진단 경계 및 API/CLI parity 검증을 설계"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "일반 공개 코어 시험의 실제 준비/전투 실행·seed/input/clock·semantic trace/receipt",
+            "Source type/role": "Workspace Actual and explicitly identified local release evidence",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "application.rs; world/{state,combat,node_flow,active_run,application}.rs; battle/core execution/commands/sim/skill runtime; skill_source/event_log/recording; determinism; public battle probe",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05"
+              ]
+            },
+            "Validation requirement": "초기 authority와 동적 observed ID, 실제 command/clock 전투 경로, effect/cast occurrence와 log retention, 결과/실패/trace 의미를 추적. 전용 콘텐츠/fixture runner 없는 재현·nonzero 실행과 trace on/off 불변 검증을 설계"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E05-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "readonly Explain/Preview와 candidate trial 준비 후 session 교체·실패/취소/수명/저장 영향",
+            "Source type/role": "Workspace Actual and explicitly identified local release evidence",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "CoreApplication; world transaction/state/active_run/checkpoint/snapshot; ValidatedGameData Arc; battle readonly projection and retained source",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05"
+              ]
+            },
+            "Validation requirement": "state/RNG/revision query 무변경, B load+actual battle preparation 뒤 atomic session swap, 실패 A 보존, introduced state lifetime/취소/replay/save 및 개인 profile 비손실의 actual owner를 식별"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "제작 입력/clock/trace/receipt/보존 generation의 유한 한계·determinism·비용 관찰",
+            "Source type/role": "Workspace Actual and explicitly identified local release evidence",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "content_pack InputLimits/snapshot; battle event log/history/execution limits; shared public guards; execution context and command parsing",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05"
+              ]
+            },
+            "Validation requirement": "기존 보호와 새 도입 buffer/workload의 차이를 확인. 입력/step/clock/output 한계·오류 boundary·history gap·allocation/시간·참조 회수의 실제 관찰 방법과 한계를 정하고 미구현 광역 안전/공식 수치 의미를 혼동하지 않음"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E02-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E03-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E04-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E05-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "current 선행·dirty attribution·release/direct public consumer·필수 회귀·canonical 계약",
+            "Source type/role": "Workspace Actual and explicitly identified local release evidence",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "Cargo.toml/Cargo.lock; core Cargo; docs/tools; current R01/R02 targets/audits/actual receipts; core tests; public_api_external_probe and standalone consumers; data_loading/core_runtime/skill contracts",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04",
+                "I05"
+              ]
+            },
+            "Validation requirement": "정확한 current predecessor/입력/환경, autobins=false·fixture cfg·독립 외부 RON/API/CLI 검증 가능성과 선행 영향/복구, 최종 owning baseline·release·fresh audit 책임을 식별"
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E01-DECIDED-001",
+                "Content Digest": null
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CATP-E06-DECIDED-001",
+                "Content Digest": null
+              }
+            ],
+            "Required claim/boundary": "범위 밖 server/Unity·Released/Deployed/personal-store compatibility",
+            "Source type/role": "Released/Deployed/external consumer excluded by approved scope",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+              "locations": "adopted AUTORUN §§1/3/9; initial O01/O02/O04/O05/O06; R03/CA03 scope",
+              "dirty_basis": "Current R01/R02 audited dirty implementation, independently rehashed by parent at R03 intake; per-source hashes for all R03 review claims; no R03 production mutation"
+            },
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CATP-P2G10-001",
+                "Content Digest": null
+              },
+              "Scope selectors": [
+                "O01",
+                "O02",
+                "O04",
+                "O05",
+                "O06"
+              ]
+            },
+            "Validation requirement": "승인된 제외와 headless core claim을 연결. 로컬 source나 release fixture를 실제 서버/Unity/배포/개인 저장의 호환성으로 승격하지 않음"
+          }
+        ]
+      }
+    }
+  ],
+  "publication_status": "candidate source-requirement plan; not a complete Review Batch or code_reviewed result",
+  "created_at": "2026-09-09T20:04:58.702833+00:00"
+}

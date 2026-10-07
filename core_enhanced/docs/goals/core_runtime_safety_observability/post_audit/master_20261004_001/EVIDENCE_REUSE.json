@@ -1,0 +1,1145 @@
+{
+  "time": "2026-10-04T00:07:13.588917+00:00",
+  "receipt_bindings": {
+    "s2_final_core_default001": {
+      "receipt_sha256": "828bac0c704f0177ecb0a3448c2aa52aa6054533351d6dfdd3058cadc4f14617",
+      "log_sha256": "1d3b3872d2d63b3c0d0c7bb48485580fd53a5e38f4ee930c066764614a56886c",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:45:19.461401+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_core_fixtures001": {
+      "receipt_sha256": "2ca2bce8fab2da5e0c9bbd65d3254596d3118f5f32adb24fa016a9120befe1c1",
+      "log_sha256": "2d9ab9ff0dc6feacfdab04aef5bde10a050a3a8aa48a38ca9f9dcf5a84104dec",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:47:56.289186+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "test-fixtures",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_core_observation001": {
+      "receipt_sha256": "a583bee618401aa7563ac4400e5dd015f487c2243568fa480fe06299c2ee57f4",
+      "log_sha256": "6e27ae52933704d6c24f909e91d4da357a211a0872e8f6a168c6b27f3f5aa687",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:50:36.065319+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_host_default001": {
+      "receipt_sha256": "0a6ad612d6d6fcd01b37436f4b91a968d10ae5c35c68656afb9e07af1e741de0",
+      "log_sha256": "64c9783e3c893f7ee06c8e2411942214972cf3e6a87728eac37e822044c9560f",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:53:27.825596+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_host_observation001": {
+      "receipt_sha256": "a1b2a98ec9e9f3e88b3aef81294465247b918e4f9998a70a7728aa54681f5fc2",
+      "log_sha256": "263a5dd0e959048f3d61b9abf6d125e066a4c3ea207d45d4db12ddf59d9f9e2f",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:54:22.252040+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_fmt001": {
+      "receipt_sha256": "3afcc0a527b0f1fd34242ad23bb69c9c71059b6bc7682098e3dfb5e056089018",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:45:13.669373+00:00",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_check001": {
+      "receipt_sha256": "73b3cff348bf74380c3fecf7511463db6bba4ef62f5d8567e7cd435a4ae67a49",
+      "log_sha256": "03123c02d2a237cdbc352010e3f3fe7d04dd075e668418fcc0179e1599850d62",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:55:12.968234+00:00",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_event_log001": {
+      "receipt_sha256": "0efa165760846a1414291096059d734a9d50a5b150150cf3c887b35f443d5cd8",
+      "log_sha256": "a2a8f8ed5249c00bec6d00c24523cab0f680687c99a4621e5b1e6f89b197c76d",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:55:49.925156+00:00",
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "event_log_checks,runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_clippy_core001": {
+      "receipt_sha256": "75d59a06ead6aebbb545f93a49124a89b289544ff0860dbb67e737e3daa57c29",
+      "log_sha256": "0416b89acbb6d43abcdfeedd74da279623ee4736170b2b9b22ed1e07e2ebe6a6",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:56:23.739939+00:00",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_clippy_host001": {
+      "receipt_sha256": "28fd2236d29157c3c8b15eaaebda99f8fba6b938561b707a45b5a14ed6caf253",
+      "log_sha256": "f32bb301cfae0af58c4b7b806fe0645e77a03abd51970a8ffc5d3408cb97b065",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:57:07.895100+00:00",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_release001": {
+      "receipt_sha256": "0e527f0ff7538678832aec2cb6878b2c2b3b680e91adff9589c74253619036a3",
+      "log_sha256": "ac06e89b6f006bed4e1aa02c35f3b12c4df9bd3f283b81862c9a4f529b6f11b4",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:57:48.332173+00:00",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_final_heap001": {
+      "receipt_sha256": "7242829546f893c32c1274dacc0a0bb39d7a7b325fd79e099b4b77c028cca9ab",
+      "log_sha256": "2ec58246f734a46be0a4637d2b61e298b7a35d324f51c6e51f392431f5d24c65",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:59:15.950766+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--lib",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "exporter_heap_is_bounded_without_scrapes_and_retires_on_idle",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_prepared_public_001": {
+      "receipt_sha256": "c4613077649759899778cf67aab7e9691fd0e7211a3d9d8c523df4e6d3795a39",
+      "log_sha256": "b35e0ee593e7517b4842e670ef61b519051510a7fdf59b5f61d4e49a24018bc3",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:00:46.446261+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/probe.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_prepared_boundary_001": {
+      "receipt_sha256": "32be1fc659172de1d5d86bb02fec7955c4eef663936cd35510eae4a9e920d54a",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:00:57.515328+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_observed_release_001": {
+      "receipt_sha256": "9368c00bda48388f836a4332bfa5c79490cd754abb111b85402b718fcf0bfcb5",
+      "log_sha256": "c6a8d9f98c163297c3a30be55ddfbbe9602cedb10d7a296651640ea92f6b92d0",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:01:06.847061+00:00",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_default_parity_001": {
+      "receipt_sha256": "4c0ceae0b16e5c57de7405455309ca1d8757b2b2b3fa53d1ba1bc89252b45e4b",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:01:12.850042+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/default_parity.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_public_oracle_001": {
+      "receipt_sha256": "819bcc4c7d60cf2faac496ff529b605afa5b7286328582214feef2260a065b96",
+      "log_sha256": "71b457f0091b4f63a8a0511116aa7d07a3586147d276f8b9bbae6df5f30be0fb",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:01:16.398452+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_probe.py",
+        "after"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_public_trace_001": {
+      "receipt_sha256": "9d207a1f459c2f69c6d9fc17fc7b0c4822213be077fe7b98808fb1d1513568c3",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:01:24.030751+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_trace_probe.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_public_cli_001": {
+      "receipt_sha256": "b300048a14a676ea8375459db6d370646ffe0021a26804d3fe40537349adaef8",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:01:30.058382+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_cli.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_public_profile_001": {
+      "receipt_sha256": "ec0bf2ab1fb125c0c1690c67dc8a5887f3a1d21c28bcf23c7f12e13420558b4e",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:01:56.564262+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_profile_probe.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_public_boundary_001": {
+      "receipt_sha256": "0a0f8905c5390855ea6d66fd4663fd6234ab2e47c84b0bafdd425bde56f7cc5f",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:02:16.383923+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_boundary_probe.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_public_api_001": {
+      "receipt_sha256": "3efa1beb3c8e97bee1a29f8441ffeb2398ebce277ed9df6fe1c537a69ed303c7",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:03:11.803287+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_api_cli_probe.py",
+        "--repository",
+        "/mnt/f/work/simulator",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_pc_prepare_001": {
+      "receipt_sha256": "fb61d5985abc88e4e2f9b671d52edda56a51a48a86a75363367250f239e3f9c9",
+      "log_sha256": "e804b76fe80255b2ef0514ab99c65a57fbb2aa0446704bd45d892a9141d49713",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:04:18.405684+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/prepare_pc.py",
+        "001"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_pc_001": {
+      "receipt_sha256": "fa28380f1904a266e820d552cec66ea2d266286a8408b3a3b3b130aedb18ac55",
+      "log_sha256": "ab12860224690eee880a74d1ca1b8e63f2ecc43413a67194d707c134386d9a7d",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:04:24.992409+00:00",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-pc-target",
+        "R06_BASELINE_OUTPUT=/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json",
+        "R06_BASELINE_SAMPLES=11",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "/tmp/r06-completion-pc-r0xg8z5d/Cargo.toml",
+        "-p",
+        "game_core",
+        "--lib",
+        "--release",
+        "--offline",
+        "--locked",
+        "pc_load_baseline",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_pc_compare_001": {
+      "receipt_sha256": "a4326364855012c67537d1d7a1359ba869747788256c52ca5ee940d969aa5f8e",
+      "log_sha256": "475c83d0cc6c56fbcaa7a8cb729fb5dc4831892b9fe58b73feb56d6b1f8f389d",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:07:19.006638+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/compare_pc_v32.py",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/PC_SUMMARY_CURRENT_002.json"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_pc_immediate_001": {
+      "receipt_sha256": "cd69a4d036f2799af9524a0ed0acb66dc5642c1e66d3dd406875c8a14afd256d",
+      "log_sha256": "653203f7af9c49362d6762b30c0ad8466e7e993ddffe156bb039901c329aff32",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:07:22.396702+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/compare_pc.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_r05_compare_001": {
+      "receipt_sha256": "7d92ccf20daab3ba249305be42f56765422ca409be0cf97709acbff6e694d2c5",
+      "log_sha256": "67efbcfbd00eb4919e0e55ee60191bcefd40ced72c7e0074c7e24bdfa0da4186",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:08:14.021994+00:00",
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/summarize_r05.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2compat_r05_001": {
+      "receipt_sha256": "4b4ea94196438e40c4491d367a71d4afeefa8215f464da610c8eb06f7c643678",
+      "log_sha256": "bf25051c16ae3ee451d0e81c6a118b074be73709da9b9f21543b58803f290cba",
+      "raw_exit": 101,
+      "started_at_utc": "2026-10-03T23:07:25.809038+00:00",
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "final_performance",
+        "--release",
+        "--features",
+        "allocation-observer",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/r05_raw_current_002.json"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_services_live006": {
+      "receipt_sha256": "94ba592bd19b6e79e4a5ab6ca847549163e1d8eec48c6b1c129bf6bbfb57a175",
+      "log_sha256": "e6579d57642f24e2ccb42244fdf1a3eaeac753d3993f34c5131aed450b096ad8",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:55:23.378999+00:00",
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/services_probe.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_services_render007": {
+      "receipt_sha256": "3920e1584c6c1dd32cd79996650282fa9769b95ee606b9c5c077f211cb2754c6",
+      "log_sha256": "bbed67fd7681b556c530393c2f71cc1cb9fe485603bb025b80ae389e21a6c456",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:58:55.234251+00:00",
+      "command": [
+        "node",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/browser_fixed.cjs",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/evidence/services/render007"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_services_verify001": {
+      "receipt_sha256": "ecd741a8ba9aad5e0e8b33ecab8e9b12669a0f5f056ef90cc6227c70e9e765cb",
+      "log_sha256": "46c14fd5a62a90a32f48ed57d5f04c287b2babe82544410e9cb5dcb180f41299",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T23:02:43.838886+00:00",
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/verify_services.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_parity_cost002": {
+      "receipt_sha256": "6e506b62dc69d8c80c55c9da092dc730056e3dad9d695c181c086ebd3bd72652",
+      "log_sha256": "d575bdee8ee6b12ef73c5a08ca8d066eb0047a429e80e5819c71cf07eae2ba6a",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:38:00.574516+00:00",
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/parity_cost.py"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_driver_release_on002": {
+      "receipt_sha256": "2a690911d001c02078e49c1799ed47d0e972a5b7e6dabf6b6594fa532663911e",
+      "log_sha256": "08fb33eea78dee326c18a3d4986f7c27babc952750145bcff590a1ef847d7fef",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:34:18.623152+00:00",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "game_server",
+        "--example",
+        "observe_runtime",
+        "--features",
+        "runtime-observation"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    },
+    "s2_driver_release_off002": {
+      "receipt_sha256": "88ba78dd9e9cf74351897e4ae16dea77b29f3fa0f49cf32a63ae091a0621b87b",
+      "log_sha256": "412eeb9680c10f3b2bad0f85be3690ef918b22f05b7af7f8a5b249e8eb857358",
+      "raw_exit": 0,
+      "started_at_utc": "2026-10-03T22:35:23.383754+00:00",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "game_server",
+        "--example",
+        "observe_runtime"
+      ],
+      "toolchain": {
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+      },
+      "source_delta_to_Master": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+        "game_server/config/observability/README.md"
+      ],
+      "reuse": "Valid: N01 doc hyperlink cannot affect execution; named cfg(test) addition affects no release binary. Original execution date/result unchanged."
+    }
+  },
+  "prior_audit_references": {
+    "post_audit/s1_20261004_003/check_current.py": "5003cd0da17612f8d61a73f1efb0bb9277760e77c49fab589f42b554d077d19c",
+    "post_audit/s1_20261004_003/COMPLETION_AUDIT.md": "49fde53ac8915dda1f45f1b841df85ef228a633e9812f85c2c18fe767349aacb",
+    "post_audit/s1_20261004_003/CURRENT_LIBRARIES.json": "1219df273db99e653e118d1f8c4e2833619440f34793abce3ba4f055987092b1",
+    "post_audit/s1_20261004_003/END_CURRENTNESS.json": "49e6da73f85a6f72b6ee781ba29bdd473813b7d8233576612413e5b608cd89bd",
+    "post_audit/s1_20261004_003/ENTRY_CURRENTNESS.json": "81b8911d69c278397091481c8036a5f8cea7ec4592135385d078fd679f59adcb",
+    "post_audit/s1_20261004_003/EVIDENCE_VERIFICATION.json": "489732d0ca3a15a7197526f48593d9333688c2926b3d7a57d2ceb7cddae61e1b",
+    "post_audit/s1_20261004_003/EXTRA_INPUTS.json": "6a551ae950910a5e703eb35fa30c5f13ebaf564b7f4af6e36ce6b698d3662b2c",
+    "post_audit/s1_20261004_003/host_peak_failure_probe.rs": "a8b46c60c0c24917753d5a5d4a41edaf9a5eb2eeed59fc3a61adfc7e43527313",
+    "post_audit/s1_20261004_003/host_peak_failure_probe_compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "post_audit/s1_20261004_003/host_peak_failure_probe_run.log": "201aa5148917b4178ae438d918874950497f5676e7a7a49908e9cf9075c47d88",
+    "post_audit/s1_20261004_003/PORTS_VERIFICATION.json": "116cfd18844cf9da57fc512d5fed1f5921a0d6fe739cf4da25417f514cbc2f4e",
+    "post_audit/s1_20261004_003/PREDECESSOR_REVIEW.json": "3e02224e735a76abc02bff73c07961713284089c2b2fd5a6cc22d0b040575116",
+    "post_audit/s1_20261004_003/PROBES.json": "911c96985336c9b1428ce190e56132f231d034ed05ce4342c236fe0c38df68bf",
+    "post_audit/s1_20261004_003/PUBLIC_COST_VERIFICATION.json": "a1065f38a8bc084e6d476bb927544eee34d90c3971ab7d53613b19a7b81012ae",
+    "post_audit/s1_20261004_003/R05_RECHECK.json": "f34c525615f11210f155576e5df32fe71a888df2399f8ce894ed442dcd5d68ad",
+    "post_audit/s1_20261004_003/recheck_r05.py": "a865bee9b6d822d70155fe2a8b1a0629a23b3c92c3b321c9002765d6f78a8814",
+    "post_audit/s1_20261004_003/restore_forward.log": "ebaad67c3dd59a04632637e56f088bb32092c4f5a107d93947a557208fe3cbbd",
+    "post_audit/s1_20261004_003/restore_reverse.log": "ebaad67c3dd59a04632637e56f088bb32092c4f5a107d93947a557208fe3cbbd",
+    "post_audit/s1_20261004_003/rollback_battle_probe.rs": "460dadf438730ba89f2a5ade87d5981c29342dc89b601ecb0ae6e307ae403bce",
+    "post_audit/s1_20261004_003/rollback_battle_probe_compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "post_audit/s1_20261004_003/rollback_battle_probe_run.log": "ee6d58ba72654fc7382ec424458acae7084b694633771479d143b74c95810f5e",
+    "post_audit/s1_20261004_003/run_probes.py": "fe39ce9e4db72f6475afefa214dbdc79728a81fe16249e10fa02d917eba4b8b3",
+    "post_audit/s1_20261004_003/verify_evidence.py": "dcf4087f43d456eabadc5e24fc6233b0915fdb404459e98195381fbb03721923",
+    "post_audit/s1_20261004_003/verify_ports.py": "77efe8fdc7c0f9c1f624b1e64ee8ba8b5e479a60a61085a30613953835296793",
+    "post_audit/s1_20261004_003/verify_public_cost.py": "4c4d684279b83dae5949a32629e944ae0a71cf86c01398c83327668508f702c5",
+    "post_audit/s1_20261004_003/write_predecessor_review.py": "e4e04d93f1a19e48d168a98a7904b17ce1f74cbe075f35bb08fc2dec72642f08",
+    "post_audit/s2_20261004_001/AUDIT_NOTES.md": "4eab3bad9224328557bb304adc38d00f94fe7cb125c46e4effc57d3e9695b19d",
+    "post_audit/s2_20261004_001/COMPLETION_AUDIT.md": "acea5e4b8081b537fcf48b26f30d28d4b69f17dd0bf69e60d620073bc58dbefd",
+    "post_audit/s2_20261004_001/CONDITION_REVIEW.json": "536effae51e76c63a5d8466f3db601c7f5ed2f8cb7798b6b1c2999a90e502310",
+    "post_audit/s2_20261004_001/DEPENDENCY_VERIFICATION.json": "1f0feaff8e215da9e4921738f239dd372752e875f455b3526683f8678be5a02f",
+    "post_audit/s2_20261004_001/END_CURRENTNESS.json": "5cc9b3bcb5b7efb0ecb10b7412cd05e93bd06046846cfa5ed40bba214922f874",
+    "post_audit/s2_20261004_001/ENTRY_CURRENTNESS.json": "1e5a365a2164ea9450683768143f2a23aeec8131451fec4d7bd6589a02060e10",
+    "post_audit/s2_20261004_001/EVIDENCE_VERIFICATION.json": "50c9f4a44455554d71212cf770f833f90a6010aba465368ac837fce2af9695f4",
+    "post_audit/s2_20261004_001/EXTRA_INPUTS.json": "4e2343c34e617e7749105a70a93ff161643480b9c86d22f8fb7424046bf0a58e",
+    "post_audit/s2_20261004_001/PARITY_VERIFICATION.json": "2b2a026252b01a521e59449a4ad74b840e463505dd93d8b8c991f512d6367116",
+    "post_audit/s2_20261004_001/PREDECESSOR_REVIEW.json": "5007b7326f1eec33e2e597579f78b40ed3c6da4509e5587d4642b38cd05f7ed6",
+    "post_audit/s2_20261004_001/PUBLIC_COST_VERIFICATION.json": "6bb052aa79bce5731e2cf2f6a277da723f91d3f38af4d6a24b4f460385ab26f0",
+    "post_audit/s2_20261004_001/R05_RECLASSIFIED.json": "67efbcfbd00eb4919e0e55ee60191bcefd40ced72c7e0074c7e24bdfa0da4186",
+    "post_audit/s2_20261004_001/recheck_r05.log": "67efbcfbd00eb4919e0e55ee60191bcefd40ced72c7e0074c7e24bdfa0da4186",
+    "post_audit/s2_20261004_001/recheck_r05.py": "c9ced723074aafcb87d99a068fe1e9f50494d0f3e06cafa1365451a6dc9fea64",
+    "post_audit/s2_20261004_001/RESTORATION.json": "34da33765176e31621a8170b8d67fc552466d5151532ad4e463922d051099932",
+    "post_audit/s2_20261004_001/restore_forward.log": "fd21ae2c1236c5c2d9631bac8c7f2719df91ff4ba489f4952c628f411d6be5bf",
+    "post_audit/s2_20261004_001/restore_reverse.log": "fd21ae2c1236c5c2d9631bac8c7f2719df91ff4ba489f4952c628f411d6be5bf",
+    "post_audit/s2_20261004_001/SERVICE_VERIFICATION.json": "87401f1337a21e225ad6524a0a984081cda9fb99fe7c2315bfa03609621f88b7",
+    "post_audit/s2_20261004_001/SOURCE_REVIEW.json": "e246295cefeaa033109da4c57c68e5598a54084f936e44a401ca947d62515e73",
+    "post_audit/s2_20261004_001/verify_dependencies.py": "c89178856c73c483b628caedda7d3c552d62e114a3098cefd10fec54771ce9be",
+    "post_audit/s2_20261004_001/verify_evidence.py": "9555c818301f1b27c978b9037757e66951213f393705c3d3808be2275b41eb27",
+    "post_audit/s2_20261004_001/verify_frozen.py": "aca778448dabe3e1bd119cb7a942e63d6dfc698a2a525dbda087121ee1642d71",
+    "post_audit/s2_20261004_001/verify_public.py": "9e6645568297baada07194d31a5a9044a43c3280e669a42e5a8354061ca47938",
+    "post_audit/s2_20261004_001/write_review.py": "3d31e140c138c4cf866a1fb76832519f8234338d83c8865ecae121f857d8d33a",
+    "post_audit/s2_20261004_002/COMPLETION_AUDIT.md": "da1a91d0ae6c051eac95fa635be68e1990b778d18eee3dfb7d6cacdf572f8b1b",
+    "post_audit/s2_20261004_002/CONDITION_REVIEW.json": "67518638f3b12b8ad2199620a8bcde2e12a1dc801e42ca74751c53487159b1e2",
+    "post_audit/s2_20261004_002/DELTA_VERIFICATION.json": "6c0805b40924a1f6a582cb53410878e9e953466a1274f6fde994d4ae0488a37f",
+    "post_audit/s2_20261004_002/END_CURRENTNESS.json": "70ee6c6d93ba596c1a48ca386e1257e0b4086752f2da0db3ad6569225032e9c7",
+    "post_audit/s2_20261004_002/ENTRY_CURRENTNESS.json": "38cc2ed6dac24d9ac760c7a2dfc0a9f8afb33544e2b05bb3db3b428d3c9c1853",
+    "post_audit/s2_20261004_002/EXTRA_INPUTS.json": "4e2343c34e617e7749105a70a93ff161643480b9c86d22f8fb7424046bf0a58e",
+    "post_audit/s2_20261004_002/PREDECESSOR_REVIEW.json": "fd7470740e90ae0a6ace3adac8035c577b413914ae2a972338cd5df5edd98121",
+    "post_audit/s2_20261004_002/RESTORATION.json": "e7c2652deed1d7220d3cd9c85f1b3041ed490f021d193eba8c4c1fcfb0225c71",
+    "post_audit/s2_20261004_002/restore_forward.log": "4e6f23ca9fb5f561341b036b280f1c4d1231b6a705a3b6f1bba1a0e566cb420d",
+    "post_audit/s2_20261004_002/restore_reverse.log": "4e6f23ca9fb5f561341b036b280f1c4d1231b6a705a3b6f1bba1a0e566cb420d",
+    "post_audit/s2_20261004_002/verify_delta.py": "c16d5ccdc1dbbe157bab14f5dda877102c9062a845c2fa182ef228c5b4851861",
+    "post_audit/s2_20261004_002/verify_frozen.py": "375c39a2400ecf4812d2a148e1e96318e27b4f7ab1b169ecfb3d8af3f2100258"
+  },
+  "verified_suite_counts": {
+    "core_default": {
+      "passed": 1701,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          1644,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "core_fixtures": {
+      "passed": 1701,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          1644,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "core_observation": {
+      "passed": 1707,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          1650,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "host_default": {
+      "passed": 77,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          77,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "host_observation": {
+      "passed": 84,
+      "failed": 0,
+      "ignored": 1,
+      "log_totals": [
+        [
+          84,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "mechanical_methods_reviewed": [
+    "s2 audit001 verify_evidence.py",
+    "s2 audit001 verify_public.py",
+    "s2 audit001 recheck_r05.py",
+    "s2 audit001 dependency verification and direct pinned-source assessment"
+  ],
+  "reused_actual_results": [
+    "35 release payload/timing comparisons",
+    "251 actual browser datasource frames and4197 metrics lines",
+    "PC576 non-timing parity",
+    "R05 preserved raw101 authorized peak-only warning",
+    "8 prepared privacy cases; observed two blocked writes then204→213",
+    "actual default/profile/API/authority/CLI and5 cancellation+trace public oracles",
+    "dependency archive/source correspondence and finite-storage analysis"
+  ],
+  "no_runtime_suites_reexecuted": true,
+  "reuse_reason": "Requirements and final production/test/config/fixture/dependency identities are exact after audited N01 documentation-only change; no new integration discrepancy invalidated prior actual runs. Master reviews cross-Phase contract and required baseline ownership, not manufacturing a new executable baseline."
+}

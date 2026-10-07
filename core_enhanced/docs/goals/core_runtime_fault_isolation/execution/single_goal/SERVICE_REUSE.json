@@ -1,0 +1,79 @@
+{
+  "predecessor_manifest_sha256": "d6a2b4d18e377862323f934a23fe9ec50871de8af824743c1188fa99ec17c5b3",
+  "unchanged_service_inputs": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "4f4e8b179849225904f359095908b8de9c17ae590f52c93aff93fbce7b0c9358",
+      "bytes": 82980
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c",
+      "bytes": 266
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "sha256": "d2660e113182f1fb27e457870faedaf4701842ed80c355de825064761dc05aa7",
+      "bytes": 1853
+    },
+    {
+      "path": "game_server/Cargo.toml",
+      "sha256": "40db753c5a866ec82552775655124d1750539d9fa55c4412a07430319e492f48",
+      "bytes": 1365
+    },
+    {
+      "path": "game_server/config/observability/grafana/dashboards/core-runtime.json",
+      "sha256": "ff23aac522731301f257ec9d9c5dce5a04b733b0202f28bb861fe302661e97a9",
+      "bytes": 27341
+    },
+    {
+      "path": "game_server/config/observability/grafana/grafana.ini",
+      "sha256": "280a7b813fa296357ef444fa4e64a2a831fab7da4cafe366b4e8a1be4c6fb1d8",
+      "bytes": 334
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/dashboards/core-runtime.yml",
+      "sha256": "b4b4acb08d251df7c679176d9926bc517783971fa5d2a441ef54f4236baefea0",
+      "bytes": 227
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/datasources/core-runtime.yml",
+      "sha256": "b03a58982b4e50a7ff0deed28ef05b371b406d83ea74074597e94569ac0cee78",
+      "bytes": 242
+    },
+    {
+      "path": "game_server/config/observability/prometheus.yml",
+      "sha256": "cda24337ad413c9a5c5f99993fb24839ae5d9fae9955e41709ee72499057fb10",
+      "bytes": 155
+    },
+    {
+      "path": "game_server/config/observability/run_local.py",
+      "sha256": "22a640ea895fdb629952fbc1109eeccc0e5a4b078ca4aab6a44f159999c74d0e",
+      "bytes": 3652
+    },
+    {
+      "path": "game_server/config/observability.ron",
+      "sha256": "fb19478c2de70bf9f568dbfd97031d9b853b4d23cc7ebc518b3dc846e6bac07c",
+      "bytes": 272
+    },
+    {
+      "path": "game_server/src/observability/mod.rs",
+      "sha256": "2457f8064f26253f7dd364fd8048d5ccf4d0d88d7d6c7dc665fff9e2f88d6f5e",
+      "bytes": 24502
+    },
+    {
+      "path": "game_server/src/observability/tests.rs",
+      "sha256": "1d9f2cf92c2d6a88725489595b33367731386a4baa7f35ea6825d1e685ffdfc3",
+      "bytes": 12442
+    }
+  ],
+  "reused_audit": "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_002/COMPLETION_AUDIT.md",
+  "reused_service_evidence": "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_001/SERVICE_VERIFICATION.json",
+  "changed_producer": "core_enhanced/src/runtime_observation.rs:RuntimeObserver::end_battle clears atomic latest current snapshot without commit; application runtime_error calls it on first actual runtime fault. Source-level consumer contract and new current release collector checks required.",
+  "current_validation": "final_fault_001_on/queue_full/detached/none/off; final_heap001; current Core/host observation suites",
+  "reuse_limit": "Actual Grafana/browser setup is reused only for unchanged service/config/dependency boundary. New terminal semantics are separately verified on current source; no claim of a new browser deployment.",
+  "reused_master_source_review": "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_001/SOURCE_REVIEW.json",
+  "reused_audit_sha256": "657dbc71317bb0399f5dd9b3729ab112e3bb31b628764ac0c386d65139199eff",
+  "reused_service_evidence_sha256": "87401f1337a21e225ad6524a0a984081cda9fb99fe7c2315bfa03609621f88b7",
+  "reused_master_source_review_sha256": "bdaab8c1b3cc239dea500dd90648075ad6eb1dbb857ab7625a49f1e8112a5705"
+}

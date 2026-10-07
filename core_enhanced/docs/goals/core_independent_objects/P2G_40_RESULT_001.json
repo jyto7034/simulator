@@ -1,0 +1,53 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "Phase Plan Ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CIOB-001",
+    "Content Digest": "sha256:b0dd7deb6894ec5e50bf71e72ee784227bed8de60f05044efc0db7eb8274cdad"
+  },
+  "Phase Plan Validation Receipt Ref": "PVR-CIOB-001",
+  "P2G-40 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CIOB-003",
+      "Content Digest": "sha256:b9f65c193e4cb512a5d6c41224896a65f3e4a0b12f8b66c2f6acafc457976f60"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CIOB-001",
+      "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CIOB-001",
+      "Content Digest": "sha256:b0dd7deb6894ec5e50bf71e72ee784227bed8de60f05044efc0db7eb8274cdad"
+    },
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "All Applicable Change Obligations Resolved": true,
+  "raw_exit": 0,
+  "validation": {
+    "validator": "p2g40-receipt-validator/1.2.0",
+    "result": "passed",
+    "counts": {
+      "freeze_members": 20,
+      "work_packages": 6,
+      "dependency_edges": 11,
+      "cyclic_sccs": 0,
+      "atomic_groups": 0,
+      "final_execution_nodes": 6,
+      "phases": 1,
+      "audit_rows": 1,
+      "integration_rows": 20
+    },
+    "failures": []
+  },
+  "semantic_design": "P2G_40_DESIGN_001.ko.md and TD01–08; six sequential transitions inside one integrated phase",
+  "next": "P2G-50"
+}

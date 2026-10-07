@@ -1,0 +1,1776 @@
+{
+  "source_digest": "5b05f2454b83b9b1dc4a4db50b7d4fc066efeca84d319c6095212c5c505ac876",
+  "receipts": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 111.71398704400053,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "e37a2493872afc8b0b14b9fd8683033919116769ce5dc2382ccebbcb67ae9496",
+      "test_results": [
+        [
+          "ok",
+          "1627",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "25",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "passed": 1684,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/all_default_002.json",
+      "receipt_sha256": "24d4adb7853d3ba89f3d0f84b75df8a282fc587db3969368beee4ca53d52e8da"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "test-fixtures",
+        "--offline",
+        "--locked"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 165.4079125940043,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "ecbbdb1025eb744834629ca8596001da1721279f6ddd543a6ca1287de6ba2129",
+      "test_results": [
+        [
+          "ok",
+          "1627",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "1",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "25",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "15",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "ok",
+          "4",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "passed": 1684,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/all_feature_001.json",
+      "receipt_sha256": "401438d6c5ab4e4b9c7da729e4d039fc61558670a7a9330b4b87e6df0e30c62f"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 19.453923270019004,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "32c049fdefbb4b88d0b60b359a139ac196babd167ae54725df1612fd3f76a4af",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/check_001.json",
+      "receipt_sha256": "3376cdbefade8aba443fdcde485c2df0f25cfbbe2d5e59eb4502304936ed770d"
+    },
+    {
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "event_log_checks",
+        "--offline",
+        "--locked"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 18.998255120997783,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "00189bb0478dea6a59a6422611fb6cd3ae6697481651ceefb2ac30af819537dc",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/event_log_check_001.json",
+      "receipt_sha256": "af18f27f8c29627b4dd403672faa98cb7ddb349a4ace52d6c0a154cc853a36b7"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 31.21982834400842,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "45ffab44ed946070485f0e746c610d28d308ef92d6b87fd2feb3da6426f82f7b",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/clippy_001.json",
+      "receipt_sha256": "f55e13d37a468eb2980db18862eef190dc347035bbccdfaad50d2a7a60fe17a4"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 4.3710340169782285,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/fmt_001.json",
+      "receipt_sha256": "2332614eb4a2dd4a782d0b5a245c6e2a29398c7297c11909a722a2b1fb8d50c3"
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "--release",
+        "--bins",
+        "--offline",
+        "--locked"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 48.87719656500849,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "c1f9d619976314e4a5fa3aad038aff92e4923bd3114061c0f149e5eb66e7b904",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/release_001.json",
+      "receipt_sha256": "b3f5029c9ca5865e1b95ff8546918367b2794502cd5f3f26a9afb5b9791b4cf5"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/public_probe.py",
+        "after"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 5.665818320005201,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "b5e40f5adfefed8308291e24f134329ae62452290fe0cdb4a19c11a0b2893230",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/public_oracle_after_001.json",
+      "receipt_sha256": "b78767d5e8261e10ad496d1b91c30daf080a24e48964d005b1fa8ceb21ef2201"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/public_cli.py"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 20.533741883991752,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/public_cli_001.json",
+      "receipt_sha256": "3d95eec324bfbc431593ad73269cb8eed2f944d9b445ca900b9b1e7595252c98"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/public_trace_probe.py"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 4.940167543012649,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/public_trace_001.json",
+      "receipt_sha256": "c9c8c156ac685937c56d189d666f8927c61115d8ea340024a2e8787bcba5655d"
+    },
+    {
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-pc-target",
+        "R06_BASELINE_OUTPUT=/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/pc_raw_current_001.json",
+        "R06_BASELINE_SAMPLES=11",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "/tmp/r06-completion-pc-jc9e5fur/Cargo.toml",
+        "-p",
+        "game_core",
+        "--lib",
+        "--release",
+        "--offline",
+        "--locked",
+        "pc_load_baseline",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 185.78680404898478,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "b038512ab9ef75a18e0d5f2681f788c4c02e3198b468cfcd8c0904425ffbdfe6",
+      "test_results": [
+        [
+          "ok",
+          "1",
+          "0",
+          "0",
+          "0",
+          "1627"
+        ]
+      ],
+      "passed": 1,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/pc_current_001.json",
+      "receipt_sha256": "28d1be2e9b6eaf2149039399cec6f9d10405b3bf7bc00caa657d3604e43c43ce"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/compare_pc_v32.py",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/pc_raw_current_001.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/PC_SUMMARY_CURRENT_001.json"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 1.9527684219938237,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "4599cc0ef125ce34186380dad99ed24b7da1284dd6ac3f9ccb76e084a9a11c71",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/pc_compare_001.json",
+      "receipt_sha256": "47ef0f5f9b2720ca618fd4cd0bab7f52a8b35d53873b176792888709c2792ae6"
+    },
+    {
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "final_performance",
+        "--release",
+        "--features",
+        "allocation-observer",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/r05_raw_current_002.json"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 57.68576075899182,
+      "exit_code": 101,
+      "source_unchanged": true,
+      "log_sha256": "68a6a838f56d93d480e6de6dc4eb8ddebbab0e98575bb65d05ce469517c8fc1e",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/r05_current_002.json",
+      "receipt_sha256": "f1ebc9068b6dc968afc99be23070e4155f8e11360c23303254bf8f3155ed257f"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/summarize_r05_002.py"
+      ],
+      "cwd": "/mnt/f/work/simulator",
+      "runner_sha256": "fac67d6c1d40d39440bc2cf159eedcc30388717f249ca787beb189b75c21c59f",
+      "environment": {
+        "CARGO_HOME": "/tmp/wp02-cargo-home",
+        "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+        "RUST_TEST_THREADS": null
+      },
+      "duration_seconds": 1.9545511070173234,
+      "exit_code": 0,
+      "source_unchanged": true,
+      "log_sha256": "bab8866e4480143f8abd93ab87747217d21d131e331933e96f12b7b791074e4a",
+      "test_results": [],
+      "passed": 0,
+      "failed": 0,
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+      "receipt": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/evidence/r05_compare_002.json",
+      "receipt_sha256": "1f1254b69de32af47e8cf0c5351d0066922f958b99ed4113e65be54e8c563658"
+    }
+  ],
+  "selectors": [
+    {
+      "id": "A08-01",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A08-02",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A08-03",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A08-04",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+        "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+        "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A08-05",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A08-06",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A08-07",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-01",
+      "selectors": [
+        "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+        "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-02",
+      "selectors": [
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+        "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-03",
+      "selectors": [
+        "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-04",
+      "selectors": [
+        "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-05",
+      "selectors": [
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-06",
+      "selectors": [
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-07",
+      "selectors": [
+        "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-08",
+      "selectors": [
+        "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+        "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-09",
+      "selectors": [
+        "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+        "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A09-10",
+      "selectors": [
+        "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-01",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+        "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+        "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-02",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+        "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-03",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+        "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-04",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+        "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+        "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-05",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+        "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+        "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+        "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-06",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+        "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+        "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-07",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+        "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+        "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-08",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+        "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A10-09",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+        "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-01",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-02",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+        "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+        "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+        "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+        "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+        "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+        "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-03",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+        "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+        "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+        "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-04",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+        "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+        "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+        "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+        "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-05",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+        "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+        "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-06",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+        "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+        "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-07",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+        "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+        "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+        "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+        "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+        "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-08",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+        "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+        "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A11-09",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+        "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-01",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+        "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-02",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+        "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-03",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+        "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-04",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+        "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-05",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+        "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-06",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+        "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-07",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-08",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+        "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+        "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+        "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+        "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+        "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-09",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+        "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+        "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "A12-10",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+        "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X01",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+        "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X02",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+        "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+        "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+        "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X03",
+      "selectors": [
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X04",
+      "selectors": [
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+        "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+        "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X05",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+        "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+        "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X06",
+      "selectors": [
+        "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+        "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X07",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X08",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+        "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+        "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+        "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X09",
+      "selectors": [],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "X10",
+      "selectors": [],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-01",
+      "selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+        "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-02",
+      "selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-03",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+        "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-04",
+      "selectors": [
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-05",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+        "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-06",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+        "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+        "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-07",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+        "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+        "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-08",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-09",
+      "selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-10",
+      "selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-11",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+        "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-12",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+        "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+        "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-13",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+        "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-14",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-15",
+      "selectors": [
+        "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-16",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+        "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-17",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-18",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-19",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+        "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-20",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+        "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+        "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "IVA-CAVER-21",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F01",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F02",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F03",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F04",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F05",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F06",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F07",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F08",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+        "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F09",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::world::tests::checkpoint_validation::current_v9_checkpoint_document_has_exact_envelope_and_checksum",
+        "game::world::tests::checkpoint_validation::current_v9_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+        "game::world::tests::checkpoint_validation::current_v9_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::current_v9_rejects_each_content_authority_mismatch_even_with_valid_checksum"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F10",
+      "selectors": [
+        "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F11",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    },
+    {
+      "id": "F12",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+        "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry"
+      ],
+      "passed_in": [
+        "all_default_002",
+        "all_feature_001"
+      ]
+    }
+  ],
+  "correction_selectors": [
+    "game::battle::core::boss_runtime::tests::f01_cancellation_faults_restore_boundary_and_retry_exactly",
+    "game::battle::core::boss_runtime::tests::f01_detach_preserves_future_flow_and_delivery",
+    "game::battle::core::boss_runtime::tests::f01_exact_handle_isolation_preserves_other_cast_and_actor_work",
+    "game::battle::core::boss_runtime::tests::f01_legacy_delayed_leaf_and_extracted_stale_step_cannot_release_after_cancel",
+    "game::battle::core::boss_runtime::tests::f01_released_area_keeps_ticks_and_settles_after_control_cancellation",
+    "game::battle::core::boss_runtime::tests::f01_same_timestamp_timeout_matches_partitioned_execution",
+    "game::battle::core::boss_runtime::tests::f01_timeout_and_state_exit_cancel_future_flow_but_preserve_released_delivery"
+  ],
+  "public_inputs": {
+    "count": 140,
+    "before_after_identical": true,
+    "all_live_sha256_match": true
+  },
+  "public_oracles": [
+    {
+      "case": "early_cancel",
+      "raw_sha256": "d814c663715ffb5f78fade37117ea4706c2deecd2deb636fc56d74ad00ee331b",
+      "steps": [
+        [
+          "marker",
+          5051
+        ]
+      ],
+      "hp_times": [],
+      "event_count": 83,
+      "trace_parity": true,
+      "pass": true
+    },
+    {
+      "case": "cancel",
+      "raw_sha256": "28c5d10b5f8482a7b7bf8ef5243aa477b3cc12ee6de6668d7bba11541aa4b26e",
+      "steps": [
+        [
+          "projectile",
+          5300
+        ],
+        [
+          "marker",
+          6501
+        ]
+      ],
+      "hp_times": [
+        5885
+      ],
+      "event_count": 88,
+      "trace_parity": true,
+      "pass": true
+    },
+    {
+      "case": "detach",
+      "raw_sha256": "c27d1583c883c9c36df34240dc8cab70614528d23e992ef3e226281c199ea9a8",
+      "steps": [
+        [
+          "projectile",
+          5300
+        ],
+        [
+          "marker",
+          6501
+        ],
+        [
+          "area",
+          6885
+        ]
+      ],
+      "hp_times": [
+        5885,
+        6885,
+        6885
+      ],
+      "event_count": 92,
+      "trace_parity": true,
+      "pass": true
+    },
+    {
+      "case": "inflight_cancel",
+      "raw_sha256": "e6aceb97b8309f2c8d82ba4a98c44993c55d694e0fdcefd6b91128df2276e311",
+      "steps": [
+        [
+          "projectile",
+          5300
+        ],
+        [
+          "marker",
+          5501
+        ]
+      ],
+      "hp_times": [
+        5885
+      ],
+      "event_count": 88,
+      "trace_parity": true,
+      "pass": true
+    },
+    {
+      "case": "state_exit",
+      "raw_sha256": "fe6f08caba275481037f1aedc44393166d5b6c5dd0ce8c8603069165a9c56fa5",
+      "steps": [
+        [
+          "projectile",
+          5300
+        ],
+        [
+          "marker",
+          6501
+        ]
+      ],
+      "hp_times": [
+        5885
+      ],
+      "event_count": 88,
+      "trace_parity": true,
+      "pass": true
+    }
+  ],
+  "note": "Fresh audit validations of existing raw command evidence, not new execution of the suites or public CLI."
+}

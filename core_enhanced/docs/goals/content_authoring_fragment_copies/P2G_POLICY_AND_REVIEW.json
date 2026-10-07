@@ -1,0 +1,1200 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Reviewed Source Basis",
+        "Artifact ID": "RSB-CAFCP-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "scope": "producer → transaction → runtime → persistence → rollback; selected file hashes are locators, not a claim every line was reviewed",
+        "source_digest": "f23caacccf436174215683f24032414ed24f26c83e69e894e95187d62370974b",
+        "files": [
+          {
+            "path": "core_enhanced/src/application.rs",
+            "sha256": "9d58d45333b99ead59641d3b5f1b8b4247ced40af44f4d1b2194172cf6aaddb1"
+          },
+          {
+            "path": "core_enhanced/src/authoring/clone_shape.rs",
+            "sha256": "b26fbed5f9d68f06c45ef6353c21f29e39125c21f38faa61de3713a99f0e7254"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/resource_runtime.rs",
+            "sha256": "a40af2d7ce6ffc01fcc31ab3f989747d4624332b58bfad4697020d267a689386"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+            "sha256": "a53cd0063c84c8b3a10752a9faa7408a6402d1da146ba512c52d59abc66de788"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+            "sha256": "ebc248e959792027602569a842847ee9d8804b9d7462fbfb072a35d7b4bbe284"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+            "sha256": "3665dcc98c1c01c29252e3adb2a33b0295585ddede9ac0dd35ca052d4527849d"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs",
+            "sha256": "37b6ae3329ec8929351b02745e000a2f9e4cd04f0ded195d66dc72d6a1fbcd38"
+          },
+          {
+            "path": "core_enhanced/src/game/behavior.rs",
+            "sha256": "00678c45ed2dc15e180122cd26949c9e929e43612ac5d53073ed802ad52fc560"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+            "sha256": "1e2c3089dc7c857bfb880e7790af54413612eb1ccc0b8c047a6ba281e8d5af40"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+            "sha256": "c5e79462df7296cf467660b0b24ebeb4731af25e4243c22c5c8682484dcbae09"
+          },
+          {
+            "path": "core_enhanced/src/game/data/corroded_employee_data.rs",
+            "sha256": "0027a9e242ce687d62ff61d5071fbab633576192c45fd42512f6faf952276d67"
+          },
+          {
+            "path": "core_enhanced/src/game/data/employee_data.rs",
+            "sha256": "bed7d6f4bebf981a2bab274f323e6cd53d89feec39507fc95c4fcc939f3a25d4"
+          },
+          {
+            "path": "core_enhanced/src/game/data/reward_data.rs",
+            "sha256": "8c9c74caee02c1c3006ad41fb532b65db8f9666ec154cd0f19d60dbe96c00c49"
+          },
+          {
+            "path": "core_enhanced/src/game/data/skill_fragment_data.rs",
+            "sha256": "5d445a921b638f1267ef0411d9ab2a560f0197579e4d06d44280e45a11ac8365"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "sha256": "26ef7def8931e4490644c7ec1f681b7f819e6fd6afdd5da6a8ef86a445359379"
+          },
+          {
+            "path": "core_enhanced/src/game/employee_psychology.rs",
+            "sha256": "fc130cf2cb5bb3182962f6feae485078b8d63cd7dbbb4c73971d364a01ef9f69"
+          },
+          {
+            "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+            "sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d"
+          },
+          {
+            "path": "core_enhanced/src/game/resource/durable.rs",
+            "sha256": "33b2760755631cd4fd274f4a807007bd82db56272b3d235f533b65d26a1e2765"
+          },
+          {
+            "path": "core_enhanced/src/game/resource/mod.rs",
+            "sha256": "224d26e2b26d42ee4fc6fbe035427833eaf080b9ebe98fbae201dd78421cc475"
+          },
+          {
+            "path": "core_enhanced/src/game/resource/runtime.rs",
+            "sha256": "1a2fab7030f652130f7390901c9d3692baef27c6f12cc41e413af95cb76e07e4"
+          },
+          {
+            "path": "core_enhanced/src/game/resource/store.rs",
+            "sha256": "f884dcc0c1c29a0a41408235cf72244741d966e16990b3ee879be2ead6c9a446"
+          },
+          {
+            "path": "core_enhanced/src/game/resource/store/tests.rs",
+            "sha256": "11fc6151645370aaba51e8a2c2af8d71a6ab832b69a04d318ed246abf0a849a6"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/board.rs",
+            "sha256": "3318239bfa2142d812f561c7aff2010221767ebb36520b90b62a7e2f48ec213c"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/economy.rs",
+            "sha256": "3b59a3cee8fe87573e709d30f5ab75fe1d9ac8c62e1a966151485c983995724d"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+            "sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/inventory.rs",
+            "sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/item_slot.rs",
+            "sha256": "400524091a45cd5670c13f8f47ee7b6f95bbbe6bb417da78bb1145bf722bc36a"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/mod.rs",
+            "sha256": "846a2da2439c31442b60cabba61a8987bb9f151c91e99991e2e34f8287cf7053"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/selection.rs",
+            "sha256": "dc667fa10d398054bc175e95555e8db5fe8e0ce7fc206e0487c94e640d50e368"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/state.rs",
+            "sha256": "d9f4733134d5e6fb1e371d08fd39de66bf6a987df80916a12a231f7896c1af8b"
+          },
+          {
+            "path": "core_enhanced/src/game/reward.rs",
+            "sha256": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f"
+          },
+          {
+            "path": "core_enhanced/src/game/reward_policy.rs",
+            "sha256": "e16a04368d089f96e7b07b74cb566ba3b825a3126a1d56094f92f37248f8f5f3"
+          },
+          {
+            "path": "core_enhanced/src/game/skill_fragment.rs",
+            "sha256": "6b8f81c7a59fc522e22774b6c225d0ec3cd108633e48e1e98f741716e109e64d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/action_capability.rs",
+            "sha256": "10dab9e64a4e5d93a0a0e7d79b9f5421678bdc1985df812ed3f6f8f6981bf2dd"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "sha256": "e927f4eaf70f1eea586d45ae32e8c156ab25a13dea17fffc09cbc4c2614cebe5"
+          },
+          {
+            "path": "core_enhanced/src/game/world/admin.rs",
+            "sha256": "c80a2b14703539d9ca48a2422bc4135a83c94ed3414e98079cb791e17d5f1731"
+          },
+          {
+            "path": "core_enhanced/src/game/world/admin/catalog.rs",
+            "sha256": "d5d40a841eafebb551caeab7b6b2a19b87d96921a52b42c7855f40049e0976ad"
+          },
+          {
+            "path": "core_enhanced/src/game/world/admin/commands.rs",
+            "sha256": "567b5b573d33eea7d929930ee7eb5a75ca90004d69aec94f5d077d452dc19a5c"
+          },
+          {
+            "path": "core_enhanced/src/game/world/admin/fixtures.rs",
+            "sha256": "c319893cc907e4982d05f3a8880d269f987061d97e451ddac624e114acf25bfb"
+          },
+          {
+            "path": "core_enhanced/src/game/world/admin/grants.rs",
+            "sha256": "6ee7eaf80d41dda3080e6bbbc03794ba1dd1c098bf4d49fd402f2f8d24929ce6"
+          },
+          {
+            "path": "core_enhanced/src/game/world/admin/tests.rs",
+            "sha256": "90870149d9f23ecb49a19e5b57eecc0f9877bcc562a1e6d6af76b52c7c1a6594"
+          },
+          {
+            "path": "core_enhanced/src/game/world/application.rs",
+            "sha256": "36ba3058aacfd27980ea3211e2c0fd6be088367139808487e018a9076965c057"
+          },
+          {
+            "path": "core_enhanced/src/game/world/authoring_lifecycle.rs",
+            "sha256": "544ee93dc3417d18e1c0ccf608d5cb55461a1d1e245d694e43df05ef7d3989d7"
+          },
+          {
+            "path": "core_enhanced/src/game/world/authoring_observation.rs",
+            "sha256": "2346bff14f655cc73db7b5570614c90f6653a32c76aa9fa481f2911b21a06901"
+          },
+          {
+            "path": "core_enhanced/src/game/world/battle_capability.rs",
+            "sha256": "fb924f16500316703eb2e07ff2c4d59dd5117f169ec0d1d3464d3fc1355af885"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "sha256": "2225558ef2b0e26d9f4d1c304034757ecbf2564bb71354ce992096599945db99"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat_trace.rs",
+            "sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092"
+          },
+          {
+            "path": "core_enhanced/src/game/world/event_node.rs",
+            "sha256": "9ad3df59233e9f30989a14c29ac6a42edc35d1a39024cdd4938475c148f03f7a"
+          },
+          {
+            "path": "core_enhanced/src/game/world/facility.rs",
+            "sha256": "35ce3dfe8e206ded40dd0ef6614fab0c41716ebafdadbadc808dc5819c14e4c6"
+          },
+          {
+            "path": "core_enhanced/src/game/world/grant_state.rs",
+            "sha256": "04ed93844a3292e7b088b6db71d9d768ad5b097fd0193be65fbc34f08db65969"
+          },
+          {
+            "path": "core_enhanced/src/game/world/headquarters.rs",
+            "sha256": "72306a6451e26ffda6068051e6616ce0576097e3cfdfce2596eeb9c0e0f23fd2"
+          },
+          {
+            "path": "core_enhanced/src/game/world/helpers.rs",
+            "sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22"
+          },
+          {
+            "path": "core_enhanced/src/game/world/maintenance.rs",
+            "sha256": "faa07e016b125dc1df2f8f2d2d11a8e048551a44f3a6e128d847cb3c86959744"
+          },
+          {
+            "path": "core_enhanced/src/game/world/map_content.rs",
+            "sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26"
+          },
+          {
+            "path": "core_enhanced/src/game/world/map_encounters.rs",
+            "sha256": "86d1a53cc437447538029b18b5af5c5feccb667db0486e94363d8caa80707d2d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+            "sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6"
+          },
+          {
+            "path": "core_enhanced/src/game/world/node_flow.rs",
+            "sha256": "e19acd8cc26826221c991e0663bfb752bf9834f7d3b57e3b444d5789211a22a2"
+          },
+          {
+            "path": "core_enhanced/src/game/world/resource_runtime.rs",
+            "sha256": "f33a68cd2354965883358b7447fc806b254537b813a8d4c69e899ca347f7d151"
+          },
+          {
+            "path": "core_enhanced/src/game/world/reward.rs",
+            "sha256": "fda449c9ed2d42f9ea93749fda6f996bb672d9687ec6b90ef86115cbb98dec2a"
+          },
+          {
+            "path": "core_enhanced/src/game/world/shop.rs",
+            "sha256": "50648b00e8ae3f7be61d525140334470b14747df526f9fa037f8a862af6a4982"
+          },
+          {
+            "path": "core_enhanced/src/game/world/snapshot.rs",
+            "sha256": "e35995f855883af5944c16955cdd36612c87fbcaa7fd1b49f39d307f7386fa51"
+          },
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "sha256": "72884eac602979d61080f145aa9de9bea85872316cf24a4c33a09e1d73be3848"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+            "sha256": "801cbcae4959396b24865cfe43b562f0502b1667cbb6d6f4b7e266a82d6ff0b4"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/combat.rs",
+            "sha256": "5850a538a0656fecc3923920ea4d63d43a6ee4aa1b967e0593bb3b4d530fa97d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/content_generation.rs",
+            "sha256": "cf807a7ae60f80c0cb55fba76e9a0917625fbc8336de2472f4fc596642bdfeaf"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/equipment.rs",
+            "sha256": "550706db6c5f89c81d1df6274d71d5466e3682963bc1d2a43d6b500bfe5b0567"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/facility.rs",
+            "sha256": "ead1513c3607fbaae0718984ae366676e0d6ccae8b1c09796f5639a3d75c9b5b"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/map_flow.rs",
+            "sha256": "de71a01b347041b177946cdb55b46e6eefa687b2e7d19adf130e4ecc77e6fe36"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+            "sha256": "49f80f7db175905a89d6f851d202edfae373bbacdb16e555cf89d3066650edc1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/mod.rs",
+            "sha256": "56febe6197d7dc960540ff3f0580a969874c7dc8918405de9165a50d80a83ca7"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/node_sessions.rs",
+            "sha256": "5a8fcc43076d1924eb32cc9d258429ab3bf6629a2e265dfca7c0a92cb4d7e0a4"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+            "sha256": "7485126713f4d97db01f24da18520c5965f3462ffe9bdad5ba60bc8d1960715a"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+            "sha256": "723c5b0342e0aab164d4f8bc0d3f69545c4394d014d6ca31f7fc1e7b518562fa"
+          },
+          {
+            "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+            "sha256": "c2a44c5a2def17c1a264c8746047c5bd6100735e876a51a318dc44193d7a19ac"
+          },
+          {
+            "path": "core_enhanced/src/game/world/visual_novel_triggers.rs",
+            "sha256": "ae14bc093afa121cc2e6cfc09164e0f94e6572ace81d388387b1f5ea096a4e87"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CAFCP-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "Current behavior": "definition stacks/progress, definition active loadout, dust upgrades, arbitrary count recovery; V7 typed checksum; cloned economy transaction already present",
+        "Proposed Implementation": [
+          {
+            "title": "단일 사본과 정상 지급",
+            "contract": "BTreeMap<Uuid, OwnedFragment>만 소유 상태를 쓴다. 파생 count만 제공한다. 새 전용 UUID namespace를 checked 증가하고 EconomyGrantState 후보에서 지급한다. 일반 강화 명령/공통 progress gameplay reader를 제거한다.",
+            "acceptance": "F01,F10,F12",
+            "locators": "game/skill_fragment.rs; game/reward.rs; game/managers/uuid_manager.rs; game/world/grant_state.rs"
+          },
+          {
+            "title": "장착·이전·분쇄·사망 회수",
+            "contract": "직원 active 슬롯 하나와 사본 equipped_to를 양방향 검증한다. exact copy만 명령으로 받는다. occupied 슬롯 거부, 명시 이전에서 두 직원을 원자적으로 변경한다. 분쇄 확인 필드가 없으면 장착 사본은 무변경 거부. 죽음 회수는 해당 copy의 owner만 해제한다.",
+            "acceptance": "F02,F03,F05,F06",
+            "locators": "game/world/maintenance.rs; game/world/helpers.rs; game/world/combat.rs; game/resources/equipment_loadout.rs; game/employee.rs"
+          },
+          {
+            "title": "개화·형태·재료",
+            "contract": "stable form ID→compiled SkillId, base 항상 해금. 개화는 해당 copy만 해금하며 선택 유지. Maintenance에서 선택. 이미 해금/동일 선택은 비용 없는 명시 무변경. enkephalin+명시 parts recipe 중복 checked 합산. recipe 없으면 unavailable. 본편 수치 창작 없이 공개 external pack에 완전 recipe 시험.",
+            "acceptance": "F02,F04,F07",
+            "locators": "game/data/skill_fragment_data.rs; game/skill_fragment.rs; game/world/maintenance.rs; game/reward.rs"
+          },
+          {
+            "title": "전투 입력과 출처",
+            "contract": "공통 resolver가 copy/definition/selected form을 skill로 연결한다. 명시 fragment provenance와 필요한 최소 owner를 전달한다. 기존 action/delivery Snapshot identity는 불변. Live도 기존 권한 유지. 새 battle fingerprint는 선택/owner 변화를 반영한다. intrinsic baseline modifier는 직원 고유 입력으로 보존한다.",
+            "acceptance": "F07,F08",
+            "locators": "game/battle/stat_pipeline.rs; game/battle/combat_setup/player_spawns.rs; game/battle/core/runtime_facts.rs; game/resources.rs; game/world/active_run.rs"
+          },
+          {
+            "title": "저장과 명시 호환",
+            "contract": "새 schema에서 copy UUID/form/unlock/양방향 owner를 검증한 뒤 commit. old V7 원본 raw checksum+old identity 먼저 검증하는 명시 converter. def/직원 UUID 정렬 및 전용 UUID stream으로 count→copy 배정. 공통 awakened는 모든 사본 해금/선택 승계. 제거된 rank와 zero-count progress는 읽기 전용 legacy provenance로 보존. 원본 자동 덮어쓰기 금지.",
+            "acceptance": "F09,F10",
+            "locators": "game/world/active_run.rs; game/world/node_flow.rs; game/world/state.rs; authoring/clone_shape.rs"
+          },
+          {
+            "title": "공개 조회와 최종 검증",
+            "contract": "DTO/preview/explain/command는 exact copy/form/owner/unavailable 이유와 동일 recipe를 소비한다. R06 수용표와 F01–F12 전부 default 공개 seam/새 process/비용/전체 feature에서 검증한다. clone/retained membership에 새 payload를 포함한다. R06 경계와 최종 source 양방향 복원 및 원자료 보존.",
+            "acceptance": "F01,F02,F03,F04,F05,F06,F07,F08,F09,F10,F11,F12",
+            "locators": "game/world/snapshot.rs; game/behavior.rs; application.rs; authoring/clone_shape.rs; authoring/trial.rs"
+          }
+        ],
+        "Known limitations": "R05 minimal fragment owner and new DTO exact spelling are implementation details to resolve before mutation in GEX PLAN; no editor, passive channel, R08, new cancellation or 20-minute soak",
+        "Rollback": "restore R06 boundary source; preserve V7 originals; V8 state requires explicit conversion, never force decode as V7"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E01-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E01",
+        "Intrinsic status": "open",
+        "Question": "단일 사본과 정상 지급",
+        "Observable Policy Acceptance": [
+          "F01",
+          "F10",
+          "F12"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAFCP-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "authority": "2026-09-29 user continuous start and delegated policy; NOT historical user policy",
+        "decision": "BTreeMap<Uuid, OwnedFragment>만 소유 상태를 쓴다. 파생 count만 제공한다. 새 전용 UUID namespace를 checked 증가하고 EconomyGrantState 후보에서 지급한다. 일반 강화 명령/공통 progress gameplay reader를 제거한다.",
+        "rationale": "exact copy independence, deterministic replay, minimal cutover and preservation of old bytes",
+        "alternatives_rejected": [
+          "shared definition progress violates independent forms",
+          "implicit first-copy selection hides identity",
+          "silent old-save defaults lose provenance"
+        ],
+        "impact": "game/skill_fragment.rs; game/reward.rs; game/managers/uuid_manager.rs; game/world/grant_state.rs",
+        "reversal": "new successor decision and migration; preserve original boundary/raw bytes"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E01",
+        "Intrinsic status": "decided",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F01",
+          "F10",
+          "F12"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E01-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E01",
+        "Intrinsic status": "code_reviewed",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E01-DECIDED-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F01",
+          "F10",
+          "F12"
+        ],
+        "contract": "BTreeMap<Uuid, OwnedFragment>만 소유 상태를 쓴다. 파생 count만 제공한다. 새 전용 UUID namespace를 checked 증가하고 EconomyGrantState 후보에서 지급한다. 일반 강화 명령/공통 progress gameplay reader를 제거한다.",
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAFCP-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "element": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E01-REVIEWED-001",
+          "Content Digest": null
+        },
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        },
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "completeness": "producer/consumer/save/failure locators in CRA; acceptance must execute in GEX, no implementation PASS"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E02-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E02",
+        "Intrinsic status": "open",
+        "Question": "장착·이전·분쇄·사망 회수",
+        "Observable Policy Acceptance": [
+          "F02",
+          "F03",
+          "F05",
+          "F06"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAFCP-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "authority": "2026-09-29 user continuous start and delegated policy; NOT historical user policy",
+        "decision": "직원 active 슬롯 하나와 사본 equipped_to를 양방향 검증한다. exact copy만 명령으로 받는다. occupied 슬롯 거부, 명시 이전에서 두 직원을 원자적으로 변경한다. 분쇄 확인 필드가 없으면 장착 사본은 무변경 거부. 죽음 회수는 해당 copy의 owner만 해제한다.",
+        "rationale": "exact copy independence, deterministic replay, minimal cutover and preservation of old bytes",
+        "alternatives_rejected": [
+          "shared definition progress violates independent forms",
+          "implicit first-copy selection hides identity",
+          "silent old-save defaults lose provenance"
+        ],
+        "impact": "game/world/maintenance.rs; game/world/helpers.rs; game/world/combat.rs; game/resources/equipment_loadout.rs; game/employee.rs",
+        "reversal": "new successor decision and migration; preserve original boundary/raw bytes"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E02",
+        "Intrinsic status": "decided",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F02",
+          "F03",
+          "F05",
+          "F06"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E02-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E02",
+        "Intrinsic status": "code_reviewed",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E02-DECIDED-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F02",
+          "F03",
+          "F05",
+          "F06"
+        ],
+        "contract": "직원 active 슬롯 하나와 사본 equipped_to를 양방향 검증한다. exact copy만 명령으로 받는다. occupied 슬롯 거부, 명시 이전에서 두 직원을 원자적으로 변경한다. 분쇄 확인 필드가 없으면 장착 사본은 무변경 거부. 죽음 회수는 해당 copy의 owner만 해제한다.",
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAFCP-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "element": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E02-REVIEWED-001",
+          "Content Digest": null
+        },
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        },
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "completeness": "producer/consumer/save/failure locators in CRA; acceptance must execute in GEX, no implementation PASS"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E03-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E03",
+        "Intrinsic status": "open",
+        "Question": "개화·형태·재료",
+        "Observable Policy Acceptance": [
+          "F02",
+          "F04",
+          "F07"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAFCP-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "authority": "2026-09-29 user continuous start and delegated policy; NOT historical user policy",
+        "decision": "stable form ID→compiled SkillId, base 항상 해금. 개화는 해당 copy만 해금하며 선택 유지. Maintenance에서 선택. 이미 해금/동일 선택은 비용 없는 명시 무변경. enkephalin+명시 parts recipe 중복 checked 합산. recipe 없으면 unavailable. 본편 수치 창작 없이 공개 external pack에 완전 recipe 시험.",
+        "rationale": "exact copy independence, deterministic replay, minimal cutover and preservation of old bytes",
+        "alternatives_rejected": [
+          "shared definition progress violates independent forms",
+          "implicit first-copy selection hides identity",
+          "silent old-save defaults lose provenance"
+        ],
+        "impact": "game/data/skill_fragment_data.rs; game/skill_fragment.rs; game/world/maintenance.rs; game/reward.rs",
+        "reversal": "new successor decision and migration; preserve original boundary/raw bytes"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E03",
+        "Intrinsic status": "decided",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F02",
+          "F04",
+          "F07"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E03-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E03",
+        "Intrinsic status": "code_reviewed",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E03-DECIDED-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F02",
+          "F04",
+          "F07"
+        ],
+        "contract": "stable form ID→compiled SkillId, base 항상 해금. 개화는 해당 copy만 해금하며 선택 유지. Maintenance에서 선택. 이미 해금/동일 선택은 비용 없는 명시 무변경. enkephalin+명시 parts recipe 중복 checked 합산. recipe 없으면 unavailable. 본편 수치 창작 없이 공개 external pack에 완전 recipe 시험.",
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAFCP-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "element": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E03-REVIEWED-001",
+          "Content Digest": null
+        },
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        },
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "completeness": "producer/consumer/save/failure locators in CRA; acceptance must execute in GEX, no implementation PASS"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E04-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E04",
+        "Intrinsic status": "open",
+        "Question": "전투 입력과 출처",
+        "Observable Policy Acceptance": [
+          "F07",
+          "F08"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAFCP-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "authority": "2026-09-29 user continuous start and delegated policy; NOT historical user policy",
+        "decision": "공통 resolver가 copy/definition/selected form을 skill로 연결한다. 명시 fragment provenance와 필요한 최소 owner를 전달한다. 기존 action/delivery Snapshot identity는 불변. Live도 기존 권한 유지. 새 battle fingerprint는 선택/owner 변화를 반영한다. intrinsic baseline modifier는 직원 고유 입력으로 보존한다.",
+        "rationale": "exact copy independence, deterministic replay, minimal cutover and preservation of old bytes",
+        "alternatives_rejected": [
+          "shared definition progress violates independent forms",
+          "implicit first-copy selection hides identity",
+          "silent old-save defaults lose provenance"
+        ],
+        "impact": "game/battle/stat_pipeline.rs; game/battle/combat_setup/player_spawns.rs; game/battle/core/runtime_facts.rs; game/resources.rs; game/world/active_run.rs",
+        "reversal": "new successor decision and migration; preserve original boundary/raw bytes"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E04",
+        "Intrinsic status": "decided",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F07",
+          "F08"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E04-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E04",
+        "Intrinsic status": "code_reviewed",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E04-DECIDED-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F07",
+          "F08"
+        ],
+        "contract": "공통 resolver가 copy/definition/selected form을 skill로 연결한다. 명시 fragment provenance와 필요한 최소 owner를 전달한다. 기존 action/delivery Snapshot identity는 불변. Live도 기존 권한 유지. 새 battle fingerprint는 선택/owner 변화를 반영한다. intrinsic baseline modifier는 직원 고유 입력으로 보존한다.",
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAFCP-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "element": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E04-REVIEWED-001",
+          "Content Digest": null
+        },
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        },
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "completeness": "producer/consumer/save/failure locators in CRA; acceptance must execute in GEX, no implementation PASS"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E05-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E05",
+        "Intrinsic status": "open",
+        "Question": "저장과 명시 호환",
+        "Observable Policy Acceptance": [
+          "F09",
+          "F10"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAFCP-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "authority": "2026-09-29 user continuous start and delegated policy; NOT historical user policy",
+        "decision": "새 schema에서 copy UUID/form/unlock/양방향 owner를 검증한 뒤 commit. old V7 원본 raw checksum+old identity 먼저 검증하는 명시 converter. def/직원 UUID 정렬 및 전용 UUID stream으로 count→copy 배정. 공통 awakened는 모든 사본 해금/선택 승계. 제거된 rank와 zero-count progress는 읽기 전용 legacy provenance로 보존. 원본 자동 덮어쓰기 금지.",
+        "rationale": "exact copy independence, deterministic replay, minimal cutover and preservation of old bytes",
+        "alternatives_rejected": [
+          "shared definition progress violates independent forms",
+          "implicit first-copy selection hides identity",
+          "silent old-save defaults lose provenance"
+        ],
+        "impact": "game/world/active_run.rs; game/world/node_flow.rs; game/world/state.rs; authoring/clone_shape.rs",
+        "reversal": "new successor decision and migration; preserve original boundary/raw bytes"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E05",
+        "Intrinsic status": "decided",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F09",
+          "F10"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E05-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E05",
+        "Intrinsic status": "code_reviewed",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E05-DECIDED-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F09",
+          "F10"
+        ],
+        "contract": "새 schema에서 copy UUID/form/unlock/양방향 owner를 검증한 뒤 commit. old V7 원본 raw checksum+old identity 먼저 검증하는 명시 converter. def/직원 UUID 정렬 및 전용 UUID stream으로 count→copy 배정. 공통 awakened는 모든 사본 해금/선택 승계. 제거된 rank와 zero-count progress는 읽기 전용 legacy provenance로 보존. 원본 자동 덮어쓰기 금지.",
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAFCP-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "element": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E05-REVIEWED-001",
+          "Content Digest": null
+        },
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        },
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "completeness": "producer/consumer/save/failure locators in CRA; acceptance must execute in GEX, no implementation PASS"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E06-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E06",
+        "Intrinsic status": "open",
+        "Question": "공개 조회와 최종 검증",
+        "Observable Policy Acceptance": [
+          "F01",
+          "F02",
+          "F03",
+          "F04",
+          "F05",
+          "F06",
+          "F07",
+          "F08",
+          "F09",
+          "F10",
+          "F11",
+          "F12"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAFCP-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "authority": "2026-09-29 user continuous start and delegated policy; NOT historical user policy",
+        "decision": "DTO/preview/explain/command는 exact copy/form/owner/unavailable 이유와 동일 recipe를 소비한다. R06 수용표와 F01–F12 전부 default 공개 seam/새 process/비용/전체 feature에서 검증한다. clone/retained membership에 새 payload를 포함한다. R06 경계와 최종 source 양방향 복원 및 원자료 보존.",
+        "rationale": "exact copy independence, deterministic replay, minimal cutover and preservation of old bytes",
+        "alternatives_rejected": [
+          "shared definition progress violates independent forms",
+          "implicit first-copy selection hides identity",
+          "silent old-save defaults lose provenance"
+        ],
+        "impact": "game/world/snapshot.rs; game/behavior.rs; application.rs; authoring/clone_shape.rs; authoring/trial.rs",
+        "reversal": "new successor decision and migration; preserve original boundary/raw bytes"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E06",
+        "Intrinsic status": "decided",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F01",
+          "F02",
+          "F03",
+          "F04",
+          "F05",
+          "F06",
+          "F07",
+          "F08",
+          "F09",
+          "F10",
+          "F11",
+          "F12"
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAFCP-E06-REVIEWED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAFCP-E06",
+        "Intrinsic status": "code_reviewed",
+        "Predecessor": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E06-DECIDED-001",
+          "Content Digest": null
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAFCP-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "F01",
+          "F02",
+          "F03",
+          "F04",
+          "F05",
+          "F06",
+          "F07",
+          "F08",
+          "F09",
+          "F10",
+          "F11",
+          "F12"
+        ],
+        "contract": "DTO/preview/explain/command는 exact copy/form/owner/unavailable 이유와 동일 recipe를 소비한다. R06 수용표와 F01–F12 전부 default 공개 seam/새 process/비용/전체 feature에서 검증한다. clone/retained membership에 새 payload를 포함한다. R06 경계와 최종 source 양방향 복원 및 원자료 보존.",
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CAFCP-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "element": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAFCP-E06-REVIEWED-001",
+          "Content Digest": null
+        },
+        "review": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CAFCP-001",
+          "Content Digest": null
+        },
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "completeness": "producer/consumer/save/failure locators in CRA; acceptance must execute in GEX, no implementation PASS"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Batch",
+        "Artifact ID": "RB-CAFCP-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "bindings": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAFCP-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAFCP-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAFCP-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAFCP-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAFCP-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CAFCP-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "source": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CAFCP-001",
+          "Content Digest": null
+        },
+        "disposition": "code-informed proposed implementation; single writer; no independent audit"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CAFCP-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Current Policy Element Revision Map": {
+          "CAFCP-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAFCP-E01-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAFCP-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAFCP-E02-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAFCP-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAFCP-E03-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAFCP-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAFCP-E04-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAFCP-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAFCP-E05-REVIEWED-001",
+            "Content Digest": null
+          },
+          "CAFCP-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAFCP-E06-REVIEWED-001",
+            "Content Digest": null
+          }
+        },
+        "User-Approved Scope": "R07 F01–F12/T11/T18/T20/T27; separate from R06; implementation authorized outside P2G by continuous user request",
+        "remaining_policy_questions": []
+      }
+    }
+  ]
+}

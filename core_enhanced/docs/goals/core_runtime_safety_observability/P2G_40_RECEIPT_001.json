@@ -1,0 +1,279 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CRSO-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CRSO-001",
+    "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "04435c8de4d1c37087fc4e86409485ba58af36c620a75146d727470305a478cf"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CRSO-001",
+    "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_30_FREEZE_001.json",
+    "sha256": "b5687527f1f5a0628ecbdbd4cb8ec018401b776414d262f786671d950cfe0765"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CRSO-005",
+    "review_batch_ref": "RB-CRSO-002",
+    "reviewed_source_basis_ref": "RSB-CRSO-002",
+    "code_review_binding_count": 12,
+    "bound_final_policy_freeze_ref": "FPF-CRSO-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 12,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CRSO-01",
+        "policy_element_revision_ref": "PER-CRSO-01-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-02",
+        "policy_element_revision_ref": "PER-CRSO-02-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-03",
+        "policy_element_revision_ref": "PER-CRSO-03-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-04",
+        "policy_element_revision_ref": "PER-CRSO-04-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-05",
+        "policy_element_revision_ref": "PER-CRSO-05-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-06",
+        "policy_element_revision_ref": "PER-CRSO-06-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-07",
+        "policy_element_revision_ref": "PER-CRSO-07-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-08",
+        "policy_element_revision_ref": "PER-CRSO-08-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-09",
+        "policy_element_revision_ref": "PER-CRSO-09-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-10",
+        "policy_element_revision_ref": "PER-CRSO-10-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-11",
+        "policy_element_revision_ref": "PER-CRSO-11-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSO-12",
+        "policy_element_revision_ref": "PER-CRSO-12-REVIEWED-002"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 12,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CRSO-01",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-02",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-03",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-04",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-05",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-06",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-07",
+        "phase_id": "PHASE-CRSO-S1"
+      },
+      {
+        "element_id": "PE-CRSO-08",
+        "phase_id": "PHASE-CRSO-S2"
+      },
+      {
+        "element_id": "PE-CRSO-09",
+        "phase_id": "PHASE-CRSO-S2"
+      },
+      {
+        "element_id": "PE-CRSO-10",
+        "phase_id": "PHASE-CRSO-S2"
+      },
+      {
+        "element_id": "PE-CRSO-11",
+        "phase_id": "PHASE-CRSO-S2"
+      },
+      {
+        "element_id": "PE-CRSO-12",
+        "phase_id": "PHASE-CRSO-S2"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 7,
+    "atomic_group_count": 0,
+    "atomic_group_member_count": 0,
+    "standalone_work_package_count": 7,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {},
+    "standalone_work_packages": [
+      "WP-CRSO-CONFIG",
+      "WP-CRSO-CORE",
+      "WP-CRSO-PORTS",
+      "WP-CRSO-S1VERIFY",
+      "WP-CRSO-OBSERVE",
+      "WP-CRSO-EXPORT",
+      "WP-CRSO-S2VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 7,
+    "edge_count": 9,
+    "cyclic_scc_count": 0,
+    "cyclic_scc_disposition_count": 0,
+    "cyclic_sccs": [],
+    "final_execution_node_count": 7,
+    "condensation_edge_count": 9,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 7,
+    "assigned_once_count": 7,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 2,
+    "assignment": {
+      "WP-CRSO-CONFIG": "PHASE-CRSO-S1",
+      "WP-CRSO-CORE": "PHASE-CRSO-S1",
+      "WP-CRSO-PORTS": "PHASE-CRSO-S1",
+      "WP-CRSO-S1VERIFY": "PHASE-CRSO-S1",
+      "WP-CRSO-OBSERVE": "PHASE-CRSO-S2",
+      "WP-CRSO-EXPORT": "PHASE-CRSO-S2",
+      "WP-CRSO-S2VERIFY": "PHASE-CRSO-S2"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 2,
+    "audit_row_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 13,
+    "mapped_count": 13,
+    "assigned_execution_node_count": 13,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 2,
+    "expected": "multi_phase",
+    "actual": "multi_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRSO-001",
+      "Content Digest": "sha256:1ef9392053bcb243fb8bb4d00d2c44736131da703720f413471a2148600d828d"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRSO-001",
+      "Content Digest": "sha256:0afeeb9809f90b980f447d895428337d003be5364ad7e3f7848eac6ea0798fbd"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_00_INITIAL_001.json",
+        "sha256": "fcc19026ed33f3aec7f682c8dd063f6d801a7d4b7ec65fb0b2f8976a8f60436a"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_10_POLICY_001.json",
+        "sha256": "eeffb1848513ae8463fc471945a77dd4a18f80ef1fa24c5e9e4c131ff566fe32"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_10_POLICY_002.json",
+        "sha256": "060c771ac298c165efad0c479ef850c30d1954743b00bd95608f8e3fbefc24c8"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_20_REVIEW_001.json",
+        "sha256": "d62854bbd997978acde13de2e9f2974ffb3804ae55f726c7e9af87c850c3566b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_20_REVIEW_002.json",
+        "sha256": "cfc981a5e95f37b1961c2ec243fc28acbfb98359dad372f0bff3a7c53a61d458"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "b5c107738976da4880dc0107ac4cddc8b344e8f0e0b033847c31e33925824489"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "e7ca7d7c195becf67775dda9b3ad49297bc9fbe85224601b6407e65608a0a7c0"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_20_SOURCE_PLAN_003.json",
+        "sha256": "3eb6fad08aa301d2039c7e589aa0e58a59287671a39ac3c73ef254e5a09546b3"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/P2G_30_FREEZE_001.json",
+        "sha256": "b5687527f1f5a0628ecbdbd4cb8ec018401b776414d262f786671d950cfe0765"
+      }
+    ]
+  }
+}

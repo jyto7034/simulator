@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "report_id": "r03_summon_view_projection_review_018",
+  "kind": "bounded_readonly_source_review",
+  "completion_audit": false,
+  "scope": "Typed borrowed summon view projection, shared scan, full output preadmission, local materialization/sort and consumer transpose plus focused test",
+  "capture_started_at_utc": "2026-09-10T10:53:46.932285+00:00",
+  "close_at_utc": "2026-09-10T10:57:45.278378+00:00",
+  "sources": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "sha256": "e7049c14d235cf5415b9785c33b8450dfff12b36571f830d5f7d9475090f3516",
+      "bytes": 146242,
+      "captured_at_utc": "2026-09-10T10:53:46.932285+00:00",
+      "inspected_spans": [
+        [
+          72,
+          138
+        ],
+        [
+          173,
+          242
+        ],
+        [
+          299,
+          350
+        ],
+        [
+          1526,
+          1617
+        ]
+      ],
+      "close_sha256": "e7049c14d235cf5415b9785c33b8450dfff12b36571f830d5f7d9475090f3516",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "sha256": "d045c86228b29964214d3c544af889aeb1983707ed4bd9cc354b1a5303320e0c",
+      "bytes": 74254,
+      "captured_at_utc": "2026-09-10T10:53:46.932285+00:00",
+      "inspected_spans": [
+        [
+          129,
+          176
+        ],
+        [
+          1287,
+          1475
+        ]
+      ],
+      "close_sha256": "d045c86228b29964214d3c544af889aeb1983707ed4bd9cc354b1a5303320e0c",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "bytes": 41036,
+      "captured_at_utc": "2026-09-10T10:53:46.932285+00:00",
+      "inspected_spans": [
+        [
+          65,
+          81
+        ],
+        [
+          208,
+          224
+        ]
+      ],
+      "close_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "bytes": 21650,
+      "captured_at_utc": "2026-09-10T10:53:46.932285+00:00",
+      "inspected_spans": [
+        [
+          99,
+          151
+        ],
+        [
+          308,
+          349
+        ],
+        [
+          373,
+          411
+        ]
+      ],
+      "close_sha256": "8230d912809e601520f9c2acd7c4dadf0f67a186634309617bd8fa34b4173841",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INPUTS_059.json",
+      "sha256": "88645999ce1a35a2b8b6405b1e30e6aaff8800bd6bb25e17de5379e1d92ba536",
+      "bytes": 39204,
+      "captured_at_utc": "2026-09-10T10:53:46.932285+00:00",
+      "inspected_json_pointers": [
+        "/files/29",
+        "/files/56"
+      ],
+      "close_sha256": "88645999ce1a35a2b8b6405b1e30e6aaff8800bd6bb25e17de5379e1d92ba536",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "bytes": 161189,
+      "captured_at_utc": "2026-09-10T10:55:03.317290+00:00",
+      "inspected_spans": [
+        [
+          230,
+          281
+        ],
+        [
+          793,
+          814
+        ]
+      ],
+      "close_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+      "sha256": "1a4426518545e9d85ca1d6c5bca0cc3fa832045dee17a94acd7bac8a8959e750",
+      "bytes": 12620,
+      "captured_at_utc": "2026-09-10T10:55:03.317290+00:00",
+      "inspected_spans": [
+        [
+          22,
+          42
+        ]
+      ],
+      "close_sha256": "1a4426518545e9d85ca1d6c5bca0cc3fa832045dee17a94acd7bac8a8959e750",
+      "drift": false
+    }
+  ],
+  "drift_count": 0,
+  "findings": [],
+  "assessment": "No concrete production defect identified within the inspected slice. This is not whole-goal or whole-clone approval.",
+  "input_pin": {
+    "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INPUTS_059.json",
+    "sha256": "88645999ce1a35a2b8b6405b1e30e6aaff8800bd6bb25e17de5379e1d92ba536",
+    "matches": [
+      {
+        "pointer": "/files/29",
+        "source_sha256": "e7049c14d235cf5415b9785c33b8450dfff12b36571f830d5f7d9475090f3516"
+      },
+      {
+        "pointer": "/files/56",
+        "source_sha256": "d045c86228b29964214d3c544af889aeb1983707ed4bd9cc354b1a5303320e0c"
+      }
+    ]
+  },
+  "verified_source_properties": [
+    "Seven typed projection refs match owned view fields and eleven nested task fields.",
+    "One meter covers Vec1 + selected element1 + each owned view before with_capacity or into_owned.",
+    "Count increment is dominated by finite slot admission and identical immutable scanner passes.",
+    "Actor/task scans occur before eligibility filters; materialization charge0 still polls.",
+    "Strict inversions only are swapped, preserving equal-key order; no-scope uses native stable sort.",
+    "Per-comparison byte work is admitted before comparison and overflow fails closed.",
+    "Projection Err drops local output and propagates through consumer transpose before pending/trigger writes."
+  ],
+  "test_oracle_limits": [
+    "No test execution by reviewer.",
+    "One-under cases allow either work/clone code and do not assert failure site.",
+    "No explicitly adversarial reversed/tied/long-prefix sorting fixture.",
+    "No cancellation/private callback Err injection in this new test.",
+    "Completed-output oracle shares child native visitors; not an independent heap proof."
+  ],
+  "performed": [
+    "Read-only source/test inspection",
+    "Input manifest path/hash match",
+    "Source initial/close hash comparison"
+  ],
+  "not_performed": [
+    "source/docs/Git mutation",
+    "cargo/build/test execution",
+    "completion audit",
+    "whole-goal verdict"
+  ],
+  "report_path": "/tmp/r03_summon_view_projection_review_018.md"
+}

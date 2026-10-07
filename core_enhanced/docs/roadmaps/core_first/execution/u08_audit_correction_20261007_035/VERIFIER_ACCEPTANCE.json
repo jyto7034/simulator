@@ -1,0 +1,48 @@
+{
+  "schema": "ROOT_U08_SUPPLEMENTAL_VERIFIER_ACCEPTANCE_V1",
+  "recorded_at_utc": "2026-10-07T06:08:16.484574+00:00",
+  "implementation_handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/audit_successor013_preparation/IMPLEMENTATION_HANDOFF_001.json",
+    "bytes": 10771,
+    "sha256": "6f939bdd3ba4f60661cfe81dbdc951d697da4c68f574fb0128b71af64a528542"
+  },
+  "focused_proof": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/audit_successor013_preparation/checks001/PROOF.json",
+    "bytes": 3467,
+    "sha256": "c7d89f1d691028dfb5d64fe187d4ac96de3aad2dfa410353f841a6f8de3bd974"
+  },
+  "verifier": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/tools/verify_supplemental_paused.py",
+    "bytes": 33173,
+    "sha256": "be5116e9ce0bc92e462d231c4c5ff9ae30b7b75fda10d1edf2f39228106e5157"
+  },
+  "spec": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/audit_successor013_preparation/SUPPLEMENTAL_SPEC_001.json",
+    "bytes": 91753,
+    "sha256": "46b63bca06c84e0c1a99fa75922f16c9e2fb4a593a714a3ad826dcf44a50e27f"
+  },
+  "verified_exact_refs": 27,
+  "review": "Root read full new verifier, focused-check source, Main public Rust/driver/runner, actual raw/summary/transcript event chains, source review, adaptation and separate composite metadata. Accepted new evidence-only producer outside unchanged selected58/performance8 historical functional50 ordering. No existing tool criteria changed.",
+  "review_limits": [
+    "Metadata/source review only; Root did not run product or verifier tests and is not independent auditor.",
+    "Per-tick full facts and retained Normal employee0 Arc supported by exact executed fail-closed assertions, not individual serialized values.",
+    "Chronological hits are Corrupt210 thenNormal144; no pre-second-hit retention claim."
+  ],
+  "production_authorization": {
+    "owner": "u08_product_runner_resume gpt-6.1-sol/xhigh",
+    "scope": "Execute only new standalone supplemental validation with standard run.py actual receipt/raw and before/after input snapshots; no product/performance or finalizer stage yet.",
+    "command": [
+      "python3",
+      "-B",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/verify_supplemental_paused.py",
+      "--spec",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/audit_successor013_preparation/SUPPLEMENTAL_SPEC_001.json",
+      "--output",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/audit_successor013_preparation/SUPPLEMENTAL_VALIDATION_001.json"
+    ],
+    "preserve_inputs": true,
+    "failure": "Close actual failure and return test/tool defect to author. Do not modify verifier, spec, expected values, or old receipts."
+  },
+  "subsequent_metadata_authorization": "Astra harness author may prepare immutable config013 after successful production supplemental receipt. Preserve selected58, all old conditions/normative sentences, old composite1958, old quiescence50/performance8. Add clearly attributed joint claims, exact supplemental report/receipt/raw and applicability/audit refs; rebind README and external target012 archives. Actual four finalizer stages require separate Root review.",
+  "independent_complete": false
+}

@@ -1,0 +1,81 @@
+{
+  "source_digest": "a24c925b97034b1e0132b31827a146d187ace2feaf05c129ce006c0d96d8f275",
+  "raw_sha256": "af6bb4a3d9ae075f7fe89c27f50905b3da64f90850e2a069faa5ca2e900b6c94",
+  "baseline_sha256": "117d96eeee8d0ce75a1a648074653d681f6bca89e70ac6ee8f3d59e8b289c497",
+  "raw_exit_code": 101,
+  "classification": "warning_concurrent_peak_only",
+  "concurrent_peak_excess_bytes": 305121,
+  "other_hard_guard_failures": [],
+  "event_heavy": {
+    "caps": {
+      "operations": 70671,
+      "retained": 276174,
+      "peak": 276174
+    },
+    "peak_samples": [
+      263431,
+      263431,
+      263431,
+      263431,
+      263431
+    ],
+    "max_peak_bytes": 263431,
+    "operations": [
+      44194,
+      44194,
+      44194,
+      44194,
+      44194
+    ],
+    "retained_samples": [
+      261190,
+      261190,
+      261190,
+      261190,
+      261190
+    ],
+    "original_allocation_guard_pass": true,
+    "repeatable": true,
+    "parity": true,
+    "latency_gate_applicable": false,
+    "p95_ns": 15405940,
+    "latency_absolute_cap_pass_observation": true,
+    "latency_regression_observation": false
+  },
+  "concurrent_sessions": {
+    "caps": {
+      "operations": 389240,
+      "retained": 4196928,
+      "peak": 9030188
+    },
+    "peak_samples": [
+      9335309,
+      9278245,
+      9236591,
+      9284686,
+      9277639
+    ],
+    "max_peak_bytes": 9335309,
+    "operations": [
+      370928,
+      370928,
+      370928,
+      370928,
+      370928
+    ],
+    "retained_samples": [
+      4196928,
+      4196928,
+      4196928,
+      4196928,
+      4196928
+    ],
+    "original_allocation_guard_pass": false,
+    "repeatable": true,
+    "parity": true,
+    "latency_gate_applicable": false,
+    "p95_ns": 8599074,
+    "latency_absolute_cap_pass_observation": true,
+    "latency_regression_observation": false
+  }
+}

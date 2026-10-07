@@ -1,0 +1,5960 @@
+{
+  "status": "review_draft_not_adopted",
+  "constraints": [
+    "입구0층,공개최종8층",
+    "같은층양방향,상승금지",
+    "1~3층동간이동,4층이후동간이동금지",
+    "방구조및노드수고정,내용원정별배정",
+    "각7층방은같은동8층최종방에직접연결",
+    "마탄옆같은층흉탄방",
+    "새영구해금능력/상승이동규칙추가없음"
+  ],
+  "stats": {
+    "total_rooms": 89,
+    "exploration_rooms": 84,
+    "general_encounter_rooms": 12,
+    "ordinary_exploration_rooms": 72,
+    "entry_rooms": 1,
+    "final_rooms": 4,
+    "upper_exploration_rooms": 33,
+    "lower_exploration_rooms": 51,
+    "exploration_activity_nodes": 711,
+    "all_activity_nodes": 735,
+    "exploration_room_sizes": {
+      "6": 26,
+      "9": 47,
+      "12": 11
+    },
+    "floors": {
+      "0": 1,
+      "1": 9,
+      "2": 12,
+      "3": 12,
+      "4": 13,
+      "5": 13,
+      "6": 15,
+      "7": 11,
+      "8": 3
+    },
+    "general_encounter_rooms_by_wing": {
+      "A": 4,
+      "B": 4,
+      "C": 4
+    }
+  },
+  "rooms": [
+    {
+      "id": "A1-01",
+      "wing": "A",
+      "depth": 1,
+      "name": "접수분소",
+      "nodes": 6,
+      "x": 205,
+      "y": 450,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A1-01",
+        "wing": "A",
+        "depth": 1,
+        "name": "접수분소",
+        "role": "연결·진입",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "A1-02",
+      "wing": "A",
+      "depth": 1,
+      "name": "서류분류실",
+      "nodes": 6,
+      "x": 500,
+      "y": 378,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A1-02",
+        "wing": "A",
+        "depth": 1,
+        "name": "서류분류실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "A1-03",
+      "wing": "A",
+      "depth": 1,
+      "name": "반출대기실",
+      "nodes": 6,
+      "x": 795,
+      "y": 450,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A1-03",
+        "wing": "A",
+        "depth": 1,
+        "name": "반출대기실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "A2-01",
+      "wing": "A",
+      "depth": 2,
+      "name": "기록연결실",
+      "nodes": 9,
+      "x": 205,
+      "y": 760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A2-01",
+        "wing": "A",
+        "depth": 2,
+        "name": "기록연결실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 9,
+          "mean": 6.6
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6,
+          "event_present": 0.7,
+          "reward_present": 0.55,
+          "elite_present": 0.25
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A2-02",
+      "wing": "A",
+      "depth": 2,
+      "name": "용병대기실",
+      "nodes": 9,
+      "x": 500,
+      "y": 699,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "붉은 두건의 용병",
+      "note": "이번 원정에서 먼저 완료해야 하는 용병의 선행 Event/Story. 최초 만남은 전투가 아니다. 호출권 사용법과 늑대 사살 의뢰 경고를 알린다. 구매는 선택이며, Event/Story 완료가 늑대 조우 발생 조건이다.",
+      "encounter_kind": "선행·계약",
+      "upper_composition": {
+        "id": "A2-02",
+        "wing": "A",
+        "depth": 2,
+        "name": "용병대기실",
+        "role": "선행 조우 갈래",
+        "activity_nodes": 9,
+        "reservations": [
+          "붉은 두건의 용병 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 1,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.600628911138924
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7997747183979975,
+          "reward_extra": 0.5997371714643304,
+          "elite": 0.24985919899874842,
+          "normal": 5.600628911138924,
+          "event_present": 0.6999436795994993,
+          "reward_present": 0.5499155193992491,
+          "elite_present": 0.24985919899874842
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A2-03",
+      "wing": "A",
+      "depth": 2,
+      "name": "문서정비실",
+      "nodes": 6,
+      "x": 500,
+      "y": 821,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A2-03",
+        "wing": "A",
+        "depth": 2,
+        "name": "문서정비실",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 5,
+          "mean": 3.9565105894360806
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 1.15,
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926,
+          "normal": 3.9565105894360806,
+          "event_present": 0.44829484562388366,
+          "reward_present": 0.29782980352130645,
+          "elite_present": 0.14736476141872926
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 15
+      }
+    },
+    {
+      "id": "A2-04",
+      "wing": "A",
+      "depth": 2,
+      "name": "운송기록실",
+      "nodes": 9,
+      "x": 795,
+      "y": 760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A2-04",
+        "wing": "A",
+        "depth": 2,
+        "name": "운송기록실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 9,
+          "mean": 6.6
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6,
+          "event_present": 0.7,
+          "reward_present": 0.55,
+          "elite_present": 0.25
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A3-01",
+      "wing": "A",
+      "depth": 3,
+      "name": "분실물보관실",
+      "nodes": 9,
+      "x": 205,
+      "y": 1070,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A3-01",
+        "wing": "A",
+        "depth": 3,
+        "name": "분실물보관실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A3-02",
+      "wing": "A",
+      "depth": 3,
+      "name": "폐쇄사육실",
+      "nodes": 12,
+      "x": 500,
+      "y": 1009,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "커다랗고 나쁠 늑대",
+      "note": "이번 원정의 두건 선행 Event/Story 완료 후에만 발생. 호출권 구매 자체는 조우 발생의 필수 조건이 아니다. 계약 여부에 따른 분기는 유지한다. 방 자체와 일반 탐사 경로를 보스 격파로 잠그지 않는다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다. 선행 미완료 시 늑대 활동 노드를 발생시키지 않는다. 같은 층 연결로 이 방에 먼저 도달해도 조건을 우회할 수 없다. 사살 계약을 활성화하면 용병이 결정타를 가져가 우호 결말, 계약 없이 직접 사살하면 같은 노드에서 광폭화한 용병전으로 이어진다.",
+      "encounter_kind": "조건부 조우",
+      "prerequisite": "이번 원정의 A2-02 용병 선행 Event/Story 완료. 호출권 구매는 필수 조건이 아님.",
+      "upper_composition": {
+        "id": "A3-02",
+        "wing": "A",
+        "depth": 3,
+        "name": "폐쇄사육실",
+        "role": "조건부 조우 갈래",
+        "activity_nodes": 12,
+        "reservations": [
+          "커다랗고 나쁠 늑대 1 (조건부)"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 11,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 1,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.85
+        },
+        "normal_with_omen": {
+          "min": 3,
+          "max": 10,
+          "mean": 6.85
+        },
+        "wolf_inactive_normal_delta": 1,
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward_extra": 0.85,
+          "elite": 0.5,
+          "normal": 7.85,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.5
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A3-03",
+      "wing": "A",
+      "depth": 3,
+      "name": "탐사기록실",
+      "nodes": 6,
+      "x": 500,
+      "y": 1131,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A3-03",
+        "wing": "A",
+        "depth": 3,
+        "name": "탐사기록실",
+        "role": "저장·회복 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.602355830591177
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.602355830591177
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.3150169955807149,
+          "reward_extra": 0.18496824452798735,
+          "elite": 0.14765892930012067,
+          "normal": 3.602355830591177,
+          "event_present": 0.3150169955807149,
+          "reward_present": 0.18496824452798735,
+          "elite_present": 0.14765892930012067
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "A3-04",
+      "wing": "A",
+      "depth": 3,
+      "name": "동간연결실",
+      "nodes": 9,
+      "x": 795,
+      "y": 1070,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "A3-04",
+        "wing": "A",
+        "depth": 3,
+        "name": "동간연결실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A4-01",
+      "wing": "A",
+      "depth": 4,
+      "name": "서고입구",
+      "nodes": 9,
+      "x": 205,
+      "y": 1430,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A4-01",
+        "name": "서고입구",
+        "wing": "A",
+        "depth": 4,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A4-02",
+      "wing": "A",
+      "depth": 4,
+      "name": "자료열람실",
+      "nodes": 9,
+      "x": 500,
+      "y": 1369,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A4-02",
+        "name": "자료열람실",
+        "wing": "A",
+        "depth": 4,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A4-03",
+      "wing": "A",
+      "depth": 4,
+      "name": "보존정비실",
+      "nodes": 6,
+      "x": 500,
+      "y": 1491,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A4-03",
+        "name": "보존정비실",
+        "wing": "A",
+        "depth": 4,
+        "kind": "explore",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.9335301810712497
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.9335301810712497
+        },
+        "expected": {
+          "support": 1.15,
+          "event": 0.4086408525880692,
+          "reward": 0.25391448317034054,
+          "elite": 0.25391448317034054,
+          "normal": 3.9335301810712497,
+          "event_present": 0.4086408525880692,
+          "reward_present": 0.25391448317034054,
+          "elite_present": 0.25391448317034054
+        },
+        "expected_support_types": {
+          "정비": 1.0,
+          "상점": 0.09642857142857143,
+          "본사 연락": 0.05357142857142857
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 11
+      }
+    },
+    {
+      "id": "A4-04",
+      "wing": "A",
+      "depth": 4,
+      "name": "심층분류실",
+      "nodes": 9,
+      "x": 795,
+      "y": 1430,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A4-04",
+        "name": "심층분류실",
+        "wing": "A",
+        "depth": 4,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A4-05",
+      "wing": "A",
+      "depth": 4,
+      "name": "폐쇄관측실",
+      "nodes": 12,
+      "x": 795,
+      "y": 1558,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "파고드는 천국이 C4-02로 이동하여 일반 탐사 방으로 사용한다. 기존 위치·연결과 12개 활동 자리를 유지한다. 시작·Gate는 수량에서 제외한다.",
+      "lower_composition": {
+        "id": "A4-05",
+        "name": "폐쇄관측실",
+        "wing": "A",
+        "depth": 4,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 12,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 12,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 5,
+          "max": 12,
+          "mean": 8.75
+        },
+        "normal_with_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.75
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.6,
+          "normal": 8.75,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.6
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A5-01",
+      "wing": "A",
+      "depth": 5,
+      "name": "회수품분류실",
+      "nodes": 9,
+      "x": 205,
+      "y": 1760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A5-01",
+        "name": "회수품분류실",
+        "wing": "A",
+        "depth": 5,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A5-02",
+      "wing": "A",
+      "depth": 5,
+      "name": "대형보관고",
+      "nodes": 12,
+      "x": 500,
+      "y": 1699,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "탐욕의 왕",
+      "note": "상단 선택 갈래에 위치. 하단 일반 탐사 경로로 우회 가능. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "고정 조우",
+      "lower_composition": {
+        "id": "A5-02",
+        "name": "대형보관고",
+        "wing": "A",
+        "depth": 5,
+        "kind": "explore",
+        "role": "일반 보스 선택 갈래",
+        "activity_nodes": 12,
+        "reservations": [
+          "탐욕의 왕 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 11,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.7
+        },
+        "normal_with_omen": {
+          "min": 3,
+          "max": 10,
+          "mean": 6.7
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.65,
+          "normal": 7.7,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.65
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A5-03",
+      "wing": "A",
+      "depth": 5,
+      "name": "기록보존실",
+      "nodes": 6,
+      "x": 500,
+      "y": 1821,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A5-03",
+        "name": "기록보존실",
+        "wing": "A",
+        "depth": 5,
+        "kind": "explore",
+        "role": "저장 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 1,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.5592583266290627
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.5592583266290627
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.30128101297798754,
+          "reward": 0.17535706595007203,
+          "elite": 0.2141035944428779,
+          "normal": 3.5592583266290627,
+          "event_present": 0.30128101297798754,
+          "reward_present": 0.17535706595007203,
+          "elite_present": 0.2141035944428779
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "A5-04",
+      "wing": "A",
+      "depth": 5,
+      "name": "폐기물통로",
+      "nodes": 9,
+      "x": 795,
+      "y": 1760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A5-04",
+        "name": "폐기물통로",
+        "wing": "A",
+        "depth": 5,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A6-01",
+      "wing": "A",
+      "depth": 6,
+      "name": "심층기록홀",
+      "nodes": 9,
+      "x": 205,
+      "y": 2090,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A6-01",
+        "name": "심층기록홀",
+        "wing": "A",
+        "depth": 6,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.301261594384558
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.301261594384558
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995036349962397,
+          "reward": 0.5994209074956129,
+          "elite": 0.5498138631235898,
+          "normal": 6.301261594384558,
+          "event_present": 0.6998759087490599,
+          "reward_present": 0.5498138631235898,
+          "elite_present": 0.5498138631235898
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A6-02",
+      "wing": "A",
+      "depth": 6,
+      "name": "봉인문서실",
+      "nodes": 12,
+      "x": 500,
+      "y": 2029,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A6-02",
+        "name": "봉인문서실",
+        "wing": "A",
+        "depth": 6,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 12,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 12,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 5,
+          "max": 12,
+          "mean": 8.65
+        },
+        "normal_with_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.65
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.7,
+          "normal": 8.65,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.7
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A6-03",
+      "wing": "A",
+      "depth": 6,
+      "name": "최하층정비실",
+      "nodes": 6,
+      "x": 500,
+      "y": 2151,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A6-03",
+        "name": "최하층정비실",
+        "wing": "A",
+        "depth": 6,
+        "kind": "explore",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.8637480405492433
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.8637480405492433
+        },
+        "expected": {
+          "support": 1.15,
+          "event": 0.39793876775285947,
+          "reward": 0.24310131970382842,
+          "elite": 0.34521187199406905,
+          "normal": 3.8637480405492433,
+          "event_present": 0.39793876775285947,
+          "reward_present": 0.24310131970382842,
+          "elite_present": 0.34521187199406905
+        },
+        "expected_support_types": {
+          "정비": 1.0,
+          "상점": 0.09642857142857143,
+          "본사 연락": 0.05357142857142857
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 11
+      }
+    },
+    {
+      "id": "A6-04",
+      "wing": "A",
+      "depth": 6,
+      "name": "기록반출실",
+      "nodes": 9,
+      "x": 795,
+      "y": 2090,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A6-04",
+        "name": "기록반출실",
+        "wing": "A",
+        "depth": 6,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.301261594384558
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.301261594384558
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995036349962397,
+          "reward": 0.5994209074956129,
+          "elite": 0.5498138631235898,
+          "normal": 6.301261594384558,
+          "event_present": 0.6998759087490599,
+          "reward_present": 0.5498138631235898,
+          "elite_present": 0.5498138631235898
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A6-05",
+      "wing": "A",
+      "depth": 6,
+      "name": "정찰대합류실",
+      "nodes": 9,
+      "x": 795,
+      "y": 2218,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "마탄의 사수",
+      "note": "마탄 조우 완료와 공개 최종보스 3종의 영구 격파 기록이 있으면 같은 층 흉탄 방의 연결이 열린다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "호위·생존",
+      "lower_composition": {
+        "id": "A6-05",
+        "name": "정찰대합류실",
+        "wing": "A",
+        "depth": 6,
+        "kind": "explore",
+        "role": "호위·생존과 흉탄 선행",
+        "activity_nodes": 9,
+        "reservations": [
+          "마탄의 사수 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 8,
+          "mean": 5.320062385677332
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 7,
+          "mean": 4.320062385677332
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7918389806984981,
+          "reward": 0.5917800726445676,
+          "elite": 0.5463185609796024,
+          "normal": 5.320062385677332,
+          "event_present": 0.697309114259798,
+          "reward_present": 0.545963671389697,
+          "elite_present": 0.5463185609796024
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 49
+      }
+    },
+    {
+      "id": "A7-01",
+      "wing": "A",
+      "depth": 7,
+      "name": "최종기록실",
+      "nodes": 9,
+      "x": 205,
+      "y": 2470,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A7-01",
+        "name": "최종기록실",
+        "wing": "A",
+        "depth": 7,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.25135406218656
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.25135406218656
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7994583751253761,
+          "reward": 0.5993681043129389,
+          "elite": 0.5998194583751254,
+          "normal": 6.25135406218656,
+          "event_present": 0.699864593781344,
+          "reward_present": 0.5497968906720161,
+          "elite_present": 0.5998194583751254
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "A7-02",
+      "wing": "A",
+      "depth": 7,
+      "name": "옛기록보관소",
+      "nodes": 12,
+      "x": 500,
+      "y": 2409,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A7-02",
+        "name": "옛기록보관소",
+        "wing": "A",
+        "depth": 7,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 12,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 12,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 5,
+          "max": 12,
+          "mean": 8.6
+        },
+        "normal_with_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.6
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.75,
+          "normal": 8.6,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.75
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "A7-03",
+      "wing": "A",
+      "depth": 7,
+      "name": "회수기록실",
+      "nodes": 6,
+      "x": 500,
+      "y": 2531,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A7-03",
+        "name": "회수기록실",
+        "wing": "A",
+        "depth": 7,
+        "kind": "explore",
+        "role": "저장 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 1,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.513391104965646
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.513391104965646
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.28589768026238027,
+          "reward": 0.16481353450959338,
+          "elite": 0.28589768026238027,
+          "normal": 3.513391104965646,
+          "event_present": 0.28589768026238027,
+          "reward_present": 0.16481353450959338,
+          "elite_present": 0.28589768026238027
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "A7-04",
+      "wing": "A",
+      "depth": 7,
+      "name": "심층연결실",
+      "nodes": 9,
+      "x": 795,
+      "y": 2470,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "A7-04",
+        "name": "심층연결실",
+        "wing": "A",
+        "depth": 7,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.25135406218656
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.25135406218656
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7994583751253761,
+          "reward": 0.5993681043129389,
+          "elite": 0.5998194583751254,
+          "normal": 6.25135406218656,
+          "event_present": 0.699864593781344,
+          "reward_present": 0.5497968906720161,
+          "elite_present": 0.5998194583751254
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B1-01",
+      "wing": "B",
+      "depth": 1,
+      "name": "중앙접수홀",
+      "nodes": 9,
+      "x": 1105,
+      "y": 450,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "초반 유물 보상",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다. 시설 입구에서 처음 도착하는 방. 첫 주요 분기 전에 접근 가능한 유물 보상 활동을 예약한다.",
+      "upper_composition": {
+        "id": "B1-01",
+        "wing": "B",
+        "depth": 1,
+        "name": "중앙접수홀",
+        "role": "초반 합류·유물 기회",
+        "activity_nodes": 9,
+        "reservations": [
+          "단순 선택 유물 보상 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 1,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.85
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.0,
+          "normal": 5.85,
+          "event_present": 0.7,
+          "reward_present": 1.0,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 27
+      }
+    },
+    {
+      "id": "B1-02",
+      "wing": "B",
+      "depth": 1,
+      "name": "본사연락실",
+      "nodes": 6,
+      "x": 1400,
+      "y": 378,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "본사 연락",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다. 초반 최대 2명 유료 채용 기회. 일반 채용은 1~4층, 5층 이후 본사 연락의 다른 기능은 별도 배정 가능.",
+      "upper_composition": {
+        "id": "B1-02",
+        "wing": "B",
+        "depth": 1,
+        "name": "본사연락실",
+        "role": "초반 채용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "본사 연락 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 0,
+        "fixed_support": [
+          "본사 연락"
+        ],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 5,
+          "mean": 4.1
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 1.15,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.1,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 8
+      }
+    },
+    {
+      "id": "B1-03",
+      "wing": "B",
+      "depth": 1,
+      "name": "배급대기실",
+      "nodes": 6,
+      "x": 1695,
+      "y": 450,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B1-03",
+        "wing": "B",
+        "depth": 1,
+        "name": "배급대기실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "B2-01",
+      "wing": "B",
+      "depth": 2,
+      "name": "중앙연결실",
+      "nodes": 9,
+      "x": 1105,
+      "y": 760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B2-01",
+        "wing": "B",
+        "depth": 2,
+        "name": "중앙연결실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 9,
+          "mean": 6.6
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6,
+          "event_present": 0.7,
+          "reward_present": 0.55,
+          "elite_present": 0.25
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "B2-02",
+      "wing": "B",
+      "depth": 2,
+      "name": "배전관리실",
+      "nodes": 9,
+      "x": 1400,
+      "y": 699,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "절망의 기사",
+      "note": "보호 계약 시작점. 이후의 서로 다른 전투 승리 조건과 계약 실패 시 구조전 규칙은 유지한다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다. 2층에서 계약을 시작해 계약 후 서로 다른 전투 10회 승리를 시도할 탐사 여유를 둔다. 계약은 원정 전체에서 유지하며 이후 다른 동으로 이동해도 종료하지 않는다.",
+      "upper_composition": {
+        "id": "B2-02",
+        "wing": "B",
+        "depth": 2,
+        "name": "배전관리실",
+        "role": "선행 조우 갈래",
+        "activity_nodes": 9,
+        "reservations": [
+          "절망의 기사 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 1,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.600628911138924
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7997747183979975,
+          "reward_extra": 0.5997371714643304,
+          "elite": 0.24985919899874842,
+          "normal": 5.600628911138924,
+          "event_present": 0.6999436795994993,
+          "reward_present": 0.5499155193992491,
+          "elite_present": 0.24985919899874842
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      },
+      "encounter_kind": "선행·계약"
+    },
+    {
+      "id": "B2-03",
+      "wing": "B",
+      "depth": 2,
+      "name": "장비정비실",
+      "nodes": 6,
+      "x": 1400,
+      "y": 821,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B2-03",
+        "wing": "B",
+        "depth": 2,
+        "name": "장비정비실",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 5,
+          "mean": 3.9565105894360806
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 1.15,
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926,
+          "normal": 3.9565105894360806,
+          "event_present": 0.44829484562388366,
+          "reward_present": 0.29782980352130645,
+          "elite_present": 0.14736476141872926
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 15
+      }
+    },
+    {
+      "id": "B2-04",
+      "wing": "B",
+      "depth": 2,
+      "name": "통제보조실",
+      "nodes": 9,
+      "x": 1695,
+      "y": 760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B2-04",
+        "wing": "B",
+        "depth": 2,
+        "name": "통제보조실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 9,
+          "mean": 6.6
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6,
+          "event_present": 0.7,
+          "reward_present": 0.55,
+          "elite_present": 0.25
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "B3-01",
+      "wing": "B",
+      "depth": 3,
+      "name": "통제접수실",
+      "nodes": 9,
+      "x": 1105,
+      "y": 1070,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B3-01",
+        "wing": "B",
+        "depth": 3,
+        "name": "통제접수실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B3-02",
+      "wing": "B",
+      "depth": 3,
+      "name": "옛회의실",
+      "nodes": 9,
+      "x": 1400,
+      "y": 1009,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B3-02",
+        "wing": "B",
+        "depth": 3,
+        "name": "옛회의실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B3-03",
+      "wing": "B",
+      "depth": 3,
+      "name": "중앙기록실",
+      "nodes": 6,
+      "x": 1400,
+      "y": 1131,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B3-03",
+        "wing": "B",
+        "depth": 3,
+        "name": "중앙기록실",
+        "role": "저장·회복 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.602355830591177
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.602355830591177
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.3150169955807149,
+          "reward_extra": 0.18496824452798735,
+          "elite": 0.14765892930012067,
+          "normal": 3.602355830591177,
+          "event_present": 0.3150169955807149,
+          "reward_present": 0.18496824452798735,
+          "elite_present": 0.14765892930012067
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "B3-04",
+      "wing": "B",
+      "depth": 3,
+      "name": "동간연결실",
+      "nodes": 9,
+      "x": 1695,
+      "y": 1070,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "B3-04",
+        "wing": "B",
+        "depth": 3,
+        "name": "동간연결실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B4-01",
+      "wing": "B",
+      "depth": 4,
+      "name": "지휘연결실",
+      "nodes": 9,
+      "x": 1105,
+      "y": 1430,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B4-01",
+        "name": "지휘연결실",
+        "wing": "B",
+        "depth": 4,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B4-02",
+      "wing": "B",
+      "depth": 4,
+      "name": "비상회의실",
+      "nodes": 9,
+      "x": 1400,
+      "y": 1369,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "아무 것도 없는",
+      "note": "중앙본부동 4층 비상회의실의 선택 조우. 고정 조우 1개를 9개 활동 자리에 포함한다. 6층 죽은 나비들의 장례와 2층 간격을 둔다. 같은 층 정비에 접근한 뒤 도전할 수 있으며, 일반 탐사 동선과 방 내부 우회로를 유지한다.",
+      "lower_composition": {
+        "id": "B4-02",
+        "name": "비상회의실",
+        "wing": "B",
+        "depth": 4,
+        "kind": "explore",
+        "role": "일반 보스 선택 갈래",
+        "activity_nodes": 9,
+        "reservations": [
+          "아무 것도 없는 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 8,
+          "mean": 5.417336296160626
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 7,
+          "mean": 4.417336296160626
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7931983184793523,
+          "reward": 0.5931204921709926,
+          "elite": 0.4463448931890288,
+          "normal": 5.417336296160626,
+          "event_present": 0.6977716859806306,
+          "reward_present": 0.5466575289709459,
+          "elite_present": 0.4463448931890288
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 49
+      },
+      "encounter_kind": "고정 조우"
+    },
+    {
+      "id": "B4-03",
+      "wing": "B",
+      "depth": 4,
+      "name": "통제정비실",
+      "nodes": 6,
+      "x": 1400,
+      "y": 1491,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B4-03",
+        "name": "통제정비실",
+        "wing": "B",
+        "depth": 4,
+        "kind": "explore",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.9335301810712497
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.9335301810712497
+        },
+        "expected": {
+          "support": 1.15,
+          "event": 0.4086408525880692,
+          "reward": 0.25391448317034054,
+          "elite": 0.25391448317034054,
+          "normal": 3.9335301810712497,
+          "event_present": 0.4086408525880692,
+          "reward_present": 0.25391448317034054,
+          "elite_present": 0.25391448317034054
+        },
+        "expected_support_types": {
+          "정비": 1.0,
+          "상점": 0.09642857142857143,
+          "본사 연락": 0.05357142857142857
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 11
+      }
+    },
+    {
+      "id": "B4-04",
+      "wing": "B",
+      "depth": 4,
+      "name": "내부관측실",
+      "nodes": 9,
+      "x": 1695,
+      "y": 1430,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B4-04",
+        "name": "내부관측실",
+        "wing": "B",
+        "depth": 4,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B5-01",
+      "wing": "B",
+      "depth": 5,
+      "name": "관측기록홀",
+      "nodes": 9,
+      "x": 1105,
+      "y": 1760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B5-01",
+        "name": "관측기록홀",
+        "wing": "B",
+        "depth": 5,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B5-02",
+      "wing": "B",
+      "depth": 5,
+      "name": "직원대기실",
+      "nodes": 9,
+      "x": 1400,
+      "y": 1699,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B5-02",
+        "name": "직원대기실",
+        "wing": "B",
+        "depth": 5,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B5-03",
+      "wing": "B",
+      "depth": 5,
+      "name": "관측기록실",
+      "nodes": 6,
+      "x": 1400,
+      "y": 1821,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B5-03",
+        "name": "관측기록실",
+        "wing": "B",
+        "depth": 5,
+        "kind": "explore",
+        "role": "저장 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 1,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.5592583266290627
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.5592583266290627
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.30128101297798754,
+          "reward": 0.17535706595007203,
+          "elite": 0.2141035944428779,
+          "normal": 3.5592583266290627,
+          "event_present": 0.30128101297798754,
+          "reward_present": 0.17535706595007203,
+          "elite_present": 0.2141035944428779
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "B5-04",
+      "wing": "B",
+      "depth": 5,
+      "name": "격리연결실",
+      "nodes": 9,
+      "x": 1695,
+      "y": 1760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B5-04",
+        "name": "격리연결실",
+        "wing": "B",
+        "depth": 5,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B5-05",
+      "wing": "B",
+      "depth": 5,
+      "name": "폐쇄실험실",
+      "nodes": 12,
+      "x": 1695,
+      "y": 1888,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "아무 것도 없는이 B4-02 비상회의실로 이동하여 일반 탐사 방으로 사용한다. 기존 위치·연결과 12개 활동 자리를 유지한다. 시작·Gate는 수량에서 제외한다.",
+      "lower_composition": {
+        "id": "B5-05",
+        "name": "폐쇄실험실",
+        "wing": "B",
+        "depth": 5,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 12,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 12,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 5,
+          "max": 12,
+          "mean": 8.7
+        },
+        "normal_with_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.699999999999999
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.65,
+          "normal": 8.7,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.65
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "B6-01",
+      "wing": "B",
+      "depth": 6,
+      "name": "심층통제홀",
+      "nodes": 9,
+      "x": 1105,
+      "y": 2090,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B6-01",
+        "name": "심층통제홀",
+        "wing": "B",
+        "depth": 6,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.301261594384558
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.301261594384558
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995036349962397,
+          "reward": 0.5994209074956129,
+          "elite": 0.5498138631235898,
+          "normal": 6.301261594384558,
+          "event_present": 0.6998759087490599,
+          "reward_present": 0.5498138631235898,
+          "elite_present": 0.5498138631235898
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B6-02",
+      "wing": "B",
+      "depth": 6,
+      "name": "장례의식실",
+      "nodes": 9,
+      "x": 1400,
+      "y": 2029,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "죽은 나비들의 장례",
+      "note": "실패 조건 없는 Story 중심 의식. 알로 부화하는 죽을 나비의 장례를 별도 고정 방으로 세지 않는다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "장례 의식",
+      "lower_composition": {
+        "id": "B6-02",
+        "name": "장례의식실",
+        "wing": "B",
+        "depth": 6,
+        "kind": "explore",
+        "role": "비전투 장례 의식",
+        "activity_nodes": 9,
+        "reservations": [
+          "죽은 나비들의 장례 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 8,
+          "mean": 5.320062385677332
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 7,
+          "mean": 4.320062385677332
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7918389806984981,
+          "reward": 0.5917800726445676,
+          "elite": 0.5463185609796024,
+          "normal": 5.320062385677332,
+          "event_present": 0.697309114259798,
+          "reward_present": 0.545963671389697,
+          "elite_present": 0.5463185609796024
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 49
+      }
+    },
+    {
+      "id": "B6-03",
+      "wing": "B",
+      "depth": 6,
+      "name": "중앙정비실",
+      "nodes": 6,
+      "x": 1400,
+      "y": 2151,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B6-03",
+        "name": "중앙정비실",
+        "wing": "B",
+        "depth": 6,
+        "kind": "explore",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.8637480405492433
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.8637480405492433
+        },
+        "expected": {
+          "support": 1.15,
+          "event": 0.39793876775285947,
+          "reward": 0.24310131970382842,
+          "elite": 0.34521187199406905,
+          "normal": 3.8637480405492433,
+          "event_present": 0.39793876775285947,
+          "reward_present": 0.24310131970382842,
+          "elite_present": 0.34521187199406905
+        },
+        "expected_support_types": {
+          "정비": 1.0,
+          "상점": 0.09642857142857143,
+          "본사 연락": 0.05357142857142857
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 11
+      }
+    },
+    {
+      "id": "B6-04",
+      "wing": "B",
+      "depth": 6,
+      "name": "신호중계실",
+      "nodes": 9,
+      "x": 1695,
+      "y": 2090,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B6-04",
+        "name": "신호중계실",
+        "wing": "B",
+        "depth": 6,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.301261594384558
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.301261594384558
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995036349962397,
+          "reward": 0.5994209074956129,
+          "elite": 0.5498138631235898,
+          "normal": 6.301261594384558,
+          "event_present": 0.6998759087490599,
+          "reward_present": 0.5498138631235898,
+          "elite_present": 0.5498138631235898
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B7-01",
+      "wing": "B",
+      "depth": 7,
+      "name": "중앙집결실",
+      "nodes": 9,
+      "x": 1105,
+      "y": 2470,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B7-01",
+        "name": "중앙집결실",
+        "wing": "B",
+        "depth": 7,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.25135406218656
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.25135406218656
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7994583751253761,
+          "reward": 0.5993681043129389,
+          "elite": 0.5998194583751254,
+          "normal": 6.25135406218656,
+          "event_present": 0.699864593781344,
+          "reward_present": 0.5497968906720161,
+          "elite_present": 0.5998194583751254
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "B7-02",
+      "wing": "B",
+      "depth": 7,
+      "name": "폐기물집적실",
+      "nodes": 12,
+      "x": 1400,
+      "y": 2398,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "웃는 시체의 산",
+      "note": "최심부 선택 갈래. 일반 탐사 방들을 잇는 우회 연결이 있다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "고정 조우",
+      "lower_composition": {
+        "id": "B7-02",
+        "name": "폐기물집적실",
+        "wing": "B",
+        "depth": 7,
+        "kind": "explore",
+        "role": "일반 보스 선택 갈래",
+        "activity_nodes": 12,
+        "reservations": [
+          "웃는 시체의 산 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 11,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.6
+        },
+        "normal_with_omen": {
+          "min": 3,
+          "max": 10,
+          "mean": 6.6
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.75,
+          "normal": 7.6,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.75
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "B7-03",
+      "wing": "B",
+      "depth": 7,
+      "name": "최종기록실",
+      "nodes": 6,
+      "x": 1695,
+      "y": 2470,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "B7-03",
+        "name": "최종기록실",
+        "wing": "B",
+        "depth": 7,
+        "kind": "explore",
+        "role": "저장 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 1,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.513391104965646
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.513391104965646
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.28589768026238027,
+          "reward": 0.16481353450959338,
+          "elite": 0.28589768026238027,
+          "normal": 3.513391104965646,
+          "event_present": 0.28589768026238027,
+          "reward_present": 0.16481353450959338,
+          "elite_present": 0.28589768026238027
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C1-01",
+      "wing": "C",
+      "depth": 1,
+      "name": "출입검사실",
+      "nodes": 6,
+      "x": 2005,
+      "y": 450,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C1-01",
+        "wing": "C",
+        "depth": 1,
+        "name": "출입검사실",
+        "role": "연결·진입",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C1-02",
+      "wing": "C",
+      "depth": 1,
+      "name": "의료대기실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 378,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C1-02",
+        "wing": "C",
+        "depth": 1,
+        "name": "의료대기실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C1-03",
+      "wing": "C",
+      "depth": 1,
+      "name": "장비검수실",
+      "nodes": 6,
+      "x": 2595,
+      "y": 450,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C1-03",
+        "wing": "C",
+        "depth": 1,
+        "name": "장비검수실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 6,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 6,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.5
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5,
+          "event_present": 0.45,
+          "reward_present": 0.3,
+          "elite_present": 0.0
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C2-01",
+      "wing": "C",
+      "depth": 2,
+      "name": "전처리접수실",
+      "nodes": 9,
+      "x": 2005,
+      "y": 760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C2-01",
+        "wing": "C",
+        "depth": 2,
+        "name": "전처리접수실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 9,
+          "mean": 6.6
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6,
+          "event_present": 0.7,
+          "reward_present": 0.55,
+          "elite_present": 0.25
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "C2-02",
+      "wing": "C",
+      "depth": 2,
+      "name": "폐쇄휴게실",
+      "nodes": 9,
+      "x": 2300,
+      "y": 699,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "증오의 여왕",
+      "note": "이 위치는 동행의 시작점이다. 히스테릭 전투는 후속 조건에 따라 발생하며 이 방에 즉시 보스전을 고정하지 않는다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "선행·동행",
+      "upper_composition": {
+        "id": "C2-02",
+        "wing": "C",
+        "depth": 2,
+        "name": "폐쇄휴게실",
+        "role": "선행 조우 갈래",
+        "activity_nodes": 9,
+        "reservations": [
+          "증오의 여왕 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 1,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.600628911138924
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7997747183979975,
+          "reward_extra": 0.5997371714643304,
+          "elite": 0.24985919899874842,
+          "normal": 5.600628911138924,
+          "event_present": 0.6999436795994993,
+          "reward_present": 0.5499155193992491,
+          "elite_present": 0.24985919899874842
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C2-03",
+      "wing": "C",
+      "depth": 2,
+      "name": "장비정비실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 821,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C2-03",
+        "wing": "C",
+        "depth": 2,
+        "name": "장비정비실",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 5,
+          "mean": 3.9565105894360806
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 1.15,
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926,
+          "normal": 3.9565105894360806,
+          "event_present": 0.44829484562388366,
+          "reward_present": 0.29782980352130645,
+          "elite_present": 0.14736476141872926
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 15
+      }
+    },
+    {
+      "id": "C2-04",
+      "wing": "C",
+      "depth": 2,
+      "name": "시료대기실",
+      "nodes": 9,
+      "x": 2595,
+      "y": 760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C2-04",
+        "wing": "C",
+        "depth": 2,
+        "name": "시료대기실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 0,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 2,
+          "max": 9,
+          "mean": 6.6
+        },
+        "normal_with_omen": null,
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6,
+          "event_present": 0.7,
+          "reward_present": 0.55,
+          "elite_present": 0.25
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "C3-01",
+      "wing": "C",
+      "depth": 3,
+      "name": "추출연결실",
+      "nodes": 9,
+      "x": 2005,
+      "y": 1070,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C3-01",
+        "wing": "C",
+        "depth": 3,
+        "name": "추출연결실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C3-02",
+      "wing": "C",
+      "depth": 3,
+      "name": "보호계약실",
+      "nodes": 9,
+      "x": 2300,
+      "y": 1009,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "파고드는 천국이 C4-02로 이동하여 일반 탐사 방으로 사용한다. 기존 위치·연결과 9개 활동 자리를 유지한다. 시작·Gate는 수량에서 제외한다.",
+      "upper_composition": {
+        "id": "C3-02",
+        "wing": "C",
+        "depth": 3,
+        "name": "보호계약실",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C3-03",
+      "wing": "C",
+      "depth": 3,
+      "name": "작업기록실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 1131,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C3-03",
+        "wing": "C",
+        "depth": 3,
+        "name": "작업기록실",
+        "role": "저장·회복 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.602355830591177
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.602355830591177
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.3150169955807149,
+          "reward_extra": 0.18496824452798735,
+          "elite": 0.14765892930012067,
+          "normal": 3.602355830591177,
+          "event_present": 0.3150169955807149,
+          "reward_present": 0.18496824452798735,
+          "elite_present": 0.14765892930012067
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C3-04",
+      "wing": "C",
+      "depth": 3,
+      "name": "동간연결실",
+      "nodes": 9,
+      "x": 2595,
+      "y": 1070,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "upper_composition": {
+        "id": "C3-04",
+        "wing": "C",
+        "depth": 3,
+        "name": "동간연결실",
+        "role": "연결·진입",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "omen_compatible_slots": 1,
+        "fixed_support": [],
+        "fixed_encounters": 0,
+        "fixed_reward": 0,
+        "fixed_save": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.500854620586026
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.500854620586026
+        },
+        "wolf_inactive_normal_delta": 0,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026,
+          "event_present": 0.6999211119459053,
+          "reward_present": 0.549881667918858,
+          "elite_present": 0.3498290758827949
+        },
+        "probability_sum": 1.0,
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C4-01",
+      "wing": "C",
+      "depth": 4,
+      "name": "제1추출홀",
+      "nodes": 9,
+      "x": 2005,
+      "y": 1430,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C4-01",
+        "name": "제1추출홀",
+        "wing": "C",
+        "depth": 4,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C4-02",
+      "wing": "C",
+      "depth": 4,
+      "name": "배관점검실",
+      "nodes": 9,
+      "x": 2300,
+      "y": 1369,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "파고드는 천국",
+      "note": "추출동 독립 구간의 4층 선택 조우. 고정 조우 1개를 9개 활동 자리에 포함한다. 같은 층 C4-03 정비에 접근한 뒤 도전할 수 있으며 일반 탐사 동선과 방 내부 우회로를 유지한다. 황금가지 봉인 후보로서 추출동 4층 진입 후 보충에 도전할 위치를 확보한다. 실제 가지 유무는 원정 시작 때 선택한 사전 작성 배치안에 따른다.",
+      "lower_composition": {
+        "id": "C4-02",
+        "name": "배관점검실",
+        "wing": "C",
+        "depth": 4,
+        "kind": "explore",
+        "role": "일반 보스 선택 갈래",
+        "activity_nodes": 9,
+        "reservations": [
+          "파고드는 천국 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 8,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 8,
+          "mean": 5.417336296160626
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 7,
+          "mean": 4.417336296160626
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7931983184793523,
+          "reward": 0.5931204921709926,
+          "elite": 0.4463448931890288,
+          "normal": 5.417336296160626,
+          "event_present": 0.6977716859806306,
+          "reward_present": 0.5466575289709459,
+          "elite_present": 0.4463448931890288
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 49
+      },
+      "encounter_kind": "고정 조우"
+    },
+    {
+      "id": "C4-03",
+      "wing": "C",
+      "depth": 4,
+      "name": "추출정비실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 1491,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C4-03",
+        "name": "추출정비실",
+        "wing": "C",
+        "depth": 4,
+        "kind": "explore",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.9335301810712497
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.9335301810712497
+        },
+        "expected": {
+          "support": 1.15,
+          "event": 0.4086408525880692,
+          "reward": 0.25391448317034054,
+          "elite": 0.25391448317034054,
+          "normal": 3.9335301810712497,
+          "event_present": 0.4086408525880692,
+          "reward_present": 0.25391448317034054,
+          "elite_present": 0.25391448317034054
+        },
+        "expected_support_types": {
+          "정비": 1.0,
+          "상점": 0.09642857142857143,
+          "본사 연락": 0.05357142857142857
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 11
+      }
+    },
+    {
+      "id": "C4-04",
+      "wing": "C",
+      "depth": 4,
+      "name": "시료분류실",
+      "nodes": 9,
+      "x": 2595,
+      "y": 1430,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C4-04",
+        "name": "시료분류실",
+        "wing": "C",
+        "depth": 4,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.401065522425458
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.401065522425458
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995940866950639,
+          "reward": 0.5995264344775746,
+          "elite": 0.4498139564019043,
+          "normal": 6.401065522425458,
+          "event_present": 0.699898521673766,
+          "reward_present": 0.5498477825106489,
+          "elite_present": 0.4498139564019043
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": true,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C5-01",
+      "wing": "C",
+      "depth": 5,
+      "name": "제2추출홀",
+      "nodes": 9,
+      "x": 2005,
+      "y": 1760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C5-01",
+        "name": "제2추출홀",
+        "wing": "C",
+        "depth": 5,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C5-02",
+      "wing": "C",
+      "depth": 5,
+      "name": "점액격리실",
+      "nodes": 12,
+      "x": 2300,
+      "y": 1699,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "녹아내리는 사랑",
+      "note": "추출 시설의 선택 갈래. 일반 탐사 경로와 분리. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "고정 조우",
+      "lower_composition": {
+        "id": "C5-02",
+        "name": "점액격리실",
+        "wing": "C",
+        "depth": 5,
+        "kind": "explore",
+        "role": "일반 보스 선택 갈래",
+        "activity_nodes": 12,
+        "reservations": [
+          "녹아내리는 사랑 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 11,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.7
+        },
+        "normal_with_omen": {
+          "min": 3,
+          "max": 10,
+          "mean": 6.7
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.65,
+          "normal": 7.7,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.65
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "C5-03",
+      "wing": "C",
+      "depth": 5,
+      "name": "성분기록실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 1821,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C5-03",
+        "name": "성분기록실",
+        "wing": "C",
+        "depth": 5,
+        "kind": "explore",
+        "role": "저장 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 1,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.5592583266290627
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.5592583266290627
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.30128101297798754,
+          "reward": 0.17535706595007203,
+          "elite": 0.2141035944428779,
+          "normal": 3.5592583266290627,
+          "event_present": 0.30128101297798754,
+          "reward_present": 0.17535706595007203,
+          "elite_present": 0.2141035944428779
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C5-04",
+      "wing": "C",
+      "depth": 5,
+      "name": "정제연결실",
+      "nodes": 9,
+      "x": 2595,
+      "y": 1760,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C5-04",
+        "name": "정제연결실",
+        "wing": "C",
+        "depth": 5,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.351165413533835
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.351165413533835
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995488721804511,
+          "reward": 0.5994736842105263,
+          "elite": 0.499812030075188,
+          "normal": 6.351165413533835,
+          "event_present": 0.6998872180451128,
+          "reward_present": 0.5498308270676692,
+          "elite_present": 0.499812030075188
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C6-01",
+      "wing": "C",
+      "depth": 6,
+      "name": "심층추출홀",
+      "nodes": 9,
+      "x": 2005,
+      "y": 2090,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C6-01",
+        "name": "심층추출홀",
+        "wing": "C",
+        "depth": 6,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.301261594384558
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.301261594384558
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995036349962397,
+          "reward": 0.5994209074956129,
+          "elite": 0.5498138631235898,
+          "normal": 6.301261594384558,
+          "event_present": 0.6998759087490599,
+          "reward_present": 0.5498138631235898,
+          "elite_present": 0.5498138631235898
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C6-02",
+      "wing": "C",
+      "depth": 6,
+      "name": "고압설비실",
+      "nodes": 12,
+      "x": 2300,
+      "y": 2029,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C6-02",
+        "name": "고압설비실",
+        "wing": "C",
+        "depth": 6,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 12,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 12,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 5,
+          "max": 12,
+          "mean": 8.65
+        },
+        "normal_with_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.65
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.7,
+          "normal": 8.65,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.7
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "C6-03",
+      "wing": "C",
+      "depth": 6,
+      "name": "심층정비실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 2151,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "정비",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C6-03",
+        "name": "심층정비실",
+        "wing": "C",
+        "depth": 6,
+        "kind": "explore",
+        "role": "성장 적용 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "정비 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [
+          "정비"
+        ],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.8637480405492433
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.8637480405492433
+        },
+        "expected": {
+          "support": 1.15,
+          "event": 0.39793876775285947,
+          "reward": 0.24310131970382842,
+          "elite": 0.34521187199406905,
+          "normal": 3.8637480405492433,
+          "event_present": 0.39793876775285947,
+          "reward_present": 0.24310131970382842,
+          "elite_present": 0.34521187199406905
+        },
+        "expected_support_types": {
+          "정비": 1.0,
+          "상점": 0.09642857142857143,
+          "본사 연락": 0.05357142857142857
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 11
+      }
+    },
+    {
+      "id": "C6-04",
+      "wing": "C",
+      "depth": 6,
+      "name": "폐액회수실",
+      "nodes": 9,
+      "x": 2595,
+      "y": 2090,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C6-04",
+        "name": "폐액회수실",
+        "wing": "C",
+        "depth": 6,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.301261594384558
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.301261594384558
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7995036349962397,
+          "reward": 0.5994209074956129,
+          "elite": 0.5498138631235898,
+          "normal": 6.301261594384558,
+          "event_present": 0.6998759087490599,
+          "reward_present": 0.5498138631235898,
+          "elite_present": 0.5498138631235898
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C6-05",
+      "wing": "C",
+      "depth": 6,
+      "name": "공명격리실",
+      "nodes": 12,
+      "x": 2595,
+      "y": 2218,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": "음 / 양",
+      "note": "하나의 조우 항목으로 세며 별도 두 방으로 분리하지 않는다. 고정 조우 1개를 이 방의 활동 노드 수에 포함한다. 같은 방 안에도 일반 활동과 조우 우회를 둔다.",
+      "encounter_kind": "고정 조우",
+      "lower_composition": {
+        "id": "C6-05",
+        "name": "공명격리실",
+        "wing": "C",
+        "depth": 6,
+        "kind": "explore",
+        "role": "일반 보스 선택 갈래",
+        "activity_nodes": 12,
+        "reservations": [
+          "음 / 양 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 11,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.65
+        },
+        "normal_with_omen": {
+          "min": 3,
+          "max": 10,
+          "mean": 6.65
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.7,
+          "normal": 7.65,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.7
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "C7-01",
+      "wing": "C",
+      "depth": 7,
+      "name": "추출종료실",
+      "nodes": 9,
+      "x": 2005,
+      "y": 2470,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C7-01",
+        "name": "추출종료실",
+        "wing": "C",
+        "depth": 7,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.25135406218656
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.25135406218656
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7994583751253761,
+          "reward": 0.5993681043129389,
+          "elite": 0.5998194583751254,
+          "normal": 6.25135406218656,
+          "event_present": 0.699864593781344,
+          "reward_present": 0.5497968906720161,
+          "elite_present": 0.5998194583751254
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "C7-02",
+      "wing": "C",
+      "depth": 7,
+      "name": "원액보관실",
+      "nodes": 12,
+      "x": 2300,
+      "y": 2409,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C7-02",
+        "name": "원액보관실",
+        "wing": "C",
+        "depth": 7,
+        "kind": "explore",
+        "role": "선택 탐사 갈래",
+        "activity_nodes": 12,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 12,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 5,
+          "max": 12,
+          "mean": 8.6
+        },
+        "normal_with_omen": {
+          "min": 4,
+          "max": 11,
+          "mean": 7.6
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward": 0.85,
+          "elite": 0.75,
+          "normal": 8.6,
+          "event_present": 0.8,
+          "reward_present": 0.7,
+          "elite_present": 0.75
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 54
+      }
+    },
+    {
+      "id": "C7-03",
+      "wing": "C",
+      "depth": 7,
+      "name": "추출기록실",
+      "nodes": 6,
+      "x": 2300,
+      "y": 2531,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": "SavePoint",
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C7-03",
+        "name": "추출기록실",
+        "wing": "C",
+        "depth": 7,
+        "kind": "explore",
+        "role": "저장 거점",
+        "activity_nodes": 6,
+        "reservations": [
+          "SavePoint 1"
+        ],
+        "reserved_slots": 1,
+        "remaining_assignment_slots": 5,
+        "fixed_encounters": 0,
+        "fixed_save": 1,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 5,
+          "mean": 3.513391104965646
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 4,
+          "mean": 2.513391104965646
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.28589768026238027,
+          "reward": 0.16481353450959338,
+          "elite": 0.28589768026238027,
+          "normal": 3.513391104965646,
+          "event_present": 0.28589768026238027,
+          "reward_present": 0.16481353450959338,
+          "elite_present": 0.28589768026238027
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 12
+      }
+    },
+    {
+      "id": "C7-04",
+      "wing": "C",
+      "depth": 7,
+      "name": "심층연결실",
+      "nodes": 9,
+      "x": 2595,
+      "y": 2470,
+      "w": 190,
+      "h": 88,
+      "kind": "explore",
+      "reserved": null,
+      "encounter": null,
+      "note": "방 이름과 활동 노드 수는 검토값. 시작·Gate는 수량에서 제외하며, 예약된 활동은 수량 안에 포함한다.",
+      "lower_composition": {
+        "id": "C7-04",
+        "name": "심층연결실",
+        "wing": "C",
+        "depth": 7,
+        "kind": "explore",
+        "role": "진입·연결",
+        "activity_nodes": 9,
+        "reservations": [],
+        "reserved_slots": 0,
+        "remaining_assignment_slots": 9,
+        "fixed_encounters": 0,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 1,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 9,
+          "mean": 6.25135406218656
+        },
+        "normal_with_omen": {
+          "min": 2,
+          "max": 8,
+          "mean": 5.25135406218656
+        },
+        "expected": {
+          "support": 0.75,
+          "event": 0.7994583751253761,
+          "reward": 0.5993681043129389,
+          "elite": 0.5998194583751254,
+          "normal": 6.25135406218656,
+          "event_present": 0.699864593781344,
+          "reward_present": 0.5497968906720161,
+          "elite_present": 0.5998194583751254
+        },
+        "expected_support_types": {
+          "정비": 0.2318181818181818,
+          "상점": 0.32142857142857145,
+          "본사 연락": 0.19675324675324676
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "ordinary_assignment",
+        "candidate_count": 53
+      }
+    },
+    {
+      "id": "ENTRY",
+      "wing": null,
+      "depth": 0,
+      "name": "시설 입구",
+      "nodes": 0,
+      "x": 1400,
+      "y": 215,
+      "w": 200,
+      "h": 82,
+      "kind": "entrance",
+      "reserved": null,
+      "encounter": null,
+      "note": "시작 지점. 일반 활동 노드 수에 포함하지 않는다."
+    },
+    {
+      "id": "A8-F",
+      "wing": "A",
+      "depth": 8,
+      "name": "종말새 최종방",
+      "nodes": 6,
+      "x": 500,
+      "y": 2780,
+      "w": 260,
+      "h": 92,
+      "kind": "final",
+      "reserved": null,
+      "encounter": "종말새",
+      "encounter_kind": "최종 조우",
+      "note": "보스 개방·입장 조건은 기존 규칙 유지. 활동 6개는 보스 1개와 격파 후 탐사 여지를 포함한 검토값이며, 세부 활동과 보상은 미정.",
+      "lower_composition": {
+        "id": "A8-F",
+        "name": "종말새 최종방",
+        "wing": "A",
+        "depth": 8,
+        "kind": "final",
+        "role": "최종 조우와 후속 탐사",
+        "activity_nodes": 6,
+        "reservations": [
+          "종말새 1",
+          "준비 지원 1",
+          "격파 후 일반전 3",
+          "탐사 보상 1"
+        ],
+        "reserved_slots": 6,
+        "remaining_assignment_slots": 0,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 3,
+          "mean": 3.0
+        },
+        "normal_with_omen": null,
+        "expected": {
+          "support": 1.0,
+          "event": 0.0,
+          "reward": 1.0,
+          "elite": 0.0,
+          "normal": 3.0,
+          "event_present": 0.0,
+          "reward_present": 1.0,
+          "elite_present": 0.0
+        },
+        "expected_support_types": {
+          "정비": 0.3,
+          "상점": 0.45,
+          "본사 연락": 0.25
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "after_boss_victory",
+        "candidate_count": 1
+      }
+    },
+    {
+      "id": "B8-F",
+      "wing": "B",
+      "depth": 8,
+      "name": "고요한 오케스트라 최종방",
+      "nodes": 6,
+      "x": 1400,
+      "y": 2780,
+      "w": 260,
+      "h": 92,
+      "kind": "final",
+      "reserved": null,
+      "encounter": "고요한 오케스트라",
+      "encounter_kind": "최종 조우",
+      "note": "보스 개방·입장 조건은 기존 규칙 유지. 활동 6개는 보스 1개와 격파 후 탐사 여지를 포함한 검토값이며, 세부 활동과 보상은 미정.",
+      "lower_composition": {
+        "id": "B8-F",
+        "name": "고요한 오케스트라 최종방",
+        "wing": "B",
+        "depth": 8,
+        "kind": "final",
+        "role": "최종 조우와 후속 탐사",
+        "activity_nodes": 6,
+        "reservations": [
+          "고요한 오케스트라 1",
+          "준비 지원 1",
+          "격파 후 일반전 3",
+          "탐사 보상 1"
+        ],
+        "reserved_slots": 6,
+        "remaining_assignment_slots": 0,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 3,
+          "mean": 3.0
+        },
+        "normal_with_omen": null,
+        "expected": {
+          "support": 1.0,
+          "event": 0.0,
+          "reward": 1.0,
+          "elite": 0.0,
+          "normal": 3.0,
+          "event_present": 0.0,
+          "reward_present": 1.0,
+          "elite_present": 0.0
+        },
+        "expected_support_types": {
+          "정비": 0.3,
+          "상점": 0.45,
+          "본사 연락": 0.25
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "after_boss_victory",
+        "candidate_count": 1
+      }
+    },
+    {
+      "id": "C8-F",
+      "wing": "C",
+      "depth": 8,
+      "name": "백야 최종방",
+      "nodes": 6,
+      "x": 2300,
+      "y": 2780,
+      "w": 260,
+      "h": 92,
+      "kind": "final",
+      "reserved": null,
+      "encounter": "백야",
+      "encounter_kind": "최종 조우",
+      "note": "보스 개방·입장 조건은 기존 규칙 유지. 활동 6개는 보스 1개와 격파 후 탐사 여지를 포함한 검토값이며, 세부 활동과 보상은 미정.",
+      "lower_composition": {
+        "id": "C8-F",
+        "name": "백야 최종방",
+        "wing": "C",
+        "depth": 8,
+        "kind": "final",
+        "role": "최종 조우와 후속 탐사",
+        "activity_nodes": 6,
+        "reservations": [
+          "백야 1",
+          "준비 지원 1",
+          "격파 후 일반전 3",
+          "탐사 보상 1"
+        ],
+        "reserved_slots": 6,
+        "remaining_assignment_slots": 0,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 3,
+          "mean": 3.0
+        },
+        "normal_with_omen": null,
+        "expected": {
+          "support": 1.0,
+          "event": 0.0,
+          "reward": 1.0,
+          "elite": 0.0,
+          "normal": 3.0,
+          "event_present": 0.0,
+          "reward_present": 1.0,
+          "elite_present": 0.0
+        },
+        "expected_support_types": {
+          "정비": 0.3,
+          "상점": 0.45,
+          "본사 연락": 0.25
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "after_boss_victory",
+        "candidate_count": 1
+      }
+    },
+    {
+      "id": "A6-H",
+      "wing": "A",
+      "depth": 6,
+      "name": "흉탄의 사수 최종방",
+      "nodes": 6,
+      "x": 340,
+      "y": 2290,
+      "w": 210,
+      "h": 90,
+      "kind": "final",
+      "reserved": null,
+      "encounter": "흉탄의 사수",
+      "encounter_kind": "숨겨진 최종 조우",
+      "note": "마탄 옆 같은 6층의 별도 고정 방. 공개 최종보스 3종 영구 격파와 이번 원정 마탄 완료 후 직접 연결 개방. 6활동은 검토값.",
+      "lower_composition": {
+        "id": "A6-H",
+        "name": "흉탄의 사수 최종방",
+        "wing": "A",
+        "depth": 6,
+        "kind": "final",
+        "role": "숨겨진 최종 조우와 후속 탐사",
+        "activity_nodes": 6,
+        "reservations": [
+          "흉탄의 사수 1",
+          "준비 지원 1",
+          "격파 후 일반전 3",
+          "탐사 보상 1"
+        ],
+        "reserved_slots": 6,
+        "remaining_assignment_slots": 0,
+        "fixed_encounters": 1,
+        "fixed_save": 0,
+        "fixed_support": [],
+        "omen_compatible_slots": 0,
+        "normal_without_omen": {
+          "min": 3,
+          "max": 3,
+          "mean": 3.0
+        },
+        "normal_with_omen": null,
+        "expected": {
+          "support": 1.0,
+          "event": 0.0,
+          "reward": 1.0,
+          "elite": 0.0,
+          "normal": 3.0,
+          "event_present": 0.0,
+          "reward_present": 1.0,
+          "elite_present": 0.0
+        },
+        "expected_support_types": {
+          "정비": 0.3,
+          "상점": 0.45,
+          "본사 연락": 0.25
+        },
+        "recruitment_allowed": false,
+        "normal_availability": "after_boss_victory",
+        "candidate_count": 1
+      }
+    }
+  ],
+  "connections": [
+    {
+      "a": "A1-01",
+      "b": "A1-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A1-02",
+      "b": "A1-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A1-01",
+      "b": "A1-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A2-01",
+      "b": "A2-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A2-02",
+      "b": "A2-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A2-01",
+      "b": "A2-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A2-03",
+      "b": "A2-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A3-01",
+      "b": "A3-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A3-02",
+      "b": "A3-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A3-01",
+      "b": "A3-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A3-03",
+      "b": "A3-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A4-01",
+      "b": "A4-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A4-02",
+      "b": "A4-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A4-01",
+      "b": "A4-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A4-03",
+      "b": "A4-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A4-03",
+      "b": "A4-05",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A5-01",
+      "b": "A5-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A5-02",
+      "b": "A5-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A5-01",
+      "b": "A5-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A5-03",
+      "b": "A5-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A6-01",
+      "b": "A6-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A6-02",
+      "b": "A6-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A6-01",
+      "b": "A6-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A6-03",
+      "b": "A6-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A6-03",
+      "b": "A6-05",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A7-01",
+      "b": "A7-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A7-02",
+      "b": "A7-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A7-01",
+      "b": "A7-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A7-03",
+      "b": "A7-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B1-01",
+      "b": "B1-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B1-02",
+      "b": "B1-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B1-01",
+      "b": "B1-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B2-01",
+      "b": "B2-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B2-02",
+      "b": "B2-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B2-01",
+      "b": "B2-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B2-03",
+      "b": "B2-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B3-01",
+      "b": "B3-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B3-02",
+      "b": "B3-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B3-01",
+      "b": "B3-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B3-03",
+      "b": "B3-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B4-01",
+      "b": "B4-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B4-02",
+      "b": "B4-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B4-01",
+      "b": "B4-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B4-03",
+      "b": "B4-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B5-01",
+      "b": "B5-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B5-02",
+      "b": "B5-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B5-01",
+      "b": "B5-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B5-03",
+      "b": "B5-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B5-03",
+      "b": "B5-05",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B6-01",
+      "b": "B6-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B6-02",
+      "b": "B6-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B6-01",
+      "b": "B6-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B6-03",
+      "b": "B6-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B7-01",
+      "b": "B7-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B7-02",
+      "b": "B7-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "B7-01",
+      "b": "B7-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C1-01",
+      "b": "C1-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C1-02",
+      "b": "C1-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C1-01",
+      "b": "C1-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C2-01",
+      "b": "C2-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C2-02",
+      "b": "C2-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C2-01",
+      "b": "C2-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C2-03",
+      "b": "C2-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C3-01",
+      "b": "C3-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C3-02",
+      "b": "C3-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C3-01",
+      "b": "C3-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C3-03",
+      "b": "C3-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C4-01",
+      "b": "C4-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C4-02",
+      "b": "C4-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C4-01",
+      "b": "C4-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C4-03",
+      "b": "C4-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C5-01",
+      "b": "C5-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C5-02",
+      "b": "C5-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C5-01",
+      "b": "C5-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C5-03",
+      "b": "C5-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C6-01",
+      "b": "C6-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C6-02",
+      "b": "C6-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C6-01",
+      "b": "C6-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C6-03",
+      "b": "C6-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C6-03",
+      "b": "C6-05",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C7-01",
+      "b": "C7-02",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C7-02",
+      "b": "C7-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C7-01",
+      "b": "C7-03",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "C7-03",
+      "b": "C7-04",
+      "kind": "lateral",
+      "condition": null
+    },
+    {
+      "a": "A1-03",
+      "b": "B1-01",
+      "kind": "cross",
+      "condition": null
+    },
+    {
+      "a": "B1-03",
+      "b": "C1-01",
+      "kind": "cross",
+      "condition": null
+    },
+    {
+      "a": "A2-04",
+      "b": "B2-01",
+      "kind": "cross",
+      "condition": null
+    },
+    {
+      "a": "B2-04",
+      "b": "C2-01",
+      "kind": "cross",
+      "condition": null
+    },
+    {
+      "a": "A3-04",
+      "b": "B3-01",
+      "kind": "cross",
+      "condition": null
+    },
+    {
+      "a": "B3-04",
+      "b": "C3-01",
+      "kind": "cross",
+      "condition": null
+    },
+    {
+      "a": "A1-01",
+      "b": "A2-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A1-03",
+      "b": "A2-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A2-01",
+      "b": "A3-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A2-04",
+      "b": "A3-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A3-01",
+      "b": "A4-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A3-04",
+      "b": "A4-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A4-01",
+      "b": "A5-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A4-03",
+      "b": "A5-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A5-01",
+      "b": "A6-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A5-04",
+      "b": "A6-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A6-01",
+      "b": "A7-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A6-03",
+      "b": "A7-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "A7-01",
+      "b": "A8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "A7-02",
+      "b": "A8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "A7-03",
+      "b": "A8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "A7-04",
+      "b": "A8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "B1-01",
+      "b": "B2-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B1-03",
+      "b": "B2-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B2-01",
+      "b": "B3-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B2-04",
+      "b": "B3-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B3-01",
+      "b": "B4-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B3-04",
+      "b": "B4-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B4-01",
+      "b": "B5-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B4-04",
+      "b": "B5-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B5-01",
+      "b": "B6-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B5-03",
+      "b": "B6-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B6-01",
+      "b": "B7-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B6-04",
+      "b": "B7-03",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "B7-01",
+      "b": "B8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "B7-02",
+      "b": "B8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "B7-03",
+      "b": "B8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "C1-01",
+      "b": "C2-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C1-03",
+      "b": "C2-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C2-01",
+      "b": "C3-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C2-04",
+      "b": "C3-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C3-01",
+      "b": "C4-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C3-04",
+      "b": "C4-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C4-01",
+      "b": "C5-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C4-04",
+      "b": "C5-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C5-01",
+      "b": "C6-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C5-04",
+      "b": "C6-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C6-01",
+      "b": "C7-01",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C6-03",
+      "b": "C7-04",
+      "kind": "down",
+      "condition": null
+    },
+    {
+      "a": "C7-01",
+      "b": "C8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "C7-02",
+      "b": "C8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "C7-03",
+      "b": "C8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "C7-04",
+      "b": "C8-F",
+      "kind": "final_down",
+      "condition": null
+    },
+    {
+      "a": "ENTRY",
+      "b": "B1-01",
+      "kind": "entry",
+      "condition": null
+    },
+    {
+      "a": "A6-05",
+      "b": "A6-H",
+      "kind": "conditional",
+      "condition": "세 공개 최종보스 영구 격파 + 이번 원정 마탄 완료"
+    }
+  ],
+  "encounter_dependencies": [
+    {
+      "source_room": "A2-02",
+      "target_room": "A3-02",
+      "scope": "current_expedition",
+      "required_event": "red_hood_intro_event_story_completed",
+      "effect": "wolf_encounter_may_spawn",
+      "before_completion": "wolf_encounter_must_not_spawn",
+      "contract_purchase_required": false,
+      "applies_to": "encounter_activity_node",
+      "is_room_movement_edge": false,
+      "source_document": "../skills/abnormality_design_notes.ko.md#붉은-두건의-용병"
+    }
+  ]
+}

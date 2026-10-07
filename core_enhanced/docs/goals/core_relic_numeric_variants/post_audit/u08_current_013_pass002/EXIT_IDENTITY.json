@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-07T07:26:50.614066+00:00",
+  "manifest_sha256": "f4a1db5be99b390def61fd76224c073430416b2445479753a48458f5233b69a2",
+  "config_sha256": "efcf41fc70d63ccee2759023394b5069e8086eea121b62f42ba5218c661992d8",
+  "source_declared": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "current_unique_files": 7160,
+  "archives": [
+    {
+      "path": "SOURCE_BEFORE.tar.gz",
+      "count": 577
+    },
+    {
+      "path": "SOURCE_AFTER.tar.gz",
+      "count": 617
+    },
+    {
+      "path": "RECORDS.tar.gz",
+      "count": 6518
+    },
+    {
+      "path": "REFERENCES.tar.gz",
+      "count": 195
+    }
+  ],
+  "failures": []
+}

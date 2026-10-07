@@ -1,0 +1,58 @@
+{
+  "findings": [
+    {
+      "id": "U07-F01",
+      "status": "Open",
+      "completion_blocking": true,
+      "priority": "High",
+      "title": "Independent HP object lifecycle erases unrelated block/contact relationships",
+      "owner": "GOAL-CIOB-01 / PHASE-CIOB-01 independent lifecycle and spatial integration",
+      "source": [
+        {
+          "path": "core_enhanced/src/game/battle/core/object_evolution.rs",
+          "line": 202,
+          "role": "new direct global reset for every non-trap evolution"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/independent_objects.rs",
+          "line": 333,
+          "role": "new active HP-object retirement caller into withdraw_unit"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/build.rs",
+          "line": 615,
+          "role": "pre-existing global reset; baseline old line614 independently verified"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+          "line": 139,
+          "role": "existing engagement preservation precedes new candidates"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+          "line": 383,
+          "role": "walls excluded from proximity reconstruction"
+        }
+      ],
+      "authority": "core_enhanced/docs/game_rules/combat.md:89; inherited PE-CBST-13",
+      "evidence_kind": "Direct source and contract proof; no new auditor product execution",
+      "failure": "Unrelated valid employee pairs and distinct wall contacts are removed by HP form evolution or active HP retirement; generic refresh lacks incumbent information and cannot restore wall contact by proximity.",
+      "pre_existing_boundary": "withdraw_unit reset predates U07; new U07 evolution reset and retirement caller broaden it. Historical U06 verdict is not rewritten. Shared-helper correction must assess prior caller impact.",
+      "affected_u07": [
+        "V07",
+        "V09",
+        "V12",
+        "V16",
+        "V19",
+        "V20"
+      ],
+      "affected_predecessor": [
+        "PE-CBST-13",
+        "PE-CBST-14",
+        "PE-CBST-15"
+      ],
+      "required_action": "Implementation-owned correction preserving unrelated valid relations and removing invalid own relations; meaningful normal lifecycle/contact reproduction and regression, applicable rollback/clone/time checks, affected full/current validation and baseline impact review; new frozen target and independent re-audit. No particular implementation is prescribed.",
+      "runtime_reproduction_in_this_audit": false
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "U08_FOCUSED_ACCEPTANCE_AND_REMAINDER_PREPARATION_034",
+  "recorded_at_utc": "2026-10-07T02:46:02.100597+00:00",
+  "status": "COORDINATOR_ACCEPTS_FOCUSED_EVIDENCE_AUTHORIZES_TEST_PREPARATION_NOT_WHOLE_GOAL_COMPLETE",
+  "source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "source_files": 438,
+  "focused_handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/attempt005/HANDOFF.json",
+    "bytes": 464639,
+    "sha256": "296c4f44c506c7104bafbf61ef69be320f65fa2154c45a39a1022553de96fe92"
+  },
+  "canonical_runner_collection": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/attempt005/CANONICAL_RUNNER_COLLECTION.json",
+    "bytes": 1281,
+    "sha256": "35a0fbbfa7ee92166f965d8ccb3f853eab7e414d759308619fade3899e1f0771"
+  },
+  "coordinator_readback": {
+    "reviewed_exact_primary_refs": 14,
+    "reviewed_runtime_members": 38,
+    "driver_full_read": true,
+    "actual_message_count": 123,
+    "actual_update_count": 89,
+    "actual_faulted_command_refusals": 8,
+    "last_committed_battle_time_ms": 8800,
+    "native_work_limit": 1000,
+    "native_requested": 1148,
+    "fault_site": "fact_summary_map_copy",
+    "fault_operation": "host_tick",
+    "limits": "Fault followed 5000ms spawn and further movement; no claim that spawn tick itself faulted. Coordinator review is not final independent audit."
+  },
+  "focused_owner_release": {
+    "agent": "/root/u08_test_author_resume",
+    "writer": 0,
+    "runner": 0
+  },
+  "next_test_owner": {
+    "agent": "/root/u08_harness_author_resume",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "scope": [
+      "Close metadata008 then author new evidence/fault_resume_successor001 only for existing fault_off role aggregate producer",
+      "Prepare new evidence/r06_resource_sum_probe003 copied from immutable probe002, changing only successor path/reference mapping and truthful version labels",
+      "Publish new exact manifests/flat archives and handoff; preserve old source438,old1322,probe002115,all failed/successful evidence"
+    ],
+    "small_checks": "Syntax/import and pure data/reference checks only. No product binary/Cargo/integration/performance or actual finalizer stage execution in this preparation. Main closed focused runner; Supplement owns any authorized small checks until handoff."
+  },
+  "fault_resume_contract": {
+    "future_build_off_receipt": "final_fault_007_build_off.json",
+    "future_off_receipt": "final_fault_007_off.json",
+    "producer_role": "fault_off",
+    "operation": "New Python successor runs original native off command once after new build_off, preserves actual stdout/stderr and exact exit, then evaluates unchanged five-mode parity and observation assertions against immutable native4 plus accepted focused WebSocket; writes new SUMMARY directly. No 59th selected role.",
+    "preserve_oracles": [
+      "exact result equality none/detached/queue_full/on/off",
+      "queue_full queue_dropped greater than zero",
+      "on selected session ends and commits unchanged",
+      "on after current battle is None",
+      "accepted WebSocket complete fault/recovery oracle actual receipt and raw binding"
+    ],
+    "provenance": "Bind exact source/build/command/raw/sequence of historical native4. Their extensionless binary SHA was not recorded by run.py; historical on SHA stays unavailable/null with explicit limitation unless an actual existing measurement is found. Do not substitute a current hash. New off binary SHA observed before/after execution.",
+    "code_contract_refs": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/tools/final_fault_probes.py",
+        "bytes": 3081,
+        "sha256": "de651a209762a5a534e78a2332406845c54a2275777a77f539c923b42be92c25"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/tools/coverage_contracts.py",
+        "bytes": 3121,
+        "sha256": "5523a0c08078b632e0b0eec29624afbcc036c1ff90bbc409a5147f1b71f38194"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/tools/select_evidence.py",
+        "bytes": 7028,
+        "sha256": "2c4206ed5c0cc10e2eb59a19597a888768244ab9311402e83137121695291cf9"
+      }
+    ]
+  },
+  "resource_sum_contract": {
+    "old_probe_preserved": {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe002/HANDOFF.json",
+      "bytes": 4710,
+      "sha256": "6678120efd375c8805b5ce9e84c1f434f9752044af27e4b682e35a49c104f007"
+    },
+    "reason": "probe002 ORACLE original_functional_prerequisites pins failed WebSocket007 receipt; probe.py112-116 requires exit0. New probe003 maps fault_websocket to accepted focus receipt, fault_off to unused007 successor receipt and otherwise preserves actual49 prerequisites.",
+    "future_receipt": "r06_resource_sum_publication009.json",
+    "unchanged": "All four mixed/homogeneous static/dynamic ResourceSum oracle cases, release007 and current438/1322 validation; no cap/workload/oracle relaxation."
+  },
+  "next_product_runner": {
+    "agent": "/root/u08_product_runner_resume",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "current_writer": 0,
+    "current_runner": 0,
+    "execution": "HOLD until prepared tests accepted and actual new snapshot_v1 BEFORE covers all command/transitive/fixture inputs. Root will issue concrete execution map; no rerun original fault wrapper."
+  },
+  "final_contracts": {
+    "selected_roles": 58,
+    "functional": 50,
+    "performance": 8,
+    "snapshot": "Composite old007,old008,newfocused005,futureSol actual intervals with explicit gaps; primary external2/member8 unchanged. Do not backdate union or snapshots.",
+    "quiescence": "Exact50 functional receipts before each PC/R05 actual quiescence and measurements",
+    "finalization": "selection -> predecessor impact -> adaptation -> coverage -> self review -> GEX/docs -> direct freeze and restoration -> independent whole U08 audit",
+    "whole_goal_complete": false
+  }
+}

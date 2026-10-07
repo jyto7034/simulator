@@ -1,0 +1,23 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "r06_",
+    "--offline",
+    "--locked"
+  ],
+  "cwd": "/mnt/f/work/simulator",
+  "exit_code": 0,
+  "elapsed_seconds": 29.257837295532227,
+  "source_before": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
+  "source_after": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
+  "env": {
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+    "RUST_TEST_THREADS": null
+  },
+  "log_sha256": "55e5d7d75633ae4602c0c4e51cd920501f20f2b5bb2875a32d74281a599c46ad"
+}

@@ -1,0 +1,56 @@
+{
+  "at_utc": "2026-10-06T06:14:02.317302+00:00",
+  "record_sha256": "ec173282a7482a4081fcb1fafb2809d5c4aa0096a3ef6aa5118b876ffa526ae8",
+  "before_archive_sha256": "f511b9eac140794983b642a773bae1e2ef6d32d23f848364de26052b9a3ba7f5",
+  "diff_sha256": "4ad0760c8554628d41b40023fa239ade8a687861b0242db9a3b58ed684b27a6b",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "before_sha256": "e5674dfeca5a6d091f9675d2767f29309d72fb0ab2003a5119a21893a65b91ad",
+      "after_sha256": "e385a33af2bb8fc30cbb11bf02b55bcba1ea52c5da1709bbe11d8c3b1d6b0d42"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before_sha256": "5641fa13151e5709ce476faaca8bd730cd1284de0b4ef60eef9eaf7d77bf9539",
+      "after_sha256": "81126b74cac39649ccaffb3f338a6b3d3f388f5d7f37fd2043d9267df912b32a"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_lifecycle005.json",
+      "sha256": "38907c0cfd39f62614b851e1bb10d34c2bc17d0f636b866c7eb56899545659bc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_lifecycle005.log",
+      "sha256": "03ed6def5eea746acab4be4c8e189235644fd2d535975f0b8ec82635d4549b61"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_lifecycle004.json",
+      "sha256": "9fc76f1201a32cc72a92aca6a370c9de0d7606a4d4ec6bbc0a897c7bc1bf6ec2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_d001.json",
+      "sha256": "e188ac074769eec068771c055e40cd2c9d529186c79e0924cb21dd6938a20e50"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_internal_lifecycle_settlement_fix001/checkpoint.json",
+      "sha256": "9ca41f8d6f4574da9444c7e644e365cc3877bc8113b863e8417efbcd3ecbf571"
+    }
+  ],
+  "source_delta_from_public_d001": [
+    {
+      "path": "core_enhanced/src/game/world/tests/mod.rs",
+      "before": "a034380a61003653e4318f56ce443a990b3e6e7e9498a27d57b530acff822eac",
+      "after": "70de262ff821103d68e6535790d3c194020c5578438f3ec52b24408bd3f188b0"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/u08_lifecycle.rs",
+      "before": null,
+      "after": "a93d9e17eb563f430e5a2dcf17ee857db538a55c172f26176258efa92e9f363c"
+    }
+  ],
+  "last_success_source": "0b73ba9c97dbe2ab88c7204bd593416932a04758634c4b1341bb9839eebc9077",
+  "focused_evidence_count": 25,
+  "whole_goal_complete": false,
+  "root_source_edits": false
+}

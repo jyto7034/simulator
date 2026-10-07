@@ -1,0 +1,306 @@
+{
+  "reused_receipts": [
+    {
+      "receipt": "compat_pc_prepare_003",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "78ce8f2a260aae7c2300b198ee2a197e2a821e1b5bcb2b7bc65fe1c62db1e21e",
+      "log_sha256": "416b62003ae3c860d05f0e356de3dd9b994a517f7a6ce4b1c1eba7d8c8ec0d69",
+      "auditor_basis": "Read exact archived PC probe and producer helpers: automatic battle workloads use default Damage/no weapon profiles; amount/expression adapter workloads also do not invoke basic-Heal owner. Eight layout/accounting sources, all numerical/oracle inputs, comparator and raw results are byte-identical. No fresh timing/allocation execution is claimed.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_pc_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "c15cefd959d38015c362bc0faebe711d3b894c58119f235557218d697bb1aae7",
+      "log_sha256": "f89d20cf09566550d88657a4985940f6e5275781ab97ab58e18e2d6be80e05a1",
+      "auditor_basis": "Read exact archived PC probe and producer helpers: automatic battle workloads use default Damage/no weapon profiles; amount/expression adapter workloads also do not invoke basic-Heal owner. Eight layout/accounting sources, all numerical/oracle inputs, comparator and raw results are byte-identical. No fresh timing/allocation execution is claimed.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_pc_gameplay_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "d378a4e509677794b0af291868cb3d3794d961a08c4fa8ebd1c6e010e92c6c84",
+      "log_sha256": "c9147f25e7aec5a5e05d6036ae6a16969af8e8fa1b1ea0f58002bdbb61572740",
+      "auditor_basis": "Read exact archived PC probe and producer helpers: automatic battle workloads use default Damage/no weapon profiles; amount/expression adapter workloads also do not invoke basic-Heal owner. Eight layout/accounting sources, all numerical/oracle inputs, comparator and raw results are byte-identical. No fresh timing/allocation execution is claimed.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_pc_cost_002",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "fba5f1be8baaf6a684b05a073c6cf5cea8c65cb6f1f52e752eb3226f0c63d0dc",
+      "log_sha256": "0090d167998d41e311e9f6b3c781224f86fd20e423089b2b95ce74a098aef860",
+      "auditor_basis": "Read exact archived PC probe and producer helpers: automatic battle workloads use default Damage/no weapon profiles; amount/expression adapter workloads also do not invoke basic-Heal owner. Eight layout/accounting sources, all numerical/oracle inputs, comparator and raw results are byte-identical. No fresh timing/allocation execution is claimed.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_r05_summary_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "ba701b4bf787d55966dc628c09b11841bb564356d319019e7b10f458f202bf6b",
+      "log_sha256": "f79c8366682f5cf3eaa35120465ddd3ec360e2b0c7337f358a2ad0bcb8c25c2c",
+      "auditor_basis": "Read final_performance.rs: Little Red/dummy Damage abnormality workload never invokes the changed Heal predicate. Native layout/accounting/inputs/caps unchanged. Raw exit101 remains the exact inherited peak-only warning; no fresh timing/allocation execution is claimed.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "public_guards001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "fa282a68d06859c8f3bbdbadfd6653b04d80aeb3a75f87d1fbc1b2a65ddba01d",
+      "log_sha256": "fc255c0fbf66adf278bf574e471836d9b85bb081125c837a350b850194c5807b",
+      "auditor_basis": "Independently read public_guards.rs: normal starters/SavePoint setup; measured Run snapshots, checkpoint exports, fixed event-log queries and rejected combat staging. It does not execute basic-Heal selection/release. Data, fields, layout, storage/query/rejection code and measured input bytes are unchanged. The frozen claim grouping this with Little Red/dummy is overbroad and is superseded by this precise audit applicability basis.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "public_guards_allocator001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "9eaa032c2556821d9fa5c47e7080e947c1eb68022104b21d40949db488d0adcf",
+      "log_sha256": "20ff6a802ba3a12211c5c8bc6cd4d84c7cd3acf3f0312b509944edff2834af7d",
+      "auditor_basis": "Independently read public_guards.rs: normal starters/SavePoint setup; measured Run snapshots, checkpoint exports, fixed event-log queries and rejected combat staging. It does not execute basic-Heal selection/release. Data, fields, layout, storage/query/rejection code and measured input bytes are unchanged. The frozen claim grouping this with Little Red/dummy is overbroad and is superseded by this precise audit applicability basis.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_prepared_public_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "a9cd31c8eb7b9e5d46e9bcf314600daea905a35eb6d55d9880bc82dca3666f8c",
+      "log_sha256": "539763d5a4818451779f88a63e420c2ebfccc94b082adadf673872835c91ca5e",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_prepared_boundary_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "ed83bc99c0d4b6c6e46628d33d99001e5ec792a63b1b7763c364504139ca62d4",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_input_validation_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "11e011069bd0cc68bc9af26574dcc71e6bf48a8df12db44666d54ac9a82d21ae",
+      "log_sha256": "1dbd428054495fc7077e34361a2d176669b86b1f1e44f5e86c01fc32be649415",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_default_parity_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "3d77fd59d56eba53861935795fe66c26d1f48baec9e95f8916f692336482bb0f",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_public_oracle_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "9ab2fc3812d7a48b90da47899f6979d3dcdba077d222b1633b485ddaee83ec4c",
+      "log_sha256": "9b732014d9cfa27f00ffe93e05b25b40afd9dd2ddf63300456e1fd6eb9482af6",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_public_trace_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "a9910fd64b2d639506017bee68be623e2443c872816eed2e690d55cf32222289",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_public_cli_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "a176b93c2ec3c5a0dd0bbed7acc632cc507ccf98570a15f948d854270ea78b4e",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_public_profile_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "38e60f63f9d60005cb0ea3cba863bc9f495efe7b1954b2c1f73c2a5e303573d9",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_public_boundary_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "82e47e7116b6cdd1f303caf0e452403286c7ba56f6760a08341f2124e65ad1bd",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_public_api_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "7cb95197e94b013e3bacf370e90017ab93a69a305e6ed2700be390d2e115714b",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "public_schema_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "276f49f7d5a9c48038f1051b7d451b4ac348d279e4ecaf765e85b734b9cb8f95",
+      "log_sha256": "5c0e63af7653d4103ba585a22db370c4fbb5dbc9e96f85c58763d38ea616b33b",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "public_independent_area_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "3331a467545a8057278cba5830620688ebd58efc601d61d36d03c97c55dc2026",
+      "log_sha256": "e0378cc2ffdca28f216f2198c9139da3dd77946c54299e0f04486fd09ded6132",
+      "auditor_basis": "Exact 419 original inputs and18 harness files unchanged, predating basic-Heal schema; no BasicAttackAction Heal authored in them. Schema/value/skill/trace/profile/API/CLI code unchanged. New basic-Heal consumer and schema executions are fresh separately.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "public_continuation_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "08f19d5a44d88932ff8c53c57c0830a1687cecd2c24705a35ccb42ab3b7170a3",
+      "log_sha256": "24c2be42e7d3753a507e0c4c4f6e41e7dea4a7d18545beb0c203b7ff6f9f5bf2",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "public_rewind_001",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "3e2fd90c18a954978331a6ec2c623acfa4cd1e13088fc06218b99aa5335995fb",
+      "log_sha256": "ee4767052d0e4264b8c5d0467d6f98876ca367230dfd47d0d8ffc72cdc0988b7",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_build_on",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "8af808c3409f05a5bb97381def66ea2f49cf972a554c4e8294a756845cf5bdcf",
+      "log_sha256": "7d6c8b7438da02454b8e655983cf0c1f347ebcc36340f91d61046966c70525ae",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_none",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "13bffe5c1d7f806b4ad5bd487915708df49eca249dc19cefc61f78d186913ba7",
+      "log_sha256": "fdace9898c5bb2bc9cacbeecaed41fe8a9b264bcfd71ed693f60fd831e3acfbb",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_detached",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "6a2cb79d370990f94bfff8ac2b551ef78c11d0008bda07959c7d207544a95c84",
+      "log_sha256": "fdace9898c5bb2bc9cacbeecaed41fe8a9b264bcfd71ed693f60fd831e3acfbb",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_queue_full",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "1b05b46b06b301f2fea9e0de7026f0203a45c38be19a7845ab73774e15c06a31",
+      "log_sha256": "865793c855c2cddc8f914b67db586c09f23dc3fbdc1ba75e8f09345dda0b4c0d",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_on",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "e6420a1ae7f0579af8d045e109f3edcc7767b09ab7d92857dfb438a57e3db066",
+      "log_sha256": "2b4f7eaf27e066412a182d3bf7f29a014b2c7cc384f5acad17bb5966342a15a8",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_websocket",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "e3b32510962bc8b878eb9d99ef2d4c29b778cf7ff1e978e6066d829a601f0c4c",
+      "log_sha256": "6c0d57afbdc9fcead089efc902df12784367b0827e104e9ff80e6d507a16d728",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_build_off",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "c69774315e8e9cb698d072176ae86fc7eb487d3dc9a20037baca531c22db375d",
+      "log_sha256": "d5c10166d9d580138458037a8d3d79cbdbf55fe7b45679ba738ba820acc70b4d",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "final_fault_001_off",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "0c9c3618387bdac6b8a3c9703c3d1a074626befa1a426260e8be10d82fb56eba",
+      "log_sha256": "fdace9898c5bb2bc9cacbeecaed41fe8a9b264bcfd71ed693f60fd831e3acfbb",
+      "auditor_basis": "Host/store/transport/fault/observation sources and inputs unchanged; any official basic-Heal definitions retain strictly positive flat8/4 with u32 SP, same outcomes. Fresh final009 Core/host/observation/heap plus new public Heal cases cover current producer boundaries; captured local services are not claimed live.",
+      "fresh_execution_claimed": false
+    },
+    {
+      "receipt": "compat_r05_002",
+      "judgment": "Reuse valid",
+      "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "receipt_sha256": "d98466908431a47c07b55729a9d3ff3673ba66cbbfd868df373f716a519dbe19",
+      "log_sha256": "62fb3a8705c3125eb7ea1f4df19e4d52ec4962ae6ac09fd4cdedcea7c720214d",
+      "auditor_basis": "Read final_performance.rs: Little Red/dummy Damage abnormality workload never invokes the changed Heal predicate. Native layout/accounting/inputs/caps unchanged. Raw exit101 remains the exact inherited peak-only warning; no fresh timing/allocation execution is claimed.",
+      "fresh_execution_claimed": false
+    }
+  ],
+  "minor_description_correction": "public_guards measured paths independently verified; no source correction or missing baseline follows from the overbroad original description.",
+  "no_new_exceptions": true
+}

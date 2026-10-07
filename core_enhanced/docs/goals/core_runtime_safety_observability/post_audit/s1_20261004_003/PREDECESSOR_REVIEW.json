@@ -1,0 +1,1928 @@
+{
+  "goal": "GOAL-CRSO-S1 predecessor applicability over F02 successor",
+  "target_manifest_sha256": "23bb1e61232265d8db0fd2fa85b94bef825b065fd537a41a218cc2b96194626c",
+  "source_digest": "a24c925b97034b1e0132b31827a146d187ace2feaf05c129ce006c0d96d8f275",
+  "historical_u01_target_sha256": "3a7bd83b904d1f8367590b7c2d3f4616a9cce8ca6a8a9cb0c7e0cc767d12b50a",
+  "historical_u01_source_entries_accessible": 388,
+  "shared_paths_changed": [
+    "core_enhanced/docs/core_runtime_contract.md",
+    "core_enhanced/docs/data_loading_contract.md",
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/src/application.rs",
+    "core_enhanced/src/authoring/control.rs",
+    "core_enhanced/src/authoring/mod.rs",
+    "core_enhanced/src/authoring/query.rs",
+    "core_enhanced/src/authoring/trial.rs",
+    "core_enhanced/src/bin/author_content.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/event_log.rs",
+    "core_enhanced/src/game/battle/runtime_control.rs",
+    "core_enhanced/src/game/data/content_pack/mod.rs",
+    "core_enhanced/src/game/data/mod.rs",
+    "core_enhanced/src/game/data/skill_data.rs",
+    "core_enhanced/src/game/value_expr/mod.rs",
+    "core_enhanced/src/game/value_expr/parse.rs",
+    "core_enhanced/src/game/world.rs",
+    "core_enhanced/src/game/world/active_run.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/node_flow.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+    "core_enhanced/src/lib.rs",
+    "game_server/config/development.toml",
+    "game_server/config/production.toml",
+    "game_server/docs/unity_bridge_protocol.md",
+    "game_server/src/env.rs",
+    "game_server/src/game/load_balance_actor/handlers.rs",
+    "game_server/src/game/load_balance_actor/messages.rs",
+    "game_server/src/game/player_game_actor/handlers.rs",
+    "game_server/src/game/player_game_actor/messages.rs",
+    "game_server/src/game/player_game_actor/mod.rs",
+    "game_server/src/game/player_game_actor/session.rs",
+    "game_server/src/game/player_game_actor/state.rs",
+    "game_server/src/lib.rs",
+    "game_server/src/main.rs",
+    "game_server/src/persistence/active_run_store.rs",
+    "game_server/src/persistence/player_profile_store.rs"
+  ],
+  "prior_acceptance_policy_unchanged": true,
+  "independent_audit": true,
+  "conditions": [
+    {
+      "id": "A08-01",
+      "group": "U01",
+      "requirement": "외부 RON 보스의 stationary actor가 명시 방향으로 지원 스킬을 실행. 실제 피격 대상·출처 일치, Player-only 우회 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Boss-only admission in sim::start_boss_skill_action keeps Opponent identity and explicit facing; no Player disguise. Unchanged public milestone test verifies actual target HP, stationary origin and 100 HP loss.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A08-02",
+      "group": "U01",
+      "requirement": "시험 시각 t0 접수/t100 release/t300 impact: Released waiter는100, EffectsSettled waiter는300에 진행. 타격 전 요청 접수를 완료로 취급하지 않음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "release_finished_boss_waiters cancels only invalidation or TimedOut+CancelUnreleased; a normal Released completion takes the handle out before state exit. Existing t100/t300 waiter assertions and released CLI remain valid.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A08-03",
+      "group": "U01",
+      "requirement": "t50 state 이탈은 미방출 취소; t150 이탈은 독립 projectile 보존. 기존 보스 이동·RouteCombat 작업과 중복 발사 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "State-owned DetachAction now cancels matching pending AND active control work. Removing only SkillStep/SkillFlowWake preserves released projectile/area completions. Public early/inflight/state-exit oracles and six internal timing combinations close F01.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A08-04",
+      "group": "U01",
+      "requirement": "target 소실·잘못된 skill·자격 실패·timeout을 각각 실제 result route로 처리. 실패 시 방향/자원/상태/순번의 허용된 변화가 계약과 일치",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+        "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+        "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "RequestRejected/TargetInvalidated routing is unchanged; timeout CancelUnreleased reaches the new exact-action cancellation. Public Cancel1500/Cancel500 versus Detach1500 show distinct policy results; pending target-loss/rejection selectors still exercise actual result routes.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A08-05",
+      "group": "U01",
+      "requirement": "이전 activation의 늦은 wake/완료·중복 완료는 새 state에 영향 없음. 반복 진입 후 handle/lease 보관량 회수",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Opaque Arc action equality, caster check, cast sequence, and stale-owner/generation guards isolate occurrences. Queue entries and public reservation are reclaimed. New foreign-same-ordinal isolation and stale extracted-event tests supplement repeated-state handle reclamation.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A08-06",
+      "group": "U01",
+      "requirement": "raw/compiled 참조 오류·빠진 실패 route·capability 충돌·미지원 milestone 조합은 정확한 진단, candidate generation 미게시",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "No catalog/compiler/schema delta. Original validation rejects missing skill/routes, target mismatches, capability collisions and invalid timeouts before publishing; mapped negative selectors pass unchanged.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A08-07",
+      "group": "U01",
+      "requirement": "clone/fault 주입 뒤 boss state와 action 등록이 함께 rollback. 기존 wave·summon·결과 authority 회귀",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Boss boundary clones before release_finished_boss_waiters/plan.commit; typed cancellation/scan/terminal failures return before publishing staged core. Six new fault sites verify exact core/queue/execution restoration and retry, in addition to admission tests.",
+      "current_independent_reasoning": "Boss admission, exact action cancellation, queue pruning and released delivery ownership are unchanged. Native/history constructors now consume the validated host profile, with original defaults; the extracted application preparation keeps the same charged clone, operation, reconciliation and failure boundary. All seven U01 F01 tests and exact public cancellation timing/HP/source oracles are current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-01",
+      "group": "U01",
+      "requirement": "임계 아래/경계/위, 공명 부족/만충, 일반/최종 보스 파편, 잘못된 사본·자격의 조합. 일반 시전 또는 침식 또는 typed 거부가 명시 정책과 일치",
+      "selectors": [
+        "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+        "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "corrosion_ready still requires exact fragment form, active Player employee, trauma threshold, resonance and start eligibility; final-boss exclusions remain. New boss cancellation neither broadens Player admission nor changes those inputs.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-02",
+      "group": "U01",
+      "requirement": "Pause 중 manual 입력→query→resume와 auto 준비: 접수만으로 침식 없음, 실제 start gate에서 한 번 판정. 준비 중 자격 변화·취소·stale event 포함",
+      "selectors": [
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+        "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "SkillStartGate remains distinct from input acceptance and ManualCastEnd. Canceled pending casts cannot match their stale start sequence. Player auto/manual gate and host pause tests remain current; boss request uses reset_resonance=false.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-03",
+      "group": "U01",
+      "requirement": "침식 대체는 일반 피해를 추가 실행하지 않고 공명 비용을 한 번만 처리. 현재 적만 사망, 미출현 required wave는 유지",
+      "selectors": [
+        "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "try_start_corrosion captures sorted current enemies once, records employee obligation before death and suppresses normal cast; new cancellation does not create enemies, costs or waves. Current integration verifies required future wave survival.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-04",
+      "group": "U01",
+      "requirement": "OnKill/OnDeath/OnAllyDeath에 관찰 가능한 효과를 달아 미발동 확인. wave death epoch/승리 검사/필수 정리는 정상. HP1·shield 도입 뒤도 재검증",
+      "selectors": [
+        "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Special death still uses finalize_prepared_death_with_dispatch(..., false); mandatory death facts/wave progression remain separate from optional reactions. Queue pruning excludes death/wave events and public cross-feature tests remain current.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-05",
+      "group": "U01",
+      "requirement": "마지막 적 처치로 즉시 terminal인 경우도 직원 Withdrawn·attempt trauma100·결과 확정 한 번. 신체 부상 증가 없음, 같은 전투 재배치 거부",
+      "selectors": [
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Corroded marker/trauma100/cost precede withdrawal and terminal enemy deaths; no mutation here in the correction. World reconciliation/once-only result tests verify employee consequences despite terminal completion.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-06",
+      "group": "U01",
+      "requirement": "0.5×/1×/2×·Pause·disconnect/resync의 fake host elapsed: 동일 연출 길이, battle time 정지, 강제 Resume 거부. 만료 후 사용자 Pause는 별도 유지",
+      "selectors": [
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "CorrosionFreeze consumes explicit raw host elapsed before battle speed; user Pause and forced pause remain separate. Neither new cancellation function reads wall time nor changes host routes; fake-host and save consumer tests remain current.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-07",
+      "group": "U01",
+      "requirement": "모든 공개 mutation route를 분류한 행렬. 거부 시 state/resource/event/revision/RNG 불변. query/preview 반복은 무변경, 직접 step으로 우회 불가",
+      "selectors": [
+        "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Application forced-pause guards and direct BattleCore ensure_not_forced_paused are unchanged. New method is private and reached within admitted boss boundary, not a new public mutation bypass. Existing route matrix remains applicable.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-08",
+      "group": "U01",
+      "requirement": "Breakdown 진입→완료 node→회복/재진입/만료. 치료와 만료 동시, retreat·실패 재시도·중복 완료·checkpoint 잔여 수 복원",
+      "selectors": [
+        "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+        "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Breakdown node counter and recovery ordering remain world/employee-owned; no ephemeral canceled action is serialized as durable state. Counter and recovery-before-expiry/fresh-process selectors retain their original oracle.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-09",
+      "group": "U01",
+      "requirement": "만료 사망의 장비·R07 사본 회수 exactly once, 소비 효과 제거·사망 방지 경계. 저장 decode 오류는 원본/현재 state 보존",
+      "selectors": [
+        "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+        "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Node expiry and exact copy recovery paths are unchanged; V9 strict checksum and explicit V8 converter remain present. U00 future no-legacy decision is not applied to this goal. Current fresh-process and failed-decode tests remain valid.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A09-10",
+      "group": "U01",
+      "requirement": "적 capture/fact/직원 대가/연출 출력 각 단계 fault 주입: 부분 kill·부분 대가 없음. retry가 처음 성공과 같은 결과",
+      "selectors": [
+        "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Corrosion capture/cost/death/presentation transaction is unchanged. Its queue still contains all non-control events; current cross-feature and fault/retry selectors preserve the original all-or-nothing oracle.",
+      "current_independent_reasoning": "Corrosion start gates, forced pause, special death suppression, employee obligation and Breakdown ownership are unchanged. The same application route guard runs before staging; new preparation additionally refuses any active battle. Host elapsed/authority/reconnect tests, first-operation tiny limits and existing rollback/checkpoint assertions remain current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-01",
+      "group": "U01",
+      "requirement": "광역 피해로 적3명 피격 후 self-heal1회. 대상 수만큼 자기 회복하지 않음. 0 실제 피해/빗나감의 결과 조건은 기존 HP-loss 의미 유지",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+        "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+        "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Flow occurrence results/actual HP-loss and damage command targeting are unchanged. Cancel removes future control only; released area executes with retained source. Existing three-target/one-heal and shield-zero selectors preserve cardinality.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-02",
+      "group": "U01",
+      "requirement": "나무꾼형3타: strike/segment/step/occurrence 주소와 누적 결과 분리. 병행 branch의 완료 순서가 달라도 authored result order 유지",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+        "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Flow compiler/runtime retains authored node/occurrence/result ordering. New selection is deterministic minimum cast sequence, and heap retained entries keep event ordering keys. Repeat/parallel result and trace selectors are current.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-03",
+      "group": "U01",
+      "requirement": "루돌타형 유한 n회·중간 무대상: 기회 소모·고정 종료, 나중 적에게 적립 없음. interval-only 변경 시 n 보존",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+        "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Finite repeat count/opportunity accounting is untouched. Cancellation terminates future opportunities and never banks/replays them. Empty-target and interval-only tests retain their expected finite results.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-04",
+      "group": "U01",
+      "requirement": "Branch의 미선택 경로 미실행, Sequence wait, Parallel join·실패·부분 취소·중복/stale wake의 실제 결과 검증",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+        "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+        "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Sequence/Parallel/Wait require a live cast owner to drive. Exact owner removal plus queued control pruning and extracted-event no-op prevent new leaves after cancellation; old branch/fault tests and new stale/same-time tests pass.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-05",
+      "group": "U01",
+      "requirement": "self/unit/tile·고정 anchor/추적·step retarget·명시 facing을 Instant/Projectile/Area에서 검증. 대상 소실과 empty set 후속 완료 포함",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+        "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+        "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+        "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Target/facing and source snapshots are in the surviving carrier. The new path never retargets or rebuilds released payloads. Existing target/anchor tests and public F01 source/HP timing prove continued delivery semantics.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-06",
+      "group": "U01",
+      "requirement": "release 전 취소와 후 취소, R08 waiter, R09 시작 gate·강제정지가 새 Flow에서도 동일 의미",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+        "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+        "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "F01 closes the missing R08 timeout/state-exit to R10 continuation edge, both before and after preparation. Released child survives; Detach and normal Released still continue. Corrosion/forced pause integration remains current.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-07",
+      "group": "U01",
+      "requirement": "잘못된 result slot/type/unit/forward reference, 미지원 조합·무한 구조·반복 상한·시간 overflow를 publication 전에 거부",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+        "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+        "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Flow compiler and publication are byte-identical to the previous audited target; no unsupported branch, type, forward reference or unbounded structure is newly accepted. Negative selector oracles remain relevant.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-08",
+      "group": "U01",
+      "requirement": "큰 유한 반복/깊이/분기에서 allocation 전 admission·work fault·rollback, 순번/RNG/queue/최근 관측 보존",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+        "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "New scans charge active cast/queue length before traversal, do not allocate a cancellation vector, propagate failures and use existing staged rollback. Existing finite/admission/overflow tests plus six new cancellation fault sites cover changed mutation boundaries.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A10-09",
+      "group": "U01",
+      "requirement": "공개 RON→compiled→CLI/실제 전투와 R06 Snapshot/Live·집계·trace·D04-F01/관통 만료 회귀",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+        "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Legacy steps still lower through CompiledSkillFlowPlan, then use the same owner/step consumers; no fallback interpreter is added. Explicit legacy delayed-step regression plus public Snapshot/Live and empty-expiry oracles remain current.",
+      "current_independent_reasoning": "Flow compilation/occurrence ordering, retained captured delivery/source and common legacy lowering are unchanged. Selected generation/compiler/runtime limits reach the original owners. Preparation does not rerun commands at commit or reset nested allowance; current typed refusal, fault/retry, PC36 and public trace oracles preserve semantics.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-01",
+      "group": "U01",
+      "requirement": "source A/B의 additive/scale modifier를 겹치고 각각 제거. base·남은 B 보존, 반복 입출입에 수치 drift 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Sustained records recompute effective stats from base and remaining sources. Cancellation does not mutate the ledger or source modifiers. Source-local expiry/removal/fault tests preserve no-drift behavior.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-02",
+      "group": "U01",
+      "requirement": "태아 aura 입장/이탈·새 배치·재배치·종료와 겹침: exact 수혜자, 비중첩, 기본 공격만 강화, 기존 released snapshot 보존",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+        "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+        "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+        "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+        "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+        "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+        "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Aura member/source ownership is independent of cast control; new pruning excludes sustained/area/projectile events. Snapshot damage and membership/priority/public actor tests remain current.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-03",
+      "group": "U01",
+      "requirement": "channel 중 공격·시전·태세·전술 이동/교대·작업 시작 거부, 명시 중지 허용. 다른 source lock은 종료 후에도 유지",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+        "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+        "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+        "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "New pending cancellation releases only matching focus locks and never calls actor-wide basic/movement cancellation. Channel-owned restrictions and other lock lifetimes remain under sustained authority; original real-periodic/field-work tests pass.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-04",
+      "group": "U01",
+      "requirement": "일반 피해/Silence는 유지, Hard CC/interrupt/철수/사망/terminal/retreat는 자기 channel·aura 정리. Pause 중 duration 보존",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+        "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+        "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+        "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+        "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Sustained end_sustained closes its own source/delivery and timer, while explicit channel stop/death/withdraw/terminal remain unchanged. No broad effect cleanup is added by this action cancellation.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-05",
+      "group": "U01",
+      "requirement": "Hello 자연 만료는 Goodbye 없이 복귀, 재입력은 남은 시간 기반 Goodbye 한 번·추가 공명 소비 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+        "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+        "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Hello activation/reinput and separate Goodbye source are unchanged; normal Released result detachment does not call cancellation. Existing remaining-time, no-extra-cost, normal-world/save tests retain their oracle.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-06",
+      "group": "U01",
+      "requirement": "timeout과 재입력 동시·중복 입력·stale activation·후속 실행 오류의 정책/rollback. 효과가 반쯤 제거된 상태 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+        "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+        "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Exact sustained activation and reinput transaction are unchanged, and queue pruning matches cast control only. Stale expiry/reinput/fault tests therefore exercise the same independent lifecycle.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-07",
+      "group": "U01",
+      "requirement": "overlay 기본 공격의 관통·범위·방향과 무기 기본 출처/흡혈, Goodbye skill 출처 구분. 다른 호환 무기도 특례 없이 실행",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+        "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+        "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+        "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+        "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+        "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Basic overlay/weapon source and actual HP-loss lifesteal consumers are unchanged. The exact-action cancel path leaves pending basic attack and released source snapshots alone; overlay/Goodbye and damage-source tests remain current.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-08",
+      "group": "U01",
+      "requirement": "다음 공격1회·windup 중 overlay 종료·발사 후 종료에서 정확 적용/소비. 기본 공격 주기 reset·이중 발사 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+        "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+        "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "No basic epoch, next_basic_attack timer, overlay use count or released projectile is edited. Existing windup/release/expiry tests directly retain once-only consumption and no cycle reset.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A11-09",
+      "group": "U01",
+      "requirement": "ledger/member/lease의 admission·clone·반복 생성/종료·retreat rollback 및 공개 RON/조회/fingerprint 연결",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+        "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Sustained retained/admission/clone and retreat transaction are unchanged. Removed cast/source references drop normally, while retained effect records own their leases; public trace and rollback tests remain applicable.",
+      "current_independent_reasoning": "Sustained source-local ledger, aura/channel/overlay ownership and released snapshots are unchanged. Whole-root preparation retains all five GameCore fields and precommit reconciliation, without an extra clone or separate interpreter. Current world/retreat/save/trace and lifecycle selectors preserve source/copy cleanup.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-01",
+      "group": "U01",
+      "requirement": "shared pool600, 감쇄 후 A400/B350: A HP 손실0, B150, 잔량0. 신규 수혜자·이탈/재진입은 새 잔량을 만들지 않음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+        "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Shield remaining pool is owned by sustained record; cancellation does not recreate or remove it. Original shared600/A400/B350 and member recast tests retain their exact expected balances.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-02",
+      "group": "U01",
+      "requirement": "개인+공유·복수 source·광역 같은 시각 피격의 결정적 순서. 대상별 실제 감쇄는 한 번, 피해가 다른 직원 HP로 이전되지 않음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+        "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "absorb_sustained_shields selects personal then shared, priority then activation; mitigation and target HP remain separate. Cancellation excludes damage events; deterministic same-time and two-employee tests are current.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-03",
+      "group": "U01",
+      "requirement": "source 초기량 증폭 한 번·재시전·expiry/소진 동시·stale expiry·source 철수. 종료/발동 기록 exactly once",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+        "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Shield/source lifetime and own expiry remain intact because only SkillStep/SkillFlowWake match pruning. Recast/stale-expiry/exhaustion tests retain once-only source bookkeeping.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-04",
+      "group": "U01",
+      "requirement": "일반 Heal/Platform Rest는 shield 불변, recharge만 잔량 변경. HP 비용은 shield를 우회하고 별도 CostFact, 부족/사망 허용 경계",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+        "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Heal/recharge and HP cost dispatch are untouched; costs retain separate fact classification and bypass protection. No cancellation branch refunds or reclassifies cost. Original boundary oracles remain current.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-05",
+      "group": "U01",
+      "requirement": "비치명/치명·HP1·death-prevent·cost·특수 kill 조합: 정책 우선순위, 실제 HP loss/죽음 fact/trigger/결과가 모두 일치",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+        "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Damage survival and special-kill policies are unchanged; released carrier damage still enters existing arbitration. HP floor/death prevention/cost and corrosion cross-feature tests remain current.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-06",
+      "group": "U01",
+      "requirement": "parry 성공 첫 eligible 타격의 damage와 부착 효과 억제, counter 한 번; 후속 무적은 추가 counter/반사 없음",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+        "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Parry eligibility/bound attachment suppression and once-only counter authority remain unchanged. Queue pruning never removes already released damage/counter completion; positive/public tests remain current.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-07",
+      "group": "U01",
+      "requirement": "parry miss는 자기 감면만 잠시 해제, 장비 방어/다른 source 유지. 반사·자해·cost 재귀 없음, 공격자 소실·다단 경계",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Parry miss owns only its reduction record; no generic source reset was introduced. Existing absent-attacker, multi-strike, cost/reflect and half-open-time tests retain original semantics.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-08",
+      "group": "U01",
+      "requirement": "slow/root/taunt/pull 및 기존 Stun/Freeze/Silence의 capability별 표를 실제 이동·저지·시전·target 변화로 검증. 만료 뒤 자기 source만 해제",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+        "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+        "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+        "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+        "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+        "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Control sources and capability resolution are unchanged; exact action cancellation no longer performs broad interrupt epochs. Pending focus lock cleanup checks matching owner time/permission; movement/basic/hard-CC tests remain current.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-09",
+      "group": "U01",
+      "requirement": "shield로 HP loss0인 타격의 R06 gate·공명·흡혈·조회 oracle. absorbed와 actual HP loss 구분, R09 suppression 보존",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+        "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+        "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Actual HP-loss facts still follow protection; source/action lifetime is preserved on released damage. Existing zero-loss gate/charge/lifesteal and R09 suppression tests remain current.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "A12-10",
+      "group": "U01",
+      "requirement": "pool/member/receipt admission 실패·중간 fault에서 HP/잔량/사망/queue/관측 모두 rollback, 정상 retry 동일",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+        "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+        "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Shield/member/receipt and damage transaction code are unchanged. Changed cancellation errors propagate through boss and outer candidate; existing native/fault tests plus added cancellation rollback preserve queue/HP/observations.",
+      "current_independent_reasoning": "Shield/parry/control and actual-HP-loss arbitration are unchanged. Existing resource admissions and first-fault propagation remain inside the same bounded draft. Rejected staged host entry cannot expose partial battle state; current integration/fault/retry selectors exercise unchanged protection consumers.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X01",
+      "group": "U01",
+      "requirement": "공개 외부 팩의 보스가 Flow 스킬 요청→projectile/area 실제 피해→Released/Settled 전이. direction/target/오류 route·wave 진행을 함께 관찰",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+        "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+        "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Unchanged external packs still validate/describe/explain/simulate through release CLI; five original public F01 inputs now meet exact timing/damage/source oracles. Ordinary milestone and wave selectors remain current.",
+      "current_independent_reasoning": "Current external five-case CLI raw events independently re-parsed: exact marker and projectile/area HP/source counts; trace on/off event equality. Boss algorithms unchanged and full milestone/wave selectors current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X02",
+      "group": "U01",
+      "requirement": "정상 직원 지급·R07 exact 파편 장착→Hello 또는 channel→실제 기본 공격·명시 재입력/중지→종료. copy/form/source와 R06 amount/trace 일치",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+        "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+        "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+        "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 normal copy grant/form/cast, sustained reinput/channel and amount/trace inputs are unchanged; six relevant public packs plus current world selectors preserve exact source through actual consumers.",
+      "current_independent_reasoning": "Current nine-pack/45-command CLI includes R07/sustained/amount consumers; same exact copy/form/source algorithms. Selected profile retains immutable generation identity and default semantics; world selectors and observation parity current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X03",
+      "group": "U01",
+      "requirement": "2명 이상 배치·개인/공유 shield·적 공격·HP/cost/parry·잔량/종료를 GameCore 정상 명령/시간 진행으로 검증",
+      "selectors": [
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Normal two-employee world deployment/damage/cost/shield/parry/save seam remains unchanged and passed. New cancellation is boss control-local and cannot modify world roster or protection pools.",
+      "current_independent_reasoning": "Current two-employee world shield/cost/parry and persistence selectors; protection algorithms unchanged. Prepared host path is only for initially non-battle commands and uses the same GameCore operation. No alternate HP/cost authority.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X04",
+      "group": "U01",
+      "requirement": "침식이 기존 보스·새 Flow·channel/pool 존재 중 발생: 필수 death/wave 유지·선택 효과 억제·대가·host freeze·결과 확정",
+      "selectors": [
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+        "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+        "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+        "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Corrosion special death, Flow/channel/shield and host freeze were tested together on current source. New cancel neither changes capture/dispatch policy nor removes wave/death/terminal events.",
+      "current_independent_reasoning": "Current cross-feature corrosion/Flow/channel/shield/host-freeze selectors. Active-battle preparation is refused and ordinary active operations retain forced-pause/native scope. Shared preparation extraction preserves actual operation/reconciliation order.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X05",
+      "group": "U01",
+      "requirement": "결과 확정→node 완료/회복/Breakdown→SavePoint→새 Core restore. R07 identity·개화·장착/역결속·typed resource와 새 durable 상태 보존",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+        "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+        "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+        "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Current V9 export/import checksum, graph validation and explicit converters remain; ephemeral action handles are not durable. Fresh-process selectors cover results/counters/copies/resources. Future U00 save policy is excluded here.",
+      "current_independent_reasoning": "Current V9 strict/graph/content and fresh-process checkpoints retain copies/resources/Breakdown. F02 independently reproduced with existing SavePoint and stronger equipment; two failed writes preserve root and current-file bytes, retry durably publishes204→213 before battle commit. Non-battle rollback/profile tests current.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X06",
+      "group": "U01",
+      "requirement": "실제 Retreat는 진입 전 상태·RNG·자원/카운터를 복원. 재시도/같은 요청 중복/오류 후 retry에 자산/효과 복제 없음",
+      "selectors": [
+        "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+        "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "World attempt/retreat candidate and run checkpoint own recovery, independent of removed control work. Existing retry/retreat selectors plus new six-site cancellation restoration establish no duplicate assets/effects.",
+      "current_independent_reasoning": "World attempt/retreat transaction remains distinct from host persistence. F01 pre-entry tokens cannot undo active battle; duplicate-token independent probe retains snapshots/reconnect. Prepared discard/retry/direct parity, current rollback identity and non-battle profile/peak tests show no replay or duplication.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X07",
+      "group": "U01",
+      "requirement": "trace/관측 on/off, preview/explain 반복이 gameplay·amount·revision·RNG·완료 순서를 바꾸지 않음. 보관되지 않은 과거 평가를 재구성해 진짜 기록처럼 반환하지 않음",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "All five F01 event sets are exactly equal trace off/on. Nine existing CLI comparisons preserve public results and four actual amount documents with only inherited OBS001 employee preview ordering normalization; no observation-based gameplay branch added.",
+      "current_independent_reasoning": "Independent current five-case trace equality; current API/CLI and nine-pack comparisons. Preparation builds public output once before commit; commit merely replaces the staged root. No observer-based gameplay branch or reconstruction of evicted amount history introduced. Inherited OBS001 preview ordering scope retained.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X08",
+      "group": "U01",
+      "requirement": "allocation/retained/work/output/event 한도의 exact/1-short/overflow, parser 깊이/중복/잘못된 ref, 임의 순회 순서 변화·stale capability·clone 격리",
+      "selectors": [
+        "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+        "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+        "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+        "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+        "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "Opaque handle equality uses Arc occurrence identity; same ordinal foreign handle cannot match. Native/work admissions and rollback remain, new loops are charged and deterministic. Existing exact/short/overflow/stale/clone tests plus added isolation apply.",
+      "current_independent_reasoning": "Current exact/short/overflow, stale/foreign token and clone/nested first-fault selectors pass. Eight independent compiler consumers verify borrowed opaque preparation; tiny first-entry work and cancellation tests exercise staging. No mutable global profile or extra commit execution.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X09",
+      "group": "U01",
+      "requirement": "최종 기본/feature 전체 시험·check·release CLI·clippy·fmt와 PC36/R05 원자료. warning과 hard failure 구분, 20분 시험 제외",
+      "selectors": [],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "14 exact-source receipts/raw hashes verified; default/feature each1684/0/0 and check/event/release/clippy/fmt/45CLI pass. PC36 recompare passes. R05 exit101 remains solely authorized concurrent peak warning; no gate relaxed or20-minute test claimed.",
+      "current_independent_reasoning": "24 final exact-source receipts verified, including the separately preserved R05 raw101. Core1701/1701 and host77; check/event_log_checks/Clippy/fmt/release/public evidence current. PC36 source/hooks and576-row immediate non-timing parity independently checked; R05 only approved concurrent peak warning +305121 bytes; no20minute test claimed.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "X10",
+      "group": "U01",
+      "requirement": "실제 before/after와 added/deleted membership·정역 복원·currentness. 모든 필수 A08~A12 조건 완료, 미정/미구현을 별도 명시",
+      "selectors": [],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "New exact before387/after388 archives,173 records,35 references,9 artifacts all match. Independent fuzz0 forward/reverse membership+bytes restoration passed. All55 conditions now pass, original Not Complete remains historical and future roadmap is excluded.",
+      "current_independent_reasoning": "Successor exact membership1714 and before/after/records/references bytes independently restored forward/reverse with fuzz0, currentness at entry/end. All55 U01 plus33 R06/R07 rows tracked; historical targets/verdicts remain unchanged. No S2/remote/future roadmap completion asserted.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-01",
+      "group": "R06_integration",
+      "requirement": "Magnitude/Ratio/Points/ms 불일치 거부, typed operator",
+      "selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+        "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-02",
+      "group": "R06_integration",
+      "requirement": "signed four rounding oracle 일치",
+      "selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-03",
+      "group": "R06_integration",
+      "requirement": "checked i128 overflow/0 divide/clamp/narrowing exact fault site",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+        "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-04",
+      "group": "R06_integration",
+      "requirement": "i32 MIN/MIN+1/-1/0/MAX legacy unsigned_abs와 signed Heal; public negative Damage semantic 거부",
+      "selectors": [
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-05",
+      "group": "R06_integration",
+      "requirement": "release Snapshot / consume Live; current/max/missing HP와 elapsed/remaining",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+        "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-06",
+      "group": "R06_integration",
+      "requirement": "source withdrawal와 delivery 권한; missing target/time typed refusal",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+        "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+        "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-07",
+      "group": "R06_integration",
+      "requirement": "finite Sum/Max/Count와 empty, canonical permutation",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+        "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+        "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-08",
+      "group": "R06_integration",
+      "requirement": "WholeSet/tile/Side/ActualEmployee/EquippedSlot, explicit filter와 실패 보존",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-09",
+      "group": "R06_integration",
+      "requirement": "Attack 100/60/90 및 SP20; weapon/growth/ordered Permanent/copy once, overflow",
+      "selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-10",
+      "group": "R06_integration",
+      "requirement": "same definition A/B의 exact copy +15/+30 독립, invalid join 거부",
+      "selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-11",
+      "group": "R06_integration",
+      "requirement": "(base_ms,points) (1500,200)→750ms, (1001,150)→668ms, (1,200)→1ms; 0/overflow 거부; 다른 weapon timer 불변",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+        "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-12",
+      "group": "R06_integration",
+      "requirement": "정확 owner/scope resource 읽기; lookup만으로 store 무변경",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+        "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+        "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-13",
+      "group": "R06_integration",
+      "requirement": "completed effect prefix/actual HP damage, stale/future/unsettled refusal",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+        "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-14",
+      "group": "R06_integration",
+      "requirement": "실패 B 미노출; prior A/ordinal+accepted state 보존, retry once",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-15",
+      "group": "R06_integration",
+      "requirement": "raw V7 checksum 원본 불변; child process SP35/growth10/enhance1 fingerprint 동일, tamper 거부",
+      "selectors": [
+        "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-16",
+      "group": "R06_integration",
+      "requirement": "canonical roster ordering; SP/copy 변경 input hash 변동, Certified weight 그대로",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+        "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-17",
+      "group": "R06_integration",
+      "requirement": "runtime 기록과 preview/explain 동일; real 2^100+1 decimal/order; wrong identity 거부",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-18",
+      "group": "R06_integration",
+      "requirement": "default RON→3 deliveries×literal/Snapshot/Live→actual damage prefix; CLI independently 실행",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-19",
+      "group": "R06_integration",
+      "requirement": "limit/exact/short/overflow/cancel preallocation; query accepted state/index/receipt 무변경",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+        "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-20",
+      "group": "R06_integration",
+      "requirement": "finite PC36/R05 + 새 observation workload; cost/retained/clone separately, raw failures preserved",
+      "selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+        "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+        "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "IVA-CAVER-21",
+      "group": "R06_integration",
+      "requirement": "default 전체/feature 전체/check/release/clippy/fmt와 official package/consume; 독립 감사 pending",
+      "selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R06 typed compiler/evaluator, exact copy/resource bindings, checked cadence/stat composition and immutable amount replay retain their original requirements. R08-R12 adds Flow/sustained/damage/save consumers but does not substitute a second evaluator or implicit source. Cancellation removes only control owners; delivery tickets and captured expression/source/resource contexts remain valid until close_delivery. Existing current public Snapshot/Live, actual HP-loss, source-removal and native-budget selectors substantiate each row; PC36 and public CLI confirm integration.",
+      "current_independent_reasoning": "Typed compiler/evaluator, original legal ExprLimits range, exact copy/resource bindings, Snapshot/Live timing, stat/cadence and immutable amount replay remain the same consumers. S1 supplies immutable profile identity/limits; default numbers are unchanged. Current selectors, external R06 CLI/API, PC36 non-timing/allocation/native parity and unchanged shared-body preparation substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F01",
+      "group": "R07_F01_F12",
+      "requirement": "Actual fragment-copy grant, owned identity and forms",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F02",
+      "group": "R07_F01_F12",
+      "requirement": "Independent same-definition copies, transfer, occupied/missing rollback",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F03",
+      "group": "R07_F01_F12",
+      "requirement": "Form compatibility, transfer, fingerprint and retained exact source",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F04",
+      "group": "R07_F01_F12",
+      "requirement": "Public forms/recipes, costs/locked/insufficient/no-op and queries",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F05",
+      "group": "R07_F01_F12",
+      "requirement": "Confirmed selected-copy dismantle and atomic failed yield",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F06",
+      "group": "R07_F01_F12",
+      "requirement": "Death releases exact copy, preserves forms and is idempotent",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F07",
+      "group": "R07_F01_F12",
+      "requirement": "Public RON recipes/forms/source/resources in a fresh process",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F08",
+      "group": "R07_F01_F12",
+      "requirement": "Run ownership follows exact copy through transfer/dismantle and retained source",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+        "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F09",
+      "group": "R07_F01_F12",
+      "requirement": "Current V9 exact envelope/checksum/graph/content validation before mutation",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::world::tests::checkpoint_validation::current_v9_checkpoint_document_has_exact_envelope_and_checksum",
+        "game::world::tests::checkpoint_validation::current_v9_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+        "game::world::tests::checkpoint_validation::current_v9_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::current_v9_rejects_each_content_authority_mismatch_even_with_valid_checksum"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F10",
+      "group": "R07_F01_F12",
+      "requirement": "Original V7 bytes explicit conversion without overwrite; multiple awakened copies",
+      "selectors": [
+        "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F11",
+      "group": "R07_F01_F12",
+      "requirement": "Form query/cost/locked/insufficient/no-op consistency",
+      "selectors": [
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    },
+    {
+      "id": "F12",
+      "group": "R07_F01_F12",
+      "requirement": "Cardinality/duplicate keys/UUID exhaustion/owned/native budgets/cancellation/retry",
+      "selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+        "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry"
+      ],
+      "current_receipts": [
+        "s1f02_all_default_001",
+        "s1f02_all_feature_001"
+      ],
+      "prior_independent_reasoning": "R07 copy UUID/form/recipe/binding/grant/dismantle and source capsule authority remain. R09 adds Breakdown and V9 checkpoint through explicit approved migration while original V7 bytes and explicit V7/V8 converters remain. Cancellation does not mutate copy or durable inventory; released source Arc and resource delivery scopes are preserved. Current normal public pack, world rollback, exact fragment lease and fresh-process checkpoint selectors substantiate each row.",
+      "current_independent_reasoning": "Copy/form grant, transfer, dismantle/death/retreat ownership, strict V9 save and explicit original-byte-preserving converters are unchanged. S1 adds current-host resource admission before restore, not a new schema/migration/fallback. Same draft executes and validates once; new host entry publishes changed checkpoint before root commit. Current copy/source/fresh-process/save/budget selectors and public CLI substantiate current applicability.",
+      "verdict": "PASS",
+      "evidence_mode": "current raw receipt/selector verification plus independent semantic delta review; named audit probes are newly executed"
+    }
+  ],
+  "count": 88,
+  "named_selector_rows": 86,
+  "non_selector_rows": [
+    "X09",
+    "X10"
+  ],
+  "passed": 88,
+  "failed": 0,
+  "r06_acceptances": [
+    {
+      "acceptance": "PER-CAVER-E01-REVIEWED-003[1]",
+      "expected": "서로 다른 unit의 Add/Sum/Max와 unit을 잃는 Multiply/Ratio가 publication 전에 거부된다.",
+      "iva": [
+        "IVA-CAVER-01"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E01-REVIEWED-003[2]",
+      "expected": "0나눗셈·checked overflow와 rounding 미지정 lossy division이 typed error이며 gameplay state를 변경하지 않는다.",
+      "iva": [
+        "IVA-CAVER-02",
+        "IVA-CAVER-03"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E01-REVIEWED-003[3]",
+      "expected": "같은 입력·rounding·compiled generation은 같은 값을 내고 외부 code eval을 사용하지 않는다.",
+      "iva": [
+        "IVA-CAVER-02",
+        "IVA-CAVER-19"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E02-REVIEWED-003[1]",
+      "expected": "release 뒤 source stat을 바꿔도 Snapshot 식의 전달 결과는 변하지 않고, 명시적 Live 식만 소비 시점 값을 읽는다.",
+      "iva": [
+        "IVA-CAVER-05",
+        "IVA-CAVER-06"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E02-REVIEWED-003[2]",
+      "expected": "snapshot과 live가 같은 authored field에서 모호하게 혼합되거나 필요한 context가 없으면 publication 또는 실행이 명시적으로 거부된다.",
+      "iva": [
+        "IVA-CAVER-06",
+        "IVA-CAVER-17"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E02-REVIEWED-003[3]",
+      "expected": "snapshot 캡처와 live read 모두 exact action/source-copy/target context를 보존한다.",
+      "iva": [
+        "IVA-CAVER-05",
+        "IVA-CAVER-06",
+        "IVA-CAVER-12"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[1]",
+      "expected": "Max(5,3,2)=5이고 Sum(5,3,2)=10이며 Max(empty)는 error, Count/Sum(empty)는 0이다.",
+      "iva": [
+        "IVA-CAVER-07"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[2]",
+      "expected": "서로 다른 owner/target/tile unit을 묵시적으로 합치지 않고 explicit grouping이 없으면 거부한다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[3]",
+      "expected": "같은 member set은 입력 순서와 hash iteration에 무관하게 같은 결과를 내며 budget 초과는 부분 적용하지 않는다.",
+      "iva": [
+        "IVA-CAVER-07",
+        "IVA-CAVER-08",
+        "IVA-CAVER-19"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[4]",
+      "expected": "ResolvedTargets는 진영·실제 직원·명시적 착용 슬롯의 실제 장비 사본별 grouping을 지원한다. 직원 grouping은 실제 Employee만 입력으로 허용하며 소환물을 소환자 직원에게 자동 합산하지 않는다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[5]",
+      "expected": "적용 불가능한 member는 제작자의 명시적 조건으로만 집계 입력에서 제외한다. 조건 없이 섞으면 validation 또는 실행 typed error이며 원 타격 대상 변경·부분 적용·silent skip이 없다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[6]",
+      "expected": "유닛의 지정 슬롯 actual equipment copy 관계와 효과·상태의 source equipment copy 관계를 구별한다. definition/첫 장비/대상 장비를 출처 사본으로 대신하지 않는다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[7]",
+      "expected": "R06은 이미 resolve된 유닛 집계와 명시적 필터까지 완료한다. 효과·상태 집합의 출처별 조회·집계는 R11 조회 기반 및 최초 실제 소비자/R17 통합에 배정하고 R06에서 지원 완료로 표시하지 않는다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E04-REVIEWED-003[1]",
+      "expected": "employee/weapon/modifier 입력으로 final Attack 100이 되면 weapon 40을 다시 더하지 않으며 각 입력을 제거했을 때 그 입력만 빠진다.",
+      "iva": [
+        "IVA-CAVER-09"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E04-REVIEWED-003[2]",
+      "expected": "SpellPower만 바꾸면 SpellPower 참조 식만 변하고 Physical/Magic damage type 자체나 Attack 참조 식은 바뀌지 않는다.",
+      "iva": [
+        "IVA-CAVER-10"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E04-REVIEWED-003[3]",
+      "expected": "같은 definition의 서로 다른 owned equipment enhancement가 definition UUID 합산으로 중복 적용되지 않고 actual copy binding을 따른다.",
+      "iva": [
+        "IVA-CAVER-09",
+        "IVA-CAVER-10"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E05-REVIEWED-003[1]",
+      "expected": "동일 resource definition이라도 owner/lifetime/lease가 다른 값은 혼합되지 않고 식 평가만으로 balance/revision이 변하지 않는다.",
+      "iva": [
+        "IVA-CAVER-12"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E05-REVIEWED-003[2]",
+      "expected": "다른 attempt·stale occurrence·not settled result 참조가 거부되며 0이나 마지막 값으로 fallback하지 않는다.",
+      "iva": [
+        "IVA-CAVER-13"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E05-REVIEWED-003[3]",
+      "expected": "current/max/missing HP와 elapsed/remaining time이 구분되고 source/target context 불일치가 명시적으로 진단된다.",
+      "iva": [
+        "IVA-CAVER-05",
+        "IVA-CAVER-06",
+        "IVA-CAVER-12"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E06-REVIEWED-003[1]",
+      "expected": "동일 base interval과 points는 scale_attack_interval_ms와 같은 interval을 만들며 0 points/base interval은 publication 전에 거부된다.",
+      "iva": [
+        "IVA-CAVER-11"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E06-REVIEWED-003[2]",
+      "expected": "AttackSpeedPoints 변경은 basic attack interval만 바꾸고 spell/area/projectile timer에는 영향이 없다.",
+      "iva": [
+        "IVA-CAVER-11"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E06-REVIEWED-003[3]",
+      "expected": "point와 millisecond unit은 식의 compatible unit으로 오인되지 않는다.",
+      "iva": [
+        "IVA-CAVER-01",
+        "IVA-CAVER-11"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E07-REVIEWED-003[1]",
+      "expected": "runtime·preview·explain이 같은 expression/source fingerprint에서 같은 값과 source trace를 내고 별도 계산식을 유지하지 않는다.",
+      "iva": [
+        "IVA-CAVER-17"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E07-REVIEWED-003[2]",
+      "expected": "저장 round-trip 뒤 owned enhancement/growth 입력과 final stat이 유지되며 transient action/result handle을 유효한 persistent ref처럼 복원하지 않는다.",
+      "iva": [
+        "IVA-CAVER-15"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E07-REVIEWED-003[3]",
+      "expected": "effective input 변경은 관련 cache/fingerprint를 바꾸지만 기존 Certified final weight나 공식 model을 새로 승인하지 않는다.",
+      "iva": [
+        "IVA-CAVER-10",
+        "IVA-CAVER-16"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E08-REVIEWED-003[1]",
+      "expected": "public RON의 positive fixture가 실제 runtime consumer까지 실행되고 unknown/unsupported/unit/depth/node/cardinality/overflow fixtures가 typed error로 거부된다.",
+      "iva": [
+        "IVA-CAVER-18",
+        "IVA-CAVER-19"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E08-REVIEWED-003[2]",
+      "expected": "budget 한계 바로 아래는 성공하고 한계 초과는 publication 또는 action mutation 전에 실패하며 safety limit가 공식 balance 수치로 표시되지 않는다.",
+      "iva": [
+        "IVA-CAVER-19",
+        "IVA-CAVER-20"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E08-REVIEWED-003[3]",
+      "expected": "0 tests·skip·fixture-only/private builder 또는 빈 executor가 supported/complete로 보고되지 않는다.",
+      "iva": [
+        "IVA-CAVER-18",
+        "IVA-CAVER-21"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E09-REVIEWED-003[1]",
+      "expected": "기존 literal pack/save가 동일 결과로 로드·실행되고 unsupported new expression은 명시적 진단을 내며 silent fallback하지 않는다.",
+      "iva": [
+        "IVA-CAVER-04",
+        "IVA-CAVER-15",
+        "IVA-CAVER-18"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E09-REVIEWED-003[2]",
+      "expected": "T06의 typed error·snapshot·single composition과 R06 해당 T18/T27 source-copy/cache 경계가 actual nonzero tests와 fresh audit로 추적된다.",
+      "iva": [
+        "IVA-CAVER-21"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    },
+    {
+      "acceptance": "PER-CAVER-E09-REVIEWED-003[3]",
+      "expected": "R07/R19 기능과 미정 Replace conflict/공식 weight는 R06 완료로 표시되지 않는다.",
+      "iva": [
+        "IVA-CAVER-10",
+        "IVA-CAVER-16",
+        "IVA-CAVER-21"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending",
+      "current_disposition": "PASS: original acceptance preserved; all referenced IVA rows pass current integration review"
+    }
+  ],
+  "r06_integration_verdict": "current applicability restored / High",
+  "r07_integration_verdict": "current applicability restored / High",
+  "u01_verdict": "current applicability restored / High",
+  "historical_verdicts": "Unchanged; this is a new current integration assessment, not rewriting old digests or verdicts.",
+  "limitations": [
+    "OBS001 retained only for existing employee-preview ordering",
+    "R05 concurrent peak warning only; raw101 retained",
+    "No later roadmap feature, S2, deployed Unity or remote-service completion"
+  ]
+}

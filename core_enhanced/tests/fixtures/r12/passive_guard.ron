@@ -1,0 +1,12 @@
+SkillDatabase(skills: [
+ SkillDef(id: "r08_strike", name: "Passive guard parry", kind: Targeted, focus_time_ms: 0,
+ use_lifetime: ActionAndEffects(effects: [(step: "guard", effect: "parry")]),
+ cast_targeting: Explicit(selection: self, target: SelfUnit, reach: pattern, air_capable: true),
+ steps: [SkillStepDef(id: "guard", delay_ms: 0, target: SelfUnit, delivery: Instant,
+ effects: [(id: "parry", op: Sustained(definition: Parry(duration_ms: 200, window_ms: 30, invulnerable_ms: 40, miss_recovery_ms: 20, reduction_percent: 0, counter_skill: "r12_counter")))])]),
+ SkillDef(id: "r12_counter", name: "Guard counter", kind: Targeted, focus_time_ms: 0,
+ use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ steps: [SkillStepDef(id: "counter", delay_ms: 0, target: CastTarget, delivery: Instant,
+ effects: [(id: "hit", op: Damage(amount: 100, damage_type: True))])])
+])

@@ -1,0 +1,64 @@
+{
+  "kind": "P2G-10 limited decision-support reading, not Code Review Binding",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "related_dirty": "BASELINE_GIT_STATUS_001.txt; all code changes predate this request",
+  "candidates": "C-CARL-01 owner identity; C-CARL-05 equipment preservation; C-CARL-06 timeline restore; C-CARL-07 persistence compatibility",
+  "purpose_and_stop": "Determine whether identity/preservation/rollback/latest-format meaning follows existing policy; stop after those facts. Full implementation delta and consumer coverage belong to P2G-20.",
+  "sources": [
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+      "sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e",
+      "selector": "78–245,296–395: actual item UUID binding, unequip preserves owned copy, dismantle removes it"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/world/shop.rs",
+      "sha256": "50648b00e8ae3f7be61d525140334470b14747df526f9fa037f8a862af6a4982",
+      "selector": "613–665: equipment sale removes exact item_uuid"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/world/facility.rs",
+      "sha256": "35ce3dfe8e206ded40dd0ef6614fab0c41716ebafdadbadc808dc5819c14e4c6",
+      "selector": "292–330: enhancement operates on existing owned equipment"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "60793d2dcfac5832aa28ddf9a940efc65823749462dc983204d62dd8ece6de5f",
+      "selector": "380–475,542–603: checkpoint and battle entry own inventory/roster/run roots and restore them"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "5452ebf3c98b40f67b24df4f5e3afaf1046e86dbc623689472c440eb55ec32ea",
+      "selector": "2870–2895: retreat restores entry snapshot"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "4b90d0697662a9d3ea93707c3dbe0fe4c2f9ff1085b3790a97e6733f18a3fd4d",
+      "selector": "29–49,150–171: current V6-only checkpoint reader"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+      "sha256": "f6f0bb7dbd46740540311aeb225644f082289741d67fca4efe6841f2f675507c",
+      "selector": "296–383: current resource owner/CostFact/ResourceChangeFact"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+      "selector": "1100–1115: result attempts and retreat inventory/resource rollback"
+    },
+    {
+      "repository": "/mnt/f/work/simulator",
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_10_POLICY_001.json",
+      "sha256": "ecca36c5ba809c858131c63b7097ccc9396fb171c03d209df44f1cb443b02507",
+      "selector": "DR-CAPG-E04-001: latest-only content/contract-bound save, refuse mismatch without deleting file"
+    }
+  ],
+  "unverified": "Full producer/consumer implementation feasibility, tests and all six lifetime runtime bindings; no new game command/build/probe executed."
+}

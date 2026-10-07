@@ -1,0 +1,235 @@
+{
+  "stage": "P2G-30",
+  "status": "complete",
+  "Final Policy Freeze Ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CRNV-001",
+    "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+  },
+  "Freeze Membership Set": [
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-01-REVIEWED-001",
+        "Content Digest": "sha256:22d80609c8c44180da38752dfb33cd68c050e78901c25cc6f3f2ecb4bb9ea26b"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-02-REVIEWED-001",
+        "Content Digest": "sha256:7285ac2f4d5c3366513f2069df9364ef15b8b6d78bec4ee997dbb37537deeef1"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-03-REVIEWED-001",
+        "Content Digest": "sha256:8cd9003481d8365d7c67dba5c9a96d68b5af6b9fc5988e789c603361ae1ddf5a"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-04-REVIEWED-001",
+        "Content Digest": "sha256:f3470096300b9486417349a3fbae2fdc94b079ec5fdef44a736bea046230f5cc"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-05-REVIEWED-001",
+        "Content Digest": "sha256:5c1ce43660b8e8c590110de7372a8fa8194ceb3a411e7406a19b52fea36b8735"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-06-REVIEWED-001",
+        "Content Digest": "sha256:4267f9fee98aca3c3a39a2e15f2023d13ccba74595a5e8e0de1e6d8881535bac"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-07-REVIEWED-001",
+        "Content Digest": "sha256:4f7a53f0a0d7bb3dc404a40d5cc5069040eb68963925a6fd901efa9fe91ec463"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-08-REVIEWED-001",
+        "Content Digest": "sha256:1ad48f71dd251561cc285641586cdb2a5e9dbd1d840933a0d0316e31aa541c17"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-09-REVIEWED-001",
+        "Content Digest": "sha256:86ca8ffbb3fa7fe39bfeac705ca0d6393112d8e68d79d006b17f5967d76ad1aa"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-10-REVIEWED-001",
+        "Content Digest": "sha256:ec8f7df16e7b80f70a8579c80afc591008561ea1ca772cdbe53bc482851a40fb"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-11-REVIEWED-001",
+        "Content Digest": "sha256:b70f9e29aacb0251761cdebde81cc7be2ae1c0b6739194f45f74b78ae19f40ed"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-12-REVIEWED-001",
+        "Content Digest": "sha256:e5252b015ad8d664d749fcf4e3afd5551df95fb9b4568e698f171d4d8e855cde"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-13-REVIEWED-001",
+        "Content Digest": "sha256:472e7c4071cfeafe98d19c29b2ff43fa3fa575aaacf633c51cd56f8b18b1766c"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-14-REVIEWED-001",
+        "Content Digest": "sha256:b21bf403fac7611f6021f0ef160ed65c604d623cd2e66cc78b6e263e9d46fa8a"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-15-REVIEWED-001",
+        "Content Digest": "sha256:97beb4802100fc9bbf3ece90f4439b5ad5e8a1b18c355b5259208ba45fc7c8e4"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRNV-001",
+        "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRNV-16-REVIEWED-001",
+        "Content Digest": "sha256:aa8baf38c7708ed7038217a0ddc29d11d66146d8ea6b9004bb34d37b5c132682"
+      }
+    }
+  ],
+  "P2G-30 Resolution Record Ref Set": [],
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRNV-003",
+      "Content Digest": "sha256:faea8329062a2e3f5c42882206195fd0feb6ee4971d44905d2005b682539780e"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRNV-001",
+      "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+    },
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "All Applicable Change Obligations Resolved": true,
+  "checks": {
+    "exact16_members": true,
+    "acceptance_projection_exact": true,
+    "binding_coverage_complete": true,
+    "121_sources_current": true,
+    "no_open_question": true
+  },
+  "Current Planning Freeze Selection": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CRNV-001",
+    "Content Digest": "sha256:a42317f7b57d09002d2fd72abf1a2a364e596368c7a1cb3bc5b3e5a5c1e90a37"
+  },
+  "next": "P2G-40"
+}

@@ -1,3 +1,4 @@
+use crate::authoring::control;
 use uuid::Uuid;
 
 use crate::game::{
@@ -11,10 +12,14 @@ use crate::game::{
             types::{AreaRuntime, SkillImpactContext, SkillStepResult},
             BattleCore,
         },
+        damage::{
+            CombatRollIdentity, CombatRollKind, DamageModifiers, DamageSource,
+            DamageSourceSnapshot, DamageType,
+        },
         enums::BattleEvent,
         event_log::{BattleLogEvent, BattleSkillAreaShape, SkillCastTarget},
         ids::UnitInstanceId,
-        tile_range::{FacingDirection, TileRangePattern},
+        tile_range::{FacingDirection, TileRangePattern, TileRangePolicy, TileReachQuery},
     },
     determinism,
     enums::Side,
@@ -28,6 +33,68 @@ fn event_log_point(position: WorldVec2) -> EventLogVec2 {
 }
 
 impl BattleCore {
+    pub(in crate::game::battle::core) fn charge_authoring_tile_pattern(
+        pattern: &TileRangePattern,
+        projections: u64,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        if !control::is_active() {
+            return Ok(());
+        }
+        let mut cells = 0usize;
+        for row in &pattern.rows {
+            control::admit(
+                control::Resource::GeometryCells,
+                cells,
+                row.len(),
+                "tile_pattern_cells",
+            )?;
+            cells += row.len();
+            control::charge(
+                (row.len() as u64 + 1)
+                    .saturating_mul(projections)
+                    .saturating_mul(3),
+                "tile_pattern_scan",
+            )?;
+        }
+        // Projection validates, locates the anchor, collects cells and sorts.
+        let comparisons = u64::from(usize::BITS - cells.leading_zeros());
+        control::charge(
+            (cells as u64)
+                .saturating_mul(comparisons)
+                .saturating_mul(projections),
+            "tile_pattern_sort",
+        )
+    }
+
+    fn area_tick_source_snapshot(
+        &self,
+        runtime: &AreaRuntime,
+        time_ms: u64,
+    ) -> Result<DamageSourceSnapshot, crate::game::behavior::GameError> {
+        const AREA_TICK_DAMAGE_NS: u64 = 0x4152_4541_544B_444Du64; // "AREATKDM"
+
+        let mut high = [0u8; 8];
+        let mut low = [0u8; 8];
+        high.copy_from_slice(&runtime.area_id.as_bytes()[..8]);
+        low.copy_from_slice(&runtime.area_id.as_bytes()[8..]);
+        let area_tag = u64::from_be_bytes(high) ^ u64::from_be_bytes(low).rotate_left(29);
+        let source_instance_id = determinism::uuid_v4_from_seed(
+            self.seed ^ area_tag ^ time_ms.rotate_left(17),
+            AREA_TICK_DAMAGE_NS,
+            time_ms,
+        );
+
+        let mut snapshot = runtime.source_snapshot.try_clone_fact_source()?;
+        snapshot.committed_at_ms = time_ms;
+        snapshot.crit_roll_percent = None;
+        snapshot.crit_roll_identity = CombatRollIdentity::new(
+            CombatRollKind::SkillCrit,
+            Some(runtime.caster_instance_id),
+            source_instance_id,
+        );
+        Ok(snapshot)
+    }
+
     pub(in crate::game::battle::core) fn tile_area_projection_facing(
         &self,
         caster_instance_id: UnitInstanceId,
@@ -37,23 +104,29 @@ impl BattleCore {
             .get(&caster_instance_id)
             .and_then(|unit| unit.facing_direction)
             .or_else(|| {
+                Self::charge_authoring_tile_pattern(footprint, 4).ok()?;
                 footprint
                     .is_rotation_invariant()
                     .then_some(FacingDirection::Up)
             })
     }
 
-    fn valid_tile_area_tiles(
+    pub(in crate::game::battle::core) fn valid_tile_area_tiles(
         &self,
         tile_range: &TileRangePattern,
         anchor_tile: Position,
         facing: FacingDirection,
     ) -> Option<Vec<Position>> {
-        let affected_tiles = tile_range.affected_tiles(anchor_tile, facing).ok()?;
-        let valid_tiles = affected_tiles
-            .into_iter()
-            .filter(|tile| self.battlefield.is_valid_tile(*tile))
-            .collect::<Vec<_>>();
+        Self::charge_authoring_tile_pattern(tile_range, 1).ok()?;
+        let query = TileReachQuery::try_new(
+            &self.battlefield,
+            TileRangePolicy::Pattern,
+            Some(tile_range),
+            Some(anchor_tile),
+            Some(facing),
+        )
+        .ok()?;
+        let valid_tiles = query.materialize_valid_cells();
         (!valid_tiles.is_empty()).then_some(valid_tiles)
     }
 
@@ -234,6 +307,23 @@ impl BattleCore {
         hit_targets: SkillHitTargetFilter,
         include_caster: bool,
     ) -> Vec<UnitInstanceId> {
+        if self
+            .admit_authoring_runtime_growth(0, "area_target_state")
+            .is_err()
+            || control::charge(
+                (self.units.len() as u64).saturating_mul(affected_tiles.len() as u64 + 1),
+                "area_target_scan",
+            )
+            .is_err()
+            || control::charge(
+                (self.units.len() as u64)
+                    .saturating_mul(u64::from(usize::BITS - self.units.len().leading_zeros())),
+                "area_target_sort",
+            )
+            .is_err()
+        {
+            return Vec::new();
+        }
         let mut targets: Vec<UnitInstanceId> = self
             .units
             .values()
@@ -302,7 +392,7 @@ impl BattleCore {
         ))
     }
 
-    fn persistent_tile_area_geometry_at(
+    pub(in crate::game::battle::core) fn persistent_tile_area_geometry_at(
         &self,
         time_ms: u64,
         runtime: &AreaRuntime,
@@ -417,7 +507,7 @@ impl BattleCore {
         step_target: Option<SkillCastTarget>,
         tile_range: TileRangePattern,
         area: SkillTileAreaDeliveryDef,
-    ) -> bool {
+    ) -> Result<bool, crate::game::behavior::GameError> {
         area.validate_runtime_contract();
         let Some((_caster_owner, origin, center, direction_hint, anchor_tile)) = self
             .resolve_tile_area_geometry(
@@ -429,14 +519,32 @@ impl BattleCore {
                 &area,
             )
         else {
-            return false;
+            return Ok(false);
         };
         let Some(facing) = self.tile_area_projection_facing(caster_instance_id, &tile_range) else {
-            return false;
+            return Ok(false);
         };
+        let Some(mut source_snapshot) = self.damage_source_snapshot_template_for_unit(
+            caster_instance_id,
+            DamageSource::Ability,
+            DamageType::default(),
+            0,
+            DamageModifiers::default(),
+            0,
+            time_ms,
+            false,
+        ) else {
+            return Ok(false);
+        };
+        source_snapshot.skill_cast_source = self
+            .active_skill_casts
+            .get(&cast_seq)
+            .and_then(|cast| cast.execution_source.clone());
+        source_snapshot.fact_source.cast = source_snapshot.skill_cast_source.clone();
+
         let Some(affected_tiles) = self.valid_tile_area_tiles(&tile_range, anchor_tile, facing)
         else {
-            return false;
+            return Ok(false);
         };
         let targets = self.collect_tile_area_targets_at(
             time_ms,
@@ -451,11 +559,22 @@ impl BattleCore {
             step,
             area.hit_targets,
             &targets,
-        ) && !self.skill_step_has_useful_hostile_target(caster_instance_id, step, &targets)
+        ) && !self
+            .effective_footprint_usefulness(
+                time_ms,
+                step_index,
+                caster_instance_id,
+                step,
+                step_target,
+            )?
+            .unwrap_or_else(|| {
+                self.skill_step_has_useful_hostile_target(caster_instance_id, step, &targets)
+            })
         {
-            return false;
+            return Ok(false);
         }
 
+        self.admit_authoring_runtime_growth(2, "persistent_area_spawn")?;
         let area_id = self.allocate_area_instance_id(cast_seq, caster_instance_id, time_ms);
         let area_declared_seq = self.record_skill_tile_area_declared(
             time_ms,
@@ -474,6 +593,16 @@ impl BattleCore {
         let next_tick_ms = area
             .tick_interval_ms
             .map(|interval| time_ms.saturating_add(u64::from(interval)));
+        source_snapshot.fact_source = self.reserve_finite_source(source_snapshot.fact_source)?;
+        source_snapshot.value_expr_capture = self.build_value_expr_delivery_capture(
+            step,
+            &source_snapshot.fact_source,
+            None,
+            time_ms,
+            Some(expires_at_ms),
+        )?;
+        let tick_source = source_snapshot.fact_source.clone();
+        source_snapshot.admit_fact_owner()?;
         self.active_areas.insert(
             area_id,
             AreaRuntime {
@@ -484,12 +613,14 @@ impl BattleCore {
                 step_id: step_id.clone(),
                 caster_instance_id,
                 caster_owner: _caster_owner,
+                source_snapshot,
                 anchor: area.anchor,
                 tile_origin: area.tile_origin,
                 tracking: area.tracking,
                 origin,
                 center,
                 direction_hint,
+                facing,
                 tile_range,
                 tile_anchor: anchor_tile,
                 hit_targets: area.hit_targets,
@@ -503,6 +634,7 @@ impl BattleCore {
                 step_target,
                 hit_unit_ids: Vec::new(),
                 previous_tick_unit_ids: Vec::new(),
+                effective_history: None,
             },
         );
         if let Some(cast) = self.active_skill_casts.get_mut(&cast_seq) {
@@ -522,20 +654,25 @@ impl BattleCore {
                 spawned_area_id: Some(area_id),
             },
         );
+        control::poll("registered_area_context")?;
 
         let cause = crate::game::battle::event_log::BattleEventCause::Parent {
             seq: area_declared_seq,
         };
-        self.event_queue.push(BattleEvent::SkillAreaTick {
-            time_ms,
-            area_id,
-            cast_seq,
-            step_index,
-            skill_id: skill_id.clone(),
-            step_id: step_id.clone(),
-            center,
-            cause,
-        });
+        self.enqueue_carrier_completion(
+            BattleEvent::SkillAreaTick {
+                time_ms,
+                area_id,
+                cast_seq,
+                step_index,
+                skill_id: skill_id.clone(),
+                step_id: step_id.clone(),
+                center,
+                cause,
+            },
+            None,
+            tick_source,
+        )?;
         self.event_queue.push(BattleEvent::SkillAreaExpire {
             time_ms: expires_at_ms,
             area_id,
@@ -545,32 +682,48 @@ impl BattleCore {
             step_id,
             cause,
         });
-        true
+        control::poll("area_registration_complete")?;
+        Ok(true)
     }
 
     pub(in crate::game::battle::core) fn apply_skill_area_tick(
         &mut self,
         time_ms: u64,
         area_id: Uuid,
-    ) {
-        let Some(runtime) = self.active_areas.get(&area_id).cloned() else {
-            return;
+    ) -> Result<(), crate::game::behavior::GameError> {
+        let Some(runtime) = self.active_areas.get(&area_id) else {
+            return Ok(());
         };
+        Self::charge_authoring_tile_pattern(&runtime.tile_range, 1)?;
+        control::charge(
+            runtime.hit_unit_ids.len() as u64 + runtime.previous_tick_unit_ids.len() as u64 + 1,
+            "area_runtime_copy",
+        )?;
+        self.admit_authoring_runtime_growth(0, "area_tick_state")?;
+        runtime.source_snapshot.admit_fact_owner()?;
+        runtime.admit_effective_history_copy()?;
+        let runtime = runtime.clone();
 
         let Some((origin, center, direction_hint, anchor_tile)) =
             self.persistent_tile_area_geometry_at(time_ms, &runtime)
         else {
-            return;
+            return Ok(());
         };
-        let Some(facing) =
-            self.tile_area_projection_facing(runtime.caster_instance_id, &runtime.tile_range)
-        else {
-            return;
+        let facing = match runtime.tracking {
+            SkillAreaTracking::GroundFixed => runtime.facing,
+            SkillAreaTracking::FollowCaster | SkillAreaTracking::FollowTarget => {
+                let Some(facing) = self
+                    .tile_area_projection_facing(runtime.caster_instance_id, &runtime.tile_range)
+                else {
+                    return Ok(());
+                };
+                facing
+            }
         };
         let Some(affected_tiles) =
             self.valid_tile_area_tiles(&runtime.tile_range, anchor_tile, facing)
         else {
-            return;
+            return Ok(());
         };
         let raw_targets = self.collect_tile_area_targets_at(
             time_ms,
@@ -580,6 +733,15 @@ impl BattleCore {
             runtime.hit_targets,
             runtime.include_caster,
         );
+        let history = match runtime.tick_policy {
+            SkillAreaTickPolicy::EveryTick => 0,
+            SkillAreaTickPolicy::OncePerArea => runtime.hit_unit_ids.len(),
+            SkillAreaTickPolicy::OnEnter => runtime.previous_tick_unit_ids.len(),
+        };
+        control::charge(
+            (raw_targets.len() as u64).saturating_mul(history as u64 + 1),
+            "area_tick_policy_scan",
+        )?;
         let targets: Vec<UnitInstanceId> = match runtime.tick_policy {
             SkillAreaTickPolicy::EveryTick => raw_targets.clone(),
             SkillAreaTickPolicy::OncePerArea => raw_targets
@@ -594,39 +756,36 @@ impl BattleCore {
                 .collect(),
         };
 
-        let Some(skill) = self
-            .game_data
-            .skill_data
-            .get_by_id(&runtime.skill_id)
-            .cloned()
+        let Some(skill) =
+            self.cloned_skill_for_source(&runtime.skill_id, &runtime.source_snapshot.fact_source)?
         else {
-            return;
+            return Ok(());
         };
         let Some(step) = Self::resolve_skill_step(&skill, runtime.step_index, &runtime.step_id)
         else {
-            return;
+            return Ok(());
         };
-        let (commands, result) = self.build_skill_step_commands(
-            runtime.caster_instance_id,
-            step,
-            &targets,
-            time_ms,
-            None,
-        );
-        let mut resolved_result = result;
-        if !commands.is_empty() {
-            let summary = self.process_commands(commands, time_ms);
-            resolved_result.actual_damage_target_count = resolved_result
-                .actual_damage_target_count
-                .saturating_add(summary.actual_damage_target_count);
+        let mut source_snapshot = self.area_tick_source_snapshot(&runtime, time_ms)?;
+        if self.runtime_fact_source.action == source_snapshot.fact_source.action
+            && self.runtime_fact_source.delivery.is_some()
+            && self.runtime_fact_source.delivery != source_snapshot.fact_source.delivery
+        {
+            if let Some(capture) = &source_snapshot.value_expr_capture {
+                source_snapshot.value_expr_capture =
+                    Some(capture.rebind_consumption_source(&self.runtime_fact_source)?);
+            }
+            source_snapshot.fact_source = self.runtime_fact_source.clone();
         }
-        let signal_result = self.record_skill_step_live_signals(
+        let resolved_result = self.execute_ordered_skill_effects(
             runtime.caster_instance_id,
             &skill.id,
             step,
             &targets,
-        );
-        resolved_result.merge(&signal_result);
+            time_ms,
+            source_snapshot.committed_at_ms,
+            Some(&source_snapshot),
+            source_snapshot.skill_cast_source.clone(),
+        )?;
         self.update_skill_cast_impact_context(
             runtime.cast_seq,
             runtime.step_index,
@@ -647,6 +806,40 @@ impl BattleCore {
             false,
             time_ms,
         );
+
+        control::poll("area_step_resolved")?;
+        if let Some(active) = self.active_areas.get(&area_id) {
+            let change = match active.tick_policy {
+                SkillAreaTickPolicy::EveryTick => (0, 0),
+                SkillAreaTickPolicy::OncePerArea => {
+                    control::charge(
+                        (targets.len() as u64).saturating_mul(active.hit_unit_ids.len() as u64 + 1),
+                        "area_hit_history_scan",
+                    )?;
+                    (
+                        0,
+                        targets
+                            .iter()
+                            .filter(|target| !active.hit_unit_ids.contains(target))
+                            .count(),
+                    )
+                }
+                SkillAreaTickPolicy::OnEnter => {
+                    (active.previous_tick_unit_ids.len(), raw_targets.len())
+                }
+            };
+            let sort_size = active
+                .hit_unit_ids
+                .len()
+                .saturating_add(targets.len())
+                .max(raw_targets.len());
+            control::charge(
+                (sort_size as u64)
+                    .saturating_mul(u64::from(usize::BITS - sort_size.leading_zeros())),
+                "area_history_sort",
+            )?;
+            self.admit_authoring_runtime_replacement(change.0, change.1, "area_hit_history")?;
+        }
 
         if let Some(active) = self.active_areas.get_mut(&area_id) {
             active.origin = origin;
@@ -680,7 +873,7 @@ impl BattleCore {
                 let next_tick_ms = time_ms.saturating_add(u64::from(interval));
                 active.next_tick_ms = Some(next_tick_ms);
                 if next_tick_ms < active.expires_at_ms {
-                    self.event_queue.push(BattleEvent::SkillAreaTick {
+                    let event = BattleEvent::SkillAreaTick {
                         time_ms: next_tick_ms,
                         area_id,
                         cast_seq: active.cast_seq,
@@ -689,16 +882,25 @@ impl BattleCore {
                         step_id: active.step_id.clone(),
                         center: active.center,
                         cause: self.recording_cause().unwrap_or_default(),
-                    });
+                    };
+                    self.enqueue_carrier_completion(
+                        event,
+                        None,
+                        runtime.source_snapshot.fact_source.clone(),
+                    )?;
                 }
             }
         }
         self.schedule_pending_autocasts(time_ms);
+        Ok(())
     }
 
-    pub(in crate::game::battle::core) fn expire_skill_area(&mut self, area_id: Uuid) {
+    pub(in crate::game::battle::core) fn expire_skill_area(
+        &mut self,
+        area_id: Uuid,
+    ) -> Result<(), crate::game::behavior::GameError> {
         let Some(runtime) = self.active_areas.remove(&area_id) else {
-            return;
+            return Ok(());
         };
         if let Some(cast) = self.active_skill_casts.get_mut(&runtime.cast_seq) {
             cast.active_area_ids.retain(|id| *id != area_id);
@@ -710,5 +912,10 @@ impl BattleCore {
             true,
             runtime.expires_at_ms,
         );
+        if let Some(ticket) = runtime.source_snapshot.fact_source.delivery {
+            self.runtime_facts
+                .close_delivery(&ticket, runtime.expires_at_ms)?;
+        }
+        Ok(())
     }
 }

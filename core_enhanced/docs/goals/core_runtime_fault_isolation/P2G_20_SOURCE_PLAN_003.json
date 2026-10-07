@@ -1,0 +1,510 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CRFI-003",
+        "Content Digest": "sha256:c1e9111608fbc674aad193bb020d7796bd9dbc27350682fdcf5476a8a1d80034"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRFI-006",
+          "Content Digest": "sha256:047098ad5309a6e51bdc2d0374a8c97a2cb1948962ce6b1a088c3b043f3cbb9a"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-01-DECIDED-003",
+                "Content Digest": "sha256:812016da01918514f08bdc2aab5e80226e5babd1a21ecce3903a022883773e0a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-02-DECIDED-003",
+                "Content Digest": "sha256:7be61aba136ef8dda3d6c66764041145dae16d30a260e611ee15473b08194485"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-03-DECIDED-003",
+                "Content Digest": "sha256:f75bed9d0ff8a6ea833bfe59d883055f6ff01686821ed57d1c39a886688576d9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-04-DECIDED-003",
+                "Content Digest": "sha256:1f0f3f695c4135749a6e0dfbfedfabdcab59b42223ce6b0c8c6ed6507844f11c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-06-DECIDED-003",
+                "Content Digest": "sha256:abbe6f3a73e9fba8e5d12ae4b52500494ff1d6f6995d65fa6c9eedd2a32ad0d6"
+              }
+            ],
+            "Required claim/boundary": "typed runtime producer→application prepare/commit→public error/latch boundary",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/behavior.rs",
+                "core_enhanced/src/game/world/application.rs",
+                "core_enhanced/src/game/world.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/game/world/resource_runtime.rs",
+                "core_enhanced/src/game/world/admin.rs",
+                "core_enhanced/src/game/world/admin/commands.rs",
+                "core_enhanced/src/game/battle/runtime_control.rs",
+                "core_enhanced/src/game/resource/store.rs",
+                "core_enhanced/src/game/value_expr/mod.rs",
+                "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+                "core_enhanced/src/game/battle/core/damage_runtime.rs",
+                "core_enhanced/src/game/battle/core/sustained.rs"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "typed categories and producing routes; live outer owner vs candidate rollback; precommit and public projection error distinction; all public mutation ports and classification exclusions"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-02-DECIDED-003",
+                "Content Digest": "sha256:7be61aba136ef8dda3d6c66764041145dae16d30a260e611ee15473b08194485"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-05-DECIDED-003",
+                "Content Digest": "sha256:3457b74dc21bcfc470b7820269302f1735ba8085fa647cace272b3b7ddcad77c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-06-DECIDED-003",
+                "Content Digest": "sha256:abbe6f3a73e9fba8e5d12ae4b52500494ff1d6f6995d65fa6c9eedd2a32ad0d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-07-DECIDED-003",
+                "Content Digest": "sha256:47eac7f6e8546d76aa473520a3e49e74b0e80817aadaaa591ca8e74107d69d15"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-10-DECIDED-003",
+                "Content Digest": "sha256:9b5132632f3d9f01be5602b6ced3df7f01bcfcf3dd60075a07537f4daef59043"
+              }
+            ],
+            "Required claim/boundary": "real actor/socket→manual/admin/tick/detach/reconnect/late callback/quit→new actor",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "game_server/src/main.rs",
+                "game_server/src/lib.rs",
+                "game_server/src/game/player_game_actor/mod.rs",
+                "game_server/src/game/player_game_actor/handlers.rs",
+                "game_server/src/game/player_game_actor/messages.rs",
+                "game_server/src/game/player_game_actor/session.rs",
+                "game_server/src/game/player_game_actor/state.rs",
+                "game_server/src/game/load_balance_actor/mod.rs",
+                "game_server/src/game/load_balance_actor/handlers.rs",
+                "game_server/src/game/load_balance_actor/messages.rs"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "source flow of early management handlers, tick scheduling, replacement/detach, actor lifetime, actual ws consumer and safe fault fallback"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-03-DECIDED-003",
+                "Content Digest": "sha256:f75bed9d0ff8a6ea833bfe59d883055f6ff01686821ed57d1c39a886688576d9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-06-DECIDED-003",
+                "Content Digest": "sha256:abbe6f3a73e9fba8e5d12ae4b52500494ff1d6f6995d65fa6c9eedd2a32ad0d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-08-DECIDED-003",
+                "Content Digest": "sha256:64936f00d08203f51ec51cfa7025d3e21225919dbc390c7f76c1ad2c26f6aea4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-09-DECIDED-003",
+                "Content Digest": "sha256:75994536bf98a4764352db043ba93fbd5153e923842a661daa4990a2fc9b07e9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-10-DECIDED-003",
+                "Content Digest": "sha256:9b5132632f3d9f01be5602b6ced3df7f01bcfcf3dd60075a07537f4daef59043"
+              }
+            ],
+            "Required claim/boundary": "valid active/profile bytes→writer gates→explicit Quit/new owner/Continue",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "game_server/src/persistence/active_run_store.rs",
+                "game_server/src/persistence/player_profile_store.rs",
+                "game_server/src/game/player_game_actor/handlers.rs",
+                "game_server/src/game/player_game_actor/mod.rs",
+                "game_server/src/game/load_balance_actor/handlers.rs",
+                "core_enhanced/src/game/world/active_run.rs",
+                "core_enhanced/src/game/world/node_flow.rs",
+                "core_enhanced/src/application.rs"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "original store bytes and shared local-install ownership; stop/management/export/reset gates; existing loads_used and checkpoint continue preserved, no new free load or deletion"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-04-DECIDED-003",
+                "Content Digest": "sha256:1f0f3f695c4135749a6e0dfbfedfabdcab59b42223ce6b0c8c6ed6507844f11c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-05-DECIDED-003",
+                "Content Digest": "sha256:3457b74dc21bcfc470b7820269302f1735ba8085fa647cace272b3b7ddcad77c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-06-DECIDED-003",
+                "Content Digest": "sha256:abbe6f3a73e9fba8e5d12ae4b52500494ff1d6f6995d65fa6c9eedd2a32ad0d6"
+              }
+            ],
+            "Required claim/boundary": "typed bounded fault/read-model→host snapshot→diagnostic failure",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/world/snapshot.rs",
+                "core_enhanced/src/game/behavior.rs",
+                "core_enhanced/src/authoring/projection.rs",
+                "core_enhanced/src/authoring/diagnostic.rs",
+                "core_enhanced/src/authoring/trace.rs",
+                "core_enhanced/src/authoring/control.rs",
+                "game_server/src/game/player_game_actor/state.rs",
+                "game_server/src/game/player_game_actor/messages.rs"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "bound fault metadata without copying unbounded cause/site strings; ordinary query failure not terminal; minimum borrowed fault query remains independent of diagnostic serialization"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-01-DECIDED-003",
+                "Content Digest": "sha256:812016da01918514f08bdc2aab5e80226e5babd1a21ecce3903a022883773e0a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-03-DECIDED-003",
+                "Content Digest": "sha256:f75bed9d0ff8a6ea833bfe59d883055f6ff01686821ed57d1c39a886688576d9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-06-DECIDED-003",
+                "Content Digest": "sha256:abbe6f3a73e9fba8e5d12ae4b52500494ff1d6f6995d65fa6c9eedd2a32ad0d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-12-DECIDED-003",
+                "Content Digest": "sha256:de7ea2aabac9a9044853962cdf4b2c4f6747b2ac32f83b36b3a5981c43cec22a"
+              }
+            ],
+            "Required claim/boundary": "speculative authoring candidate/trial/preview and private runtime retry",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring/trial.rs",
+                "core_enhanced/src/authoring/control.rs",
+                "core_enhanced/src/authoring/query.rs",
+                "core_enhanced/src/authoring/amount_query.rs",
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/battle/core/mod.rs",
+                "core_enhanced/src/bin/author_content.rs"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "candidate owner publication and prefix retry/cancellation unchanged; public accepted application fault lifetime separate from private rollback operation"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-02-DECIDED-003",
+                "Content Digest": "sha256:7be61aba136ef8dda3d6c66764041145dae16d30a260e611ee15473b08194485"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-03-DECIDED-003",
+                "Content Digest": "sha256:f75bed9d0ff8a6ea833bfe59d883055f6ff01686821ed57d1c39a886688576d9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-04-DECIDED-003",
+                "Content Digest": "sha256:1f0f3f695c4135749a6e0dfbfedfabdcab59b42223ce6b0c8c6ed6507844f11c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-11-DECIDED-003",
+                "Content Digest": "sha256:3ac658b36d413fe2af3ef5e06d0a7793637102bd73ff4492dfe4db04e5fb07ad"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-12-DECIDED-003",
+                "Content Digest": "sha256:de7ea2aabac9a9044853962cdf4b2c4f6747b2ac32f83b36b3a5981c43cec22a"
+              }
+            ],
+            "Required claim/boundary": "U02 attempt/commit observation→terminal cleanup→worker/selection/exporter",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/runtime_observation.rs",
+                "core_enhanced/src/game/world/application.rs",
+                "core_enhanced/src/application.rs",
+                "game_server/src/observability/mod.rs",
+                "config/runtime_safety.ron",
+                "game_server/config/observability.ron",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/corrections/n01_metric_docs_001/METRICS_AND_STORAGE.md"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "cleanup without fake commit; failed attempt work/reason retained; selected/current clearing and ring/window bounds; disabled/enabled/collector-failure parity"
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-01-DECIDED-003",
+                "Content Digest": "sha256:812016da01918514f08bdc2aab5e80226e5babd1a21ecce3903a022883773e0a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-04-DECIDED-003",
+                "Content Digest": "sha256:1f0f3f695c4135749a6e0dfbfedfabdcab59b42223ce6b0c8c6ed6507844f11c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-05-DECIDED-003",
+                "Content Digest": "sha256:3457b74dc21bcfc470b7820269302f1735ba8085fa647cace272b3b7ddcad77c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-07-DECIDED-003",
+                "Content Digest": "sha256:47eac7f6e8546d76aa473520a3e49e74b0e80817aadaaa591ca8e74107d69d15"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-08-DECIDED-003",
+                "Content Digest": "sha256:64936f00d08203f51ec51cfa7025d3e21225919dbc390c7f76c1ad2c26f6aea4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-09-DECIDED-003",
+                "Content Digest": "sha256:75994536bf98a4764352db043ba93fbd5153e923842a661daa4990a2fc9b07e9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-10-DECIDED-003",
+                "Content Digest": "sha256:9b5132632f3d9f01be5602b6ced3df7f01bcfcf3dd60075a07537f4daef59043"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-12-DECIDED-003",
+                "Content Digest": "sha256:de7ea2aabac9a9044853962cdf4b2c4f6747b2ac32f83b36b3a5981c43cec22a"
+              }
+            ],
+            "Required claim/boundary": "existing genuine public failure/host fixtures→new end-to-end validation seams",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+                "core_enhanced/src/runtime_safety.rs",
+                "game_server/src/test_support.rs",
+                "game_server/examples/observe_runtime.rs",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_profile_probe.py",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/tools/run.py",
+                "core_enhanced/Cargo.toml",
+                "game_server/Cargo.toml",
+                "Cargo.toml",
+                "Cargo.lock"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "reuse actual limit and legal runtime-expression failure fixtures, baseline test commands/public transport; identify required new behavior tests without implementation in P2G20"
+          },
+          {
+            "Requirement ID": "RQ08",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRFI-12-DECIDED-003",
+                "Content Digest": "sha256:de7ea2aabac9a9044853962cdf4b2c4f6747b2ac32f83b36b3a5981c43cec22a"
+              }
+            ],
+            "Required claim/boundary": "100 predecessor condition applicability and exact audited U02 baseline",
+            "Source type/role": "Workspace Actual; exact frozen predecessor evidence, actual local host source",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_002/COMPLETION_AUDIT.md",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_002/END_CURRENTNESS.json",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/execution/master/followups/n02_001/target/master_002/MANIFEST.json",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/execution/master/followups/n02_001/COVERAGE.json",
+                "core_enhanced/docs/roadmaps/core_first/execution/u02_closure_20261004_001/RESULT.ko.md",
+                "core_enhanced/docs/roadmaps/core_first/execution/u02_closure_20261004_001/PUBLICATION_RECORD.json"
+              ],
+              "dirty_basis": "Preserve all existing changes; capture exact bytes of actually reviewed files"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-002",
+                "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "reuse precise source-bound old evidence and warnings; classify terminal-observation/public-live-retry impacts, unchanged parser/authority/config/private flow applicability; no current-source claims from old executions"
+          }
+        ],
+        "Currentness Boundary": "Workspace source/local host only. No remote production or Unity compatibility claim. GEX must execute genuine public negative paths.",
+        "Candidate Publication": "non-current until complete P2G-20 batch",
+        "Predecessor Source Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CRFI-002",
+          "Content Digest": "sha256:6e76182eee6d1ee16e71247ddff995b900ba55ff6d9e42d33a1ef708c741b72a"
+        }
+      }
+    }
+  ]
+}

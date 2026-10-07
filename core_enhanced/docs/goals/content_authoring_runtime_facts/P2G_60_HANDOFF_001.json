@@ -1,0 +1,189 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HOF-CARF-P2G60-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Handoff Artifact Ref": null,
+        "Exact Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARF-P2G20-001",
+            "Content Digest": null
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CARF-P2G30-001",
+            "Content Digest": null
+          },
+          "Current Planning Freeze Selection": "selected",
+          "Final Policy Freeze Lifecycle Disposition": "current",
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CARF-P2G40-002",
+            "Content Digest": null
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CARF-P2G50-001",
+            "Content Digest": null
+          },
+          "Derived Applicable Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": [],
+          "Phase Plan Lifecycle Disposition": "current",
+          "Goal Set Lifecycle Disposition": "current"
+        },
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CARF-P2G30-001",
+          "Content Digest": null
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CARF-P2G40-002",
+          "Content Digest": null
+        },
+        "Goal Set Ref": {
+          "Artifact Type": "Goal Set",
+          "Artifact ID": "GS-CARF-P2G50-001",
+          "Content Digest": null
+        },
+        "Remaining Evidence Gap / Blocker / Limitation / Out-of-Scope Summary": [
+          {
+            "Source Owner Ref": {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CARF-P2G30-001",
+              "Content Digest": null
+            },
+            "Source Member/Section": "Known Unknown Set/KU30-01; Plan SC01–05; Goal boundary/prerequisites",
+            "Remaining Summary": "Exact Rust types/field layout, validity token/epoch, per-carrier transition table and finite native/authoring safety numbers remain unimplemented details; proposed typed fact/handle ports are not callable yet.",
+            "Follow-up Owner/Condition": "AG-CARF-01 investigates real producers/carriers/consumers/clone/restore and closes detailed owner/input/output/identity/order/failure/cancel/settlement/drop/budget/test-oracle design in existing GEX records before production mutation."
+          },
+          {
+            "Source Owner Ref": {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CARF-P2G30-001",
+              "Content Digest": null
+            },
+            "Source Member/Section": "Known Unknown Set/KU30-02; Plan IVA01–10; Goal acceptance/dimension/impact matrices",
+            "Remaining Summary": "20 acceptance/10 IVA/10 dimensions and C01–08 have prospective actual oracles. No R04 runtime test/build/implementation/fresh completion audit has executed.",
+            "Follow-up Owner/Condition": "WP-CARF-03 implements durable focused/current-RON/public API/CLI/lifecycle/limit/determinism/cost seams and runs nonzero actual validation, final integrated core/release and currentness; same-scope failures return to AG for correction."
+          },
+          {
+            "Source Owner Ref": {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CARF-P2G30-001",
+              "Content Digest": null
+            },
+            "Source Member/Section": "Known Unknown Set/KU30-03; Plan SC06/IVA10; Goal dependencies",
+            "Remaining Summary": "R03 actual target002/audit002 is current Complete/High and independently accepts R01audit004/R02audit003 as current/proven-non-impacting. Exact planning evidence verifies318source inputs/101audit outputs/3binaries. Expected R04 source change can invalidate affected evidence.",
+            "Follow-up Owner/Condition": "Map changed inputs to each predecessor/direct-consumer requirement; rerun affected tests/probes and restore applicable current audits or positive scoped non-impact evidence. Preserve old targets/audits/failed receipts. New R04 behavior/cost never inherits historical PASS."
+          },
+          {
+            "Source Owner Ref": {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CARF-P2G30-001",
+              "Content Digest": null
+            },
+            "Source Member/Section": "Known Unknown Set/KU30-04; TR30-06; RQ08/09; Goal Consumer Boundary",
+            "Remaining Summary": "Server/Unity/deployed state and personal store contents are excluded/unverified. Local release is only a core consumer verification.",
+            "Follow-up Owner/Condition": "Core API/CLI/native state/actual current V6 inventory and live reconnect remain required; document actual changed behavior and durable N/A without personal-file mutation or external rollout/compatibility claim."
+          },
+          {
+            "Source Owner Ref": {
+              "Artifact Type": "Goal Set",
+              "Artifact ID": "GS-CARF-P2G50-001",
+              "Content Digest": null
+            },
+            "Source Member/Section": "GOAL-CARF-01 invariants I01–06; structural completion and scope",
+            "Remaining Summary": "Preserve basic-only triggers/formulas/HP-loss gates/signed Heal/actual pay, mandatory death/wave once, predeath/source vs killer, distinct strike/segment and real equipment IDs. Control terminal differs from detached released settlement; UUID restore cannot make stale handle valid.",
+            "Follow-up Owner/Condition": "AG/WP03 implement all present producer/carrier paths, bare and outer operation atomicity, prior successful timestamp prefix and bounded native/clone/retained state together. No inferred copy/root, log authority, request-success fallback or future R executor."
+          },
+          {
+            "Source Owner Ref": {
+              "Artifact Type": "Goal Set",
+              "Artifact ID": "GS-CARF-P2G50-001",
+              "Content Digest": null
+            },
+            "Source Member/Section": "Goal Set authored status; GOAL-CARF-01 prerequisites/risk/reviewer",
+            "Remaining Summary": "Authored / Not Activated / Implementation Authorized: No are immutable P2G authoring statuses. Handoff currentness is planning transfer, not execution readiness/activation/completion.",
+            "Follow-up Owner/Condition": "Parent user-adopted AUTORUN separately selects eligible exact child for GEX00 currentness/dirty/baseline/unique execution-path and reviewer feasibility. Root sole writer; completion reviewer separate from implementation and these planning helpers."
+          }
+        ],
+        "P2G Scope Completed": "Policy freeze, Phase plan and Goal authoring delivered",
+        "Authorization Boundary": "P2G itself does not approve activation, implementation authorization, production mutation or completion. Current Handoff is durable planning transfer. The existing user-adopted AUTORUN separately authorizes eligible exact child GEX subject to actual GEX00 entry; no new user permission follows merely from stage transition.",
+        "Applicable P2G-60 Obligation Key Set": []
+      }
+    }
+  ],
+  "source_locations": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_20_REVIEW_001.json",
+      "sha256": "133815b3079c500316a7bc4753e566394aa3e94cba3f6de453ef33155a4d57b5",
+      "inspection": "Exact upstream owner",
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CARF-P2G20-001",
+        "Content Digest": null
+      },
+      "sections": [
+        "artifacts / WR-CARF-P2G20-001"
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json",
+      "sha256": "abacf502adca360c469311c4e64a0c69c96613c474f1a90c0a062a771ae414d3",
+      "inspection": "Exact upstream owner",
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CARF-P2G30-001",
+        "Content Digest": null
+      },
+      "sections": [
+        "artifacts / FPF-CARF-P2G30-001"
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_002.json",
+      "sha256": "a1720004d7eacf388fd1e54de8659221849e241957f7d18037974753028e0fc6",
+      "inspection": "Exact upstream owner",
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CARF-P2G40-002",
+        "Content Digest": null
+      },
+      "sections": [
+        "artifacts / PP-CARF-P2G40-002"
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_GOAL_SET_001.ko.md",
+      "sha256": "2e106e05c0e5e767b3e221735205a939bfbcb0e0c80ce618fbd0fabaaf366800",
+      "inspection": "Exact upstream owner",
+      "ref": {
+        "Artifact Type": "Goal Set",
+        "Artifact ID": "GS-CARF-P2G50-001",
+        "Content Digest": null
+      },
+      "sections": [
+        "Goal Set",
+        "Single Goal Member — GOAL-CARF-01",
+        "Policy–Phase–Goal Traceability"
+      ]
+    }
+  ],
+  "external_context_locations": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_RESULT_001.json",
+      "sha256": "e20e877611ef6f88526ab2d366a60abf6924c1b52ecc17e9d3a344ebce6cec37"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_50_AUTHORING_REVIEW_001.json",
+      "sha256": "ede7ab502245cd2705fa67d062d5da34a13dfec990aca6b0c588d2d260deebe3"
+    }
+  ],
+  "representation_notes": "Identity/locations outside payload. Owning upstream member references rather than duplicate payload. Current selection owned by external complete stage result."
+}

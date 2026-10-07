@@ -1,6 +1,6 @@
 use actix::{Addr, Message};
 use backoff::ExponentialBackoff;
-use game_core::game::data::GameDataBase;
+use game_core::game::data::ValidatedGameData;
 use std::io;
 use std::sync::Arc;
 use std::time::Duration;
@@ -17,7 +17,12 @@ lazy_static::lazy_static! {
     pub static ref RETRY_CONFIG: TokioRwLock<Option<ExponentialBackoff>> = TokioRwLock::new(None);
 }
 
+pub mod bootstrap;
 pub mod env;
+#[cfg(feature = "runtime-observation")]
+pub mod observability;
+#[cfg(feature = "runtime-measurement")]
+pub mod runtime_measurement;
 
 // Module groups
 pub mod game;
@@ -119,5 +124,8 @@ pub struct AppState {
     pub load_balance_addr: Addr<LoadBalanceActor>,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
-    pub game_data: Arc<GameDataBase>,
+    pub game_data: ValidatedGameData,
 }
+
+#[cfg(test)]
+mod test_support;

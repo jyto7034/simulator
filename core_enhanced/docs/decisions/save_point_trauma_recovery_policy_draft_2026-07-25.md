@@ -4,7 +4,7 @@
 - 마지막 정책 검토: 2026-07-27
 - 상태: **Policy closed / P00·P01 구현 완료 (2026-07-27)**
 - 문서 등급: 구현 이력·정책 근거 문서
-- 주의: 현재 runtime, live RON, save/wire 계약의 source of truth는 `game_rulebook.md`,
+- 주의: 현재 runtime, live RON, save/wire 계약의 source of truth는 `archive/game_rulebook_legacy_2026-10-04.md`,
   `core_runtime_contract.md`, `data_loading_contract.md`와 외부 Unity canonical이다. 이 문서는 P00·P01이
   구현한 승인 정책의 역사적 입력으로 유지한다. 완료 근거는
   `../goals/run_policy_phase_00_savepoint_trauma_vertical_convergence/COMPLETION_REVIEW.md`와
@@ -436,7 +436,7 @@ Unity는 percent 계산이나 eligibility를 재구현하지 않고 Core project
 
 이 초안을 구현하기 전 별도 goal/plan에서 최소 다음 표면을 함께 감사하고 갱신한다.
 
-- `game_rulebook.md`: 노드 목록, Safe Node, SavePoint/Gate, condition과 failure 규칙
+- `archive/game_rulebook_legacy_2026-10-04.md`: 노드 목록, Safe Node, SavePoint/Gate, condition과 failure 규칙
 - `core_runtime_contract.md`: completion atomicity, checkpoint, recovery restriction,
   `AwaitingRunFailureDecision`과 capability
 - `data_loading_contract.md`: tagged Trauma recovery schema와 validation

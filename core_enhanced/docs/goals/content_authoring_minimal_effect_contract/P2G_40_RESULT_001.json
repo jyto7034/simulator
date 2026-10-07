@@ -1,0 +1,202 @@
+{
+  "stage": "P2G-40",
+  "outcome": "blocked",
+  "recorded_at": "2026-09-09T06:35:19.991005+00:00",
+  "request": {
+    "mode": "execute",
+    "progression": "bounded_pipeline",
+    "topic": "WPD-CAMEC-20260909",
+    "selected_card": "NEXT-0005",
+    "exact_user_request": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md를 읽고\n다음 단계를 진행해줘. 첫 인수에서 문서 배치와 P2G/GEX의 적용 버전도\n확인하고, 작업 결과와 근거를 기록한 뒤 현황 문서를 갱신해줘.",
+    "locator": "현재 대화: NEXT-0004 완료 보고 다음의 사용자 실행 요청",
+    "authorized_terminal_result": "같은 최소 정책 범위의 P2G-40 exit 또는 필수 blocker; validator/rule/production mutation 제외",
+    "status_at_request": {
+      "revision": "v1.5 / record 0006",
+      "sha256": "ec2ebad50c86cf8793fbe6ccbcd4619f4f7e85a9ed9596344ab7eef7d6fcfeb6",
+      "exact_card": "\n\n**작업 표지: NEXT-0005 — 같은 최소 계약의 P2G-40 Phase Plan까지**\n\n| 항목 | 수행할 내용 |\n| --- | --- |\n| 분류·대상 | 다음 요청에서 선택할 P2G `bounded_pipeline`: `WPD-CAMEC-20260909`의 같은 정책 범위 내 필요한 수리/재검증과 **P2G-40 exit까지**. 초기화·기존 검토 재착수 없음 |\n| 근거·선정 이유 | [P2G-30 complete result](../../goals/content_authoring_minimal_effect_contract/P2G_30_RESULT_001.json)과 [Freeze](../../goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json): `WR-CAMEC-P2G20-001` + `FPF-CAMEC-P2G30-001` current, 6개 요소·12개 acceptance 및 기존 `RB-CAMEC-P2G20-001` |\n| 먼저 읽을 것 | [Working Policy](../../goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md), Freeze의 전환 disposition/unknown, [검토 §3–5](../../goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md), 실제 P2G r2 Reader/P2G-40·validator receipt 규칙 및 필요한 entry/repair 절 |\n| 포함 | 최소 계약의 Work Package·실제 의존성·Phase와 integration validation owner 설계. 직접 소비자·동시 전환 단위·유효 중간 상태를 코드 검토와 실제 선행 근거로 정하고, 정책 초안/R·L 제안을 포괄 승인으로 승격하지 않음 |\n| 허용 변경 | 다음 사용자 실행 요청 시: 기존 Topic의 P2G-40 Plan·결과·필수 validator receipt 작성, 같은 범위의 필요한 owner 수리/재검증, 안전한 진단·문서 검사·현황 갱신. 불변 원본은 successor 규칙으로 보존 |\n| 제외 | 코드·RON·store·검증기·AGENTS·P2G/GEX 규칙 수정, 새 gameplay/범위/위험/권한 대리 선택, P2G-50/60 Goal/Handoff·GEX, 외부팩/사본/보스/도구 전체 및 서버/Unity 구현 |\n| 순서 근거·직접 전제 | 현재 Review의 publication/실행·직접 소비·저장 경계와 Freeze. 재개 시 관련 hash·dirty·지침 revision 변화를 영향 범위에서 확인하고 실제 P2G-40 validator를 사용. 신규 계약 구현/게임 시험은 아직 없음 |\n| 미검토·조정 owner | 정책 의미/승인 근거는 P2G-10, source/소비자 변경은 P2G-20, 동결 일치는 P2G-30. P2G-40은 최소 동시 전환과 검증 owner를 정하며 COV 전체·미정 콘텐츠 수치를 선행으로 일괄 확대하지 않음 |\n| 종료점 | 같은 6개 요소의 complete P2G-40 결과와 필수 검증 근거 또는 필수 blocker를 Topic 원본에 기록하고 현황 갱신. Goal/Handoff/구현/다음 Topic은 실행하지 않음 |\n| 중단 조건 | 새 정책/범위/위험/권한 선택 또는 해결할 수 없는 필수 approval/source/도구·지침 충돌이 실제 exit를 막으면 영향·근거·질문을 기록하고 정지 |\n\nNEXT-0001/0002/0003/0004를 재시작하지 않는다. NEXT-0005는 다음 요청용 카드이며 이번 요청에서 실행하지 않았다. 새 Topic을 만들거나 콘텐츠 초안 전체를 확정하는 작업이 아니다.\n\n"
+    }
+  },
+  "last_valid_current_composite_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CAMEC-P2G20-001",
+      "Content Digest": null
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CAMEC-P2G30-001",
+      "Content Digest": null
+    },
+    "Current Planning Freeze Selection": "selected",
+    "Final Policy Freeze Lifecycle Disposition": "current",
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Derived Applicable Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "candidate_phase_plan": {
+    "ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CAMEC-P2G40-001",
+      "Content Digest": null
+    },
+    "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_CANDIDATE_001.ko.md",
+    "sha256": "3754f18ddadb96ef8dcb8919a3cdbbfe396045218d3b9da3627373d053220476",
+    "current": false,
+    "payload_fixed": true
+  },
+  "phase_plan_validation_receipt": null,
+  "reserved_receipt_identity": {
+    "artifact_type": "Phase Plan Validation Receipt",
+    "artifact_id": "PVR-CAMEC-P2G40-001",
+    "status": "not issued; generation failed"
+  },
+  "complete_stage_result_published": false,
+  "validator_attempt": {
+    "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_VALIDATOR_ATTEMPT_001.json",
+    "sha256": "04fc5fbbaae6fbc742da5e6addb793b68697145b0ab0fe8264b3ac591e806004"
+  },
+  "semantic_review_and_supplemental_document_diagnostics": {
+    "result": "candidate design reviewed; not a standard Receipt or stage completion",
+    "implementation_boundary": "Review L01–04의 compiler/publication과 direct consumer/catalog 동시 전환을 AG-CAMEC-01로 묶었다. WP-CAMEC-03은 새 durable 통합 fixture owner다.",
+    "intermediate_state": "단일 Phase 완료에는 AG와 검증 node가 모두 필요하다. 구형/신형 문법 병존이나 미구현 API를 독립 foundation으로 인정하지 않는다.",
+    "existing_prerequisites": "opaque publication/SkillId/step-command/checkpoint actual reused; prior CRAR audit is historical, not new contract validation",
+    "policy_change": false,
+    "counts": {
+      "frozen_elements": 6,
+      "mapped_acceptance_members": 12,
+      "work_packages": 3,
+      "dependency_edges": 4,
+      "cyclic_sccs": 1,
+      "atomic_groups": 1,
+      "final_execution_nodes": 2,
+      "ordered_phases": 1,
+      "integration_ownership_rows": 6
+    },
+    "diagnostic_command": "python3 /tmp/ca01_next0005_record.py",
+    "diagnostic_script_sha256": "a5e95beff09e6b7f0dbb7331868c583017df310bd9f8056a1e5f630e1436aab7",
+    "diagnostic_checks": [
+      "explicit Stable Element ID from exact JSON member payloads",
+      "WP selectors and primary ownership",
+      "WP/group disjoint partition",
+      "cyclic SCC coverage and condensation",
+      "node/Phase cardinality",
+      "12 existing acceptance indices covered by 6 assigned integration rows",
+      "31 review source hashes and policy-decision source spans unchanged"
+    ],
+    "not_claimed": [
+      "standard validator passed",
+      "current Phase Plan",
+      "game/API/fixture implementation or game tests",
+      "independent GEX audit"
+    ]
+  },
+  "blocker": {
+    "id": "B40-001",
+    "classification": "tooling input contract / unsupported format",
+    "owner": "P2G-40 standard validator and directly affected companion/fixture owner",
+    "source": {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_BLOCKER_001.ko.md",
+      "sha256": "53b1c958623093ef7b924739909ea6fe019abcc50bb5a70f315054f9917d7e7d"
+    },
+    "actual_failure_codes": [
+      "REF_FREEZE",
+      "FREEZE_MEMBERS",
+      "WP_SELECTOR_EMPTY",
+      "WP_SELECTOR_EMPTY",
+      "WP_SELECTOR_EMPTY"
+    ],
+    "affected_claim": "passed exact Freeze/selector Validation Receipt and current complete Phase Plan",
+    "root_causes": [
+      "Markdown-only Freeze field extraction cannot parse existing JSON artifacts[].ref/payload",
+      "PE prefix selector parsing and PER-name-derived identity disagree with actual Stable Element ID in immutable member payload"
+    ],
+    "freeze_stale_finding": false,
+    "required_permission": "현재 카드에서 제외된 validator와 직접 companion/회귀 fixture의 JSON Freeze/actual Stable Element ID 호환성 교정",
+    "authority_boundary_sources": [
+      "ROADMAP_STATUS v1.5 NEXT-0005 제외 row",
+      "P2G r2 P2G-40 generator failure handling: 필요한 도구 교정은 별도 승인 범위",
+      "P2G r2 §8.0 producer-issued Exact Ref preservation and §8.6 blocker handling"
+    ],
+    "rejected_workarounds": [
+      "rename immutable Stable Element ID/Ref to fit tool regex",
+      "alter Freeze bytes or substitute a Markdown copy as the exact input",
+      "hand-edit/fabricate passed Receipt",
+      "replace required standard gate with supplemental Python checks"
+    ],
+    "resume": "교정 승인/도구 변경 후 exact basis 재확인, 필요 시 candidate successor, 표준 Receipt 생성과 기본 검증 후 P2G-40 exit; P2G-50 이후 제외"
+  },
+  "workspace_handoff": {
+    "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803",
+    "request_started_at": "2026-09-09T06:26:42.347952+00:00",
+    "git_entry_count": 16504,
+    "selected_text_paths": 1683,
+    "changed_since_NEXT0004_exit": [],
+    "reconstruction_basis": [
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKSPACE_BASELINE_001.json",
+        "sha256": "f83d0ed52080601261744d26e08eac7bbc8f22a9f2d48ecb2106400179c189f0"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0004_VERIFICATION.json",
+        "sha256": "c4e80d2d9f0b897b5a6d56227ff9a3fe4ec220476527951d74a8bfa50bb85346"
+      }
+    ],
+    "review_source_hashes": {
+      "core_enhanced/src/game/data/live_ron.rs": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0",
+      "core_enhanced/src/game/data/mod.rs": "74ed2bcf2bed377d13b4e1442d2c35ee0b83f3e7d86f1f2e26c308b660997270",
+      "core_enhanced/src/application.rs": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1",
+      "core_enhanced/src/game/data/skill_data.rs": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f",
+      "core_enhanced/src/game/ability.rs": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25",
+      "core_enhanced/Cargo.toml": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+      "core_enhanced/src/game/battle/core/sim.rs": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb",
+      "core_enhanced/src/game/battle/core/commands.rs": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149",
+      "core_enhanced/src/game/battle/core/skill_runtime/cast.rs": "8c586e5a98252579eb1093c24ac85304d1b27fff7d83cafb1b9e54966081eef5",
+      "core_enhanced/src/game/battle/core/types.rs": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9",
+      "core_enhanced/src/game/battle/damage.rs": "e92d03779bb460e370326559244cd95fd842da78050ec92493005169e5497076",
+      "core_enhanced/src/game/battle/core/damage_runtime.rs": "7b4d43792b45b08b0b3c872813059ff1ded233736e67e9c47ef11cdab154f7cb",
+      "core_enhanced/src/game/battle/core/build.rs": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7",
+      "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs": "8c1a2a84776a8f54efc496bba9e2153ca51aedfe6bb4ad2d929ae0d505f8d96e",
+      "core_enhanced/src/game/battle/core/skill_runtime/area.rs": "23e25cdfb7831dedc970912d531c20c669083bd36218f00af37cd0d9de9b8f42",
+      "core_enhanced/src/game/stats.rs": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+      "core_enhanced/src/game/battle/core/triggers.rs": "303313fcaa5e27df6b886f1d03274baa902723e3c899953f23b164c859b0f34d",
+      "core_enhanced/src/game/skill_fragment.rs": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d",
+      "core_enhanced/src/game/employee.rs": "8d3940dce94a7e8d8858b39c2c48c22f367d76d3b31d23319e76859cc53eaa54",
+      "core_enhanced/src/game/battle/stat_pipeline.rs": "3db4f9e21c6bb82e0c0c0d3044c4f5a3b7c7354c3893facac58ff25b0ab1485f",
+      "core_enhanced/src/game/data/equipment_data.rs": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "core_enhanced/src/game/data/validation.rs": "6b636e9ecd48d9084435a930f3201d22d253d93b956e74e823d42469c3942e60",
+      "core_enhanced/src/game/range_preview.rs": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338",
+      "core_enhanced/src/game/data/boss_runtime_data.rs": "5c259a9892c30c5ab3f818370ac3a8f241ffd2b3562a365d0525da4d13c6701d",
+      "core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md": "f04382a6fa9dc6eb171fc22cb10c1a6020ea5862aba5eff04b3952ada238b554",
+      "core_enhanced/src/game/world/state.rs": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab",
+      "core_enhanced/src/game/world/active_run.rs": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8",
+      "core_enhanced/tests/skill_runtime_contract.rs": "9292bd7175c043073698e724a2265a9a56b107d2a5f4884c3ddcd585e54368ac",
+      "core_enhanced/tests/live_skill_catalog_audit.rs": "d07a40f566d9c598a4fecb285b107f923f256b25f2770e8c52b1f90cef278b7f",
+      "core_enhanced/tests/live_item_skill_activation.rs": "607251fd94ea8819551ef505e3f782be1593121fbef6df6675d446da168bf1f6",
+      "game_resources/data/skills/base.ron": "4087df054a663e20ddab14f184a206d532f8df7b472c656bbd708835298f1770"
+    },
+    "pipeline_files": {
+      "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+      "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+      "core_enhanced/docs/goal_execution_pipeline(1).md": "0ec53e9f68a82790c33a61c3b87d326d0af545c8fdbb47a6e97986c65b6a75c6",
+      "core_enhanced/docs/archive/goal_execution_pipeline.md": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72"
+    },
+    "pipeline_revision": "P2G 2026-09-09-r2 / placed GEX 2026-09-09-gex-r1; GEX execution/runner routing not verified",
+    "validator_version": "p2g40-receipt-validator/1.1.0",
+    "validator_sha256": "c75be6b741b3a64165f970e31168a9460ebed1c31aea746cefce03fd81e52c53",
+    "validator_comparison_limitation": "not part of inherited selected-path hash baseline; current bytes read and separately preserved across actual command",
+    "documentation_placement": "existing roadmap root and same Topic; no relocation or duplicate Working Policy",
+    "applicable_AGENTS": []
+  },
+  "not_executed": [
+    "P2G-10/20/30 rerun or new policy decision",
+    "standard default validation: no generated Receipt",
+    "validator/AGENTS/P2G/GEX rule mutation",
+    "game production/RON/store changes",
+    "game implementation/build/tests",
+    "P2G-50/60 and GEX",
+    "deployed/released/server/Unity or runner application verification"
+  ],
+  "next_action": "NEXT-0006 proposed tooling compatibility correction and same P2G-40 completion, only upon new user authorization"
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "U07 current predecessor intake",
+  "audit": "core_enhanced/docs/goals/core_battle_starter_tactics/post_audit/u06_20261005_002",
+  "audit_closure_sha256": "25127be9463989b2a85c1c9b98386f7607b360bf275bef409c756c8d83fc58b5",
+  "publication": "core_enhanced/docs/roadmaps/core_first/execution/u06_closure_20261005_001/PUBLICATION_RECORD.json",
+  "publication_sha256": "24bace4047cc5fc2886668b0a59e58d86527defae09f0b5fa402201d26049a1a",
+  "currentness": "current / proven non-impacting delta",
+  "changed_members": [
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+  ],
+  "member_count": 3123,
+  "product_identity": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+  "non_impact": "Verified all target members. Only the two published progress summaries differ; exact before/current hashes and archived bytes match. Reviewed publication diff: progress/closure/history references only; ROADMAP section0 onward unchanged. U06 policy, acceptance, source, input, tests, execution records, frozen targets and independent audit remain unchanged.",
+  "inherited": "161 conditions (141 predecessors plus20 U06), and31 separately tracked original R06 acceptances",
+  "reuse_clarification": "Final U06 audit REUSE_JUDGMENTS precisely distinguishes public_guards snapshot/checkpoint/query/rejection paths from final_performance Little Red/dummy workloads; use that applicability judgment.",
+  "applied_revisions": [
+    "P2G2026-10-04-r8",
+    "GEX2026-10-04-gex-r8",
+    "Goal quality2",
+    "usagev2.1.3"
+  ],
+  "next": "P2G-00 raw capture then P2G-10 under existing continuous authorization"
+}

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-09-10T17:36:23.698660+00:00",
+  "scope": "R02 GEX-20 audit outputs only; registry excludes itself; target004 unchanged at closure",
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_003.md",
+      "sha256": "d0536bad7ced70f778967bd6be36abb7258da448184d34bc4a546fe2a65f4583",
+      "bytes": 27976
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/audit_probe_history.md",
+      "sha256": "cf9eb510fd3a823661acc759de02350e0b99c3cdf4459d0915a9fc7608e28617",
+      "bytes": 1055
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/currentness_closure.json",
+      "sha256": "ebcfaba4aecdd3eb26c489854a21feb2fc83f0c27e0a593ccc2516bb5afe23e1",
+      "bytes": 4199
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/currentness_entry.json",
+      "sha256": "ea7ae8a7e851a0bc7c12674636db0b1f8b06a1d9b935b9cfcc2a5548e7f1631e",
+      "bytes": 4199
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/evidence_review.json",
+      "sha256": "ad131aca3cd1f000092628112f3b93a52d9e8809f9210f36ef81777e25dfd165",
+      "bytes": 35020
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/supplemental_review.json",
+      "sha256": "04b383f8b73e5af2c5c59e704243dee8093fe1a1bc7b8a289c053fe0b581aee1",
+      "bytes": 2461
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/verify_currentness.py",
+      "sha256": "57079a7dd9897666d04ec1625c5753efa453cb3379898029879167eaf5e0b743",
+      "bytes": 2963
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/verify_evidence.py",
+      "sha256": "7b9d538fccf9fe917baef8a6db3ae04c27acbadbd659073bae4a415d32cbceb3",
+      "bytes": 7039
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/verify_supplemental.py",
+      "sha256": "4755202d14748c91ba07db5da7e18859ee380adca0908e5ad34a683090344313",
+      "bytes": 4718
+    }
+  ]
+}

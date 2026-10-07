@@ -1,0 +1,32 @@
+{
+  "references": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_g6_stage001/RESULT.json",
+      "sha256": "ebed0a2d637e34b44c9d11931f597581a13a51b6e0d326cc904304cfeb85ae93"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_g7_prep001/MANIFEST.json",
+      "sha256": "fb2f3ae601e8addb2fe9815c869b6d98a359550d39ae7da4c752aa7d712bd990"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_g7_prep001/HANDOFF.json",
+      "sha256": "bd047f9d7fa1ab389cd1caa9c343e06d3f6ffdb9b3cb5b5201a392ee68355744"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff002/MANIFEST.json",
+      "sha256": "8f836b79faf0f8d0e64d429002866402cef873a3bb9acb1b69455691fc9b150c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff002/HANDOFF.json",
+      "sha256": "e61b4b909df109425eac42f296e1fb9bda7b643ea9b2d4ae62059633e44a375d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_prep002/MANIFEST.json",
+      "sha256": "bf519a16949f4d68151deb9af914510c572c9648439faedef55d0260f90f4bac"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/docs_checkpoint024/RECORD.json",
+      "sha256": "ce5b9d041820c5212eb103b2e3eed72acb9289e277138c2a9eddfbfceab07e6e"
+    }
+  ]
+}

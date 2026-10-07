@@ -1,0 +1,55 @@
+{
+  "kind": "post-audit document-only publication and narrative digest correction",
+  "audit_closure": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/AUDIT_CLOSURE.json",
+  "audit_closure_sha256": "986cd76e40eaf7ea7e11ad7ff438f8d128bdbda9da03dd6a9366452c29ed696f",
+  "original_audit_manifest_preserved": true,
+  "original_audit_records_preserved": 311,
+  "verdict": "Not Complete",
+  "blocking_findings": [
+    "F01"
+  ],
+  "audited_source_digest": "9a0b88beb24c1371c3362837e924ccf447832efb9372e0be1b8e1c99a6f72912",
+  "current_source_digest_after_status_publication": "7293553475043d738fca14a85ce39d712f17a7b9ecc14b3b9cfabb45094b5499",
+  "source_membership_unchanged": true,
+  "source_changed_members": [
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+  ],
+  "source_nonimpact": "ROADMAP_STATUS describes the already-issued Not Complete verdict; all other 386 audit-source members unchanged",
+  "before_status_documents": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "bytes": 36899,
+      "sha256": "fac77b12d0392bed1fc2c10d8639b54429be6803577acf821322728c7d761e7c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r13_r16_runtime/PLAN.md",
+      "bytes": 858,
+      "sha256": "3be048d2aac0c40a31d918c01c2f3ed9f94237ad37684e317bc09ce03f3a4880"
+    }
+  ],
+  "after_status_documents": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "bytes": 38421,
+      "sha256": "952f399ddf2a32156f2f3f58f068956f58e3b168da896b9e6b16af6d59040bfc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r13_r16_runtime/PLAN.md",
+      "bytes": 1954,
+      "sha256": "f71dcc2588e9ddae295d28bd4162e853071d88a129179553808e656c8cca4723"
+    }
+  ],
+  "status_forward_reverse_isolated_fuzz0": true,
+  "narrative_correction": {
+    "original": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/COMPLETION_AUDIT.md",
+    "original_preserved": true,
+    "wrong_current_digest": "a1289812bb0083a419c0767a5f157317e67e4c7602c368b230f5193f455eec8b",
+    "correct_audited_digest": "9a0b88beb24c1371c3362837e924ccf447832efb9372e0be1b8e1c99a6f72912",
+    "basis": "AUDIT_TARGET, all command receipts and AUDIT_CLOSURE already agree on the correct digest; only narrative copied a stale preparation digest",
+    "successor": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261003_001/COMPLETION_AUDIT.md",
+    "successor_sha256": "74fe67742c9878fe96b0ca710d01d07e6a6e2304b867a3b77750dfbc4d78d397"
+  },
+  "product_code_or_data_modified": false,
+  "r13_r16_started": false,
+  "r13_r16_final_target_frozen": false
+}

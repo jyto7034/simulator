@@ -1,0 +1,371 @@
+{
+  "utc": "2026-10-07T07:17:30.630495+00:00",
+  "source": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "receipts": [
+    {
+      "id": "integrated_core_default",
+      "exit": 0,
+      "passed": 1967,
+      "named_passes": 1955
+    },
+    {
+      "id": "integrated_core_fixtures",
+      "exit": 0,
+      "passed": 1967,
+      "named_passes": 1955
+    },
+    {
+      "id": "integrated_core_observation",
+      "exit": 0,
+      "passed": 1986,
+      "named_passes": 1974
+    },
+    {
+      "id": "integrated_host_default",
+      "exit": 0,
+      "passed": 94,
+      "named_passes": 94
+    },
+    {
+      "id": "integrated_host_observation",
+      "exit": 0,
+      "passed": 105,
+      "named_passes": 105
+    },
+    {
+      "id": "integrated_host_measurement",
+      "exit": 0,
+      "passed": 124,
+      "named_passes": 124
+    },
+    {
+      "id": "integrated_fmt",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "integrated_check",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "integrated_event_log",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "integrated_clippy_core",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "integrated_clippy_host",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "integrated_heap",
+      "exit": 0,
+      "passed": 1,
+      "named_passes": 1
+    },
+    {
+      "id": "host_measurement_heap",
+      "exit": 0,
+      "passed": 1,
+      "named_passes": 1
+    },
+    {
+      "id": "measurement_support",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "release_build",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "debug_build",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "playback_actual",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "lifecycle_actual",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "host_actual",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "playback_prepare",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "pc_prepare",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "pc_gameplay",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "pc_cost",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "r05_prepare",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "r05_summary",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "r05_dependencies",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "pc",
+      "exit": 0,
+      "passed": 1,
+      "named_passes": 1
+    },
+    {
+      "id": "r05",
+      "exit": 101,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_prepared_host",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_prepared_boundary",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_input_validation",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_defaults",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_oracle",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_trace",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_relics",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_cli",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_profile",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_boundary",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_api",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_starter_schema",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_schema",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_independent_area",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_continuation",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_rewind",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_object_schema",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_objects",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_object_combat",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_guards",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "public_allocator_guards",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_build_on",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_none",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_detached",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_queue_full",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_on",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_websocket",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_build_off",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "fault_off",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    },
+    {
+      "id": "r06_resource_sum_public",
+      "exit": 0,
+      "passed": 0,
+      "named_passes": 0
+    }
+  ],
+  "claims_checked": 655,
+  "assertions_checked": 249,
+  "artifact_checks": 426,
+  "unique_refs": 140,
+  "quiescence": [
+    {
+      "phase": "pc",
+      "functional_count": 50,
+      "recorded_at_utc": "2026-10-07T03:44:07.462218+00:00"
+    },
+    {
+      "phase": "r05",
+      "functional_count": 50,
+      "recorded_at_utc": "2026-10-07T03:55:00.085212+00:00"
+    }
+  ],
+  "failures": []
+}

@@ -12,12 +12,14 @@ use game_core::game::ability::{
     SkillStepDef, SkillTarget, StepTargetingMode,
 };
 use game_core::game::battle::event_log::BattleEventLog;
+use game_core::game::battle::scenario::{TerminalCondition, TerminalOutcome};
+use game_core::game::battle::types::{BattleOutcomeId, BattleVerdict};
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
 use game_core::game::data::corroded_employee_data::CorrodedEmployeeProfileDatabase;
 use game_core::game::data::equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType};
 use game_core::game::data::pve_data::{
-    PveEncounter, PveEncounterClass, PveEncounterDatabase, PveWaveData, PveWaveEnemyData,
-    PveWaveSource,
+    PveEncounter, PveEncounterClass, PveEncounterDatabase, PveOutcomePolicyData,
+    PveTerminalConditionData, PveTerminalOutcomeData, PveWaveData, PveWaveEnemyData, PveWaveSource,
 };
 use game_core::game::data::reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata};
 use game_core::game::data::shop_data::{
@@ -29,6 +31,62 @@ use game_core::game::data::{GameDataBase, GameDataBuilder};
 use game_core::game::enums::{RewardMode, RiskLevel};
 use game_core::game::reward::RewardEffect;
 use uuid::Uuid;
+
+pub fn required_group_terminal_outcomes() -> Vec<TerminalOutcome> {
+    vec![
+        TerminalOutcome {
+            id: BattleOutcomeId::new("victory"),
+            verdict: BattleVerdict::Victory,
+            condition: TerminalCondition::AllRequiredEnemyGroupsDefeated,
+            priority: 0,
+        },
+        TerminalOutcome {
+            id: BattleOutcomeId::new("defeat"),
+            verdict: BattleVerdict::Defeat,
+            condition: TerminalCondition::AllPlayerCombatantsDefeated,
+            priority: 0,
+        },
+    ]
+}
+
+fn pve_terminal_outcomes() -> Vec<PveTerminalOutcomeData> {
+    vec![
+        PveTerminalOutcomeData {
+            id: "victory".to_string(),
+            verdict: BattleVerdict::Victory,
+            condition: PveTerminalConditionData::AllRequiredEnemyGroupsDefeated,
+            priority: 0,
+        },
+        PveTerminalOutcomeData {
+            id: "defeat".to_string(),
+            verdict: BattleVerdict::Defeat,
+            condition: PveTerminalConditionData::AllPlayerCombatantsDefeated,
+            priority: 0,
+        },
+    ]
+}
+
+fn pve_outcome_policies(
+    reward_mode: RewardMode,
+    reward_uuids: Vec<Uuid>,
+) -> Vec<PveOutcomePolicyData> {
+    vec![
+        PveOutcomePolicyData {
+            outcome_id: "victory".to_string(),
+            reward_mode,
+            reward_uuids,
+            grant_node_bonus: true,
+            advance_encounter_progression: true,
+        },
+        PveOutcomePolicyData {
+            outcome_id: "defeat".to_string(),
+            reward_mode: RewardMode::ClaimAll,
+            reward_uuids: Vec::new(),
+            grant_node_bonus: false,
+            advance_encounter_progression: false,
+        },
+    ]
+}
 
 pub fn debug_event_log_exports_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -46,8 +104,8 @@ pub fn write_debug_event_log_export(name: &str, event_log: &BattleEventLog) -> P
         )
     });
     std::fs::create_dir_all(parent_dir).expect("create debug_event_log_exports directory");
-    event_log
-        .write_pretty_json(&out_path)
+    let file = std::fs::File::create(&out_path).expect("create debug event log json");
+    serde_json::to_writer_pretty(std::io::BufWriter::new(file), event_log)
         .expect("write debug event log json");
     out_path
 }
@@ -101,6 +159,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 
     let skill_id = SkillId::from("test_skill");
     let skills_db = SkillDatabase::new(vec![SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: skill_id.clone(),
         name: "test_skill".to_string(),
         kind: SkillKind::Targeted,
@@ -253,18 +313,18 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             encounter_class: PveEncounterClass::Elite,
             primary_abnormality_id: Some(abnormality1.id.clone()),
             risk_level: RiskLevel::ZAYIN,
-            reward_mode: RewardMode::ChooseOne,
-            reward_uuids: vec![reward_uuid],
-            suppression_research: None,
+            outcome_policies: pve_outcome_policies(RewardMode::ChooseOne, vec![reward_uuid]),
             node_type: None,
             mission_variant: None,
-            survive_timer_ms: None,
+            terminal_outcomes: pve_terminal_outcomes(),
             battlefield: None,
             tactical_plan: None,
-            win_condition: None,
+            boss_runtime: None,
             waves: vec![PveWaveData {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: game_core::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: Vec::new(),
                 route_id: None,
                 required_for_victory: true,
@@ -281,18 +341,18 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             encounter_class: PveEncounterClass::Elite,
             primary_abnormality_id: Some(abnormality2.id.clone()),
             risk_level: RiskLevel::TETH,
-            reward_mode: RewardMode::ChooseOne,
-            reward_uuids: vec![reward_uuid],
-            suppression_research: None,
+            outcome_policies: pve_outcome_policies(RewardMode::ChooseOne, vec![reward_uuid]),
             node_type: None,
             mission_variant: None,
-            survive_timer_ms: None,
+            terminal_outcomes: pve_terminal_outcomes(),
             battlefield: None,
             tactical_plan: None,
-            win_condition: None,
+            boss_runtime: None,
             waves: vec![PveWaveData {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: game_core::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: Vec::new(),
                 route_id: None,
                 required_for_victory: true,
@@ -309,18 +369,18 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             encounter_class: PveEncounterClass::Elite,
             primary_abnormality_id: Some(abnormality3.id.clone()),
             risk_level: RiskLevel::ZAYIN,
-            reward_mode: RewardMode::ChooseOne,
-            reward_uuids: vec![reward_uuid],
-            suppression_research: None,
+            outcome_policies: pve_outcome_policies(RewardMode::ChooseOne, vec![reward_uuid]),
             node_type: None,
             mission_variant: None,
-            survive_timer_ms: None,
+            terminal_outcomes: pve_terminal_outcomes(),
             battlefield: None,
             tactical_plan: None,
-            win_condition: None,
+            boss_runtime: None,
             waves: vec![PveWaveData {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: game_core::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: Vec::new(),
                 route_id: None,
                 required_for_victory: true,
@@ -359,5 +419,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 /// - 보스 전조 체인 데이터 (boss_omen/chains.ron)
 #[allow(dead_code)]
 pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
-    GameDataBase::load_live_embedded().expect("embedded live gameplay RON must be valid")
+    game_core::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid")
+        .into_fixture_database_arc()
 }

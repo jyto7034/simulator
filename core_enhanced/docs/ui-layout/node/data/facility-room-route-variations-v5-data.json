@@ -1,0 +1,4199 @@
+{
+  "status": "review_proposal",
+  "version": 5,
+  "variants": [
+    {
+      "id": "6A",
+      "base": "facility-room-route-6-a-v5",
+      "activity_count": 6,
+      "title": "짧은 두 경로와 연결문",
+      "idea": [
+        "각 세 자리인 두 경로를 가운데에서 연결해 진행 방향을 바꿀 수 있는 구조.",
+        "짧은 연결용 방의 기본형. 어느 쪽으로 들어가도 반대편 통로로 건너갈 수 있음."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 550,
+          "y": 445,
+          "name": "접수 전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 550,
+          "y": 715,
+          "name": "기록 복도",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 550,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 1250,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 1
+        },
+        {
+          "id": "5",
+          "x": 1250,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 1
+        },
+        {
+          "id": "6",
+          "x": 1250,
+          "y": 985,
+          "name": "출입 관리",
+          "zone": 1
+        }
+      ],
+      "groups": [
+        {
+          "label": "서측 통로 · 3자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3
+          ],
+          "rect": [
+            350,
+            340,
+            400,
+            735
+          ]
+        },
+        {
+          "label": "동측 통로 · 3자리",
+          "color": "green",
+          "ids": [
+            4,
+            5,
+            6
+          ],
+          "rect": [
+            1050,
+            340,
+            400,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              550,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              1250,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "3",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              550,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "6",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1250,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 6,
+        "exit_approaches": [
+          "3",
+          "6"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "6B",
+      "base": "facility-room-route-6-b-v5",
+      "activity_count": 6,
+      "title": "주경로와 안쪽 곁방",
+      "idea": [
+        "주경로 네 자리에 두 자리짜리 곁방을 덧붙이고, 출구는 한 곳으로 모음.",
+        "곁방 끝까지 추가 탐사하거나 주경로만 통과. 지원 거점·작은 조우 방의 후보."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 650,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 650,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 650,
+          "y": 420,
+          "name": "접수 전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 650,
+          "y": 610,
+          "name": "연결 홀",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 650,
+          "y": 800,
+          "name": "안내 복도",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 650,
+          "y": 990,
+          "name": "출구 전실",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 1250,
+          "y": 610,
+          "name": "부속실",
+          "zone": 1
+        },
+        {
+          "id": "6",
+          "x": 1250,
+          "y": 900,
+          "name": "안쪽 보관실",
+          "zone": 1
+        }
+      ],
+      "groups": [
+        {
+          "label": "주경로 · 4자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "rect": [
+            450,
+            315,
+            400,
+            780
+          ]
+        },
+        {
+          "label": "곁방 · 2자리",
+          "color": "amber",
+          "ids": [
+            5,
+            6
+          ],
+          "rect": [
+            1050,
+            490,
+            400,
+            500
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": []
+        },
+        {
+          "a": "4",
+          "b": "G",
+          "one_way": true,
+          "via": []
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 6,
+        "exit_approaches": [
+          "4"
+        ],
+        "shortest_activity_path": 4,
+        "dead_end_slots": [
+          "6"
+        ],
+        "mandatory_activity_slots": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "6C",
+      "base": "facility-room-route-6-c-v5",
+      "activity_count": 6,
+      "title": "작은 순환 회랑",
+      "idea": [
+        "여섯 자리를 하나의 고리로 연결해, 출구 앞에서도 반대쪽 탐사를 이어갈 수 있음.",
+        "막다른 곁방 없이 한 바퀴 돌아오는 작은 탐사 방. 가운데 횡단 연결은 없음."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 550,
+          "y": 445,
+          "name": "접수 전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 550,
+          "y": 715,
+          "name": "기록 복도",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 550,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 1250,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 1250,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 1250,
+          "y": 985,
+          "name": "출입 관리",
+          "zone": 0
+        }
+      ],
+      "groups": [
+        {
+          "label": "작은 순환 회랑 · 6자리",
+          "color": "purple",
+          "ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "rect": [
+            350,
+            340,
+            1100,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              550,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              1250,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "3",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              550,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "6",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1250,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 6,
+        "exit_approaches": [
+          "3",
+          "6"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "9A",
+      "base": "facility-room-route-9-a-v5",
+      "activity_count": 9,
+      "title": "두 복도와 작은 곁방",
+      "idea": [
+        "서측·동측 복도를 중앙에서 연결하고, 짧은 곁방 두 곳을 덧붙인 구조.",
+        "빠른 통과와 곁방 탐사를 선택하는 작은 방의 기본형."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 400,
+          "y": 445,
+          "name": "전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 900,
+          "y": 445,
+          "name": "보관실",
+          "zone": 1
+        },
+        {
+          "id": "3",
+          "x": 1400,
+          "y": 445,
+          "name": "작업 접수",
+          "zone": 2
+        },
+        {
+          "id": "4",
+          "x": 400,
+          "y": 715,
+          "name": "서측 복도",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 900,
+          "y": 715,
+          "name": "연결 홀",
+          "zone": 1
+        },
+        {
+          "id": "6",
+          "x": 1400,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 2
+        },
+        {
+          "id": "7",
+          "x": 400,
+          "y": 985,
+          "name": "반출 전실",
+          "zone": 0
+        },
+        {
+          "id": "8",
+          "x": 900,
+          "y": 985,
+          "name": "안쪽 창고",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 1400,
+          "y": 985,
+          "name": "출입 관리",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "서측 탐사",
+          "color": "blue",
+          "ids": [
+            1,
+            4,
+            7
+          ],
+          "rect": [
+            220,
+            340,
+            360,
+            735
+          ]
+        },
+        {
+          "label": "중앙 연결과 곁방",
+          "color": "purple",
+          "ids": [
+            2,
+            5,
+            8
+          ],
+          "rect": [
+            720,
+            340,
+            360,
+            735
+          ]
+        },
+        {
+          "label": "동측 탐사",
+          "color": "green",
+          "ids": [
+            3,
+            6,
+            9
+          ],
+          "rect": [
+            1220,
+            340,
+            360,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              400,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "3",
+          "one_way": false,
+          "via": [
+            [
+              1400,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "7",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              400,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "9",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1400,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 9,
+        "exit_approaches": [
+          "7",
+          "9"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [
+          "2",
+          "8"
+        ],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "9B",
+      "base": "facility-room-route-9-b-v5",
+      "activity_count": 9,
+      "title": "외곽 고리와 안쪽 방",
+      "idea": [
+        "외곽 여덟 자리가 하나의 고리로 이어지고 중앙 방 하나가 안쪽으로 분기.",
+        "한 바퀴 돌거나 반대 복도로 돌아올 수 있는 순환 중심 변형."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 400,
+          "y": 445,
+          "name": "전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 900,
+          "y": 445,
+          "name": "보관실",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 1400,
+          "y": 445,
+          "name": "작업 접수",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 400,
+          "y": 715,
+          "name": "서측 복도",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 900,
+          "y": 715,
+          "name": "연결 홀",
+          "zone": 1
+        },
+        {
+          "id": "6",
+          "x": 1400,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 0
+        },
+        {
+          "id": "7",
+          "x": 400,
+          "y": 985,
+          "name": "반출 전실",
+          "zone": 0
+        },
+        {
+          "id": "8",
+          "x": 900,
+          "y": 985,
+          "name": "안쪽 창고",
+          "zone": 0
+        },
+        {
+          "id": "9",
+          "x": 1400,
+          "y": 985,
+          "name": "출입 관리",
+          "zone": 0
+        }
+      ],
+      "groups": [
+        {
+          "label": "외곽 순환 복도 · 8자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            7,
+            8,
+            9
+          ],
+          "rect": [
+            220,
+            340,
+            1360,
+            735
+          ]
+        },
+        {
+          "label": "안쪽 방 · 1자리",
+          "color": "amber",
+          "ids": [
+            5
+          ],
+          "rect": [
+            740,
+            620,
+            320,
+            180
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              400,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "3",
+          "one_way": false,
+          "via": [
+            [
+              1400,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "7",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              400,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "9",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1400,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 9,
+        "exit_approaches": [
+          "7",
+          "9"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [
+          "5"
+        ],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "9C",
+      "base": "facility-room-route-9-c-v5",
+      "activity_count": 9,
+      "title": "중앙 복귀와 단일 출구",
+      "idea": [
+        "중앙 통로에서 양쪽을 탐사하고, 아래의 출구 전실 한 곳으로 복귀.",
+        "드물게 섞는 단일 출구형. 우측 상단에는 짧은 막다른 곁방을 배치."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 400,
+          "y": 445,
+          "name": "접수 구역",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 900,
+          "y": 445,
+          "name": "중앙 전실",
+          "zone": 1
+        },
+        {
+          "id": "3",
+          "x": 1400,
+          "y": 445,
+          "name": "예비 창고",
+          "zone": 2
+        },
+        {
+          "id": "4",
+          "x": 400,
+          "y": 715,
+          "name": "기록 복도",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 900,
+          "y": 715,
+          "name": "중앙 연결",
+          "zone": 1
+        },
+        {
+          "id": "6",
+          "x": 1400,
+          "y": 715,
+          "name": "설비 분기",
+          "zone": 2
+        },
+        {
+          "id": "7",
+          "x": 400,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "8",
+          "x": 900,
+          "y": 985,
+          "name": "출구 전실",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 1400,
+          "y": 985,
+          "name": "설비 반출",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "서측 탐사",
+          "color": "blue",
+          "ids": [
+            1,
+            4,
+            7
+          ],
+          "rect": [
+            220,
+            340,
+            360,
+            735
+          ]
+        },
+        {
+          "label": "중앙 연결과 곁방",
+          "color": "purple",
+          "ids": [
+            2,
+            5,
+            8
+          ],
+          "rect": [
+            720,
+            340,
+            360,
+            735
+          ]
+        },
+        {
+          "label": "동측 탐사",
+          "color": "green",
+          "ids": [
+            3,
+            6,
+            9
+          ],
+          "rect": [
+            1220,
+            340,
+            360,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "2",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "1",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "2",
+          "one_way": false,
+          "via": []
+        },
+        {
+          "a": "8",
+          "b": "G",
+          "one_way": true,
+          "via": []
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 9,
+        "exit_approaches": [
+          "8"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [
+          "3"
+        ],
+        "mandatory_activity_slots": [
+          "2",
+          "8"
+        ],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "12A",
+      "base": "facility-room-route-12-a-v5",
+      "activity_count": 12,
+      "title": "횡단 복도와 네 곁방",
+      "idea": [
+        "두 주 복도를 긴 연결 복도로 잇고, 위아래에 곁방을 나누어 배치.",
+        "활동 8자리를 잇는 통로와 막다른 곁방 4자리로 탐사 범위를 선택."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 300,
+          "y": 445,
+          "name": "접수 전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 700,
+          "y": 445,
+          "name": "자료 보관",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 1100,
+          "y": 445,
+          "name": "시료 보관",
+          "zone": 1
+        },
+        {
+          "id": "4",
+          "x": 1500,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 1
+        },
+        {
+          "id": "5",
+          "x": 300,
+          "y": 715,
+          "name": "기록 복도",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 700,
+          "y": 715,
+          "name": "서측 연결",
+          "zone": 0
+        },
+        {
+          "id": "7",
+          "x": 1100,
+          "y": 715,
+          "name": "동측 연결",
+          "zone": 1
+        },
+        {
+          "id": "8",
+          "x": 1500,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 300,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "10",
+          "x": 700,
+          "y": 985,
+          "name": "서고 안쪽",
+          "zone": 0
+        },
+        {
+          "id": "11",
+          "x": 1100,
+          "y": 985,
+          "name": "예비 창고",
+          "zone": 1
+        },
+        {
+          "id": "12",
+          "x": 1500,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 1
+        }
+      ],
+      "groups": [
+        {
+          "label": "서측 · 기록 구역 6자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            5,
+            6,
+            9,
+            10
+          ],
+          "rect": [
+            120,
+            340,
+            760,
+            735
+          ]
+        },
+        {
+          "label": "동측 · 작업 구역 6자리",
+          "color": "green",
+          "ids": [
+            3,
+            4,
+            7,
+            8,
+            11,
+            12
+          ],
+          "rect": [
+            920,
+            340,
+            760,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              300,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              1500,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "9",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              300,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "12",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1500,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 12,
+        "exit_approaches": [
+          "9",
+          "12"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [
+          "2",
+          "3",
+          "10",
+          "11"
+        ],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "12B",
+      "base": "facility-room-route-12-b-v5",
+      "activity_count": 12,
+      "title": "두 순환 구역과 연결문",
+      "idea": [
+        "각 여섯 자리 구역이 독립된 순환 복도를 가지며, 중간 연결문으로 왕래.",
+        "한 구역만 탐사하거나 다른 구역까지 확장하는 선택이 뚜렷한 구조."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 300,
+          "y": 445,
+          "name": "접수 전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 700,
+          "y": 445,
+          "name": "자료 보관",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 1100,
+          "y": 445,
+          "name": "시료 보관",
+          "zone": 1
+        },
+        {
+          "id": "4",
+          "x": 1500,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 1
+        },
+        {
+          "id": "5",
+          "x": 300,
+          "y": 715,
+          "name": "기록 복도",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 700,
+          "y": 715,
+          "name": "서측 연결",
+          "zone": 0
+        },
+        {
+          "id": "7",
+          "x": 1100,
+          "y": 715,
+          "name": "동측 연결",
+          "zone": 1
+        },
+        {
+          "id": "8",
+          "x": 1500,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 300,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "10",
+          "x": 700,
+          "y": 985,
+          "name": "서고 안쪽",
+          "zone": 0
+        },
+        {
+          "id": "11",
+          "x": 1100,
+          "y": 985,
+          "name": "예비 창고",
+          "zone": 1
+        },
+        {
+          "id": "12",
+          "x": 1500,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 1
+        }
+      ],
+      "groups": [
+        {
+          "label": "서측 · 기록 구역 6자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            5,
+            6,
+            9,
+            10
+          ],
+          "rect": [
+            120,
+            340,
+            760,
+            735
+          ]
+        },
+        {
+          "label": "동측 · 작업 구역 6자리",
+          "color": "green",
+          "ids": [
+            3,
+            4,
+            7,
+            8,
+            11,
+            12
+          ],
+          "rect": [
+            920,
+            340,
+            760,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              300,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              1500,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "9",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              300,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "12",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1500,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 12,
+        "exit_approaches": [
+          "9",
+          "12"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "12C",
+      "base": "facility-room-route-12-c-v5",
+      "activity_count": 12,
+      "title": "외곽 회랑과 내부 횡단로",
+      "idea": [
+        "외곽 고리를 따라 돌거나, 안쪽 두 자리를 통과해 반대편으로 이동.",
+        "아래 중앙의 두 출구 접근점으로 모이는 회랑형. 막다른 곁방은 없음."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 300,
+          "y": 445,
+          "name": "접수 전실",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 700,
+          "y": 445,
+          "name": "자료 보관",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 1100,
+          "y": 445,
+          "name": "시료 보관",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 1500,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 300,
+          "y": 715,
+          "name": "기록 복도",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 700,
+          "y": 715,
+          "name": "서측 연결",
+          "zone": 1
+        },
+        {
+          "id": "7",
+          "x": 1100,
+          "y": 715,
+          "name": "동측 연결",
+          "zone": 1
+        },
+        {
+          "id": "8",
+          "x": 1500,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 0
+        },
+        {
+          "id": "9",
+          "x": 300,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "10",
+          "x": 700,
+          "y": 985,
+          "name": "서고 안쪽",
+          "zone": 0
+        },
+        {
+          "id": "11",
+          "x": 1100,
+          "y": 985,
+          "name": "예비 창고",
+          "zone": 0
+        },
+        {
+          "id": "12",
+          "x": 1500,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 0
+        }
+      ],
+      "groups": [
+        {
+          "label": "외곽 회랑 · 10자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "rect": [
+            120,
+            340,
+            1560,
+            735
+          ]
+        },
+        {
+          "label": "내부 횡단로 · 2자리",
+          "color": "purple",
+          "ids": [
+            6,
+            7
+          ],
+          "rect": [
+            540,
+            615,
+            720,
+            200
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              300,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              1500,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "10",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              700,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "11",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1100,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 12,
+        "exit_approaches": [
+          "10",
+          "11"
+        ],
+        "shortest_activity_path": 4,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "15A",
+      "base": "facility-room-route-15-a-v5",
+      "activity_count": 15,
+      "title": "중앙 홀과 두 순환 구역",
+      "idea": [
+        "중앙 세 자리에서 기록·작업 구역으로 나뉘고, 아래 연결점으로 복귀.",
+        "중앙 3자리 + 양쪽 6자리씩. 방향을 잡기 쉽고 양쪽 탐사를 이어가기 좋음."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 230,
+          "y": 445,
+          "name": "기록 접수",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 565,
+          "y": 445,
+          "name": "열람 구역",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 900,
+          "y": 445,
+          "name": "중앙 전실",
+          "zone": 1
+        },
+        {
+          "id": "4",
+          "x": 1235,
+          "y": 445,
+          "name": "검사 접수",
+          "zone": 2
+        },
+        {
+          "id": "5",
+          "x": 1570,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 2
+        },
+        {
+          "id": "6",
+          "x": 230,
+          "y": 715,
+          "name": "분류 구역",
+          "zone": 0
+        },
+        {
+          "id": "7",
+          "x": 565,
+          "y": 715,
+          "name": "기록 연결",
+          "zone": 0
+        },
+        {
+          "id": "8",
+          "x": 900,
+          "y": 715,
+          "name": "중앙 홀",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 1235,
+          "y": 715,
+          "name": "설비 연결",
+          "zone": 2
+        },
+        {
+          "id": "10",
+          "x": 1570,
+          "y": 715,
+          "name": "작업 복도",
+          "zone": 2
+        },
+        {
+          "id": "11",
+          "x": 230,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "12",
+          "x": 565,
+          "y": 985,
+          "name": "보존 구역",
+          "zone": 0
+        },
+        {
+          "id": "13",
+          "x": 900,
+          "y": 985,
+          "name": "아래 연결",
+          "zone": 1
+        },
+        {
+          "id": "14",
+          "x": 1235,
+          "y": 985,
+          "name": "설비 보관",
+          "zone": 2
+        },
+        {
+          "id": "15",
+          "x": 1570,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "기록 구역 · 6자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            6,
+            7,
+            11,
+            12
+          ],
+          "rect": [
+            90,
+            340,
+            620,
+            735
+          ]
+        },
+        {
+          "label": "중앙 · 3자리",
+          "color": "purple",
+          "ids": [
+            3,
+            8,
+            13
+          ],
+          "rect": [
+            740,
+            340,
+            320,
+            735
+          ]
+        },
+        {
+          "label": "작업 구역 · 6자리",
+          "color": "green",
+          "ids": [
+            4,
+            5,
+            9,
+            10,
+            14,
+            15
+          ],
+          "rect": [
+            1090,
+            340,
+            620,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "3",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "15",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "3",
+          "one_way": false,
+          "via": []
+        },
+        {
+          "a": "11",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              230,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "15",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1570,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 15,
+        "exit_approaches": [
+          "11",
+          "15"
+        ],
+        "shortest_activity_path": 5,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [
+          "3",
+          "8"
+        ],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "15B",
+      "base": "facility-room-route-15-b-v5",
+      "activity_count": 15,
+      "title": "외곽 고리와 깊은 곁방",
+      "idea": [
+        "외곽 열두 자리는 순환하고, 안쪽 세 자리는 끝까지 들어갔다가 복귀.",
+        "곁방 하나를 깊게 탐사하는 변형. 안쪽 갈래를 건너뛰어도 출구 접근 가능."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 230,
+          "y": 445,
+          "name": "기록 접수",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 565,
+          "y": 445,
+          "name": "열람 구역",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 900,
+          "y": 445,
+          "name": "중앙 전실",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 1235,
+          "y": 445,
+          "name": "검사 접수",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 1570,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 230,
+          "y": 715,
+          "name": "분류 구역",
+          "zone": 0
+        },
+        {
+          "id": "7",
+          "x": 565,
+          "y": 715,
+          "name": "기록 연결",
+          "zone": 1
+        },
+        {
+          "id": "8",
+          "x": 900,
+          "y": 715,
+          "name": "중앙 홀",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 1235,
+          "y": 715,
+          "name": "설비 연결",
+          "zone": 1
+        },
+        {
+          "id": "10",
+          "x": 1570,
+          "y": 715,
+          "name": "작업 복도",
+          "zone": 0
+        },
+        {
+          "id": "11",
+          "x": 230,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "12",
+          "x": 565,
+          "y": 985,
+          "name": "보존 구역",
+          "zone": 0
+        },
+        {
+          "id": "13",
+          "x": 900,
+          "y": 985,
+          "name": "아래 연결",
+          "zone": 0
+        },
+        {
+          "id": "14",
+          "x": 1235,
+          "y": 985,
+          "name": "설비 보관",
+          "zone": 0
+        },
+        {
+          "id": "15",
+          "x": 1570,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 0
+        }
+      ],
+      "groups": [
+        {
+          "label": "외곽 순환 · 12자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "rect": [
+            90,
+            340,
+            1620,
+            735
+          ]
+        },
+        {
+          "label": "안쪽 곁방 · 3자리",
+          "color": "amber",
+          "ids": [
+            7,
+            8,
+            9
+          ],
+          "rect": [
+            425,
+            615,
+            950,
+            200
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "15",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              230,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "5",
+          "one_way": false,
+          "via": [
+            [
+              1570,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "11",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              230,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "15",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1570,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 15,
+        "exit_approaches": [
+          "11",
+          "15"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [
+          "9"
+        ],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "15C",
+      "base": "facility-room-route-15-c-v5",
+      "activity_count": 15,
+      "title": "엇갈린 세 구역",
+      "idea": [
+        "접수·처리·반출 구역을 각각 다섯 자리로 나누고 연결 위치를 엇갈리게 배치.",
+        "출구로 가며 세 구역을 거치되, 각 구역에서 어느 쪽으로 횡단할지 선택."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 230,
+          "y": 445,
+          "name": "기록 접수",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 565,
+          "y": 445,
+          "name": "열람 구역",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 900,
+          "y": 445,
+          "name": "중앙 전실",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 1235,
+          "y": 445,
+          "name": "검사 접수",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 1570,
+          "y": 445,
+          "name": "작업 전실",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 230,
+          "y": 715,
+          "name": "분류 구역",
+          "zone": 1
+        },
+        {
+          "id": "7",
+          "x": 565,
+          "y": 715,
+          "name": "기록 연결",
+          "zone": 1
+        },
+        {
+          "id": "8",
+          "x": 900,
+          "y": 715,
+          "name": "중앙 홀",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 1235,
+          "y": 715,
+          "name": "설비 연결",
+          "zone": 1
+        },
+        {
+          "id": "10",
+          "x": 1570,
+          "y": 715,
+          "name": "작업 복도",
+          "zone": 1
+        },
+        {
+          "id": "11",
+          "x": 230,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 2
+        },
+        {
+          "id": "12",
+          "x": 565,
+          "y": 985,
+          "name": "보존 구역",
+          "zone": 2
+        },
+        {
+          "id": "13",
+          "x": 900,
+          "y": 985,
+          "name": "아래 연결",
+          "zone": 2
+        },
+        {
+          "id": "14",
+          "x": 1235,
+          "y": 985,
+          "name": "설비 보관",
+          "zone": 2
+        },
+        {
+          "id": "15",
+          "x": 1570,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "접수 구역 · 5자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "rect": [
+            90,
+            340,
+            1620,
+            195
+          ]
+        },
+        {
+          "label": "처리 구역 · 5자리",
+          "color": "purple",
+          "ids": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "rect": [
+            90,
+            610,
+            1620,
+            195
+          ]
+        },
+        {
+          "label": "반출 구역 · 5자리",
+          "color": "green",
+          "ids": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "rect": [
+            90,
+            880,
+            1620,
+            195
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "1",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              230,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "5",
+          "one_way": false,
+          "via": [
+            [
+              1570,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "11",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              230,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "15",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1570,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 15,
+        "exit_approaches": [
+          "11",
+          "15"
+        ],
+        "shortest_activity_path": 5,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "18A",
+      "base": "facility-room-route-18-a-v5",
+      "activity_count": 18,
+      "title": "세 구역을 차례로 횡단",
+      "idea": [
+        "기록 → 관제 → 작업 구역으로 진행하며 각 구역의 순환로와 연결문을 선택.",
+        "구역마다 6자리. 세 구역을 거치는 동선이며 모든 활동을 거칠 필요는 없음."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 340,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 1460,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 200,
+          "y": 445,
+          "name": "기록 접수",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 480,
+          "y": 445,
+          "name": "열람 전실",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 760,
+          "y": 445,
+          "name": "관제 접수",
+          "zone": 1
+        },
+        {
+          "id": "4",
+          "x": 1040,
+          "y": 445,
+          "name": "검사 전실",
+          "zone": 1
+        },
+        {
+          "id": "5",
+          "x": 1320,
+          "y": 445,
+          "name": "작업 접수",
+          "zone": 2
+        },
+        {
+          "id": "6",
+          "x": 1600,
+          "y": 445,
+          "name": "공정 관리",
+          "zone": 2
+        },
+        {
+          "id": "7",
+          "x": 200,
+          "y": 715,
+          "name": "분류 구역",
+          "zone": 0
+        },
+        {
+          "id": "8",
+          "x": 480,
+          "y": 715,
+          "name": "기록 연결",
+          "zone": 0
+        },
+        {
+          "id": "9",
+          "x": 760,
+          "y": 715,
+          "name": "관제 복도",
+          "zone": 1
+        },
+        {
+          "id": "10",
+          "x": 1040,
+          "y": 715,
+          "name": "검수 구역",
+          "zone": 1
+        },
+        {
+          "id": "11",
+          "x": 1320,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 2
+        },
+        {
+          "id": "12",
+          "x": 1600,
+          "y": 715,
+          "name": "작업 구역",
+          "zone": 2
+        },
+        {
+          "id": "13",
+          "x": 200,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "14",
+          "x": 480,
+          "y": 985,
+          "name": "보존 구역",
+          "zone": 0
+        },
+        {
+          "id": "15",
+          "x": 760,
+          "y": 985,
+          "name": "관제 반출",
+          "zone": 1
+        },
+        {
+          "id": "16",
+          "x": 1040,
+          "y": 985,
+          "name": "출입 관리",
+          "zone": 1
+        },
+        {
+          "id": "17",
+          "x": 1320,
+          "y": 985,
+          "name": "설비 반출",
+          "zone": 2
+        },
+        {
+          "id": "18",
+          "x": 1600,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "기록 구역 · 6자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            7,
+            8,
+            13,
+            14
+          ],
+          "rect": [
+            65,
+            340,
+            550,
+            735
+          ]
+        },
+        {
+          "label": "관제 구역 · 6자리",
+          "color": "purple",
+          "ids": [
+            3,
+            4,
+            9,
+            10,
+            15,
+            16
+          ],
+          "rect": [
+            625,
+            340,
+            550,
+            735
+          ]
+        },
+        {
+          "label": "작업 구역 · 6자리",
+          "color": "green",
+          "ids": [
+            5,
+            6,
+            11,
+            12,
+            17,
+            18
+          ],
+          "rect": [
+            1185,
+            340,
+            550,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "16",
+          "one_way": false
+        },
+        {
+          "a": "16",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "15",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "18",
+          "one_way": false
+        },
+        {
+          "a": "18",
+          "b": "17",
+          "one_way": false
+        },
+        {
+          "a": "17",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "16",
+          "b": "17",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              200,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "2",
+          "one_way": false,
+          "via": [
+            [
+              480,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "17",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1320,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "18",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1600,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 18,
+        "exit_approaches": [
+          "17",
+          "18"
+        ],
+        "shortest_activity_path": 6,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "18B",
+      "base": "facility-room-route-18-b-v5",
+      "activity_count": 18,
+      "title": "중앙 통로와 양쪽 탐사동",
+      "idea": [
+        "중앙 여섯 자리에서 출구 방향을 잡고, 양쪽 탐사동을 선택적으로 순환.",
+        "양쪽 구역은 위에서 들어가 아래로 복귀. 중앙만 통과하는 짧은 경로도 유지."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 900,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 900,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 200,
+          "y": 445,
+          "name": "기록 접수",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 480,
+          "y": 445,
+          "name": "열람 전실",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 760,
+          "y": 445,
+          "name": "관제 접수",
+          "zone": 1
+        },
+        {
+          "id": "4",
+          "x": 1040,
+          "y": 445,
+          "name": "검사 전실",
+          "zone": 1
+        },
+        {
+          "id": "5",
+          "x": 1320,
+          "y": 445,
+          "name": "작업 접수",
+          "zone": 2
+        },
+        {
+          "id": "6",
+          "x": 1600,
+          "y": 445,
+          "name": "공정 관리",
+          "zone": 2
+        },
+        {
+          "id": "7",
+          "x": 200,
+          "y": 715,
+          "name": "분류 구역",
+          "zone": 0
+        },
+        {
+          "id": "8",
+          "x": 480,
+          "y": 715,
+          "name": "기록 연결",
+          "zone": 0
+        },
+        {
+          "id": "9",
+          "x": 760,
+          "y": 715,
+          "name": "관제 복도",
+          "zone": 1
+        },
+        {
+          "id": "10",
+          "x": 1040,
+          "y": 715,
+          "name": "검수 구역",
+          "zone": 1
+        },
+        {
+          "id": "11",
+          "x": 1320,
+          "y": 715,
+          "name": "설비 복도",
+          "zone": 2
+        },
+        {
+          "id": "12",
+          "x": 1600,
+          "y": 715,
+          "name": "작업 구역",
+          "zone": 2
+        },
+        {
+          "id": "13",
+          "x": 200,
+          "y": 985,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "14",
+          "x": 480,
+          "y": 985,
+          "name": "보존 구역",
+          "zone": 0
+        },
+        {
+          "id": "15",
+          "x": 760,
+          "y": 985,
+          "name": "관제 반출",
+          "zone": 1
+        },
+        {
+          "id": "16",
+          "x": 1040,
+          "y": 985,
+          "name": "출입 관리",
+          "zone": 1
+        },
+        {
+          "id": "17",
+          "x": 1320,
+          "y": 985,
+          "name": "설비 반출",
+          "zone": 2
+        },
+        {
+          "id": "18",
+          "x": 1600,
+          "y": 985,
+          "name": "작업 반출",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "기록 구역 · 6자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            7,
+            8,
+            13,
+            14
+          ],
+          "rect": [
+            65,
+            340,
+            550,
+            735
+          ]
+        },
+        {
+          "label": "관제 구역 · 6자리",
+          "color": "purple",
+          "ids": [
+            3,
+            4,
+            9,
+            10,
+            15,
+            16
+          ],
+          "rect": [
+            625,
+            340,
+            550,
+            735
+          ]
+        },
+        {
+          "label": "작업 구역 · 6자리",
+          "color": "green",
+          "ids": [
+            5,
+            6,
+            11,
+            12,
+            17,
+            18
+          ],
+          "rect": [
+            1185,
+            340,
+            550,
+            735
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "16",
+          "one_way": false
+        },
+        {
+          "a": "16",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "15",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "18",
+          "one_way": false
+        },
+        {
+          "a": "18",
+          "b": "17",
+          "one_way": false
+        },
+        {
+          "a": "17",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "16",
+          "b": "17",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "3",
+          "one_way": false,
+          "via": [
+            [
+              760,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              1040,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "15",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              760,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "16",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1040,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 18,
+        "exit_approaches": [
+          "15",
+          "16"
+        ],
+        "shortest_activity_path": 3,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    },
+    {
+      "id": "18C",
+      "base": "facility-room-route-18-c-v5",
+      "activity_count": 18,
+      "title": "큰 관제실과 좁은 설비동",
+      "idea": [
+        "기록 6자리 · 관제 8자리 · 설비 4자리로 구역 크기와 모양을 다르게 구성.",
+        "넓은 중앙 순환 구역에서 가느다란 설비동으로 확장하는 비대칭 건물형."
+      ],
+      "nodes": [
+        {
+          "id": "S",
+          "x": 340,
+          "y": 235,
+          "name": "입구",
+          "zone": null
+        },
+        {
+          "id": "G",
+          "x": 1400,
+          "y": 1190,
+          "name": "Gate",
+          "zone": null
+        },
+        {
+          "id": "1",
+          "x": 200,
+          "y": 445,
+          "name": "기록 접수",
+          "zone": 0
+        },
+        {
+          "id": "2",
+          "x": 200,
+          "y": 715,
+          "name": "분류 구역",
+          "zone": 0
+        },
+        {
+          "id": "3",
+          "x": 200,
+          "y": 990,
+          "name": "기록 반출",
+          "zone": 0
+        },
+        {
+          "id": "4",
+          "x": 480,
+          "y": 445,
+          "name": "열람 구역",
+          "zone": 0
+        },
+        {
+          "id": "5",
+          "x": 480,
+          "y": 715,
+          "name": "기록 연결",
+          "zone": 0
+        },
+        {
+          "id": "6",
+          "x": 480,
+          "y": 990,
+          "name": "보존 구역",
+          "zone": 0
+        },
+        {
+          "id": "7",
+          "x": 850,
+          "y": 420,
+          "name": "관제 접수",
+          "zone": 1
+        },
+        {
+          "id": "8",
+          "x": 850,
+          "y": 610,
+          "name": "제어 복도",
+          "zone": 1
+        },
+        {
+          "id": "9",
+          "x": 850,
+          "y": 800,
+          "name": "관측 구역",
+          "zone": 1
+        },
+        {
+          "id": "10",
+          "x": 850,
+          "y": 990,
+          "name": "관제 반출",
+          "zone": 1
+        },
+        {
+          "id": "11",
+          "x": 1120,
+          "y": 420,
+          "name": "검사 전실",
+          "zone": 1
+        },
+        {
+          "id": "12",
+          "x": 1120,
+          "y": 610,
+          "name": "검수 구역",
+          "zone": 1
+        },
+        {
+          "id": "13",
+          "x": 1120,
+          "y": 800,
+          "name": "설비 연결",
+          "zone": 1
+        },
+        {
+          "id": "14",
+          "x": 1120,
+          "y": 990,
+          "name": "출입 관리",
+          "zone": 1
+        },
+        {
+          "id": "15",
+          "x": 1560,
+          "y": 420,
+          "name": "설비 전실",
+          "zone": 2
+        },
+        {
+          "id": "16",
+          "x": 1560,
+          "y": 610,
+          "name": "동력 구역",
+          "zone": 2
+        },
+        {
+          "id": "17",
+          "x": 1560,
+          "y": 800,
+          "name": "냉각 구역",
+          "zone": 2
+        },
+        {
+          "id": "18",
+          "x": 1560,
+          "y": 990,
+          "name": "설비 반출",
+          "zone": 2
+        }
+      ],
+      "groups": [
+        {
+          "label": "기록 · 6자리",
+          "color": "blue",
+          "ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "rect": [
+            65,
+            340,
+            550,
+            735
+          ]
+        },
+        {
+          "label": "관제 · 8자리",
+          "color": "purple",
+          "ids": [
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "rect": [
+            710,
+            315,
+            550,
+            765
+          ]
+        },
+        {
+          "label": "설비 · 4자리",
+          "color": "green",
+          "ids": [
+            15,
+            16,
+            17,
+            18
+          ],
+          "rect": [
+            1420,
+            315,
+            280,
+            765
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "a": "1",
+          "b": "2",
+          "one_way": false
+        },
+        {
+          "a": "2",
+          "b": "3",
+          "one_way": false
+        },
+        {
+          "a": "3",
+          "b": "6",
+          "one_way": false
+        },
+        {
+          "a": "6",
+          "b": "5",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "4",
+          "one_way": false
+        },
+        {
+          "a": "4",
+          "b": "1",
+          "one_way": false
+        },
+        {
+          "a": "7",
+          "b": "8",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "9",
+          "one_way": false
+        },
+        {
+          "a": "9",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "10",
+          "b": "14",
+          "one_way": false
+        },
+        {
+          "a": "14",
+          "b": "13",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "12",
+          "b": "11",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "7",
+          "one_way": false
+        },
+        {
+          "a": "8",
+          "b": "12",
+          "one_way": false
+        },
+        {
+          "a": "15",
+          "b": "16",
+          "one_way": false
+        },
+        {
+          "a": "16",
+          "b": "17",
+          "one_way": false
+        },
+        {
+          "a": "17",
+          "b": "18",
+          "one_way": false
+        },
+        {
+          "a": "5",
+          "b": "8",
+          "one_way": false,
+          "via": [
+            [
+              660,
+              715
+            ],
+            [
+              660,
+              610
+            ]
+          ]
+        },
+        {
+          "a": "6",
+          "b": "10",
+          "one_way": false
+        },
+        {
+          "a": "11",
+          "b": "15",
+          "one_way": false
+        },
+        {
+          "a": "13",
+          "b": "17",
+          "one_way": false
+        },
+        {
+          "a": "S",
+          "b": "1",
+          "one_way": false,
+          "via": [
+            [
+              200,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "S",
+          "b": "4",
+          "one_way": false,
+          "via": [
+            [
+              480,
+              235
+            ]
+          ]
+        },
+        {
+          "a": "14",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1120,
+              1190
+            ]
+          ]
+        },
+        {
+          "a": "18",
+          "b": "G",
+          "one_way": true,
+          "via": [
+            [
+              1560,
+              1190
+            ]
+          ]
+        }
+      ],
+      "status": "review_proposal",
+      "start_and_gate_excluded": true,
+      "activity_types": "Unassigned; existing expedition assignment rules apply.",
+      "validation": {
+        "activity_count": 18,
+        "exit_approaches": [
+          "14",
+          "18"
+        ],
+        "shortest_activity_path": 5,
+        "dead_end_slots": [],
+        "mandatory_activity_slots": [],
+        "all_nodes_reachable": true,
+        "every_activity_can_reach_exit": true,
+        "no_direct_entry_exit": true,
+        "no_node_or_connector_collisions": true,
+        "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+      }
+    }
+  ],
+  "constraints": [
+    "No direct entry to Gate",
+    "Start and Gate excluded",
+    "6B and 9C have one exit approach; all others have two"
+  ],
+  "reference": "Original graph variations of the user-approved room diagrams; no external game map copied."
+}

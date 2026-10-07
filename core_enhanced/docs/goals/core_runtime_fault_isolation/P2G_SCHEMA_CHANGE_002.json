@@ -1,0 +1,1082 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Post-Freeze Change Record",
+        "Artifact ID": "PFC-CRFI-SCHEMA-002",
+        "Content Digest": "sha256:4504ed61daf7585cddd0919608978b7b8d2843f7ddce7239b6196176e9749959"
+      },
+      "payload": {
+        "Change ID": "CH-CRFI-SCHEMA-002",
+        "Origin Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRFI-005",
+            "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRFI-002",
+            "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRFI-001",
+            "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+          },
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "PFC-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+            }
+          ]
+        },
+        "Predecessor Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRFI-002",
+          "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+        },
+        "Changed Premise": "P2G50 standard member field reader uses DR- prefix for Covered Decision Revision Ref Set; DEC- IDs from initial policy cannot satisfy exact Goal mapping. Correct immutable identity lineage before Goal authoring.",
+        "Policy Impact Closure": {
+          "Direct Member Set": [],
+          "Transitive Member Set": [],
+          "Edges": [],
+          "Exclusion Reason": "All exact policy/decision/acceptance meanings unchanged; canonical ID representation only. P2G50 standard parser recognizes DR- decision identities, not DEC-."
+        },
+        "Artifact Invalidation Closure": {
+          "Direct Member Ref Set": [
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-01-REVIEWED-002",
+              "Content Digest": "sha256:d5676d5eb6b289dbf6c00ade7f7d9578c5349a217d2c4bbbacbf0d6d3f3094a5"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-02-REVIEWED-002",
+              "Content Digest": "sha256:3d83f7fa8d0e75ba60184bd50d0fa435c16a9ed5ecb0f18df92a69e3b01eb05b"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-03-REVIEWED-002",
+              "Content Digest": "sha256:9abff002efab766c46eb84b99c63db389ad0290d51d548f1e04d158ef80a3853"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-04-REVIEWED-002",
+              "Content Digest": "sha256:422a2592cf37e4ed645b55fb191add5c12db20f9980defffb29b73d5d793195d"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-05-REVIEWED-002",
+              "Content Digest": "sha256:970903ce9e78c47125cfa5c96b0d184386476f7b72b890d09bcd722c0971f192"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-06-REVIEWED-002",
+              "Content Digest": "sha256:7e4baef743a578ae06830ddddd4be2372fb662b0c63400443639be7a9e3c6198"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-07-REVIEWED-002",
+              "Content Digest": "sha256:07789a67549d214414359a59d046bb64b662772c79f8e893533b03c5ad7c89fb"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-08-REVIEWED-002",
+              "Content Digest": "sha256:8be7ab0c5a9c559c01065393a9e2e5ed8f3aff5b9b861bcf12ba3b38de975195"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-09-REVIEWED-002",
+              "Content Digest": "sha256:071992ce26073c7f915b5cbe2de452a4f896a6aef46478a617bd5b364e5b0858"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-10-REVIEWED-002",
+              "Content Digest": "sha256:af34541a983a480b4b95b9cc9bbc08fc222c6eb2bf5a8e6122642574fc490ea8"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-11-REVIEWED-002",
+              "Content Digest": "sha256:43a200a6022468d2ce2f44f84b9a8de5b4c6f67b32a30d98e352fb15f6255a8d"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-12-REVIEWED-002",
+              "Content Digest": "sha256:50fe6c550dbd62d9f8c31cc6a2b0d407c20c3c07f41747c1b77e024256f778d0"
+            }
+          ],
+          "Transitive Member Ref Set": [
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ01-002",
+              "Content Digest": "sha256:e9740fd4df3a0ee2aa0e7b550b537eaf1892b06a14d2de2747dbeb3aeca27aa9"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ02-002",
+              "Content Digest": "sha256:d381593495fa904f188bffe914db0b2d6f9959d90d7f963d721d5a7878a4530d"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ03-002",
+              "Content Digest": "sha256:7fec80e1750707d341cf51f8c8524d71381696093e45f4f056c387127f252526"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ04-002",
+              "Content Digest": "sha256:1abf16b63f43b658419679970514cab21f970395881c822ba4661d3986cc6e6c"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ05-002",
+              "Content Digest": "sha256:6022563c1d7df4f8234c5a44a52ad6f427401e8f63d9db5b9ed8763bb724cb5b"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ06-002",
+              "Content Digest": "sha256:38069737a37574bbd92612c676deb7d4ffc7abfce51c53f0c7dbc77b523e155a"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ07-002",
+              "Content Digest": "sha256:a21486329134b00471084233643ea57b7cddc7d967230311e584d5dacfc7fcd3"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ08-002",
+              "Content Digest": "sha256:0cbab7b4be3facad4acf42b66948740b63d582a34aaa7f7eaba2199789c5e184"
+            },
+            {
+              "Artifact Type": "Code Review Artifact",
+              "Artifact ID": "CRA-CRFI-002",
+              "Content Digest": "sha256:bdfeb3a36f22e7632e2ab9eb5a84c67615234111b4c2831fed890a5ca6931198"
+            },
+            {
+              "Artifact Type": "Working Revision",
+              "Artifact ID": "WR-CRFI-005",
+              "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-01-002",
+              "Content Digest": "sha256:3f92fdd3ca639059fc349bcefad57984f08bb2507f1ab40d33b37f29770faa1c"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-02-002",
+              "Content Digest": "sha256:355550a9792a628f5c30c1d6f5a923e7486b20dc9a31fb0a087b5b4160a28492"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-03-002",
+              "Content Digest": "sha256:f14a232dc37c795b32722bb6f6fe3c7836bba71e422d3583b00d5be192e6a2fb"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-04-002",
+              "Content Digest": "sha256:88cbbbed7dc81e6d88db980eaaf03ad51813b8b93c3acc8d8b73f7a45681c627"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-05-002",
+              "Content Digest": "sha256:64f59f3cdc07c8fca06592bbd24cca57fadc6cc03b63c338df959f802d124880"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-06-002",
+              "Content Digest": "sha256:24bf2179a14aa4a82e405974e814a99a092b881eaeccb893cd7f8131b9a6ffb6"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-07-002",
+              "Content Digest": "sha256:32a57da102e632db57c73052e25c49f0d4184df5fa738870b35b157fd129cd5d"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-08-002",
+              "Content Digest": "sha256:b65c9a3793abbb74499ead48418e5e2b0607b413b3ba3e4bad4ddae52eb44d74"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-09-002",
+              "Content Digest": "sha256:c37673b33523507cecc57fbc1abe9127dec20e484c18ca950dc89c0a5dd3d447"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-10-002",
+              "Content Digest": "sha256:c134a34be26beb962f6a94df080932710984fd3aa46771fbe12c1d21dbaad2c4"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-11-002",
+              "Content Digest": "sha256:813c2709f7a40589aac96be1a53dd8d6178a06a0e4b0d4f8b98527a396568fe3"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-12-002",
+              "Content Digest": "sha256:559beb3b15ff71c437ae910cf35e7c7079f10bdbb283d38d4dbc9f2fea35acff"
+            },
+            {
+              "Artifact Type": "Review Batch",
+              "Artifact ID": "RB-CRFI-002",
+              "Content Digest": "sha256:186c35541932173d0e6d6ddcf4955835e20ca1d785ea4c5841e2faa3f267af55"
+            },
+            {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CRFI-002",
+              "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+            },
+            {
+              "Artifact Type": "Phase Plan",
+              "Artifact ID": "PP-CRFI-001",
+              "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+            }
+          ],
+          "Edges": "decision ID representation→element ref→Working/Review→Freeze→Phase Plan; exact statement/acceptance/source unchanged",
+          "Exclusions": "No Goal Set/Handoff exists; source/test data and U02 audit unaffected. Prior resolved schema Change remains applicable."
+        },
+        "Evidence": "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs:378–381; read-only source inspection, no validator modification",
+        "Authority": "Original full P2G correction scope; no new user policy choice"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRFI-SCHEMA-002",
+        "Content Digest": "sha256:3f4b7b6e681731f5f71c4601f105e815cf81a1fc4ea586e5791977d8d6e6febf"
+      },
+      "payload": {
+        "Change ID": "CH-CRFI-SCHEMA-002",
+        "Post-Freeze Change Record Ref": {
+          "Artifact Type": "Post-Freeze Change Record",
+          "Artifact ID": "PFC-CRFI-SCHEMA-002",
+          "Content Digest": "sha256:4504ed61daf7585cddd0919608978b7b8d2843f7ddce7239b6196176e9749959"
+        },
+        "Origin Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRFI-005",
+            "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRFI-002",
+            "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRFI-001",
+            "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+          },
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "PFC-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+            }
+          ]
+        },
+        "Policy Impact Closure": {
+          "Direct Member Set": [],
+          "Transitive Member Set": [],
+          "Edges": [],
+          "Exclusion Reason": "All exact policy/decision/acceptance meanings unchanged; canonical ID representation only. P2G50 standard parser recognizes DR- decision identities, not DEC-."
+        },
+        "Artifact Invalidation Closure": {
+          "Direct Member Ref Set": [
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-01-REVIEWED-002",
+              "Content Digest": "sha256:d5676d5eb6b289dbf6c00ade7f7d9578c5349a217d2c4bbbacbf0d6d3f3094a5"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-02-REVIEWED-002",
+              "Content Digest": "sha256:3d83f7fa8d0e75ba60184bd50d0fa435c16a9ed5ecb0f18df92a69e3b01eb05b"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-03-REVIEWED-002",
+              "Content Digest": "sha256:9abff002efab766c46eb84b99c63db389ad0290d51d548f1e04d158ef80a3853"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-04-REVIEWED-002",
+              "Content Digest": "sha256:422a2592cf37e4ed645b55fb191add5c12db20f9980defffb29b73d5d793195d"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-05-REVIEWED-002",
+              "Content Digest": "sha256:970903ce9e78c47125cfa5c96b0d184386476f7b72b890d09bcd722c0971f192"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-06-REVIEWED-002",
+              "Content Digest": "sha256:7e4baef743a578ae06830ddddd4be2372fb662b0c63400443639be7a9e3c6198"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-07-REVIEWED-002",
+              "Content Digest": "sha256:07789a67549d214414359a59d046bb64b662772c79f8e893533b03c5ad7c89fb"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-08-REVIEWED-002",
+              "Content Digest": "sha256:8be7ab0c5a9c559c01065393a9e2e5ed8f3aff5b9b861bcf12ba3b38de975195"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-09-REVIEWED-002",
+              "Content Digest": "sha256:071992ce26073c7f915b5cbe2de452a4f896a6aef46478a617bd5b364e5b0858"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-10-REVIEWED-002",
+              "Content Digest": "sha256:af34541a983a480b4b95b9cc9bbc08fc222c6eb2bf5a8e6122642574fc490ea8"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-11-REVIEWED-002",
+              "Content Digest": "sha256:43a200a6022468d2ce2f44f84b9a8de5b4c6f67b32a30d98e352fb15f6255a8d"
+            },
+            {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-12-REVIEWED-002",
+              "Content Digest": "sha256:50fe6c550dbd62d9f8c31cc6a2b0d407c20c3c07f41747c1b77e024256f778d0"
+            }
+          ],
+          "Transitive Member Ref Set": [
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ01-002",
+              "Content Digest": "sha256:e9740fd4df3a0ee2aa0e7b550b537eaf1892b06a14d2de2747dbeb3aeca27aa9"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ02-002",
+              "Content Digest": "sha256:d381593495fa904f188bffe914db0b2d6f9959d90d7f963d721d5a7878a4530d"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ03-002",
+              "Content Digest": "sha256:7fec80e1750707d341cf51f8c8524d71381696093e45f4f056c387127f252526"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ04-002",
+              "Content Digest": "sha256:1abf16b63f43b658419679970514cab21f970395881c822ba4661d3986cc6e6c"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ05-002",
+              "Content Digest": "sha256:6022563c1d7df4f8234c5a44a52ad6f427401e8f63d9db5b9ed8763bb724cb5b"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ06-002",
+              "Content Digest": "sha256:38069737a37574bbd92612c676deb7d4ffc7abfce51c53f0c7dbc77b523e155a"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ07-002",
+              "Content Digest": "sha256:a21486329134b00471084233643ea57b7cddc7d967230311e584d5dacfc7fcd3"
+            },
+            {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ08-002",
+              "Content Digest": "sha256:0cbab7b4be3facad4acf42b66948740b63d582a34aaa7f7eaba2199789c5e184"
+            },
+            {
+              "Artifact Type": "Code Review Artifact",
+              "Artifact ID": "CRA-CRFI-002",
+              "Content Digest": "sha256:bdfeb3a36f22e7632e2ab9eb5a84c67615234111b4c2831fed890a5ca6931198"
+            },
+            {
+              "Artifact Type": "Working Revision",
+              "Artifact ID": "WR-CRFI-005",
+              "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-01-002",
+              "Content Digest": "sha256:3f92fdd3ca639059fc349bcefad57984f08bb2507f1ab40d33b37f29770faa1c"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-02-002",
+              "Content Digest": "sha256:355550a9792a628f5c30c1d6f5a923e7486b20dc9a31fb0a087b5b4160a28492"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-03-002",
+              "Content Digest": "sha256:f14a232dc37c795b32722bb6f6fe3c7836bba71e422d3583b00d5be192e6a2fb"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-04-002",
+              "Content Digest": "sha256:88cbbbed7dc81e6d88db980eaaf03ad51813b8b93c3acc8d8b73f7a45681c627"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-05-002",
+              "Content Digest": "sha256:64f59f3cdc07c8fca06592bbd24cca57fadc6cc03b63c338df959f802d124880"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-06-002",
+              "Content Digest": "sha256:24bf2179a14aa4a82e405974e814a99a092b881eaeccb893cd7f8131b9a6ffb6"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-07-002",
+              "Content Digest": "sha256:32a57da102e632db57c73052e25c49f0d4184df5fa738870b35b157fd129cd5d"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-08-002",
+              "Content Digest": "sha256:b65c9a3793abbb74499ead48418e5e2b0607b413b3ba3e4bad4ddae52eb44d74"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-09-002",
+              "Content Digest": "sha256:c37673b33523507cecc57fbc1abe9127dec20e484c18ca950dc89c0a5dd3d447"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-10-002",
+              "Content Digest": "sha256:c134a34be26beb962f6a94df080932710984fd3aa46771fbe12c1d21dbaad2c4"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-11-002",
+              "Content Digest": "sha256:813c2709f7a40589aac96be1a53dd8d6178a06a0e4b0d4f8b98527a396568fe3"
+            },
+            {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-12-002",
+              "Content Digest": "sha256:559beb3b15ff71c437ae910cf35e7c7079f10bdbb283d38d4dbc9f2fea35acff"
+            },
+            {
+              "Artifact Type": "Review Batch",
+              "Artifact ID": "RB-CRFI-002",
+              "Content Digest": "sha256:186c35541932173d0e6d6ddcf4955835e20ca1d785ea4c5841e2faa3f267af55"
+            },
+            {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CRFI-002",
+              "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+            },
+            {
+              "Artifact Type": "Phase Plan",
+              "Artifact ID": "PP-CRFI-001",
+              "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+            }
+          ],
+          "Edges": "decision ID representation→element ref→Working/Review→Freeze→Phase Plan; exact statement/acceptance/source unchanged",
+          "Exclusions": "No Goal Set/Handoff exists; source/test data and U02 audit unaffected. Prior resolved schema Change remains applicable."
+        },
+        "Complete Initial Obligation Member Set": [
+          {
+            "Obligation ID": "O10",
+            "Owner Stage": "P2G-10",
+            "Origin Composite Basis": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-005",
+                "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+              },
+              "Final Policy Freeze Ref": {
+                "Artifact Type": "Final Policy Freeze",
+                "Artifact ID": "FPF-CRFI-002",
+                "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+              },
+              "Phase Plan Ref": {
+                "Artifact Type": "Phase Plan",
+                "Artifact ID": "PP-CRFI-001",
+                "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+              },
+              "Goal Set Ref": null,
+              "Handoff Artifact Ref": null,
+              "Post-Freeze Change Record Ref Set": [
+                {
+                  "Artifact Type": "Post-Freeze Change Record",
+                  "Artifact ID": "PFC-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+                }
+              ],
+              "Authoritative Change Obligation Declaration Ref Set": [
+                {
+                  "Artifact Type": "Change Obligation Declaration",
+                  "Artifact ID": "COD-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+                }
+              ]
+            },
+            "Internal Prerequisite Obligation ID Set": [],
+            "External Prerequisite Obligation Key Set": [],
+            "Target Basis Requirements/Projection": "canonical DR identity successors with unchanged exact meanings; fresh full current binding/freeze/identical phase plan under exact new basis",
+            "Artifact Invalidation Closure Selector": [
+              "Working Revision",
+              "Decision Revision"
+            ],
+            "Required Resolution Artifact Type": [
+              "Working Revision",
+              "Decision Revision"
+            ]
+          },
+          {
+            "Obligation ID": "O20",
+            "Owner Stage": "P2G-20",
+            "Origin Composite Basis": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-005",
+                "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+              },
+              "Final Policy Freeze Ref": {
+                "Artifact Type": "Final Policy Freeze",
+                "Artifact ID": "FPF-CRFI-002",
+                "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+              },
+              "Phase Plan Ref": {
+                "Artifact Type": "Phase Plan",
+                "Artifact ID": "PP-CRFI-001",
+                "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+              },
+              "Goal Set Ref": null,
+              "Handoff Artifact Ref": null,
+              "Post-Freeze Change Record Ref Set": [
+                {
+                  "Artifact Type": "Post-Freeze Change Record",
+                  "Artifact ID": "PFC-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+                }
+              ],
+              "Authoritative Change Obligation Declaration Ref Set": [
+                {
+                  "Artifact Type": "Change Obligation Declaration",
+                  "Artifact ID": "COD-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+                }
+              ]
+            },
+            "Internal Prerequisite Obligation ID Set": [
+              "O10"
+            ],
+            "External Prerequisite Obligation Key Set": [],
+            "Target Basis Requirements/Projection": "canonical DR identity successors with unchanged exact meanings; fresh full current binding/freeze/identical phase plan under exact new basis",
+            "Artifact Invalidation Closure Selector": [
+              "Review Batch",
+              "Code Review Binding"
+            ],
+            "Required Resolution Artifact Type": [
+              "Review Batch",
+              "Code Review Binding"
+            ]
+          },
+          {
+            "Obligation ID": "O30",
+            "Owner Stage": "P2G-30",
+            "Origin Composite Basis": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-005",
+                "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+              },
+              "Final Policy Freeze Ref": {
+                "Artifact Type": "Final Policy Freeze",
+                "Artifact ID": "FPF-CRFI-002",
+                "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+              },
+              "Phase Plan Ref": {
+                "Artifact Type": "Phase Plan",
+                "Artifact ID": "PP-CRFI-001",
+                "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+              },
+              "Goal Set Ref": null,
+              "Handoff Artifact Ref": null,
+              "Post-Freeze Change Record Ref Set": [
+                {
+                  "Artifact Type": "Post-Freeze Change Record",
+                  "Artifact ID": "PFC-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+                }
+              ],
+              "Authoritative Change Obligation Declaration Ref Set": [
+                {
+                  "Artifact Type": "Change Obligation Declaration",
+                  "Artifact ID": "COD-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+                }
+              ]
+            },
+            "Internal Prerequisite Obligation ID Set": [
+              "O20"
+            ],
+            "External Prerequisite Obligation Key Set": [],
+            "Target Basis Requirements/Projection": "canonical DR identity successors with unchanged exact meanings; fresh full current binding/freeze/identical phase plan under exact new basis",
+            "Artifact Invalidation Closure Selector": [
+              "Final Policy Freeze"
+            ],
+            "Required Resolution Artifact Type": [
+              "Final Policy Freeze"
+            ]
+          },
+          {
+            "Obligation ID": "O40",
+            "Owner Stage": "P2G-40",
+            "Origin Composite Basis": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRFI-005",
+                "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+              },
+              "Final Policy Freeze Ref": {
+                "Artifact Type": "Final Policy Freeze",
+                "Artifact ID": "FPF-CRFI-002",
+                "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+              },
+              "Phase Plan Ref": {
+                "Artifact Type": "Phase Plan",
+                "Artifact ID": "PP-CRFI-001",
+                "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+              },
+              "Goal Set Ref": null,
+              "Handoff Artifact Ref": null,
+              "Post-Freeze Change Record Ref Set": [
+                {
+                  "Artifact Type": "Post-Freeze Change Record",
+                  "Artifact ID": "PFC-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+                }
+              ],
+              "Authoritative Change Obligation Declaration Ref Set": [
+                {
+                  "Artifact Type": "Change Obligation Declaration",
+                  "Artifact ID": "COD-CRFI-SCHEMA-001",
+                  "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+                }
+              ]
+            },
+            "Internal Prerequisite Obligation ID Set": [
+              "O30"
+            ],
+            "External Prerequisite Obligation Key Set": [],
+            "Target Basis Requirements/Projection": "canonical DR identity successors with unchanged exact meanings; fresh full current binding/freeze/identical phase plan under exact new basis",
+            "Artifact Invalidation Closure Selector": [
+              "Phase Plan"
+            ],
+            "Required Resolution Artifact Type": [
+              "Phase Plan"
+            ]
+          }
+        ],
+        "Stage Coverage Evidence": {
+          "O10": "12 same-meaning Decision successors and element references",
+          "O20": "all12 fresh bindings at same59 source files",
+          "O30": "current successor freeze with exact12 members",
+          "O40": "same4 WPs/1 atomic group/1 Phase/12 seams, new exact freeze receipt",
+          "P2G-50/60": "no published artifact yet; no repair obligation"
+        },
+        "Invalidated Artifact Disposition Set": [
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ01-002",
+              "Content Digest": "sha256:e9740fd4df3a0ee2aa0e7b550b537eaf1892b06a14d2de2747dbeb3aeca27aa9"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ02-002",
+              "Content Digest": "sha256:d381593495fa904f188bffe914db0b2d6f9959d90d7f963d721d5a7878a4530d"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ03-002",
+              "Content Digest": "sha256:7fec80e1750707d341cf51f8c8524d71381696093e45f4f056c387127f252526"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ04-002",
+              "Content Digest": "sha256:1abf16b63f43b658419679970514cab21f970395881c822ba4661d3986cc6e6c"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ05-002",
+              "Content Digest": "sha256:6022563c1d7df4f8234c5a44a52ad6f427401e8f63d9db5b9ed8763bb724cb5b"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ06-002",
+              "Content Digest": "sha256:38069737a37574bbd92612c676deb7d4ffc7abfce51c53f0c7dbc77b523e155a"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ07-002",
+              "Content Digest": "sha256:a21486329134b00471084233643ea57b7cddc7d967230311e584d5dacfc7fcd3"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CRFI-RQ08-002",
+              "Content Digest": "sha256:0cbab7b4be3facad4acf42b66948740b63d582a34aaa7f7eaba2199789c5e184"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Artifact",
+              "Artifact ID": "CRA-CRFI-002",
+              "Content Digest": "sha256:bdfeb3a36f22e7632e2ab9eb5a84c67615234111b4c2831fed890a5ca6931198"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-01-REVIEWED-002",
+              "Content Digest": "sha256:d5676d5eb6b289dbf6c00ade7f7d9578c5349a217d2c4bbbacbf0d6d3f3094a5"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-02-REVIEWED-002",
+              "Content Digest": "sha256:3d83f7fa8d0e75ba60184bd50d0fa435c16a9ed5ecb0f18df92a69e3b01eb05b"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-03-REVIEWED-002",
+              "Content Digest": "sha256:9abff002efab766c46eb84b99c63db389ad0290d51d548f1e04d158ef80a3853"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-04-REVIEWED-002",
+              "Content Digest": "sha256:422a2592cf37e4ed645b55fb191add5c12db20f9980defffb29b73d5d793195d"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-05-REVIEWED-002",
+              "Content Digest": "sha256:970903ce9e78c47125cfa5c96b0d184386476f7b72b890d09bcd722c0971f192"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-06-REVIEWED-002",
+              "Content Digest": "sha256:7e4baef743a578ae06830ddddd4be2372fb662b0c63400443639be7a9e3c6198"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-07-REVIEWED-002",
+              "Content Digest": "sha256:07789a67549d214414359a59d046bb64b662772c79f8e893533b03c5ad7c89fb"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-08-REVIEWED-002",
+              "Content Digest": "sha256:8be7ab0c5a9c559c01065393a9e2e5ed8f3aff5b9b861bcf12ba3b38de975195"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-09-REVIEWED-002",
+              "Content Digest": "sha256:071992ce26073c7f915b5cbe2de452a4f896a6aef46478a617bd5b364e5b0858"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-10-REVIEWED-002",
+              "Content Digest": "sha256:af34541a983a480b4b95b9cc9bbc08fc222c6eb2bf5a8e6122642574fc490ea8"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-11-REVIEWED-002",
+              "Content Digest": "sha256:43a200a6022468d2ce2f44f84b9a8de5b4c6f67b32a30d98e352fb15f6255a8d"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-12-REVIEWED-002",
+              "Content Digest": "sha256:50fe6c550dbd62d9f8c31cc6a2b0d407c20c3c07f41747c1b77e024256f778d0"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Working Revision",
+              "Artifact ID": "WR-CRFI-005",
+              "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-01-002",
+              "Content Digest": "sha256:3f92fdd3ca639059fc349bcefad57984f08bb2507f1ab40d33b37f29770faa1c"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-02-002",
+              "Content Digest": "sha256:355550a9792a628f5c30c1d6f5a923e7486b20dc9a31fb0a087b5b4160a28492"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-03-002",
+              "Content Digest": "sha256:f14a232dc37c795b32722bb6f6fe3c7836bba71e422d3583b00d5be192e6a2fb"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-04-002",
+              "Content Digest": "sha256:88cbbbed7dc81e6d88db980eaaf03ad51813b8b93c3acc8d8b73f7a45681c627"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-05-002",
+              "Content Digest": "sha256:64f59f3cdc07c8fca06592bbd24cca57fadc6cc03b63c338df959f802d124880"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-06-002",
+              "Content Digest": "sha256:24bf2179a14aa4a82e405974e814a99a092b881eaeccb893cd7f8131b9a6ffb6"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-07-002",
+              "Content Digest": "sha256:32a57da102e632db57c73052e25c49f0d4184df5fa738870b35b157fd129cd5d"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-08-002",
+              "Content Digest": "sha256:b65c9a3793abbb74499ead48418e5e2b0607b413b3ba3e4bad4ddae52eb44d74"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-09-002",
+              "Content Digest": "sha256:c37673b33523507cecc57fbc1abe9127dec20e484c18ca950dc89c0a5dd3d447"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-10-002",
+              "Content Digest": "sha256:c134a34be26beb962f6a94df080932710984fd3aa46771fbe12c1d21dbaad2c4"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-11-002",
+              "Content Digest": "sha256:813c2709f7a40589aac96be1a53dd8d6178a06a0e4b0d4f8b98527a396568fe3"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Code Review Binding",
+              "Artifact ID": "CRB-CRFI-12-002",
+              "Content Digest": "sha256:559beb3b15ff71c437ae910cf35e7c7079f10bdbb283d38d4dbc9f2fea35acff"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Review Batch",
+              "Artifact ID": "RB-CRFI-002",
+              "Content Digest": "sha256:186c35541932173d0e6d6ddcf4955835e20ca1d785ea4c5841e2faa3f267af55"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Final Policy Freeze",
+              "Artifact ID": "FPF-CRFI-002",
+              "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          },
+          {
+            "Exact Artifact Ref": {
+              "Artifact Type": "Phase Plan",
+              "Artifact ID": "PP-CRFI-001",
+              "Content Digest": "sha256:076c80a1e4bfcf204eb174431684ba5acf87af5f3498103e7f7a85a53abf9c75"
+            },
+            "Derived Disposition": "stale",
+            "Invalidation Reason": "decision canonical ID representation propagates to downstream exact refs",
+            "Change ID": "CH-CRFI-SCHEMA-002"
+          }
+        ]
+      }
+    }
+  ],
+  "current_authoritative_declaration_ref": {
+    "Artifact Type": "Change Obligation Declaration",
+    "Artifact ID": "COD-CRFI-SCHEMA-002",
+    "Content Digest": "sha256:3f4b7b6e681731f5f71c4601f105e815cf81a1fc4ea586e5791977d8d6e6febf"
+  },
+  "population_evidence": "Enumerated root-level topic artifacts: Change001 resolved remains applicable; new Change002 only other change. No disjoint branch; strict10→20→30→40 acyclic."
+}

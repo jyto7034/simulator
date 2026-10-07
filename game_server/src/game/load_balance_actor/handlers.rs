@@ -41,25 +41,28 @@ impl Handler<GetOrCreatePlayerActor> for LoadBalanceActor {
         }
 
         info!("Creating PlayerGameActor for player {}", msg.player_id);
-        let encounter_compendium_profile = self
-            .encounter_compendium_persistence
+        let player_profile = self
+            .player_profile_persistence
             .as_ref()
             .and_then(|persistence| persistence.lock().ok()?.profile().ok())
             .unwrap_or_default();
-        let game_core = game_core::game::world::GameCore::new_with_encounter_compendium_profile(
-            msg.game_data,
-            msg.run_seed,
-            encounter_compendium_profile,
-        )
-        .expect(
-            "stored encounter compendium profile was validated against this server's live catalogs",
-        );
+        let mut game_core =
+            game_core::application::CoreApplication::new(msg.game_data, msg.run_seed);
+        #[cfg(feature = "runtime-observation")]
+        if let Some(observation) = &self.observation {
+            observation.attach(&mut game_core);
+        }
+        game_core
+            .merge_player_profile(game_core::application::ApplicationDocument::new(
+                serde_json::to_value(player_profile).expect("validated profile serialization"),
+            ))
+            .expect("stored player profile was validated before server publication");
         let mut actor = PlayerGameActor::new(msg.player_id, game_core, ctx.address());
         if let Some(store) = self.active_run_store.clone() {
             actor = actor.with_active_run_store(store);
         }
-        if let Some(persistence) = self.encounter_compendium_persistence.clone() {
-            actor = actor.with_encounter_compendium_persistence(persistence);
+        if let Some(persistence) = self.player_profile_persistence.clone() {
+            actor = actor.with_player_profile_persistence(persistence);
         }
         let actor = actor.start();
         self.players.insert(msg.player_id, actor.clone());
@@ -95,13 +98,12 @@ impl Handler<GetPlayerCount> for LoadBalanceActor {
 mod tests {
     use super::*;
     use crate::game::player_game_actor::messages::GetEncounterCompendiumProfile;
-    use game_core::game::data::{GameDataBase, GameDataBuilder};
+    use game_core::game::data::GameDataBuilder;
     use game_core::game::encounter_compendium::EncounterCompendiumProfileState;
-    use std::sync::Arc;
     use uuid::Uuid;
 
-    fn empty_game_data() -> Arc<GameDataBase> {
-        GameDataBuilder::empty().build_arc()
+    fn empty_game_data() -> game_core::game::data::ValidatedGameData {
+        GameDataBuilder::empty().build_arc().into()
     }
 
     #[actix_web::test]
@@ -139,21 +141,23 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn different_transport_players_share_local_install_encounter_compendium_profile() {
+    async fn different_transport_players_share_local_install_player_profile() {
         let directory = tempfile::tempdir().unwrap();
         let active_store = crate::persistence::active_run_store::ActiveRunStore::open(
             directory.path().join("active"),
         )
         .unwrap();
-        let profile_store =
-            crate::persistence::encounter_compendium_store::EncounterCompendiumStore::open(
-                directory.path().join("profile"),
-            )
-            .unwrap();
-        let mut persistence = crate::persistence::encounter_compendium_store::EncounterCompendiumPersistence::bootstrap(profile_store);
+        let profile_store = crate::persistence::player_profile_store::PlayerProfileStore::open(
+            directory.path().join("profile"),
+        )
+        .unwrap();
+        let mut persistence =
+            crate::persistence::player_profile_store::PlayerProfilePersistence::bootstrap(
+                profile_store,
+            );
         let second_player_id = Uuid::new_v4();
-        let game_data =
-            GameDataBase::load_live_embedded().expect("embedded live gameplay data should load");
+        let game_data = game_core::game::data::ValidatedGameData::load_live_embedded()
+            .expect("embedded live gameplay data should load");
         let abnormality_id = game_data
             .abnormality_data
             .items
@@ -162,14 +166,11 @@ mod tests {
             .id
             .clone();
         let profile = EncounterCompendiumProfileState {
-            discovered_abnormality_ids: std::collections::BTreeSet::from([abnormality_id]),
-            defeated_abnormality_ids: std::collections::BTreeSet::new(),
-            discovered_corrosion_profile_ids: std::collections::BTreeSet::new(),
-            defeated_corrosion_profile_ids: std::collections::BTreeSet::new(),
+            registered_ids: std::collections::BTreeSet::from([abnormality_id]),
         };
         assert!(matches!(
             persistence.merge_and_persist(profile.clone()),
-            crate::persistence::encounter_compendium_store::EncounterCompendiumPersistOutcome::Saved
+            crate::persistence::player_profile_store::PlayerProfilePersistOutcome::Saved
         ));
         let load_balance = LoadBalanceActor::with_persistence(active_store, persistence).start();
 
@@ -186,6 +187,6 @@ mod tests {
             .await
             .expect("profile query should succeed");
 
-        assert_eq!(restored, profile);
+        assert_eq!(restored.unwrap(), profile);
     }
 }

@@ -1,0 +1,35 @@
+# S1 선택과 실패 기록
+
+P2G canonical 필드 표현을 successor revision으로 교정했고 이전 원본은 보존했다. 의미 변경 없음.
+Host persistence rollback은 public opaque session/revision capability로 준비하며 private Core export는 금지한다.
+
+
+GEX-10 TD03 구체화: ApplicationPersistenceRollback은 Arc owner + 포화 u64 revision + private non-battle snapshot을 가진 non-Clone/non-Serde capability다. public mutation attempt마다 revision을 한 번 올리고, restore는 동일 owner 및 정확히 다음 attempt에서만 허용한다. restore도 revision을 소비하며 overflow 직전에는 capture를 거부한다. 불일치는 `stale_persistence_rollback`; 기존 profile/run peak의 monotonic merge를 유지한다. private Core 및 command/result enum은 공개하지 않는다. authoring fork는 별도 owner를 갖는다. 이는 P2G TD03의 구체 구현 선택이며 정책 의미 변경이 아니다.
+
+V04 restore: V9 typed resource graph의 보존 extent를 현재 immutable generation의 native max_retained_bytes로 비교한다. save의 semantic content identity/checksum은 기존 검증을 유지하고 profile identity를 save authority로 가져오지 않는다. 실패는 typed runtime fault이며 draft 밖의 원본 save와 live state가 유지되어야 한다.
+
+settings_focused_004/005의 실패는 새 probe의 가정 오류였다: typed i128 expression을 사용한 SkillDatabase의 RON serializer는 지원되지 않으므로 원문 RON에 probe를 추가했다. max_actors는 단순 spawned unit 개수가 아니라 fact actor summary 수이므로 spawn만으로 초과하지 않는다. 첫 operation에서 max_work=1을 사용해 설정이 시작 전에 설치됐는지 검증하도록 변경했다. 파서/compile/evaluate 및 semantic identity probe는 005에서 실제 통과했다. settings_and_restore_006은 새 rollback test의 &mut 누락 4건이며 교정 후 007 실행 중.
+
+History public Vec mutation은 진단 객체의 외부 조작 경로다. application 내부 log는 append/stream import를 통해서만 생성·수정되며 외부 객체를 live authority로 설치하는 공개 API는 없다. 같은 길이의 임의 수정에서 accounting이 stale해질 수 있는 기존 진단 타입 성질은 후속 검토 대상이다. 호스트 profile 적용 검증을 그 경로까지 통과했다고 주장하지 않는다.
+
+
+009 실제 검증: 10 PASS. 007의 native cap=1은 generated preview admission 자체를 거부했으며 이는 설정 전파의 올바른 동작이다. 008은 resource catalog만 늘려서는 lazy Run balances가 생성되지 않아 restore reject가 없었다. 009는 3500개 유효한 이전사용 Run ledger를 fixture에 명시적으로 구성하고 default profile로 save한 후 262144-byte profile에서 continue를 거부, default에서 허용하며 원본 bytes/상태 보존을 검증했다. 임의 cap을 올리거나 정책을 약화하지 않았다. persistence_rollback_001은 foreign/stale/duplicate-capture/revision saturation/profile monotonic 2 tests PASS.
+
+Server adapter의 기존 terminal log attachment 호출은 현재 Core에 없으며 release negative API audit (`core_enhanced/tools/history_result_api_audit/invalid/src/main.rs`)에서도 금지된다. 따라서 공개 attachment seam을 새로 만들지 않고 production snapshot의 optional compressed_event_log를 None으로 둔다. 기존 live battle setup/update/resync와 command payload는 public ApplicationResult에서 명시적으로 복원한다. 이는 제거된 이전 API를 되살리지 않는 선행 계약 유지다.
+
+Host config 2개 파일은 product baseline337의 디렉터리 범위 밖이었으므로 변경 전에 baseline/HOST_CONFIG_BEFORE.json 및 tar.gz로 별도 보존했다. 후속 runner는 game_server/config도 source identity에 포함한다; 이미 발행한 command receipts는 수정하지 않는다.
+
+
+Server adapter 001: production rollback로 이동한 기존 peak monotonic helper가 cfg(test)이어서 non-test build에서 누락; 같은 의미로 production 경로를 활성화했다. 002: session admin type 잔여 private import와 ApplicationResultKind::Ok glob shadowing을 교정했다. 003: public app adapter의 library/binary 경로를 검사하고 기존 fixture/example의 private API·누락 DTO 필드를 확인했다. 004: test 변환 중 return-type 바로 뒤에 corrosion_class를 삽입한 문법 오류가 handler impl을 모두 숨겨 연쇄 오류를 냈고, fixture macro/value 이름 충돌·untyped None/string을 함께 교정했다. 어떤 실패도 audit pass로 간주하지 않는다.
+
+서버 입력 테스트는 동일한 성공·거부 입력을 public ApplicationCommand와 실제 transport envelope로 재검증한다. 이미 제거된 upgrade_skill_fragment 및 target_fragment_id 각성 요청은 거부로 갱신하고 현행 copy_uuid/form_id를 성공 case로 추가했다. 결과·오류 mapper의 독립 transport fixture는 공개 serialized ApplicationResult/ApplicationError만 구성한다. 실제 세션/저장/전투 검증은 CoreApplication이 결과를 생성하며 private Core compatibility shim을 사용하지 않는다. 예제 3개는 변경 전 HOST_EXAMPLES_BEFORE에 보존했고 runner membership에도 추가했다.
+
+2026-10-04 structural-field diagnostics: settings_focused_011 compile failure came from using ron0.8 enum names while this Core intentionally retains ron0.5.1. No dependency migration: corrected to existing Serde structural-message field plus serde_path_to_error parent. Added root/nested unknown/duplicate/missing assertions; original failure retained. server_tests_002: all74 passed.
+
+S1 follow-up: bootstrap real official-pack concurrent profiles passed. First public battle probe initially used max_actors=1, but the actual first Defense spawn has one defense-object actor and succeeds; corrected probe to native max_work=1. Focused first-entry test passes and verifies rollback state plus no active-battle persistence token. History same-length public mutable edits previously bypassed cached size/time invalidation; added inline dirty bit, retained existing COW and clone admission, clears only after internal accounting. 13 history tests pass, including small-profile eviction, dirty edit, COW, cancellation and exact bytes. cargo fmt changed31 already-owned product paths; no previously unchanged baseline source changed.
+
+Full default and test-fixtures first pass both1699/0/0, exact source unchanged. Added actual 1000ms timed battle under1ms/1event history; focusedPASS verifies nontermination at500ms, same winner/final duration statistics at1000ms and expired cursor rejection. Host file I/O failures now label runtime_safety_path. Fresh final baseline required for this addition. Production release Core+server binaries pass. public_profile001 failure was probe overreach: only two trace receipt usage.metadata_bytes_peak values differ, gameplay/amount/other receipt fields equal. Corrected comparison excludes top-level usage bookkeeping;002PASS24CLI+4realserver auth/command/reconnect/invalidstartup. Probe003 adds actual environment selection using config0.15 local source-confirmed APP__ prefix; old env.rs example APP_SERVER__PORT is a preexisting comment typo, runtime behavior unchanged and canonical new instructions use APP__RUNTIME_SAFETY_PATH. Public boundary001 not counted: missing cached log0.4.34 prevented valid consumer compilation; fetching exact locked dependencies, no version update. U01 F01 5/5, trace5/5,45CLI and trace amount parity allPASS currentrelease.
+
+PC_current001 compiled no test: isolated directory omitted the historical V7 JSON included by Core unit tests. Literal include audit found exactly three out-of-root compile inputs (V7 JSON plus live skill manifest/content index in integration tests). Source runner membership now includes all three, and supplemental COMPILE_INPUTS_BEFORE captures actual unchanged files for restoration. Existing receipts are not rewritten; final complete tests rerun with the expanded exact membership. Production release/API/CLI runs did not compile these cfg-test/integration inputs and their relevant runtime/config/binary basis remains unchanged. Cost probe will use a new full isolate002. Default number comparison passed38, but first runner receipt collided case-insensitively with uppercase proof filename; original proof/log retained with interruption record, distinct successor DEFAULT_NUMBERS001 and default_parity002 are valid.
+
+Final outcome and remaining warning: RESULT.ko.md. PC36 exact non-timing parity to immediate U01; R05 raw101 and warning_concurrent_peak_only are separate. History public-edit accounting gap described above is closed by the dirty-bit correction and final tests, not a remaining claim limitation. No independent verdict exists yet.

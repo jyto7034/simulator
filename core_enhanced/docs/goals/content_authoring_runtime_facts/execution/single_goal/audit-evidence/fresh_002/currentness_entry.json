@@ -1,0 +1,1296 @@
+{
+  "stage": "entry",
+  "at": "2026-09-11T03:19:34.433723+00:00",
+  "reviewer": "/root/r04_correction_fresh_completion_audit",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "toolchain": {
+    "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+    "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)"
+  },
+  "targets": [
+    {
+      "label": "R04",
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_003.json",
+        "bytes": 2088659,
+        "sha256": "a599773bc1f084a46c55b01ddf3a37e2ab47f10323080d5c67df3bceeff6b4c8"
+      },
+      "record": "ATR-CARF-R04-003",
+      "members": 4361,
+      "absences": 2,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_003",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_002",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_002",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_002",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_002",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_002",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_002",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_002",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_002",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_EXTERNAL_001",
+          "files": 72,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_CLI_001",
+          "files": 16,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_004",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_005",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/API_EXTERNAL_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CORRECTION_001_CONSUMER_BINARIES",
+          "files": 4,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_004",
+          "files": 20,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_003",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_003",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_003",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_003",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_003",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_003",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_003",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_003",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_003",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_003",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_003",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_003",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_003",
+          "files": 14,
+          "exact": true
+        }
+      ],
+      "external_files": 3773,
+      "binaries": [
+        {
+          "path": "target/release/author_content",
+          "bytes": 17292688,
+          "sha256": "9c6632208b04092c8ee2c70af1e8b7a645e14c190c725222885cef09a3780db3"
+        },
+        {
+          "path": "target/release/package_official_content",
+          "bytes": 9634016,
+          "sha256": "6ba9aa39b97786ba72219d833249266f71adf2c82ca848f8987d9c9ae420750b"
+        },
+        {
+          "path": "target/release/consume_content_pack",
+          "bytes": 16226264,
+          "sha256": "5fc810fba400b075006a3614879fb9cde41e4fc6f783f5e92c8ea59dadb2345e"
+        }
+      ]
+    },
+    {
+      "label": "R01",
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_006.json",
+        "bytes": 2086578,
+        "sha256": "a1f87aded22960fce13999d609c3d00f10ab4aa0c86423e63108313bc15b03af"
+      },
+      "record": "ATR-CAMEC-R01-006",
+      "members": 4362,
+      "absences": 2,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_003",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_002",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_002",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_002",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_002",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_002",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_002",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_002",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_002",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_EXTERNAL_001",
+          "files": 72,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_CLI_001",
+          "files": 16,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_004",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_005",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/API_EXTERNAL_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CORRECTION_001_CONSUMER_BINARIES",
+          "files": 4,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_004",
+          "files": 20,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_003",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_003",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_003",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_003",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_003",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_003",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_003",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_003",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_003",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_003",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_003",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_003",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_003",
+          "files": 14,
+          "exact": true
+        }
+      ],
+      "external_files": 3773,
+      "binaries": [
+        {
+          "path": "target/release/author_content",
+          "bytes": 17292688,
+          "sha256": "9c6632208b04092c8ee2c70af1e8b7a645e14c190c725222885cef09a3780db3"
+        },
+        {
+          "path": "target/release/package_official_content",
+          "bytes": 9634016,
+          "sha256": "6ba9aa39b97786ba72219d833249266f71adf2c82ca848f8987d9c9ae420750b"
+        },
+        {
+          "path": "target/release/consume_content_pack",
+          "bytes": 16226264,
+          "sha256": "5fc810fba400b075006a3614879fb9cde41e4fc6f783f5e92c8ea59dadb2345e"
+        }
+      ],
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_correction_006/AUDIT_OUTPUTS.json",
+        "bytes": 3721,
+        "sha256": "2b75f9ffc58fc07b72a0c0a49c0ffb23ed9c77d06b37424231794db441d73386"
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_006.md",
+        "bytes": 28554,
+        "sha256": "9875bb8fc93de29465ea444b062c233cbd2541233a21bc5f1853d4158aaf7208"
+      },
+      "outputs": 11,
+      "verdict": "Complete / High"
+    },
+    {
+      "label": "R02",
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_006.json",
+        "bytes": 2088556,
+        "sha256": "3e57d1f541f7f1ac94ee9638c8cf2f6ff6821e2c81668350da698c2921f56ee1"
+      },
+      "record": "ATR-CAPG-R02-006",
+      "members": 4365,
+      "absences": 2,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_003",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_002",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_002",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_002",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_002",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_002",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_002",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_002",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_002",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_EXTERNAL_001",
+          "files": 72,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_CLI_001",
+          "files": 16,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_004",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_005",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/API_EXTERNAL_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CORRECTION_001_CONSUMER_BINARIES",
+          "files": 4,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_004",
+          "files": 20,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_003",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_003",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_003",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_003",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_003",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_003",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_003",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_003",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_003",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_003",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_003",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_003",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_003",
+          "files": 14,
+          "exact": true
+        }
+      ],
+      "external_files": 3773,
+      "binaries": [
+        {
+          "path": "target/release/author_content",
+          "bytes": 17292688,
+          "sha256": "9c6632208b04092c8ee2c70af1e8b7a645e14c190c725222885cef09a3780db3"
+        },
+        {
+          "path": "target/release/package_official_content",
+          "bytes": 9634016,
+          "sha256": "6ba9aa39b97786ba72219d833249266f71adf2c82ca848f8987d9c9ae420750b"
+        },
+        {
+          "path": "target/release/consume_content_pack",
+          "bytes": 16226264,
+          "sha256": "5fc810fba400b075006a3614879fb9cde41e4fc6f783f5e92c8ea59dadb2345e"
+        }
+      ],
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r04_correction_005/AUDIT_OUTPUTS.json",
+        "bytes": 5582,
+        "sha256": "b9842ae6c7f94cd0b995fd9829a66260f23514f69c84b8eca40ee3ca4eaa6896"
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_005.md",
+        "bytes": 28428,
+        "sha256": "bfd82e5ee16b03394901ba1f1813bcc3c305d853401363cc85fccb1cdde7c5fe"
+      },
+      "outputs": 18,
+      "verdict": "Complete / High"
+    },
+    {
+      "label": "R03",
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_004.json",
+        "bytes": 2090470,
+        "sha256": "b59521416b76bec8487a9d9353645fc7a5e4bceb0b05818a179e78f2c1197cf1"
+      },
+      "record": "ATR-CATP-R03-004",
+      "members": 4368,
+      "absences": 2,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_003",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_002",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_002",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_002",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_002",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_002",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_002",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_002",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_002",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_002",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_002",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_002",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_002",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_EXTERNAL_001",
+          "files": 72,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_CLI_001",
+          "files": 16,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_004",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_005",
+          "files": 14,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/API_EXTERNAL_002",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CORRECTION_001_CONSUMER_BINARIES",
+          "files": 4,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/ORDINARY_GUARDS_004",
+          "files": 20,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_COST_003",
+          "files": 5,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_EXTERNAL_003",
+          "files": 63,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/RUNTIME_FACT_SOURCE_003",
+          "files": 7,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PACK_003",
+          "files": 75,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_CLI_003",
+          "files": 102,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_API_003",
+          "files": 13,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_003",
+          "files": 23,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_003",
+          "files": 30,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_SOURCE_003",
+          "files": 70,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_COMBAT_003",
+          "files": 54,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_RESOURCE_003",
+          "files": 100,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_BUFF_003",
+          "files": 101,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_INVALID_003",
+          "files": 448,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_DELIVERY_003",
+          "files": 68,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_PREVIEW_003",
+          "files": 65,
+          "exact": true
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/evidence/PREDECESSOR_REPLACEMENT_003",
+          "files": 14,
+          "exact": true
+        }
+      ],
+      "external_files": 3773,
+      "binaries": [
+        {
+          "path": "target/release/author_content",
+          "bytes": 17292688,
+          "sha256": "9c6632208b04092c8ee2c70af1e8b7a645e14c190c725222885cef09a3780db3"
+        },
+        {
+          "path": "target/release/package_official_content",
+          "bytes": 9634016,
+          "sha256": "6ba9aa39b97786ba72219d833249266f71adf2c82ca848f8987d9c9ae420750b"
+        },
+        {
+          "path": "target/release/consume_content_pack",
+          "bytes": 16226264,
+          "sha256": "5fc810fba400b075006a3614879fb9cde41e4fc6f783f5e92c8ea59dadb2345e"
+        }
+      ],
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_correction_004/AUDIT_OUTPUTS.json",
+        "bytes": 5406,
+        "sha256": "9a76dfd1792907de15788906932f6eff13a00b8c3e6a73cf26dad9498f96528d"
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/COMPLETION_AUDIT_004.md",
+        "bytes": 28653,
+        "sha256": "bcb34ce252cacafea2b63f6f2cbf68acc889042732fd9daca83aa46839aa9ea0"
+      },
+      "outputs": 18,
+      "verdict": "Complete / High"
+    }
+  ],
+  "distinct_files_hashed": 6928,
+  "errors": [],
+  "currentness": "current / unchanged"
+}

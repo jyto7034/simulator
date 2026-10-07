@@ -1,0 +1,26 @@
+{
+  "timestamp_utc": "2026-09-29T16:44:50.063818+00:00",
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "tools": [
+    {
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--help"
+      ],
+      "exit_code": 0,
+      "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9",
+      "purpose": "tool discovery only; not P2G validation"
+    },
+    {
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs",
+        "--help"
+      ],
+      "exit_code": 0,
+      "sha256": "a072f17a59e16c0b999ecd4a0d74740e508efaa39b4bf0216ad7aed138e63897",
+      "purpose": "tool discovery only; not P2G validation"
+    }
+  ]
+}

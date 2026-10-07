@@ -1,0 +1,68 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-004",
+    "Content Digest": "sha256:f70d3b0f97d5bf68976df4f03b84aaa4f443ebdca8363e466e03f5376e42e7ea"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-005",
+    "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+  },
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CRFI-002",
+    "Content Digest": "sha256:186c35541932173d0e6d6ddcf4955835e20ca1d785ea4c5841e2faa3f267af55"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CRFI-002",
+    "Content Digest": "sha256:6e76182eee6d1ee16e71247ddff995b900ba55ff6d9e42d33a1ef708c741b72a"
+  },
+  "checks": {
+    "exact_reference_integrity": true,
+    "source_unchanged": true,
+    "input_acceptance_preserved": true,
+    "all_12_reviewed_and_bound": true,
+    "all_8_source_requirements_confirmed": true,
+    "material_policy_findings": 0,
+    "required_source_gaps": 0
+  },
+  "Resolution Record Ref Set": [
+    {
+      "Artifact Type": "Resolution Record",
+      "Artifact ID": "RR-CRFI-SCHEMA-20-001",
+      "Content Digest": "sha256:1f59f636b0e38836bae3ba0f2cf076af10bc8925b1e2915d4e4a83e9f536ffc0"
+    }
+  ],
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRFI-005",
+      "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+    },
+    "Final Policy Freeze Ref": null,
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [
+      {
+        "Artifact Type": "Post-Freeze Change Record",
+        "Artifact ID": "PFC-CRFI-SCHEMA-001",
+        "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+      }
+    ],
+    "Authoritative Change Obligation Declaration Ref Set": [
+      {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRFI-SCHEMA-001",
+        "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+      }
+    ]
+  },
+  "O20_effectively_resolved": true,
+  "production_mutation": false,
+  "next": "P2G-30"
+}

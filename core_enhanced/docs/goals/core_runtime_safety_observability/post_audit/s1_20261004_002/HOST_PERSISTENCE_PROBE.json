@@ -1,0 +1,70 @@
+{
+  "source_sha256": "aeb2671288385c1eb541781baa03631fa59dca089cfb341a6b13485845f46d32",
+  "compile_exit": 0,
+  "host_probe_exit": 0,
+  "exit_meaning": "probe asserts and demonstrates defect, not a product pass",
+  "host_observations": [
+    "saved peak 204",
+    "host_command_result Err(PlayerGameActorError { code: \"active_battle_persistence_rollback\", message: \"Action is not allowed in the current state\" })",
+    "post_failure_battle_side_messages 2",
+    "persisted_peak 204"
+  ],
+  "core_peak_observation": {
+    "active_battle": true,
+    "after_peak": 213,
+    "before_peak": 204,
+    "checkpoint_equal": false,
+    "restore": "Err(ApplicationError { kind: InvalidAction, code: \"active_battle_persistence_rollback\", details: ApplicationDocument(Object {\"message\": String(\"persistence rollback is unavailable during an active battle\")}) })"
+  },
+  "inputs": [
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s1_20261004_002/host_peak_failure_probe.rs",
+      "sha256": "614cdffea3a14f7ce3a6c4d0cd6b3479049ccc6fa2891359d0ad7a3652ad2a0b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s1_20261004_002/checkpoint_entry_probe.rs",
+      "sha256": "d8fe7120ffeb2cd7daaee63deb79c30a29eab3847b482b083c4e252326fb281e"
+    },
+    {
+      "path": ".cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+      "sha256": "e8f71326546f62b5bb983e9cd2a87005e24e82cb70e434fa93b485ab0da8f766"
+    },
+    {
+      "path": ".cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+      "sha256": "c251b87040b86edf8a5c7d17edd4e8aee498d97aac38fbbfbbb728dd8423ed7f"
+    },
+    {
+      "path": ".cache/d07-runtime-amount-product-target/release/deps/libactix-0172911f7557b8c0.rlib",
+      "sha256": "507c74de7e64877cd837f2f1f4ba7714b75b72f2fedb0240a04d54dc5df290b8"
+    },
+    {
+      "path": ".cache/d07-runtime-amount-product-target/release/deps/libgame_core-2f31213ad3aeaf43.rlib",
+      "sha256": "121413d0072a25530b4e4cd5435c25dac9e06c42736e784123ec894d5efce13d"
+    },
+    {
+      "path": ".cache/d07-runtime-amount-product-target/release/deps/libgame_server-d1396f4faf960c7e.rlib",
+      "sha256": "aff144c1d766da15d0f0b97a73e0fb6e68567233ff04498edeb1aa2fcaaf35c0"
+    }
+  ],
+  "raw_logs": [
+    {
+      "path": "checkpoint_probe_run_001.log",
+      "sha256": "e01e7360273fcaad546dac47e98b5cfb298e91561336a168fbabe08b0f1875da"
+    },
+    {
+      "path": "checkpoint_probe_run_002.log",
+      "sha256": "f4d1d1092c57b1f4550f5dadd0d38b1e4bc4808baa1f4eefe2899bd8d2422664"
+    },
+    {
+      "path": "host_peak_compile.log",
+      "sha256": "e023aef5977866e7585aea0a78f5224997223c7a3e28b2359a12166f2b1f9a31"
+    },
+    {
+      "path": "host_peak_run.log",
+      "sha256": "35dbc723cd72b07e98442393e1d789cf60ce9e00da2240e8553066e0438dc22f"
+    }
+  ],
+  "failure_injection": "An isolated /tmp ActiveRunStore has a valid published checkpoint and an active_run.tmp directory, causing the first temporary-file write to fail; no user store touched.",
+  "setup": "External R06 pack seed77; first four real preparation commands; public admin_enter_save_point then complete_node; public admin_grant_equipment crimson_goggles then equip_item; select available combat; real PlayerGameActor ExecutePlayerBehavior ConfirmEnterNode.",
+  "finding": "F02: host returns rejection after entry committed, omits normal success/update publication, retains active battle while durable monotonic peak stays204 instead of213."
+}

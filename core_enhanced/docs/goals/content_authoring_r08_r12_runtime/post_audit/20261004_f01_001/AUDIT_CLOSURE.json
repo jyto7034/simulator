@@ -1,0 +1,106 @@
+{
+  "timestamp_utc": "2026-10-03T18:02:40.719626+00:00",
+  "goal": "GS-CARX-001 / GOAL-CARX-01 / HA-CARX-001",
+  "verdict": "Complete / High",
+  "independent_reviewer": "/root/u01_f01_audit; implementation nonparticipant",
+  "target": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/target/f01_action_flow_001",
+  "manifest_sha256": "3a7bd83b904d1f8367590b7c2d3f4616a9cce8ca6a8a9cb0c7e0cc767d12b50a",
+  "source_digest": "5b05f2454b83b9b1dc4a4db50b7d4fc066efeca84d319c6095212c5c505ac876",
+  "source_count": 388,
+  "source_membership_and_bytes_match": true,
+  "records_and_references_match": true,
+  "currentness": "current / unchanged",
+  "u00_prior_audit_to_correction_baseline_delta": [
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+  ],
+  "condition_count": 55,
+  "condition_failures": [],
+  "r06_acceptances": 31,
+  "r06_integration": 21,
+  "r07_conditions": 12,
+  "blocking_findings": [],
+  "historical_f01": "resolved in this new target; old Not Complete unchanged",
+  "residual_limitations": [
+    "R05 raw exit101 retained: authorized concurrent peak only +343587 bytes; all other hard guards pass.",
+    "Inherited OBS001 recovery-preview employee-array ordering only.",
+    "No20-minute test; later roadmap/Unity/deployment not audited."
+  ],
+  "successor_eligibility": "U02 may proceed under the continuous request after its own prerequisite/owner intake.",
+  "artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/BASELINE_REVIEW.json",
+      "bytes": 3349,
+      "sha256": "dd5258f962ad03410a7e393858f2bdfc2682b2cf3a57af4aaa44d6fea934725e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/CLI_PARITY_RECHECK.json",
+      "bytes": 963,
+      "sha256": "859d5ad8cbc0a806b6c79343079ba53c69479bf7ac4197d7edbb5ceae2cf8281"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/COMPLETION_AUDIT.md",
+      "bytes": 13176,
+      "sha256": "a7b46195634da1d1293e1f12ec53e38604ce7fc982eb06262961a346b5e8864f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/CONDITION_REVIEW.json",
+      "bytes": 90786,
+      "sha256": "680f0aac9c135fb7e33cb07fee2dbcfd0b4cd10bd1f256c41d9bf27e15dc5cb1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/CURRENTNESS.json",
+      "bytes": 1518,
+      "sha256": "22ef9426c5af6c46edf650e9cca01fc02c4bbfb187b24d3b475265b6fe296fbc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/EVIDENCE_REUSE.json",
+      "bytes": 64836,
+      "sha256": "469ace6a1dc3251bcd19241767ab55b7a76a58da531b0c854c9d134c1c974d95"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/PC_RECOMPARE.json",
+      "bytes": 1017,
+      "sha256": "4599cc0ef125ce34186380dad99ed24b7da1284dd6ac3f9ccb76e084a9a11c71"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/R06_R07_IMPACT_REVIEW.json",
+      "bytes": 57079,
+      "sha256": "2ae98800499b62e6639117e9ebc43fb6375d982c1a740dcb97e36405ba00d6cf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/build_condition_matrix.py",
+      "bytes": 18771,
+      "sha256": "01984a890da4717befa8d1bd780b0615d56eca973edd7172cd6e87cd0bd01f80"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/close_audit.py",
+      "bytes": 5188,
+      "sha256": "a5eeaa58b8035035fecd742bd12994132024240f3779534509fec8a796fa5370"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/pc_recompare.log",
+      "bytes": 1017,
+      "sha256": "4599cc0ef125ce34186380dad99ed24b7da1284dd6ac3f9ccb76e084a9a11c71"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/restore_forward.log",
+      "bytes": 206,
+      "sha256": "ca0a677ba445cdf8fd13cfa67213ed8d64ad63e4c48fed3815d5c8e5da997ed0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/restore_reverse.log",
+      "bytes": 206,
+      "sha256": "ca0a677ba445cdf8fd13cfa67213ed8d64ad63e4c48fed3815d5c8e5da997ed0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/verify_baselines.py",
+      "bytes": 5398,
+      "sha256": "d6bf71728f4442c0b593b6a2beb2daf8a8fbecec85e69fd5b367f5981d0cacda"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/verify_evidence.py",
+      "bytes": 8560,
+      "sha256": "0f81bdb8fe41b87ea9cb302a0a915026565e5896a63b7a51d32b541468738f43"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "start": "2026-09-25T18:28:32.698548+00:00",
+  "end": "2026-09-25T18:30:27.412706+00:00",
+  "command": [
+    "cargo",
+    "test",
+    "--manifest-path",
+    "/tmp/r06-f02-f03-f01-regression.7rfjxtir/core_enhanced/Cargo.toml",
+    "--offline",
+    "--release",
+    "--lib",
+    "reviewer_",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "exit_code": 0,
+  "source_identity": "f01_isolated_input.json"
+}

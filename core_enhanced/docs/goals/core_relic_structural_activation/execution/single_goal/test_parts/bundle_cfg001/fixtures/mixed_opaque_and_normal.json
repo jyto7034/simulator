@@ -1,0 +1,7 @@
+{
+  "purpose": "A normal cfg(test) body mutation must be detected even while the same opaque macro causes a review item.",
+  "before": "macro_rules! opaque { () => { #[cfg(test)] fn hidden() { 7 } }; }\n#[cfg(test)] fn normal_test() { assert_eq!(1, 1); }\n",
+  "after": "macro_rules! opaque { () => { #[cfg(test)] fn hidden() { 7 } }; }\n#[cfg(test)] fn normal_test() { assert_eq!(1, 2); }\n",
+  "expected_same_opaque_macro": true,
+  "expected_normal_ast_equal": false
+}

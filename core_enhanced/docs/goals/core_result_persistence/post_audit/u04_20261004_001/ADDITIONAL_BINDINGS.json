@@ -1,0 +1,4125 @@
+{
+  "selectors": [
+    {
+      "selector": "application::fault::tests::typed_normal_resource_and_control_refusals_are_not_terminal",
+      "current_selector": "application::fault::tests::typed_normal_resource_and_control_refusals_are_not_terminal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::actual_dynamic_expression_failure_preserves_complete_root_and_latches_at_manual_command",
+      "current_selector": "application::fault_tests::actual_dynamic_expression_failure_preserves_complete_root_and_latches_at_manual_command",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::actual_revision_overflow_is_terminal_but_postcommit_projection_cancellation_is_not",
+      "current_selector": "application::fault_tests::actual_revision_overflow_is_terminal_but_postcommit_projection_cancellation_is_not",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::admitted_cast_deadline_overflow_faults_for_zero_and_positive_focus",
+      "current_selector": "application::fault_tests::admitted_cast_deadline_overflow_faults_for_zero_and_positive_focus",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::interrupted_diagnostic_keeps_fixed_first_fault_and_origin_excludes_read_only_errors",
+      "current_selector": "application::fault_tests::interrupted_diagnostic_keeps_fixed_first_fault_and_origin_excludes_read_only_errors",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+      "current_selector": "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::normal_refusals_queries_and_profile_errors_do_not_fault",
+      "current_selector": "application::fault_tests::normal_refusals_queries_and_profile_errors_do_not_fault",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::ordinary_invalid_targeting_action_is_recoverable_at_the_real_public_producer",
+      "current_selector": "application::fault_tests::ordinary_invalid_targeting_action_is_recoverable_at_the_real_public_producer",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::ordinary_missing_employee_is_recoverable_at_the_real_public_producer",
+      "current_selector": "application::fault_tests::ordinary_missing_employee_is_recoverable_at_the_real_public_producer",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::ordinary_reinput_and_duplicate_hello_refusals_remain_recoverable",
+      "current_selector": "application::fault_tests::ordinary_reinput_and_duplicate_hello_refusals_remain_recoverable",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+      "current_selector": "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_boss_activation_failure_preserves_first_cause_at_public_advance",
+      "current_selector": "application::fault_tests::trusted_boss_activation_failure_preserves_first_cause_at_public_advance",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_goodbye_definition_failure_faults_at_public_reinput",
+      "current_selector": "application::fault_tests::trusted_goodbye_definition_failure_faults_at_public_reinput",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_goodbye_failure_ends_observation_without_publishing_candidate",
+      "current_selector": "application::fault_tests::trusted_goodbye_failure_ends_observation_without_publishing_candidate",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_origin_fault_ends_observation_once_without_committing_candidate",
+      "current_selector": "application::fault_tests::trusted_origin_fault_ends_observation_once_without_committing_candidate",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_reconciliation_fault_at_manual_deployment_retains_original_authority",
+      "current_selector": "application::fault_tests::trusted_reconciliation_fault_at_manual_deployment_retains_original_authority",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_reconciliation_origins_fault_once_and_preserve_complete_root",
+      "current_selector": "application::fault_tests::trusted_reconciliation_origins_fault_once_and_preserve_complete_root",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::trusted_swap_deployment_references_fault_for_either_missing_native_unit",
+      "current_selector": "application::fault_tests::trusted_swap_deployment_references_fault_for_either_missing_native_unit",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::u04_prepared_command_and_host_tick_drop_preserve_roots_and_commit_matches_immediate_ports",
+      "current_selector": "application::fault_tests::u04_prepared_command_and_host_tick_drop_preserve_roots_and_commit_matches_immediate_ports",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::fault_tests::u04_prepared_host_tick_fault_retains_first_origin_and_original_authority",
+      "current_selector": "application::fault_tests::u04_prepared_host_tick_fault_retains_first_origin_and_original_authority",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::persistence_rollback_tests::persistence_rollback_preserves_monotonic_profile_and_exhaustion_never_wraps",
+      "current_selector": "application::persistence_rollback_tests::persistence_rollback_preserves_monotonic_profile_and_exhaustion_never_wraps",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::persistence_rollback_tests::persistence_rollback_restores_one_attempt_and_rejects_foreign_stale_and_double_tokens",
+      "current_selector": "application::persistence_rollback_tests::persistence_rollback_restores_one_attempt_and_rejects_foreign_stale_and_double_tokens",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::runtime_observation_tests::a_nested_draft_commit_is_not_a_live_application_commit",
+      "current_selector": "application::runtime_observation_tests::a_nested_draft_commit_is_not_a_live_application_commit",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::runtime_observation_tests::actual_commit_and_full_or_absent_collector_preserve_command_results_and_queries",
+      "current_selector": "application::runtime_observation_tests::actual_commit_and_full_or_absent_collector_preserve_command_results_and_queries",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::runtime_observation_tests::discarded_preparation_detaches_tls_and_cannot_advance_commit_gauges",
+      "current_selector": "application::runtime_observation_tests::discarded_preparation_detaches_tls_and_cannot_advance_commit_gauges",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::runtime_observation_tests::finite_labels_have_unique_names_and_dense_operation_indices",
+      "current_selector": "application::runtime_observation_tests::finite_labels_have_unique_names_and_dense_operation_indices",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once",
+      "current_selector": "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "application::tests::prepared_command_preserves_first_authoring_fault_and_original_root",
+      "current_selector": "application::tests::prepared_command_preserves_first_authoring_fault_and_original_root",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+      "current_selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+      "current_selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+      "current_selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+      "current_selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+      "current_selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+      "current_selector": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial",
+      "current_selector": "authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+      "current_selector": "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+      "current_selector": "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure",
+      "current_selector": "authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness",
+      "current_selector": "authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output",
+      "current_selector": "authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically",
+      "current_selector": "authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner",
+      "current_selector": "authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+      "current_selector": "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion",
+      "current_selector": "authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+      "current_selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+      "current_selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "bootstrap::tests::real_pack_bootstrap_keeps_concurrent_profiles_separate_and_rejects_settings_first",
+      "current_selector": "bootstrap::tests::real_pack_bootstrap_keeps_concurrent_profiles_separate_and_rejects_settings_first",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "bootstrap::tests::runtime_safety_host_file_is_explicit_bounded_and_never_falls_back",
+      "current_selector": "bootstrap::tests::runtime_safety_host_file_is_explicit_bounded_and_never_falls_back",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+      "current_selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_cancellation_faults_restore_boundary_and_retry_exactly",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_cancellation_faults_restore_boundary_and_retry_exactly",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_detach_preserves_future_flow_and_delivery",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_detach_preserves_future_flow_and_delivery",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_exact_handle_isolation_preserves_other_cast_and_actor_work",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_exact_handle_isolation_preserves_other_cast_and_actor_work",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_legacy_delayed_leaf_and_extracted_stale_step_cannot_release_after_cancel",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_legacy_delayed_leaf_and_extracted_stale_step_cannot_release_after_cancel",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_released_area_keeps_ticks_and_settles_after_control_cancellation",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_released_area_keeps_ticks_and_settles_after_control_cancellation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_same_timestamp_timeout_matches_partitioned_execution",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_same_timestamp_timeout_matches_partitioned_execution",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::f01_timeout_and_state_exit_cancel_future_flow_but_preserve_released_delivery",
+      "current_selector": "game::battle::core::boss_runtime::tests::f01_timeout_and_state_exit_cancel_future_flow_but_preserve_released_delivery",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::microstep_and_activation_overflow_leave_the_complete_core_unchanged",
+      "current_selector": "game::battle::core::boss_runtime::tests::microstep_and_activation_overflow_leave_the_complete_core_unchanged",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+      "current_selector": "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+      "current_selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+      "current_selector": "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+      "current_selector": "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate",
+      "current_selector": "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+      "current_selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+      "current_selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+      "current_selector": "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events",
+      "current_selector": "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+      "current_selector": "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it",
+      "current_selector": "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::runtime_observation_captures_real_projectile_peak_after_same_attempt_cleanup",
+      "current_selector": "game::battle::core::tests::amount_order::runtime_observation_captures_real_projectile_peak_after_same_attempt_cleanup",
+      "passing_receipts": [
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it",
+      "current_selector": "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+      "current_selector": "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+      "current_selector": "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+      "current_selector": "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+      "current_selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+      "current_selector": "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time",
+      "current_selector": "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::allocation_free_encoded_length_matches_compact_json_bytes",
+      "current_selector": "game::battle::event_log::tests::allocation_free_encoded_length_matches_compact_json_bytes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::authoring_cow_admission_precedes_copy_and_preserves_retry_and_continuation",
+      "current_selector": "game::battle::event_log::tests::authoring_cow_admission_precedes_copy_and_preserves_retry_and_continuation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::authoring_cow_cancellation_keeps_original_and_rejects_prepared_candidate",
+      "current_selector": "game::battle::event_log::tests::authoring_cow_cancellation_keeps_original_and_rejects_prepared_candidate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::authoring_cow_prices_nested_storage_strings_and_shared_source_handles",
+      "current_selector": "game::battle::event_log::tests::authoring_cow_prices_nested_storage_strings_and_shared_source_handles",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::battle_time_cap_is_a_moving_window_not_a_timeout",
+      "current_selector": "game::battle::event_log::tests::battle_time_cap_is_a_moving_window_not_a_timeout",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::clone_shares_entries_until_mutation_then_preserves_isolation",
+      "current_selector": "game::battle::event_log::tests::clone_shares_entries_until_mutation_then_preserves_isolation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::count_cap_keeps_exact_window_and_requires_resync_before_floor",
+      "current_selector": "game::battle::event_log::tests::count_cap_keeps_exact_window_and_requires_resync_before_floor",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::encoded_byte_cap_allows_exact_limit_and_drops_oversized_diagnostics",
+      "current_selector": "game::battle::event_log::tests::encoded_byte_cap_allows_exact_limit_and_drops_oversized_diagnostics",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::hp_changed_serializes_feedback_tags_as_snake_case_array",
+      "current_selector": "game::battle::event_log::tests::hp_changed_serializes_feedback_tags_as_snake_case_array",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::movement_stopped_serializes_explicit_stopped_at_ms",
+      "current_selector": "game::battle::event_log::tests::movement_stopped_serializes_explicit_stopped_at_ms",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries",
+      "current_selector": "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::same_length_public_edit_invalidates_size_and_time_before_next_append",
+      "current_selector": "game::battle::event_log::tests::same_length_public_edit_invalidates_size_and_time_before_next_append",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::event_log::tests::standard_serde_round_trip_matches_compact_event_log_json",
+      "current_selector": "game::battle::event_log::tests::standard_serde_round_trip_matches_compact_event_log_json",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation",
+      "current_selector": "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault",
+      "current_selector": "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard",
+      "current_selector": "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid",
+      "current_selector": "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow",
+      "current_selector": "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected",
+      "current_selector": "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy",
+      "current_selector": "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::data::content_pack::tests::authoring_generation_lifetime::real_trial_replacement_failures_and_last_pin_reclaim_generations",
+      "current_selector": "game::data::content_pack::tests::authoring_generation_lifetime::real_trial_replacement_failures_and_last_pin_reclaim_generations",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::data::run_policy_data::tests::trauma_recovery_supports_flat_and_ceil_current_percent",
+      "current_selector": "game::data::run_policy_data::tests::trauma_recovery_supports_flat_and_ceil_current_percent",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::employee::tests::dead_employee_cannot_be_revived_by_physical_treatment",
+      "current_selector": "game::employee::tests::dead_employee_cannot_be_revived_by_physical_treatment",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::employee::tests::death_prevent_consumes_buff_and_keeps_employee_alive_once",
+      "current_selector": "game::employee::tests::death_prevent_consumes_buff_and_keeps_employee_alive_once",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::employee::tests::repeated_incapacitation_increments_physical_damage_once_each_time",
+      "current_selector": "game::employee::tests::repeated_incapacitation_increments_physical_damage_once_each_time",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::accepted_application_profile_write_failure_commits_core_and_requires_recovery",
+      "current_selector": "game::player_game_actor::handlers::tests::accepted_application_profile_write_failure_commits_core_and_requires_recovery",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::active_run_write_failure_does_not_rollback_or_skip_compendium_publish",
+      "current_selector": "game::player_game_actor::handlers::tests::active_run_write_failure_does_not_rollback_or_skip_compendium_publish",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::application_preintent_write_failure_keeps_core_and_profile_unchanged",
+      "current_selector": "game::player_game_actor::handlers::tests::application_preintent_write_failure_keeps_core_and_profile_unchanged",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::attach_replaces_previous_session_immediately",
+      "current_selector": "game::player_game_actor::handlers::tests::attach_replaces_previous_session_immediately",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::attach_session_merges_durable_compendium_before_building_snapshot",
+      "current_selector": "game::player_game_actor::handlers::tests::attach_session_merges_durable_compendium_before_building_snapshot",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+      "current_selector": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::backup_recovery_notification_is_emitted_once_across_reconnects",
+      "current_selector": "game::player_game_actor::handlers::tests::backup_recovery_notification_is_emitted_once_across_reconnects",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::clean_title_exposes_confirmable_full_compendium_reset_without_retry",
+      "current_selector": "game::player_game_actor::handlers::tests::clean_title_exposes_confirmable_full_compendium_reset_without_retry",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::compendium_write_failure_does_not_rollback_active_run_commit",
+      "current_selector": "game::player_game_actor::handlers::tests::compendium_write_failure_does_not_rollback_active_run_commit",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset",
+      "current_selector": "game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::detached_actor_stops_after_ttl_and_deregisters",
+      "current_selector": "game::player_game_actor::handlers::tests::detached_actor_stops_after_ttl_and_deregisters",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+      "current_selector": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance",
+      "current_selector": "game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_prepared_terminal_tick_observes_discard_and_commit_without_premature_end",
+      "current_selector": "game::player_game_actor::handlers::tests::durable::u04_prepared_terminal_tick_observes_discard_and_commit_without_premature_end",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_protected_profile_exposes_retry_and_refuses_forced_reset_without_writing_originals",
+      "current_selector": "game::player_game_actor::handlers::tests::durable::u04_protected_profile_exposes_retry_and_refuses_forced_reset_without_writing_originals",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once",
+      "current_selector": "game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::durable::u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition",
+      "current_selector": "game::player_game_actor::handlers::tests::durable::u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::execute_behavior_returns_updated_state_snapshot",
+      "current_selector": "game::player_game_actor::handlers::tests::execute_behavior_returns_updated_state_snapshot",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fatal_compendium_bootstrap_gates_title_to_retry_and_confirmed_reset",
+      "current_selector": "game::player_game_actor::handlers::tests::fatal_compendium_bootstrap_gates_title_to_retry_and_confirmed_reset",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue",
+      "current_selector": "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fault::new_owner_continue_keeps_existing_missing_and_invalid_save_refusals",
+      "current_selector": "game::player_game_actor::handlers::tests::fault::new_owner_continue_keeps_existing_missing_and_invalid_save_refusals",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer",
+      "current_selector": "game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+      "current_selector": "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+      "current_selector": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+      "current_selector": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+      "current_selector": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+      "current_selector": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement",
+      "current_selector": "game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+      "current_selector": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+      "current_selector": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::pending_application_blocks_continue_and_retries_in_process",
+      "current_selector": "game::player_game_actor::handlers::tests::pending_application_blocks_continue_and_retries_in_process",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::pending_standard_completion_blocks_continue_and_retries_in_process",
+      "current_selector": "game::player_game_actor::handlers::tests::pending_standard_completion_blocks_continue_and_retries_in_process",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::player_state_snapshot_preserves_core_snapshot_root_fields",
+      "current_selector": "game::player_game_actor::handlers::tests::player_state_snapshot_preserves_core_snapshot_root_fields",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+      "current_selector": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::runtime_observation_real_battle_preparation_failure_commit_and_end_are_distinct",
+      "current_selector": "game::player_game_actor::handlers::tests::runtime_observation_real_battle_preparation_failure_commit_and_end_are_distinct",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+      "current_selector": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+      "current_selector": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::admin_command_is_not_a_player_behavior_request",
+      "current_selector": "game::player_game_actor::messages::tests::admin_command_is_not_a_player_behavior_request",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_admin_command_as_separate_top_level_message",
+      "current_selector": "game::player_game_actor::messages::tests::deserializes_admin_command_as_separate_top_level_message",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_live_battle_requests",
+      "current_selector": "game::player_game_actor::messages::tests::deserializes_live_battle_requests",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_pending_deployment_range_preview_request",
+      "current_selector": "game::player_game_actor::messages::tests::deserializes_pending_deployment_range_preview_request",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_snake_case_node_flow_requests",
+      "current_selector": "game::player_game_actor::messages::tests::deserializes_snake_case_node_flow_requests",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_battle_resync_with_nested_battle_update",
+      "current_selector": "game::player_game_actor::messages::tests::serializes_battle_resync_with_nested_battle_update",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_battle_setup_snapshot_as_top_level_transport_message",
+      "current_selector": "game::player_game_actor::messages::tests::serializes_battle_setup_snapshot_as_top_level_transport_message",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_battle_update_as_top_level_transport_message",
+      "current_selector": "game::player_game_actor::messages::tests::serializes_battle_update_as_top_level_transport_message",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_control_status_checkpoint_contract_with_typed_reason",
+      "current_selector": "game::player_game_actor::messages::tests::serializes_control_status_checkpoint_contract_with_typed_reason",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_authored_member_edges_before_member_allocation",
+      "current_selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_authored_member_edges_before_member_allocation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_depth_and_node_edges_before_unbounded_ast_creation",
+      "current_selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_depth_and_node_edges_before_unbounded_ast_creation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::expression_input_span_accepts_limit_minus_one_and_limit_then_rejects_overlong_payload",
+      "current_selector": "game::value_expr::parse::tests::expression_input_span_accepts_limit_minus_one_and_limit_then_rejects_overlong_payload",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::expression_struct_variants_reject_unknown_fields",
+      "current_selector": "game::value_expr::parse::tests::expression_struct_variants_reject_unknown_fields",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::read_reference_payloads_reject_unknown_fields",
+      "current_selector": "game::value_expr::parse::tests::read_reference_payloads_reject_unknown_fields",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::resolved_predicates_use_the_shared_node_budget_before_element_allocation",
+      "current_selector": "game::value_expr::parse::tests::resolved_predicates_use_the_shared_node_budget_before_element_allocation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::scanner_treats_strings_and_comments_as_opaque_and_bounds_its_own_nesting",
+      "current_selector": "game::value_expr::parse::tests::scanner_treats_strings_and_comments_as_opaque_and_bounds_its_own_nesting",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::parse::tests::strict_expression_fields_preserve_valid_forms_and_nested_member_contracts",
+      "current_selector": "game::value_expr::parse::tests::strict_expression_fields_preserve_valid_forms_and_nested_member_contracts",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::bounded_frame_keeps_sorted_logarithmic_reads_duplicates_and_capacity",
+      "current_selector": "game::value_expr::tests::bounded_frame_keeps_sorted_logarithmic_reads_duplicates_and_capacity",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::capability_checks_prevent_unavailable_snapshot_context",
+      "current_selector": "game::value_expr::tests::capability_checks_prevent_unavailable_snapshot_context",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+      "current_selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::compile_and_runtime_budgets_reject_before_partial_results",
+      "current_selector": "game::value_expr::tests::compile_and_runtime_budgets_reject_before_partial_results",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+      "current_selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_authored_work_is_a_static_executable_bound",
+      "current_selector": "game::value_expr::tests::correction_002_authored_work_is_a_static_executable_bound",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_grouped_and_nested_authored_work_stays_bounded",
+      "current_selector": "game::value_expr::tests::correction_002_grouped_and_nested_authored_work_stays_bounded",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_runtime_payload_work_is_explicitly_dynamic",
+      "current_selector": "game::value_expr::tests::correction_002_runtime_payload_work_is_explicitly_dynamic",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_shape_is_iterative_at_default_and_extended_depth",
+      "current_selector": "game::value_expr::tests::correction_002_shape_is_iterative_at_default_and_extended_depth",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_compile_work_and_storage_boundaries_are_exact",
+      "current_selector": "game::value_expr::tests::correction_compile_work_and_storage_boundaries_are_exact",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_group_boundaries_and_cumulative_resource_capabilities_hold",
+      "current_selector": "game::value_expr::tests::correction_group_boundaries_and_cumulative_resource_capabilities_hold",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_long_payloads_are_rejected_before_kernel_owned_clones",
+      "current_selector": "game::value_expr::tests::correction_long_payloads_are_rejected_before_kernel_owned_clones",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_nested_stack_nodes_depth_and_task_frames_are_enforced",
+      "current_selector": "game::value_expr::tests::correction_nested_stack_nodes_depth_and_task_frames_are_enforced",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_raw_and_canonical_member_budgets_are_distinct_and_exact",
+      "current_selector": "game::value_expr::tests::correction_raw_and_canonical_member_budgets_are_distinct_and_exact",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_streaming_fingerprint_is_byte_compatible_with_pre_fix_plan",
+      "current_selector": "game::value_expr::tests::correction_streaming_fingerprint_is_byte_compatible_with_pre_fix_plan",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::correction_wide_add_rejects_before_child_traversal_and_keeps_left_order",
+      "current_selector": "game::value_expr::tests::correction_wide_add_rejects_before_child_traversal_and_keeps_left_order",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::dynamic_reads_use_typed_frames_and_report_missing_context_and_overflow",
+      "current_selector": "game::value_expr::tests::dynamic_reads_use_typed_frames_and_report_missing_context_and_overflow",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+      "current_selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+      "current_selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::legacy_literal_lowering_and_final_narrowing_preserve_signed_contracts",
+      "current_selector": "game::value_expr::tests::legacy_literal_lowering_and_final_narrowing_preserve_signed_contracts",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+      "current_selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::nested_aggregate_cross_product_and_static_group_keys_are_admitted_up_front",
+      "current_selector": "game::value_expr::tests::nested_aggregate_cross_product_and_static_group_keys_are_admitted_up_front",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::resolved_predicates_are_bounded_normalized_and_fingerprinted_with_slot_meaning",
+      "current_selector": "game::value_expr::tests::resolved_predicates_are_bounded_normalized_and_fingerprinted_with_slot_meaning",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::resolved_relation_requires_its_exact_node_view_and_distinguishes_empty",
+      "current_selector": "game::value_expr::tests::resolved_relation_requires_its_exact_node_view_and_distinguishes_empty",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+      "current_selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::active_run::continuation::tests::u04_shared_savepoint_import_charges_fresh_monolith_buckets_before_clone",
+      "current_selector": "game::world::active_run::continuation::tests::u04_shared_savepoint_import_charges_fresh_monolith_buckets_before_clone",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::application::tests::incoherent_parallel_context_is_rejected_before_application_staging",
+      "current_selector": "game::world::application::tests::incoherent_parallel_context_is_rejected_before_application_staging",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::checkpoint_explicit_load_rejects_an_internally_consistent_foreign_seed",
+      "current_selector": "game::world::tests::checkpoint_validation::checkpoint_explicit_load_rejects_an_internally_consistent_foreign_seed",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::checkpoint_graph_rejects_one_edge_defects_before_explicit_load_mutation",
+      "current_selector": "game::world::tests::checkpoint_validation::checkpoint_graph_rejects_one_edge_defects_before_explicit_load_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_continue_then_v10_capture_is_semantically_identical",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_continue_then_v10_capture_is_semantically_identical",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_envelope_and_checksum",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_envelope_and_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_round_trips_exact_inventory_reservation_boundary",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_round_trips_exact_inventory_reservation_boundary",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_round_trips_with_canonical_map_order_independent_checksum",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_round_trips_with_canonical_map_order_independent_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_continue_restores_rng_and_replays_the_same_next_gate",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_continue_restores_rng_and_replays_the_same_next_gate",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_load_count_and_active_lifecycle_boundaries_reject_without_mutation",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_load_count_and_active_lifecycle_boundaries_reject_without_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_rejects_v4_and_v5_before_mutation_on_retry",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_rejects_v4_and_v5_before_mutation_on_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v10_strictly_rejects_missing_extra_research_and_pending_shapes",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_strictly_rejects_missing_extra_research_and_pending_shapes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_checkpoint_document_has_exact_envelope_and_checksum",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_envelope_and_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "renamed same validation for V10"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "renamed same validation for V10"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "renamed same validation for V10"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+      "current_selector": "game::world::tests::checkpoint_validation::current_v10_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "renamed same validation for V10"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::external_generations_bind_save_continue_explicit_load_and_cached_export",
+      "current_selector": "game::world::tests::checkpoint_validation::external_generations_bind_save_continue_explicit_load_and_cached_export",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::public_application_checkpoint_port_round_trips_into_a_fresh_application",
+      "current_selector": "game::world::tests::checkpoint_validation::public_application_checkpoint_port_round_trips_into_a_fresh_application",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+      "current_selector": "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+      "current_selector": "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+      "current_selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+      "current_selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original",
+      "current_selector": "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::advance_rolls_back_core_and_world_when_employee_reconcile_fails",
+      "current_selector": "game::world::tests::combat::advance_rolls_back_core_and_world_when_employee_reconcile_fails",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::boss_kind_combat_defeat_consumes_node_on_first_defeat",
+      "current_selector": "game::world::tests::combat::boss_kind_combat_defeat_consumes_node_on_first_defeat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::combat_defeat_commits_attempt_incapacitation_without_reapplying_it",
+      "current_selector": "game::world::tests::combat::combat_defeat_commits_attempt_incapacitation_without_reapplying_it",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee",
+      "current_selector": "game::world::tests::combat::combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::consumable_modifier_survives_abandonment_and_expires_on_committed_result",
+      "current_selector": "game::world::tests::combat::consumable_modifier_survives_abandonment_and_expires_on_committed_result",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot",
+      "current_selector": "game::world::tests::combat::expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::failed_live_defense_battle_consumes_node_on_first_defeat",
+      "current_selector": "game::world::tests::combat::failed_live_defense_battle_consumes_node_on_first_defeat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::final_boss_defeat_with_valid_checkpoint_requires_explicit_decision",
+      "current_selector": "game::world::tests::combat::final_boss_defeat_with_valid_checkpoint_requires_explicit_decision",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::final_boss_retreat_changes_only_its_budget",
+      "current_selector": "game::world::tests::combat::final_boss_retreat_changes_only_its_budget",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_continuation",
+      "current_selector": "game::world::tests::combat::owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_continuation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+      "current_selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation",
+      "current_selector": "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+      "current_selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save",
+      "current_selector": "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+      "current_selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+      "current_selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+      "current_selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+      "current_selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+      "current_selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+      "current_selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+      "current_selector": "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation",
+      "current_selector": "game::world::tests::combat::retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial",
+      "current_selector": "game::world::tests::combat::standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::tactical_world_late_employee_reconciliation_failure_is_atomic",
+      "current_selector": "game::world::tests::combat::tactical_world_late_employee_reconciliation_failure_is_atomic",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::trusted_goodbye_failure_keeps_private_gamecore_retry_and_complete_root",
+      "current_selector": "game::world::tests::combat::trusted_goodbye_failure_keeps_private_gamecore_retry_and_complete_root",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::two_retreats_consume_only_retreat_budget_and_third_entry_cannot_retreat",
+      "current_selector": "game::world::tests::combat::two_retreats_consume_only_retreat_budget_and_third_entry_cannot_retreat",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_choose_one_two_candidates_and_participant_context_survive_select_claim_restarts",
+      "current_selector": "game::world::tests::combat::u04_choose_one_two_candidates_and_participant_context_survive_select_claim_restarts",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_choose_one_zero_candidates_has_explicit_empty_result_and_no_claim",
+      "current_selector": "game::world::tests::combat::u04_choose_one_zero_candidates_has_explicit_empty_result_and_no_claim",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_confirmed_receipt_rejects_phase_outcome_ack_and_entitlement_inconsistency",
+      "current_selector": "game::world::tests::combat::u04_confirmed_receipt_rejects_phase_outcome_ack_and_entitlement_inconsistency",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_continue_before_first_savepoint_restores_current_roster_and_map",
+      "current_selector": "game::world::tests::combat::u04_continue_before_first_savepoint_restores_current_roster_and_map",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_continue_retains_active_visual_novel_and_queue_at_a_stable_boundary",
+      "current_selector": "game::world::tests::combat::u04_continue_retains_active_visual_novel_and_queue_at_a_stable_boundary",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without_quit_charge",
+      "current_selector": "game::world::tests::combat::u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without_quit_charge",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_each_unfinished_interactive_node_restores_its_preentry_roots",
+      "current_selector": "game::world::tests::combat::u04_each_unfinished_interactive_node_restores_its_preentry_roots",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_live_terminal_commits_before_ack_and_continue_cannot_repeat_grants",
+      "current_selector": "game::world::tests::combat::u04_live_terminal_commits_before_ack_and_continue_cannot_repeat_grants",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_pending_continue_rejects_tampered_entitlement_and_missing_option_fields_atomically",
+      "current_selector": "game::world::tests::combat::u04_pending_continue_rejects_tampered_entitlement_and_missing_option_fields_atomically",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_profile",
+      "current_selector": "game::world::tests::combat::u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_profile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_shared_savepoint_encoding_restores_independent_rewind_and_rejects_bad_references",
+      "current_selector": "game::world::tests::combat::u04_shared_savepoint_encoding_restores_independent_rewind_and_rejects_bad_references",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_terminal_choice_survives_ack_and_claim_restart_then_exit_invalidates_continue",
+      "current_selector": "game::world::tests::combat::u04_terminal_choice_survives_ack_and_claim_restart_then_exit_invalidates_continue",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::combat::u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+      "current_selector": "game::world::tests::combat::u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::facility::checkpoint_load_restores_floor_anchor_and_gate_replay_is_deterministic",
+      "current_selector": "game::world::tests::facility::checkpoint_load_restores_floor_anchor_and_gate_replay_is_deterministic",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::facility::load_run_checkpoint_is_limited_to_three_uses_per_run",
+      "current_selector": "game::world::tests::facility::load_run_checkpoint_is_limited_to_three_uses_per_run",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::facility::save_point_reduces_living_trauma_and_saves_checkpoint",
+      "current_selector": "game::world::tests::facility::save_point_reduces_living_trauma_and_saves_checkpoint",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::map_flow::event_success_action_starts_combat_and_retreat_preserves_committed_check",
+      "current_selector": "game::world::tests::map_flow::event_success_action_starts_combat_and_retreat_preserves_committed_check",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::mastered_elite_sweep::u04_unfinished_sweep_continue_discards_plan_and_confirmed_sweep_remains_committed",
+      "current_selector": "game::world::tests::mastered_elite_sweep::u04_unfinished_sweep_continue_discards_plan_and_confirmed_sweep_remains_committed",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid",
+      "current_selector": "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+      "current_selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+      "current_selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+      "current_selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back",
+      "current_selector": "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent",
+      "current_selector": "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle",
+      "current_selector": "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+      "current_selector": "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+      "current_selector": "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+      "current_selector": "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+      "current_selector": "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+      "current_selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "game::world::tests::snapshots_and_start::run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history",
+      "current_selector": "game::world::tests::snapshots_and_start::run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "observability::tests::a_contended_atomic_read_keeps_the_last_commit_and_selection_until_a_real_end",
+      "current_selector": "observability::tests::a_contended_atomic_read_keeps_the_last_commit_and_selection_until_a_real_end",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "observability::tests::actual_queue_batch_dedup_and_dead_lease_cleanup_do_not_depend_on_end_messages",
+      "current_selector": "observability::tests::actual_queue_batch_dedup_and_dead_lease_cleanup_do_not_depend_on_end_messages",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "observability::tests::churn_registry_storage_tracks_live_sessions_and_registration_never_waits",
+      "current_selector": "observability::tests::churn_registry_storage_tracks_live_sessions_and_registration_never_waits",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "observability::tests::config_is_opt_in_separate_and_loopback_only",
+      "current_selector": "observability::tests::config_is_opt_in_separate_and_loopback_only",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "observability::tests::selection_switch_ring_rollover_end_and_aggregate_subtraction_are_exact",
+      "current_selector": "observability::tests::selection_switch_ring_rollover_end_and_aggregate_subtraction_are_exact",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "observability::tests::stopped_scrapes_and_pinned_retirement_cannot_accumulate_histogram_batches",
+      "current_selector": "observability::tests::stopped_scrapes_and_pinned_retirement_cannot_accumulate_histogram_batches",
+      "passing_receipts": [
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::backup_recovery_never_rolls_back_monotonic_load_count",
+      "current_selector": "persistence::active_run_store::tests::backup_recovery_never_rolls_back_monotonic_load_count",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::backup_recovery_preserves_checkpoint_payload_and_monotonic_power_peak",
+      "current_selector": "persistence::active_run_store::tests::backup_recovery_preserves_checkpoint_payload_and_monotonic_power_peak",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::checksum_mismatch_is_rejected",
+      "current_selector": "persistence::active_run_store::tests::checksum_mismatch_is_rejected",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::old_envelope_version_and_removed_monotonic_anchor_are_rejected",
+      "current_selector": "persistence::active_run_store::tests::old_envelope_version_and_removed_monotonic_anchor_are_rejected",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_failure_keeps_previous_current_readable",
+      "current_selector": "persistence::active_run_store::tests::publish_failure_keeps_previous_current_readable",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_load_backup_recovery_and_invalidation_use_real_files",
+      "current_selector": "persistence::active_run_store::tests::publish_load_backup_recovery_and_invalidation_use_real_files",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_load_count_into_incoming_generation",
+      "current_selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_load_count_into_incoming_generation",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_loads_and_peak_into_incoming_generation",
+      "current_selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_loads_and_peak_into_incoming_generation",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_power_peak_into_incoming_generation",
+      "current_selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_power_peak_into_incoming_generation",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publishing_after_terminal_invalidation_never_reuses_an_old_run_backup",
+      "current_selector": "persistence::active_run_store::tests::publishing_after_terminal_invalidation_never_reuses_an_old_run_backup",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::unsupported_envelope_version_is_not_silently_migrated",
+      "current_selector": "persistence::active_run_store::tests::unsupported_envelope_version_is_not_silently_migrated",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::active_run_store::tests::unsupported_version_both_corrupt_and_single_writer_are_explicit",
+      "current_selector": "persistence::active_run_store::tests::unsupported_version_both_corrupt_and_single_writer_are_explicit",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_conditional_intent_rejects_stale_choices_and_terminal_missing_aba",
+      "current_selector": "persistence::player_profile_store::application_intent::tests::u04_conditional_intent_rejects_stale_choices_and_terminal_missing_aba",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_incompatible_current_backup_legacy_and_journal_originals_are_never_overwritten",
+      "current_selector": "persistence::player_profile_store::application_intent::tests::u04_incompatible_current_backup_legacy_and_journal_originals_are_never_overwritten",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_intent_io_failure_before_and_after_acceptance_has_distinct_recovery",
+      "current_selector": "persistence::player_profile_store::application_intent::tests::u04_intent_io_failure_before_and_after_acceptance_has_distinct_recovery",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::application_intent::tests::u04_real_process_crash_at_every_intent_and_aggregate_publication_stage",
+      "current_selector": "persistence::player_profile_store::application_intent::tests::u04_real_process_crash_at_every_intent_and_aggregate_publication_stage",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::checksum_unsupported_dual_corrupt_and_single_writer_are_explicit",
+      "current_selector": "persistence::player_profile_store::tests::checksum_unsupported_dual_corrupt_and_single_writer_are_explicit",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::explicit_reset_clears_the_entire_successor_profile_and_all_recovery_artifacts",
+      "current_selector": "persistence::player_profile_store::tests::explicit_reset_clears_the_entire_successor_profile_and_all_recovery_artifacts",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::explicit_reset_preserves_retired_profile_and_journal_originals",
+      "current_selector": "persistence::player_profile_store::tests::explicit_reset_preserves_retired_profile_and_journal_originals",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::missing_publish_load_backup_recovery_and_reset_use_real_files",
+      "current_selector": "persistence::player_profile_store::tests::missing_publish_load_backup_recovery_and_reset_use_real_files",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::publish_failure_keeps_previous_current_and_does_not_rotate_corruption",
+      "current_selector": "persistence::player_profile_store::tests::publish_failure_keeps_previous_current_and_does_not_rotate_corruption",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::retired_legacy_compendium_file_is_not_read_or_migrated",
+      "current_selector": "persistence::player_profile_store::tests::retired_legacy_compendium_file_is_not_read_or_migrated",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::retired_version_two_profile_is_rejected_without_union_migration",
+      "current_selector": "persistence::player_profile_store::tests::retired_version_two_profile_is_rejected_without_union_migration",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::runtime_keeps_latest_registered_set_dirty_and_retries_full_profile",
+      "current_selector": "persistence::player_profile_store::tests::runtime_keeps_latest_registered_set_dirty_and_retries_full_profile",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::standard_completion_journal_closes_profile_and_active_run_after_restart",
+      "current_selector": "persistence::player_profile_store::tests::standard_completion_journal_closes_profile_and_active_run_after_restart",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::standard_completion_publish_failure_exposes_neither_side",
+      "current_selector": "persistence::player_profile_store::tests::standard_completion_publish_failure_exposes_neither_side",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::standard_completion_retries_failed_active_run_invalidation_from_journal",
+      "current_selector": "persistence::player_profile_store::tests::standard_completion_retries_failed_active_run_invalidation_from_journal",
+      "passing_receipts": [],
+      "disposition": "superseded independent-write semantics by approved U04 paired-intent semantics"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::successor_profile_rejects_unknown_fields_and_ignores_interrupted_temp",
+      "current_selector": "persistence::player_profile_store::tests::successor_profile_rejects_unknown_fields_and_ignores_interrupted_temp",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::terminal_application_journal_closes_profile_and_active_run_after_restart",
+      "current_selector": "persistence::player_profile_store::tests::terminal_application_journal_closes_profile_and_active_run_after_restart",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::terminal_application_preintent_failure_exposes_neither_side",
+      "current_selector": "persistence::player_profile_store::tests::terminal_application_preintent_failure_exposes_neither_side",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::terminal_application_retries_failed_active_invalidation_from_journal",
+      "current_selector": "persistence::player_profile_store::tests::terminal_application_retries_failed_active_invalidation_from_journal",
+      "passing_receipts": [
+        "integrated_host_default004",
+        "integrated_host_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::a_short_history_span_does_not_end_battle_or_change_final_statistics",
+      "current_selector": "runtime_safety::tests::a_short_history_span_does_not_end_battle_or_change_final_statistics",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::compiler_limits_preserve_existing_typed_range_and_parser_ceiling",
+      "current_selector": "runtime_safety::tests::compiler_limits_preserve_existing_typed_range_and_parser_ceiling",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::explicit_authoring_admission_and_trial_limits_consume_the_profile",
+      "current_selector": "runtime_safety::tests::explicit_authoring_admission_and_trial_limits_consume_the_profile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::external_generation_keeps_semantics_and_separates_profile_admission",
+      "current_selector": "runtime_safety::tests::external_generation_keeps_semantics_and_separates_profile_admission",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::history_import_and_deserialize_apply_the_host_window_and_keep_cursor_gaps",
+      "current_selector": "runtime_safety::tests::history_import_and_deserialize_apply_the_host_window_and_keep_cursor_gaps",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::original_defaults_and_no_file_profile_have_one_effective_identity",
+      "current_selector": "runtime_safety::tests::original_defaults_and_no_file_profile_have_one_effective_identity",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::parser_is_bounded_before_deserialization_including_nested_comments",
+      "current_selector": "runtime_safety::tests::parser_is_bounded_before_deserialization_including_nested_comments",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::public_content_parser_compiler_and_immutable_plan_consume_selected_profile",
+      "current_selector": "runtime_safety::tests::public_content_parser_compiler_and_immutable_plan_consume_selected_profile",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::raw_and_effective_identity_are_distinct_and_profiles_are_immutable",
+      "current_selector": "runtime_safety::tests::raw_and_effective_identity_are_distinct_and_profiles_are_immutable",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation",
+      "current_selector": "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::settings_reject_schema_unknown_duplicate_negative_overflow_zero_and_ceilings",
+      "current_selector": "runtime_safety::tests::settings_reject_schema_unknown_duplicate_negative_overflow_zero_and_ceilings",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    },
+    {
+      "selector": "runtime_safety::tests::structural_errors_identify_the_offending_field_at_each_level",
+      "current_selector": "runtime_safety::tests::structural_errors_identify_the_offending_field_at_each_level",
+      "passing_receipts": [
+        "integrated_core_default004",
+        "integrated_core_fixtures004",
+        "integrated_core_observation004"
+      ],
+      "disposition": "current exact pass"
+    }
+  ],
+  "selector_count": 411,
+  "service_inputs_exact": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "4f4e8b179849225904f359095908b8de9c17ae590f52c93aff93fbce7b0c9358",
+      "bytes": 82980
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c",
+      "bytes": 266
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "sha256": "d2660e113182f1fb27e457870faedaf4701842ed80c355de825064761dc05aa7",
+      "bytes": 1853
+    },
+    {
+      "path": "game_server/Cargo.toml",
+      "sha256": "40db753c5a866ec82552775655124d1750539d9fa55c4412a07430319e492f48",
+      "bytes": 1365
+    },
+    {
+      "path": "game_server/config/observability/grafana/dashboards/core-runtime.json",
+      "sha256": "ff23aac522731301f257ec9d9c5dce5a04b733b0202f28bb861fe302661e97a9",
+      "bytes": 27341
+    },
+    {
+      "path": "game_server/config/observability/grafana/grafana.ini",
+      "sha256": "280a7b813fa296357ef444fa4e64a2a831fab7da4cafe366b4e8a1be4c6fb1d8",
+      "bytes": 334
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/dashboards/core-runtime.yml",
+      "sha256": "b4b4acb08d251df7c679176d9926bc517783971fa5d2a441ef54f4236baefea0",
+      "bytes": 227
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/datasources/core-runtime.yml",
+      "sha256": "b03a58982b4e50a7ff0deed28ef05b371b406d83ea74074597e94569ac0cee78",
+      "bytes": 242
+    },
+    {
+      "path": "game_server/config/observability/prometheus.yml",
+      "sha256": "cda24337ad413c9a5c5f99993fb24839ae5d9fae9955e41709ee72499057fb10",
+      "bytes": 155
+    },
+    {
+      "path": "game_server/config/observability/run_local.py",
+      "sha256": "22a640ea895fdb629952fbc1109eeccc0e5a4b078ca4aab6a44f159999c74d0e",
+      "bytes": 3652
+    },
+    {
+      "path": "game_server/config/observability.ron",
+      "sha256": "fb19478c2de70bf9f568dbfd97031d9b853b4d23cc7ebc518b3dc846e6bac07c",
+      "bytes": 272
+    },
+    {
+      "path": "game_server/src/observability/mod.rs",
+      "sha256": "2457f8064f26253f7dd364fd8048d5ccf4d0d88d7d6c7dc665fff9e2f88d6f5e",
+      "bytes": 24502
+    },
+    {
+      "path": "game_server/src/observability/tests.rs",
+      "sha256": "1d9f2cf92c2d6a88725489595b33367731386a4baa7f35ea6825d1e685ffdfc3",
+      "bytes": 12442
+    }
+  ],
+  "service_reuse_artifacts_exact": true,
+  "allocator_low_high_equal": true,
+  "allocation_sample": {
+    "baseline_live_bytes": 0,
+    "peak_live_bytes": 74834,
+    "peak_delta_bytes": 74834,
+    "end_live_bytes": 0,
+    "retained_delta_bytes": 0,
+    "allocation_count": 627,
+    "deallocation_count": 627,
+    "reallocation_count": 0
+  },
+  "fault_modes_equal": [
+    "none",
+    "detached",
+    "queue_full",
+    "on",
+    "off"
+  ],
+  "public_raw_checks": [
+    {
+      "folder": "public_continuation_004",
+      "messages": 78,
+      "state_snapshots": 27,
+      "errors": [
+        {
+          "type": "error",
+          "request_id": "16",
+          "code": "active_run_revision_conflict",
+          "message": "active-run revision conflict (expected 3c23a00e-e1e2-4431-be52-c6c73c28eba3, actual f8939783-581d-4d13-8ecd-5de6e6890375)"
+        },
+        {
+          "type": "error",
+          "request_id": "17",
+          "code": "context_irrelevant",
+          "message": "Action ClaimReward is unavailable: ContextIrrelevant"
+        }
+      ],
+      "final_continue": {
+        "available": false,
+        "recovered_from_backup": false,
+        "reset_required": false
+      }
+    },
+    {
+      "folder": "public_rewind_004",
+      "messages": 114,
+      "state_snapshots": 36,
+      "errors": [
+        {
+          "type": "error",
+          "request_id": "18",
+          "code": "active_run_revision_conflict",
+          "message": "active-run revision conflict (expected 654743fe-c871-4bf8-8f46-dbc0fbf71b53, actual f508ecbb-7cbf-482f-bb83-4c5b08033073)"
+        },
+        {
+          "type": "error",
+          "request_id": "19",
+          "code": "context_irrelevant",
+          "message": "Action ClaimReward is unavailable: ContextIrrelevant"
+        },
+        {
+          "type": "error",
+          "request_id": "28",
+          "code": "context_irrelevant",
+          "message": "Action ClaimReward is unavailable: ContextIrrelevant"
+        }
+      ],
+      "final_continue": {
+        "available": false,
+        "recovered_from_backup": false,
+        "reset_required": false
+      }
+    }
+  ]
+}

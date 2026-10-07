@@ -1,0 +1,182 @@
+{
+  "id": "6C",
+  "base": "facility-room-route-6-c-v5",
+  "activity_count": 6,
+  "title": "작은 순환 회랑",
+  "idea": [
+    "여섯 자리를 하나의 고리로 연결해, 출구 앞에서도 반대쪽 탐사를 이어갈 수 있음.",
+    "막다른 곁방 없이 한 바퀴 돌아오는 작은 탐사 방. 가운데 횡단 연결은 없음."
+  ],
+  "nodes": [
+    {
+      "id": "S",
+      "x": 900,
+      "y": 235,
+      "name": "입구",
+      "zone": null
+    },
+    {
+      "id": "G",
+      "x": 900,
+      "y": 1190,
+      "name": "Gate",
+      "zone": null
+    },
+    {
+      "id": "1",
+      "x": 550,
+      "y": 445,
+      "name": "접수 전실",
+      "zone": 0
+    },
+    {
+      "id": "2",
+      "x": 550,
+      "y": 715,
+      "name": "기록 복도",
+      "zone": 0
+    },
+    {
+      "id": "3",
+      "x": 550,
+      "y": 985,
+      "name": "기록 반출",
+      "zone": 0
+    },
+    {
+      "id": "4",
+      "x": 1250,
+      "y": 445,
+      "name": "작업 전실",
+      "zone": 0
+    },
+    {
+      "id": "5",
+      "x": 1250,
+      "y": 715,
+      "name": "설비 복도",
+      "zone": 0
+    },
+    {
+      "id": "6",
+      "x": 1250,
+      "y": 985,
+      "name": "출입 관리",
+      "zone": 0
+    }
+  ],
+  "groups": [
+    {
+      "label": "작은 순환 회랑 · 6자리",
+      "color": "purple",
+      "ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "rect": [
+        350,
+        340,
+        1100,
+        735
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "a": "1",
+      "b": "2",
+      "one_way": false
+    },
+    {
+      "a": "2",
+      "b": "3",
+      "one_way": false
+    },
+    {
+      "a": "3",
+      "b": "6",
+      "one_way": false
+    },
+    {
+      "a": "6",
+      "b": "5",
+      "one_way": false
+    },
+    {
+      "a": "5",
+      "b": "4",
+      "one_way": false
+    },
+    {
+      "a": "4",
+      "b": "1",
+      "one_way": false
+    },
+    {
+      "a": "S",
+      "b": "1",
+      "one_way": false,
+      "via": [
+        [
+          550,
+          235
+        ]
+      ]
+    },
+    {
+      "a": "S",
+      "b": "4",
+      "one_way": false,
+      "via": [
+        [
+          1250,
+          235
+        ]
+      ]
+    },
+    {
+      "a": "3",
+      "b": "G",
+      "one_way": true,
+      "via": [
+        [
+          550,
+          1190
+        ]
+      ]
+    },
+    {
+      "a": "6",
+      "b": "G",
+      "one_way": true,
+      "via": [
+        [
+          1250,
+          1190
+        ]
+      ]
+    }
+  ],
+  "status": "review_proposal",
+  "start_and_gate_excluded": true,
+  "activity_types": "Unassigned; existing expedition assignment rules apply.",
+  "validation": {
+    "activity_count": 6,
+    "exit_approaches": [
+      "3",
+      "6"
+    ],
+    "shortest_activity_path": 3,
+    "dead_end_slots": [],
+    "mandatory_activity_slots": [],
+    "all_nodes_reachable": true,
+    "every_activity_can_reach_exit": true,
+    "no_direct_entry_exit": true,
+    "no_node_or_connector_collisions": true,
+    "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+  }
+}

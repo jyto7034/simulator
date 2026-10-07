@@ -1,0 +1,6 @@
+EquipmentMetadata(id: "r09_death_reactions", uuid: "09000000-0000-0000-0000-000000000099", name: "Death reactions", equipment_type: Accessory, rarity: ZAYIN, price: 1,
+ triggered_effects: {
+  OnDeath: [(target: AllEnemies, effect: Heal(flat: 7, percent: 0))],
+  OnKill: [(target: AllAllies, effect: Heal(flat: 11, percent: 0))],
+  OnAllyDeath: [(target: AllEnemies, effect: Heal(flat: 13, percent: 0))],
+ })

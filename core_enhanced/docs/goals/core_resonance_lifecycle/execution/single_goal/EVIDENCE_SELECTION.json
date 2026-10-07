@@ -1,0 +1,43 @@
+{
+  "suites": [
+    "integrated_core_default002",
+    "integrated_core_fixtures002",
+    "integrated_core_observation002",
+    "integrated_host_default002",
+    "integrated_host_observation002"
+  ],
+  "checks": [
+    "integrated_fmt002",
+    "integrated_check002",
+    "integrated_event_log002",
+    "integrated_clippy_core002",
+    "integrated_clippy_host002",
+    "integrated_heap002",
+    "integrated_release002",
+    "public_guards001",
+    "public_guards_allocator001",
+    "public_inputs003"
+  ],
+  "compatibility_directory": "compatibility/current_001",
+  "compatibility_suffix": "_002",
+  "compatibility_overrides": {
+    "pc_prepare": "compat_pc_prepare_003",
+    "pc": "compat_pc_003",
+    "pc_compare": "compat_pc_compare_003",
+    "pc_immediate": "compat_pc_immediate_003"
+  },
+  "fault_prefix": "final_fault_001_",
+  "continuation": "public_continuation002",
+  "continuation_summary": "public_continuation_002/SUMMARY.json",
+  "rewind": "public_rewind002",
+  "rewind_summary": "public_rewind_002/SUMMARY.json",
+  "schema": "public_schema004",
+  "schema_summary": "public_schema_004/SUMMARY.json",
+  "independent_area": "public_independent_area003",
+  "independent_area_summary": "public_independent_area_003/SUMMARY.json",
+  "r05_summary": "compatibility/current_001/evidence/R05_SUMMARY_CURRENT_003.json",
+  "compatibility_adaptation": "compatibility/current_001/ADAPTATION_FINAL.json",
+  "status": "Successful current-source receipt bindings verified by COVERAGE; independent audit pending",
+  "pc_reconciliation": "compatibility/current_001/PC_RECONCILIATION.json",
+  "source_sha256": "3129db450b14515564da3845313cf0ce1539e9f99c032c89788a3a5fe840d283"
+}

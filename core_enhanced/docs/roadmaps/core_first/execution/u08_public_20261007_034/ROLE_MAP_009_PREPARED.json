@@ -1,0 +1,812 @@
+{
+  "schema": "U08_SUCCESSOR_ROLE_MAP_009_PREPARED",
+  "status": "ROLE_MAP_ONLY_NOT_EXECUTION_AUTHORIZATION",
+  "recorded_at_utc": "2026-10-07T02:52:19.551542+00:00",
+  "prior_execution_plan": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_032/EXECUTION_PLAN.json",
+    "bytes": 47119,
+    "sha256": "9be6818b3167750a914aca9e4493cee62e692d096eefc5347386c442b67e507f"
+  },
+  "root_review": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261007_034/RECORD.json",
+    "bytes": 6127,
+    "sha256": "40d9b050d75a6903180c7081c8e01aadb9417cea49bf1fb2f86c91307df4b1a4"
+  },
+  "source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "selected_count": 58,
+  "functional_count": 50,
+  "performance_count": 8,
+  "available_exit0_count": 25,
+  "future_count": 33,
+  "future_functional_count": 25,
+  "future_performance_count": 8,
+  "roles": [
+    {
+      "id": "integrated_core_default",
+      "kind": "suite",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default007.json",
+        "bytes": 169864,
+        "sha256": "7ab994bbfc5c95d0fc99d25420a24742dbc89d8c65d99f5214bff4a911452edc"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_default007.log",
+        "bytes": 227547,
+        "sha256": "4bf74d6dfb9870f2b320c1fefbf2d72e02cbd0c530cb81fd0641331295a788e6"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_core_fixtures",
+      "kind": "suite",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_fixtures007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_fixtures007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_fixtures007.json",
+        "bytes": 169902,
+        "sha256": "c6aa97df3cf90d76bace2bb16beca5e25f4cd5080261c28c399bd32fc77ec784"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_fixtures007.log",
+        "bytes": 228711,
+        "sha256": "b0a4638ec678a34b1dcad34d24e319d1d3c5a0c73a25d4606300aac6a3a960b8"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_core_observation",
+      "kind": "suite",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_observation007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_observation007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_observation007.json",
+        "bytes": 169908,
+        "sha256": "6780b9ae5ba5990ef8ba58c226ba8cea2cda5a799a876de7754624054baf57e5"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_core_observation007.log",
+        "bytes": 229867,
+        "sha256": "c61cbeb7a32198f6c629e4aaaca327608dd5056c2107b547e476bc9334cd71ca"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_host_default",
+      "kind": "suite",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_default007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_default007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_default007.json",
+        "bytes": 169864,
+        "sha256": "227176040e29d1376b48e241cfc60bc37e57cc93dd4d6a0d5e52e4c3c88a6fe4"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_default007.log",
+        "bytes": 17979,
+        "sha256": "f85e311f12b87a3b2b9534596eca0912f3502d5eb91a7106eb211b2b62ae06f3"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_host_observation",
+      "kind": "suite",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_observation007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_observation007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_observation007.json",
+        "bytes": 169910,
+        "sha256": "cea1f6b2aeaba8c314ea26c75b9e994524b8cb7c859b33fbed0ae3d10f3d43f7"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_observation007.log",
+        "bytes": 19269,
+        "sha256": "675830af6d75a837ca7c50aa7790eb4195e694254c72c02d1935de86aab38585"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_host_measurement",
+      "kind": "suite",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_measurement007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_measurement007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_measurement007.json",
+        "bytes": 169910,
+        "sha256": "b418f091ba4ece8424be574a07b4213836760d3ee4cacef2dd3ccd1a0caafb9a"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_host_measurement007.log",
+        "bytes": 21794,
+        "sha256": "318dba753df47ae1a4a62730e6c9248dac7f88e70bbd099cfde6e5aab166f9b5"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_fmt",
+      "kind": "check",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_fmt007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_fmt007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_fmt007.json",
+        "bytes": 169664,
+        "sha256": "8ad9f5bd8bb456c2e798846867ab4d4ce75490a1a893fc6a673625569aa526bd"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_fmt007.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_check",
+      "kind": "check",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_check007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_check007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_check007.json",
+        "bytes": 169916,
+        "sha256": "0595eebbf8a0023fa03cecb5da4a93068bdef6042f75970d8acf328817abe512"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_check007.log",
+        "bytes": 4892,
+        "sha256": "62e2d51bc919cdf10960f0b1e6003eb15f3b501052b3ae6b775b47556509243e"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_event_log",
+      "kind": "check",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_event_log007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_event_log007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_event_log007.json",
+        "bytes": 169892,
+        "sha256": "562511fad225cb671b8fc7f2754b6cafd73d523b76a90ddf94661ae3b89641c4"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_event_log007.log",
+        "bytes": 4824,
+        "sha256": "faf675bda9a70464b6467d6590e744173dfa29ed1d8232d2e47ce28c0155db55"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_clippy_core",
+      "kind": "check",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_core007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_core007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_core007.json",
+        "bytes": 169953,
+        "sha256": "02d5a1a078fb99bd325cdeec557d800ea9df5a61eccbb1599f3f577960270738"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_core007.log",
+        "bytes": 1626007,
+        "sha256": "eb46afb1fb3a4cba2449f58254e1d7a46a837de59067d1d3ab867fbece234fe9"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_clippy_host",
+      "kind": "check",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_host007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_host007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_host007.json",
+        "bytes": 169956,
+        "sha256": "bb1a27d5b5e63690f0c95d34be7f30493a6a97cdcd907bad7f557261403cb913"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_clippy_host007.log",
+        "bytes": 1163198,
+        "sha256": "392941267de8591851d626aa79fa11d55df26fe593c6b5d7d008d7e0e955b3ce"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "integrated_heap",
+      "kind": "focused",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_heap007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_heap007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_heap007.json",
+        "bytes": 170005,
+        "sha256": "fe4b7bb0f875a0f468eebb4101e220ad4d69ea0bb9fb9686298394bb973a48c4"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/integrated_heap007.log",
+        "bytes": 4853,
+        "sha256": "2c387978005c70bb6acddf0cead3f96fb58e41902b732c8749c26c648531eef5"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "host_measurement_heap",
+      "kind": "focused",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/host_measurement_heap007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/host_measurement_heap007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/host_measurement_heap007.json",
+        "bytes": 170006,
+        "sha256": "00b340e64eecbdfebb7f8dec2830af038eebadaf05e0cfc7f7fd6c6b1c36246c"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/host_measurement_heap007.log",
+        "bytes": 4853,
+        "sha256": "ece67d5c6e264e206637d2781f71462c01c8a5e07d0f45cc6b77d3934e15a550"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "measurement_support",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/measurement_support007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/measurement_support007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/measurement_support007.json",
+        "bytes": 169794,
+        "sha256": "9c2648f26f9101a02783f08b67743da0c0329c3bcace6584b7d031c54bdbbc88"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/measurement_support007.log",
+        "bytes": 4879,
+        "sha256": "5575d46714a5efde14e6a576681e7492eeafcae7acfaa08ad436cb695bb574b4"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "release_build",
+      "kind": "build",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/release_build_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/release_build_007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/release_build_007.json",
+        "bytes": 169822,
+        "sha256": "940a4da13604fae88a771ac2fe557ea5661bd45e5eef79e41016ca2998d3b612"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/release_build_007.log",
+        "bytes": 8471,
+        "sha256": "4b51b804548fe9df68c2036fe4fdeb5506ec28a88766568f925e4142e6eebb8e"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "debug_build",
+      "kind": "build",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/debug_build_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/debug_build_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "playback_actual",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/playback_actual007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/playback_actual007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "lifecycle_actual",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/lifecycle_actual007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/lifecycle_actual007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "host_actual",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/host_actual007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/host_actual007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "playback_prepare",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/playback_prepare007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/playback_prepare007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "pc_prepare",
+      "kind": "execution",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/pc_prepare007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/pc_prepare007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "pc_gameplay",
+      "kind": "execution",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_pc_gameplay_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_pc_gameplay_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "pc_cost",
+      "kind": "execution",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_pc_cost007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_pc_cost007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "r05_prepare",
+      "kind": "execution",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_prepare_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_prepare_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "r05_summary",
+      "kind": "execution",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_summary_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_summary_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "r05_dependencies",
+      "kind": "execution",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_dependencies_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_dependencies_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "pc",
+      "kind": "focused",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_pc_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_pc_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "r05",
+      "kind": "r05",
+      "phase": "performance",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_r05_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_prepared_host",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_prepared_public_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_prepared_public_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_prepared_boundary",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_prepared_boundary_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_prepared_boundary_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_input_validation",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_input_validation_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_input_validation_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_defaults",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_default_parity_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_default_parity_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_oracle",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_oracle_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_oracle_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_trace",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_trace_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_trace_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_relics",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_relics_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_relics_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_cli",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_cli_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_cli_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_profile",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_profile_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_profile_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_boundary",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_boundary_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_boundary_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_api",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_api_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/compat_public_api_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_starter_schema",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_starter_schema_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_starter_schema_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_schema",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_schema_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_schema_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_independent_area",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_independent_area_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_independent_area_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_continuation",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_continuation_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_continuation_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_rewind",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_rewind_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_rewind_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_object_schema",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_object_schema_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_object_schema_007.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "public_objects",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_objects_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_objects_007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_objects_007.json",
+        "bytes": 170060,
+        "sha256": "c0ee35c40a4909c3065205098c9ec90a0c8f5c4a7d3e11dd29d5e141a2d76ea7"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_objects_007.log",
+        "bytes": 84,
+        "sha256": "29bc2ec5c9da7fac0bbd182e1357e79792c0175dcaf48bcd90c1e1d270e11d4d"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "public_object_combat",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_object_combat_007.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_object_combat_007.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_object_combat_007.json",
+        "bytes": 170072,
+        "sha256": "b278da91ab5e8db9817a96ec8f94ff6ba27764f13879478d31bac593288b9d2e"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_object_combat_007.log",
+        "bytes": 76,
+        "sha256": "052e3e481a69d3d7c0115adf506738f24c885b9ed5724f058f5123476f9e51ed"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "public_guards",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards008.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards008.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards008.json",
+        "bytes": 170335,
+        "sha256": "9b5001838d78c3df8276d74a45ea208efc32df563ec226721a4826f7d03cc27f"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards008.log",
+        "bytes": 16777,
+        "sha256": "9133f544738c993624b54891ee6bc4a1286d1b2c3c1c6906746b910abaad9861"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "public_allocator_guards",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator008.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator008.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator008.json",
+        "bytes": 170389,
+        "sha256": "d3f31acb53c436a798cff43415d92d88bf7659c14c4c1eba72bf3177b62702fd"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/public_guards_allocator008.log",
+        "bytes": 16952,
+        "sha256": "b196f26d902d9562b534beba5d88ccfe2f084dc25c9ceaa6b9d4b0581263f800"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "fault_build_on",
+      "kind": "build",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_build_on.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_build_on.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_build_on.json",
+        "bytes": 169790,
+        "sha256": "492d8b8f382bdf07d1a94c9292f81c94bbecc7cf79955de96b055c0d77ad76a2"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_build_on.log",
+        "bytes": 8403,
+        "sha256": "4c395bf916289062583f024d91bd01e84e4d8b7862c596f0226bc12ff2874d83"
+      },
+      "disposition": "existing_exit0_exact_source",
+      "limitation": "Historical native build/leaf success; full five-mode aggregate awaits off execution."
+    },
+    {
+      "id": "fault_none",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_none.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_none.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_none.json",
+        "bytes": 171113,
+        "sha256": "a737450d22c57138de810baaaaa4753a7264365328bd43a5c3bacb27bd37335c"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_none.log",
+        "bytes": 55032,
+        "sha256": "6d9c5013a50799bf99519ca715259a67fb160749cc0b652703df6e5a078dd7d6"
+      },
+      "disposition": "existing_exit0_exact_source",
+      "limitation": "Historical native build/leaf success; full five-mode aggregate awaits off execution."
+    },
+    {
+      "id": "fault_detached",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_detached.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_detached.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_detached.json",
+        "bytes": 171117,
+        "sha256": "552c71e72095414a1ea5b42023be82a619029247cc31c75e755b6e16b5486068"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_detached.log",
+        "bytes": 55032,
+        "sha256": "6d9c5013a50799bf99519ca715259a67fb160749cc0b652703df6e5a078dd7d6"
+      },
+      "disposition": "existing_exit0_exact_source",
+      "limitation": "Historical native build/leaf success; full five-mode aggregate awaits off execution."
+    },
+    {
+      "id": "fault_queue_full",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_queue_full.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_queue_full.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_queue_full.json",
+        "bytes": 171119,
+        "sha256": "06bcb59960496fcb6138cf8a90f7081cf487f499345891cbecb3cd2ce6b60793"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_queue_full.log",
+        "bytes": 55052,
+        "sha256": "4b797e988d5c644965557d9e35a619bf87128606fb43218b497609140ca61118"
+      },
+      "disposition": "existing_exit0_exact_source",
+      "limitation": "Historical native build/leaf success; full five-mode aggregate awaits off execution."
+    },
+    {
+      "id": "fault_on",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_on.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_on.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_on.json",
+        "bytes": 171111,
+        "sha256": "4209edd3a686724d02b511a1da983bdcde9e9d99f3ff1caeb58735a5ea15acb4"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_on.log",
+        "bytes": 65648,
+        "sha256": "cace3fd3f851bf4f96d584b154ca74f3b241e90ce273134a0a04652b79b2aea6"
+      },
+      "disposition": "existing_exit0_exact_source",
+      "limitation": "Historical native build/leaf success; full five-mode aggregate awaits off execution."
+    },
+    {
+      "id": "fault_websocket",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/attempt005/focus.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/attempt005/focus.log",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/attempt005/focus.json",
+        "bytes": 170890,
+        "sha256": "954ad1b55e24497570010b6138cfbd3e8c2dc59eb9e36743759407aff3674b6f"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_websocket_successor001/attempt005/focus.log",
+        "bytes": 398,
+        "sha256": "a81f276596247829a7ff8ea4c0faf81f1c6163150cb0e47086764c37ff30a4c4"
+      },
+      "disposition": "existing_exit0_exact_source"
+    },
+    {
+      "id": "fault_build_off",
+      "kind": "build",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_build_off.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_build_off.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "fault_off",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_off.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/final_fault_007_off.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    },
+    {
+      "id": "r06_resource_sum_public",
+      "kind": "execution",
+      "phase": "functional",
+      "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_publication009.json",
+      "raw_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_publication009.log",
+      "receipt": null,
+      "raw": null,
+      "disposition": "future_unused_path"
+    }
+  ],
+  "command_scope": "Native build_off/off007 then verify_remaining008(start3,label007), probe003/publication009, PC/R05 unchanged007. Actual wrapper paths, manifests, snapshot collection and root execution handoff still pending.",
+  "execution_authorized": false
+}

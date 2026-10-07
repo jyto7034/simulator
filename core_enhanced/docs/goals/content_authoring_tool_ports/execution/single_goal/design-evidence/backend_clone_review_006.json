@@ -1,0 +1,154 @@
+{
+  "schema": "r03_backend_clone_review_006.v1",
+  "status": "bounded_source_review_not_completion_audit",
+  "generated_utc": "2026-09-10T08:12:44.332738+00:00",
+  "captured_utc": "2026-09-10T08:07:50.203417+00:00",
+  "report_path": "/tmp/r03_backend_clone_review_006.md",
+  "report_sha256": "3b7f61dbd370e6fc541545162014f1034a3c675eefaa220c172310a01c1e1465",
+  "sources": [
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "sha256_capture": "c8ce8325a28d9ac2685bc6c73ba6b63cf7e472163200743f203b89ba0b5993e9",
+      "bytes": 39288,
+      "spans": "1,37-134,193-258,293-394,415-432,981-1097",
+      "sha256_close": "c8ce8325a28d9ac2685bc6c73ba6b63cf7e472163200743f203b89ba0b5993e9",
+      "drift": false,
+      "evidence_basis": "fresh workspace read/search",
+      "sha256_prior_005": "764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9",
+      "drift_from_005": true
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/authoring/control.rs",
+      "sha256_capture": "1c465fc9e00ef53d1b93cab11f4cf97fdffa341b02715d3227af8d0f8803edcc",
+      "bytes": 16946,
+      "spans": "27-55,90-111,230-280,419-437",
+      "sha256_close": "1c465fc9e00ef53d1b93cab11f4cf97fdffa341b02715d3227af8d0f8803edcc",
+      "drift": false,
+      "evidence_basis": "fresh workspace read/search",
+      "sha256_prior_005": "fe69b34d3303d4d465d94c999dc750fa8eaf33a6f34982957f3c5a93ff976bc5",
+      "drift_from_005": true
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "sha256_capture": "88e994497261f339d696b705c2e222a8256f56002591e36ef347b023a3a95153",
+      "bytes": 138567,
+      "spans": "292-312,1761-1802",
+      "sha256_close": "88e994497261f339d696b705c2e222a8256f56002591e36ef347b023a3a95153",
+      "drift": false,
+      "evidence_basis": "fresh workspace read/search"
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/movement/mod.rs",
+      "sha256_capture": "096f70bc180482ae54d3ef142989ca44b7cc677cb1a050c56df19286ff77ce32",
+      "bytes": 662,
+      "spans": "search only: movement exports",
+      "sha256_close": "096f70bc180482ae54d3ef142989ca44b7cc677cb1a050c56df19286ff77ce32",
+      "drift": false,
+      "evidence_basis": "fresh workspace read/search"
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/movement/engine.rs",
+      "sha256_capture": "89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f",
+      "bytes": 26675,
+      "spans": "search only: movement_backend dispatch",
+      "sha256_close": "89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f",
+      "drift": false,
+      "evidence_basis": "fresh workspace read/search"
+    },
+    {
+      "path": "/mnt/f/work/simulator/core_enhanced/src/game/battle/core/mod.rs",
+      "spans": "108,346 search only",
+      "sha256_close": "026b85b1b7d47cfc3f08d3e88467dfe7de9558926aa1783e76b3cb56bf5bf67e",
+      "bytes": 349296,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated"
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.16.0/src/map.rs",
+      "spans": "604-619",
+      "sha256_close": "bf069e9f391abbbfca0918f5798229fd44380afc4f126ce64afd387b5401a8e3",
+      "bytes": 202065,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated",
+      "sha256_prior_005": "bf069e9f391abbbfca0918f5798229fd44380afc4f126ce64afd387b5401a8e3",
+      "drift_from_005": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.16.0/src/raw/mod.rs",
+      "spans": "1282-1284; clone/growth basis reused from 005: 2627-2681,3155-3185,3292-3327",
+      "sha256_close": "a88cd291be71cd2f6119a1f8b4030a0429b6b1f8771b7f2a8b140c1824788bed",
+      "bytes": 191672,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated",
+      "sha256_prior_005": "a88cd291be71cd2f6119a1f8b4030a0429b6b1f8771b7f2a8b140c1824788bed",
+      "drift_from_005": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rapier2d-0.32.0/src/geometry/collider_set.rs",
+      "spans": "134-220",
+      "sha256_close": "4895f6a2dad10b2b9c51527dd91cb0ba61f14694be36da2fcca02f0a98198c3e",
+      "bytes": 18257,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated",
+      "sha256_prior_005": "4895f6a2dad10b2b9c51527dd91cb0ba61f14694be36da2fcca02f0a98198c3e",
+      "drift_from_005": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rapier2d-0.32.0/src/data/arena.rs",
+      "spans": "15-38",
+      "sha256_close": "605ee1a2f7059cea0f983265954cd2e9e7b44564504cc8073e1783eeeda9931f",
+      "bytes": 33525,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated",
+      "sha256_prior_005": "605ee1a2f7059cea0f983265954cd2e9e7b44564504cc8073e1783eeeda9931f",
+      "drift_from_005": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parry2d-0.26.0/src/partitioning/bvh/bvh_tree.rs",
+      "spans": "135-147",
+      "sha256_close": "bc5494726bfa107b2bbaf86a2f825e2707fd80b22d1199b263a052fed89ebd15",
+      "bytes": 82667,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated",
+      "sha256_prior_005": "bc5494726bfa107b2bbaf86a2f825e2707fd80b22d1199b263a052fed89ebd15",
+      "drift_from_005": false
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/parry2d-0.26.0/src/partitioning/bvh/bvh_optimize.rs",
+      "spans": "30-90",
+      "sha256_close": "cb9ec6f079badc2d997b5445c854494e03769b72231e220df4012c39092a81ad",
+      "bytes": 20168,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated",
+      "sha256_prior_005": "cb9ec6f079badc2d997b5445c854494e03769b72231e220df4012c39092a81ad",
+      "drift_from_005": false
+    },
+    {
+      "path": "/tmp/r03_backend_clone_design_005.md",
+      "spans": "prior design source basis",
+      "sha256_close": "029a63fd0bb6b830e25180a6feabf93aa06379438550d652218424613203f46f",
+      "bytes": 26075,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated"
+    },
+    {
+      "path": "/tmp/r03_backend_clone_design_005.json",
+      "spans": "prior source ledger basis",
+      "sha256_close": "9b7ae39a98f764ee4e7c715f64cdb3051cdc1570a0c6a489d1bc60df2d0d5673",
+      "bytes": 28867,
+      "evidence_basis": "single close hash; prior 005 basis where expressly stated"
+    }
+  ],
+  "capture_close_drift": [],
+  "builds_or_tests_run": false,
+  "repository_or_dependency_mutation": false,
+  "standard_library_source_inspected": false,
+  "limitations": [
+    "No exact Rust std HashMap implementation was locally available to this helper; pinned hashbrown 0.16 must not be equated to std silently.",
+    "Whole application visitor, whole BattleCore nested fields, coexistence and fullheap proofs were intentionally outside this review.",
+    "Source tests were read but root INPUTS034 results were not executed or verified by this helper."
+  ],
+  "findings": [
+    {
+      "id": "BC006-F01",
+      "status": "open_on_captured_source",
+      "kind": "structural_clone_accounting_gap",
+      "location": "core_enhanced/src/game/battle/core/movement/rapier_backend.rs:121-125",
+      "title": "Usable HashMap capacity is used as an unproved upper bound on retained backing slots",
+      "minimal_fix": "Verify pinned std map growth/Clone semantics, then retain per-map insertion/capacity high-water across clear and use a checked source-backed bucket/work envelope; no arbitrary current-capacity multiplier is verified.",
+      "root_disposition": "Root acknowledged and is independently inspecting Rust 1.91.1 official source; successor not reviewed here."
+    }
+  ]
+}

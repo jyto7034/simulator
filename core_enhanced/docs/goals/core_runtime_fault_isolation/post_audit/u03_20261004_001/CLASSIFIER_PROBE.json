@@ -1,0 +1,39 @@
+{
+  "purpose": "Bounded independent negative probe for frozen PE01/V02 trusted internal failure classification",
+  "base_manifest_sha256": "36640f3db8ff2a95528202a8aedc63f1a024038f0ccf985d1241de76a811ad25",
+  "base_product_sha256": "d844a3e32bed90d19e0ead462e2394f97d61ba884f27b3108d26ad3b797a6560",
+  "isolated_root": "/tmp/u03-independent-classifier-probe",
+  "all_367_frozen_source_files_verified": true,
+  "only_delta": [
+    "core_enhanced/src/game/world/tests/combat.rs"
+  ],
+  "delta": "Append classifier_probe.rs to the existing combat tests; production functions unchanged. Uses existing internal reconcile negative setup and public CoreApplication advance calls.",
+  "probe_sha256": "05deb4bb1bdcdfe59a21e60d93c831a096b6d953aa43d3d2c40f3f530d8e58ad",
+  "isolated_test_file_sha256": "9b93eb4468f1271917bb5b13693f5d26e8cdfd8411e644f4404caecf557411f7",
+  "command": [
+    "cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "u03_independent_internal_reconcile_must_fault_application",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/tmp/u03-independent-classifier-probe",
+  "environment": {
+    "PATH_prefix": "/home/blast/.cargo/bin",
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target"
+  },
+  "raw_exit": 101,
+  "executed": 1,
+  "failed": 1,
+  "log_sha256": "71aa95819e79ebcbf3a5d6f4230171d314ec2f2c894e23152b351804d7c78d3e",
+  "actual": [
+    "first_error=unit_not_found fault_present=false",
+    "second_error=unit_not_found fault_present=false"
+  ],
+  "expected": "first internal error latches fixed first fault; subsequent advance rejects battle_faulted",
+  "limitation": "Existing deliberately inconsistent trusted-state setup; does not claim ordinary external input can manufacture this corruption. Frozen contract explicitly requires internal failures to terminate. No frozen source changes."
+}

@@ -1,0 +1,348 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CMRP-001",
+        "Content Digest": "sha256:3f5d8bb47b19192ee9ea8eb48057af486d32c9a026f75774a24406288c240ed7"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CMRP-20261005",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "current user request excerpt",
+            "Exact Content or Content Reference": "기존 연속 요청의 계획·구현·자체 검증·독립 감사·finding 교정·재감사·후속 작업 권한을 유지한다.\n단계 전환이나 감사 인계마다 사용자 재승인을 요구하지 않는다.\nCore 우선, Unity 후속, 개별 최종보스 고유 구현 제외를 유지한다.\n위임된 정책 판단은 선택·이유·영향·위임 근거를 남긴다.\n\n기존 사용자 변경·실패 원본·과거 감사·동결 target을 보존한다.\n전체 저장소 reset/clean/stash 등으로 작업 상태를 정리하지 않는다.\n구현자와 감사자가 같은 대상 파일을 동시에 변경하지 않도록 조정한다.",
+            "User-Provided Locator": "2026-10-05 current continuous resume request, autonomy and preservation paragraphs",
+            "User-Stated Constraint": "Continue authorized roadmap scope with mandatory separate implementation and independent audit roles.",
+            "Capture Limitation": "Exact operative excerpt only, not the entire request. U07-specific resume instructions remain in historical PLAN/handoff; this successor scope is the registered FOLLOWUP."
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "sha256": "269966f0132db9db7543007fc4ee3cb131e01ff50df6484325623e07c217e233"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+              "sha256": "e2afeffab42bd9be4fd4b7a3e97afe63c3e1b2377b319adf19b49b4456a4ca93"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+              "sha256": "4b6e1f076292f40a3e17d9145edd3f55dfebaba854f890601169813606c9f3e5"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md",
+              "sha256": "0e5177a05511490fd9a9a8adbc17059e01265d3792d8be226fa3ab01eb595dbf"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/PUBLICATION_RECORD.json",
+              "sha256": "6cb904d8f11058054afe6983a140c323ad717f3ec6b66ade982a86e04386dcb3"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07_closure_20261005_001/RESULT.ko.md",
+              "sha256": "3abb5b687306cccfe3869cac8eeab4d619287df96f6ade684ed7cdc2dc2e72d3"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u07_closure_20261005_001/PUBLICATION_RECORD.json",
+              "sha256": "02c0268a87918bd153d170f23a5127eaf680f3fd4599e1bdbcbfd543aebabe20"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/workflow_efficiency_update_20261004_001/RECORD.ko.md",
+              "sha256": "5659725821cc301f3f6c625af82d0013193f5e8c6680a0753c73f462c98bde5b"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/core_runtime_contract.md",
+              "sha256": "f0c06020a6fa994419ac0320eb114d8988889b1fa2865169e2ecfd60ddf5bc06"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rulebook.md",
+              "sha256": "668a54159339de58ae5ca865432a4a322482eec0c207c31478a8d85cc9ec5cdd"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-012",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/results-and-save.md",
+              "sha256": "22f98e114f0d3047b62be582520de069678ea5c4ce2f396a8cc8ed1b4cc01aee"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-013",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+              "sha256": "e070cc60b1b1225e8260bf463b98bcebfec3a16608f73de3a6d45f9b219d0ca7"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-014",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+              "sha256": "9ae04d15909bfe07652b58805a416adfd402e43ce1045405eb396b3094db79cc"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-015",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+              "sha256": "9626f374f6523f63dc89a9ea0a940f94733223c59a51144c420a5632fe74342c"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-016",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_independent_objects/post_audit/u07_20261005_002/AUDIT_CLOSURE.json",
+              "sha256": "d371f43c1122826347261ed68f0817e66432bbc97e85fdb6759deaf686a59cb9"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-017",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md",
+              "sha256": "1779ebe7a41367c4f96a1959376728bcf146cbd71334e1e18a95b0bad50264bd"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          },
+          {
+            "Intake Item ID": "IN-018",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/target/u07_002/MANIFEST.json",
+              "sha256": "deefd24a1ee8ea628922e139fd03c99482f053a25245c21f616cd632a538505a"
+            },
+            "User-Provided Locator": "Active ROADMAP §5 U07-M, registered followup and applicable pipeline/prerequisite references",
+            "User-Stated Constraint": "Preserve deployment defaults/current U07 verdict and history; finite trusted development measurement preparation before U08.",
+            "Capture Limitation": "Raw capture; source necessity, semantic completeness and runtime implementation not judged by P2G-00."
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMRP-001",
+        "Content Digest": "sha256:0a2b82d382c7807474f5f87cd33560dd697cf62cabf36e59e30939e1800bf31c"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CMRP-20261005",
+          "Policy Topic": "U07-M 실측 기반 실행 예산 조정 준비",
+          "Requested Result": "bounded_pipeline P2G00-60 then separately authorized GEX implementation, independent audit/correction, and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+            "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+            "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Trusted explicit development measurement profile, finite emergency memory cap, warning threshold and preserved deployment defaults",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "FOLLOWUP4.1/A1–A3"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Separate accounted extent/cumulative admission/actual allocator/RSS measurements, bounded collection and normal Core/host samples with identity/reproduction",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "FOLLOWUP4.2/A4–A5"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Normal repetition/lifecycle/rollback/fault/profile/clone/save/replay/approval boundaries and current applicable validation",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "FOLLOWUP4.3/A3,A6–A7"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Independent completion and documented later U30-C/U30-P tuning ownership before U08",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "FOLLOWUP3/A7–A8 and current continuous request"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Retroactive relaxation or PASS of U07/PC/R05 failures, unbounded mode, unrelated protection removal or runtime automatic cap changes",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "FOLLOWUP1/4.1/4.3"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Remote collection service/dashboard, all-content/Unity play aggregation and final deployment budget adequacy in this preparation step",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "FOLLOWUP3/4.2/5"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Unity implementation, individual finalbosses, whole-future-roadmap detailed design or unrelated cleanup/destructive history changes",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous resume excerpt and IN-003 continuous request",
+                "scope": "IN-002 ROADMAP §5 U07-M and IN-004 FOLLOWUP §§1–6/A1–A8",
+                "boundary": "U07 independent Complete/High consumed; bounded P2G00-60 then separately authorized implementation/testing/audit/correction and next eligible work.",
+                "specific_locator": "IN-001 and active continuous request"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMRP-001",
+          "Content Digest": "sha256:3f5d8bb47b19192ee9ea8eb48057af486d32c9a026f75774a24406288c240ed7"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

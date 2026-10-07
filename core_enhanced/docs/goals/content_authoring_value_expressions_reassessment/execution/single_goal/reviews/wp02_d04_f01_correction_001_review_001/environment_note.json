@@ -1,0 +1,13 @@
+{
+  "initial_run": "focused_correction_001",
+  "exit_code": 101,
+  "observed_error": "linker terminated with signal 7 (Bus error)",
+  "observed_tmp": {
+    "size": "16GiB",
+    "used": "15GiB",
+    "available": "467MiB"
+  },
+  "interpretation": "Low tmpfs free space suspected; not proven as unique cause.",
+  "recovery": "cargo clean -p game_core --target-dir /tmp/r06-action-review-qlag__yf/build --offline; only reviewer-owned generated build cache removed (3.4 GiB)",
+  "retry": "focused_correction_002; unchanged source and selectors, CARGO_INCREMENTAL=0"
+}

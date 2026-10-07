@@ -1,0 +1,1081 @@
+{
+  "uid": "core-runtime",
+  "title": "Core runtime safety and observation",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "1s",
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "tags": [
+    "core",
+    "runtime"
+  ],
+  "editable": false,
+  "links": [
+    {
+      "title": "Selected identity / 300-row detail ring",
+      "type": "link",
+      "url": "http://127.0.0.1:9110/state",
+      "targetBlank": true
+    }
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Active battles and committed operations",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_active_battles",
+          "legendFormat": "active battles",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "rate(core_runtime_commits_total[10s])",
+          "legendFormat": "commits / wall second",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Root publications only; ended or dropped sessions leave the active aggregate.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Returned rejections \u2014 once per public operation",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_rejections_total > 0",
+          "legendFormat": "{{reason}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Native first-fault code or finite application error kind. Internal polls do not increment counters.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Retained accounted extent \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"accounted_extent_bytes\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Queued events \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"pending_events\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Active actions \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"active_actions\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Projectiles \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"projectiles\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Owned units \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"units\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Retained history events \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"history_events\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "History encoded-byte accounting \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"history_accounted_encoded_bytes\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Retained history time span \u2014 sum / max / interval peaks",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_usage{quantity=\"history_span_ms\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Current gauges use committed roots. Peaks include attempts and discarded drafts. Accounted extent and encoded-byte bounds are not process RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "title": "Operation wall duration distribution (p50 / p95)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))",
+          "legendFormat": "{{operation}} p50",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_operation_seconds_bucket[10s])))",
+          "legendFormat": "{{operation}} p95",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Monotonic elapsed wall seconds for synchronous Core work, excluding host persistence wait.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "title": "Native work / operation (p95)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_work_bucket[10s])))",
+          "legendFormat": "{{operation}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Accepted native work charged by the existing operation scope; failed attempts remain counted.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "Cumulative admitted bytes / operation (p95)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by(le, operation)(rate(core_runtime_admitted_bytes_bucket[10s])))",
+          "legendFormat": "{{operation}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Conservative cumulative retained allowance, including starting extent. Releases do not replenish this allowance. This differs from retained extent and RSS.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "Observed outcomes / wall second",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(core_runtime_operations_total[10s]) > 0",
+          "legendFormat": "{{operation}} / {{outcome}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Counters remain exact if the summary queue fills. Histogram samples can be lost, with losses below.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Observation losses and collector freshness",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_observation_dropped_total",
+          "legendFormat": "queue full / disconnected",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "core_runtime_observation_expired_total",
+          "legendFormat": "retired session summary",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "core_runtime_registration_dropped_total",
+          "legendFormat": "registration contention",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "D",
+          "expr": "time() - core_runtime_last_snapshot_unix_seconds",
+          "legendFormat": "seconds since snapshot",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "These losses affect observation only. They never drop game events.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "title": "Selected slot0 \u2014 extent on wall time",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 56,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_selected_usage{slot=\"0\",quantity=\"accounted_extent_bytes\"}",
+          "legendFormat": "{{statistic}}",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "UUID and selection wall timestamp are in the bounded detail record linked above, not in metric labels.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "title": "Selected slot0 \u2014 simulation clock on wall time",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 64,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_selected_usage{slot=\"0\",quantity=\"simulation_time_ms\",statistic=\"current\"}",
+          "legendFormat": "simulation time",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "X is Prometheus wall time; Y is the selected battle simulation clock. Pause and speed can make these differ.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "title": "Selection boundaries",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 64,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_selection_generation{slot=\"0\"}",
+          "legendFormat": "selection generation",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "core_runtime_selected_active{slot=\"0\"}",
+          "legendFormat": "selected active",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "Generation changes mark switches. Selected active becomes zero on battle end/drop. The detail ring retains exact identity/time boundaries.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "line",
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "title": "Selected slot0 \u2014 extent by simulation time",
+      "type": "xychart",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "core-runtime"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 72,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_runtime_selected_usage{slot=\"0\",quantity=\"simulation_time_ms\",statistic=\"current\"} and on(slot) (core_runtime_selected_active == 1)",
+          "legendFormat": "simulation_time_ms",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "core_runtime_selected_usage{slot=\"0\",quantity=\"accounted_extent_bytes\",statistic=\"current\"} and on(slot) (core_runtime_selected_active == 1)",
+          "legendFormat": "accounted_extent_bytes",
+          "range": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "core-runtime"
+          }
+        }
+      ],
+      "description": "X is battle simulation milliseconds, Y is committed accounted extent. Use selection boundaries when comparing sessions.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "show": "points",
+            "pointSize": {
+              "fixed": 4
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "simulation_time_ms"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Battle simulation time (ms)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "accounted_extent_bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Accounted retained extent (bytes)"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "mapping": "manual",
+        "series": [
+          {
+            "name": {
+              "fixed": "slot0"
+            },
+            "x": {
+              "matcher": {
+                "id": "byName",
+                "options": "simulation_time_ms"
+              }
+            },
+            "y": {
+              "matcher": {
+                "id": "byName",
+                "options": "accounted_extent_bytes"
+              }
+            },
+            "frame": {
+              "matcher": {
+                "id": "byIndex",
+                "options": 0
+              }
+            }
+          }
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "Time",
+            "mode": "outer"
+          }
+        }
+      ],
+      "pluginVersion": "13.2.3"
+    }
+  ],
+  "annotations": {
+    "list": []
+  }
+}

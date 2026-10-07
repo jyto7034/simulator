@@ -1,0 +1,649 @@
+{
+  "schema": "r03-bounded-source-design-015",
+  "status": "intermediate_design_helper_not_completion_audit",
+  "scope": "remaining boss compiled phase/node/active-pattern/route/summon-task copies and direct consumer/error owners",
+  "excluded_paths": [
+    "core_enhanced/src/game/battle/core/spawn_kernel.rs"
+  ],
+  "read_method": "rg bounded discovery, Python Path.read_bytes and SHA256 from same bytes as numbered source spans, read-only final rehash",
+  "source_reads": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141640,
+      "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "observed_at_utc": "2026-09-10T10:31:54.324249+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 220
+        },
+        {
+          "start": 321,
+          "end": 616
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "bytes": 161189,
+      "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "observed_at_utc": "2026-09-10T10:31:54.352316+00:00",
+      "spans": [
+        {
+          "start": 513,
+          "end": 813
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141640,
+      "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "observed_at_utc": "2026-09-10T10:32:13.284427+00:00",
+      "spans": [
+        {
+          "start": 617,
+          "end": 875
+        },
+        {
+          "start": 933,
+          "end": 1167
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "bytes": 161189,
+      "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "observed_at_utc": "2026-09-10T10:32:13.292167+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 69
+        },
+        {
+          "start": 110,
+          "end": 163
+        },
+        {
+          "start": 204,
+          "end": 300
+        },
+        {
+          "start": 813,
+          "end": 823
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141640,
+      "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "observed_at_utc": "2026-09-10T10:32:28.997665+00:00",
+      "spans": [
+        {
+          "start": 1167,
+          "end": 1442
+        },
+        {
+          "start": 1494,
+          "end": 1698
+        },
+        {
+          "start": 1758,
+          "end": 1899
+        },
+        {
+          "start": 2163,
+          "end": 2178
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "bytes": 66508,
+      "sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "observed_at_utc": "2026-09-10T10:33:08.830812+00:00",
+      "spans": [
+        {
+          "start": 35,
+          "end": 75
+        },
+        {
+          "start": 128,
+          "end": 238
+        },
+        {
+          "start": 296,
+          "end": 341
+        },
+        {
+          "start": 380,
+          "end": 416
+        },
+        {
+          "start": 457,
+          "end": 503
+        },
+        {
+          "start": 607,
+          "end": 635
+        },
+        {
+          "start": 661,
+          "end": 731
+        },
+        {
+          "start": 798,
+          "end": 809
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "bytes": 361303,
+      "sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec",
+      "observed_at_utc": "2026-09-10T10:33:08.845328+00:00",
+      "spans": [
+        {
+          "start": 428,
+          "end": 453
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141640,
+      "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "observed_at_utc": "2026-09-10T10:33:08.863996+00:00",
+      "spans": [
+        {
+          "start": 218,
+          "end": 321
+        },
+        {
+          "start": 1948,
+          "end": 2020
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 41036,
+      "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "observed_at_utc": "2026-09-10T10:33:43.868263+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 81
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141640,
+      "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "observed_at_utc": "2026-09-10T10:33:43.901188+00:00",
+      "spans": [
+        {
+          "start": 1697,
+          "end": 1757
+        },
+        {
+          "start": 3605,
+          "end": 3657
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "bytes": 66508,
+      "sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "observed_at_utc": "2026-09-10T10:33:43.911550+00:00",
+      "spans": [
+        {
+          "start": 238,
+          "end": 296
+        },
+        {
+          "start": 340,
+          "end": 380
+        },
+        {
+          "start": 505,
+          "end": 531
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "bytes": 161189,
+      "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "observed_at_utc": "2026-09-10T10:33:43.926146+00:00",
+      "spans": [
+        {
+          "start": 298,
+          "end": 360
+        },
+        {
+          "start": 438,
+          "end": 449
+        }
+      ]
+    }
+  ],
+  "final_rehash": {
+    "observed_at_utc": "2026-09-10T10:35:01.003342+00:00",
+    "sources": [
+      {
+        "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+        "bytes": 141640,
+        "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705"
+      },
+      {
+        "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+        "bytes": 161189,
+        "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+        "bytes": 66508,
+        "sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "bytes": 361303,
+        "sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec"
+      },
+      {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "bytes": 41036,
+        "sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b"
+      }
+    ]
+  },
+  "source_drift": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "initial_sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "final_sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "initial_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "final_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "initial_sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "final_sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "initial_sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec",
+      "final_sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec",
+      "changed": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "initial_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "final_sha256": "6e56d3990b14357c98663ace941fc44b6cde7c41667829b4dddec78e71adbc6b",
+      "changed": false
+    }
+  ],
+  "sites": [
+    {
+      "id": "B01",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          438,
+          479
+        ],
+        [
+          501,
+          557
+        ]
+      ],
+      "symbols": [
+        "plan_next",
+        "enter_phase"
+      ],
+      "current_copies": [
+        "selected CompiledBossEncounterPhaseTransition clone at 440–442",
+        "CompiledBossEncounterPhase clone at 526"
+      ],
+      "shape": "transition owns ID and potentially condition IDs; phase owns ID, binding Vec and transition Vec, although each behavior is Arc",
+      "minimal_change": "plan_next extract (timing,target_phase_index), both native Copy, from borrowed winner; enter_phase retain Arc::clone(&self.definition), borrow its phases[phase_index], and retain only selected behavior Arc handles across self mutation",
+      "fallibility": "existing Result throughout; new Arc handle copy can use controlled_clone(&Arc) if metered; no compiled phase/node visitor needed when borrowing",
+      "owner": "plan_next local next + effects; then boundary staged BattleCore"
+    },
+    {
+      "id": "B02",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          559,
+          615
+        ],
+        [
+          1061,
+          1165
+        ]
+      ],
+      "symbols": [
+        "activate_actor_behavior",
+        "enter_control_node",
+        "advance_actor_once"
+      ],
+      "current_copies": [
+        "behavior .cloned at 585/1077 is Arc-only",
+        "CompiledBossControlNode .cloned at 1082 is deep"
+      ],
+      "shape": "State owns id/tasks/transitions; PatternCall owns id/candidate Vec/cooldowns/outcome_routes, whose pattern/frame children are Arc",
+      "minimal_change": "keep detached behavior Arc, remove node.cloned, match borrowed node; dereference repeat/no_eligible index scalars and pass borrowed candidate. enter_control_node already demonstrates this shape. activate_actor_behavior can accept entry_node_index scalar, because it only reads behavior.entry_node_index",
+      "semantic_constraints": [
+        "Keep behavior/node validation before the active-pattern branch as currently ordered",
+        "Preserve candidate and transition enumeration and max_by_key tie behavior"
+      ],
+      "owner": "plan_next next then boundary staged"
+    },
+    {
+      "id": "B03",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          1231,
+          1375
+        ],
+        [
+          1697,
+          1748
+        ]
+      ],
+      "symbols": [
+        "advance_pattern_once",
+        "resolve_loop_target"
+      ],
+      "current_copies": [
+        "ActiveBossPattern .cloned at 1242 and 1291",
+        "CompiledBossPatternTransition.clone at 1266",
+        "pattern.definition.id.clone at 1318"
+      ],
+      "shape": "ActiveBossPattern owns active tasks and loop_counters/batch_handles/cleared_batch_handles, with definition/frame Arc handles",
+      "minimal_change": "borrow live pattern to select winner and capture scalar state index/activation plus detached Arc definition/frame; release self borrow; borrow winner/next state from local definition Arc for resolve_loop_target/admit_state_tasks. Outcome compares route.pattern_id with borrowed local definition.id. Eliminate both full pattern copies and transition/ID copy",
+      "semantic_constraints": [
+        "State transition cancel_current_state(false) clears tasks but keeps pattern metadata; detached metadata preserves behavior",
+        "Outcome cancel_current_state(true) drops active pattern, so definition Arc must remain alive outside self",
+        "ContinueState consumes exact selected condition; no alternate decision order"
+      ],
+      "owned_followup": "loop counter key guard.id.as_str().to_string is a retained String copy; use admitted owned clone before entry, optionally borrowed get_mut then allocate only missing key; scalar transition target enum has no owned storage"
+    },
+    {
+      "id": "B04",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          933,
+          1058
+        ],
+        [
+          1405,
+          1440
+        ],
+        [
+          1948,
+          2020
+        ]
+      ],
+      "symbols": [
+        "route_cells_for_actor",
+        "poll_actor_once",
+        "select_rejoin_route_index",
+        "boss_movement_directive"
+      ],
+      "current_copies": [
+        "cells.clone at 1438"
+      ],
+      "shape": "Vec<Position> is stored under core.units[*].enemy_movement_plan or core.scenario.tactical_plan.enemy_plan; self provides only Copy unit_id",
+      "minimal_change": "fn route_cells_for_actor<'core>(&self, core: &'core BattleCore, actor_index: usize) -> &'core [Position]; return borrowed cells.as_slice. Explicit output lifetime tied solely to core permits mutable self in poll_actor_once. All three consumers read only; no new Result needed for removed allocation",
+      "limits": "Retains exact fallback, route ordering/cursor and movement behavior. Does not bound geometry/path scans."
+    },
+    {
+      "id": "B05",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          617,
+          677
+        ],
+        [
+          2163,
+          2176
+        ]
+      ],
+      "symbols": [
+        "resolve_target_query",
+        "admit_state_tasks"
+      ],
+      "current_copies": [
+        "BossTargetQueryData.clone in literal and parameter branches"
+      ],
+      "shape": "owned filter Vec + order_by Vec; only read by select_target and Copy lock_policy use",
+      "minimal_change": "return Result<&'a BossTargetQueryData, GameError> with value and optional frame sharing 'a; preserve literal/parameter validation; both originate in detached immutable Arc definitions/frame at callers",
+      "owner": "no new owned copy; selection remains within plan_next candidate"
+    },
+    {
+      "id": "B06",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          617,
+          814
+        ],
+        [
+          1185,
+          1227
+        ]
+      ],
+      "symbols": [
+        "admit_state_tasks",
+        "admit_pattern"
+      ],
+      "current_copies": [
+        "task IDs every task branch",
+        "summon definition/batch/placement/occupancy/route/removal-signal fields 763–774",
+        "generated request_id format 758–761",
+        "EmitSignal signal_id 783",
+        "cooldown group_id 1209"
+      ],
+      "shape": "Task IDs/definition IDs/batch IDs are String wrappers; placement can own zone String; occupancy can own Vec; optional route owns String; removal signal owns ID. Count/time/lifetime mode are fixed. Pattern/frame 1219–1220 are Arc-only",
+      "minimal_change": "Retained runtime task data cannot borrow temporary compiled references without broader owner/index representation redesign. Complete projected ActiveBossState/tasks plus affected output copies and generated request-id length bound before Vec::with_capacity/format/native clone, or independently admit each actual allocation/copy before it. Existing ActiveBossSummonTask/Task CloneShape covers owned leaves; use existing controlled_clone for source field copies, never after task construction. Pre-admit cooldown key copy before insert",
+      "fallibility": "admit_state_tasks/admit_pattern already Result; typed failures discard next/effects via plan_next/boundary. Runtime IDs must keep current checked allocator and exact request string format; do not substitute IDs."
+    },
+    {
+      "id": "B07",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          1494,
+          1538
+        ]
+      ],
+      "symbols": [
+        "summon_task_views",
+        "summon_request_is_active"
+      ],
+      "current_copies": [
+        "summon.clone per view",
+        "active check recreates and sorts all owned views"
+      ],
+      "minimal_change": "Make owned snapshot method Result<Vec<BossSummonTaskView>, GameError>, pre-admit selected tasks/output Vec and copying before first native clone, preserve sorted request-id order and post-copy poll. Implement active check directly over borrowed actors/pattern/state/tasks with exact prior eligibility+identity predicates instead of snapshot allocation",
+      "consumer": {
+        "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+        "spans": [
+          [
+            152,
+            174
+          ],
+          [
+            177,
+            189
+          ]
+        ],
+        "details": "capture_boss_summon_requests already Result and moves each view into pending map after trigger registration; Option<Result<Vec>> uses transpose()?.unwrap_or_default only for absent runtime. Active-check caller is Result and can propagate if scan charging makes predicate fallible."
+      },
+      "identity_predicates": [
+        "actor.unit_id and behavior_activation_id and control present",
+        "control.pattern present",
+        "task is Summon and task.result absent",
+        "request_id, actor_runtime_key, behavior_activation_id, pattern_activation_id, state_activation_id, task_activation_id match"
+      ],
+      "reason_owned_snapshot": "consumer mutates self and retains pending state independently of later boss pattern cancellation. Borrowed view cannot survive those mutations without representation redesign."
+    },
+    {
+      "id": "B08",
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "spans": [
+        [
+          177,
+          238
+        ],
+        [
+          262,
+          305
+        ]
+      ],
+      "symbols": [
+        "settle_one_summon_request"
+      ],
+      "current_copies": [
+        "pending map value .cloned 182",
+        "pending.view.clone 185"
+      ],
+      "minimal_change": "controlled_clone only the PendingSummonRequest from map to detach across mutable self calls; borrow &pending.view locally instead of a second deep clone. End borrow before moving pending into commit_summon_batch. Summoned definition .cloned at 225 is Arc-only.",
+      "owner": "boundary staged core protects errors; pending source map entry unchanged by detached clone itself"
+    },
+    {
+      "id": "B09",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          1540,
+          1617
+        ]
+      ],
+      "symbols": [
+        "settle_summon_task",
+        "note_summon_batch_cleared"
+      ],
+      "current_copies": [
+        "batch handle key clone 1583",
+        "cleared batch handle clone 1614"
+      ],
+      "minimal_change": "admit actual retained String ID clone before map/set insertion. settle_summon_task already Result; note_summon_batch_cleared can return Result<(),GameError> with ? at reconcile_summon_batches, which already returns Result<bool,GameError>",
+      "owner": "summon_runtime::commit_summon_batch has selective before restores, not every ?; outer run_boss_runtime_boundary staged owner is required. reconcile marks cleared_emitted before note callback, so new failure must escape to outer rollback; do not swallow as successful clear"
+    },
+    {
+      "id": "B10",
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "spans": [
+        [
+          296,
+          338
+        ],
+        [
+          661,
+          727
+        ]
+      ],
+      "symbols": [
+        "commit_summon_batch",
+        "summon_candidate_placements"
+      ],
+      "current_copies": [
+        "resolved route.cells clone 330",
+        "spawn-zone cells clone 705"
+      ],
+      "minimal_change": "Route Vec becomes owned ScenarioSpawnGroup.enemy_movement_plan across mutable self spawn callbacks; this actual retained copy needs controlled_clone(&route.cells) inside already-Result map/transpose. Spawn-zone cells can instead be borrowed/iterated to produce placements while preserving authored order; alternatively keep and control that Vec copy for minimum line change. This does not inspect or change spawn_kernel.rs.",
+      "owner": "before snapshot exists before route copy, but event-log detach precedes it; bare ? does not universally restore before. Outer boss boundary stages complete core."
+    },
+    {
+      "id": "B11",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          348,
+          386
+        ]
+      ],
+      "symbols": [
+        "BossEncounterRuntime::from_setup"
+      ],
+      "current_copies": [
+        "actor.unit_ref.clone 355",
+        "summon_spawn_zones.clone 380",
+        "summon_routes.clone 381"
+      ],
+      "shape": "definition is Arc-only; setup actors and runtime actors plus scenario/runtime route/zone owners are distinct persistent owners",
+      "minimal_change": "Owned setup copies require projection admission before runtime construction, unless a broader shared-owner representation is deliberately introduced. Cannot simply replace them with references into scenario within self-owned BattleCore.",
+      "consumer": {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "spans": [
+          [
+            438,
+            446
+          ]
+        ],
+        "details": "new_from_database -> Self directly invokes from_setup -> Self. A direct Result replacement needs the existing fallible construction owner or a fallible constructor path; never hide error in .ok(), default or expect."
+      },
+      "limits": "Flagged constructor boundary obligation only, not traced through all construction callers in this bounded investigation"
+    },
+    {
+      "id": "B12",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "spans": [
+        [
+          781,
+          790
+        ],
+        [
+          1627,
+          1635
+        ],
+        [
+          1758,
+          1787
+        ],
+        [
+          1859,
+          1897
+        ]
+      ],
+      "symbols": [
+        "note_signal_emitted",
+        "BossRuntimeTransitionPlan::commit",
+        "run_boss_runtime_boundary"
+      ],
+      "current_copies": [
+        "signal_id.clone to epoch map before moving original into latch set"
+      ],
+      "minimal_change": "If connecting this retained ID copy, private note_signal_emitted and plan.commit can become Result and propagate at the sole boundary call; or pre-admit the second owned key in the fallible planner. Do not return domain fallback after sticky failure. Poll before final staged-to-self replacement so infallible helper control failure cannot be silently committed.",
+      "limits": "Adjacent task-signal copy/commit obligation, not an audit of all runtime effects/queue allocations"
+    }
+  ],
+  "restrictions": {
+    "source_docs_git_mutation": false,
+    "build_test_runtime_execution": false,
+    "optional_trace": "gap only; cannot affect gameplay or mandatory control/receipt admission"
+  },
+  "remaining_obligations": [
+    "Retained task/output/map/generated string allocations need admission independent of removed temporary clones",
+    "Infallible from_setup constructor boundary not fully followed",
+    "commit_summon_batch before snapshot restores only selected errors; outer staged boss boundary owns complete rollback",
+    "No final source audit, no generalized runtime bounds or Session completion claim"
+  ]
+}

@@ -13,7 +13,7 @@ use crate::game::{
     battle::{
         event_log::BattleEventLog,
         result_stats::BattleResultStatsDto,
-        types::{BattleWinner, ParticipantBattleResult},
+        types::{BattleOutcomeId, BattleVerdict, BattleWinner, ParticipantBattleResult},
     },
     behavior::GameError,
     combat_preview::{CombatMissionVariant, CombatNodeType},
@@ -30,10 +30,11 @@ struct CombatTraceDebugExport<'a> {
     encounter_id: &'a str,
     node_type: CombatNodeType,
     mission_variant: CombatMissionVariant,
+    outcome_id: &'a BattleOutcomeId,
+    verdict: BattleVerdict,
     winner: BattleWinner,
     participant_results: &'a [ParticipantBattleResult],
     result_stats: &'a BattleResultStatsDto,
-    bonus_objectives: &'a [crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto],
     event_log: &'a BattleEventLog,
 }
 
@@ -67,7 +68,7 @@ pub(super) fn export_debug_combat_trace(
         ))
     })?;
     let export = CombatTraceDebugExport {
-        version: 1,
+        version: 2,
         run_seed,
         battle_uuid,
         combat_node_uuid: battle.abnormality_uuid,
@@ -75,10 +76,11 @@ pub(super) fn export_debug_combat_trace(
         encounter_id: &battle.encounter_id,
         node_type: battle.node_type,
         mission_variant: battle.mission_variant,
+        outcome_id: &battle.outcome_id,
+        verdict: battle.verdict,
         winner: battle.winner,
         participant_results: &battle.participant_results,
         result_stats: &battle.result_stats,
-        bonus_objectives: &battle.bonus_objectives,
         event_log: &battle.event_log,
     };
     serde_json::to_writer_pretty(BufWriter::new(file), &export).map_err(|error| {

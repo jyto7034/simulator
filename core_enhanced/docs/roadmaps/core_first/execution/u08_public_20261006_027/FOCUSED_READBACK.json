@@ -1,0 +1,77 @@
+{
+  "verified_at_utc": "2026-10-06T12:27:43.907057+00:00",
+  "status": "root focused source and raw result readback; final harness review pending",
+  "source_files_verified": 438,
+  "source_archive_members_verified": 438,
+  "same_source_scoped_fmt_and_exact_selectors": 4,
+  "passed_exact_tests": 3,
+  "actual_nonfinite_cases": 16,
+  "normal_actual_hp": [
+    452,
+    272
+  ],
+  "normal_damage": 180,
+  "current_source_delta_from003": "only u08_relics.rs: prior14nonfinite lines plus200append-only Normal test",
+  "prior_body_preserved": true,
+  "refs": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal_fmt001.json",
+      "bytes": 170026,
+      "sha256": "7586bb7e522d15b10e98d5d69a64ffac4880f5325963e8c6fb460d3c34e58231"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal_fmt001.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal001.json",
+      "bytes": 169878,
+      "sha256": "073ae68ecd16f1e934f355c6cdcadbfc853f9c04797d08e7f5d1c0dd5a3bb086"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal001.log",
+      "bytes": 5828,
+      "sha256": "9ce2199eece755f85c060b4f7c56d9a48c4146dc28929a4f3702d04880df2565"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal_e009001.json",
+      "bytes": 170022,
+      "sha256": "954379f4e965d4ded30c27c330516fdc3f26dc2a1a4ca2feabb5b6869e19c95a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal_e009001.log",
+      "bytes": 1600,
+      "sha256": "3676f6be13fb0532d147db08cc4da271c955a0484d1dc2e3598dd58fd9c595f0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal_nonfinite001.json",
+      "bytes": 169867,
+      "sha256": "3c2d70baa6c312671338bd473870ca3a1a67e0ba038225663f1e2a0e7cd3ea51"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_public_normal_nonfinite001.log",
+      "bytes": 9105,
+      "sha256": "49e000a13c8a56c3518575ad1c7f4379170b47f840b0fed832d00e0b5399bb54"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/source_versions/380e7408c647444127f818afb1fc722a6d3602b660ecc57b38d9df74ddd89171.tar.gz",
+      "bytes": 1920212,
+      "sha256": "a23361accbc96c2164c5b12d6c0d0f40a3cd4e9e7cfe33b55a4e0995fc810aba"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/test_public_normal001/RESULT.json",
+      "bytes": 6570,
+      "sha256": "315cd8b21fe964ce80ca88a057359a6d62b6c3f05709f0b33736ddbbaea80afb"
+    }
+  ],
+  "role_record": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_roles_20261006_004/RECORD.json",
+    "bytes": 3893,
+    "sha256": "fbe40dc30690f65d281b98a52c0ba6a3a72fd364f818d2ff276b0579904e816f"
+  },
+  "docs026_verified_nested_refs": 50,
+  "cache_archives_verified": 341,
+  "prepared_harness_archive_regular_members_verified": 1322,
+  "prepared_harness_archive_whole_files_verified": 5
+}

@@ -372,7 +372,7 @@ placeholder 자리를 표시하며, 자리 자체를 숨길 future entry가 생�
 이 정책은 시설 맵 구현 goal에 흡수하지 않고 별도 영향 감사와 구현 goal로 진행한다. 최소 다음을
 함께 감사·갱신한다.
 
-- `game_rulebook.md`: Elite 반복, 연구/파편, 전투 시도, Shop, 도감과 Endless 완료 조건
+- `archive/game_rulebook_legacy_2026-10-04.md`: Elite 반복, 연구/파편, 전투 시도, Shop, 도감과 Endless 완료 조건
 - `core_runtime_contract.md`: node conversion transaction, battle result, run-local/persistent state와
   checkpoint 경계
 - `data_loading_contract.md`: 모노리스 item/Shop entry, 재현 stage profile, compendium order와 capstone

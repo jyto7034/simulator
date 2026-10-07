@@ -1,0 +1,1073 @@
+{
+  "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+  "prior_audit_reuse": "R06/R07 historical Complete/High applies only to its frozen source. Current shared runtime/schema changes require a new independent impact audit.",
+  "R06_acceptances": [
+    {
+      "acceptance": "PER-CAVER-E01-REVIEWED-003[1]",
+      "expected": "서로 다른 unit의 Add/Sum/Max와 unit을 잃는 Multiply/Ratio가 publication 전에 거부된다.",
+      "iva": [
+        "IVA-CAVER-01"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E01-REVIEWED-003[2]",
+      "expected": "0나눗셈·checked overflow와 rounding 미지정 lossy division이 typed error이며 gameplay state를 변경하지 않는다.",
+      "iva": [
+        "IVA-CAVER-02",
+        "IVA-CAVER-03"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E01-REVIEWED-003[3]",
+      "expected": "같은 입력·rounding·compiled generation은 같은 값을 내고 외부 code eval을 사용하지 않는다.",
+      "iva": [
+        "IVA-CAVER-02",
+        "IVA-CAVER-19"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E02-REVIEWED-003[1]",
+      "expected": "release 뒤 source stat을 바꿔도 Snapshot 식의 전달 결과는 변하지 않고, 명시적 Live 식만 소비 시점 값을 읽는다.",
+      "iva": [
+        "IVA-CAVER-05",
+        "IVA-CAVER-06"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E02-REVIEWED-003[2]",
+      "expected": "snapshot과 live가 같은 authored field에서 모호하게 혼합되거나 필요한 context가 없으면 publication 또는 실행이 명시적으로 거부된다.",
+      "iva": [
+        "IVA-CAVER-06",
+        "IVA-CAVER-17"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E02-REVIEWED-003[3]",
+      "expected": "snapshot 캡처와 live read 모두 exact action/source-copy/target context를 보존한다.",
+      "iva": [
+        "IVA-CAVER-05",
+        "IVA-CAVER-06",
+        "IVA-CAVER-12"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[1]",
+      "expected": "Max(5,3,2)=5이고 Sum(5,3,2)=10이며 Max(empty)는 error, Count/Sum(empty)는 0이다.",
+      "iva": [
+        "IVA-CAVER-07"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[2]",
+      "expected": "서로 다른 owner/target/tile unit을 묵시적으로 합치지 않고 explicit grouping이 없으면 거부한다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[3]",
+      "expected": "같은 member set은 입력 순서와 hash iteration에 무관하게 같은 결과를 내며 budget 초과는 부분 적용하지 않는다.",
+      "iva": [
+        "IVA-CAVER-07",
+        "IVA-CAVER-08",
+        "IVA-CAVER-19"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[4]",
+      "expected": "ResolvedTargets는 진영·실제 직원·명시적 착용 슬롯의 실제 장비 사본별 grouping을 지원한다. 직원 grouping은 실제 Employee만 입력으로 허용하며 소환물을 소환자 직원에게 자동 합산하지 않는다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[5]",
+      "expected": "적용 불가능한 member는 제작자의 명시적 조건으로만 집계 입력에서 제외한다. 조건 없이 섞으면 validation 또는 실행 typed error이며 원 타격 대상 변경·부분 적용·silent skip이 없다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[6]",
+      "expected": "유닛의 지정 슬롯 actual equipment copy 관계와 효과·상태의 source equipment copy 관계를 구별한다. definition/첫 장비/대상 장비를 출처 사본으로 대신하지 않는다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E03-REVIEWED-SCOPE-001[7]",
+      "expected": "R06은 이미 resolve된 유닛 집계와 명시적 필터까지 완료한다. 효과·상태 집합의 출처별 조회·집계는 R11 조회 기반 및 최초 실제 소비자/R17 통합에 배정하고 R06에서 지원 완료로 표시하지 않는다.",
+      "iva": [
+        "IVA-CAVER-08"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E04-REVIEWED-003[1]",
+      "expected": "employee/weapon/modifier 입력으로 final Attack 100이 되면 weapon 40을 다시 더하지 않으며 각 입력을 제거했을 때 그 입력만 빠진다.",
+      "iva": [
+        "IVA-CAVER-09"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E04-REVIEWED-003[2]",
+      "expected": "SpellPower만 바꾸면 SpellPower 참조 식만 변하고 Physical/Magic damage type 자체나 Attack 참조 식은 바뀌지 않는다.",
+      "iva": [
+        "IVA-CAVER-10"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E04-REVIEWED-003[3]",
+      "expected": "같은 definition의 서로 다른 owned equipment enhancement가 definition UUID 합산으로 중복 적용되지 않고 actual copy binding을 따른다.",
+      "iva": [
+        "IVA-CAVER-09",
+        "IVA-CAVER-10"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E05-REVIEWED-003[1]",
+      "expected": "동일 resource definition이라도 owner/lifetime/lease가 다른 값은 혼합되지 않고 식 평가만으로 balance/revision이 변하지 않는다.",
+      "iva": [
+        "IVA-CAVER-12"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E05-REVIEWED-003[2]",
+      "expected": "다른 attempt·stale occurrence·not settled result 참조가 거부되며 0이나 마지막 값으로 fallback하지 않는다.",
+      "iva": [
+        "IVA-CAVER-13"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E05-REVIEWED-003[3]",
+      "expected": "current/max/missing HP와 elapsed/remaining time이 구분되고 source/target context 불일치가 명시적으로 진단된다.",
+      "iva": [
+        "IVA-CAVER-05",
+        "IVA-CAVER-06",
+        "IVA-CAVER-12"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E06-REVIEWED-003[1]",
+      "expected": "동일 base interval과 points는 scale_attack_interval_ms와 같은 interval을 만들며 0 points/base interval은 publication 전에 거부된다.",
+      "iva": [
+        "IVA-CAVER-11"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E06-REVIEWED-003[2]",
+      "expected": "AttackSpeedPoints 변경은 basic attack interval만 바꾸고 spell/area/projectile timer에는 영향이 없다.",
+      "iva": [
+        "IVA-CAVER-11"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E06-REVIEWED-003[3]",
+      "expected": "point와 millisecond unit은 식의 compatible unit으로 오인되지 않는다.",
+      "iva": [
+        "IVA-CAVER-01",
+        "IVA-CAVER-11"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E07-REVIEWED-003[1]",
+      "expected": "runtime·preview·explain이 같은 expression/source fingerprint에서 같은 값과 source trace를 내고 별도 계산식을 유지하지 않는다.",
+      "iva": [
+        "IVA-CAVER-17"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E07-REVIEWED-003[2]",
+      "expected": "저장 round-trip 뒤 owned enhancement/growth 입력과 final stat이 유지되며 transient action/result handle을 유효한 persistent ref처럼 복원하지 않는다.",
+      "iva": [
+        "IVA-CAVER-15"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E07-REVIEWED-003[3]",
+      "expected": "effective input 변경은 관련 cache/fingerprint를 바꾸지만 기존 Certified final weight나 공식 model을 새로 승인하지 않는다.",
+      "iva": [
+        "IVA-CAVER-10",
+        "IVA-CAVER-16"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E08-REVIEWED-003[1]",
+      "expected": "public RON의 positive fixture가 실제 runtime consumer까지 실행되고 unknown/unsupported/unit/depth/node/cardinality/overflow fixtures가 typed error로 거부된다.",
+      "iva": [
+        "IVA-CAVER-18",
+        "IVA-CAVER-19"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E08-REVIEWED-003[2]",
+      "expected": "budget 한계 바로 아래는 성공하고 한계 초과는 publication 또는 action mutation 전에 실패하며 safety limit가 공식 balance 수치로 표시되지 않는다.",
+      "iva": [
+        "IVA-CAVER-19",
+        "IVA-CAVER-20"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E08-REVIEWED-003[3]",
+      "expected": "0 tests·skip·fixture-only/private builder 또는 빈 executor가 supported/complete로 보고되지 않는다.",
+      "iva": [
+        "IVA-CAVER-18",
+        "IVA-CAVER-21"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E09-REVIEWED-003[1]",
+      "expected": "기존 literal pack/save가 동일 결과로 로드·실행되고 unsupported new expression은 명시적 진단을 내며 silent fallback하지 않는다.",
+      "iva": [
+        "IVA-CAVER-04",
+        "IVA-CAVER-15",
+        "IVA-CAVER-18"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E09-REVIEWED-003[2]",
+      "expected": "T06의 typed error·snapshot·single composition과 R06 해당 T18/T27 source-copy/cache 경계가 actual nonzero tests와 fresh audit로 추적된다.",
+      "iva": [
+        "IVA-CAVER-21"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    },
+    {
+      "acceptance": "PER-CAVER-E09-REVIEWED-003[3]",
+      "expected": "R07/R19 기능과 미정 Replace conflict/공식 weight는 R06 완료로 표시되지 않는다.",
+      "iva": [
+        "IVA-CAVER-10",
+        "IVA-CAVER-16",
+        "IVA-CAVER-21"
+      ],
+      "status": "same acceptance; current integration selectors rerun; new independent impact audit pending"
+    }
+  ],
+  "R06_integration": [
+    {
+      "id": "IVA-CAVER-01",
+      "expected": "Magnitude/Ratio/Points/ms 불일치 거부, typed operator",
+      "actual_selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+        "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+        "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-02",
+      "expected": "signed four rounding oracle 일치",
+      "actual_selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::value_expr::tests::integer_rounding_matches_the_signed_oracle"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-03",
+      "expected": "checked i128 overflow/0 divide/clamp/narrowing exact fault site",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+        "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+        "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-04",
+      "expected": "i32 MIN/MIN+1/-1/0/MAX legacy unsigned_abs와 signed Heal; public negative Damage semantic 거부",
+      "actual_selectors": [
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+        "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-05",
+      "expected": "release Snapshot / consume Live; current/max/missing HP와 elapsed/remaining",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+        "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+        "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-06",
+      "expected": "source withdrawal와 delivery 권한; missing target/time typed refusal",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+        "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+        "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+        "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+        "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-07",
+      "expected": "finite Sum/Max/Count와 empty, canonical permutation",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+        "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+        "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+        "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+        "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-08",
+      "expected": "WholeSet/tile/Side/ActualEmployee/EquippedSlot, explicit filter와 실패 보존",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+        "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-09",
+      "expected": "Attack 100/60/90 및 SP20; weapon/growth/ordered Permanent/copy once, overflow",
+      "actual_selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-10",
+      "expected": "same definition A/B의 exact copy +15/+30 독립, invalid join 거부",
+      "actual_selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-11",
+      "expected": "(base_ms,points) (1500,200)→750ms, (1001,150)→668ms, (1,200)→1ms; 0/overflow 거부; 다른 weapon timer 불변",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+        "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+        "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-12",
+      "expected": "정확 owner/scope resource 읽기; lookup만으로 store 무변경",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+        "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+        "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+        "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+        "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-13",
+      "expected": "completed effect prefix/actual HP damage, stale/future/unsettled refusal",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+        "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+        "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+        "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-14",
+      "expected": "실패 B 미노출; prior A/ordinal+accepted state 보존, retry once",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-15",
+      "expected": "raw V7 checksum 원본 불변; child process SP35/growth10/enhance1 fingerprint 동일, tamper 거부",
+      "actual_selectors": [
+        "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-16",
+      "expected": "canonical roster ordering; SP/copy 변경 input hash 변동, Certified weight 그대로",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+        "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+        "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-17",
+      "expected": "runtime 기록과 preview/explain 동일; real 2^100+1 decimal/order; wrong identity 거부",
+      "actual_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-18",
+      "expected": "default RON→3 deliveries×literal/Snapshot/Live→actual damage prefix; CLI independently 실행",
+      "actual_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "additional_evidence": [
+        "evidence/PC_SUMMARY_003.json",
+        "evidence/R05_SUMMARY_003.json",
+        "evidence/CLI_SUMMARY_003.json",
+        "evidence/CLI_AGGREGATE_SUMMARY_003.json"
+      ],
+      "predecessor_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+        "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-19",
+      "expected": "limit/exact/short/overflow/cancel preallocation; query accepted state/index/receipt 무변경",
+      "actual_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+        "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "predecessor_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+        "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-20",
+      "expected": "finite PC36/R05 + 새 observation workload; cost/retained/clone separately, raw failures preserved",
+      "actual_selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+        "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+        "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "additional_evidence": [
+        "evidence/PC_SUMMARY_003.json",
+        "evidence/R05_SUMMARY_003.json",
+        "evidence/CLI_SUMMARY_003.json",
+        "evidence/CLI_AGGREGATE_SUMMARY_003.json"
+      ],
+      "predecessor_selectors": [
+        "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+        "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+        "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+        "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "IVA-CAVER-21",
+      "expected": "default 전체/feature 전체/check/release/clippy/fmt와 official package/consume; 독립 감사 pending",
+      "actual_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "additional_evidence": [
+        "evidence/PC_SUMMARY_003.json",
+        "evidence/R05_SUMMARY_003.json",
+        "evidence/CLI_SUMMARY_003.json",
+        "evidence/CLI_AGGREGATE_SUMMARY_003.json"
+      ],
+      "predecessor_selectors": [
+        "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    }
+  ],
+  "R07_F01_F12": [
+    {
+      "id": "F01",
+      "actual_selectors": [
+        "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F02",
+      "actual_selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F03",
+      "actual_selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F04",
+      "actual_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F05",
+      "actual_selectors": [
+        "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F06",
+      "actual_selectors": [
+        "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F07",
+      "actual_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F08",
+      "actual_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+        "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+        "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+        "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F09",
+      "actual_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::world::tests::checkpoint_validation::current_v9_checkpoint_document_has_exact_envelope_and_checksum",
+        "game::world::tests::checkpoint_validation::current_v9_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+        "game::world::tests::checkpoint_validation::current_v9_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::current_v9_rejects_each_content_authority_mismatch_even_with_valid_checksum"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+        "game::world::tests::checkpoint_validation::current_v8_checkpoint_document_has_exact_envelope_and_checksum",
+        "game::world::tests::checkpoint_validation::current_v8_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+        "game::world::tests::checkpoint_validation::current_v8_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::current_v8_rejects_each_content_authority_mismatch_even_with_valid_checksum"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F10",
+      "actual_selectors": [
+        "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+        "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F11",
+      "actual_selectors": [
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    },
+    {
+      "id": "F12",
+      "actual_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+        "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry"
+      ],
+      "receipt": "evidence/integrated_all_003_environment_excluded.json",
+      "raw": "evidence/integrated_all_003_environment_excluded.log",
+      "result": "selected_oracles_passed_on_current_source_independent_impact_audit_pending",
+      "predecessor_selectors": [
+        "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+        "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+        "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry"
+      ],
+      "feature_receipt": "evidence/integrated_feature_003_environment_excluded.json",
+      "source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+      "reuse": "actual final source execution; explicit V7/V8 to V9 conversion and original-byte preservation retained",
+      "audit_reexecution": [
+        "all_default_001",
+        "all_feature_001"
+      ],
+      "audit_disposition": "all mapped selectors pass; no separate current Complete/High issued on rejected R08-R12 integration"
+    }
+  ],
+  "independent_audit": false,
+  "audit_scope": "R06 31 acceptance -> 21 integration groups; R07 F01-F12. Historical Complete/High retained only for historical target. Shared action/flow lifetime correction must recheck R06/R07.",
+  "audit_current_source": "9a0b88beb24c1371c3362837e924ccf447832efb9372e0be1b8e1c99a6f72912",
+  "audit_verdict": "R08-R12 Not Complete / F01; prerequisite transfer not authorized"
+}

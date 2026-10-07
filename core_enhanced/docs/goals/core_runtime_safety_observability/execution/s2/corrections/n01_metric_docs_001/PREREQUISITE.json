@@ -1,0 +1,10 @@
+{
+  "goal": "GOAL-CRSO-S2",
+  "finding": "N01",
+  "previous_verdict": "Complete / High; N01 nonblocking",
+  "previous_manifest_sha256": "42bd3deab7c16aae1feddd7e8b02687f9ec5a29a2fba783d151776f6431611fd",
+  "previous_audit_sha256": "acea5e4b8081b537fcf48b26f30d28d4b69f17dd0bf69e60d620073bc58dbefd",
+  "previous_end_currentness_sha256": "5cc9b3bcb5b7efb0ecb10b7412cd05e93bd06046846cfa5ed40bba214922f874",
+  "authority": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+  "scope": "Documentation precision only; frozen records and audit preserved; no policy or gameplay change"
+}

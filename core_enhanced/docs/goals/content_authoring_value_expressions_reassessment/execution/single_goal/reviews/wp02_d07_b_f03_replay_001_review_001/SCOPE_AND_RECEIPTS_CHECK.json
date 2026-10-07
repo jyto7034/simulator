@@ -1,0 +1,247 @@
+{
+  "state": "PASS",
+  "manifest_sha256": "31421ec1cea97fd573aa21ba3faa305ae5c606c0adf15da7851ac553a54cb4ba",
+  "source_digest": "f5cbc267ea1e86995e6c85433c8d20fdb81cd59bd64eeddac838cddff985183d",
+  "source_count": 342,
+  "predecessor_source_rows_match": true,
+  "production_prefix_identical": true,
+  "inherited_unchanged_files": 340,
+  "record_count": 375,
+  "fresh_receipts": {
+    "f03_replay_004": {
+      "exit_code": 0,
+      "passed": 5,
+      "log_sha256": "4757d24f6eff43e6a893fd23ca4dae558b17688d6079d56e045ebf2a0c3135f5",
+      "final_source_match": true
+    },
+    "check_final_001": {
+      "exit_code": 0,
+      "passed": 0,
+      "log_sha256": "5837e82624a991330198d49ff9af2b988feb33eeceb9048e88d2a840373b6a95",
+      "final_source_match": true
+    },
+    "authoring_final_001": {
+      "exit_code": 0,
+      "passed": 112,
+      "log_sha256": "a7daf42d6b1535a36a1058ae7c5ad92aeae6a936f3a16dcc6127a2e9b299671c",
+      "final_source_match": true
+    },
+    "value_expr_final_001": {
+      "exit_code": 0,
+      "passed": 99,
+      "log_sha256": "b38291d88b65a027684acaba2c1f9123f6718f66cf2c863ec110ccb3d2e43151",
+      "final_source_match": true
+    },
+    "all_targets_final_001": {
+      "exit_code": 0,
+      "passed": 1550,
+      "log_sha256": "d2fa77a7f55ce2ae0d9afa3d7a8a4b7d07f55e69498877d205c13a2498435084",
+      "final_source_match": true
+    },
+    "clippy_final_001": {
+      "exit_code": 0,
+      "passed": 0,
+      "log_sha256": "da98e3f427e271e0e192f12bb8059b20826bd4b0adcb82d96a6d2d13bc0c8791",
+      "final_source_match": true
+    },
+    "format_final_001": {
+      "exit_code": 0,
+      "passed": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "final_source_match": true
+    }
+  },
+  "reused_evidence_files_hash_verified": 14,
+  "PC36_R05_rerun": false,
+  "focused_tests": {
+    "passed": 5,
+    "failed": 0,
+    "scenarios": 11,
+    "document_pairs": 22,
+    "serial_log_sha256": "4be94c8d9e72f0165989b87bbb802ee853ff81a51cb0a4fcdd22dbba6bc33fef",
+    "parallel_log_sha256": "4f27266ec7558de4fb9c650fa022694c1c9fa757d33e7a14944d40bb033d568c"
+  },
+  "observations": [
+    {
+      "label": "attack_at_consume",
+      "input": 10,
+      "kind": "Damage",
+      "expected": 10,
+      "moment": "Snapshot",
+      "ordinal": 1
+    },
+    {
+      "label": "attack_after_mutation",
+      "input": 10,
+      "kind": "Damage",
+      "expected": 10,
+      "moment": "Snapshot",
+      "ordinal": 1
+    },
+    {
+      "label": "attack_at_consume",
+      "input": 20,
+      "kind": "Damage",
+      "expected": 20,
+      "moment": "Live",
+      "ordinal": 1
+    },
+    {
+      "label": "attack_after_mutation",
+      "input": 20,
+      "kind": "Damage",
+      "expected": 20,
+      "moment": "Live",
+      "ordinal": 1
+    },
+    {
+      "label": "completed_result_at_consume",
+      "input": 7,
+      "kind": "Heal",
+      "expected": 7,
+      "moment": "Snapshot",
+      "ordinal": 3
+    },
+    {
+      "label": "completed_result_after_mutation",
+      "input": 7,
+      "kind": "Heal",
+      "expected": 7,
+      "moment": "Snapshot",
+      "ordinal": 3
+    },
+    {
+      "label": "completed_result_at_consume",
+      "input": 10,
+      "kind": "Heal",
+      "expected": 10,
+      "moment": "Live",
+      "ordinal": 3
+    },
+    {
+      "label": "completed_result_after_mutation",
+      "input": 10,
+      "kind": "Heal",
+      "expected": 10,
+      "moment": "Live",
+      "ordinal": 3
+    },
+    {
+      "label": "resource_at_consume",
+      "input": 7,
+      "kind": "Damage",
+      "expected": 7,
+      "moment": "Snapshot",
+      "ordinal": 1
+    },
+    {
+      "label": "resource_after_mutation",
+      "input": 7,
+      "kind": "Damage",
+      "expected": 7,
+      "moment": "Snapshot",
+      "ordinal": 1
+    },
+    {
+      "label": "resource_at_consume",
+      "input": 11,
+      "kind": "Damage",
+      "expected": 11,
+      "moment": "Live",
+      "ordinal": 1
+    },
+    {
+      "label": "resource_after_mutation",
+      "input": 11,
+      "kind": "Damage",
+      "expected": 11,
+      "moment": "Live",
+      "ordinal": 1
+    },
+    {
+      "label": "target_hp_at_consume",
+      "input": 80,
+      "kind": "Damage",
+      "expected": 20,
+      "moment": "Snapshot",
+      "ordinal": 1
+    },
+    {
+      "label": "target_hp_after_mutation",
+      "input": 80,
+      "kind": "Damage",
+      "expected": 20,
+      "moment": "Snapshot",
+      "ordinal": 1
+    },
+    {
+      "label": "target_hp_at_consume",
+      "input": 60,
+      "kind": "Damage",
+      "expected": 15,
+      "moment": "Live",
+      "ordinal": 1
+    },
+    {
+      "label": "target_hp_after_mutation",
+      "input": 60,
+      "kind": "Damage",
+      "expected": 15,
+      "moment": "Live",
+      "ordinal": 1
+    },
+    {
+      "label": "hp",
+      "input": 24,
+      "kind": "Heal",
+      "expected": 24,
+      "moment": "Live",
+      "ordinal": 2
+    },
+    {
+      "label": "hp",
+      "input": 24,
+      "kind": "Heal",
+      "expected": 24,
+      "moment": "Live",
+      "ordinal": 2
+    },
+    {
+      "label": "result",
+      "input": 4,
+      "kind": "Heal",
+      "expected": 4,
+      "moment": "Live",
+      "ordinal": 2
+    },
+    {
+      "label": "result",
+      "input": 4,
+      "kind": "Heal",
+      "expected": 4,
+      "moment": "Live",
+      "ordinal": 2
+    },
+    {
+      "label": "resource",
+      "input": 11,
+      "kind": "Heal",
+      "expected": 11,
+      "moment": "Live",
+      "ordinal": 2
+    },
+    {
+      "label": "resource",
+      "input": 11,
+      "kind": "Heal",
+      "expected": 11,
+      "moment": "Live",
+      "ordinal": 2
+    }
+  ],
+  "limits": "Direct record encoders, not public selectors; source fact scope is supplied by test fixture.",
+  "review_check_notes": [
+    "Initial reviewer JSON assertion assumed an external enum tag; corrected to actual kind/value representation.",
+    "Parallel diagnostic lines interleaved: 19 of 22 prefixes parsed. Reran only focused 5 tests serially for complete 22 document pairs. Product and frozen files unchanged."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-07T07:21:24.934066+00:00",
+  "membership_count": 7168,
+  "product_count": 438,
+  "pc_rows": 576,
+  "pc_differences": {
+    "/measurement/elapsed_ns": 576,
+    "/setup/elapsed_ns": 192
+  },
+  "resource_cases": 4,
+  "failures": []
+}

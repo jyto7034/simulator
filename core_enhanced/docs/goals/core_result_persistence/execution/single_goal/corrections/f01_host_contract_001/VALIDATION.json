@@ -1,0 +1,388 @@
+{
+  "recorded_at_utc": "2026-10-04T09:34:06.853650+00:00",
+  "goal": "GOAL-CRRP-01",
+  "finding": "F01",
+  "stage": "correction GEX-10",
+  "passed": true,
+  "product_unchanged": true,
+  "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+  "before_document": {
+    "path": "game_server/docs/unity_bridge_protocol.md",
+    "bytes": 12955,
+    "sha256": "ebfb9534fc901afe8a40885c23c6504e6524f0b07420f83aa0f45a60898429c4"
+  },
+  "after_document": {
+    "path": "game_server/docs/unity_bridge_protocol.md",
+    "sha256": "22392eede07dcf66a8110ea2a07f94429597657df5dcfb780faa970d10562c63",
+    "bytes": 18816
+  },
+  "original_audit": {
+    "path": "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_001/AUDIT_ARTIFACTS.json",
+    "sha256": "a7dd51b1920b5d79b0211648520de01c040220bf0614449a2c20d5407520bcab",
+    "bytes": 4098
+  },
+  "original_target": {
+    "path": "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/target/u04_001/MANIFEST.json",
+    "sha256": "f1b9bd51c71fe415fccc79f8f073462915b7baa79b3440f20238d41f35a65f5f",
+    "bytes": 211727
+  },
+  "original_audit_and_target_artifacts_unchanged": true,
+  "source_review_bindings": [
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "c5bd81e764f66ed35cf454b9d3a01001cfd7bb8e09f944ef360e6c711ca0ab8c",
+      "bytes": 87693
+    },
+    {
+      "path": "core_enhanced/src/game/behavior.rs",
+      "sha256": "04cb6a2009e437e6728a194bdddfa7ae6d1e1223fd8799e5400de01a8e131d6a",
+      "bytes": 238250
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "5efb3825bf69c9831c27682eb9479b8d4d10df94c9ead58e89de4374b37e35bc",
+      "bytes": 139749
+    },
+    {
+      "path": "core_enhanced/src/game/world/reward.rs",
+      "sha256": "ee991ad0460e1ff582d4312c2693b2be8f13a9f90562fde04de57ef2d343570f",
+      "bytes": 8409
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+      "sha256": "e32af78131946ff348d30c79fcc51948a45b144ea5bace328b98dcb9da7cbb30",
+      "bytes": 39017
+    },
+    {
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "sha256": "115335bca1ed3f024f7b9a377118d077718aca7a26da0bb03978d4d1d122091e",
+      "bytes": 156874
+    },
+    {
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "sha256": "d5e686726c3156218a4c1ac15729fcbd45c2548a0f43328821f18449abde8d89",
+      "bytes": 33183
+    },
+    {
+      "path": "game_server/src/game/player_game_actor/state.rs",
+      "sha256": "f953df0c00e89cbad9923117b8cb4d1e622ee56a389eb7d61eb5baf8c223b728",
+      "bytes": 51071
+    },
+    {
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "sha256": "a6233c2f3e046a8cbff8e14852e6bce7750e1dc8253989b94dea46f6934e8f52",
+      "bytes": 30338
+    },
+    {
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "sha256": "332ea4bbd101dc3f9a048c887cefbd4f244ffa51d9714338dc3324fb0b9f74e8",
+      "bytes": 30583
+    },
+    {
+      "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+      "sha256": "ded9801cb33157f10f4a642cd2ff90550a68cf1089bb1a4d49411c1609f3e4be",
+      "bytes": 22600
+    }
+  ],
+  "document_command_vocabulary": {
+    "CompleteCombatResult": "complete_combat_result",
+    "SelectReward": "select_reward",
+    "ClaimReward": "claim_reward",
+    "ContinueRun": "continue_run",
+    "LoadRunCheckpoint": "load_run_checkpoint",
+    "RetreatBattle": "retreat_battle",
+    "RetryPlayerProfile": "retry_player_profile",
+    "StartNewGame": "start_new_game"
+  },
+  "markdown_local_links_exist": true,
+  "diff_whitespace_check_passed": true,
+  "reused_current_executions": [
+    {
+      "id": "integrated_core_default004",
+      "receipt_sha256": "cbbc74184ae5cf98ed90592818f9380c42ab0cebf81513c85a2fdb50e95ca500",
+      "log_sha256": "9e23cde551280f37417e93d8725198a1f2383207e8385dfe84a46f4fe8f817a3",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_core_fixtures004",
+      "receipt_sha256": "cb6029cbe876a120afb39dce422cf3662e3fb1af4b51cd7abe66729053dacd0b",
+      "log_sha256": "cc7aba55d08e8ae471713df4e272580fb2b8c5fe7112e7f27113ea7d72fe176e",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_core_observation004",
+      "receipt_sha256": "70eb9ac47ccc841c4e806df43a47d7cc55bf38d94d7960bb06c81829d18af4bb",
+      "log_sha256": "e441473e01f976c3bafc72a1fb9371b1cebef7b6fa40a51bcfad4aca7273877e",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_host_default004",
+      "receipt_sha256": "c3a176fe9e5c7f214846ccfae142fcf7989d3853fe031bd57ba0b8414b0fd635",
+      "log_sha256": "bf80b7d94c35a60ee8a377a2d9ba74dca832b0402c3bad922f2ab88afaff3196",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_host_observation004",
+      "receipt_sha256": "c7b067a04de6fc75c5d9658feebfb93cc736a94528bbfba5c356ddbd20014192",
+      "log_sha256": "b24042f0344803cb9a8de3091bd2978edfebd571a2eba0e195da41d01c7d1d1f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_fmt004",
+      "receipt_sha256": "8ebd2e2dec645d7e8c7050542e84ee584b39173079dd0eb98697f9c13347096a",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_check004",
+      "receipt_sha256": "515d86fb624f091affb97d97357cbfc9dcb4a5b6d5d00ac36a1571fda4910e56",
+      "log_sha256": "6e906bd94568b4a7ae55f768c4f00a7bf403a85fea5a2de9710d4e1a72daa9ee",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_event_log004",
+      "receipt_sha256": "df8b93a37ab8df0720abfb0220210fa5888d7794ceb0f49c1d9d393343d26552",
+      "log_sha256": "50202a9093ebdbb4fd1b275067819c84168033125b8f9b04b4e9002010b151c3",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_clippy_core004",
+      "receipt_sha256": "10b924b54afebd22ad3779406b0dfe8976b5227a82a14cef130f827758415e87",
+      "log_sha256": "9773cea59274522576a9d6d0658742860be6c2a398e366ea2dc9081ce05abc6f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_clippy_host004",
+      "receipt_sha256": "8be114c037c81977c54e710fe52abcac68c20f9b7ee9804c465ca36e87bb2c46",
+      "log_sha256": "777bd4bd0c44474890f6b5ef5bfb9f92284d05ef7c4457807ed92204c54b8d1e",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_heap004",
+      "receipt_sha256": "947ce78e1a67c0e28a5fa5a096e934e304d9df29d23a47a54a83bfd817e8d0c4",
+      "log_sha256": "70fe814c0ba6d69124001fad31cafc201a6735a405a2c88042db95de452dc5d1",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "integrated_release003",
+      "receipt_sha256": "24765c6264a9b734400700b691a86186a8a6c9bfb4b6dfc32bc4c641cca5ad4a",
+      "log_sha256": "4c137e88407410d58e7049d29cf06f9783000f5be9d92aa8f2e118a2b86b4d6a",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "public_guards003",
+      "receipt_sha256": "386e1671b18a481d80342cd45d460f931505d54549d47a5fc35c6a62bc9f7264",
+      "log_sha256": "996c800a6949bdf1a1dcd97d0a2e30f74837a2bdfe8eb3a87e2dc8adc2af75ef",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "public_guards_allocator002",
+      "receipt_sha256": "66e438876f630a4d8e3d6b1f8c4b4e3f5271f8591925691e6a73a24a97ad1fc9",
+      "log_sha256": "ccebe4c843dc26cf4fdcb5c328dd8868ae763e4bb91c5ef627b7d1172f489b65",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_prepared_public_005",
+      "receipt_sha256": "14a4f5c44ba581f7a9ca1168ab14a91438eea0edb3c2759169b47f38ebb068a5",
+      "log_sha256": "57be3097d995e4beea13a4a2138f92df58d1b3ef077af12d7f97e54c82d52df9",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_prepared_boundary_005",
+      "receipt_sha256": "44be3476790c1e60d2ebd9f812c9b76ce4492efa561fe323322fb83f93ea04e7",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_observed_release_005",
+      "receipt_sha256": "c188c90458d6265be708b13580ba79b93739efda58b6a86050e97a247f639043",
+      "log_sha256": "6df99072867e85da6ec5da7dec0fef2125a8bbe42e3838fabc35625a864ffa05",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_default_parity_005",
+      "receipt_sha256": "a3db0ecef0e24002def1561db92bd8e2fc83d9dd97efff9a5210025ec499ba27",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_public_oracle_005",
+      "receipt_sha256": "8e39dd9b25a63678c8ee9b4984db2c4dbc14822aa993f3866b627b0613a6ec2d",
+      "log_sha256": "087d25e8e39f48663921e2839a5edfc3bb6a8d76685aa1dbaeb52d1886830050",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_public_trace_005",
+      "receipt_sha256": "f4777a7c9daa15f06cd6bfa026f1ba834895bf887826e07fbcf36d31bb9abc8a",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_public_cli_005",
+      "receipt_sha256": "9299eded1ca0ce532ee0eb2bc1dc84993e4fcf2c6448fbb0d47ac1d6451e92ad",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_public_profile_005",
+      "receipt_sha256": "9f50e81ae2d345c172835f17dd1e0e4eac62c8fc7cfbd97ccec935dd406b5223",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_public_boundary_005",
+      "receipt_sha256": "c820651ddb3f64cbe60879730e4aa19d6f8ed4ba254d6bbfc133ed968fe6813d",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_public_api_005",
+      "receipt_sha256": "b906b4f3de793f61effb2a4baa1482d04eafeac1cb1c46b756326a014878730b",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_pc_prepare_005",
+      "receipt_sha256": "2404fe3fdeb578081825ca1be6c04a740aba8e626a0c4d32da23109185186cba",
+      "log_sha256": "7458814a560c4c20af7752718e0b683d38f5168994ee0dfdf85201bf9d7e9986",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_pc_005",
+      "receipt_sha256": "e1156cf6fcd90c138e4a95f73db743d95385419caff72b952d11ec457528eecc",
+      "log_sha256": "bf24265dd96f5d8f37517991ffa20a8548501462f1e4f6b5dd3e59fa30a2423d",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_pc_compare_005",
+      "receipt_sha256": "60ac3ef79f4460143866eb38468bd6ab7da6c69452175ab2a95ac73ce1556ba5",
+      "log_sha256": "8a1ce5f6686ded0e623dcee115b8cd6a30bbfd148e471e934a1cdca19c72871f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_pc_immediate_005",
+      "receipt_sha256": "1ef66c4dbc289c3240a4e74643f9b5e7a4df627dd4e9b7c2f93ddc2fc0473c64",
+      "log_sha256": "dd922373a87d778df0d888eaab7ceef39cae3cab57a27e5e188ff7361adf547f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "compat_r05_005",
+      "receipt_sha256": "7fbea9f2a0ae1de7ec053765e7e134a5bc9ec3448a5816c94100fd06e3ad7ea0",
+      "log_sha256": "bba0019c694060478b381c4c432f86e1ff509e65ca2077006aa7f1a48bef3bf6",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 101
+    },
+    {
+      "id": "compat_r05_compare_006",
+      "receipt_sha256": "4d45ef60fd28e1f28d46b7684b9f886272d0ac7c9538579a9afced9125f2e2cd",
+      "log_sha256": "0fd94d07a2c3aba9ae858fe6682ec3d33ae42f2de2eca4c18efb4ea63a47b7ff",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_build_on",
+      "receipt_sha256": "cb7a4d4e33ce06456c91183db003e9a28437e08693b565d0f61804f2a0eda93a",
+      "log_sha256": "3dc9c78978f53e82e6e742d47aecc4a2b82fff3bfa436210553442ec4aea8f1f",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_none",
+      "receipt_sha256": "2c5a9a28edeb7b7f97c77fe543d0411812c180eeb4851cdf9e33679867f00709",
+      "log_sha256": "610b991843b37f713798cb679ba16ef64957057035bcabd32d58ba71ad36a6d0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_detached",
+      "receipt_sha256": "da1c0fcacc9cca95c47e8b2007068d73012d95aae6fd75988be1affcec3644b6",
+      "log_sha256": "610b991843b37f713798cb679ba16ef64957057035bcabd32d58ba71ad36a6d0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_queue_full",
+      "receipt_sha256": "67d839021e02b7ccd5760fd4ed15ac1219627ca484d050e41eb074c1bbe2a6fc",
+      "log_sha256": "fe7a8f123e6f52297bfe760c8890bdf6a9c1a050f2a476a9fa07f74a97b8f3c0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_on",
+      "receipt_sha256": "89153696a9a2735674857e432ef22ca9d8a56229821aff62ba2b428887b6cda5",
+      "log_sha256": "436129040b6336e97f4f15c9ef2a85ec87116be8002a7a76eefcc6bb8964eeff",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_websocket",
+      "receipt_sha256": "ef66e2d1add3ace2642a3ce96f48f3b24420b1cc706d0e15edd44086faac578b",
+      "log_sha256": "ed4ac106c736e6a924efc641804168321db95de1ef5a2a4594fcd65a5f88e042",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_build_off",
+      "receipt_sha256": "6174d0f21df1bc19a3aa53401d8e2ab06aea1cf7e5e6c7e748f059efa32227fb",
+      "log_sha256": "4e32f65ebb6a796959461b155b5710c7fbdece126016b8a2fc9d36c89b546fc4",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "final_fault_004_off",
+      "receipt_sha256": "f57f9aea9186304adf3e4a8cb3440623342032b1b5f9e9d9d29944311de86432",
+      "log_sha256": "610b991843b37f713798cb679ba16ef64957057035bcabd32d58ba71ad36a6d0",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "public_continuation004",
+      "receipt_sha256": "199fdea495caf7e3e3eb76f23454d29f1808738c2bc94d29817bd928e75b9fd3",
+      "log_sha256": "ed6661ac23bb9bf3744db4d0ec2886bea7df7f34a83b460695906233d43f8c51",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    },
+    {
+      "id": "public_rewind004",
+      "receipt_sha256": "2b8ef1f6b30afbd0b0aa3bf469d5a8d7ae78c99957be70721863632be5f020fa",
+      "log_sha256": "39bb42d607bed3b47bfa6ff9370f6df2e5a17b47eda6f71ff606e74fc2c05cb9",
+      "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+      "raw_exit_code": 0
+    }
+  ],
+  "reuse_reason": "Only canonical host documentation and correction records/status changed; every product/input/receipt/log/runner byte for all40 final executions remains exact. No product test rerun is claimed or needed for this documentation correction.",
+  "affected_completion": [
+    "PE15",
+    "V12 canonical consumer contract",
+    "V14 required surface/restoration"
+  ],
+  "required_next": "Successor target including host protocol, exact restoration, fresh independent GEX-20; no self-awarded F01 closure."
+}

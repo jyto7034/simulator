@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-09-09T14:29:50.684286+00:00",
+  "audit_target_sha256": "435369751372476fe58a1e15afd602ec525ca9630d611f362e94e13c5ab993c7",
+  "expected_audit_target_sha256": "435369751372476fe58a1e15afd602ec525ca9630d611f362e94e13c5ab993c7",
+  "manifest_count": 291,
+  "mismatches": [],
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+  "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)"
+}

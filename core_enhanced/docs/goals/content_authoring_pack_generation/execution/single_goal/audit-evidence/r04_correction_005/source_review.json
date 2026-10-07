@@ -1,0 +1,131 @@
+{
+  "review_method": "Fresh direct producer-consumer source and actual oracle review; paths identify files, report identifies inspected symbols/sections. Hash binding does not claim every line read.",
+  "files": [
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "sha256": "cdca9db0f33f6590406162db40c8a238fe195f55c5e4754383fb86065fa03fab",
+      "bytes": 7931
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399",
+      "bytes": 17994
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "sha256": "2cbcf06e0efebf64ad8ca58df22f2b38de078945954b5073d890d285c43f826b",
+      "bytes": 26257
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/packaging.rs",
+      "sha256": "a3c3e47c811a89cf0599e05a7ff978596812e6f565f530d3bd490636edd458a0",
+      "bytes": 9793
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "sha256": "72c6fa4917831d76c87c0f9a0cd58c8be3c8e5342235c8ef01a80a94c94852e7",
+      "bytes": 49105
+    },
+    {
+      "path": "core_enhanced/src/game/data/validation.rs",
+      "sha256": "656e46763c9f35a5e3201992866a928664c62467a0936439027ea8584517eb80",
+      "bytes": 76347
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "sha256": "cc1712c4a52b39470935d7efe6fed263e92a768481e8c5c283f6c4ba93f79f9e",
+      "bytes": 53205
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "sha256": "cf60b014bebf94d30011756daf69c07d94109ac1caadd98e54069ceff8dbb6b9",
+      "bytes": 35331
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "sha256": "2f8fcef78d414fd641ec891bdfeea0532b78930b0c92d855caa98a6c0fbd6a2b",
+      "bytes": 11032
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "4b90d0697662a9d3ea93707c3dbe0fe4c2f9ff1085b3790a97e6733f18a3fd4d",
+      "bytes": 11256
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "ec966a461ebb32b352a13e7422c7e14013290bc8790e751ac0af46efe1fd433d",
+      "bytes": 63130
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/content_generation.rs",
+      "sha256": "cf807a7ae60f80c0cb55fba76e9a0917625fbc8336de2472f4fc596642bdfeaf",
+      "bytes": 15728
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "sha256": "3aa09adc055c64b205b9dcc75dabf328171bca287e0435096d1a7fd62ba247fa",
+      "bytes": 61035
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "sha256": "9c649efd853ec7ad9ea6072bb5524f1730b23f1fa39687704c8835d0bdc3730a",
+      "bytes": 28239
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "sha256": "148de763482b4894a0752028ceec9fa2c4c16b94224ae14ab6e5276b4f100ebd",
+      "bytes": 93729
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "sha256": "a0969d5d8e0b8bb363bb32b16de6daf2589bee69ee1e36631855b3941abdab86",
+      "bytes": 402956
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "7d992def1b86a9d62ea88c560f10f1cccca636eb20c2ddcefb9bd5a2eadf7798",
+      "bytes": 24247
+    },
+    {
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "sha256": "e0c1cfdf0ee55fff69c68b1736d39c315d768e959e8fd6e530cac75931307d50",
+      "bytes": 60874
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "sha256": "6866ef3cf023c026e43977efd860a1da442b37c1263d9d52d1cbaeb70aaa5221",
+      "bytes": 157959
+    },
+    {
+      "path": "core_enhanced/docs/skill_target_contract.md",
+      "sha256": "04236f2cec57727820193db1f65852ef60a0cbcdf3db3a6641baf3246fa379bc",
+      "bytes": 32162
+    }
+  ],
+  "criteria": {
+    "completion": 8,
+    "acceptance": 14,
+    "IVA": 8,
+    "dimensions_required": 10,
+    "invariants": 6,
+    "shared_contracts": 5,
+    "migration_rows": 6
+  },
+  "source_judgments": [
+    "Closed typed snapshot/resolution/publication; final winners and real source locators; no file-order writer fallback.",
+    "One private generation owns database/identity/receipt; eligibility precedes B install and briefing; prepared commit moves complete authority.",
+    "V6 checksum and current content identity checked before restore/cache/export; old version rejection and no personal file mutation.",
+    "Corrected strike identity admission precedes current-hit planning/formula; native/authoring first-fault polling prevents failed candidate commit; formula/gate/RNG remain unchanged.",
+    "Original nonzero Remove acquisition, full rollback, fresh-app RNG/next-Gate, strict save identity/graph, actual packaging/source cases are substantive retained oracles.",
+    "No fixture-ID production dispatch, silent successful rejection, duplicate mutable content authority, unbounded global generation registry, invented timing workaround or unauthorized legacy reader found in reviewed R02 surface."
+  ],
+  "known_nonblocking_observation": {
+    "id": "O-R02-005-01",
+    "owner": "GS-CARF-P2G50-002 / GOAL-CARF-01 / WP-CARF-03",
+    "actual_concurrent_peak_cap": 9030188,
+    "owner_map_printed_cap": 9030228,
+    "measured": 9007676,
+    "margin": 22512,
+    "impact": "Actual stricter cap passes; evidence-map typo does not block R02."
+  }
+}

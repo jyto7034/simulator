@@ -85,6 +85,13 @@ pub enum SkillFragmentOrigin {
     Concept { concept_id: String },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum FragmentCorrosionClass {
+    #[default]
+    Ordinary,
+    ExcludedFinalBoss,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum SkillFragmentEffectDef {
@@ -93,12 +100,76 @@ pub enum SkillFragmentEffectDef {
         attack_interval_ms_reduction: u32,
     },
     ActiveSkill {
-        imitation_skill_id: SkillId,
+        #[serde(
+            deserialize_with = "crate::game::skill_fragment::bounded::map::<_, _, _, MAX_FRAGMENT_FORMS>"
+        )]
+        forms: BTreeMap<String, SkillFragmentForm>,
         #[serde(default)]
-        upgrade_skill_ids: BTreeMap<u8, SkillId>,
-        #[serde(default)]
-        awakened_skill_id: Option<SkillId>,
+        dismantle_recipe: Option<SkillFragmentRecipe>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        passive_guard: Option<ParryGuardDef>,
     },
+}
+
+/// Narrow exception for an active parry fragment; no additional active slot.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParryGuardDef {
+    pub reduction_percent: u32,
+    pub reflection_chance_percent: u32,
+    pub reflection_percent: u32,
+}
+crate::authoring::clone_shape::copy_shape!(ParryGuardDef);
+impl ParryGuardDef {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.reduction_percent > 100
+            || self.reflection_chance_percent > 100
+            || self.reflection_percent > 100
+        {
+            return Err("passive parry guard percentages must be in 0..100".into());
+        }
+        Ok(())
+    }
+}
+
+pub const BASE_FRAGMENT_FORM: &str = "base";
+pub const MAX_FRAGMENT_FORMS: usize = 16;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SkillFragmentForm {
+    pub skill_id: SkillId,
+    /// Capacity belongs to the selected fragment form, not the employee profile.
+    pub resonance_max: u32,
+    /// Additional requirements; definition-level compatibility still applies.
+    #[serde(default)]
+    pub compatibility: Option<SkillFragmentCompatibilityRequirements>,
+    #[serde(default)]
+    pub bloom_recipe: Option<SkillFragmentRecipe>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SkillFragmentRecipe {
+    pub enkephalin: u32,
+    pub materials: Vec<crate::game::data::equipment_data::EquipmentMaterialCost>,
+}
+
+impl SkillFragmentRecipe {
+    pub fn aggregated_materials(&self) -> Option<BTreeMap<String, u32>> {
+        if self.materials.len() > 64 || (self.enkephalin == 0 && self.materials.is_empty()) {
+            return None;
+        }
+        let mut amounts = BTreeMap::<String, u32>::new();
+        for cost in &self.materials {
+            if cost.amount == 0 || cost.material_id.is_empty() || cost.material_id.len() > 128 {
+                return None;
+            }
+            let amount = amounts.entry(cost.material_id.clone()).or_default();
+            *amount = amount.checked_add(cost.amount)?;
+        }
+        Some(amounts)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -244,7 +315,10 @@ impl SkillFragmentCompatibilityRequirements {
         }
 
         if let Some(block_capacity_min) = self.block_capacity_min {
-            if context.combat_profile.block_capacity < block_capacity_min {
+            let base_block_capacity = weapon_profile
+                .map(|profile| profile.block_capacity)
+                .unwrap_or(0);
+            if base_block_capacity < block_capacity_min {
                 failure_codes.push(SkillFragmentCompatibilityFailureCode::BlockCapacityTooLow);
             }
         }
@@ -390,6 +464,8 @@ pub struct SkillFragmentMetadata {
     pub equip_limit: SkillFragmentEquipLimit,
     #[serde(default)]
     pub origin: Option<SkillFragmentOrigin>,
+    #[serde(default)]
+    pub corrosion_class: FragmentCorrosionClass,
     pub sources: Vec<SkillFragmentAcquisitionSource>,
     #[serde(default)]
     pub dependencies: Vec<SkillFragmentDependency>,
@@ -419,9 +495,34 @@ impl SkillFragmentMetadata {
         }
     }
 
+    pub fn form_compatibility_report(
+        &self,
+        form_id: &str,
+        profile: &UnitCombatProfile,
+    ) -> Option<SkillFragmentCompatibilityReport> {
+        let SkillFragmentEffectDef::ActiveSkill { forms, .. } = &self.effect else {
+            return None;
+        };
+        let form = forms.get(form_id)?;
+        let mut report = self.compatibility_report(profile);
+        if let Some(extra) = &form.compatibility {
+            let extra = extra.evaluate(SkillFragmentCompatibilityContext::from_combat_profile(
+                profile,
+            ));
+            report.is_compatible &= extra.is_compatible;
+            for failure in extra.failure_codes {
+                if !report.failure_codes.contains(&failure) {
+                    report.failure_codes.push(failure);
+                }
+            }
+        }
+        Some(report)
+    }
+
     #[cfg(test)]
     pub fn starter_basic_attack() -> Self {
         Self {
+            corrosion_class: FragmentCorrosionClass::Ordinary,
             id: SkillFragmentId::from("starter_basic_attack_enhancement"),
             uuid: Uuid::from_u128(0x5354_4152_5445_525f_4652_4147_0000_0001),
             name: "Starter Basic Attack Enhancement".to_string(),
@@ -457,6 +558,15 @@ pub struct SkillFragmentDatabase {
 }
 
 impl SkillFragmentDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(fragments: Vec<SkillFragmentMetadata>) -> Self {
+        Self {
+            fragments,
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
+        }
+    }
+
     pub fn new(fragments: Vec<SkillFragmentMetadata>) -> Self {
         let by_id = once_lock_with(build_string_index(
             &fragments,
@@ -510,6 +620,81 @@ impl SkillFragmentDatabase {
 
     pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
         for (fragment_index, fragment) in self.fragments.iter().enumerate() {
+            if let SkillFragmentEffectDef::ActiveSkill {
+                forms,
+                dismantle_recipe,
+                passive_guard,
+            } = &fragment.effect
+            {
+                let invalid = |field: String, cause: String| {
+                    crate::game::data::DataValidationError::at(
+                        fragment.id.as_str(),
+                        format!("fragments[{fragment_index}].effect.ActiveSkill.{field}"),
+                        cause,
+                    )
+                };
+                if let Some(guard) = passive_guard {
+                    guard
+                        .validate()
+                        .map_err(|cause| invalid("passive_guard".into(), cause))?;
+                }
+                if !forms.contains_key(BASE_FRAGMENT_FORM) || forms.len() > MAX_FRAGMENT_FORMS {
+                    return Err(invalid(
+                        "forms".into(),
+                        "base form required and at most16 forms".into(),
+                    ));
+                }
+                for (id, form) in forms {
+                    if form.resonance_max == 0 {
+                        return Err(invalid(
+                            format!("forms[{id}].resonance_max"),
+                            "resonance_max must be positive".into(),
+                        ));
+                    }
+                    if id.is_empty()
+                        || id.len() > 64
+                        || !id
+                            .bytes()
+                            .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
+                    {
+                        return Err(invalid("forms".into(), "invalid stable form ID".into()));
+                    }
+                    if id == BASE_FRAGMENT_FORM && form.bloom_recipe.is_some() {
+                        return Err(invalid(
+                            format!("forms[{id}].bloom_recipe"),
+                            "base is always unlocked".into(),
+                        ));
+                    }
+                    if let Some(requirements) = &form.compatibility {
+                        requirements.validate_static_contract().map_err(|e| {
+                            invalid(
+                                format!("forms[{id}].compatibility.{}", e.field_path),
+                                e.cause,
+                            )
+                        })?;
+                    }
+                    if form
+                        .bloom_recipe
+                        .as_ref()
+                        .is_some_and(|r| r.aggregated_materials().is_none())
+                    {
+                        return Err(invalid(
+                            format!("forms[{id}].bloom_recipe"),
+                            "invalid or overflowing recipe".into(),
+                        ));
+                    }
+                }
+                if dismantle_recipe
+                    .as_ref()
+                    .is_some_and(|r| r.aggregated_materials().is_none())
+                {
+                    return Err(invalid(
+                        "dismantle_recipe".into(),
+                        "invalid or overflowing recipe".into(),
+                    ));
+                }
+            }
+
             fragment
                 .compatibility
                 .validate_static_contract()
@@ -559,6 +744,8 @@ mod tests {
     #[test]
     fn metadata_preserves_sources_and_dependencies_for_future_concepts() {
         let metadata = SkillFragmentMetadata {
+            corrosion_class:
+                crate::game::data::skill_fragment_data::FragmentCorrosionClass::Ordinary,
             id: SkillFragmentId::from("freischutz_fragment"),
             uuid: Uuid::from_u128(10),
             name: "Freischutz Fragment".to_string(),
@@ -576,9 +763,17 @@ mod tests {
             }],
             compatibility: SkillFragmentCompatibilityRequirements::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: SkillId::from("fragment_freischutz_black_round"),
-                upgrade_skill_ids: BTreeMap::new(),
-                awakened_skill_id: None,
+                forms: std::collections::BTreeMap::from([(
+                    "base".into(),
+                    crate::game::data::skill_fragment_data::SkillFragmentForm {
+                        resonance_max: 100,
+                        skill_id: SkillId::from("fragment_freischutz_black_round"),
+                        compatibility: None,
+                        bloom_recipe: None,
+                    },
+                )]),
+                passive_guard: None,
+                dismantle_recipe: None,
             },
         };
 
@@ -597,15 +792,17 @@ mod tests {
     #[test]
     fn compatibility_requirements_accept_matching_weapon_profile() {
         let mut profile = UnitCombatProfile::employee_default();
-        profile.apply_weapon_profile(&WeaponCombatProfile {
-            range_role: WeaponRangeRole::Ranged,
-            weapon_archetype: WeaponArchetype::Gun,
-            block_capacity: 1,
-            damage_type: DamageType::Magic,
-            targeting_profile: TargetingProfile::AirFirst,
-            air_capable: true,
-            ..WeaponCombatProfile::default()
-        });
+        profile
+            .apply_weapon_profile(&WeaponCombatProfile {
+                range_role: WeaponRangeRole::Ranged,
+                weapon_archetype: WeaponArchetype::Gun,
+                block_capacity: 1,
+                damage_type: DamageType::Magic,
+                targeting_profile: TargetingProfile::AirFirst,
+                air_capable: true,
+                ..WeaponCombatProfile::default()
+            })
+            .unwrap();
 
         let requirements = SkillFragmentCompatibilityRequirements {
             allowed_range_roles: vec![WeaponRangeRole::Ranged],

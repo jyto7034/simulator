@@ -1,0 +1,21 @@
+{
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d07_b_f03_aggregate_001/target/d07_b_f03_aggregate_001/MANIFEST.json",
+    "bytes": 273330,
+    "sha256": "0aed6d9be20ece81d8daee39d0dc26314115deac8a8396073152244c8bef354b"
+  },
+  "verification": {
+    "state": "CURRENTNESS_AND_ISOLATED_BIDIRECTIONAL_RESTORATION_VERIFIED",
+    "before_source_count": 343,
+    "after_source_count": 345,
+    "modified_paths": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "added_paths": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/aggregate_replay.rs",
+      "core_enhanced/tests/battle_showcase.rs"
+    ],
+    "source_test_membership_verified": true,
+    "record_count": 472
+  }
+}

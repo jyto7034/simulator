@@ -1,3 +1,6 @@
+# Optional trusted-host safety profile. Omit to use embedded defaults.
+# runtime_safety_path = "../config/runtime_safety.ron"
+
 # 서버 설정
 [server]
 bind_address = "0.0.0.0"
@@ -22,4 +25,9 @@ heartbeat_timeout = 120
 
 [persistence]
 active_run_directory = "persistent_data"
-encounter_compendium_directory = "persistent_data"
+player_profile_directory = "persistent_data"
+
+# Package catalogs explicitly with package_official_content before server startup.
+[content]
+trusted_root = "../content_packs"
+selection_path = "../content_selection.json"

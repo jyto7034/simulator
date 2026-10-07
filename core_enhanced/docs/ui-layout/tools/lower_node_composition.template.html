@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>심층과 최종방 노드 구성 검토안</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#26364c;font:15px/1.65 'Malgun Gothic',sans-serif}header,main{max-width:1500px;margin:auto;padding:24px}header{padding-bottom:0}h1{font-size:28px;margin:0}h2{font-size:21px;margin:26px 0 10px}p{color:#596a7f}a{color:#265e91}.links,.controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:18px 0}.links a,select{background:#fff;border:1px solid #ccd8e5;border-radius:7px;padding:8px 12px;font:inherit;text-decoration:none}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{padding:20px;background:#fff;border:1px solid #d8e2ec;border-radius:12px}.card b{display:block;font-size:28px;color:#234e7a}.card span,small{color:#63758c}.note{background:#fff6df;border-left:4px solid #b78425;padding:14px 18px;margin:20px 0}.controls{padding:14px;background:#e8eff7;border-radius:9px}label{display:flex;align-items:center;gap:8px}.scroll{overflow:auto;background:white;border:1px solid #d5dfeb;border-radius:10px}table{border-collapse:collapse;width:100%;min-width:1250px}th,td{text-align:left;padding:11px;border-bottom:1px solid #e3eaf2;vertical-align:top}th{background:#eaf0f7;white-space:nowrap}tr:hover td{background:#f4f8fd}.num{text-align:right;white-space:nowrap}.id{font-weight:bold;min-width:180px}.summary{min-width:750px}.diagram{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:18px;background:#eaf2f8;border-radius:12px}.diagram span{background:#fff;border:1px solid #c5d7e5;border-radius:8px;padding:10px}#shown{font-size:14px}footer{margin-top:24px;color:#687a91}@media(max-width:800px){header,main{padding:16px}.cards{grid-template-columns:repeat(2,1fr)}h1{font-size:23px}}
+</style>
+<header><h1>4~7층과 최종방 노드 구성 검토안</h1><p>심층 탐사 51개 방과 최종방 4개. 전체 지도 용량을 기준으로 예약과 선택 활동을 정리했습니다.</p>
+<nav class="links"><a href="facility-map-review-v2.html">시설 지도</a><a href="facility-upper-node-composition-v1.html">1~3층 구성표</a><a href="../../md/facility-lower-node-composition-v1.ko.md">계산과 조우 조건</a><a href="../data/facility-lower-node-composition-v1.csv" download>방별 CSV</a></nav></header>
+<main><div class="cards"><div class="card"><b>453</b><span>4~7층 탐사 활동 자리</span></div><div class="card"><b>20</b><span>조우·정비·저장 예약</span></div><div class="card"><b id="normal"></b><span>심층 전체 일반전 평균 · 전조 치환 전</span></div><div class="card"><b>12</b><span>최종방 네 곳의 격파 후 일반전 용량</span></div></div>
+<div class="note">한 원정의 전투 횟수가 아닙니다. 전조 후보 방은 51개지만 실제로는 계열별·층별 첫 진입 방에만 배정합니다. 완료한 전조와 방문 경로에 따라 출현 수가 달라집니다. 최종방의 일반전은 해당 보스 격파 후에만 열리는 제안입니다.</div>
+<h2>층별 탐사 용량</h2><div class="scroll"><table class="summary"><thead><tr><th>층</th><th>방 수</th><th>전체 활동</th><th>예약</th><th>일반전 평균 · 전조 전</th><th>엘리트 평균</th><th>고정 지원·저장</th></tr></thead><tbody id="floors"></tbody></table></div>
+<h2>방별 구성</h2><div class="controls"><label>구간 <select id="floor"><option value="all">전체 55개 방</option><option value="4">4층 탐사</option><option value="5">5층 탐사</option><option value="6">6층 탐사</option><option value="7">7층 탐사</option><option value="final">최종방 4개</option></select></label><label>동 <select id="wing"><option value="all">전체</option><option value="A">기록동</option><option value="B">중앙본부동</option><option value="C">추출동</option></select></label><span id="shown"></span></div>
+<div class="scroll"><table><thead><tr><th>방 ID / 이름</th><th>역할</th><th>활동 수</th><th>예약 구성</th><th>일반전 범위<br>전조 전</th><th>일반전 평균<br>전조 전</th><th>일반전 평균<br>이 방이 전조 대상</th><th>이벤트 / 보상 / 엘리트<br>각 평균</th><th>지원 평균</th><th>채용</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p><small>‘전조 대상’ 평균을 모든 행에 적용해 합산하지 않습니다. 최종방은 일반 추첨 대신 여섯 활동의 역할을 고정합니다. 일반 보스·전조·엘리트·이벤트 및 보상의 전투는 일반 침식전 수와 별도로 셉니다.</small></p>
+<h2>최종방의 진행 제안</h2><div class="diagram" aria-label="최종방 진행: 준비 지원 선택 이용, 보스 도전, 격파 후 즉시 귀환 또는 추가 탐사"><span>방 진입 · 지원 선택 이용</span>→<span>보스 도전</span>→<span>승리 후 Gate 귀환<br>또는 일반전 3개와 보상 1개의 선택 갈래</span></div>
+<p>후속 탐사는 ‘일반전 1 → 일반전 2 → 보상’과 ‘일반전 3’ 갈래로 나눕니다. 각 활동에서 귀환 가능한 연결을 두고, 미이용한 준비 지원으로 돌아갈 길을 유지합니다. 공개 최종방은 8층에서 상층으로 올라갈 수 없습니다. 흉탄 방은 같은 6층의 마탄 방으로 돌아가 기존 탐사를 이어갈 수 있습니다.</p>
+<h2>심층에서 달라지는 조건</h2><p>4층은 일반 채용의 마지막 층입니다. 5층 이후 본사 연락은 응급지원·상점 등 기존 기능을 유지합니다. 심포니 진행이 없는 채 중앙본부동 4층에 들어왔다면 4~7층의 네 기회를 모두 완료해야 오케스트라에 접근할 수 있습니다. 흉탄은 공개 최종보스 세 종의 영구 격파 기록과 이번 원정 마탄 완료가 필요합니다.</p>
+<footer>방 규모·활동 비중·후속 탐사 배치는 검토값입니다. 실제 방문량과 전장 재사용 수는 방 내부 연결과 원정 경로를 작성한 뒤 계산합니다.</footer></main>
+<script>
+const DATA=__DATA__;
+const $=s=>document.querySelector(s),f=x=>x.toFixed(2);
+function cell(row,text,cls=''){const td=document.createElement('td');td.textContent=text;td.className=cls;row.append(td)}
+$('#normal').textContent=f(DATA.aggregate.expected.normal);
+for(const a of DATA.by_floor){const tr=document.createElement('tr');[a.depth+'층',a.rooms,a.activity_slots,a.reserved_slots,f(a.expected.normal),f(a.expected.elite),a.depth%2===0?'정비 3개':'SavePoint 3개'].forEach(v=>cell(tr,v));$('#floors').append(tr)}
+function render(){const floor=$('#floor').value,wing=$('#wing').value;
+const rs=DATA.rooms.filter(r=>(floor==='all'||(floor==='final'?r.kind==='final':r.kind==='explore'&&r.depth===Number(floor)))&&(wing==='all'||r.wing===wing));
+const baseline=rs.reduce((sum,r)=>sum+r.normal_without_omen.mean,0),post=rs.filter(r=>r.kind==='final').length*3;
+$('#shown').textContent=rs.length+'개 방 · 일반전 평균 합계 '+f(baseline)+' (전조 전'+(post?', 격파 후 용량 '+post+' 포함':'')+') · 위 카드는 전체 기준';
+$('#rows').replaceChildren();for(const r of rs){const tr=document.createElement('tr'),g=r.normal_without_omen,e=r.expected;tr.dataset.room=r.id;
+cell(tr,r.id+' · '+r.name,'id');cell(tr,r.role);cell(tr,r.activity_nodes,'num');cell(tr,r.reservations.join(' / ')||'없음');cell(tr,g.min+'~'+g.max,'num');cell(tr,f(g.mean)+(r.kind==='final'?' · 격파 후':''),'num');cell(tr,r.normal_with_omen?f(r.normal_with_omen.mean):'—','num');cell(tr,[e.event,e.reward,e.elite].map(f).join(' / '),'num');cell(tr,f(e.support),'num');cell(tr,r.recruitment_allowed?'본사 연락 발생 시':'없음');$('#rows').append(tr)}}
+['floor','wing'].forEach(id=>$('#'+id).addEventListener('change',render));render();
+</script></html>

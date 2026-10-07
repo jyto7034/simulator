@@ -1,0 +1,728 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-01-DECIDED-002",
+        "Content Digest": "sha256:6bd5e9b5ce44b7737245b5e0510e05dc3ec532cc22a2e23053429f4cf31a5129"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-01-r3",
+          "Content Digest": "sha256:1d292c79151da4ba9aefb6bff2d1b5ca93d5eaafcc091c77c798dbd5fbcd068a"
+        },
+        "Policy Statement": "현재 전투의 승패가 성립한 동일 처리에서 직원 상태·손실·소모품 기간·자원·XP·확정 보상 또는 선택 권리·격파 기록·노드 소비를 함께 확정한다. 결과 확인은 이미 확정된 결과를 표시 종료하고 다음 진행으로 옮기는 동작이다. 명령과 자동 tick 모두 같은 의미를 따른다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-01-001",
+          "Content Digest": "sha256:f20b8179237d9d71774db33b2f4054fceea3af53a5c08a3fe35f7b6bd8b3b12e"
+        },
+        "Observable Policy Acceptance": [
+          "승리·패배 직후 확인 없이 종료하고 새 프로세스로 이어해도 동일 직원·자원·XP·보상·진행이 남는다.",
+          "반복 조회·결과 확인·재접속·재처리로 정산이 다시 실행되지 않는다. 선택 후보에 속한 효과는 선택 전 무조건 지급하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-02-DECIDED-002",
+        "Content Digest": "sha256:83936f01fb03a92db4563f9f41ae72d1dab0a2b319b58a4f68b4da9521cc38d6"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-02-r3",
+          "Content Digest": "sha256:b0bc57ce66815c485e368c247868d70938d3a69269c4b9371ad2176b6c56f028"
+        },
+        "Policy Statement": "동시 승패는 패배 우선이다. 확정 패배도 노드를 소비하고 재도전을 제공하지 않는다. 현재 일반전·엘리트·일반 보스·Event 전투의 실패 완료는 통과 가능하되 승리 보상·격파·해금을 만들지 않는다. 현재 FinalBoss·생존자/복구 경로 없음에 따른 런 실패와 체크포인트 복구 선택은 기존 소유 규칙을 적용한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-02-001",
+          "Content Digest": "sha256:562c013150bf944c320597a2130b03930cba1f54b2beeeeedc61287e5eb9922f"
+        },
+        "Observable Policy Acceptance": [
+          "첫 도전 패배 후에도 같은 노드 전투에 다시 진입할 수 없고 실패 완료와 성공 완료·격파를 구분한다.",
+          "패배 XP는 현행 authored 규칙대로 한 번만 적용하며 승리 자산·격파를 지급하지 않는다. 런 실패 후보에는 남은 유효 SavePoint 복구 선택이 우선한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-03-DECIDED-002",
+        "Content Digest": "sha256:d14983052a157dd5a880c838c072101b485d44c160b303273159c910b693e0bc"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-03-r3",
+          "Content Digest": "sha256:6f65c708cebbf12ffe6b8bd5d6acc0cbc11c366a2d55c820355244e97a989dc3"
+        },
+        "Policy Statement": "승리의 선택형 보상은 결과에 귀속된 권리·실제 후보·선택 대기와 원래 지급 문맥을 고정한다. 후보 부족 시 실제 가능한 후보만 제시하고 0개는 보상 없음 안내 후 생략한다. 중복 보유·희귀도 제한이나 대체 보상을 추가하지 않는다. 선택은 한 번만 지급하며 동일 권리의 중복·경쟁 선택은 추가 지급을 만들지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-03-001",
+          "Content Digest": "sha256:ff2eb65f517dc8a9ab6c973b91c630ee415a081ad3b87d4fb5895c1140086f5a"
+        },
+        "Observable Policy Acceptance": [
+          "후보 3개 요청/실제2개와 실제0개에서 각각 2개 선택 또는 없음 안내가 유지되며 재실행·재접속으로 재추첨하지 않는다.",
+          "살아남은 전투 참가자 등 원래 보상 문맥이 Continue 뒤에도 같고, 같은 권리에 대한 두 선택 중 최대 하나만 자산을 얻는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-04-DECIDED-002",
+        "Content Digest": "sha256:157a547ed3e890aa0c7964a196f8cae5ca9041fb65c39efb0f5400c65ef98876"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-04-r3",
+          "Content Digest": "sha256:8eb8470cbca162d5b25ab3b38307bcfb5483df92173b028bb954536359d32118"
+        },
+        "Policy Statement": "현재 후퇴 허용 전투는 노드당 성공한 수동 후퇴만 최대2회 소비한다. 첫 진입과 두 번의 후퇴 뒤 마지막 도전을 허용하며 두 번째 후퇴 자체는 노드를 소비하지 않는다. 거절·취소 입력과 개별 직원 철수는 차감하지 않는다. 명시된 강제 조우 후퇴 금지는 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-04-001",
+          "Content Digest": "sha256:8c9a1acf37b86e02fa97564c847658d5a6bc009782599c3f8891fee38ddfeb52"
+        },
+        "Observable Policy Acceptance": [
+          "첫·둘째 후퇴는 각각 한 번만 차감하고 세 번째 도전의 후퇴는 거절된다. 재방문·재접속·프로세스 재시작에도 사용량이 남는다.",
+          "확정 승패 후에는 남은 후퇴 횟수와 무관하게 후퇴할 수 없으며 거절 입력은 상태·횟수를 바꾸지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-05-DECIDED-002",
+        "Content Digest": "sha256:56c3236a736641948248ee93474b50fa2a4961e0bc338fe3a1a17658353cc82e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-05-r3",
+          "Content Digest": "sha256:619fb1e4faff4fc5aaa5a4a9fc42f8f8f9e0ff36d3906637f69fc87c89d9f209"
+        },
+        "Policy Statement": "성공한 후퇴는 현재 전투 진입 전의 직원·소모품·인벤토리·재화·노드/진행·체크포인트·난수를 함께 복원하되 사용한 후퇴 횟수를 보존한다. XP·보상·완료·추가 자원 비용을 만들지 않는다. 이미 확정된 현재 전투 전 상태는 보존하며 미래 최초 입장 비용·부화·유물 도입은 해당 owner가 이 경계를 확장한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-05-001",
+          "Content Digest": "sha256:0374288a6804f721782b1ea7be238c350ccbaf7217b32bb2c9fd50c79fafc49b"
+        },
+        "Observable Policy Acceptance": [
+          "전투에서만 발생한 손실·RNG·자산 변화가 함께 되돌고 후퇴 차감은 복원되지 않는다.",
+          "복원 실패는 후퇴 성공/차감을 만들지 않으며 이미 확정된 전투 전 행동을 보상 환불로 바꾸지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-06-DECIDED-002",
+        "Content Digest": "sha256:87ec04f63de092cb1aef96c7a91923ec2c8d65b9aa9d38c93b0128825d24c78b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-06-r3",
+          "Content Digest": "sha256:2e9ee76292bf87a69a5a11acb21507ace2b5b68b353960a599716a01ac36f209"
+        },
+        "Policy Statement": "프로세스 종료 후 미확정 전투·Event·상점·정비·보상 등 모든 현재 노드는 입장 전 상태로 함께 복원한다. 노드 안의 미확정 소비와 결과·난수 배정을 함께 되돌리고 이미 사용한 수동 후퇴는 반환하지 않는다. 종료 복구는 후퇴도 SavePoint load도 아니며 둘 다 추가 소비하지 않는다. 승패가 나거나 비전투 완료가 확정된 노드는 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-06-001",
+          "Content Digest": "sha256:b9dcb986d98c80cb6113a9f85cbf68f58514e611654ff0e3fe8952d1a3140c08"
+        },
+        "Observable Policy Acceptance": [
+          "각 현재 노드 유형에서 미완료 중 종료하면 비용·획득·직원·노드·RNG가 같은 입장 전 시점으로 복원된다.",
+          "2회 후퇴 뒤 미결 전투 종료와 재진입에도 후퇴 사용량2, load 사용량 불변이며 마지막 도전의 후퇴 불가가 유지된다.",
+          "결과 확인 전 종료와 완료된 비전투 종료는 완료·보상·소비를 되돌리지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-07-DECIDED-002",
+        "Content Digest": "sha256:afe8d110eb041a20949484ed2fc8f9f444b8278e287eb193907323fc24f1a121"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-07",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-07-r3",
+          "Content Digest": "sha256:c8414935278aab655a8fe99b63c47435954d73f7961879641940e3c83d49746e"
+        },
+        "Policy Statement": "Continue는 SavePoint 유무와 관계없이 최신 확정 진행과 미확정 노드의 입장 전 복구 경계를 사용한다. 같은 원정·직원·확정 자산·선택 권리를 이어하며 새 런 예산이나 기록을 만들지 않는다. 런 완료·확정 실패·자발 포기는 Continue를 무효화한다. 새 런으로 교체하는 기존 명시 확인을 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-07-001",
+          "Content Digest": "sha256:574298631d9723b44d7af4e0c2b333bebaa59bd832c8ecef990f7462e9ffbbfa"
+        },
+        "Observable Policy Acceptance": [
+          "첫 SavePoint 전에도 확정 시작/진행을 Continue할 수 있고 최신 완료 노드가 마지막 SavePoint보다 뒤여도 보존된다.",
+          "Continue의 load 소비는0이며 이미 종료된 런은 이어할 수 없다. 교체 확인 없이 기존 유효 런을 덮어쓰지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-08-DECIDED-002",
+        "Content Digest": "sha256:2001f3c071867de3f4cf0a715d7035ff75dfcf81809c1deeb9c9a12899dd5a4e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-08-r3",
+          "Content Digest": "sha256:d6f1b893890c49db5a3bd52db344ce7d7d7caf219596d5f2ef87553f958785a1"
+        },
+        "Policy Statement": "현재 SavePoint 완료는 생존 직원의 현재 트라우마15%를 올림해 줄이고 노드 완료와 단일 최신 체크포인트 저장을 함께 확정한다. Critical·Breakdown을 포함하고 Dead를 제외하며 신체 부상·신뢰·기억을 바꾸지 않는다. 새 저장으로 누적 load 사용량을 초기화하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-08-001",
+          "Content Digest": "sha256:1ff8d2d24b37c1c62fc619518e5867cacb3c7cd11fd76915bc7b804772fbf030"
+        },
+        "Observable Policy Acceptance": [
+          "살아 있는 트라우마1/99/100 및 Critical·Breakdown에서 올림 회복하고 Dead는 회복하지 않는다.",
+          "SavePoint 재작성과 재시작 후에도 성공 load 사용량이 유지되고 회복·노드 완료·저장 중 일부만 확정되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-09-DECIDED-002",
+        "Content Digest": "sha256:85b18bbd76a7e4fb37c4c1fad944c215aac16f3b4d5d9dc1beb8966dd6ee3ead"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-09-r3",
+          "Content Digest": "sha256:44321b74ddec760781b2c08bfb6ff355c3b706a3559120df88afb32ac15135a1"
+        },
+        "Policy Statement": "명시적 SavePoint load는 Core가 허용한 때만 런당 최대3회 성공한다. 원정 자산·소비 결과·직원 생사·RNG·노드 진행·후퇴 사용량은 체크포인트 당시 값으로 함께 복원한다. 누적 load 횟수와 확정 영구 기록은 되돌리지 않으며 저장 덮어쓰기·재시작·백업 복구로 load 사용량이 줄지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-09-001",
+          "Content Digest": "sha256:5c7511413110181fb9ec70a7ee23c7eedb1982496720b3fa9e07fb07769a2652"
+        },
+        "Observable Policy Acceptance": [
+          "후퇴 사용량이 다른 과거 체크포인트를 불러오면 해당 시점 값으로 복원되지만 load 누적은 하나 증가한다.",
+          "3회 후 재저장·재시작·현재 파일 장애와 백업 경로에도 4회째 load가 허용되지 않는다.",
+          "체크포인트 뒤의 소비와 그 결과가 함께 되돌고 동일 복구를 반복해 자산을 누적 반환하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-10-DECIDED-002",
+        "Content Digest": "sha256:108f138f302937d973ed00462e7a203fb9472d309af9626d51e0e37187c7b77e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-10",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-10-r3",
+          "Content Digest": "sha256:fdd9cc0244adcaa7f6cef72f24028055e26cb25dff3a4b10359adc2ffe58bf57"
+        },
+        "Policy Statement": "현재 전투 개체의 실제 전투불능마다 부상+1과 authored 트라우마를 시도에 한 번 누적하고 결과에서 직원에 한 번 반영한다. 재배치된 직원의 통계는 합치고 마지막 개체가 최종 HP/생존을 대표한다. 실제 사망의 현행 장비·공유 파편 회수와 소비 아이템 효과 제거, 사망 방지 예외 및 전투 종료 기간 소비를 같은 결과에 포함한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-10-001",
+          "Content Digest": "sha256:4ed39d6f54a838afb9d9e700e6735af55e51ca84e736ed892d7d7dce5893782b"
+        },
+        "Observable Policy Acceptance": [
+          "같은 전투불능의 재관찰/결과 확인/Continue는 부상·트라우마를 중복 반영하지 않고 다른 실제 전투불능은 각각 반영한다.",
+          "사망 직원의 현재 자산 회수·소모품 종료가 결과 직후 보존되며 사망 방지 때는 회수하지 않는다. 일반 회복으로 Dead가 살아나지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-11-DECIDED-002",
+        "Content Digest": "sha256:962c7c93f654a4716c76ee7c1ee761ac6bd8c56a21db4160b8b5b2bc304c2871"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-11",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-11-r3",
+          "Content Digest": "sha256:8b4e1f305813eb6c208d658ea2273c85f3f49ccb190f5806c5207dc402da1cad"
+        },
+        "Policy Statement": "동일 서버 actor의 연결 끊김은 기존 자동 정지·재접속 규칙을 유지하여 진행 중 전투를 보존한다. 프로세스 종료/새 owner의 Continue와 구별한다. U03 runtime fault는 정상 승패·후퇴·저장 결과가 아니며 해당 fault actor의 mutation/writer gate와 최초 원인을 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-11-001",
+          "Content Digest": "sha256:00b8a3050bdb1993e986d5cacc8a7bb1ec8ba97cc2723aedf2a9ecf6e2151068"
+        },
+        "Observable Policy Acceptance": [
+          "연결만 끊었다 붙이면 같은 전투와 정지 상태가 남고 후퇴·load·노드 복원이 실행되지 않는다.",
+          "runtime fault는 결과/보상/저장을 생성하지 않고 U03 Quit→새 actor→유효 Continue만 기존 복구 경로로 사용할 수 있다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-12-DECIDED-002",
+        "Content Digest": "sha256:658ec4a34c1500be8db07b10aad6357e291f13da10e0687fde32f32a2049b4a2"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-12",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-12-r3",
+          "Content Digest": "sha256:de8eb2a6a2143b3a1beda2f99bac7960c806b22fa4f82ff128d8c375c60b543a"
+        },
+        "Policy Statement": "영속 host에서 결과·선택·후퇴·완료·load의 성공은 해당 원정 상태와 영구 기록을 장애 후 일관되게 복구할 수 있을 때만 게시한다. 확정 전 쓰기 실패는 성공을 만들지 않고, 이미 durable하게 접수된 확정의 후속 쓰기/응답 실패는 같은 확정을 재처리한다. 일부 자산만 남기거나 동일 결과를 두 번 지급하지 않는다. I/O 장애를 정상 패배 또는 U03 전투 실행 fault로 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-12-001",
+          "Content Digest": "sha256:4e9934d1245032e5e1b94b9f2174628085e55dc5e7276e8fa866da9ebf1f9347"
+        },
+        "Observable Policy Acceptance": [
+          "실제 파일 adapter의 각 게시 단계에서 프로세스를 종료하고 다시 열면 이전 유효 경계 또는 접수된 전체 결과 중 하나만 나타난다.",
+          "active와 profile이 따로 갱신되는 중단·결과 ack 전 종료·선택 재요청에서 권리/지급/노드가 일치한다.",
+          "확정 뒤 응답 실패를 재시도해도 성공 지급은 한 번이며 복구 필요 상태는 명시적으로 표시된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-13-DECIDED-002",
+        "Content Digest": "sha256:f1f4bf30af9eba41c3c4693f97f2ce68dbb77b6f5969b60abadd7fad1c957838"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-13",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-13-r3",
+          "Content Digest": "sha256:14d60413902f86dcc7f1adc26ab19557d415722e76c5239eec79ab6a73ddfff4"
+        },
+        "Policy Statement": "결과/선택 중복 여부는 현재 원정과 현재 복구 분기의 권리에 귀속한다. 명시적 과거 load로 정당하게 되돌린 뒤 다시 성립한 결과를 과거 battle UUID만으로 영원히 차단하지 않는다. 공유하는 현재 단일 active 저장에 대한 오래된 상태의 쓰기는 최신 확정 자산·권리를 덮어쓸 수 없다. 경쟁 입력은 같은 권리를 한 번만 확정하고 충돌은 명시한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-13-001",
+          "Content Digest": "sha256:09f31e6d8f8f37ec66b3f2afe496529bd6466385fd24ed379a87514833fe2214"
+        },
+        "Observable Policy Acceptance": [
+          "같은 저장 revision에서 시작한 경쟁 선택은 하나만 확정하며 패자는 최신 파일을 덮어쓰지 않는다.",
+          "체크포인트 rewind 뒤 동일 결정적 battle identity가 재생돼도 되돌린 현재 자산에는 새 정당한 결과가 한 번 적용된다.",
+          "다른 활성 원정/오래된 actor가 현재 저장을 암묵 교체하지 않고 기존 명시 교체 동의만 새 런 교체를 허용한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-14-DECIDED-002",
+        "Content Digest": "sha256:2794bd62455daf700f0e22c472cbe7f73ea1fa84037ac3d52d2fd98c6033eedd"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-14",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-14-r3",
+          "Content Digest": "sha256:7f87cf1ddfe7a3f943212141b17caa8c1c77fceed931493914afe4f6fc4c4540"
+        },
+        "Policy Statement": "전환 후 지원하지 않는 구 active/profile 형식은 원본을 보존하고 명시적으로 거절한다. 변환·의미 호환을 필수로 요구하지 않으며 자동 삭제·덮어쓰기·필드 무시·다른 백업으로 조용히 대체하지 않는다. 새 지원 형식의 읽기/쓰기와 장애 복구는 함께 구현한다. 이미 양립하는 영구 profile 의미를 불필요하게 폐기하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-14-001",
+          "Content Digest": "sha256:c4ca061782be44c221bd46beeda7c87e76f16d1592c2358fbd8a7194e9e69b45"
+        },
+        "Observable Policy Acceptance": [
+          "구 V9 Core/V4 active 및 미지원 profile fixture의 bytes가 load·reset·new-run·복구 시도 후에도 보존되며 미지원 사유가 노출된다.",
+          "새 형식 정상 저장·Continue·SavePoint·쓰기 장애 복구를 실제 adapter로 검증한다. 원본 분리 없이 새 형식으로 덮어쓰지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRRP-15-DECIDED-002",
+        "Content Digest": "sha256:ca36488ea63086637e7ba5c28540711458c93d1ca633ee67cbda193427d3ad02"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRRP-15",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PE-CRRP-15-r3",
+          "Content Digest": "sha256:8e82bb315d9db7284649a25647c43e4275c51136894072468c7c3b16c5f55b71"
+        },
+        "Policy Statement": "현재 구현된 combat/Event/비전투 완료·자산·직원·checkpoint/Continue와 실제 reader/writer만 함께 전환한다. 기존 mastered-elite sweep의 확인 전 계산은 실제 BattleVerdict가 아닌 미확정 preview이므로 확인으로 완료할 때 저장하고 미완료 종료는 입장 전 복구한다. 기존 generic final-boss 경로는 유지하되 미합의 고유 콘텐츠와 미래 지도·억제력·창고·도구·유물 schema는 해당 후속 owner에 남긴다. 선행112조건과 별도 R06 계약을 영향에 맞게 인수/재검증한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRRP-15-001",
+          "Content Digest": "sha256:8da5c8762f4f4854c8e3419b838748098dbdec05948fd23a7c8fcc09ce427edb"
+        },
+        "Observable Policy Acceptance": [
+          "현재 모든 producer·public Core consumer·host tick/명령·file reader/writer의 결과/복구 계약이 일치한다. sweep 미확정 preview 종료와 실제 완료를 구분한다.",
+          "선행 증거의 현재 적용성·의도된 변경·새 검증이 추적되고 변경되지 않은 원본/사용자 변경을 보존한다.",
+          "자체 시험과 구현 비참여 Astra High 독립 감사가 닫힌 뒤에만 U05 후속 구현으로 이동한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRRP-004",
+        "Content Digest": "sha256:ecac1fe5bddf08375fe199499b87d1cf1111d2f4e3657232229c0ad163e0cd9b"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRRP-003",
+          "Content Digest": "sha256:c69805d7dcbcd7991a6733f78edace930582fccba4f4d5949ad222c1a869aba0"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRRP-20261004",
+          "Policy Topic": "U04 결과 확정·선택 권리·후퇴·이어하기·SavePoint 수명 전환",
+          "Requested Result": "bounded_pipeline P2G-00→60, then authorized GEX implementation/verification/independent audit/correction",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "Policy Intake Snapshot.IN-001",
+            "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+            "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+            "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction"
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "승패 성립 즉시 현재 직원·손실·자원·XP·보상 권리·노드 소비를 확정·저장하고 결과 확인은 표시만 닫는다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S01,S08"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "선택형 보상의 권리·실제 후보·선택 대기를 보존하고 중복 지급·재추첨을 막는다; 후보 부족/0개의 기존 확정 정책을 따른다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S02; CF-D02/03"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "성공한 수동후퇴를 노드당2회로 제한하고 세 번째 도전·이미 소비한 횟수·미확정 노드 종료복구를 구분한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S03,S04"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "현재 확정 진행의 stable Continue와 단일 최신 SavePoint의 명시적 load3회·누적 횟수·동일 프로세스 재접속을 분리한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S05,S06,S07"
+              }
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "Core 결과·실제 정산·영속 확인/재처리·query/ack·tick/명령·active/profile 저장·V9 후속 reader/writer와 crash/concurrent choice 검증을 함께 전환한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04 together-boundaries and completion; ROADMAP §6.1/6.2"
+              }
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "구 개발/테스트 저장의 legacy 의미 호환은 요구하지 않으며 원본 보존·명시적 미지원 처리를 적용한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "CF-D01; results-and-save 구저장 지원 범위"
+              }
+            },
+            {
+              "Scope Item ID": "I07",
+              "Approved Disposition": "in",
+              "Statement": "선행 U01/U02/U03의 실제 완료 증거와 오류 격리·원본 보호를 인수하고 영향 조건 재검증·독립 감사·교정을 수행한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "continuous request; U04 prerequisites"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "최신 지도·억제력·창고·전조 등 아직 도입하지 않은 미래 schema 선추가 및 그 owner의 gameplay 구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04 explicit exclusions; ROADMAP §6.1/6.2"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "과거 저장 자동 삭제·덮어쓰기·필드 무시로 새 형식 취급, 최초 실제 저장 구현을 U28로 미루기",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04 explicit exclusions; CF-D01"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "공개/숨겨진 최종보스의 미합의 고유 구현과 Unity 후속 화면 구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "ROADMAP USER-01/02 and U04 Core scope"
+              }
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "후속 U05 이후 전투·유물·모드 정책의 일괄 상세 설계 또는 무관한 제품 정리",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "continuous request scope-local sequencing; ROADMAP §5 owners"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRRP-001",
+          "Content Digest": "sha256:f7d5da3f0056045f9d8cfa20066669bbd84ada2adaed4961b497b23ddb3a8bab"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRRP-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-01-DECIDED-002",
+            "Content Digest": "sha256:6bd5e9b5ce44b7737245b5e0510e05dc3ec532cc22a2e23053429f4cf31a5129"
+          },
+          "PE-CRRP-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-02-DECIDED-002",
+            "Content Digest": "sha256:83936f01fb03a92db4563f9f41ae72d1dab0a2b319b58a4f68b4da9521cc38d6"
+          },
+          "PE-CRRP-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-03-DECIDED-002",
+            "Content Digest": "sha256:d14983052a157dd5a880c838c072101b485d44c160b303273159c910b693e0bc"
+          },
+          "PE-CRRP-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-04-DECIDED-002",
+            "Content Digest": "sha256:157a547ed3e890aa0c7964a196f8cae5ca9041fb65c39efb0f5400c65ef98876"
+          },
+          "PE-CRRP-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-05-DECIDED-002",
+            "Content Digest": "sha256:56c3236a736641948248ee93474b50fa2a4961e0bc338fe3a1a17658353cc82e"
+          },
+          "PE-CRRP-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-06-DECIDED-002",
+            "Content Digest": "sha256:87ec04f63de092cb1aef96c7a91923ec2c8d65b9aa9d38c93b0128825d24c78b"
+          },
+          "PE-CRRP-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-07-DECIDED-002",
+            "Content Digest": "sha256:afe8d110eb041a20949484ed2fc8f9f444b8278e287eb193907323fc24f1a121"
+          },
+          "PE-CRRP-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-08-DECIDED-002",
+            "Content Digest": "sha256:2001f3c071867de3f4cf0a715d7035ff75dfcf81809c1deeb9c9a12899dd5a4e"
+          },
+          "PE-CRRP-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-09-DECIDED-002",
+            "Content Digest": "sha256:85b18bbd76a7e4fb37c4c1fad944c215aac16f3b4d5d9dc1beb8966dd6ee3ead"
+          },
+          "PE-CRRP-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-10-DECIDED-002",
+            "Content Digest": "sha256:108f138f302937d973ed00462e7a203fb9472d309af9626d51e0e37187c7b77e"
+          },
+          "PE-CRRP-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-11-DECIDED-002",
+            "Content Digest": "sha256:962c7c93f654a4716c76ee7c1ee761ac6bd8c56a21db4160b8b5b2bc304c2871"
+          },
+          "PE-CRRP-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-12-DECIDED-002",
+            "Content Digest": "sha256:658ec4a34c1500be8db07b10aad6357e291f13da10e0687fde32f32a2049b4a2"
+          },
+          "PE-CRRP-13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-13-DECIDED-002",
+            "Content Digest": "sha256:f1f4bf30af9eba41c3c4693f97f2ce68dbb77b6f5969b60abadd7fad1c957838"
+          },
+          "PE-CRRP-14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-14-DECIDED-002",
+            "Content Digest": "sha256:2794bd62455daf700f0e22c472cbe7f73ea1fa84037ac3d52d2fd98c6033eedd"
+          },
+          "PE-CRRP-15": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRRP-15-DECIDED-002",
+            "Content Digest": "sha256:ca36488ea63086637e7ba5c28540711458c93d1ca633ee67cbda193427d3ad02"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-01-001",
+            "Content Digest": "sha256:f20b8179237d9d71774db33b2f4054fceea3af53a5c08a3fe35f7b6bd8b3b12e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-02-001",
+            "Content Digest": "sha256:562c013150bf944c320597a2130b03930cba1f54b2beeeeedc61287e5eb9922f"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-03-001",
+            "Content Digest": "sha256:ff2eb65f517dc8a9ab6c973b91c630ee415a081ad3b87d4fb5895c1140086f5a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-04-001",
+            "Content Digest": "sha256:8c9a1acf37b86e02fa97564c847658d5a6bc009782599c3f8891fee38ddfeb52"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-05-001",
+            "Content Digest": "sha256:0374288a6804f721782b1ea7be238c350ccbaf7217b32bb2c9fd50c79fafc49b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-06-001",
+            "Content Digest": "sha256:b9dcb986d98c80cb6113a9f85cbf68f58514e611654ff0e3fe8952d1a3140c08"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-07-001",
+            "Content Digest": "sha256:574298631d9723b44d7af4e0c2b333bebaa59bd832c8ecef990f7462e9ffbbfa"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-08-001",
+            "Content Digest": "sha256:1ff8d2d24b37c1c62fc619518e5867cacb3c7cd11fd76915bc7b804772fbf030"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-09-001",
+            "Content Digest": "sha256:5c7511413110181fb9ec70a7ee23c7eedb1982496720b3fa9e07fb07769a2652"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-10-001",
+            "Content Digest": "sha256:4ed39d6f54a838afb9d9e700e6735af55e51ca84e736ed892d7d7dce5893782b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-11-001",
+            "Content Digest": "sha256:00b8a3050bdb1993e986d5cacc8a7bb1ec8ba97cc2723aedf2a9ecf6e2151068"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-12-001",
+            "Content Digest": "sha256:4e9934d1245032e5e1b94b9f2174628085e55dc5e7276e8fa866da9ebf1f9347"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-13-001",
+            "Content Digest": "sha256:09f31e6d8f8f37ec66b3f2afe496529bd6466385fd24ed379a87514833fe2214"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-14-001",
+            "Content Digest": "sha256:c4ca061782be44c221bd46beeda7c87e76f16d1592c2358fbd8a7194e9e69b45"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRRP-15-001",
+            "Content Digest": "sha256:8da5c8762f4f4854c8e3419b838748098dbdec05948fd23a7c8fcc09ce427edb"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,3237 @@
+[
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libactix-e7f4e8fb3bfba69e.rlib",
+    "bytes": 1813936,
+    "sha256": "885a600109fd44fd7e9cf67c00c52c52a44fea7e094bd7ae59a4e258f1de166b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2dd464a0adea236d.rlib",
+    "bytes": 133633468,
+    "sha256": "d82c6f623a77d35dc3710da514be168a6e9d55438dcc78eab3fae010bcd71020"
+  },
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_server-f38ff124b64e7a19.rlib",
+    "bytes": 26762790,
+    "sha256": "5493510fe6df85f672f0e370301ca9ba80e718b9e1d72ec7f40caf7fab7fd25b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+    "bytes": 2020804,
+    "sha256": "e8f71326546f62b5bb983e9cd2a87005e24e82cb70e434fa93b485ab0da8f766"
+  },
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+    "bytes": 618520,
+    "sha256": "c251b87040b86edf8a5c7d17edd4e8aee498d97aac38fbbfbbb728dd8423ed7f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/examples/fault_runtime",
+    "bytes": 22916696,
+    "sha256": "9f425866288d6c461774644e90e87d0d81b9a4d8ce2e33999a8c5e9132269586"
+  },
+  {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/game_server",
+    "bytes": 39909296,
+    "sha256": "d8e9af66ccfbf920e3881592d4909546f492397f6cfe219a8905eb94a02b05ec"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/compare_pc_v32.py",
+    "bytes": 3096,
+    "sha256": "4105f07ab1394a38e82ab242333ab71b3fea6325408080e1ea664277bd8d32a1"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json",
+    "bytes": 7528,
+    "sha256": "117d96eeee8d0ce75a1a648074653d681f6bca89e70ac6ee8f3d59e8b289c497"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "88c4dba53574997f9d98efde36b8b3e808621de7823e9b4c63427d644327cf23"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/events/rewards/base.ron",
+    "bytes": 5067,
+    "sha256": "93800827be18c1c185a5279ea8d245d72ee7c1ae924c760b7c4950fc5eda3dc3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/skill_fragments/base.ron",
+    "bytes": 30075,
+    "sha256": "dacec350cf047c3190b343922e8ea998b616edf8389d7dfcaa9db858567b84a5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/skills/base.ron",
+    "bytes": 45888,
+    "sha256": "641815c9007adc1641d59d790837dc00fac9ecb6a1a638256d1ec173e41fb766"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/content/official/pack.ron",
+    "bytes": 1745,
+    "sha256": "bffa6723668fa4f59c47009b3893b92317a6ea8ccf60c03c8c9d9a958a6ecc4b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/explain_003.json",
+    "bytes": 90,
+    "sha256": "3f5aba880396de4a859dee0cc58be16e06eda9f3c0466866c6a2de511a3e7459"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/run/policy.ron",
+    "bytes": 12287,
+    "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/skill_fragments/base.ron",
+    "bytes": 29646,
+    "sha256": "1671f4941b012778d6aaa6570a6d6a06d9d98fc26529585776e25646fc7cb4c2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/skills/base.ron",
+    "bytes": 44908,
+    "sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/packaged_official/pack.ron",
+    "bytes": 1745,
+    "sha256": "bffa6723668fa4f59c47009b3893b92317a6ea8ccf60c03c8c9d9a958a6ecc4b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "88c4dba53574997f9d98efde36b8b3e808621de7823e9b4c63427d644327cf23"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/events/rewards/base.ron",
+    "bytes": 5067,
+    "sha256": "93800827be18c1c185a5279ea8d245d72ee7c1ae924c760b7c4950fc5eda3dc3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/run/policy.ron",
+    "bytes": 12287,
+    "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/skill_fragments/base.ron",
+    "bytes": 30075,
+    "sha256": "dacec350cf047c3190b343922e8ea998b616edf8389d7dfcaa9db858567b84a5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/skills/base.ron",
+    "bytes": 46133,
+    "sha256": "f313c19b480ba3655c8a35c932383afa674b570c960a5ee61662844f867c8bab"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/resolved_groups_003/official/pack.ron",
+    "bytes": 1745,
+    "sha256": "bffa6723668fa4f59c47009b3893b92317a6ea8ccf60c03c8c9d9a958a6ecc4b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/scenario.json",
+    "bytes": 7709,
+    "sha256": "8e0edfa43957b553a9f3cc655a28a5fb61df70b8aa595fc5e34612b1ec26561b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "88c4dba53574997f9d98efde36b8b3e808621de7823e9b4c63427d644327cf23"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/events/rewards/base.ron",
+    "bytes": 5067,
+    "sha256": "93800827be18c1c185a5279ea8d245d72ee7c1ae924c760b7c4950fc5eda3dc3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/run/policy.ron",
+    "bytes": 12287,
+    "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/skill_fragments/base.ron",
+    "bytes": 30075,
+    "sha256": "dacec350cf047c3190b343922e8ea998b616edf8389d7dfcaa9db858567b84a5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/skills/base.ron",
+    "bytes": 45896,
+    "sha256": "71f9bab01b8bd587bb64c74b908f1e08cb67ec97a97cb1152a5ef39b1902b056"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_above_max/official/pack.ron",
+    "bytes": 1745,
+    "sha256": "bffa6723668fa4f59c47009b3893b92317a6ea8ccf60c03c8c9d9a958a6ecc4b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "88c4dba53574997f9d98efde36b8b3e808621de7823e9b4c63427d644327cf23"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/events/rewards/base.ron",
+    "bytes": 5067,
+    "sha256": "93800827be18c1c185a5279ea8d245d72ee7c1ae924c760b7c4950fc5eda3dc3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/run/policy.ron",
+    "bytes": 12287,
+    "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/skill_fragments/base.ron",
+    "bytes": 30075,
+    "sha256": "dacec350cf047c3190b343922e8ea998b616edf8389d7dfcaa9db858567b84a5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/skills/base.ron",
+    "bytes": 45897,
+    "sha256": "16e11a484d1c903c0fa90380cf689b48a01b97117c5b628ac3692cdf7b16e7e2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_below_min/official/pack.ron",
+    "bytes": 1745,
+    "sha256": "bffa6723668fa4f59c47009b3893b92317a6ea8ccf60c03c8c9d9a958a6ecc4b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "88c4dba53574997f9d98efde36b8b3e808621de7823e9b4c63427d644327cf23"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/events/rewards/base.ron",
+    "bytes": 5067,
+    "sha256": "93800827be18c1c185a5279ea8d245d72ee7c1ae924c760b7c4950fc5eda3dc3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/run/policy.ron",
+    "bytes": 12287,
+    "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/skill_fragments/base.ron",
+    "bytes": 30075,
+    "sha256": "dacec350cf047c3190b343922e8ea998b616edf8389d7dfcaa9db858567b84a5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/skills/base.ron",
+    "bytes": 45897,
+    "sha256": "b69d7a1e3e1185d7d768515cf3928cd712078fb49d46d4604cf72c9a5ee2360c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/signed_min/official/pack.ron",
+    "bytes": 1745,
+    "sha256": "bffa6723668fa4f59c47009b3893b92317a6ea8ccf60c03c8c9d9a958a6ecc4b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06/trace.jsonl",
+    "bytes": 6559,
+    "sha256": "b21c1558bdb5ee1c948b786ccb8a30a5287216a7d5fe8a8fbd9cc22a11bdf90a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/boss_runtime/base.ron",
+    "bytes": 10399,
+    "sha256": "1e90dcbba510227e000ea4b13ab8ecafda7591338690ca012b7e0aa7aaf43bbd"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/pve/encounters.ron",
+    "bytes": 51889,
+    "sha256": "8010bf9a693c1b80e4fc5570fc2d3447d4378552ed9c2f362580675d3757a030"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/skill_fragments/base.ron",
+    "bytes": 29838,
+    "sha256": "57670784389d36846e530296bc7c99a1259734cabef5e5b4555da228798fed2e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/skills/base.ron",
+    "bytes": 46260,
+    "sha256": "e5df380aff4bd69c00a0f553bc49f646873ed515629e31f6b28dbd890061d4f6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/content/official/pack.ron",
+    "bytes": 1808,
+    "sha256": "09aea58af22b31b60e392d78d999bd9b1671e3e5d54f725c83c7c0a4d1ced413"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/scenario.json",
+    "bytes": 4871,
+    "sha256": "1779cdea60af2d25f3801275aaceaf844ed511812b415517a0d5f77127f9edf2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/cancel/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/boss_runtime/base.ron",
+    "bytes": 10389,
+    "sha256": "a831cc2b9bb0d86512e228c90c47419def58e6511237686298ca7557bd9a5c7b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/pve/encounters.ron",
+    "bytes": 51889,
+    "sha256": "8010bf9a693c1b80e4fc5570fc2d3447d4378552ed9c2f362580675d3757a030"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/skill_fragments/base.ron",
+    "bytes": 29838,
+    "sha256": "57670784389d36846e530296bc7c99a1259734cabef5e5b4555da228798fed2e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/skills/base.ron",
+    "bytes": 46260,
+    "sha256": "e5df380aff4bd69c00a0f553bc49f646873ed515629e31f6b28dbd890061d4f6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/content/official/pack.ron",
+    "bytes": 1808,
+    "sha256": "09aea58af22b31b60e392d78d999bd9b1671e3e5d54f725c83c7c0a4d1ced413"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/scenario.json",
+    "bytes": 4871,
+    "sha256": "1779cdea60af2d25f3801275aaceaf844ed511812b415517a0d5f77127f9edf2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/detach/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/boss_runtime/base.ron",
+    "bytes": 10397,
+    "sha256": "a3c89f7a4768cb63825a7b4732374ab21bb1326ca912748e4998f12f84a58099"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/pve/encounters.ron",
+    "bytes": 51889,
+    "sha256": "8010bf9a693c1b80e4fc5570fc2d3447d4378552ed9c2f362580675d3757a030"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/skill_fragments/base.ron",
+    "bytes": 29838,
+    "sha256": "57670784389d36846e530296bc7c99a1259734cabef5e5b4555da228798fed2e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/skills/base.ron",
+    "bytes": 46260,
+    "sha256": "e5df380aff4bd69c00a0f553bc49f646873ed515629e31f6b28dbd890061d4f6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/content/official/pack.ron",
+    "bytes": 1808,
+    "sha256": "09aea58af22b31b60e392d78d999bd9b1671e3e5d54f725c83c7c0a4d1ced413"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/scenario.json",
+    "bytes": 4871,
+    "sha256": "1779cdea60af2d25f3801275aaceaf844ed511812b415517a0d5f77127f9edf2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_002/early_cancel/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/boss_runtime/base.ron",
+    "bytes": 10398,
+    "sha256": "99ffcb93cb043600b26b85c90f3364f28608a4b0bc9b519f681d7e249d2d6b42"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/pve/encounters.ron",
+    "bytes": 51889,
+    "sha256": "8010bf9a693c1b80e4fc5570fc2d3447d4378552ed9c2f362580675d3757a030"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/skill_fragments/base.ron",
+    "bytes": 29838,
+    "sha256": "57670784389d36846e530296bc7c99a1259734cabef5e5b4555da228798fed2e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/skills/base.ron",
+    "bytes": 46260,
+    "sha256": "e5df380aff4bd69c00a0f553bc49f646873ed515629e31f6b28dbd890061d4f6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/content/official/pack.ron",
+    "bytes": 1808,
+    "sha256": "09aea58af22b31b60e392d78d999bd9b1671e3e5d54f725c83c7c0a4d1ced413"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/scenario.json",
+    "bytes": 4871,
+    "sha256": "1779cdea60af2d25f3801275aaceaf844ed511812b415517a0d5f77127f9edf2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/inflight_cancel/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/boss_runtime/base.ron",
+    "bytes": 11324,
+    "sha256": "c4953a52cb1c2cbed0d0858cff626d3083e797e8bddc5683c8641ddafb11d6a1"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/pve/encounters.ron",
+    "bytes": 51889,
+    "sha256": "8010bf9a693c1b80e4fc5570fc2d3447d4378552ed9c2f362580675d3757a030"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/skill_fragments/base.ron",
+    "bytes": 29838,
+    "sha256": "57670784389d36846e530296bc7c99a1259734cabef5e5b4555da228798fed2e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/skills/base.ron",
+    "bytes": 46260,
+    "sha256": "e5df380aff4bd69c00a0f553bc49f646873ed515629e31f6b28dbd890061d4f6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/content/official/pack.ron",
+    "bytes": 1808,
+    "sha256": "09aea58af22b31b60e392d78d999bd9b1671e3e5d54f725c83c7c0a4d1ced413"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/scenario.json",
+    "bytes": 4871,
+    "sha256": "1779cdea60af2d25f3801275aaceaf844ed511812b415517a0d5f77127f9edf2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/evidence/timeout_marker_probe_003/state_exit/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/pc_raw_current_002.json",
+    "bytes": 1416965,
+    "sha256": "71caab7b6084204d6ff83f9442697965eb24d5a2d7ece8e3c5bdf049e0d0a24d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/public_after/cancel.jsonl",
+    "bytes": 770771,
+    "sha256": "fa2e24e81f560a13f1a1d3ecaed64ac65106580faa118b0fc7a2b93cb5e353c1"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/public_after/detach.jsonl",
+    "bytes": 796566,
+    "sha256": "6b648046a72b2aa635164b9261f6edd82774325f1b651b964310cc4b33fe0493"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/public_after/early_cancel.jsonl",
+    "bytes": 714937,
+    "sha256": "f76da5265ea5de5c6243153f49be94126385e562180752a723e88ae07c20ca3a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/public_after/inflight_cancel.jsonl",
+    "bytes": 795529,
+    "sha256": "849f9d1cf894fefb8b0003bd3f2283fd1e458a920ce68878953b5963a82ccb53"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/corrections/f02_persistence_entry_001/evidence/public_after/state_exit.jsonl",
+    "bytes": 770771,
+    "sha256": "e9180f84fbe75450aca6eb4a284ebec665e40450ea61ab57034f335a69149932"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/clone.log",
+    "bytes": 1006,
+    "sha256": "b94ae41d1b90e0e61ae124580e0845e2ce0937b4806862db792d7e58f4936387"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/clone.rs",
+    "bytes": 131,
+    "sha256": "be26bcfbf2d7cc945cf37ac3354fbddc70f0f1c2bf4ffe8c16d2b74e6c6c5f98"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/deserialize.log",
+    "bytes": 1705,
+    "sha256": "cdf9916511836ee2c06f413f31f1a7900bda9fd206c88a3b3947467ae6e05e66"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/deserialize.rs",
+    "bytes": 136,
+    "sha256": "b1aa3bd542b3a83eec100d9933652356fd7aa7b3f07c6268dc9f0a84207a542c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/foreign.log",
+    "bytes": 603,
+    "sha256": "f2adb9665d59b3a341702d93249f542a3cb553a8e741af284c26726864298cd7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/foreign.rs",
+    "bytes": 149,
+    "sha256": "142ca44fcf185a3e493e38249c1c0082929773c43be3df6bdd8bbc2b2ae78fcb"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/interleave.log",
+    "bytes": 780,
+    "sha256": "64e468083d4e1c6f1455936103a65be90c686ce569f8d7e46ee68b3782ee7c2f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/interleave.rs",
+    "bytes": 315,
+    "sha256": "e97c1eb3bd964c7231ce600e3a5f2434fd3a571a6fd8374aaf81f0629e965197"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/private.log",
+    "bytes": 534,
+    "sha256": "1dc1e0d1628d33c722ae647a23cb684762dbbc95bf74a5b1c3918e87a5cfdcae"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/private.rs",
+    "bytes": 114,
+    "sha256": "81079aaeb29c231316c00f18c85c6d2e3d524ab97b7e08d2472631c091779022"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/reuse.log",
+    "bytes": 1101,
+    "sha256": "ade554ea4415a20baf0016e11cacfc6da058bc962f473aff181f6de96db6184f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/reuse.rs",
+    "bytes": 134,
+    "sha256": "953883931208ae56d02d0c5d07579587a8fcdf4ffe764e17608cf2d8f72bb47e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/serialize.log",
+    "bytes": 1848,
+    "sha256": "206dda5d72acc54399252984dd31c388706f5e8129b977e0ddefa643fa9fee6d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/serialize.rs",
+    "bytes": 129,
+    "sha256": "e21e2e8a9129c38c44b4a1a1e26b45836f9e1573ea1091c6a29767b9b5f3ee77"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/valid.log",
+    "bytes": 455,
+    "sha256": "ffa0b1fcab8fda9a70dea954366009580bdfbd56504fc7fac3bdff3ea5e8a807"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary_001/valid.rs",
+    "bytes": 185,
+    "sha256": "223fe3ad1388e537de548b513c498bac9f6cbce2b4d6a0c30cd23cbe22ea96d6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_isolate_hooks_001.tar.gz",
+    "bytes": 53454,
+    "sha256": "7ba2a9da30ffbf2deb264c22e0fd9d881e9cd7528ddaeab888118eef9e97cfc9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json",
+    "bytes": 1416963,
+    "sha256": "59fe0fb11a6e8566447b1d7b2389ef0c25cb85c3cbd62a7f5e0476f29998cdae"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_after/cancel.jsonl",
+    "bytes": 770771,
+    "sha256": "fa2e24e81f560a13f1a1d3ecaed64ac65106580faa118b0fc7a2b93cb5e353c1"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_after/detach.jsonl",
+    "bytes": 796566,
+    "sha256": "6b648046a72b2aa635164b9261f6edd82774325f1b651b964310cc4b33fe0493"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_after/early_cancel.jsonl",
+    "bytes": 714937,
+    "sha256": "f76da5265ea5de5c6243153f49be94126385e562180752a723e88ae07c20ca3a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_after/inflight_cancel.jsonl",
+    "bytes": 795529,
+    "sha256": "849f9d1cf894fefb8b0003bd3f2283fd1e458a920ce68878953b5963a82ccb53"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_after/state_exit.jsonl",
+    "bytes": 770771,
+    "sha256": "e9180f84fbe75450aca6eb4a284ebec665e40450ea61ab57034f335a69149932"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/describe.json",
+    "bytes": 68633,
+    "sha256": "70329ce66d7cb9c92995b28825a7f223e579724a9b35ef527057c7f628d3c55b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/explain.json",
+    "bytes": 85,
+    "sha256": "580fb741f5581592bfdaa3bcd8bb4abb8f6dad7dd858ca9b5ab62bb2a80031bb"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/explain_result.json",
+    "bytes": 1627,
+    "sha256": "0d2476b0c1c0c85bf195dc0ca0a6c869d4887bda40d048618762008098e49b0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/partial.json",
+    "bytes": 2208,
+    "sha256": "dffe8ce2903ffd870ec265f08337144869dbe6d08acfa304726f23297a28fe1c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/partial_failure.json",
+    "bytes": 1631,
+    "sha256": "46661fe68dbeb04f2f855d5c866566e894ec7a3ae6ac70c8d8a85f9804b150ae"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/partial_receipts.ndjson",
+    "bytes": 188555,
+    "sha256": "34aecb95852425553cc3d385332f5003a7ac8a44ac460b5c98eacfdee8ab78a4"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/preparation_failure.json",
+    "bytes": 312,
+    "sha256": "66cc2b33fc7925fd07b9810ddeabbd48e43157752c4b4672b9db6ac39697772b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/receipts.ndjson",
+    "bytes": 199748,
+    "sha256": "c168938e10be0eeb8ad83f196e725d5f5a15933be3adc6115d0ab1d6f1110db8"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/scenario.json",
+    "bytes": 2206,
+    "sha256": "8f8eda7fc7d1aa51cb8456dd3c35a8e3569fffeb7707960bdf5af6a6d5e574c5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/selection.json",
+    "bytes": 35,
+    "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/unprepared.json",
+    "bytes": 229,
+    "sha256": "d2ffe781cde46b187e2f6f2750111d62e04c858daaf3bde3ce76f0f7a6d900d1"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/api/validate.json",
+    "bytes": 4835,
+    "sha256": "dc67f31e3eec86c2b58ff023c227d53dad5e50294efd0170a97f6297f016616d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/commands.json",
+    "bytes": 25168,
+    "sha256": "263d4f29f76724b790895a0746ac7c1fddc6fef68585315fae8b64f384eb1aa3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/describe.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/describe.stdout",
+    "bytes": 68634,
+    "sha256": "dc308724997f522c9d65a97a93b11ad5d29c9722f206b1ec2357c0789ff30928"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/explain.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/explain.stdout",
+    "bytes": 1628,
+    "sha256": "635be2ae56a46f548ec671a74f69cdab04826b6ec6b04500b5a60e7744538650"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/failed_stdout.stderr",
+    "bytes": 1672,
+    "sha256": "e382e64fd485c0da5d235d9aede9adba926e9b6bc6cc2741c14a370ea8843191"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/failed_stdout.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/invalid_args.stderr",
+    "bytes": 291,
+    "sha256": "46cab1c2b062534cc28b98d301821d7a45d6f70e754814c9879610328f7fe3dd"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/invalid_args.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/malformed.json",
+    "bytes": 9,
+    "sha256": "16fa663ec21cec884a8fe10f1a67fc2db85c32087c2a383293f7f3181f08d8ba"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/malformed_selection.stderr",
+    "bytes": 170,
+    "sha256": "a3bb8e821645d2457f2e65b2b3852bf0ffc5ecb83acb786fdef0b2e769296efc"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/malformed_selection.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/oversized.json",
+    "bytes": 65537,
+    "sha256": "76c002eec0c9da854ca2ee5dae9fb0069a622274b6638ab712fcb70384304899"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/oversized_selection.stderr",
+    "bytes": 169,
+    "sha256": "dd4ac9c2fdd1757f8708218ccd78a688d0b18c894ebcdca5948e5dcf3779fccf"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/oversized_selection.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/package.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/package.stdout",
+    "bytes": 11612,
+    "sha256": "cbbe100dfb109dbadc3767607bc6c642b2030f60c7d8f0e65e9d6a491d22bf1b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/abnormalities/base.ron",
+    "bytes": 33133,
+    "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/boss_omen/chains.ron",
+    "bytes": 799,
+    "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/boss_runtime/base.ron",
+    "bytes": 15863,
+    "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/buffs/base.ron",
+    "bytes": 917,
+    "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/consumables/base.ron",
+    "bytes": 4154,
+    "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/employees/definitions.ron",
+    "bytes": 9193,
+    "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/enemies/corroded_employees.ron",
+    "bytes": 6332,
+    "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/enemies/corroded_wave_presets.ron",
+    "bytes": 3346,
+    "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/equipments/base.ron",
+    "bytes": 71403,
+    "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/events/rewards/base.ron",
+    "bytes": 4988,
+    "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/events/shops/base.ron",
+    "bytes": 5446,
+    "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/events/story/base.ron",
+    "bytes": 5693,
+    "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/map/battlefield_archetypes.ron",
+    "bytes": 1823,
+    "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/map/battlefield_templates.ron",
+    "bytes": 12299,
+    "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/map/facility_templates.ron",
+    "bytes": 13884,
+    "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/map/node_assignment_profiles.ron",
+    "bytes": 9857,
+    "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/map/node_definitions.ron",
+    "bytes": 1990,
+    "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/pve/encounters.ron",
+    "bytes": 114717,
+    "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/resources/base.ron",
+    "bytes": 91,
+    "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/run/policy.ron",
+    "bytes": 12392,
+    "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/skill_fragments/base.ron",
+    "bytes": 29838,
+    "sha256": "57670784389d36846e530296bc7c99a1259734cabef5e5b4555da228798fed2e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/skills/base.ron",
+    "bytes": 44908,
+    "sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/summoned_units/base.ron",
+    "bytes": 1132,
+    "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/visual_novel_triggers/base.ron",
+    "bytes": 722,
+    "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/data/visual_novels/base.ron",
+    "bytes": 4357,
+    "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/packs/official/pack.ron",
+    "bytes": 1808,
+    "sha256": "09aea58af22b31b60e392d78d999bd9b1671e3e5d54f725c83c7c0a4d1ced413"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/partial_failure.stderr",
+    "bytes": 1632,
+    "sha256": "53bc7d90ad2b66d15c128fd024bd2188bd2994305c9c822e9182e83ca2a088f4"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/partial_failure.stdout",
+    "bytes": 188555,
+    "sha256": "34aecb95852425553cc3d385332f5003a7ac8a44ac460b5c98eacfdee8ab78a4"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/preparation_failure.stderr",
+    "bytes": 313,
+    "sha256": "c959a23866fcec3c7ac488531eee981571f29ad2b4f2e4e22d09f6b6d9d7213d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/preparation_failure.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_borrow_mutation.stderr",
+    "bytes": 8890,
+    "sha256": "a066916e04cd2823394d9a55726f8163ada2555f28c0432aa76da9379fdc15f3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_borrow_mutation.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_borrow_mutation/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_borrow_mutation/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_borrow_mutation/src/main.rs",
+    "bytes": 212,
+    "sha256": "6f0d1b45679e0b65146a9f19c5be9e7e8632ce050db9d05cbfcf779731ab0dce"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_clone.stderr",
+    "bytes": 8847,
+    "sha256": "a8105361c9b2d60783e0a08ca44d4fcdb3ab4227d6fe2eb7d6a53417949de101"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_clone.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_clone/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_clone/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_clone/src/main.rs",
+    "bytes": 121,
+    "sha256": "6372cd50b89bbf0c216909ba3ec92011abcdcdc228dd42efd9c6a8a9934241d3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deref.stderr",
+    "bytes": 8838,
+    "sha256": "7a431a68952965db16a4773f25a2b9cb6377d37727f15d41b42ea0a1e931858e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deref.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deref/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deref/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deref/src/main.rs",
+    "bytes": 137,
+    "sha256": "1a4ab9bfa2bc5d37262d3682438f493f73d673cfc4558850df3bcd23f1e54b75"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deserialize.stderr",
+    "bytes": 9625,
+    "sha256": "3f8f2912eca92669bac9196336418f36356f50b0b3f4a3e72bd5000035fa636d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deserialize.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deserialize/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deserialize/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_deserialize/src/main.rs",
+    "bytes": 120,
+    "sha256": "01181e96e26adf0c469ca364788a60b4be59e79d2ae9b3495cce34442f5ab0a2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_private_state.stderr",
+    "bytes": 8572,
+    "sha256": "d9121dff95d99d22606471fb5b054f08b9cf143ccd76e486fcb9324a73aaf56a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_private_state.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_private_state/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_private_state/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_private_state/src/main.rs",
+    "bytes": 102,
+    "sha256": "242685f6a2dcc0015759fa799502ef78563f440b870643b0d3f340ba4e8f6de5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_serialize.stderr",
+    "bytes": 9755,
+    "sha256": "3f429bed0e4b7066e4930c1436659b63673a29b10524d6be41955b85cba6e6df"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_serialize.stdout",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_serialize/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_serialize/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/privacy_serialize/src/main.rs",
+    "bytes": 118,
+    "sha256": "85b9e2d3765e59bf04de1a7d6dbe4bb3911030c189d82d3afa7112616c3d436e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/public_api.stderr",
+    "bytes": 8611,
+    "sha256": "96f33a91b973f682d1b93f16da7b944e2c47c389daa2e48e5b4d96f2ae3f93b7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/public_api.stdout",
+    "bytes": 110,
+    "sha256": "2c9da6815cd318d7468deba04e81b068f2ed05c38b9fd05c130fc3cbae983cf7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/repeat.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/repeat.stdout",
+    "bytes": 199748,
+    "sha256": "c168938e10be0eeb8ad83f196e725d5f5a15933be3adc6115d0ab1d6f1110db8"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/simulate.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/simulate.stdout",
+    "bytes": 199748,
+    "sha256": "c168938e10be0eeb8ad83f196e725d5f5a15933be3adc6115d0ab1d6f1110db8"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/trace.ndjson",
+    "bytes": 277,
+    "sha256": "3009f2e7dec029265d49de8ce4ad6b9e57943e4a85f43059a19e8e12956e977a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/trace.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/trace.stdout",
+    "bytes": 199748,
+    "sha256": "c168938e10be0eeb8ad83f196e725d5f5a15933be3adc6115d0ab1d6f1110db8"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/trace_collision.stderr",
+    "bytes": 40,
+    "sha256": "55731643f9abb581f9c09e948afc85c36fa1c1862dea5042f417bc29a1bf0c23"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/trace_collision.stdout",
+    "bytes": 199748,
+    "sha256": "c168938e10be0eeb8ad83f196e725d5f5a15933be3adc6115d0ab1d6f1110db8"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/validate.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api/validate.stdout",
+    "bytes": 4836,
+    "sha256": "1c3b5ec47fa6b1f9f582ad986ae71b399a1b7627df6c241519b704d3238e2804"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_clone/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_clone/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_clone/src/main.rs",
+    "bytes": 117,
+    "sha256": "cdd4a0daabd42ea29ff91f873d35f48514c083204c58563cf3a52b8fd8116bae"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_deserialize/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_deserialize/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_deserialize/src/main.rs",
+    "bytes": 122,
+    "sha256": "7be7bd555aa3c36f2ae2eea8a9bcc08a3ddb5953406ca8869c445a12993cebce"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_private/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_private/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_private/src/main.rs",
+    "bytes": 106,
+    "sha256": "e04bbe822ded4eb70b9693f9cc08772b37ca04588cafa985a53a9ffeb8dd491b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_reuse/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_reuse/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_reuse/src/main.rs",
+    "bytes": 226,
+    "sha256": "135c23784d1cd3f3e30464723ebdb72737cc6affd9e2afe379917800df918cbb"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_serialize/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_serialize/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/rollback_serialize/src/main.rs",
+    "bytes": 120,
+    "sha256": "70a5d329ba8561d9c486e643421a2aeb64d5ad66e4f68a127c34959916687dea"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/settings_private/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/settings_private/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/settings_private/src/main.rs",
+    "bytes": 117,
+    "sha256": "90526851c381c504f5dbb0e13a1d3aac56ad8c82cdd7fb1b516eae442010afe9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/valid/Cargo.lock",
+    "bytes": 32251,
+    "sha256": "05661ed746d5b8d874f625b766bd96067ec523cba37fea72323c15b21b386c63"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/valid/Cargo.toml",
+    "bytes": 291,
+    "sha256": "175f010b5a6958b9176d65e18a57c7e661b9e75b14ab193f736bcacf547fd51b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_boundary_001/valid/src/main.rs",
+    "bytes": 404,
+    "sha256": "91c1127479d1abdb3767bee4cdedb5835a14dce48772a8d234dd648a7489619c"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/host_peak_failure_probe.rs",
+    "bytes": 8986,
+    "sha256": "94754c0dee14570b8d4908d441a0012c69270d17d9a4bc7256bd7f3421d1cd5a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_probe_001/build.jsonl",
+    "bytes": 328340,
+    "sha256": "900f78defff8a708f8657f82fd8949ef50af79b6d447e6e9fbf2328432952c82"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_probe_001/build.log",
+    "bytes": 62,
+    "sha256": "5366eab4008d0913615c40014b3c6dc6114bfa48c7d9caa46d7ec5e7bcc938a7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_probe_001/compile.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_probe_001/run.log",
+    "bytes": 141512,
+    "sha256": "6dda60169e16de3d29c92644b5948f2af35433a240567381cc32a0eab96f3561"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_001/COMPLETION_AUDIT.md",
+    "bytes": 19380,
+    "sha256": "744c00efa660aceb559f194802fe29735bcc4ec5e2abffbd676bb0a092a815f5"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_001/CONDITION_REVIEW.json",
+    "bytes": 36068,
+    "sha256": "70b9bc36d4fbf7637a0199135d7d01cb568129a161f7be44624effa765f3dd49"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_001/EVIDENCE_REUSE.json",
+    "bytes": 50755,
+    "sha256": "7037f2f7fd233e1095e8cbfdfc50fddade82372f8f6f7bff0baa6255c3d39422"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/master_20261004_001/PREDECESSOR_REVIEW.json",
+    "bytes": 71236,
+    "sha256": "94d40c9167cc001655cf71d472853c92d6b0d362258be9355c10629e6d823628"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_001/COMPLETION_AUDIT.md",
+    "bytes": 19533,
+    "sha256": "acea5e4b8081b537fcf48b26f30d28d4b69f17dd0bf69e60d620073bc58dbefd"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_001/CONDITION_REVIEW.json",
+    "bytes": 68161,
+    "sha256": "536effae51e76c63a5d8466f3db601c7f5ed2f8cb7798b6b1c2999a90e502310"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_001/EVIDENCE_VERIFICATION.json",
+    "bytes": 170949,
+    "sha256": "50c9f4a44455554d71212cf770f833f90a6010aba465368ac837fce2af9695f4"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_001/PREDECESSOR_REVIEW.json",
+    "bytes": 213288,
+    "sha256": "5007b7326f1eec33e2e597579f78b40ed3c6da4509e5587d4642b38cd05f7ed6"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_001/SOURCE_REVIEW.json",
+    "bytes": 15624,
+    "sha256": "e246295cefeaa033109da4c57c68e5598a54084f936e44a401ca947d62515e73"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_002/COMPLETION_AUDIT.md",
+    "bytes": 7411,
+    "sha256": "da1a91d0ae6c051eac95fa635be68e1990b778d18eee3dfb7d6cacdf572f8b1b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_002/CONDITION_REVIEW.json",
+    "bytes": 81998,
+    "sha256": "67518638f3b12b8ad2199620a8bcde2e12a1dc801e42ca74751c53487159b1e2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/post_audit/s2_20261004_002/PREDECESSOR_REVIEW.json",
+    "bytes": 247727,
+    "sha256": "fd7470740e90ae0a6ace3adac8035c577b413914ae2a972338cd5df5edd98121"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/coverage.py",
+    "bytes": 9343,
+    "sha256": "ddc244e7d82f4c539bfa96be06dc4215f8f3f314379b73c1fb7188fb5e1bca1e"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/default_parity.py",
+    "bytes": 4323,
+    "sha256": "05f0657db7d0857d8f4bcd05fec5993a58e3a933c29fe4af4e0a82db23db1a18"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/freeze_plan.py",
+    "bytes": 11230,
+    "sha256": "c70454916915b2960135246d3d56685c3450e2efce4d5e241d54bb8ec97ffec3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/freeze_s1.py",
+    "bytes": 8271,
+    "sha256": "4a06750e9e04cf740f563b4a330641df01d801ad8be85689279ba1416de17b46"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/goals.py",
+    "bytes": 18071,
+    "sha256": "332851029e9b2f49ccaebcb373d7433ec61efccf2076a8814c5f30fe9fa7b1b7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/handoff_intake.py",
+    "bytes": 8958,
+    "sha256": "ce3e8bb68fb6bf886e219456d44cf0d2cb4a7fb7e179936ee12b6113d078e5fb"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/initialize.py",
+    "bytes": 9896,
+    "sha256": "d2d4041d6d201378e5ceeaa9fb43f7c422b7b38f650bed5d1316c58acc6251ac"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/normalize.py",
+    "bytes": 2525,
+    "sha256": "d4d7db2dce90010f883ef2182ff07c1dd9a8bb26bc15e877f3ba68f9ead839e0"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/policy.py",
+    "bytes": 13951,
+    "sha256": "21907155a2282bf570110d321638aeb6aaa54350462e9c5618b5dfcc7a92169b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/prepare_pc.py",
+    "bytes": 4849,
+    "sha256": "337d48ccbeb61345bff1bb543ee36de01d3b706d1b1af31283013ddb5c87bb96"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_api_cli_probe.py",
+    "bytes": 8630,
+    "sha256": "9466d28cfc882a7b2dc66330d7b8e1a4ae3facee822d674a37cb4d9bc3e73f71"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_boundary_probe.py",
+    "bytes": 4395,
+    "sha256": "096fd9cf93f7232ee3d2ee9086e8088cecf80169b929abbc8084af15dc8efe8d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_cli.py",
+    "bytes": 3928,
+    "sha256": "73c531b479e43c09caf938c95a9abf8e1bc6d22177aa7f3216387460daca369f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_probe.py",
+    "bytes": 3444,
+    "sha256": "8aa5cdd7b8ad44538488e513ece1f0b4afd3fcbb191b890ad95f2ee997f25d3f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_profile_probe.py",
+    "bytes": 13444,
+    "sha256": "5be07d155755aae654b75afee8b3d4fe049093d98914f5ebb46d9928233aa729"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_trace_probe.py",
+    "bytes": 1856,
+    "sha256": "8662b3c53da7482c3097b143a650e2afe2468e1461806b08e2f92817233d7a45"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/review.py",
+    "bytes": 13849,
+    "sha256": "335c5491a143a7456c1efafc728339fba72c97be79a746fa5b02e839a63275bf"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/review_v2.py",
+    "bytes": 14197,
+    "sha256": "692a6c0a67776c5b232971a23e0b486dffb256871eb6a7f2edfa95d3cacf1a4a"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/run.py",
+    "bytes": 4301,
+    "sha256": "c5e37f091dd1f6c9277d0bb218c5f3e057ccb578db4b4a201421f5d3a47b3087"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/source_plan.py",
+    "bytes": 5683,
+    "sha256": "6996c005997b968c100cd0114a9afee8e161948850378cd863355067a94570ed"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/summarize_r05_002.py",
+    "bytes": 5481,
+    "sha256": "2513afcc950d804feb13c3500f28ec81d364b6808a55a4a0d2184eeb5bfa06b3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/summarize_s1.py",
+    "bytes": 6928,
+    "sha256": "e215cf0428bbd90aa084f8e2428a9eea7cd0aeb6da94268dda39c78374362688"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/evidence/P01_PERFORMANCE_BASELINE.json",
+    "bytes": 7527,
+    "sha256": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/application_authority_api_audit/invalid/Cargo.lock",
+    "bytes": 32237,
+    "sha256": "c261e36b7db10d422b5fa0ebea0971cf869ac59c523e4337f959218e42b2eede"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/application_authority_api_audit/invalid/Cargo.toml",
+    "bytes": 169,
+    "sha256": "67726b35db77de81e1088ca5d7ba48a86059157c0109578f02a88443f3aa995f"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/application_authority_api_audit/invalid/src/main.rs",
+    "bytes": 577,
+    "sha256": "d930a28982eaaf805f0ee4ff595881664749dae82d37403059755cdc2533bbb9"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/application_authority_api_audit/valid/Cargo.lock",
+    "bytes": 32259,
+    "sha256": "6bcc24a083adc315644ec5ed7611d561a1ba76d1b25087d21393f9eca15f09ba"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/application_authority_api_audit/valid/Cargo.toml",
+    "bytes": 235,
+    "sha256": "9210a961d8b30f3ebd02fc6e3ccfaa0d6dce210e9dbf8ff60deaf3129423785d"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/application_authority_api_audit/valid/src/main.rs",
+    "bytes": 964,
+    "sha256": "919946eb38456c72cfb7e11f30fc9fbe54b917b8e49cca9e89b1e99b13b985af"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+    "bytes": 4415,
+    "sha256": "029179ae0b7d715ae01001e377800ec128276616be1406204750be94915cd745"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/external_pack_probe.rs",
+    "bytes": 812,
+    "sha256": "0ed2abce045ce61a73cabdb098077a68593ef5324061ec1b25c85b2e60989ee7"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/history_result_api_audit/invalid/Cargo.lock",
+    "bytes": 32230,
+    "sha256": "111d8c0202ea9623c65c4418e2d3b24c1b9f63e03051ea882d545c5f17a5d107"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/history_result_api_audit/invalid/Cargo.toml",
+    "bytes": 162,
+    "sha256": "269190972fda2e042de95b7eeee457d5dbe024bdb7c92e5168b9ef333bcc5c29"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/history_result_api_audit/invalid/src/main.rs",
+    "bytes": 524,
+    "sha256": "bc7b3c6c82c4dea401ea38571e649b806ddc48df9dad2eff8de2afbaa288fb3b"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/history_result_api_audit/valid/Cargo.lock",
+    "bytes": 32252,
+    "sha256": "ea89f3afa00a476dffee0ef74727745163eda0c931ddbd64c2ed13edd732b779"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/history_result_api_audit/valid/Cargo.toml",
+    "bytes": 228,
+    "sha256": "93262e38807d9ae8faaa141d3c178e63b7b9bf1d84c7625bd35993bfdb9319d2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/history_result_api_audit/valid/src/main.rs",
+    "bytes": 352,
+    "sha256": "031df4c383c441dcb7798bac6fa168d1c0be45f3713f836f42ed6447563b69c2"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+    "bytes": 600,
+    "sha256": "7a791442a385906a90b9c908ddb0b968695a38f312776fd2ba65d60401749ef3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/validated_data_api_audit/invalid/Cargo.lock",
+    "bytes": 32234,
+    "sha256": "4f3338947283088021dbcbbbc087c15e50e7630556e9f0dbc518477af215c4a3"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/validated_data_api_audit/invalid/Cargo.toml",
+    "bytes": 166,
+    "sha256": "b78aceb93fe03bca865878062caf6c28f7186cd8616e7f598f8e84225a7bada8"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/validated_data_api_audit/invalid/src/main.rs",
+    "bytes": 452,
+    "sha256": "645612a0b1125e4e0098712c267b051a7406283f67b772e4770f84dd63b45b46"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/validated_data_api_audit/valid/Cargo.lock",
+    "bytes": 32232,
+    "sha256": "d3aa9c431bd14d25242f8a0cf85d1723cd46fd4335d8190d4e3e7ce9235505bf"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/validated_data_api_audit/valid/Cargo.toml",
+    "bytes": 164,
+    "sha256": "82dcaa2d15bd8b1c1ec9294b21b1be246caf82b667661ed31be3a91eee33cac4"
+  },
+  {
+    "path": "/mnt/f/work/simulator/core_enhanced/tools/validated_data_api_audit/valid/src/main.rs",
+    "bytes": 265,
+    "sha256": "39c631b78e7ff8254fc87a3b183da33eeaba0a723447be860fe72a35080becb2"
+  },
+  {
+    "path": "/tmp/crso-s2-services/grafana_13.2.3_36482603486_linux_amd64.tar.gz",
+    "bytes": 460956549,
+    "sha256": "6107ad27016296aac38e0d7ffa8753ab540b5541ad27e94790f771289d733235"
+  },
+  {
+    "path": "/tmp/crso-s2-services/prometheus-3.15.0.linux-amd64.tar.gz",
+    "bytes": 111651578,
+    "sha256": "2a542df32eac02ee17b9d844fb2aa1de00dafa5476579ba8a3ba862e9d572ea0"
+  },
+  {
+    "path": "/tmp/r06-completion-pc-_za9vdll/Cargo.toml",
+    "bytes": 266,
+    "sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/.cargo_vcs_info.json",
+    "bytes": 109,
+    "sha256": "89100e0b4e849eb4f55db23a067a5ab72333c63b66c41df31ff879464389c982"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/CHANGELOG.md",
+    "bytes": 6264,
+    "sha256": "ebe3570ade82a6e2f140d7765071314cfdb2981a020f46da8f8816beec321abe"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/Cargo.lock",
+    "bytes": 9952,
+    "sha256": "f23b5722db1c4470b11dcbba121c9049065ecb2989e8a1103ff0e6ed11dfd334"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/Cargo.toml",
+    "bytes": 2052,
+    "sha256": "630ac9711ae7d4844bd8b60929934e28c945c87a28eab65e320f940efb247805"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/Cargo.toml.orig",
+    "bytes": 2078,
+    "sha256": "8e56443ece70ac8d688da4cf423de4358593135a2d7017ec2b0fd7fe3a4bff43"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/LICENSE-APACHE",
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/LICENSE-MIT",
+    "bytes": 1099,
+    "sha256": "5734ed989dfca1f625b40281ee9f4530f91b2411ec01cb748223e7eb87e201ab"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/README.md",
+    "bytes": 2084,
+    "sha256": "20b4b274397d2694db1254764b2cf266a33b3ce68918140f6a95b97a3653f99a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/benches/defer.rs",
+    "bytes": 1537,
+    "sha256": "c330b704d96b2ad1aed29f72c37a99da534adef8cb06a3976d5f93bf567abb20"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/benches/flush.rs",
+    "bytes": 1040,
+    "sha256": "0389ac6c473632f0e93c962f223404cc360257f6699b4ec90b9b3be16bb6d74f"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/benches/pin.rs",
+    "bytes": 575,
+    "sha256": "2f649a5153745c7930efdb32a52f9dc522f7b8cf548a251c5e2c82ee25dc3fff"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/build.rs",
+    "bytes": 674,
+    "sha256": "c8c35fc536a2e6481549bc13979293cb51244cd9c72d4ed9e35c22a1d70fa9ae"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/examples/sanitize.rs",
+    "bytes": 1783,
+    "sha256": "a39d1635fa61e643e59192d7a63becc97ff81f03c1f4e03d38cedefb1525026a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/atomic.rs",
+    "bytes": 54941,
+    "sha256": "5db5c12a916eda8e2d542335fe973af152a14325f92000558d55bcbe2889b1d7"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/collector.rs",
+    "bytes": 12263,
+    "sha256": "12c6a00496fd702facaff3efdc993f326049d2bbb21fb2c9db1b8ffe6f54cf69"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/default.rs",
+    "bytes": 2516,
+    "sha256": "a153392422d2a473afb01873d83c8d92f34a3bab5dde2f3743d916acce36f9b9"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/deferred.rs",
+    "bytes": 4149,
+    "sha256": "5ad2032c40f96e32f3bab367c843c3091c4300402e938217d2706070f20c6811"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/epoch.rs",
+    "bytes": 5498,
+    "sha256": "42f1e1e83aa58481a7a737d741aa12bd541ba0bf48f3afdec9aade9148955350"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/guard.rs",
+    "bytes": 19543,
+    "sha256": "555bb756fe0c422d7f778121226834158cd143c664211a955662c789c867d6d1"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/internal.rs",
+    "bytes": 22355,
+    "sha256": "fcba7aab8a506b8e9259e30c3edc0af21e4f5675144b1e4d3e9182614be7c326"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/lib.rs",
+    "bytes": 6951,
+    "sha256": "a69c62d04cee1ab25c33f54fa1d289266a69a44d16016b19b4440c055335d9ed"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/sync/list.rs",
+    "bytes": 16141,
+    "sha256": "6950177b01fa6f51d3f4ca22f3ce4e77143eed28bec04579ecc8a8599ab17031"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/sync/mod.rs",
+    "bytes": 154,
+    "sha256": "326e32489d467e974c441120640a8338aa55da55c24b20276075ce9053997326"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/sync/once_lock.rs",
+    "bytes": 2523,
+    "sha256": "aa8f957604d1119c4fc7038a18c14a6281230e81005f31201c099acff284ad4b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/src/sync/queue.rs",
+    "bytes": 14160,
+    "sha256": "0324e9b07dfd0f76ba0058395a4b9ae4b4a6e5ab0aec41d98edab7864bac3157"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/crossbeam-epoch-0.9.21/tests/loom.rs",
+    "bytes": 4626,
+    "sha256": "db772f4478966de6ec98774ca4093171dc942da635822a0d2d3257d31188cb9b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/.cargo_vcs_info.json",
+    "bytes": 101,
+    "sha256": "6d3010390c7e80160b77f5a93e9c3b092862fd6211b8d510460c24e5adfc920b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/.gitignore",
+    "bytes": 30,
+    "sha256": "6b937008e0a58a438c32574627db6961a4d2aff4bf5c703d4e45cb56ef3b168a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/CHANGELOG.md",
+    "bytes": 13671,
+    "sha256": "ab4e743619efb77dfa73e0fc0f5b73b952ecff294ff4cad8662c2e91b9b90c9e"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/Cargo.lock",
+    "bytes": 17239,
+    "sha256": "e3bd3ead921dd7c2082b5956986c9c4a69440e791e0ebae4db302945e4d28ace"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/Cargo.toml",
+    "bytes": 1839,
+    "sha256": "9eb80c40891c01d527a03af7af233525c5748c0591f86b60b2745aee2906437a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/Cargo.toml.orig",
+    "bytes": 845,
+    "sha256": "c0b48f5cc7b065f738c456791979a721965563991a91c2ad267e1dd9623948f4"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/LICENSE",
+    "bytes": 1064,
+    "sha256": "efab6bad93b11c2a2bbecbd303e0844de04bbf9c7c3db9bdf4fc7ecc980c37e4"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/README.md",
+    "bytes": 1153,
+    "sha256": "f7421982f6e138481bc12cc0e8a1866c7e11f45184c388765a9173ac2afc2668"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/RELEASES.md",
+    "bytes": 15004,
+    "sha256": "b49c6e46303d4e4838c34eb0a72fbfa4cba170fd5ba7f8644d8c570cd1f960af"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/benches/macros.rs",
+    "bytes": 3067,
+    "sha256": "d59cb3e17c82c9368e67270df4c2c16f56308ced3289146d2caa15aeaffc97d4"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/examples/basic.rs",
+    "bytes": 6465,
+    "sha256": "d76c78f3424348265170985a481490adb362c0fee62b2b5b5f9f97ffcfc84c19"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/examples/sizes.rs",
+    "bytes": 551,
+    "sha256": "611dc16da82687c4a7c8229032f7529641c69266e237be03504c81a45b413421"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/release.toml",
+    "bytes": 602,
+    "sha256": "5840262a3049ba2cbd59b37675d9d82956ac67b9ae9f54307d4cec460a257859"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/atomics.rs",
+    "bytes": 1982,
+    "sha256": "48c1f1ce3c2b52a21ec2da6015120d7ba182b440192c47511f41130da677c35c"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/common.rs",
+    "bytes": 12637,
+    "sha256": "07aaeeaf017b5db0f37e24fbd8a3e8ea719ce90f622178d39eb35908b6853995"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/cow.rs",
+    "bytes": 31499,
+    "sha256": "510117682ae7096e08c1a9deb6e19015e72358a220ce09045473349d42aa5f6c"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/handles.rs",
+    "bytes": 6293,
+    "sha256": "1109e8379d44791924d1a2e499f7b50f9f5b819560f67967fbdf3255120cdda8"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/key.rs",
+    "bytes": 24442,
+    "sha256": "3a76acbe2f375c0c3247ba2acf9d91c165e293b07c29c7aa2965a97898090cd8"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/label.rs",
+    "bytes": 3462,
+    "sha256": "869a99504c655e368803c0b2e030d610485ff40d1054e9598a80b46ff6071577"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/lib.rs",
+    "bytes": 16014,
+    "sha256": "ce84c0f172de8bc0dd7211be91fe618787e67e7ecc96ca5246c4b43ff64739d9"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/macros.rs",
+    "bytes": 22444,
+    "sha256": "61fb0fa1be6b3d23481f5b1dd5d3c0884dadcddb0f81a9c03a0e56909700dae4"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/metadata.rs",
+    "bytes": 5147,
+    "sha256": "0f70b0ccb6c86cb5e9697c174cd47618e35bfd65295a934440acc358f5c14aed"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/recorder/cell.rs",
+    "bytes": 2403,
+    "sha256": "6c5fa2a985a685187707ce744b975b01617a40ce532b18a7c23d88080ebd5a64"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/recorder/errors.rs",
+    "bytes": 822,
+    "sha256": "280c0e02eb36f099880ba91ef4fced8f07f0483f6a5ab373aeafaf6c9150acc1"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/recorder/mod.rs",
+    "bytes": 19585,
+    "sha256": "b4493271e56273855ee4e1f98f04b62beb53c2dbdeff45f8037889ea53e6aafb"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/src/recorder/noop.rs",
+    "bytes": 964,
+    "sha256": "a430dd529e44291f1845501c365a619f7d439ef16c2991dd4b9798b40a5dc90b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/tests/macros.rs",
+    "bytes": 273,
+    "sha256": "ef4e953eec283e66f4b35519965fc71030d08ec771a217dbedbc8ea8297389e0"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/tests/macros/01_basic.rs",
+    "bytes": 2259,
+    "sha256": "7bfb0103df2f46cd1d577555c1cd23bab201b68d10735f5073fe266c7cf4c472"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/tests/macros/02_trailing_comma.rs",
+    "bytes": 433,
+    "sha256": "ba88a344bd20593fd263f606f80a6266d535df58125426cbd5152cdec0b7c2eb"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/tests/macros/03_mod_aliasing.rs",
+    "bytes": 786,
+    "sha256": "312690f935624447f74b7c40e794562156ea4bee98393e56413381aee91ae670"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-0.24.6/tests/macros/04_customization.rs",
+    "bytes": 4203,
+    "sha256": "d26ce10a3bc735dcb4e31bdb0df0d0065764ddbd47b7115a1c537a5786288132"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/.cargo_vcs_info.json",
+    "bytes": 121,
+    "sha256": "a65912ef098d5d2e03b058e9649da76007e5d6e940cca229e43fc48c204f538d"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/.gitignore",
+    "bytes": 30,
+    "sha256": "6b937008e0a58a438c32574627db6961a4d2aff4bf5c703d4e45cb56ef3b168a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/CHANGELOG.md",
+    "bytes": 12175,
+    "sha256": "08b81b0d13335241a04075fa0106ab26c0380b58d8f3d3876f759a6508219a27"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/Cargo.lock",
+    "bytes": 46746,
+    "sha256": "88e5e2fe1179ef94cb3ac5bdf35013fc4fac4819cbd7a670d874e608fa548b5b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/Cargo.toml",
+    "bytes": 4867,
+    "sha256": "b9e473b6fd88161c734235fd9b273460fd0e09edaa68a2fa27615189161cf29f"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/Cargo.toml.orig",
+    "bytes": 2865,
+    "sha256": "6e709a0b1bca662d21c9ed85d5653cc4d599928a64dd8c011c7fd3b1028545fc"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/LICENSE",
+    "bytes": 1064,
+    "sha256": "efab6bad93b11c2a2bbecbd303e0844de04bbf9c7c3db9bdf4fc7ecc980c37e4"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/README.md",
+    "bytes": 992,
+    "sha256": "23b7bcaecfa8013b78b17c29163f9bb45b718d1e12e9bb098be09485582c0ad3"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/build.rs",
+    "bytes": 144,
+    "sha256": "84dd7a1e56784e49c87487ad404d8bfed4364edcacb73c6dfce3618c51073473"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/examples/native_histograms.rs",
+    "bytes": 2038,
+    "sha256": "b68dcdcfa8078b2e0bf36811773e0ce752f10df42837848b463296f71b142fa5"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/examples/prometheus_push_gateway.rs",
+    "bytes": 2354,
+    "sha256": "559bbfdba72e04cc8b5ab55a0aaf9af729e8d51fdeddb7b1bb8ccf06d35ed441"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/examples/prometheus_server.rs",
+    "bytes": 1916,
+    "sha256": "1326fb37a289bb331dc380d28867ea037c5386ddfbae988492244cf304d2dacc"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/examples/prometheus_uds_server.rs",
+    "bytes": 1960,
+    "sha256": "6676c27cb68ee92917bd32e1e6e7a7eb309f9863687c761e03c033b9fe1cfc12"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/proptest-regressions/common.txt",
+    "bytes": 579,
+    "sha256": "15e224fe757fd59d33dcced868d8a4f2a763bd89dc17d62b346d6b0a8f19a25e"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/proto/metrics.proto",
+    "bytes": 5960,
+    "sha256": "5d0c331fb3ec69ec36138a3b3968c042b96e0023774bb06b97a7a17cf1c5266e"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/common.rs",
+    "bytes": 4555,
+    "sha256": "52a1bd616e4942e2f8997598f285cdbb00e07fda46c5eaa099f4e081535fc03a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/distribution.rs",
+    "bytes": 15202,
+    "sha256": "47a215b0707b0d3d3b8efe4cc272af25cbce2b46b666ce9df0b12865c5e6f981"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/exporter/builder.rs",
+    "bytes": 46304,
+    "sha256": "d04bf3c093e160fe0594b297d5b095ca68379c09001c0846041b529a2d1460ec"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/exporter/http_listener.rs",
+    "bytes": 8173,
+    "sha256": "294c0304373aa4f950db9edfdd90b301c2e5b18941b65a362f8795094c49be9f"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/exporter/mod.rs",
+    "bytes": 2797,
+    "sha256": "959ee581958fa27ef4e576cce002ed45348e59c70ce9dbc9b3995023c4623d9a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/exporter/push_gateway.rs",
+    "bytes": 5282,
+    "sha256": "4dc41261af4fcb5b1088b48ff75d29e7f22e47a3fd346e8c66d531c4d2a77ff7"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/formatting.rs",
+    "bytes": 16495,
+    "sha256": "5464b30e9665875d738ddc0216438a595447ccbc890e187cbff257f1aa4f0cc2"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/lib.rs",
+    "bytes": 7751,
+    "sha256": "4fc59711742e1f9510b78ab3b076c88d41aa60184f4deb9cb011cc71b622aab3"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/native_histogram.rs",
+    "bytes": 35972,
+    "sha256": "558643aa1a2f60b65aa7352962795e8b463bc396461a0ea2b751b1b809c8d81b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/protobuf.rs",
+    "bytes": 16053,
+    "sha256": "96560300bea5f1410e5eca6c97bf8f90cbdc11b5b6bd9372e516f1be7d777845"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/recorder.rs",
+    "bytes": 18515,
+    "sha256": "63d2223f81ceb16b5500345c9ff10c1dc7a4d1c307e80a2e1afc2ca86a27e00e"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/src/registry.rs",
+    "bytes": 1401,
+    "sha256": "b1ee6acfb5a7dbaf240a08f17ea1ebc7076cb63dbe7d6084ea8f1424126e4ac0"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-exporter-prometheus-0.18.3/tests/http_listener_integration_test.rs",
+    "bytes": 6608,
+    "sha256": "5f6118e43fde5e49071a618113b3d9c71d29ea485dc9a1237456714864fdf105"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/.cargo_vcs_info.json",
+    "bytes": 106,
+    "sha256": "95b5723246d80d12d423bafbcd5236f023579e17bbd0980dd7a749aaa9d3bd4d"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/.gitignore",
+    "bytes": 30,
+    "sha256": "6b937008e0a58a438c32574627db6961a4d2aff4bf5c703d4e45cb56ef3b168a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/CHANGELOG.md",
+    "bytes": 11813,
+    "sha256": "938aef89565eb0c95518df21acadcf4a5ee8404b98873e475b341a7d7126c18d"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/Cargo.lock",
+    "bytes": 30035,
+    "sha256": "3c2ce946430f8174c58b7f907d1cf5c21fd960fa9d2f7ed1a507b03b38da4804"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/Cargo.toml",
+    "bytes": 4903,
+    "sha256": "e3382f5535e0134278dcb16fd5e6250d6d6d3a170dcfd759fb65fd0adcd74480"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/Cargo.toml.orig",
+    "bytes": 2732,
+    "sha256": "85c27c5b20d7f0301e6520164aba4e6ff3c986dd58e2a47ea55530f06e49937f"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/LICENSE",
+    "bytes": 1064,
+    "sha256": "efab6bad93b11c2a2bbecbd303e0844de04bbf9c7c3db9bdf4fc7ecc980c37e4"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/README.md",
+    "bytes": 878,
+    "sha256": "f5db7e15670d31330ae3591480aa50314ca9d1c2f3667c60e3895c57cfbe2b5b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/benches/bucket.rs",
+    "bytes": 3246,
+    "sha256": "bdb8772e03bca07aba4b73204c159a44e3eb57c0dbe26a7dd9dd38156889ecf3"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/benches/filter.rs",
+    "bytes": 2501,
+    "sha256": "2d1e38ef1d7f089701b5da946b7499c3f6acc569a0f00a14646bfb43f52e3b09"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/benches/prefix.rs",
+    "bytes": 1521,
+    "sha256": "f7bb4c93473bb569ecc418ade5199b4b397ada1bc0720aa1525fb0fcedfaa067"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/benches/registry.rs",
+    "bytes": 2740,
+    "sha256": "6091b82478262c2a4ed7694a9f1ebe9ed74355b459ddf8cd76813f16cf05f7e5"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/benches/router.rs",
+    "bytes": 1846,
+    "sha256": "ceaa9fbf712f959205a668dc07d67a5623f8bcc541cf24ae54f2d426c0ec3c68"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/examples/bucket-crusher.rs",
+    "bytes": 5602,
+    "sha256": "100ba36218ab384bced4b68ffa49d5f7315288058886cf646890002c807f94ba"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/examples/segqueue-torture.rs",
+    "bytes": 4728,
+    "sha256": "edb0839b3b36a929dd0533a1915ecd61ea519e19441743be6b70a5f3163fbe0d"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/common.rs",
+    "bytes": 3482,
+    "sha256": "17a51f421b735b48bf4dba16b6fe4ebc665c599c9373f88bb51aa2bce391e32d"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/debugging.rs",
+    "bytes": 11153,
+    "sha256": "f864fafa457c69c9fb9d6cd98d19d82efdf86c0de3e845ab2c7fcdc0f4e3436b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/handles.rs",
+    "bytes": 162,
+    "sha256": "e3df525dc4d958456491c0f75937f3420a9251714346e78ba1820852f0bd6a96"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/key.rs",
+    "bytes": 1171,
+    "sha256": "edd510228a2062dcca6813c92985c1750efe6f786d4585769e54548d862e4152"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/kind.rs",
+    "bytes": 3912,
+    "sha256": "266fbb7cdebfc74828c2225e8cbc835677990f8fb1a1dec5c00693e3d6eed3d8"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/layers/fanout.rs",
+    "bytes": 6735,
+    "sha256": "66968f7dc419c63efe8931a093860a3ad6dba879a5edd7354a3b701b3d0df356"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/layers/filter.rs",
+    "bytes": 11219,
+    "sha256": "3e4c11df27746a564e3cb76c2b262f26362d7d397e4bad7879c23110b6f85911"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/layers/mod.rs",
+    "bytes": 6545,
+    "sha256": "30b774d8e83b4e8620fe71590831ff3f6b8cff4b9ed5bc9414e89de03cfa8b7b"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/layers/prefix.rs",
+    "bytes": 5978,
+    "sha256": "ef60e088c77c42a6189d2cd7d468febb07389d3214f06b9dc19cd4c7a7557208"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/layers/router.rs",
+    "bytes": 13290,
+    "sha256": "c7505f3eb8d4cbe08d05c5acbfa869bd19acfde5f3e8a23bee5d860b47a81b4f"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/lib.rs",
+    "bytes": 765,
+    "sha256": "0563ef86a477afd994849efd01b9aca424578fc8ce797b0a731fa5184ac22a1a"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/quantile.rs",
+    "bytes": 3315,
+    "sha256": "2c35205f107ef0f6089106bc6fb950c92f63e7a6e0ba95e67ad64a7091eff9a0"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/recoverable.rs",
+    "bytes": 12267,
+    "sha256": "d252c9b77229bdf01eabf48b4f3d9c6b6f0f30f78ef23c7974787807be31dbf7"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/registry/mod.rs",
+    "bytes": 20332,
+    "sha256": "678495f6fa33fe979ff4ca97ca741e7a8c06dbed9d5d1980c60046befd136c02"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/registry/recency.rs",
+    "bytes": 12787,
+    "sha256": "0535a8da0877d46a761548821c744596285742e4fc5ccd66337e1c1f9b148786"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/registry/storage.rs",
+    "bytes": 1829,
+    "sha256": "151ce37c9bd99cd2700ea9e3da455196bd540408df6a5b2fb523f01915518f3d"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/storage/bucket.rs",
+    "bytes": 23283,
+    "sha256": "8ab88e5aa6ca8329d47b8a5fd3b798c915674423bba7b5f42e541abb22fabb1f"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/storage/histogram.rs",
+    "bytes": 3758,
+    "sha256": "6df086dca13d02e5a64b7c264e32f4656b0ef2ea459abb3ebac4a458dbc304d2"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/storage/mod.rs",
+    "bytes": 492,
+    "sha256": "f3e3ef627fb1d9634052be71fe57aa6941de37346ff02398690e5a9c32090042"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/storage/reservoir.rs",
+    "bytes": 8871,
+    "sha256": "72e0e430d31b97093402b9fc7927557e23ac303f771d9aaf1e2428cbc3c8e5d8"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/storage/summary.rs",
+    "bytes": 13500,
+    "sha256": "9cfd389d43f6aef6d6d5f62f1104f4c4cfbeee6d554332c0d172b76fa9120b53"
+  },
+  {
+    "path": "/tmp/wp02-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/metrics-util-0.20.4/src/test_util.rs",
+    "bytes": 5213,
+    "sha256": "841be3dc98d1d2730832d6098a6fd41382ed8f3b2a63837f79a109bbeb7a7a3b"
+  }
+]

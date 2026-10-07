@@ -1,9 +1,7 @@
-use super::GameCore;
+use super::{shop::ShopSessionCommitMode, visual_novel_flow::VisualNovelQueuePlacement, GameCore};
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::data::reward_data::RewardGrantKind;
-use crate::game::data::visual_novel_data::{
-    VisualNovelId, VisualNovelPresentationMode, VisualNovelSceneId,
-};
+use crate::game::data::visual_novel_data::VisualNovelId;
 use crate::game::determinism;
 use crate::game::enums::RewardMode;
 use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload};
@@ -12,9 +10,7 @@ use crate::game::resources::{
     RewardSessionState, SavePointSessionState, ShopSessionState,
 };
 use crate::game::reward::RewardOption;
-use crate::game::visual_novel::{
-    VisualNovelSession, VisualNovelSessionPresentationMode, VisualNovelSource,
-};
+use crate::game::visual_novel::VisualNovelSource;
 
 impl GameCore {
     pub(super) fn node_seed(&self, node_id: MapNodeId, namespace: u64) -> u64 {
@@ -262,10 +258,7 @@ impl GameCore {
                 };
                 let shop_uuid = shop.uuid;
                 let shop_result = Self::shop_event_option(&shop);
-                self.run_state_mut()?
-                    .shop_sessions
-                    .insert(node_id, shop.clone());
-                self.state.active_node_content = Some(ActiveNodeContent::Shop(shop));
+                self.commit_shop_session(shop, ShopSessionCommitMode::RequireRun)?;
                 self.transition_to(GameState::InShop { shop_uuid })?;
                 self.start_monolith_exchange_if_available()?;
                 Ok(Some(BehaviorResult::ShopState { shop: shop_result }))
@@ -307,8 +300,9 @@ impl GameCore {
                     return Ok(None);
                 };
                 let session = MaintenanceSessionState::new(node_id);
+                self.state.active_node_content =
+                    Some(ActiveNodeContent::Maintenance(session.clone()));
                 let result = self.maintenance_state_result(&session);
-                self.state.active_node_content = Some(ActiveNodeContent::Maintenance(session));
                 Ok(Some(result))
             }
             MapNodeCategory::HeadquartersContact => {
@@ -346,46 +340,23 @@ impl GameCore {
             return Ok(());
         }
         let visual_novel_id = self.run_policy().monolith.exchange_visual_novel_id.clone();
-        let definition = self
-            .game_data
-            .visual_novel_data
-            .get_by_id(&visual_novel_id)
-            .ok_or_else(|| {
+        let definition = self.resolve_visual_novel_session_definition(
+            VisualNovelId::new(visual_novel_id.clone()),
+            || {
                 GameError::InvalidStaticData(format!(
                     "monolith exchange references missing visual novel '{visual_novel_id}'"
                 ))
-            })?;
-        let presentation_mode = match definition.default_presentation_mode {
-            VisualNovelPresentationMode::Cinematic => VisualNovelSessionPresentationMode::Cinematic,
-            VisualNovelPresentationMode::Radio => VisualNovelSessionPresentationMode::Radio,
-            VisualNovelPresentationMode::Compact => VisualNovelSessionPresentationMode::Compact,
-            VisualNovelPresentationMode::NonBlocking => {
-                VisualNovelSessionPresentationMode::NonBlocking
-            }
-        };
-        let current_scene_id = VisualNovelSceneId::new(definition.entry_scene_id.as_str());
+            },
+        )?;
         self.run_state_mut()?
             .monolith
             .start_exchange(threshold)
             .map_err(|_| GameError::InvalidAction)?;
-        let session = VisualNovelSession {
-            session_id: self
-                .state
-                .uuid_manager
-                .next_visual_novel_session()
-                .to_string(),
-            source: VisualNovelSource::Map,
-            vn_id: VisualNovelId::new(visual_novel_id),
-            current_scene_id,
-            committed_choice_id: None,
-            blocking: true,
-            presentation_mode,
-        };
-        if self.state.visual_novel.active.is_none() {
-            self.state.visual_novel.active = Some(session);
-        } else {
-            self.state.visual_novel.queue.insert(0, session);
-        }
+        let session = self.assemble_visual_novel_session(definition, VisualNovelSource::Map, true);
+        self.activate_or_queue_visual_novel_session(
+            session,
+            VisualNovelQueuePlacement::FrontOfQueue,
+        );
         Ok(())
     }
 }

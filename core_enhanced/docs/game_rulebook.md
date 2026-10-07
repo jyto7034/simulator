@@ -1,732 +1,257 @@
-# Game Rulebook
+# 게임 룰북
 
-이 문서는 현재 게임 규칙의 최상위 룰북이다. 플레이어가 어떤 흐름으로 런을 진행하고, 각 노드와 전투가 어떤 의미를 가지며, 보상과 손실이 언제 확정되는지를 설명한다.
+정책 갱신: 2026-10-07(유물 보상 노드) · 문서 권위·경로 교정: 2026-10-04. 시작 편성·튜토리얼/원정·공명과 스킬 사용·후퇴 한도·승패 즉시 확정·저장 복구·회수와 창고,
+엘리트/일반 보스 보상·유물 보상 활동·방 계열과 흉탄 접근까지 후속 합의를 통합했다.
+기존 전조·백야·억제력·Breakdown 정책은 유지하며, 초기 수치는 플레이 검증 대상으로 구분한다.
 
-## 문서 책임
+**이 문서군이 최신 게임 정책 기준이다.** 2026-10-04에 기존 `next` 문서군을 현재 이름으로 정리했다.
+정확한 조건·수치·예외는 연결된 `game_rules/` 규칙 페이지가 소유하며 이후 명시적 사용자 합의가 우선한다.
+[과거 룰북](archive/game_rulebook_legacy_2026-10-04.md)은 역사적 비교 자료다. 파일 수정 시각이나 현행 구현을 이유로 과거 정책을
+최신 기준으로 승격하지 않는다. 명시적으로 계승한 공통 규칙만 과거 룰북에서 참조하고, 상세 페이지의
+‘현행 비교 기준’은 작성 당시 구현·정책 비교로 읽는다. 정책 합의와 구현 완료는 별개이며 현재 구현 상태는
+[단일 현황](roadmaps/content_authoring/ROADMAP_STATUS.md)과 해당 실행 증거로 확인한다.
+[2026-10-04 권위·혼입 교정 기록](roadmaps/core_first/execution/rulebook_authority_correction_20261004_001/RECORD.ko.md)을 따른다.
+[문서 경로 변경과 과거 기록 대응](roadmaps/core_first/execution/rulebook_path_migration_20261004_001/RECORD.ko.md)을 참고한다.
+모든 노드 유형의 정책·수치를 RON으로 설정하는 확장은 [후속 설계·구현 과제](game_rules/open-decisions.md#후속-설계구현-작업)로 남긴다.
 
-| 구분 | 내용 |
+## 어떤 게임인가
+
+소수의 직원을 이끌고 봉쇄된 시설을 탐사하는 로그라이크 전술 전투 게임이다. 직원의 무기와
+환상체 스킬 파편, 유물을 조합하고 다음 전투에 필요한 성장을 선택한다. 전장에서는 직원을
+배치해 적의 진입을 저지하며 보호 대상을 지킨다. 전투 밖에서는 부상·트라우마·재료와 편성을 관리한다.
+
+핵심 판단은 어느 직원을 어떤 장비로 내보낼지, 추가 전투의 위험을 감수할지, 전술 자원을 언제
+쓸지, 손실을 안고 다음 관문으로 갈지를 정하는 것이다. 환상체는 조우하고 대응하는 위협이며,
+직원은 파편을 통해 그 힘을 모방한다.
+
+이번 게임에서 탐사 인력으로 쓰는 ‘직원’은 회사가 데려온 수감자다. 원정이 끝나면 회사는
+정보 유출을 막는다는 명목으로 생존한 탐사 인력을 살처분한다. 성공 귀환도 이 처분을 면제하지 않는다.
+관리자는 원정을 넘어 동일 인물로 유지되고, 다음 원정에는 새로운 수감자를 선발한다.
+직원의 성장·부상·트라우마·신뢰·기억은 해당 인물과 원정에 속하며 다음 인원에게 계승하지 않는다.
+탐사 정보와 규칙에 따라 회수한 자산이 관리자·회사 측에 남아 반복 원정을 이어 간다.
+
+## 직원과 편성을 준비한다
+
+런 시작에는 직원 후보를 선발하고 초기 무장을 정한다. 이후 채용·획득한 장비와 파편·개화·
+유물 조합으로 편성을 바꾼다. 살아 있어도 부상과 트라우마가 심하거나 무기가 없으면 전투에
+참여할 수 없어, 편성의 전투력과 실제 출전 가능성을 함께 살펴야 한다.
+
+시작 후보는 딜러·탱커·힐러 각 2명, 총 6명이며 그중 **3명**을 선발한다. 각자 기본 무기와 기본 파편을 받는다.
+보유 상한은 10명, 동시 배치 상한은 8명이다. 초반 고정 본사 연락에서 최대 2명을 유료 채용할 기회를 제공하며
+원정 중 일반 채용은 1~4층에서만 제공한다. 채용 직원도 기본 세트를 갖추고 비용에 이를 포함한다.
+별도 출전 명단 없이 보유 인원 전원을 배치 후보로 두며 출전 조건·개인별 비용·재배치 대기를 적용한다.
+추가 훈련용 파편 1개 선택은 없고 회수품 대여는 기본 세트와 별도다.
+[직원 선발과 채용](game_rules/run-and-map.md#직원-선발과-채용)
+
+## 필요한 성장을 골라 관문에 도전한다
+
+차기 본편은 같은 시설을 여러 원정에 걸쳐 탐사하며 정보를 밝혀 간다. **맵**은 전체 세계,
+**방**은 맵을 구성하는 공간, **노드**는 방 안의 활동 지점, **층**은 방의 깊이다.
+입구는 0층이고 공개 최종보스 방은 8층이다. 흉탄은 마탄 옆 같은 층에 놓는 예외다. 같은 층에 여러 방이 있으며, 연결된 방은 양방향 이동과
+재방문이 가능하다. 층 사이에서는 하강만 허용하고 상승은 금지한다.
+모든 7층 방은 정해진 8층 보스 방과 연결되며, 각 방의 연결 대상은 고정한다.
+방의 규모·연결·일반 보스 출현 노드는 고정하고 일반 노드 콘텐츠는 원정마다 배정한다.
+왼쪽 종말새·중앙 오케스트라·오른쪽 백야로 계열을 고정하며, 합류 방도 한 계열에만 속한다.
+일반 보스의 구체적인 좌표와 엘리트의 위치·빈도는 미정이다.
+[런 구성과 지도](game_rules/run-and-map.md#한-런의-구성)
+
+일반 방의 위치·연결·이동 방향은 처음부터 공개하며, 미탐사 방의 상세 정보는 가린다.
+이동 가능한 인접 방의 이름·컨셉은 진입 전에 보여 준다. 해당 방을 클리어하면 고정 정보를 영구 기록하며,
+생환 여부와 무관하게 다음 원정에도 공개한다. 클리어로 확정한 기록은 실패·체크포인트 복구로 지우지 않는다.
+일반 방은 Gate를 통해 다음 방으로 이동하거나 귀환할 때, 최종보스 방은 최종 보스 격파 시 클리어한다.
+일반 방의 Gate는 연결 경로의 노드를 해결해 도달하면 별도 해금 조건 없이 이용할 수 있다.
+다음 방 이동은 그대로 허용하며, Gate에서의 성공 귀환은 현재 3층부터 선택할 수 있다.
+단순 방문·미리보기만으로는 해당 방의 영구 정보 공개를 확정하지 않는다. 일반 방의 미공개 정보는
+경로 잠금을 뜻하지 않는다. 숨겨진 방·비밀 연결과 명시된 이동 조건은 별도 규칙을 따른다.
+[지도 가시성과 탐사 기록](game_rules/run-and-map.md#전체-지도-가시성과-탐사-기록)
+
+일반 보스와 일반 침식체 전투는 생략할 수 있다. 일반전은 무기 강화에 쓰는 장비 가루의 주 공급처이며,
+사용하지 않는 장비·유물을 분쇄해 가루를 추가로 확보할 수 있다.
+황금가지로 봉인된 일반 보스는 가지를 포기하고 지나가거나, 봉인을 해제하고 강화 전투에 도전한다.
+황금가지는 매 원정 재생성하며, 원정 시작 때 시설 연결과 실제 이동 조건에 맞는 사전 작성 배치안 하나를 선택한다.
+배치안은 고정 출현 노드의 즉시 조우 가능한 일반 보스를 대상으로 주요 하강 경로의 보충 기회를 설계한다.
+이번 원정의 황금가지 위치는 미탐사 방까지 원정 시작부터 표시하되, 방 상세·보스 정체의 공개 조건은 유지한다.
+황금가지 획득과 억제력 보충은 봉인 보스 승리 후 확정한다. 보충량은 임시 조절값으로 두고 플레이로 검증한다.
+[원정 흐름과 억제력](game_rules/expedition-and-deterrence.md)
+
+시설에는 Event·상점·정비·저장·보상·본사 연락도 있다. 편의 노드를 매 방 보장하지 않는다.
+주요 하강 경로의 정비 접근 기회는 고정 정비 방으로 확보한다. 해당 방에는 정비 노드 하나를 매 원정
+같은 위치에 예약하고, 일반 탐사 노드를 함께 둔다. 첫 정비는 초반 재료 확보 뒤 이용할 위치로 잡으며,
+정비 간격 약 2층은 초기 검증 기준이다. 정비는 선택 이용이고 고정 정비도 지원 노드 상한 2개에 포함한다.
+방 진입 시 노드의 위치·연결·종류를 모두 공개한다. 비밀 노드는 별도 발견 조건을 따른다.
+방별 방문 노드 수에 별도 상한을 두지 않는다. 완료한 노드는 내용을 다시 실행하지 않고 통과한다.
+새로운 노드의 최초 입장을 확정하면 억제력이 소모되고, 방 간 이동에는 별도 소모가 없다.
+미리보기는 무료이며, 전투 후퇴에도 이미 지불한 입장 비용은 유지하고 같은 노드 재입장에는 다시 차감하지 않는다.
+모든 노드를 해결하기보다 필요한 성장 노드를 골라 탐사하는 흐름을 기준으로 노드 수·보상·억제력을 조절한다.
+[시설 탐사와 비전투 노드](game_rules/run-and-map.md#시설-지도와-노드-선택)
+
+적 난이도는 깊이·지역·조우별 작성값을 사용한다. 편성 또는 런 최고 전투력을 따라 적을 강화하지 않는다.
+같은 방의 일반전에는 서로 다른 난이도를 배정하고 지급량과 추가 보상도 구분한다.
+
+## 배치와 조작으로 전투를 해결한다
+
+전투는 실시간 배치 방어인 DefenseRoute다. 무료 브리핑에서 경로·배치 구역·주요 위협을 확인하고,
+전술 포인트를 써서 직원을 배치한다. 무기와 타일에 따라 공격·저지·방어·휴식의 역할이 달라진다.
+철수 후 재배치, 같은 직원의 전술 이동, 두 직원의 자리 교대를 상황에 맞게 사용한다.
+
+이동·교대는 공격·방어 어느 태세에서도 요청할 수 있으며 성공 후 잠시 강제 방어를 거쳐 자동으로
+공격한다. 저지된 적은 저지 시점의 판정용 타일을 유지한다. 아군과 적이 가까이 보이는 연출과
+실제 거리·타일 판정은 구분한다. [전투 규칙](game_rules/combat.md),
+[저지와 공격 판정](game_rules/blocking-and-targeting.md)
+
+공명은 배치·재배치 때 최대치의 20% 내림으로 시작하고 초당 1 자동 충전을 초기값으로 쓴다.
+공격·피격에 따른 기본 획득과 Rest 보너스를 제거하며 방어·작업·침묵 중에도 충전한다. 기절·빙결과
+스킬 입력 접수부터 사용 종료까지는 모든 획득을 막는다. 접수 즉시 전량 소비하고 취소된 시전도 환불하지 않는다.
+작업 칸은 강제 방어 타이머를 취소하고 즉시 작업하며 완료 후 공격 태세로 돌아간다.
+
+포커스와 배치 선택은 진행 중인 전투를 감속하여 판단할 시간을 준다. 고스트로 타일과 방향을
+선택한 뒤 최종 입력에서 실행한다. 카메라가 움직이는 큰 전장에서는 배치 초상화와 시야 이동으로
+필요한 직원을 찾는다. [조작과 화면](game_rules/battle-controls.md)
+
+## 보상을 편성의 변화로 연결한다
+
+직원은 XP로 성장하고 무기는 강화로 제공 공격력·주문력을 높인다. 파편은 일반 강화 없이 개화로
+새 형태를 해금하며, 정비에서 기존 형태와 개화 형태를 선택한다. 엔케팔린은 상점 구매 재화,
+장비 가루는 무기 강화 재료, 환상체 파츠는 개화 재료다. 무기 강화 비용은 장비 가루로만 지불한다.
+개화 요구 파츠·수량과 엔케팔린 동반 비용은 스킬 파편 RON에 개화 형태별로 작성한다.
+장비 가루·환상체 파츠의 상점 직접 구매·판매는 금지한다.
+가루는 일반전을 주 공급처로, 장비·유물 분쇄를 보조 공급처로 두며 지급량·분쇄량·강화 요구량은 플레이로 조절한다.
+강화 무기·개화 파편의 분쇄는 기본 보상에 실제 투자 재료의 일부를 추가 환급한다.
+초기 환급률은 종류별 50% 내림이며 엔케팔린은 환급하지 않는다.
+엔케팔린은 일반전·엘리트·일반 보스·부활 전투의 승리 보상으로 확보하고, Event와 물품 판매로 보충한다.
+판매 가능한 남는 장비는 판매해 구매 자금을 마련하거나 분쇄해 무기 강화에 투자한다.
+엔케팔린은 원정별 예산이며 성공 귀환 때 잔액을 회사가 회수한다. 다음 원정에는 잔액을 계승하지 않고,
+이전 원정의 성공·실패와 무관하게 같은 기준의 기본 예산을 지급한다. 초기 예산 액수는 플레이로 조절한다.
+[성장과 재료 경제](game_rules/growth-and-rewards.md)
+
+성공적으로 생환하면 회수 장비·파편을 반납하고 다음 원정에 합계 최대 2사본을 선택 대여한다.
+종류별 할당 없이 0~2개를 선택하며 가져가지 않은 보관 회수품은 실패해도 유지한다. 가져간 회수품은
+원정 실패 시 잃고 생환 시 다시 반납한다. 시설 밖에서는 메인터넌스의 일반 강화 효과가 사라지지만
+파편의 개화는 유지된다. [회수와 대여](game_rules/results-and-save.md#원정-귀환과-회수품-대여)
+
+환상체 파츠는 종류 합계 최대 2개, 부활 촉매제는 별도로 최대 1개를 선택 회수하는 초기값을 쓴다.
+창고는 다음 빌드 구성을 앞당기는 용도다. 정비 개화와 부화 화면에서 소지분·창고분을 직접 소비하며
+사전 반입·원정별 사용량 제한은 두지 않는다. 알은 현재 원정에서 확보해야 한다.
+가루·엔케팔린·침식 촉매제·일반 회복/전투 소모품은 회수하거나 창고에 보관하지 않는다.
+[재료 공용 창고](game_rules/equipment-and-fragments.md#재료-공용-창고)
+
+엘리트는 종류별 원정 첫 격파에서 파편+장비, 이후 자연 반복에서 조우별 재료·XP 등의 보상을 얻는다.
+알을 남기지 않으며 격파 횟수로 자동 강화하지 않는다. 일반 보스는 첫 격파 파편+알, 두 번째 부활 격파
+장비·파츠+알, 세 번째 부활 격파 파츠·장비 흐름을 따른다. 파편을 잃거나 분쇄해도 최초 보상을 다시 주지 않는다.
+숙달·자동 소탕은 제거하고 매 조우 직접 전투한다. 마탄 무보상 등 고유 예외는 유지한다.
+주력 직원의 중반 레벨 3·최종보스 도전 전 레벨 6을 초기 성장 목표로 삼아 XP를 플레이로 조절한다.
+[파편 획득과 반복 전투](game_rules/growth-and-rewards.md#파편-획득과-반복-전투)
+
+### 유물
+
+유물은 직원의 전투 효과를 강화하거나 연결한다. 직원별 공용 슬롯에 독립 사본을 장착하고,
+같은 파편도 유물 조합에 따라 다르게 운용한다. 유물 자체를 반복 강화하지 않으며 강한 효과와
+생존 위험을 함께 주는 침식 변형도 설계한다. 유물 보상 노드를 주 공급처로 두고, 표시된 일부 위험 전투에서
+추가 확보하며 상점에서 조합을 보완한다. Event는 보조 획득처다. 첫 주요 갈림길 전에 범용 유물 선택 기회를
+보장하고 이후에는 경로별로 배치한다. 일부 보상 노드의 일반 유물 묶음을 허용하며, 공급량·후보 수·가격은 플레이로 조절한다.
+유물 보상 노드는 단순 선택·자원 투입·도박·유물 투입 가챠·스트레스 전투의 다섯 종류로 구성한다.
+도박형은 원정 첫 조우의 VN 제안을 수락한 뒤 세 미니게임 중 하나를 고른다. 거절하면 보상 없이 노드를 소비한다.
+첫 게임 선택 후 시작 전에 갬빗 활성화 여부를 한 번 정하고 조우 전체에 고정한다. 배율은 조우별2배 또는3배로 미리 배정·공개하며, 활성화하면 획득·손실 모두에 적용한다. 다음 조우에서는 새로 선택한다.
+판수 제한 없이 양수 잔액에서 계속할 수 있고, 판 사이에 계속·담보·정산을 선택한다.0점 이하에서는 담보로 잔액을 양수로 만들거나 정산한다.
+담보는 잔액과 관계없이 미장착 유물을 복수 선택하며, 지급 후 잔액이 양수일 때 확정한다. 정산은 담보별 무이자 원금 회수·포기, 남은 포인트로 상품 구매, 나가기 순서다.
+회수할 사본을 일부만 선택할 수 있고, 포기한 사본은 제거하며 해당 빚을 소멸시킨다. 나가기에서 조우 결과와 노드 소비를 확정하고 잔여·음수 포인트는 소멸한다.
+스트레스 전투는 현재 편대와 보호 대상의 상태를 이어가는 최대 5라운드 연속 방어전이다.
+라운드 사이에는 전투 시간을 멈추고 누적·다음 보상을 확인한 뒤 계속 방어 또는 보상 받고 철수만 선택한다.
+철수 또는 최종 완료 때 누적 보상을 받으며, 패배하면 이번 전투의 미수령 보상을 잃는다. 기본 생존 XP는 성공·패배 때 전투 전체에서 한 번 지급하고 전투 중 후퇴에는 지급하지 않는다. 무억제 강화와 해당 재료·XP 보상 배율도 공통 전투 규칙을 따른다.
+세부 합의와 미정 사항은 [유물 보상 노드](game_rules/relic-reward-nodes.md)를 따른다.
+연쇄에는 공통 발동 횟수 상한 없이 같은 경로의 순환 발동 금지를 적용한다.
+침식은 상점에서 구매해 보관한 촉매제를 원하는 유물에 사용하거나, Event에서 촉매제 없이 보유 유물을
+변환하는 방식으로 제공한다. 효과·패널티를 미리 확인하고 선택하며 침식 자체의 위험에 과도한 획득 비용을 더하지 않는다.
+유물별 RON에 침식형의 효과·패널티를 직접 작성하며, 침식형이 정의된 유물만 변환 대상으로 허용한다.
+한 사본의 침식은 한 번만 허용하며 같은 종류의 다른 사본은 각각 침식할 수 있다.
+침식한 유물은 원정 중 원상복구할 수 없으며, 전투 밖 장착 해제·교체·직원 간 이전은 허용한다.
+[유물 규칙](game_rules/relics.md)
+
+## 손실을 관리하고 다음 진행을 정한다
+
+승패 판정 즉시 직원 상태·보상·노드 소비를 함께 확정하고 저장한다. 결과 확인 버튼은 확정을 미루지 않는다. 전투 HP와 런에 남는 부상·트라우마는
+별개다. 심각한 부상이나 Breakdown은 직원을 출전 불가로 만든다. 트라우마 100 이후 새 노드 최초 입장의
+규정 억제력 소모가 누적 4에 도달하기 전까지 회복하지 못하면 영구사망하는 초기 기준을 사용한다.
+무억제 상태에서도 같은 규정 소모량으로 유예가 진행하며 체크포인트는 당시 상태를 복원한다.
+회복 가능한 경로와 체크포인트를 살펴 런을 이어간다.
+
+게임 종료 후 이어하기는 진행 중 노드의 미확정 상태를 입장 전으로 복원하며, 이미 판정된 승패와 노드 소비는 유지한다.
+승패 전 종료는 후퇴 횟수를 쓰지 않고 이미 사용한 후퇴 횟수도 돌려주지 않는다. 결과 화면에서 종료해도 승패는 유지한다.
+입장 비용·유예·창고 소비·부화·보상을 함께 되돌리고 전투 도중 상태는 재개하지 않는다. 수동 후퇴는
+승패 성립 전까지만 가능하며 최초 입장·부화 비용을 유지한다. 수동 후퇴는 해당 전투당 최대 2회이며 첫 진입을 포함해 최대 3회 도전할 수 있다.
+승패 전 종료 복구는 별도 예외이므로 종료·재실행을 포함한 절대 진입 횟수 제한은 아니다.
+승리·패배가 확정되면 바로 노드를 소비하므로 패배 후 재도전은 없다. 일반전·엘리트·일반 보스·부활의
+패배는 승리 보상·격파 기록 없는 실패 통과다. 최종보스 패배의 런 실패와 고유 조우 결과는 유지한다.
+SavePoint 과거 복구는 런당 최대 3회다. 위치는 고정하고 주요 경로 활동 노드 수·예상 시간으로 간격을 정한다.
+고위험 구간의 간격은 일반 구간과 같거나 더 짧다. Gate 트라우마 회복은 하강 때만 적용한다.
+현재 3층부터 선택 가능한 Gate와 억제력 소진 시 성공 귀환을 선택할 수 있다.
+깊이 1~2의 Gate에서는 연결된 방으로만 이동하며, 소진되면 무억제 탐사를 계속하거나 회수 없이 원정을 포기한다.
+방문 방 수나 횡단 횟수는 귀환 자격을 만들지 않는다. 무억제 탐사에서는 일반 침식체를 포함한
+전체 적의 HP·공격력을 조우별 작성값으로 1.5~2배 강화하며, 배율은 진입 전에 공개한다.
+무억제로 인한 패턴·이동 속도·공격 속도·사거리·저지 요구량 변화는 없다. 해당 전투 승리의
+엔케팔린·장비 가루·환상체 파츠·XP는 기존 총량의 2배로 지급한다. 파편·알·장비·유물과 선택 횟수,
+황금가지 및 억제력 보충량, 비전투 노드 보상에는 이 배율을 적용하지 않는다.
+구체적인 조우별 강화 수치와 부활 단계 강화의 중첩 계산 방식은 플레이 검증 대상으로 남긴다.
+최종 보스 격파 후에는 보상과 기록을 확정하고 귀환 또는 계속 탐사를 선택한다. 계속하면 새 보상을
+장착해 연결된 방의 미해결 노드를 탐사할 수 있으며, 실제 귀환 전 실패하면 그 보상도 잃는다.
+최대 깊이 8과 상승 금지를 유지하며 같은 층의 연결된 방은 재방문할 수 있다. [원정 흐름](game_rules/expedition-and-deterrence.md#소진과-귀환)
+기본 최종 보스는 백야·고요한 오케스트라·종말새 3종이며, 흉탄은 추가 조건을 가진 숨겨진 최종 보스다.
+영구 기록이 없는 보스 방은 선행 조건으로 공개·개방하고, 이미 알려진 방은 위치·보스 정보를 표시하되 잠근다.
+격파·클리어 기록이 있어도 새 원정에서는 공개 보스의 전조·퍼즐 또는 흉탄의 마탄 완료 조건을 다시 진행한다.
+영구 격파·탐사 기록은 유지하지만 이번 원정의 선행 조건을 대신하지 않는다.
+전조는 **3~7층에서 계열별·층별 최대 1개**다. 해당 층에서 그 계열의 방에 처음 들어갔을 때
+미완료 후보가 있으면 반드시 배정하고 방에 들어온 뒤에 공개한다. 출현 확률 판정은 하지 않으며,
+같은 층 방 이동·재방문으로 추가 생성하지 않는다. 방향을 바꾸어도 기존 전조 진행은 유지한다.
+
+전투 전조도 후퇴를 최대 2회 허용하고 승리·패배가 확정되면 노드를 소비한다. 두 결과 모두 전조 경험
+완료로 인정하지만 성공 보상은 승리에만 지급한다. 미방문은 후퇴 기회를 쓰지 않고 수동 후퇴는 1회를 쓴다.
+미완료 전조가 다음 층에 재제안되어도 사용한 후퇴 횟수를 유지하며, 완료한 전조는 다시 제안하지 않는다.
+종말새는 세 새, 오케스트라는 서로 다른 심포니 네 전조를 순서 무관하게 모두 완료해야 한다.
+오케스트라는 첫 전조 승리에서 단일 파편·충전 1회를 얻고 서로 다른 승리마다 +1회, 최대 4회다.
+1~3악장 종료 공격은 각각 방어 1회로 막을 수 있지만 4악장 종료 공격은 방어할 수 없다.
+[전조 배치](game_rules/run-and-map.md#방향별-징조와-퍼즐-발현) ·
+[전조 풀과 보스 조건](game_rules/growth-and-rewards.md#보스-징조와-반복-조우)
+
+백야는 교회 전조에서 최대 3명씩 치료해 현재 생존 직원 전원에게 잠복 사도 표식이 생기면 입장할 수 있다.
+실제 환자는 바로 치료하고 건강한 직원은 2~3회 재확인에 모두 Yes를 답해야 치료한다.
+직원 선택 중 중도 퇴장이 가능하며 3명 또는 생존 직원 전원을 치료하면 의사가 먼저 떠난다.
+전원 치료를 마친 교회의 반짝이는 구석을 조사하면 원정 전용 가시 면류관을 얻는다.
+면류관 없이도 입장할 수 있지만 보스의 필연적 붕괴에서 전멸한다. 면류관이 있으면 One Sin이
+이번 치료 기록으로 기본 3문항을 묻고, 전체 문답 중 첫 오답만 정정할 수 있다. 두 번째 오답은 전멸이다.
+성공하면 기존 부활·억제 작전·강제 현현 전투로 이어진다.
+[백야의 상세 진행](skills/abnormality_design_notes.ko.md#백야)
+
+백야·고요한 오케스트라·종말새의 격파는 원정 간 영구 기록으로 누적한다. 각각 한 번 이상 격파한 뒤
+이번 원정의 마탄 호위·생존 조우를 완료하면 마탄 옆 같은 층의 흉탄 방과 직접 연결이 열린다.
+추가 전조·모노리스나 과거 목격 기록을 요구하지 않는다. 새 원정에는 마탄을 다시 완료해야 한다.
+마탄 반복 조우는 도입을 줄이되 같은 전투와 흉탄 난입 결말을 유지하며 보상을 주지 않는다.
+흉탄 본체의 전투 설계는 보류한다.
+
+모드는 튜토리얼과 원정만 제공한다. 전용 지도·사전 설정 편성의 튜토리얼은 반복·건너뛰기가 가능하고
+원정 자산·창고·영구 기록에 영향을 주지 않는다. 첫 실행부터 원정을 선택할 수 있다.
+첫 성공 귀환에는 회수 보고 중 화면 밖 총성과 비명을 들려주는 VN을 한 번 재생하고 메인 메뉴로 돌아간다.
+이후 귀환은 짧게 처리하며, 설정의 전모를 앞서 튜토리얼에서 설명하지 않는다.
+[결과·직원 상태·저장](game_rules/results-and-save.md)
+
+## 규칙을 찾아볼 때
+
+| 궁금한 내용 | 읽을 페이지 |
 | --- | --- |
-| 문서 등급 | Gameplay canonical |
-| 소유 범위 | 게임 정체성, 모드와 런 흐름, 노드 의미, 플레이어-visible 전투 규칙, 보상·성장·연구·실패·후퇴 정책 |
-| 소유하지 않는 범위 | 정확한 타겟팅 알고리즘, runtime 생산자/커밋 불변식, RON loader/schema, Unity JSON shape와 message order, 작업 절차 |
-| 함께 확인할 문서 | [skill_target_contract.md](skill_target_contract.md), [core_runtime_contract.md](core_runtime_contract.md), [data_loading_contract.md](data_loading_contract.md), [engineering_workflow.md](engineering_workflow.md), [README.md](README.md), 외부 Unity canonical |
-
-세부 구현 계약은 이 문서에 모두 풀어 쓰지 않는다. 경계 주제는 다음 문서를 우선한다.
-
-- 스킬/평타 타겟팅, 범위, 자동 시전, 유효 적대 대상 판정: [skill_target_contract.md](skill_target_contract.md)
-- 전투 runtime source-of-truth, 결정론/RNG, event log, checkpoint, battle record, actor identity 구현 계약: [core_runtime_contract.md](core_runtime_contract.md)
-- live RON authoring, loader, fixture, validation: [data_loading_contract.md](data_loading_contract.md)
-- Unity WebSocket, snapshot, command/result 통합 계약: 외부 canonical `/mnt/f/unity projects/ark/docs/unity_core_contract.md`
-- 전투 시작, live update, checkpoint, resync, 전투 종료 snapshot 흐름: 외부 canonical `/mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md`
-- 리팩토링, 레거시 제거, debug 산출물 분류: [engineering_workflow.md](engineering_workflow.md)
-- 문서 지도와 source-of-truth 순서: [README.md](README.md)
-
-문서보다 실제 runtime code와 live RON/data가 우선이다. 문서와 코드가 충돌하면 코드를 먼저 확인하고, 게임 정책 판단이 필요한 부분은 사용자와 의논한다.
-
-## 게임 개요
-
-이 장은 플레이어가 접하는 게임의 정체성, 모드, 런의 기본 순서와 시작 roster 구성을 소유한다.
-command field나 runtime 저장 구조는 의미를 설명하기 위한 seam이며 정확한 구현 계약은 인접 canonical을 따른다.
-
-### 게임 정체성
-
-이 게임은 환상체를 소유 기물로 쓰는 게임이 아니라, 소수의 직원을 이끌고 봉쇄된 시설을 탐사하는 로그라이크 전술 전투 게임이다.
-
-핵심 판단은 아래 네 가지다.
-
-- 어떤 직원과 장비, 스킬 파편으로 다음 노드에 들어갈지 정한다.
-- 노드 브리핑과 위협 경고를 읽고 배치와 전투 계획을 세운다.
-- `DefenseRoute` 전투 중 안정화치 기반 배치, 철수, 수동 스킬, 후퇴, 일시정지, 배속을 조작한다.
-- 보상, 연구 진행도, 장비/파편 성장, 직원 손실 위험을 관리하며 다음 노드를 고른다.
-
-현재 공식 전투 축은 명일방주식 실시간 배치 방어인 `DefenseRoute` 하나다. 보스 전투도 별도 전투 장르를 되살리기보다 `DefenseRoute` 파생으로 설계하는 방향을 우선 검토한다.
-
-### 게임 모드
-
-게임은 상위 구조로 `일반 모드`와 `끝없는 탐사 모드`를 가진다. 두 모드는 같은 직원, 장비, 스킬 파편, 노드, `DefenseRoute` 전투 규칙을 공유하지만, 런 길이와 보스 체인 정책이 다르다.
-
-Runtime은 런 생성 시점부터 `GameMode`를 명시적으로 저장해야 한다. `GameMode`는 `StartNewGame` command의 필수 입력이며, 직원 선발 완료 후 생성되는 `RunProgression`에 그대로 저장된다. `GameMode`는 노드맵 생성, `Gate` 배치, 다음 Floor 전환, 최종 클리어/실패 조건의 source of truth다. 모드별 규칙을 generator나 UI 추론으로 흩어 두지 않는다.
-
-일반 모드:
-
-- 기본 모드이자 튜토리얼 성향의 짧은 모드다.
-- 플레이어가 런 시작, 직원 선발, Floor 맵, 노드 선택, Safezone, `DefenseRoute` 전투, 후퇴/실패/보상, 장비/스킬 파편 성장 흐름을 익히는 것이 목적이다.
-- 일반 모드는 3 Floor 고정 구조다.
-- Floor 1~2는 엘리트 노드 클리어 후 열리는 `Gate` 노드를 통해 다음 Floor로 이동한다.
-- Floor 3은 최종 보스가 최종 관문으로 등장하며, 최종 보스를 클리어하면 런 클리어다.
-- 최종 보스의 패배 판정은 즉시 런 실패다. 엘리트와 일반 보스 실패는 런 실패가 아니라 해당 노드 실패로 처리한다.
-- 고요한 오케스트라 같은 장기 보스 체인과 특수 보스 파편 리스크는 기본적으로 일반 모드의 핵심 콘텐츠가 아니다. 백야의 장기 체인/사도/특수 파편 세부 설계는 아직 미래·미정이며 현재 모드 규칙으로 해석하지 않는다.
-- 일반 모드에서도 스킬 파편, 장비, 연구 진행도는 사용할 수 있지만, 끝없는 탐사용 장기 징조 체인을 끝까지 밀어 파편을 얻는 구조는 다루지 않는다.
-
-끝없는 탐사 모드:
-
-- 장기 생존과 심화 콘텐츠를 담당하는 모드다.
-- Floor가 계속 이어지며, 플레이어는 누적되는 손실과 보상을 관리한다.
-- 특정 보스가 `provisional_boss`로 떠오를 수 있고, 기존 노드 위에 보스 징조 source가 얹힐 수 있다.
-- 플레이어가 같은 보스 계열의 징조 source를 반복 선택하면 보스 체인이 확정되거나 진행도가 누적될 수 있다.
-- 조건이 완성되면 보스 방이 생성되거나, 일부 체인은 다음 노드 선택지를 잠그는 강제 보스 방으로 이어질 수 있다.
-- 다음 층 이동 source는 `Gate` 노드다. 끝없는 탐사에서는 `Gate`의 부모가 엘리트, 보스, 일반 노드 중 무엇이든 될 수 있다.
-- 기본적으로 한 층에는 `Gate`가 하나지만, 특수 층에서는 여러 `Gate` 후보를 허용할 수 있다.
-- 조건부/Locked Gate, 비밀 Gate, 완전 숨김 Gate는 시스템상 미래 확장 후보지만 기본 live data에 임의로 작성하지 않는다. 그런 노드는 명시 정책이 있을 때만 추가한다.
-- 고요한 오케스트라 같은 장기 보스 기믹, 특수 보스 파편, 고위험 보상과 누적 리스크는 끝없는 탐사 콘텐츠다. 백야의 상세 체인은 향후 정책부터 다시 승인할 설계 후보이며 현재 구현 계약이 아니다.
-
-### 핵심 플레이 루프
-
-기본 런 흐름은 아래 순서다.
-
-```text
-런 시작
--> 시작 직원 선발
--> Floor 맵 생성
--> 노드 선택
--> 노드 진입 전 확인과 준비
--> 전투/지원/정비/상점/보상/본사 연락 처리
--> 노드 결과 반영
--> 다음 노드 선택
--> 모드별 종료 조건 확인
-```
-
-일반 모드에서는 Floor 1~2의 `Gate`를 통한 다음 Floor 이동과 Floor 3 최종 보스 클리어가 핵심 진행/종료 조건이다. 끝없는 탐사 모드에서는 `Gate`를 통한 다음 Floor 이동, 보스 징조 체인, 누적 손실 관리가 핵심 진행/종료 조건을 만든다.
-
-전투 노드는 한 번의 전투로 끝나지 않을 수 있다. 일반 전투, 엘리트, 일반 보스, 최종 보스는 같은 이상현상 시도 횟수 정책을 따르되, 최종 보스는 패배 판정이 즉시 런 실패라는 예외를 가진다. 패배 판정 전 전투 포기는 진입 직전 상태를 복원하므로 남은 시도를 줄이지 않는다.
-
-### 시작 직원 선발
-
-런 시작 시 플레이어는 시작 직원 후보 중 출전할 직원을 고른다.
-
-- 모든 시작 후보와 본사 채용 후보는 하나의 authored `EmployeeDefinition` catalog에서 온다. `starter_eligible`은 시작 후보 자격이며, 시작 때 선택하지 않은 starter definition과 모든 non-starter definition은 같은 런의 미합류 채용 queue에 들어간다.
-- `employee_definition_id`는 콘텐츠에서 안정적인 authored identity다. roster 합류 뒤 생성되는 `uuid`는 해당 런 안의 직원 instance identity이며 둘을 서로 대신 사용하지 않는다.
-- definition은 이름, 역할, 배경, initial loadout, personality의 risk/social 두 축, `CombatAptitude`, 기본 HP/공격/방어/마법 저항, `basic_attack_speed_percent`를 명시한다.
-- risk disposition은 `Brave`, `Cautious`, `SurvivalInstinct`, social disposition은 `Obedient`, `Defiant`, `Comradely` 중 각각 정확히 하나다. personality는 UUID나 신뢰 상태에서 추론하지 않는다.
-- `CombatAptitude`는 `Balanced`, `Defensive`, `Offensive`의 가시성 정보다. 현재 장비 제한이나 불일치 페널티를 만들지 않는다.
-- 직원 기본 공격 속도 100은 중립이다. 무기가 기본 공격 주기를 소유하고 최종 주기는 `ceil(weapon_base_interval_ms * 100 / basic_attack_speed_percent)`다. 무기가 없을 때도 같은 공식을 기본 직원 공격 주기에 적용한다.
-- specialties는 현재 production schema/runtime/DTO에 없다.
-- 미합류 직원 queue 순서는 run seed로 한 번 결정한다. 본사 연락은 queue head에서 authored 후보 수만큼 active session으로 옮기며 snapshot 재요청이나 재접속으로 다시 뽑지 않는다.
-- 채용한 definition은 새 run-local UUID와 함께 roster로 이동하고, 선택하지 않은 후보는 제안된 순서 그대로 queue tail에 돌아간다. 응급지원이나 본사 상점을 선택하면 현재 후보 전부가 같은 순서로 tail에 돌아간다.
-- 같은 definition은 queue, active recruitment session, roster 중 정확히 한 곳에만 존재한다. checkpoint load는 이 소유권과 queue 순서를 검증·복원하고 Floor 전환도 그대로 유지한다.
-- 시작 직원은 이후 런 전체의 핵심 자원이다.
-- 직원은 장비, 스킬 파편, run-local Psychology, physical damage, trauma를 통해 장기적으로 관리된다.
-- 출전 가능한 직원이 없고 회복 가능 노드도 남아 있지 않으면 런 실패다.
-
-## 탐사와 노드
-
-이 장은 플레이어가 Floor를 탐색하고 node content를 선택·해결하는 규칙을 소유한다. Snapshot field,
-RON field와 validation 세부는 각각 외부 Unity canonical, [data_loading_contract.md](data_loading_contract.md),
-[core_runtime_contract.md](core_runtime_contract.md)의 경계 요약으로만 읽는다.
-
-### Floor 맵과 노드 선택
-
-Floor 맵은 봉쇄된 시설의 방과 복도를 탐사하는 지도다. 플레이어는 임의 node로 순간이동하지 않고,
-core가 현재 위치와 authored facility connection으로 계산한 도달 가능한 node만 선택한다.
-
-- Standard와 Endless는 같은 facility engine을 사용한다. Mode/Floor별 live schedule이 template pool과
-  assignment profile을 고르고, pool의 deterministic 순서·cycle·사용 이력은 run/checkpoint 상태다.
-- Facility template는 semantic room slot, slot별 허용 category, tag, typed terminal과
-  `Bidirectional`/`ForwardOnly` connection을 소유한다. Runtime은 별도 node edge graph를 저장하거나
-  depth/lane 좌표로 topology를 재생성하지 않는다.
-- Floor 생성 시 모든 slot의 category, kind/content와 seed를 한 번 확정한다. Profile의
-  min/max/exact와 slot allowed category를 만족하는 완전 배정이 없으면 category repair나 구 generator
-  fallback 없이 content error다.
-- Node는 Combat, SavePoint, Maintenance, Shop, Reward, HeadquartersContact, Boss, Gate 등의
-  단일 category를 가진다.
-- Start는 실제 node이며 Floor 시작 시 `Completed + Revealed` 상태와 현재 위치가 된다.
-- 완료 node는 content를 다시 실행하지 않는 transit 지점으로 사용할 수 있다. Core는 완료된
-  transit path와 connection direction을 반영한 최종 `map_navigation.selectable_node_ids`를 투영한다.
-- Connection은 `Bidirectional` 또는 `ForwardOnly`다. Unity는 graph와 선택 가능성을 재계산하거나
-  transit 이동을 별도로 연출하지 않고 core가 허용한 목적지를 즉시 선택한다.
-- Combat/Boss 선택은 `NodeConfirm` preview를 열 뿐 현재 위치를 바꾸지 않는다. 실제 진입과
-  node 소비는 출전 가능한 직원이 한 명 이상인 `ConfirmEnterNode` 성공 뒤 확정된다.
-- 직원 카드 표시 순서는 Unity-local 설정이며 core gameplay, checkpoint와 battle retreat의
-  복원 대상이 아니다.
-
-Node state와 visibility의 gameplay 의미:
-
-- `Available`: 선택 가능한 미해결 node.
-- `Completed`: 해결됐고 transit으로만 사용할 수 있는 node.
-- `Locked`/`Unavailable`: 조건 또는 현재 progression 때문에 선택할 수 없는 node.
-- `Revealed`: 종류와 preview를 표시하는 기본 상태.
-- `Obscured`: 종류·보상·상세를 숨길 수 있지만 core가 selectable로 투영하면 선택 가능하다.
-- `Concealed`: Unity에서 숨기며 선택할 수 없다. 명시적인 비밀방/조건부 기믹에만 사용한다.
-
-Gate는 다음 Floor로 이동하는 독립 node다.
-
-- Elite/Boss가 Gate 역할을 겸하지 않으며 Standard Floor 1~2에서는 Elite 뒤에 별도 Gate가 열린다.
-- Gate는 보이는 것과 선택 가능한 것이 다르다. Unity-local 확인을 거친 확정 command에서 core가
-  현재 선택 가능성을 다시 검증한다.
-- Gate는 SavePoint가 아니다.
-- 전환 시 생존 직원의 trauma를 RunPolicy `gate_trauma_recovery`에 따라 줄인다. Live 값은
-  `CurrentPercent { percent: 10 }`이며 현재 trauma의 10%를 올림한다. Critical과 Breakdown도
-  생존 직원으로 포함하고 Dead는 제외하며 physical damage와 checkpoint는 바꾸지 않는다.
-- Floor가 바뀌어도 roster condition, 장비, 스킬 파편, 소비 아이템과 resource는 유지된다.
-
-시설 지도 좌표는 core의 `map_template_id + slot_id`와 Unity-local template가 연결한다. Slot이
-없을 때 임의 좌표로 fallback하지 않는다. 차단 구역·오염·경고 같은 분위기 표현은 선택과 진행에
-영향을 줄 때만 core node가 되고, 그 외에는 Unity template/art가 소유한다.
-
-조건부 보너스 방은 Floor 생성 때 slot/category/content/seed까지 미리 확정된 `Concealed` node다.
-Authored prerequisite slot들을 순서와 무관하게 모두 성공 완료한 transaction에서만 같은 map의
-authored connection과 함께 한 번 `Revealed`로 발현한다. Retreat, 실패, 취소와 단순 방문은 발현을
-일으키지 않으며 reconnect/checkpoint load는 content를 재추첨하지 않는다. 발현 방은 선택형 콘텐츠만
-허용하고 Gate, SavePoint, 필수 Boss 같은 진행 필수 room은 대상이 될 수 없다.
-
-### Certified 전투력과 Floor 난이도
-
-- Core는 지금 전투에 진입할 수 있는 직원(`alive && physical_damage <= 4 && trauma < 100`)의 level,
-  영구 combat stat, 장착 장비/강화, 장착 skill fragment, 공격 주기, block과 공격 범위만으로 versioned
-  provisional certified power를 계산한다. 이 경계 안의 현재 HP 및 physical damage/trauma 크기,
-  active consumable과 전투 중 임시 효과는 raw power 계수가 아니라 readiness 경고에만 반영한다.
-  Critical, Breakdown, Dead 직원은 합산하지 않으며 roster의 eligible power가 0이면 상대 위협은
-  `VeryHigh`다.
-- 첫 Floor anchor는 starter/loadout commit 뒤 certified power와 authored 최소값의 최댓값이다. 이후
-  실제 Combat 진입 때만 run peak를 올리고, 새 Floor anchor는 authored 최소값, 이전 anchor + 최소
-  상승분, run peak의 최댓값으로 한 번 확정한다. 같은 Floor의 편성 변경은 node를 재스케일하지 않는다.
-- Ordinary Combat는 Floor 생성 transaction에서 Easy/Standard/Hard quota를 결정론적으로 나눈다.
-  Elite/NormalBoss/FinalBoss/BossOmen/MonolithRemanifestation은 ordinary quota와 분리된 role이다.
-- 확정 난이도는 target power, enemy stat, generated-wave budget과 수량형 reward budget을 함께 소유한다.
-  Hard와 특수 role의 reward multiplier는 Standard보다 커야 한다.
-- Unity에는 exact certified/anchor/target/multiplier를 공개하지 않는다. 확정 band, 현재 certified 대비
-  상대 위협과 Trauma/physical damage/출전 가능 인원 readiness만 표시한다.
-- Run peak는 checkpoint load, retreat, restart와 active-run backup 복구로 감소하지 않는다. Current Floor
-  anchor와 power model version은 checkpoint의 map/node difficulty와 같은 세대로 저장·복원한다. 같은
-  checkpoint에서 같은 Gate를 재진행하면 같은 run peak/live policy에서 같은 다음 anchor를 만들며 load가
-  상승분을 누적하지 않는다. 구 Floor-number scaling과 overflow clamp는 authority가 아니다.
-
-### Safe Node와 Safezone
-
-`Safe Node`는 맵에서 선택하고 한 번 소비하는 비전투 node이며 `Safezone`은 node 사이의 준비
-UX다.
-
-- Safe Node 계열은 SavePoint, Maintenance, HeadquartersContact, Shop, Reward다.
-- SavePoint는 선택지를 고르는 중간 mode 없이 `SavePointState`와
-  `selected_event.type == "save_point"`를 쓰는 독립 통과형 node다. Maintenance도 별도 상태를
-  쓰는 독립 node다.
-- Safezone은 node를 소비하거나 보상·회복·정비 효과를 자동 지급하지 않는다.
-- Safezone에서는 node 탐색, 소비 아이템 사용과 원자적 loadout 교체를 할 수 있다. 장비 이동과
-  같은 type slot 교체는 전부 성공하거나 전부 실패하며 장비를 소비·조합하지 않는다.
-- 파편/장비의 강화·개화·분쇄는 Safezone이 아니라 Maintenance가 소유한다.
-
-### Event Node
-
-Event는 ordered illustration/text panel, 직원 판정과 분기 결과를 소유하는 독립 node category다.
-Global Visual Novel이나 다른 node category의 fallback이 아니며 Standard와 Endless 기본 Floor에
-최소 하나가 생성된다.
-
-- Core는 event/scene identity, ordered panel id, interaction, eligibility, committed check와 진행
-  상태를 소유한다. Unity는 image/text asset과 panel cursor만 로컬로 처리한다.
-- 선택지가 없는 scene도 command로 진행하며 Unity가 다음 scene이나 eligibility를 계산하지 않는다.
-- 직원은 저장된 Profile에 Medical, Security, Analysis, Reconnaissance, Containment,
-  Maintenance 중 Event aptitude를 정확히 하나 가진다. 선택지의 aptitude와 일치하면 +3이고,
-  성격·신뢰·기억·컨디션 수치·전투 스탯은 범용 보정치가 아니다.
-- checked choice가 `aptitude`, DC 8/12/16/20과 optional key를 소유한다. 같은 aptitude에 적용되는
-  현재 직원의 장착·소유 장비 중 가장 높은 +1/+2 하나만 더하며 동률은 장비 instance UUID
-  오름차순이다. Inventory-only 장비는 적용하지 않고 key는 소비하거나 보정치를 암시하지 않는다.
-- Core는 Event session의 choice/performer와 독립적인 pure 1d20을 한 번만 확정한다. Natural 1은
-  critical failure, natural 20은 critical success이며 2..19는
-  `raw_roll + employee_modifier + equipment_modifier >= dc`면 성공한다.
-- 확정한 choice, performer, raw roll, typed modifier/key provenance와 outcome은 exact duplicate,
-  reconnect/checkpoint/retreat 뒤에도 바꾸거나 다시 굴릴 수 없다. Invalid identity, condition,
-  missing key와 stale preview는 상태·RNG를 변경하지 않는다.
-- 실패는 command error가 아니라 authored failure scene이며, 모든 reference와 effect는 검증 뒤
-  원자적으로 commit한다.
-- 한 Event에는 reachable employee-check scene이 최대 하나다. 현재 첫 live checked Event는
-  `sealed_archive_recovery_01`이고 Analysis DC16/key/80 Enkephalin과 Maintenance DC12/no-key/30
-  Enkephalin 선택을 제공한다. `white_night_confession_01`은 advance-only다.
-
-Event choice는 기존 combat pipeline을 시작할 수 있다.
-
-- Event category를 Combat으로 바꾸지 않고 choice가 명시한 encounter를 사용한다.
-- 승리하면 Event가 완료된다. Retry 가능한 패배나 retreat 뒤에는 committed check를 유지한 채
-  같은 전투를 이어가며 choice/employee를 다시 선택하지 않는다.
-- 도전 횟수를 모두 소진하면 Event가 완료된다.
-- BossOmen Event도 같은 규칙을 따르고 Event 완료 시점에만 omen step을 소비한다.
-
-### 일반 인벤토리
-
-일반 인벤토리는 장비 instance와 소비 아이템 definition stack을 보유하며 gameplay admission cap이
-없다.
-
-- 장비 instance 하나와 서로 다른 소비 아이템 stack 하나가 각각 한 슬롯을 점유한다. 재화,
-  장비 재료, 스킬 파편과 파편 가루는 포함하지 않는다.
-- 소비 아이템은 수량 상한 없는 `definition_id` stack이며 수량 증가는 새 슬롯을 요구하지 않는다.
-- `reserved_slot_count`는 50에서 시작해 새 슬롯 commit이 경계를 넘을 때 10단위로 증가하고
-  제거 시 줄지 않는 표시용 high-water 값이다. Collection capacity나 overflow 저장소가 아니다.
-- 보상, Event, Shop과 admin 지급은 슬롯 수 때문에 실패하거나 지연되지 않는다.
-
-### 소비 아이템
-
-소비 아이템은 `ViewingMap`과 `NodeConfirm`에서 사용하는 run 자원이다.
-
-- Core가 대상과 효과를 검증하고 성공 시 definition stack 수량을 정확히 1 줄인다.
-- 직원의 단일 active modifier가 이미 있으면 성공한 command가 기존 modifier를 즉시 제거하고 새
-  modifier로 교체한다. 환불, 차단, 별도 overwrite 확인 modal은 없다.
-- Metadata의 static UUID가 definition-backed stack의 wire selector이며 copy별 owned UUID는 없다.
-- 적용한 직원 modifier duration은 전투 결과 commit마다 한 번 감소한다. Retreat와 non-combat
-  node에서는 감소하지 않는다.
-- 전투·결과·Safe Node·Shop·Reward 내부에서는 사용할 수 없으며 사용한 아이템은 되돌리지 않는다.
-- Unity는 authoritative quantity와 command/snapshot 결과를 표시하고 local count를 추론하지 않는다.
-
-### 상점
-
-Shop은 Enkephalin으로 authored merchandise를 구매하고 허용된 보유품을 판매하는 Safe Node다.
-Headquarters와 Unknown Shop은 같은 transaction/session 모델을 사용하되 서로 다른 merchandise
-profile을 사용한다.
-
-- Core가 offer, price, refresh와 sell eligibility를 계산하며 Unity는 재추첨하거나 재계산하지 않는다.
-- Offer는 session 내 고유 identity, typed merchandise, 양수 quantity와 총 구매가를 가진다.
-  장비 구매는 새 owned instance를 만들고 소비 아이템은 definition stack에 수량을 더한다.
-- 구매한 자리는 자동 보충하지 않으며 non-repeatable 상품은 같은 session의 refresh에 재등장하지 않는다.
-- Refresh는 authored 비용과 횟수를 원자적으로 소비해 page 전체를 교체한다. 비용·횟수·후보가
-  부족하면 상태를 바꾸지 않는다.
-- Sell은 현재 owned/착용 상태, tag, quantity와 quote를 검증한다. 귀속·장착 장비와 0원 거래는
-  허용하지 않는다.
-- 구매가는 base price percentage를 올림, 판매가는 내림하며 live validation은 same/cross-Shop
-  arbitrage와 산술 overflow를 거부한다.
-
-### 노드 진입 전 브리핑
-
-전투 노드 미리보기는 제한 자원을 소비해 업그레이드하지 않는다. 기본 브리핑은 항상 전투 진입에 필요한 최소 정보를 제공해야 한다.
-
-기본 브리핑에는 아래 정보가 포함된다.
-
-- 전투 모드와 임무 변형
-- 전장 템플릿과 배치 가능 구역
-- 주요 route 또는 예상 진입 방향
-- 위험도와 보상 후보
-- 주요 적 또는 핵심 위협 요약
-- 위협 경고와 그 신뢰도
-
-정확한 웨이브 수, 모든 등장 타이밍, 숨은 기믹의 세부 값은 기본적으로 전투 중 관찰과 리트라이 학습 영역으로 둔다. 단, 플레이어가 납득 가능한 배치를 할 수 없을 정도로 정보가 부족하면 별도 소비 자원 없이 기본 브리핑 자체를 보강한다.
-
-`EnemyBriefing`은 플레이어에게 보여줄 정보이며 실제 스폰 수량/종류의 source of truth가 아니다. 실제 전투 스폰은 `SpawnWave.enemy_entries`가 담당한다.
-
-## 전투
-
-이 장은 플레이어가 경험하는 전투 진입, 배치, 적 구성, 공격과 피해 피드백의 의미를 소유한다.
-타겟 판정 알고리즘은 [skill_target_contract.md](skill_target_contract.md), event/checkpoint/result 생산자
-불변식은 [core_runtime_contract.md](core_runtime_contract.md), 정확한 wire shape와 message order는 외부
-Unity canonical이 소유한다.
-
-### 전투 모드
-
-현재 live 전투 모드는 명일방주식 실시간 배치 방어인 `DefenseRoute` 하나다.
-
-- 플레이어 유닛은 배치 위치에서 route 적을 공격하고 `block_capacity`만큼 지속 저지한다. 거리
-  이탈만으로 engagement가 풀리지 않으며 사망·철수·unblockable 전환·강제 이동 같은 명시
-  조건에서만 해제된다.
-- 철수/전투불능 유닛은 필드에서 제거되고 각각 30초/90초 뒤 새 runtime instance로 재배치한다.
-  철수 재배치는 기존 HP에 최대 HP 30%를 회복하고, 전투불능 재배치는 갱신된 직원 condition으로
-  시작 HP를 다시 계산한다. 이전 buff/cast/target/cooldown state는 상속하지 않는다.
-- 철수한 유닛을 향해 비행 중인 hostile projectile은 miss로 끝난다.
-- 모든 필수 wave·적 처리와 보호 대상 생존이 성공 조건이며 보호 대상 파괴나 scenario 조건이
-  실패를 만든다. Pause, 배속과 battle retreat는 server simulation 기준이다.
-- 일반 전투와 보스는 같은 transport, 전장, 배치와 wave 모델을 공유한다.
-- 생존 전투는 별도 `Encirclement` mode가 아니라 `DefenseRoute / Defense + survive_timer_ms`로
-  작성하며 timer 도달 시 남은 적과 무관하게 승리한다.
-
-`DefendPoint`, `Encirclement` mission variant, `Recovery`, `DefendAndEscape`,
-`TacticalGroupPlan`과 formation AI는 현재 live 계약이 아니다. `SplitRoom`은 전투 mode가 아니라
-필요할 때 battlefield template로 표현한다.
-
-### 전투 시작과 Unity 경계
-
-전투는 live battle state를 사용한다.
-
-- Scene construction은 `battle_setup_snapshot`, 연출 timing은 `battle_update.events_delta`,
-  현재 상태와 복구는 `battle_update.checkpoint`, 결과 통계는 `selected_event.result_stats`가
-  source of truth다.
-- Active event/result는 전투 종료 뒤 player history로 누적하지 않는다.
-- Core가 공격·스킬 판정과 preview를 계산하며 Unity는 authored metadata에서 재계산하지 않는다.
-
-생산자 불변식은 [core_runtime_contract.md](core_runtime_contract.md), targeting은
-[skill_target_contract.md](skill_target_contract.md), JSON shape와 message order는 외부 Unity
-canonical을 따른다.
-
-### 전장과 배치
-
-Node마다 route, 장애물, 배치/출현 구역이 다른 비사각형 전장을 사용할 수 있다.
-
-- `battle_setup_snapshot`이 실제 scene source이고 `combat_preview`는 진입 전 briefing이다.
-- 배치와 range 후보는 tile 기반, 이동과 충돌은 2D 연속좌표 기반이다.
-- 크기는 `Small`, `Medium`, `Large`이며 Boss는 기본적으로 Large다.
-- Archetype은 `OpenHall`, `Corridor`, `ChokePoint`, `Ambush`, `Surrounded`,
-  `SplitRoom`, `ObstacleRoom`, `BossArena`의 데이터 분류다. `SplitRoom`은 현재 live
-  encounter 배정 대상이 아니다.
-- ASCII template/route authoring은
-  [data_loading_contract.md](data_loading_contract.md#battlefield-template-authoring), route와
-  movement projection은
-  [core_runtime_contract.md](core_runtime_contract.md#route-and-battlefield-projection)가 소유한다.
-
-### 적 구성과 웨이브
-
-일반 wave의 주력은 `CorrodedEmployee`이고 `Abnormality`는 Elite/Boss/특수 encounter의 중심
-위협이다. `FacilityEntity`는 아직 live 대상이 아니다.
-
-Encounter 분류:
-
-- `Normal`: 순수 침식 직원 전투. Primary abnormality와 그 연구·bonus objective가 없다.
-- `Elite`, `NormalBoss`, `FinalBoss`: 정확히 하나의 `primary_abnormality_id`를 가지며
-  각각 elite, 일반 boss, Standard run-ending boss에 사용한다.
-- 환상체 `threat_class`는 최소 Elite이고 Boss 환상체만 Boss다. 실제 spawn은 encounter
-  classification이 아니라 wave data가 소유한다.
-
-Wave는 `SpawnWave`로 관리한다.
-
-- 현재 live authored wave는 전투 시작 5초 뒤 등장한다. 다른 timing은 필요할 때 명시한다.
-- `required_for_victory: false` wave는 승리 필수 대상이 아니다.
-- Manual source는 typed `CorrodedEmployee(profile_id, tier, count)` 또는
-  `Abnormality(abnormality_id, tier, count)` entry를 사용한다.
-- Preset 생성도 허용하지만 결과는 CombatPreview 때 `enemy_entries`로 확정하며 전투 중
-  재생성하지 않는다.
-- HP/사망/웨이브 전멸/지점 도달 기반 조건부 spawn event는 아직 정규 계약이 아니다.
-
-### 기본 공격과 스킬 타겟팅
-
-타겟팅의 상위 원칙은 단순하다.
-
-- 어떤 공격이든 deterministic expected final damage가 0보다 크면 유효 후보로 본다.
-- 피해가 0이어도 선택한 적 또는 AoE 안의 적에게 적용되는 적대적 target-applied effect가 있으면 유효 후보로 본다.
-- 피해도 없고 적대적 대상 효과도 없으면 자동 평타/스킬 후보에서 제외한다.
-- 후보가 여럿이면 기본 공격은 무기의 `targeting_profile`, 스킬은 스킬 자체의 명시
-  `UnitTargetRule`과 deterministic fallback/tie-break 규칙을 따른다. 스킬이 무기 profile을
-  상속하는 경로는 없다.
-- 피해 가능 대상과 효과만 가능한 대상 사이에 별도 우선순위는 두지 않는다.
-
-적대적 효과의 분류, 타겟 filter 평가 시점, blocker-first, route enemy 재이동, cast/step retarget,
-projectile lifecycle, `TileArea`, range authoring의 세부 source of truth는
-[skill_target_contract.md](skill_target_contract.md)다.
-
-### 피해 타입과 피드백
-
-`Physical`, `Magic`, `True`는 빌드 효율 차이를 만들지만 영구 단일 타입 면역으로 특정
-딜러 보유만 검사하지 않는다. 높은 방어/저항과 일시 기믹은 허용하되 관통, 저항 감소, 고정 피해,
-제어, 저지, 아이템과 timing 같은 복수 counterplay를 둔다.
-
-Core가 계산한 `HpChanged`와 `final_damage`가 피해·HP·사망의 source of truth다. Unity는 다음
-`feedback_tags`만 표시하고 방어 계산을 재구현하지 않는다.
-
-- `critical`: 치명타
-- `mitigated`: 크게 감소한 피해
-- `fixed_damage`: 고정 피해
-- `immune`: 피해 또는 상태가 완전히 막힘
-
-`piercing`, `shield`, `blocked`, `resisted_status`는 현재 공식 피해 feedback tag가 아니다.
-
-## 성장과 연구
-
-이 장은 전투와 node resolution 뒤 플레이어가 얻거나 누적하는 보상, 성장, 연구, 장비와 스킬
-파편의 gameplay 의미를 소유한다. 수량 commit과 runtime transaction은
-[core_runtime_contract.md](core_runtime_contract.md), authored schema와 catalog validation은
-[data_loading_contract.md](data_loading_contract.md)가 소유한다.
-
-### 보상과 성장
-
-Combat reward는 `Currency`, `Equipment`, `SkillFragment`, `ResearchProgress` effect를 자동
-지급한다. Live encounter는 `ClaimAll`만 허용하며 `ChooseOne`은 현재 계약이 아니다. Reward
-node는 authored pool에서 XP를 제외한 후보 하나와 그 effect를 node seed로 고정한다.
-
-직원 성장:
-
-- 새 직원은 level 1, 현재 level XP 0에서 시작한다.
-- XP requirement, 생존 XP와 battle tier는 `run/policy.ron`이 소유한다. 현재 모든 level은
-  100 XP, 전투 결과 생존 직원은 승패와 무관하게 10 XP, tier는 level 1/3/6부터 I/II/III다.
-- 같은 직원이 여러 번 배치돼도 생존 XP는 한 번만 지급하고 retreat에는 지급하지 않는다.
-- 한 grant가 여러 level을 넘을 수 있으며 남은 XP는 다음 level에 유지된다. Battle tier는 현재
-  stat multiplier가 아니다.
-- Authored `GrantExperience.amount`는 total pool이며 대상 직원에게 결정론적으로 균등 분배한다.
-  정확한 staging과 remainder 규칙은
-  [core_runtime_contract.md](core_runtime_contract.md#reward-and-employee-growth-boundary)가 소유한다.
-- `GrowthStack`은 XP/level과 별도다. 현재 production producer는 없고 level-up으로 증가하지 않는다.
-
-### 연구 완료와 본사 송신
-
-스킬 파편 연구도 보상은 파편 자체를 즉시 지급하지 않고, 해당 파편의 `research_progress`를 올린다. 연구도는 개화 진행도와 별개의 본부 분석/블랙박스 회수 진행도다.
-
-기본 정책:
-
-- 연구 진행도가 완료 기준에 도달하면 pending 연구 완료 항목으로 등록한다.
-- node 활동 중에는 pending 상태를 유지한다. SavePoint, 본사 연락, Shop, Reward, Maintenance,
-  Event를 포함해 어떤 node도 진입만으로 지급하지 않는다.
-- 해결된 node가 권위적으로 완료되어 지도/planning으로 돌아오는 순간, Unity가 Safe Zone으로
-  표현하는 그 복귀와 함께 모든 pending을 원자적으로 자동 수령한다.
-- 전투 재도전, 전투 후퇴, node 선택 취소, checkpoint load, reconnect/snapshot 재표시,
-  RunComplete, RunFailed는 Safe Zone 복귀 지급이 아니다.
-- Event에서 시작한 전투는 Event node 전체가 해결될 때까지 보류한다. Gate는 다음 Floor의
-  planning에 도착할 때 지급한다.
-- pending 연구 완료 수령은 node 행동권을 추가로 소모하지 않으며, 같은 복귀를 다시 표시해도
-  중복 지급하지 않는다.
-- 인벤토리 스냅샷은 보유 파편 목록과 별도로 `skill_fragment_progress`, `pending_research_deliveries`를 노출한다.
-
-지급 권위는 Core의 planning-return transition 하나다. Unity 화면 진입이나 node category
-allowlist로 대체하지 않는다.
-
-### 영구 환상체·침식 도감
-
-게임은 플레이어가 실제로 조우한 환상체와 침식 프로필의 로컬 영구 도감을 유지한다. 이는 전투 history나 재생 기록이 아니라 canonical ID의 `discovered`/`defeated` set이며 `defeated ⊆ discovered`다.
-
-- 전장에 실제 spawn된 적군 `Abnormality`/`CorrodedEmployee`만 후보다. 노드 preview, briefing, 아직 spawn되지 않은 wave는 도감에 올라가지 않는다.
-- 승리하거나 최종 패배로 해당 combat node가 소비될 때만 실제 spawn ID를 발견으로 커밋한다. 재도전이 남은 패배와 전투 포기는 발견을 커밋하지 않는다. Player 승리는 primary 환상체를 발견·격파하고, 같은 승리 attempt에서 실제 `UnitDied`한 non-primary 환상체/침식만 추가 격파한다. 패배와 생존한 non-primary는 격파하지 않는다.
-- 커밋된 두 set은 local-install profile의 단조 union이며 checkpoint load, 새 run, RunFailed, 일반
-  non-battle transaction 실패와 active-run transaction rollback으로 사라지지 않는다.
-  Run/checkpoint/transport player UUID와 분리되고, title의 확인된 전체 profile reset만 삭제할 수 있다.
-- profile에는 ID set만 저장하고, 표시 이름·위험 등급과 authored 순서는 현재 live catalog에서 해결한다. 현재 catalog에서 사라진 dormant ID는 profile에 보존하지만 current snapshot에는 투영하지 않는다.
-- `RunSnapshotDto.encounter_compendium`은 현재 catalog 전체를 authored 순서로 투영한다. 미발견 항목은 ID와 `discovered:false`, `defeated:false`만 가진 `???` placeholder이고 발견 항목만 metadata를 공개한다.
-- Unity는 Core projection과 host의 `encounter_compendium_persistence` 상태만 표시하며 battle event, preview, local catalog로 발견·격파를 재계산하지 않는다.
-
-### 끝없는 탐사 환상체 대응 연구
-
-Endless run은 스킬 파편 연구 및 영구 도감과 별도로 Elite/Boss/FinalBoss 환상체의 run-local 대응
-연구를 보존한다. 도구형 환상체, 침식 직원, 시설 entity와 일반 wave 적은 대상이 아니다.
-
-- 각 대상은 research point/requirement, completion, suppression count, 최근/완료 Floor와 unique
-  fragment 지급 여부를 가진다. Point가 판정 source이고 percentage는 UI 파생값이다.
-- 현재 live 기본값은 requirement 100, 승리 20 point, 반복 제압 dust가 Elite 5/Boss 10/FinalBoss
-  20이다. 모든 수치는 `run/policy.ron`에서 조절한다.
-- 최초 완료 시 metadata가 지정한 skill fragment를 한 번 지급한다. 이후 같은 환상체 승리는
-  fragment를 중복 지급하지 않고 threat class별 dust를 지급한다.
-- 모든 대상 환상체의 대응 완료가 Endless 완료 조건이다.
-
-반복 조우는 허용하지만 일반 non-omen 선택에서 최근 1 Floor의 같은 환상체를 제외하고, 완료
-환상체의 현재 weight를 25%(미완료 100%)로 낮춘다. 후보가 비면
-`ResetSoftRepeatConstraints`가 최근 제외와 weight 감소만 초기화하며 hard constraint를 깨지
-않는다. BossOmen·강화/각성·FinalBoss 조건은 이 일반 weight를 명시적으로 우회할 수 있다.
-`last_encountered_floor`는 실제 결과 처리 때만 갱신한다.
-
-### Elite 모노리스와 강화 재현
-
-Endless 자연 Elite는 같은 run에서 승리 또는 세 번째 패배가 확정되면 다시 자연 배정되지 않는다.
-같은 Floor에도 같은 Elite identity를 둘 이상 배정하지 않으며, 모든 자연 Elite가 해결되면 이후 Elite
-slot은 authored 일반 Combat으로 바뀐다. 미방문 배정은 해결이 아니며 Standard에는 이 규칙을 적용하지
-않는다.
-
-- 자연 Elite 최초 승리만 해당 환상체의 모노리스 구매 자격을 연다. 한 identity는 run당 한 번만
-  구매할 수 있고 3 uses를 가진다.
-- Endless Floor 1~3에는 떠돌이 상인이 없다. Floor 4+의 전용 상인은 첫 page 3칸에 eligible
-  모노리스를 최대 2개 배치하고 나머지는 고위험 consumable로 채운다. 한 번의 유료 refresh는 page
-  전체를 item-only 3칸으로 바꾼다. Standard의 일반 exploration Shop은 별도다.
-- NodeConfirm은 순수 Available Normal Combat에서만 `모노리스 사용 (N)`과 환상체별 카드를 투영한다.
-  최종 확정은 node 구조를 유지하고 encounter/difficulty를 다음 stage로 바꾸면서 1 use를 차감한다.
-- 강화 재현은 stage 2와 3이며 최대 2회 시도한다. 첫 패배는 같은 node를 재시도하고 두 번째 패배는
-  무보상 완료한다. Retreat는 attempt를 소비하지 않는다. 승리만 stage를 올리고 stage 3은 authored
-  고유 skill fragment를 정확히 한 번 지급한다.
-- 변환된 difficulty는 typed stage를 소유하고 monolith ledger의 stage와 반드시 일치한다. Stage는
-  target power와 적 최대 HP/공격/방어에만 합성하고 wave budget은 바꾸지 않는다. 현재 stage 2는
-  HP 165%·공격/방어 145%, stage 3은 HP 207%·공격/방어 182%이며 둘 다 wave budget 200%다.
-- Stage 보상은 Monolith role multiplier와 먼저 합성한 뒤 원래 authored 수량에 한 번만 적용하고
-  한 번만 반올림한다. Unity에는 exact multiplier 대신 `enhanced`/`final_enhanced` tier만 투영한다.
-- stage 3 승리 시 use가 정확히 1 남으면 source identity를 가진 잔재로 전환한다. 서로 다른 경로에서
-  모은 잔재가 네 개가 되면 다음 Floor의 Shop 하나를 보장한다. 상인은 Shop보다 먼저 일회성 VN으로
-  oldest four 교환을 제시하며 수락은 run-local 변질된 모노리스를 주고 거절은 같은 run에서 비가역적이다.
-- 변질된 모노리스는 현재 dormant run-local key다. 숨겨진 보스, 관리자 연출, 전용 capstone, 기존
-  Endless 최종 완료 변경은 콘텐츠 정책이 확정될 후속 phase 전까지 존재하지 않는다.
-
-Bonus objective:
-
-- Encounter가 명시한 objective만 존재하며 primary abnormality가 없는 Normal encounter에는 없다.
-- 승리 결과에서 완료 event log/result stats로 평가하고 objective별 전투당 한 번만 연구 bonus를
-  더한다. 총 증가는 기본 승리 point와 만족한 bonus의 합이다.
-- `ClearWithin(time_ms)`는 battle start부터 victory까지의 시간을 검사하며 늦게 spawn하는
-  boss에는 사용하지 않는다.
-- `DecisiveDamage(percent)`는 primary abnormality에게 한 공격 원천이 준 non-DoT 실효 피해가
-  최대 HP의 지정 비율 이상인지 정수 비교한다. 여러 tick을 합산하지 않고 마지막 일격일 필요도 없다.
-- “환상체 부위”는 별도 item이 아니라 bonus 연구 증가를 표현하는 presentation이다.
-
-### 장비
-
-장비는 일반 장비와 E.G.O 장비로 나뉘며 무기, 방어구, 악세서리 슬롯을 사용한다.
-
-- 무기는 기본 공격·range·targeting과 block 수치를 제공한다. 각 무기의 필수
-  `weapon_profile.block_capacity`가 직원의 기본 저지 수를 단독으로 결정하며, 직원 class/
-  `CombatAptitude`나 방어구는 이 값을 변경하지 않는다. 무기가 없으면 0이다.
-- 현재 authoring 기준은 Shield 3, Sword/Spear 1, Bow/Gun/Staff 0이다. 이 값은 모든 live weapon
-  RON에 명시하며 runtime이 archetype으로 추론하거나 fallback하지 않는다. 방어구는 생존 stat과
-  utility를, 악세서리는 보조 stat과 utility를 제공할 수 있다.
-- 강화 level은 definition이 아니라 `OwnedEquipment` instance에 저장하며 전투 시작 draft에
-  snapshot한다.
-- 강화는 장비 가루를 사용한다. 장비 제작은 현재 Maintenance action이 아니다.
-- 장비 가루와 skill fragment dust 경제는 분리하며 서로의 강화에 사용할 수 없다.
-
-### 스킬 파편
-
-직원은 기본 고유 active skill 대신 장착한 skill fragment의 대표 active skill을 사용한다.
-
-- 기본 active fragment slot은 1개다. 환상체 원본 skill과 직원용 모방 skill은 별도 data다.
-- Fragment는 passive 장비가 아니며 평타 강화, 일시 stat, buff와 공명 변화도 active skill 결과로
-  표현한다.
-- 위 두 항목은 정식 fragment 정책이다. 현재 abnormality-derived 28개와 concept starter 1개의
-  직접 `BasicAttackModifier`는 dedicated active skill 제작 전의 temporary placeholder이며 정식
-  정책이 구현 완료됐다는 근거가 아니다. 이 correction에서는 해당 live data를 변환하지 않는다.
-- 강화·개화·분쇄는 Maintenance가 소유하며 전투/결과/보상 중에는 교체하지 않는다.
-- 장착 조건은 직원 직업명이 아니라 장착 무기의 combat profile을 사용한다. Melee/ranged 또는
-  특정 archetype 제한을 허용하되 모든 fragment를 모든 무기에 강제 호환하지 않는다.
-- 최종 장착 가능성은 core validation이 소유한다. 콘텐츠 설계와 live 목록은 `docs/skills/`를
-  함께 확인한다.
-
-## 비전투 노드
-
-이 장은 SavePoint, Maintenance, HeadquartersContact에서 플레이어가 얻는 결과를 소유한다.
-세션 identity, capability, atomic commit과 snapshot projection은 runtime/wire 경계의 요약이며 세부
-구현은 [core_runtime_contract.md](core_runtime_contract.md)와 외부 Unity canonical을 따른다.
-
-### SavePoint 노드
-
-- 완료 시 run당 단일 checkpoint를 덮어쓰고 Safezone으로 복귀한다.
-- Load는 최대 3회이며 Config에서 core가 `LoadRunCheckpoint` capability를 enabled로 투영할 때만
-  실행한다. Checkpoint metadata 자체는 실행 가능성을 뜻하지 않는다.
-- 생존 직원 trauma를 RunPolicy `save_point_trauma_recovery`에 따라 줄인다. Live 값은
-  `CurrentPercent { percent: 15 }`이며 현재 trauma의 15%를 올림한다. Critical과 Breakdown도
-  생존 직원으로 포함하고 Dead는 제외한다. Physical damage는 바꾸지 않는다.
-- Recovery, pending 연구 지급, node completion과 checkpoint capture는 승인된 최종 상태를 기준으로
-  원자적으로 한 번만 적용한다. Host의 durable active-run publish까지 실패하면 이 transition을
-  성공으로 보고하지 않는다. SavePoint는 psychology/trust/memory/event를 생산하지 않는다.
-- 마지막 완료 SavePoint는 versioned local-install active-run current file과 rolling backup의
-  continue source다. 이어하기는 load 횟수를 소비하지 않으며 transport player identity와 영구
-  조우 도감은 payload 밖에서 주입·보존한다.
-- `loads_used`는 checkpoint payload와 분리된 run-scoped monotonic metadata다. 성공한 명시적 load만
-  정확히 1 증가시키고 SavePoint 덮어쓰기, checkpoint 복원, process restart와 backup 복구로
-  감소시키지 않는다.
-
-### Maintenance 노드
-
-Maintenance는 분쇄·강화·개화를 반복 실행한 뒤 완료하는 독립 Safe Node다.
-
-- Skill fragment는 fragment dust, 장비는 equipment dust 경제를 사용한다.
-- Bloom은 현재 skill fragment 전용이며 장비에서는 disabled다.
-- 장착 중인 대상도 확인 후 자동 해제해 분쇄할 수 있고 Maintenance 안에서 loadout 교체도 가능하다.
-- Core가 대상별 가능 여부, disabled reason, 비용/획득/before-after preview와 확인·자동 해제 여부를
-  계산한다.
-- Root capability는 `UpgradeSkillFragment`/`AwakenSkillFragment`/`DismantleSkillFragment`를 각각
-  skill-fragment 대상의 `enhance`/`awaken`/`dismantle` operation에,
-  `DismantleEquipment`/`EnhanceEquipment`를 equipment 대상의 `dismantle`/`enhance` operation에
-  대응시킨다. Maintenance 밖에서는 이 다섯 action을 생략한다. Maintenance 안에서는 대응
-  `can_execute`가 하나라도 true면 enabled이고, 하나도 없으면 `NoEligiblePayload`로 disabled다.
-- Enabled capability는 모든 대상이 가능하다는 뜻이 아니다. 선택한 대상은 실행 시 Core가 최신
-  보유·장착·recipe·재료 상태를 다시 검증하며 실패한 command는 부분 mutation을 남기지 않는다.
-- 장비 분쇄/강화는 대상 definition의 explicit RON dismantle/enhancement recipe가 있을 때만
-  실행한다. Recipe가 없으면 preview의 `can_execute`가 false이고 기존 typed
-  `disabled_reason`(`cannot_dismantle_equipment`/`cannot_enhance_equipment`)을 표시한다. Generic
-  비용/획득 fallback은 없다.
-- 현재 live equipment recipe coverage는 `standard_armor` 하나뿐이다. 다른 무기/방어구/
-  악세서리 recipe와 수치는 후속 콘텐츠·밸런스 authoring 범위다.
-- 완료 전에는 여러 작업을 반복할 수 있고 완료하면 node를 소비한다. Safezone Loadout은 이
-  정비 효과를 제공하지 않는다.
-
-### 본사 연락 노드
-
-본사 연락 노드는 런 중 본부와 연결되는 별도 Safe Node다.
-
-- `SavePoint`, `Maintenance`와 역할이 다르므로 별도 노드 계열로 다룬다.
-- pending 연구 완료는 본사 연락 진입 시 수령하지 않는다. 본사 연락 행동이 node를 해결하고
-  planning으로 돌아갈 때 다른 node와 같은 자동 수령 규칙을 사용하며 추가 행동권을 소모하지 않는다.
-- 본사 연락은 추후 정보 확인, 연구 송신, 특수 지시 수령 같은 별도 선택지로 확장할 수 있다.
-
-## 결과와 실패
-
-이 장은 node 소비, 전투 결과 확정, 후퇴, 직원 상태와 run failure가 플레이어에게 갖는 의미를
-소유한다. Runtime instance ledger, rollback snapshot, capability preflight와 commit 순서는
-[core_runtime_contract.md](core_runtime_contract.md)가 소유한다.
-
-### 노드 결과 처리
-
-CombatResult는 성공/실패, 직원 condition 변화, 통계, 자동 보상, 연구 진행과 pending 완료를
-표시한 뒤 플레이어 확인으로 commit한다.
-
-- `CompleteCombatResult`는 condition, consumable duration, reward/XP, research/pending, node
-  진행과 session 정리를 하나의 원자적 transition으로 적용한다. 실패하면 user-visible state를
-  부분 commit하지 않는다.
-- Attempt 중 condition은 working state에 누적하고 결과 확인 때 한 번 roster에 반영한다. 여러
-  runtime instance의 통계는 직원별 한 행으로 합치며 마지막 instance가 최종 HP/생존을 대표한다.
-- 결과 완료 capability와 preflight는 Core가 소유하고 Unity는 context에서 추론하지 않는다.
-- 패배도 살아남은 직원에게 생존 XP를 지급하지만 성공 보상과 연구 진행은 지급하지 않는다.
-
-전투 node는 첫 진입을 포함해 기본 최대 3회 도전한다.
-
-- 승리/패배 result commit이 한 회를 소비하고 retreat는 진입 상태를 복원해 소비하지 않는다.
-- Normal/Elite/NormalBoss는 3회를 모두 소진하면 보상 없이 Completed transit node가 된다.
-- 모노리스 강화 재현 node는 예외적으로 최대 2회이며 두 번째 패배에 보상 없이 Completed가 된다.
-- FinalBoss 패배는 run failure 후보이며 결과 확정 전 retreat는 허용한다. 유효하고 횟수가 남은
-  checkpoint가 있으면 다른 gameplay failure와 같은 사전 선택을 거치고, 없으면 즉시 확정된다.
-
-### 후퇴
-
-`RetreatBattle`은 개별 유닛 철수와 달리 BattleEnd/패배 판정 전 전투 전체를 포기하는 rollback이다.
-
-- Pause, cast와 wave 진행 중에도 가능하지만 명시된 강제 encounter는 금지할 수 있다.
-- Core는 NodeConfirm 진입 직전의 attempt, RNG/UUID continuation, roster condition, consumable,
-  inventory/resource, node/session/VN/checkpoint 상태를 정확히 복원한다.
-- CombatResult, 보상·패널티, node 완료와 시도 소진을 만들지 않는다.
-
-### 직원 condition, 전투 HP, 전투불능, 런 실패
-
-Persistent condition의 authority는 `physical_damage: 0..6`와 `trauma: 0..100`뿐이다.
-
-- Physical damage 0/1~3/4/5/6은 Normal/Minor/Major/Critical/Dead이고 trauma 100은 살아 있는
-  Breakdown이다.
-- Combat/Event/high-risk 참여는 physical damage 0~4와 trauma 0~99에서만 가능하다. Critical과
-  Breakdown은 loadout/치료가 가능하지만 사망 직원은 모든 action에서 제외한다.
-- Battle HP는 runtime 값이며 persistent condition으로 되쓰지 않는다. 전투불능 instance마다
-  attempt-local physical damage 1과 authored trauma를 정확히 한 번 더한다.
-- Physical damage는 명시적 Physical Treatment만 줄인다. 살아 있는 직원은 현재 physical damage가
-  0이어도 구조적으로 유효한 target이며, 선택한 Treatment는 실효 회복량과 무관하게 소비된다.
-  SavePoint/Gate는 trauma만 회복하고 사망을 되돌리지 않는다.
-- 일반 사망 시 roster record는 남기되 장비와 shared active fragment를 원자적으로 회수하고
-  consumable modifier를 제거한다. Death-prevent가 발동하면 회수하지 않는다.
-
-살아 있는 직원이 없으면 run failure 후보이다. 전투 결과 뒤 deployable 직원이 없으면 현재 보유한
-Physical Treatment, 현재 progression에서 즉시 선택 가능한 SavePoint/Gate, 실제 후보를 제공하는
-HeadquartersContact recruitment를 하나의 recovery-path evaluator로 계산한다. 제한 중에는 이 행동과
-checkpoint load만 허용하고 snapshot의 `combat_recovery_restriction` reason/허용 node 집합을 Unity가
-표시한다. 허용 행동 하나가 끝날 때마다 전체 deployability와 경로를 다시 계산하며 더 이상 실제
-경로가 없으면 failure 후보가 된다.
-
-모든 gameplay failure 후보(`NoLivingEmployees`, `NoDeployableEmployees`, `BossDefeated`)는 유효하고
-횟수가 남은 checkpoint가 있으면 `AwaitingRunFailureDecision`에 먼저 들어간다. 플레이어는 checkpoint
-load 또는 명시적 failure 확정을 선택하며, checkpoint가 없거나 loadable하지 않으면 즉시
-`RunFailed`로 확정된다. `RunComplete`, 확정된 `RunFailed`, `AbandonRun`은 durable 이어하기를
-무효화한다. 유효한 이어하기를 새 run으로 교체할 때도 한 번의 명시적 확인이 필요하다.
-
-### 직원 Psychology
-
-Authored personality는 변하지 않는 risk/social 두 축이고 Psychology는 별도의 run-local 신뢰와
-기억 상태다.
-
-- `trust_score`는 -100~100이며 band는 Distrust(-100~-51), Uneasy(-50~-11), Neutral(-10~25),
-  Trusting(26~70), Devoted(71~100)로 파생한다.
-- 현재 production Psychology mutation은 없다. SavePoint/Gate trauma recovery는 신뢰, 기억 또는
-  최근 사건을 만들지 않는다.
-- Durable memory는 같은 kind/subject를 병합하고 optional duration을 node 완료마다 줄인다. 최근
-  반응은 별도 최대 8개 receipt다.
-- Psychology는 roster와 checkpoint/retreat에 보존되며 사망해도 남는다.
-- 신뢰 기반 명령 거부, combat modifier와 대사·표정 cue는 아직 gameplay 계약이 아니다.
-
-## 고급 정책과 레거시
-
-### BossOmen Chain
-
-BossOmen은 Endless에서 final-boss급 encounter를 예고하고 확정하는 단일 active run-local chain이다.
-
-- 후보는 authored minimum Floor, awakened fragment 보유, active chain 부재를 요구하며 abnormality
-  metadata의 `omen_chain_id`가 별도 chain definition을 가리켜야 한다.
-- Step은 Event 또는 Combat source로 기존 같은 category node에 overlay한다. 적합한 node가 없으면
-  잘못된 category로 fallback하지 않고 provisional boss와 step을 다음 Floor로 미룬다.
-- 첫 omen source를 무시하고 Gate를 통과하면 boss를 pool에 돌려보내며 chain을 확정하지 않는다.
-  Source를 해결하면 chain이 확정되고 node가 Completed될 때 step을 소비한다.
-- 모든 step 뒤에는 현재 탐사 map을 authored `boss_omen_capstone` map으로 원자 교체한다. Capstone은
-  Boss room과 미리 배정된 concealed Exit Gate room, `Boss -> Exit Gate` ForwardOnly connection을
-  사용하며 이전 탐사 room으로 돌아갈 수 없다. Boss 진입 전 Safezone loadout은 허용한다.
-- Forced boss 패배도 result commit 뒤 공통 failure-decision 규칙을 사용한다. BossOmen 전용
-  post-`RunFailed` load 예외는 없으며 FinalBoss와 다른 failure reason도 같은 checkpoint 사전 선택을
-  공유한다.
-- 승리는 authored 보상과 chain 종료를 commit하고 capstone에 이미 배정된 Exit Gate와 connection을
-  공개한다. 새 node/edge를 만들지 않으며 Floor advance와 Gate trauma 회복은 boss 승리가 아니라 그
-  Gate 확인 때 적용한다.
-
-### 레거시 제거 원칙
-
-공통 compatibility, fallback, 구 테스트와 사용자 확인 원칙은
-[engineering_workflow.md](engineering_workflow.md#레거시와-문서-정리)가 소유한다. 이 룰북은
-gameplay domain에서 다시 만들지 않을 계약만 열거한다.
-
-- 구형 `timeline_delta`/`battle_delta` 전송을 다시 만들지 않는다.
-- 제거된 전투 모드와 RON wrapper는 필요하다는 이유만으로 부활시키지 않는다.
-- 제거된 `Support`, `Rest`, `ChooseSupport`, support choice mode와 관련 Psychology 사건은
-  compatibility alias나 fallback으로 부활시키지 않는다.
+| 원정 반복, 억제력 소진, 황금가지 봉인, 귀환 조건 | [원정 흐름과 억제력](game_rules/expedition-and-deterrence.md) |
+| 방과 관문, 지도, 직원 선발, Event, 상점, 소비 아이템 | [런과 시설 탐사](game_rules/run-and-map.md) |
+| 배치 비용, 철수·재배치, 태세, 이동·교대, 스킬, 작업, 정지 | [전투 규칙](game_rules/combat.md) |
+| 적의 정지 위치, 타일, 저지 상대 공격, 일반 타겟팅 | [저지와 공격 판정](game_rules/blocking-and-targeting.md) |
+| 고스트·방향 선택, 포커스·감속, 로스터, 카메라 | [조작과 화면](game_rules/battle-controls.md) |
+| 공격력·주문력, XP, 재료·보상, 고정 난이도, 파편 획득·알 부활 | [성장과 보상](game_rules/growth-and-rewards.md) |
+| 무기 역할, 장비 효과, 파편·개화·형태 선택, 정비 | [장비와 스킬 파편](game_rules/equipment-and-fragments.md) |
+| 유물 소유·태그·연쇄·침식·수명·콘텐츠 | [유물](game_rules/relics.md) |
+| 유물 보상 5종, 딜러·미니게임·포인트·담보 회수와 포기, 스트레스 전투 | [유물 보상 노드](game_rules/relic-reward-nodes.md) |
+| 결과, 후퇴, 부상·트라우마·사망, 저장·도감·영구 기록 | [결과·직원 상태·저장](game_rules/results-and-save.md) |
+| 다음에 결정할 질문, 아직 채택하지 않은 수치·제안 | [남은 결정](game_rules/open-decisions.md) |
+| 9월 27일 런·지도·황금가지 합의와 이전안 대체 | [원정 설계 합의 기록](decisions/game_rulebook_next_expedition_2026-09-27.md) |
+| 이전 문장의 이동 위치, 합의 출처와 대체 순서 | [출처와 통합 기록](decisions/game_rulebook_next_restructure_2026-09-26.md) |
+
+정확한 대상 선정은 [타겟팅 계약](skill_target_contract.md), 전투 상태·저장·이벤트는
+[런타임 계약](core_runtime_contract.md), 콘텐츠 형식과 검증은 [데이터 계약](data_loading_contract.md)이
+소유한다. 개별 환상체·파편·유물 콘텐츠는 [콘텐츠 카탈로그](skills/lobotomy_content_catalog.md)와
+관련 설계 노트로 연결한다. 이 설계서에 구현 계약이나 콘텐츠 catalog를 반복해서 옮기지 않는다.

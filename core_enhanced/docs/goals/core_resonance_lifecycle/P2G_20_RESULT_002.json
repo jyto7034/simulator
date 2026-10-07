@@ -1,0 +1,35 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSL-003",
+    "Content Digest": "sha256:2bbc2e858b134686ebeb2272f6d9bc5236a5bc37c902dd085dd2539ae9c2c53a"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSL-004",
+    "Content Digest": "sha256:214d3c9bd0c92eb5a398b5fa34b0f3ea4bd036d28d76e5e0e6671c53e82b63ae"
+  },
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CRSL-002",
+    "Content Digest": "sha256:47a0ce63e6f466de7ea7aabeb387989fada01acb0496ec8de2a651d600f753b9"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CRSL-002",
+    "Content Digest": "sha256:155b8965e2a2c55d5cd93012feaa8f73e3525c8c4ad8fefba235732648242ae8"
+  },
+  "checks": {
+    "exact_refs_digests": true,
+    "150_source_files_unchanged": true,
+    "all14_acceptance_preserved_bound": true,
+    "required7_confirmed": true,
+    "N_A2_supported": true,
+    "new_material_findings": 0,
+    "required_source_gaps": 0
+  },
+  "production_mutation": false,
+  "next": "P2G-30"
+}

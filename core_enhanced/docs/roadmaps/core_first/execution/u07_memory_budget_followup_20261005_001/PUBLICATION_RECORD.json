@@ -1,0 +1,164 @@
+{
+  "published_at_utc": "2026-10-05T09:15:38.369771+00:00",
+  "scope": "U07-M successor documentation only; no product implementation or tests by this task",
+  "checks": {
+    "new_links_verified": 21,
+    "roadmap_cards": 34,
+    "order_matches_cards": true,
+    "old_order_and_ids_preserved": true,
+    "dependencies": 51,
+    "active_dependencies": 46,
+    "before_archive_exact": true,
+    "new_trailing_whitespace": 0,
+    "staged_existing_documents": 3,
+    "staged_new_documents": 2,
+    "published_document_bytes_verified": 5,
+    "closed_artifacts_unchanged": 31
+  },
+  "existing_documents": {
+    "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md": {
+      "before_sha256": "5301e61f02f6016129134adf10fc095aae50c0bb712dac142bcfed8b0d2ccab7",
+      "after_sha256": "a789a1d27bbdc83ddfc6257f836d4463e028832cb8a9c37ae9029effe81173aa"
+    },
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md": {
+      "before_sha256": "a80e725e090bd1b3ea2a0657c7a231f988bed4e5dfe31160f76d8bc8aaf79a05",
+      "after_sha256": "3bcc962c9c4828de74ee698e6885ac667ab26b3721fd3212796164947a63ee15"
+    },
+    "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md": {
+      "before_sha256": "9cda7522677c000d0c7a037ae1d23bc61a595f9a3139a976e9d7383b313f948d",
+      "after_sha256": "e2afeffab42bd9be4fd4b7a3e97afe63c3e1b2377b319adf19b49b4456a4ca93"
+    }
+  },
+  "new_documents": {
+    "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md": {
+      "sha256": "0e5177a05511490fd9a9a8adbc17059e01265d3792d8be226fa3ab01eb595dbf"
+    },
+    "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md": {
+      "sha256": "4b6e1f076292f40a3e17d9145edd3f55dfebaba854f890601169813606c9f3e5"
+    }
+  },
+  "before_archive_sha256": "a0aa8ba5562696404b90d5938d8ca117eeac75b6e3cf2250c46512dd7c089cc7",
+  "protected_closed_artifacts": {
+    "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261005.ko.md": "d852572d044285fc38e6fdd3f1ef82e5610fc9d46f4422761babbf56cd63b6fc",
+    "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261005_002.ko.md": "4600623f677009ba4078441fbbdb7db9ff3bd3a0cf2a6734ec1e33faf35c03c1",
+    "core_enhanced/docs/roadmaps/core_first/execution/u07_pause_20261005_001/PRODUCT_CURRENT.json": "dc5076bd6a1122c0ffa2c490d9c5c9b69efa59b46ad5117913c3eddc36f00fb4",
+    "core_enhanced/docs/roadmaps/core_first/execution/u07_pause_20261005_001/PUBLICATION_RECORD.json": "1ea252b5c7abde75d840d44743bb79a8c3cb39313d430046198ab3615ae82ed2",
+    "core_enhanced/docs/roadmaps/core_first/execution/u07_pause_20261005_001/STATE.json": "870e94c7ff39f5f8a467205819664c7914ae73313b1f4784d7705d04feac88cc",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_00_INITIAL_001.json": "f9e603d4effcc668fd51aa690d5e76f414a7b470c6e0be454a8072e9023830ef",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_00_RESULT_001.json": "b55d9347872380d1f21f9f472496305a09de9b2e3732b6f8c54a3b8b560de780",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_10_POLICY_001.json": "1d8b17bd1cea9b1493b856ac858c49e658bb17ebd1d674266c6e6a11ce53aa9a",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_10_RESULT_001.json": "3237e5a515789ef5678362883b7664f83b6bba6fee3a6580bd384645dfd176e2",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_10_SUPPORT_001.json": "09f71a6709fdf6bc6941a6f4d3214c906dad451d4a68b1c7c4538579d672c95b",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_20_RESULT_001.json": "7a8348c5d55fac72cd1e8ae4bbd0ae892c3916b61bb777e4b157229884b5e778",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_20_REVIEW_001.json": "4cc4c983af32d95a56ac56614cc28d104e7d466a06ea701c360348d1ac51e8f3",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_20_SOURCE_PLAN_001.json": "a026569a7e99f29333c8b645f37318e7db8bfc576422a85d40b29de3a9897d74",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_20_SOURCE_PLAN_002.json": "51ea0f85ecba231dfea499258cdc7db7d8f377053c187b293bb08eacb3263344",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_20_SOURCE_PLAN_003.json": "6f917bd9f398cdda3d79dcce7c81da6cd3c7e835c063f885e81bcbd901a29f14",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_30_FREEZE_001.json": "6a6b2914d47f56aa350853f7002836e22ed2e4485c44f4c88639f80737223a32",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_30_RESULT_001.json": "b406c08692e8f2446cbf3c81e52b1c7b7dbfb8e7057950f17d1d76bb1a48b536",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_40_GENERATION_001.json": "b0776177b98fac1a80c44512347e3edc3e18f94553f96b49a90415d326ccd8d8",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_40_PHASE_PLAN_001.json": "be8d5f185a59afc1053c5ea328be2f313d89945dc35a64799d90455d6e8ba250",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_40_RECEIPT_001.json": "6b2ae16cc0c58478ba065790842f0a2b28e2a96b01e7936a34ef1e57e0e2d40d",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_40_RESULT_001.json": "67cc590b91dfe92c88b8e30f80021da04b387421961cd07b0be41d802b215520",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_40_VALIDATION_001.json": "3c2347a1a06c46c348d1191d7a96bcc5811fc17938167fab2f119d625dd1b6ee",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_50_RESULT_001.json": "d5692debe021c974709a4ae5804a5191d5dcbafacbda334f57c3d3fcf067e1e6",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_50_VALIDATION_001.json": "d3635b9ad258d37bde6809702d0b644466b491aea07e1c9a8aed5243a8c27a37",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_60_HANDOFF_001.json": "77421e7e4554a8d48eb8f7d0acd0ff422ce71e39da08ce9490df0f85d390cb07",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_60_RESULT_001.json": "9125120f5b4e872b9182ab6246ea1f6c5026fd1803c4ce7a3eb7efe3a3c2769a",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_40_DESIGN_001.ko.md": "ff418b04193165e35aacf3a4fe0474135634ed70973d6f27b5f5c87ca948ad2f",
+    "core_enhanced/docs/goals/core_independent_objects/P2G_50_GOAL_SET.ko.md": "72b487261c9c23392315dfe7c3c5c4b88b2ad1ddb6a4cc9223cb08333fe4f368",
+    "core_enhanced/docs/goals/core_independent_objects/WORKING_POLICY.ko.md": "4ac3af5753a7e247195410bfaf89b32ce1cfae512f696a3802ada358af99bdbc",
+    "core_enhanced/docs/goals/core_independent_objects/CODE_REVIEW_001.ko.md": "e9ec1fc2d1f23f0dc164f4812b77dfe1f1b057704d2457b78ff195c606db275c",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/post_audit/u06_20261005_002/COMPLETION_AUDIT.md": "e2b175bfd871cf34bac4d988783e2def6b8b6e65891179eb7632e60358b2ea64"
+  },
+  "new_link_targets": [
+    {
+      "from": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md",
+      "to": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/PLAN.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261005_002.ko.md"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "config/runtime_safety.ron"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/src/game/battle/runtime_control.rs"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/src/runtime_safety.rs"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs"
+    },
+    {
+      "from": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md",
+      "to": "core_enhanced/docs/roadmaps/core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md"
+    }
+  ],
+  "product_tests_run_by_this_task": false,
+  "live_implementation_documents_written_by_this_task": false,
+  "current_u07_goal_limits_or_verdict_changed_by_this_task": false,
+  "concurrency_note": "Live implementation may change product files independently; no repository-wide unchanged claim. Currentness consumers must assess these documentation deltas."
+}

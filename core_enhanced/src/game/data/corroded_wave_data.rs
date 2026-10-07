@@ -48,6 +48,14 @@ pub struct CorrodedWavePresetDatabase {
 }
 
 impl CorrodedWavePresetDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(presets: Vec<CorrodedWavePreset>) -> Self {
+        Self {
+            presets,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(presets: Vec<CorrodedWavePreset>) -> Self {
         let by_id = once_lock_with(build_string_index(
             &presets,

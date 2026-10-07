@@ -1,0 +1,302 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CRFI-002",
+  "evaluated_phase_plan": {
+    "ref": "PP-CRFI-002",
+    "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_40_PHASE_PLAN_002.json",
+    "sha256": "262423fe369f91da618e028a081374444a94c9eb3aa9a5801545bbc089a32d03"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CRFI-003",
+    "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_30_FREEZE_003.json",
+    "sha256": "1bd5d12dcaba318065f88d826f5149c3ebe68d480ebd7fd27b2b0a190f754572"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CRFI-007",
+    "review_batch_ref": "RB-CRFI-003",
+    "reviewed_source_basis_ref": "RSB-CRFI-003",
+    "code_review_binding_count": 12,
+    "bound_final_policy_freeze_ref": "FPF-CRFI-003",
+    "applicable_p2g40_obligation_key_count": 1,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 12,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CRFI-01",
+        "policy_element_revision_ref": "PER-CRFI-01-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-02",
+        "policy_element_revision_ref": "PER-CRFI-02-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-03",
+        "policy_element_revision_ref": "PER-CRFI-03-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-04",
+        "policy_element_revision_ref": "PER-CRFI-04-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-05",
+        "policy_element_revision_ref": "PER-CRFI-05-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-06",
+        "policy_element_revision_ref": "PER-CRFI-06-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-07",
+        "policy_element_revision_ref": "PER-CRFI-07-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-08",
+        "policy_element_revision_ref": "PER-CRFI-08-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-09",
+        "policy_element_revision_ref": "PER-CRFI-09-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-10",
+        "policy_element_revision_ref": "PER-CRFI-10-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-11",
+        "policy_element_revision_ref": "PER-CRFI-11-REVIEWED-003"
+      },
+      {
+        "element_id": "PE-CRFI-12",
+        "policy_element_revision_ref": "PER-CRFI-12-REVIEWED-003"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 12,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CRFI-01",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-02",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-03",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-04",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-05",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-06",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-07",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-08",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-09",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-10",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-11",
+        "phase_id": "PHASE-CRFI-01"
+      },
+      {
+        "element_id": "PE-CRFI-12",
+        "phase_id": "PHASE-CRFI-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 4,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 3,
+    "standalone_work_package_count": 1,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CRFI-RUNTIME": [
+        "WP-CRFI-CORE",
+        "WP-CRFI-HOST",
+        "WP-CRFI-OBSERVE"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CRFI-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 4,
+    "edge_count": 5,
+    "cyclic_scc_count": 0,
+    "cyclic_scc_disposition_count": 0,
+    "cyclic_sccs": [],
+    "final_execution_node_count": 2,
+    "condensation_edge_count": 1,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 2,
+    "assigned_once_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CRFI-RUNTIME": "PHASE-CRFI-01",
+      "WP-CRFI-VERIFY": "PHASE-CRFI-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 12,
+    "mapped_count": 12,
+    "assigned_execution_node_count": 12,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRFI-003",
+      "Content Digest": "sha256:3a6db391f688bbdf63603c118c14485d8d77e0aedd59d12cb482697185e66ff3"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRFI-002",
+      "Content Digest": "sha256:e16bdc25df674813c1d3e5836d601e5e68f80d25b81bd10f94224e47058bd549"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_00_INITIAL_001.json",
+        "sha256": "0d031cc72a587091551bd8bbe290d803c43985b21a66d8ff932ab2683b6922ee"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_10_POLICY_001.json",
+        "sha256": "6f7aa203adb2cb856c0fb6d149e00d9563f617825de9fc2e4e5ad2ba744e83f4"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_10_POLICY_002.json",
+        "sha256": "c3946760ef04c120b08100b6a3535d9fef57862cb89f52dc36b6d221f2d29b89"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_10_POLICY_003.json",
+        "sha256": "1884e6a8f624250ec7447fa7acdc67ec8948fb387903bc5df5522cbed8b1c8da"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_20_REVIEW_001.json",
+        "sha256": "9af76621b42893f7d1fc8425edd59b56114ab53ea67e303345af296cb8a83ccd"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_20_REVIEW_002.json",
+        "sha256": "6d897bd6516b644693571ff8bfa3c0ffae62ab41dc133837829304fb41b44a1c"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_20_REVIEW_003.json",
+        "sha256": "3409eb572d83634daceba0308669c72a242324570ed7a9edace1c9a95e82c9f1"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "f359ca3595f5397b461393740edc5b2fec6597d8702ee9c07828cdc4fcdeae57"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "e0120efa8dad996e7ba560661531ae96c532a16ae402bcaa83aec5511b8210a0"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_20_SOURCE_PLAN_003.json",
+        "sha256": "c158b2c8fac4b14457e2179018a4a7788f361944c803d68818a48b20e32ca4be"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_30_FREEZE_001.json",
+        "sha256": "61331343044945f3811403a28472d42a86c729bbff6b407f49caa51434bc5a82"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_30_FREEZE_002.json",
+        "sha256": "76651718b3c746fd4ce2cd0f5ec5fb2bd8b4cc8e2ae15bd77579a21ca2904d05"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_30_FREEZE_003.json",
+        "sha256": "1bd5d12dcaba318065f88d826f5149c3ebe68d480ebd7fd27b2b0a190f754572"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_40_PHASE_PLAN_001.json",
+        "sha256": "e1417653359bb025b8ec17d119b5a48199f4981c723bf8e5bb660bdc6914f80e"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_SCHEMA_CHANGE_001.json",
+        "sha256": "b1a94c419bda1d59ef4fdfea4cf17f04392aad2c125c106d9a9e13633257711e"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/P2G_SCHEMA_CHANGE_002.json",
+        "sha256": "96f2bb636ce0b18b929afc050467fb4bba0e7b8e3a93d93ea077d72a1791e403"
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "status": "paused_by_user_handoff_published",
+  "product_unchanged_since_pause_capture": true,
+  "product_sha256": "0e070ffb8a3b223285b9aae2f700b91b38cf14847b052d7572ae4090124873c2",
+  "product_files": 369,
+  "u06_changed_product_files": 16,
+  "delta_archive_verified": true,
+  "delta_patch_forward_and_reverse_verified": true,
+  "handoff_local_links_verified": 19,
+  "handoff": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261005.ko.md",
+    "sha256": "d852572d044285fc38e6fdd3f1ef82e5610fc9d46f4422761babbf56cd63b6fc"
+  },
+  "document_updates": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "sha256_before": "c38dd43c3fb25c271cabea12b4c7bc0ee84f39f2f3bbefc6aed6b486d5c40dcf",
+      "sha256_after": "97d08ac4a3c2592757af59d963477377b9143f70228202357d436a4f2096b3af"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "sha256_before": "a4fcf71235434d9cf5eb5c1f506893eb45c515fa2a4a88ed98d913323810b731",
+      "sha256_after": "f60470d9b6474a87bedf031bdeccf90845bcf2969d88fb7dc0210b5932f23f31"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+      "sha256_before": "e4135b9c66068cb5054ffe1b35101fdb029d902fbe2f94f12359c880f8434ef0",
+      "sha256_after": "671bfb114e478a294d7f8ae8d10d18884e5fd121473014714c37114dddce0e69"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/PLAN.md",
+      "sha256_before": "fdf29870ed4bfb47b837b187d7084b3b4f38f552fc26bdf1b59081b89952745a",
+      "sha256_after": "886cf7a4e27cb37751adf29aeb5d1113f22866d0d019e204d75b4ec40e49bc7a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/EXPERIMENTS.md",
+      "sha256_before": "4b4643c3c9e5c99144f6af3093beb6c6941fc084365031fc82bfbb4ffa5df97b",
+      "sha256_after": "57fdbef0b07a17b6b922d17c99cbb769698657e88c5b14478f9e79fca4011253"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/EXPERIMENT_NOTES.md",
+      "sha256_before": "ecc9084d9e9da6157463739e18293c97a3334485b1bf5956f905c127fdeee8bc",
+      "sha256_after": "ddd18c2aeef43357b6cfaac814dd0dffba91e4e9ee9f9da2709e3c3c380dac2a"
+    }
+  ],
+  "artifact_sha256": {
+    "STATE.json": "16ac9bc5c03a65f0362b8535450f15860dd6a76997c5bb5b6733a2a520298788",
+    "PRODUCT_CURRENT.json": "b2c4fdbb9644b30a853ca9d2b460f7e0103a4a6d685a665953e72b3ba52d817d",
+    "PRODUCT_DELTA.patch": "22e6da893a807bf21f8354e1c6eecd4ca70759e42f9c0788d571f8cd700f1608",
+    "PRODUCT_DELTA.tar.gz": "64021ced249686306c5b9a1ae44aa320feb0474a8f9e2f7dbaf4f5bb583f846f",
+    "DOCUMENTS_BEFORE.tar.gz": "dff9b5caf2178964240479e7f347316117ec77a0122697e440ee21ffe4150541",
+    "capture.py": "15e9957df3ed8aa9b561992568936e027c8cb228a2aec651fc49666171d2a458",
+    "verify.py": "40d527e7f963741008a8f37f41dac2e564544f060ccc6e59810333075af391cc"
+  },
+  "product_tests_after_user_stop": false,
+  "new_independent_audit": false,
+  "implementation_complete": false
+}

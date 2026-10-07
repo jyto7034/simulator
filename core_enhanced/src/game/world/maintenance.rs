@@ -2,11 +2,9 @@ use uuid::Uuid;
 
 use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
-use crate::game::data::skill_fragment_data::SkillFragmentId;
-use crate::game::resources::item_slot::EquippedRef;
 use crate::game::resources::{
-    EquipItemOutcomeDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto, InventoryItemDto,
-    UnequipItemResultDto,
+    EquipItemOutcomeDto, EquipItemResultDto, EquipmentItemDto, EquipmentLoadoutTransition,
+    InventoryDiffDto, InventoryItemDto, UnequipItemResultDto,
 };
 use crate::game::reward::RewardEffect;
 
@@ -16,78 +14,14 @@ impl GameCore {
         item_uuid: Uuid,
         target_unit: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_equip_item_payload(item_uuid, target_unit)?;
-
-        let incoming = self
-            .state
-            .inventory
-            .equipments
-            .get_item(&item_uuid)
-            .ok_or(GameError::InventoryItemNotFound)?;
-        let source_unit = incoming.equipped_to;
-        let incoming_ref = EquippedRef {
-            instance_uuid: item_uuid,
-            base_uuid: incoming.meta.uuid,
-            equipment_type: incoming.meta.equipment_type,
-        };
-        let allow_duplicate = incoming.meta.allow_duplicate_equip;
-        let replaced_item_uuid = self
-            .state
-            .roster
-            .get(&target_unit)
-            .ok_or(GameError::UnitNotFound)?
-            .loadout
-            .item_slot
-            .iter()
-            .find(|equipped| equipped.equipment_type == incoming_ref.equipment_type)
-            .map(|equipped| equipped.instance_uuid);
+        let plan = self.plan_equip_item_payload(item_uuid, target_unit)?;
 
         let mut staged_roster = self.state.roster.clone();
         let mut staged_inventory = self.state.inventory.clone();
-
-        if let Some(source_unit) = source_unit {
-            staged_roster
-                .get_mut(&source_unit)
-                .ok_or(GameError::UnitNotFound)?
-                .loadout
-                .item_slot
-                .remove_by_instance(item_uuid)
-                .ok_or(GameError::InvalidAction)?;
-        }
-
-        if let Some(replaced_item_uuid) = replaced_item_uuid {
-            staged_roster
-                .get_mut(&target_unit)
-                .ok_or(GameError::UnitNotFound)?
-                .loadout
-                .item_slot
-                .remove_by_instance(replaced_item_uuid)
-                .ok_or(GameError::InvalidAction)?;
-            staged_inventory
-                .equipments
-                .get_item_mut(&replaced_item_uuid)
-                .ok_or(GameError::InventoryItemNotFound)?
-                .equipped_to = None;
-        }
-
-        staged_roster
-            .get_mut(&target_unit)
-            .ok_or(GameError::UnitNotFound)?
-            .loadout
-            .item_slot
-            .equip(incoming_ref, allow_duplicate)
-            .map_err(|_| GameError::InvalidAction)?;
-        staged_inventory
-            .equipments
-            .get_item_mut(&item_uuid)
-            .ok_or(GameError::InventoryItemNotFound)?
-            .equipped_to = Some(target_unit);
-
-        let mut updated_item_uuids = vec![item_uuid];
-        if let Some(replaced_item_uuid) = replaced_item_uuid {
-            updated_item_uuids.push(replaced_item_uuid);
-        }
-        let updated = updated_item_uuids
+        let transition = EquipmentLoadoutTransition::new(&mut staged_inventory, &mut staged_roster)
+            .equip(plan)?;
+        let updated = transition
+            .updated_item_uuids
             .iter()
             .map(|uuid| {
                 staged_inventory
@@ -128,24 +62,18 @@ impl GameCore {
         item_uuid: Uuid,
         target_unit: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_unequip_item_payload(item_uuid, target_unit)?;
+        if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
 
-        let roster = self.roster_mut()?;
-        let employee = roster
-            .get_mut(&target_unit)
-            .ok_or(GameError::UnitNotFound)?;
-        employee
-            .loadout
-            .item_slot
-            .remove_by_instance(item_uuid)
-            .ok_or(GameError::InvalidAction)?;
-
-        let inventory = self.inventory_mut()?;
-        let owned_equipment = inventory
+        let mut staged_roster = self.state.roster.clone();
+        let mut staged_inventory = self.state.inventory.clone();
+        EquipmentLoadoutTransition::new(&mut staged_inventory, &mut staged_roster)
+            .unequip(item_uuid, target_unit)?;
+        let owned_equipment = staged_inventory
             .equipments
-            .get_item_mut(&item_uuid)
+            .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
-        owned_equipment.equipped_to = None;
         let updated_item =
             InventoryItemDto::Equipment(EquipmentItemDto::from_owned_equipment(owned_equipment));
         let inventory_diff = InventoryDiffDto {
@@ -154,12 +82,14 @@ impl GameCore {
             removed: vec![],
             material_stacks: vec![],
         };
-        let _ = inventory;
+        let equipped_items = Self::equipped_item_dtos_from_target(
+            &staged_inventory,
+            Some(&staged_roster),
+            target_unit,
+        )?;
 
-        let roster = self.roster()?;
-        let inventory = self.inventory()?;
-        let equipped_items =
-            Self::equipped_item_dtos_from_target(inventory, Some(roster), target_unit)?;
+        self.state.roster = staged_roster;
+        self.state.inventory = staged_inventory;
 
         Ok(BehaviorResult::UnEquipItem {
             result: UnequipItemResultDto {
@@ -240,155 +170,296 @@ impl GameCore {
     pub(super) fn handle_equip_skill_fragment(
         &mut self,
         employee_uuid: Uuid,
-        fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_equip_skill_fragment_payload(employee_uuid, fragment_id)?;
-        self.validate_skill_fragment_equip_limit(employee_uuid, fragment_id)?;
-        let inventory = self.state.skill_fragments.clone();
-        let database = self.game_data.skill_fragment_data.clone();
-        let employee = self.state.roster.equip_skill_fragment(
+        self.validate_equip_skill_fragment_payload(employee_uuid, copy_uuid)?;
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        staged.skill_fragments.equip_copy(
+            &mut staged.roster,
+            &self.game_data.skill_fragment_data,
+            copy_uuid,
             employee_uuid,
-            &inventory,
-            &database,
-            fragment_id,
+            false,
         )?;
-
+        staged.commit_into(&mut self.state);
         Ok(BehaviorResult::SkillFragmentLoadoutUpdated {
             employee_uuid,
-            equipped_fragment_ids: employee.skill_fragments.equipped_ids(),
+            active_copy_uuid: Some(copy_uuid),
         })
     }
 
     pub(super) fn handle_unequip_skill_fragment(
         &mut self,
         employee_uuid: Uuid,
-        fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_unequip_skill_fragment_payload(employee_uuid, fragment_id)?;
-        let database = self.game_data.skill_fragment_data.clone();
-        let employee =
-            self.state
-                .roster
-                .unequip_skill_fragment(employee_uuid, &database, fragment_id)?;
-
+        self.validate_unequip_skill_fragment_payload(employee_uuid, copy_uuid)?;
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        staged.skill_fragments.unequip_copy(
+            &mut staged.roster,
+            &self.game_data.skill_fragment_data,
+            copy_uuid,
+            employee_uuid,
+        )?;
+        staged.commit_into(&mut self.state);
         Ok(BehaviorResult::SkillFragmentLoadoutUpdated {
             employee_uuid,
-            equipped_fragment_ids: employee.skill_fragments.equipped_ids(),
+            active_copy_uuid: None,
         })
     }
 
-    pub(super) fn handle_upgrade_skill_fragment(
-        &mut self,
-        target_fragment_id: &SkillFragmentId,
-    ) -> Result<BehaviorResult, GameError> {
-        self.validate_upgrade_skill_fragment_payload(target_fragment_id)?;
-        let result = self.state.skill_fragments.upgrade_with_dust_policy(
-            target_fragment_id,
+    pub(super) fn validate_transfer_skill_fragment_payload(
+        &self,
+        copy_uuid: Uuid,
+        target: Uuid,
+    ) -> Result<(), GameError> {
+        if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
+        let copy = self
+            .state
+            .skill_fragments
+            .get(&copy_uuid)
+            .ok_or(GameError::InvalidAction)?;
+        copy.equipped_to.ok_or(GameError::InvalidAction)?;
+        let report = self.skill_fragment_compatibility_report_for_employee(target, copy_uuid)?;
+        if !report.is_compatible {
+            return Err(GameError::SkillFragmentIncompatible {
+                fragment_id: copy.definition_id.clone(),
+                failure_codes: report.failure_codes,
+            });
+        }
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        staged.skill_fragments.equip_copy(
+            &mut staged.roster,
             &self.game_data.skill_fragment_data,
-            &self.state.skill_fragment_policy,
+            copy_uuid,
+            target,
+            true,
         )?;
+        Ok(())
+    }
 
-        Ok(BehaviorResult::SkillFragmentUpgraded {
-            target_fragment_id: target_fragment_id.clone(),
-            dust_spent: result.dust_spent,
-            remaining_dust: result.remaining_dust,
-            progress: result.progress,
+    pub(super) fn handle_transfer_skill_fragment(
+        &mut self,
+        copy_uuid: Uuid,
+        target: Uuid,
+    ) -> Result<BehaviorResult, GameError> {
+        self.validate_transfer_skill_fragment_payload(copy_uuid, target)?;
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        let previous_owner = staged
+            .skill_fragments
+            .get(&copy_uuid)
+            .and_then(|c| c.equipped_to)
+            .ok_or(GameError::InvalidAction)?;
+        let changed = staged.skill_fragments.equip_copy(
+            &mut staged.roster,
+            &self.game_data.skill_fragment_data,
+            copy_uuid,
+            target,
+            true,
+        )?;
+        let copy = staged
+            .skill_fragments
+            .get(&copy_uuid)
+            .ok_or(GameError::InvalidAction)?
+            .clone();
+        staged.commit_into(&mut self.state);
+        Ok(BehaviorResult::SkillFragmentTransferred {
+            copy,
+            previous_owner,
+            changed,
         })
     }
 
     pub(super) fn handle_awaken_skill_fragment(
         &mut self,
-        target_fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
+        form_id: &str,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_awaken_skill_fragment_payload(target_fragment_id)?;
-        let result = self.state.skill_fragments.awaken_with_dust_policy(
-            target_fragment_id,
+        if self
+            .fragment_form_unavailable_reason(copy_uuid, form_id, false)
+            .is_some()
+        {
+            return Err(GameError::InvalidAction);
+        }
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        let copy = staged
+            .skill_fragments
+            .get(&copy_uuid)
+            .ok_or(GameError::InvalidAction)?;
+        let mut enkephalin_spent = 0;
+        let mut inventory_diff = InventoryDiffDto {
+            added: vec![],
+            updated: vec![],
+            removed: vec![],
+            material_stacks: vec![],
+        };
+        if !copy.unlocked_forms.contains(form_id) {
+            let metadata = self
+                .game_data
+                .skill_fragment_data
+                .get_by_id(&copy.definition_id)
+                .ok_or(GameError::InvalidAction)?;
+            let crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
+                forms,
+                ..
+            } = &metadata.effect
+            else {
+                return Err(GameError::InvalidAction);
+            };
+            let recipe = forms
+                .get(form_id)
+                .and_then(|f| f.bloom_recipe.as_ref())
+                .ok_or(GameError::InvalidAction)?;
+            enkephalin_spent = recipe.enkephalin;
+            staged.enkephalin.amount = staged
+                .enkephalin
+                .amount
+                .checked_sub(enkephalin_spent)
+                .ok_or(GameError::InvalidAction)?;
+            for (id, amount) in recipe
+                .aggregated_materials()
+                .ok_or(GameError::InvalidAction)?
+            {
+                let metadata = self
+                    .game_data
+                    .equipment_data
+                    .get_material_by_id(&id)
+                    .ok_or(GameError::InvalidAction)?;
+                let remaining = staged.inventory.equipment_materials.consume(&id, amount)?;
+                inventory_diff.material_stacks.push(
+                    crate::game::resources::EquipmentMaterialStackDto::from_metadata(
+                        metadata, remaining,
+                    ),
+                );
+            }
+        }
+        let changed = staged.skill_fragments.unlock(
+            copy_uuid,
+            form_id,
             &self.game_data.skill_fragment_data,
-            &self.state.skill_fragment_policy,
         )?;
-
+        let copy = staged
+            .skill_fragments
+            .get(&copy_uuid)
+            .ok_or(GameError::InvalidAction)?
+            .clone();
+        staged.commit_into(&mut self.state);
         Ok(BehaviorResult::SkillFragmentAwakened {
-            target_fragment_id: target_fragment_id.clone(),
-            dust_spent: result.dust_spent,
-            remaining_dust: result.remaining_dust,
-            progress: result.progress,
+            copy,
+            changed,
+            enkephalin_spent,
+            inventory_diff,
         })
+    }
+
+    pub(super) fn handle_select_skill_fragment_form(
+        &mut self,
+        copy_uuid: Uuid,
+        form_id: &str,
+    ) -> Result<BehaviorResult, GameError> {
+        if self
+            .fragment_form_unavailable_reason(copy_uuid, form_id, true)
+            .is_some()
+        {
+            return Err(GameError::InvalidAction);
+        }
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        let changed = staged.skill_fragments.select(
+            copy_uuid,
+            form_id,
+            &self.game_data.skill_fragment_data,
+        )?;
+        let copy = staged
+            .skill_fragments
+            .get(&copy_uuid)
+            .ok_or(GameError::InvalidAction)?
+            .clone();
+        staged.commit_into(&mut self.state);
+        Ok(BehaviorResult::SkillFragmentFormSelected { copy, changed })
+    }
+
+    pub(super) fn fragment_dismantle_effects(
+        &self,
+        copy_uuid: Uuid,
+        confirmed: bool,
+    ) -> Result<(u32, Vec<RewardEffect>), GameError> {
+        if !self.is_in_maintenance_node() {
+            return Err(GameError::InvalidAction);
+        }
+        self.state
+            .skill_fragments
+            .validate_bindings(&self.state.roster, &self.game_data.skill_fragment_data)?;
+        let (copy, metadata, _) = self
+            .state
+            .skill_fragments
+            .resolve(&copy_uuid, &self.game_data.skill_fragment_data)?;
+        if let Some(owner) = copy.equipped_to {
+            if !confirmed {
+                return Err(GameError::InvalidAction);
+            }
+            self.validate_unequip_skill_fragment_payload(owner, copy_uuid)?;
+        }
+        let crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
+            dismantle_recipe: Some(recipe),
+            ..
+        } = &metadata.effect
+        else {
+            return Err(GameError::InvalidAction);
+        };
+        let mut effects = recipe
+            .aggregated_materials()
+            .ok_or(GameError::InvalidAction)?
+            .into_iter()
+            .map(
+                |(material_id, amount)| RewardEffect::GrantEquipmentMaterial {
+                    material_id,
+                    amount,
+                },
+            )
+            .collect::<Vec<_>>();
+        if recipe.enkephalin > 0 {
+            effects.push(RewardEffect::GrantEnkephalin {
+                amount: recipe.enkephalin,
+            });
+        }
+        Ok((recipe.enkephalin, effects))
     }
 
     pub(super) fn handle_dismantle_skill_fragment(
         &mut self,
-        fragment_id: &SkillFragmentId,
+        copy_uuid: Uuid,
+        confirmed: bool,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_dismantle_skill_fragment_payload(fragment_id)?;
-        let dust_gained = self
-            .state
-            .skill_fragment_policy
-            .dismantle
-            .validate_dismantle(
-                &self.state.skill_fragments,
-                fragment_id,
-                &self.game_data.skill_fragment_data,
-            )?;
-        self.preview_grant_effects(&[RewardEffect::GrantFragmentDust {
-            amount: dust_gained,
-        }])?;
-        let result = self
-            .state
+        let (enkephalin_gained, effects) = self.fragment_dismantle_effects(copy_uuid, confirmed)?;
+        let mut staged = super::grant_state::EconomyGrantState::capture(&self.state)?;
+        if let Some(owner) = staged
             .skill_fragments
-            .remove_copy_for_dismantle_with_policy(
-                fragment_id,
-                &self.game_data.skill_fragment_data,
-                &self.state.skill_fragment_policy,
-            )?;
-        let metadata = self
-            .game_data
-            .skill_fragment_data
-            .get_by_id(fragment_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "skill fragment '{}' is owned by run but missing from static data",
-                    fragment_id
-                ))
-            })?;
-        let allowed_equipped_count = match metadata.equip_limit {
-            crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies => {
-                result.remaining_count as usize
-            }
-            crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::GlobalExclusive => {
-                usize::from(result.remaining_count > 0)
-            }
-        };
-        let mut equipped_employee_ids = self
-            .state
-            .roster
-            .iter()
-            .filter(|employee| {
-                employee
-                    .skill_fragments
-                    .active_fragment_id()
-                    .is_some_and(|active_id| active_id == fragment_id)
-            })
-            .map(|employee| employee.uuid)
-            .collect::<Vec<_>>();
-        equipped_employee_ids.sort_by_key(|uuid| uuid.as_u128());
-        for employee_uuid in equipped_employee_ids
-            .into_iter()
-            .skip(allowed_equipped_count)
+            .get(&copy_uuid)
+            .and_then(|c| c.equipped_to)
         {
-            let database = self.game_data.skill_fragment_data.clone();
-            self.state
-                .roster
-                .unequip_skill_fragment(employee_uuid, &database, fragment_id)?;
+            staged.skill_fragments.unequip_copy(
+                &mut staged.roster,
+                &self.game_data.skill_fragment_data,
+                copy_uuid,
+                owner,
+            )?;
         }
-        self.apply_grant_effects(&[RewardEffect::GrantFragmentDust {
-            amount: result.dust_gained,
-        }])?;
-
+        let copy = staged.skill_fragments.remove(copy_uuid)?;
+        let granted = staged.grant_effects(
+            &self.game_data,
+            &self.state.skill_fragment_policy,
+            &crate::game::reward::GrantExecutionContext::default(),
+            &effects,
+            self.run_seed ^ 0x4752_414e_5446_5853,
+        )?;
+        staged.commit_into(&mut self.state);
         Ok(BehaviorResult::SkillFragmentDismantled {
-            fragment_id: fragment_id.clone(),
-            remaining_count: result.remaining_count,
-            dust_gained: result.dust_gained,
-            total_dust: self.state.skill_fragments.fragment_dust(),
+            copy_uuid,
+            definition_id: copy.definition_id,
+            enkephalin_gained,
+            inventory_diff: granted.inventory_diff,
         })
     }
 
@@ -405,12 +476,6 @@ impl GameCore {
             .meta
             .id
             .clone();
-        let equipped_to = self
-            .inventory()?
-            .equipments
-            .get_item(&item_uuid)
-            .ok_or(GameError::InventoryItemNotFound)?
-            .equipped_to;
         let recipe = self
             .game_data
             .equipment_data
@@ -431,23 +496,9 @@ impl GameCore {
             .collect::<Vec<_>>();
         self.preview_grant_effects(&grant_effects)?;
 
-        if let Some(employee_uuid) = equipped_to {
-            let roster = self.roster_mut()?;
-            let employee = roster
-                .get_mut(&employee_uuid)
-                .ok_or(GameError::UnitNotFound)?;
-            employee
-                .loadout
-                .item_slot
-                .remove_by_instance(item_uuid)
-                .ok_or(GameError::InvalidAction)?;
-        }
-
-        let inventory = self.inventory_mut()?;
-        inventory
-            .equipments
-            .remove_item(item_uuid)
-            .ok_or(GameError::InventoryItemNotFound)?;
+        let state = &mut self.state;
+        EquipmentLoadoutTransition::new(&mut state.inventory, &mut state.roster)
+            .remove_for_dismantle(item_uuid)?;
 
         let granted = self.apply_grant_effects(&grant_effects)?;
 
@@ -486,8 +537,13 @@ impl GameCore {
                 ))
             })?
             .clone();
-        let cost_materials = recipe
-            .costs_per_level
+        let aggregated_costs = recipe.aggregated_costs().ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "equipment enhancement recipe for '{}' has aggregate cost amount overflow",
+                recipe.equipment_id
+            ))
+        })?;
+        let cost_materials = aggregated_costs
             .iter()
             .map(|cost| {
                 self.game_data
@@ -504,10 +560,10 @@ impl GameCore {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let inventory = self.inventory_mut()?;
+        let mut staged_inventory = self.inventory()?.clone();
         let mut material_stacks = Vec::with_capacity(cost_materials.len());
         for (material_id, amount, metadata) in &cost_materials {
-            let remaining = inventory
+            let remaining = staged_inventory
                 .equipment_materials
                 .consume(material_id, *amount)?;
             material_stacks.push(
@@ -517,7 +573,7 @@ impl GameCore {
             );
         }
 
-        let equipment = inventory
+        let equipment = staged_inventory
             .equipments
             .get_item_mut(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
@@ -525,6 +581,7 @@ impl GameCore {
         let enhancement_level = equipment.enhancement_level;
         let updated_item =
             InventoryItemDto::Equipment(EquipmentItemDto::from_owned_equipment(equipment));
+        *self.inventory_mut()? = staged_inventory;
 
         Ok(BehaviorResult::EquipmentEnhanced {
             item_uuid,

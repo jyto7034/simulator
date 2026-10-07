@@ -1,0 +1,382 @@
+{
+  "stage": "P2G-20",
+  "input": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARL-P2G10-001",
+    "Content Digest": null
+  },
+  "result": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARL-P2G20-001",
+    "Content Digest": null
+  },
+  "selected_plan": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CARL-P2G20-001",
+    "Content Digest": null
+  },
+  "review_batch": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CARL-P2G20-001",
+    "Content Digest": null
+  },
+  "complete_result": {
+    "Review Scope/Source Requirement Plan Ref": {
+      "Artifact Type": "Review Scope/Source Requirement Plan",
+      "Artifact ID": "RSP-CARL-P2G20-001",
+      "Content Digest": null
+    },
+    "Source Observation Ref Set": [
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR01-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR02-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR03-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR04-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR05-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR06-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR07-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR08-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR09-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR10-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CARL-P2G20-SR11-001",
+        "Content Digest": null
+      }
+    ],
+    "Code Review Artifact Ref Set": [
+      {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CARL-P2G20-001",
+        "Content Digest": null
+      }
+    ],
+    "Review Evidence Ref Set": [
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR01-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR02-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR03-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR04-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR05-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR06-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR07-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR08-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR09-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR10-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "RE-CARL-P2G20-SR11-001",
+        "Content Digest": null
+      }
+    ],
+    "Reviewed Source Basis Ref": {
+      "Artifact Type": "Reviewed Source Basis",
+      "Artifact ID": "RSB-CARL-P2G20-001",
+      "Content Digest": null
+    },
+    "Produced code_reviewed Policy Element Revision Ref Set": [
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E01-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E02-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E03-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E04-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E05-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E06-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E07-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E08-REVIEWED-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E09-REVIEWED-001",
+        "Content Digest": null
+      }
+    ],
+    "Result Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CARL-P2G20-001",
+      "Content Digest": null
+    },
+    "Result-basis Code Review Binding Ref Set": [
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E01-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E02-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E03-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E04-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E05-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E06-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E07-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E08-001",
+        "Content Digest": null
+      },
+      {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CARL-E09-001",
+        "Content Digest": null
+      }
+    ],
+    "Review Batch Ref": {
+      "Artifact Type": "Review Batch",
+      "Artifact ID": "RB-CARL-P2G20-001",
+      "Content Digest": null
+    },
+    "P2G-20 Resolution Record Ref Set": []
+  },
+  "static_review_complete": true,
+  "elements": 9,
+  "acceptance_members": 33,
+  "requirements": 11,
+  "required_confirmed": 9,
+  "scope_NA": 2,
+  "source_files": 44,
+  "new_runtime_tests": 0,
+  "typed_references_checked": 400,
+  "source_evidence": {
+    "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/P2G_20_SOURCE_EVIDENCE_001.json",
+    "sha256": "1540ec79f570c8cb639169d6426462913b91ee4ad9bccbfd14614c87646b0b13"
+  },
+  "review_body": {
+    "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/CODE_REVIEW_001.ko.md",
+    "sha256": "eb695e0531ded6ea4dff1a3c3cee5cd549fde8dcf2564a8eb9b32784e6793fc1"
+  },
+  "exit_checks": [
+    {
+      "condition": 1,
+      "passed": true,
+      "evidence": "Exact input/result/Decision/plan/source refs resolve."
+    },
+    {
+      "condition": 2,
+      "passed": true,
+      "evidence": "C01–09 distinguish actual, approved target (exact input), delta/proposal and detailed implementation handoff."
+    },
+    {
+      "condition": 3,
+      "passed": true,
+      "evidence": "Required runtime/data/store/public consumer boundaries inspected; scope exclusions bound to O01."
+    },
+    {
+      "condition": 4,
+      "passed": true,
+      "evidence": "Every required claim and every acceptance has evidence and design/validation seam."
+    },
+    {
+      "condition": 5,
+      "passed": true,
+      "evidence": "TD01–09 and F01–03 classified/disposed; later full gameplay out_of_scope."
+    },
+    {
+      "condition": 6,
+      "passed": true,
+      "evidence": "No new material policy."
+    },
+    {
+      "condition": 7,
+      "passed": true,
+      "evidence": "Technical decisions preserve exact owner/lifetime/value/timeline semantics."
+    },
+    {
+      "condition": 8,
+      "passed": true,
+      "evidence": "No blocking current-source gap; runtime implementation evidence deferred to authorized GEX owner."
+    },
+    {
+      "condition": 9,
+      "passed": true,
+      "evidence": "R07/R16+ exclusions do not remove R05 common lifetime obligations."
+    },
+    {
+      "condition": 10,
+      "passed": true,
+      "evidence": "Produced/current sets separate fields, same nine members covered by exact result bindings."
+    },
+    {
+      "condition": 11,
+      "passed": true,
+      "evidence": "All nine in-scope elements code_reviewed."
+    },
+    {
+      "condition": 12,
+      "passed": true,
+      "evidence": "All bindings select exact result/map/plan/source/evidence."
+    },
+    {
+      "condition": 13,
+      "passed": true,
+      "evidence": "Candidate validated before formal publish; current view changes only after this result."
+    },
+    {
+      "condition": 14,
+      "passed": true,
+      "evidence": "No aborted or predecessor-only bindings selected."
+    },
+    {
+      "condition": 15,
+      "passed": true,
+      "evidence": "No applicable Change requiring declaration."
+    },
+    {
+      "condition": 16,
+      "passed": true,
+      "evidence": "No applicable repair obligation."
+    },
+    {
+      "condition": 17,
+      "passed": true,
+      "evidence": "All eleven plan requirements evaluated; only two explicit not_applicable requirements use N/A."
+    },
+    {
+      "condition": 18,
+      "passed": true,
+      "evidence": "All statements, Decisions and acceptance values equal input."
+    },
+    {
+      "condition": 19,
+      "passed": true,
+      "evidence": "Complete result authorizes current view selection of WR-CARL-P2G20-001; source hash recheck passed."
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Historical dirty checkout is Workspace Actual, not clean HEAD.",
+    "Full file hashes fix exact bytes; only identified bodies/search results support semantic claims.",
+    "Original reading ledger retains output truncation caveat. Follow-up bodies close the previously pending result/causal/grant/consumer boundaries.",
+    "No released/deployed compatibility, runtime implementation success or fresh audit verdict."
+  ]
+}

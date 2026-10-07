@@ -1,0 +1,7 @@
+SkillDatabase(skills: [SkillDef(
+ id: "r08_strike", name: "R08 public action", kind: Targeted, focus_time_ms: 100,
+ use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ steps: [SkillStepDef(id: "hit", delay_ms: 200, target: CastTarget, delivery: Instant,
+ effects: [(id: "damage", op: Damage(amount: 100, damage_type: True))])]
+)])

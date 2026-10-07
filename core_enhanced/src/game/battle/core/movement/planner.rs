@@ -13,6 +13,7 @@ use crate::game::{
 use super::{path::next_cell_path_target, types::MovementGoal};
 
 impl BattleCore {
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
     pub fn build_continuous_attack_goals(&mut self) -> HashMap<UnitInstanceId, MovementGoal> {
         self.refresh_block_state();
         self.build_continuous_attack_goals_from_current_block_state(0)
@@ -25,27 +26,50 @@ impl BattleCore {
         let mut unit_ids: Vec<UnitInstanceId> = self.units.keys().copied().collect();
         unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
 
-        let mut goals = HashMap::new();
+        let mut goals = HashMap::with_capacity(self.units.len());
         for unit_id in unit_ids {
             let Some(unit) = self.units.get(&unit_id) else {
                 continue;
             };
-            if !unit.is_active() || !unit.can_move() {
+            if !unit.is_active() || !unit.can_move() || self.rooted(unit_id) {
                 continue;
             }
             if self.blocked_by(unit_id).is_some() {
                 continue;
             }
 
-            let goal = match unit.owner {
-                Side::Player => match self.scenario.tactical_plan.player_plan {
-                    PlayerMovementPlan::FixedDefense => self.fixed_defense_goal(unit_id),
-                },
-                Side::Opponent => match self.enemy_movement_plan_for_unit(unit_id) {
-                    EnemyMovementPlan::PathAlongCells { cells } => {
-                        self.path_along_cells_goal(unit_id, &cells, now_ms)
+            // An independent actor's explicit path applies to either side;
+            // the player's employee stance does not grant it chase authority.
+            if matches!(
+                unit.source_identity,
+                crate::game::battle::types::BattleUnitSourceIdentity::IndependentObject { .. }
+            ) {
+                if let Some(EnemyMovementPlan::PathAlongCells { cells }) = &unit.enemy_movement_plan
+                {
+                    if let Some(goal) = self.path_along_cells_goal(unit_id, cells, now_ms) {
+                        goals.insert(unit_id, goal);
                     }
-                },
+                }
+                continue;
+            }
+
+            let goal = match self.boss_movement_directive(unit_id, now_ms) {
+                crate::game::battle::core::boss_runtime::BossMovementDirective::Goal(goal) => {
+                    Some(goal)
+                }
+                crate::game::battle::core::boss_runtime::BossMovementDirective::Suppress => None,
+                crate::game::battle::core::boss_runtime::BossMovementDirective::OrdinaryFallback => {
+                    match unit.owner {
+                        Side::Player => match self.scenario.tactical_plan.player_plan {
+                            PlayerMovementPlan::FixedDefense => self.fixed_defense_goal(unit_id),
+                        },
+                        Side::Opponent => match self.enemy_movement_plan_for_unit(unit_id) {
+                            EnemyMovementPlan::PathAlongCells { cells } => {
+                                self.path_along_cells_goal(unit_id, &cells, now_ms)
+                            }
+                        },
+                    }
+                }
             };
 
             if let Some(goal) = goal {
@@ -57,10 +81,20 @@ impl BattleCore {
     }
 
     fn enemy_movement_plan_for_unit(&self, unit_id: UnitInstanceId) -> EnemyMovementPlan {
-        self.units
+        let mut plan = self
+            .units
             .get(&unit_id)
             .and_then(|unit| unit.enemy_movement_plan.clone())
-            .unwrap_or_else(|| self.scenario.tactical_plan.enemy_plan.clone())
+            .unwrap_or_else(|| self.scenario.tactical_plan.enemy_plan.clone());
+        if let Some(cursor) = self.boss_route_cursor(unit_id) {
+            match &mut plan {
+                EnemyMovementPlan::PathAlongCells { cells } => {
+                    let keep_from = cursor.min(cells.len().saturating_sub(1));
+                    *cells = cells[keep_from..].to_vec();
+                }
+            }
+        }
+        plan
     }
 
     fn fixed_defense_goal(&self, unit_id: UnitInstanceId) -> Option<MovementGoal> {
@@ -169,10 +203,13 @@ mod tests {
     ) -> RuntimeUnit {
         let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
         stats.move_speed_units_per_ms = 1_000_000;
-        let mut basic_attack = BasicAttackDef::default();
-        basic_attack.range_units = 0.5;
+        let basic_attack = BasicAttackDef::default();
 
         RuntimeUnit {
+            employee_trauma: None,
+            corroded: false,
+            fragment_source: None,
+            basic_attack_speed_percent: 100,
             instance_id: UnitInstanceId::from(Uuid::from_u128(id)),
             lifecycle: crate::game::battle::core::types::RuntimeUnitLifecycle::Active,
             spawn_order: id as u64,
@@ -184,6 +221,7 @@ mod tests {
             source_identity: crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
                 base_uuid: Uuid::nil(),
             },
+            equipment_slots: None,
             stats,
             incoming_damage_modifiers: Default::default(),
             basic_attack,
@@ -204,10 +242,14 @@ mod tests {
             current_target: None,
             next_basic_attack_ms: 0,
             pending_basic_attack: false,
+            basic_attack_epoch: 0,
+            basic_attack_windup_until_ms: None,
             ranged_reposition_until_ms: 0,
             resonance_current: 0,
             resonance_max: 100,
             resonance_lock_ms: 0,
+            resonance_use: None,
+            next_resonance_pulse_ms: None,
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,
@@ -220,14 +262,12 @@ mod tests {
         unit.block_capacity = capacity;
         unit.block_radius_units = 1.0;
         unit.blockable = false;
-        unit.basic_attack.range_units = 1.0;
         unit
     }
 
     fn blockable_enemy(id: u128, position: WorldVec2) -> RuntimeUnit {
         let mut unit = runtime_unit(id, Side::Opponent, position, None);
         unit.blockable = true;
-        unit.basic_attack.range_units = 1.0;
         unit
     }
 
@@ -235,7 +275,6 @@ mod tests {
         let mut unit = runtime_unit(id, Side::Player, position, Some(position));
         unit.role = crate::game::battle::types::BattleUnitRole::DefenseObject;
         unit.stats.move_speed_units_per_ms = 0;
-        unit.basic_attack.range_units = 0.0;
         unit.blockable = false;
         unit
     }
@@ -244,7 +283,6 @@ mod tests {
         let mut unit = runtime_unit(id, Side::Opponent, position, None);
         unit.mobility_kind = MobilityKind::Airborne;
         unit.blockable = false;
-        unit.basic_attack.range_units = 1.0;
         unit
     }
 
@@ -292,13 +330,12 @@ mod tests {
     }
 
     #[test]
-    fn fixed_defense_player_stop_goal_uses_tile_range_not_range_units() {
+    fn fixed_defense_player_stop_goal_requires_membership_in_tile_range() {
         let mut core = core_with_player_plan(PlayerMovementPlan::FixedDefense);
         let player_id = UnitInstanceId::from(Uuid::from_u128(1));
         let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
         let mut player = runtime_unit(1, Side::Player, WorldVec2::new(1.5, 1.5), None);
         player.facing_direction = Some(FacingDirection::Right);
-        player.basic_attack.range_units = 99.0;
         player.basic_attack.defense_tile_range = Some(TileRangePattern {
             include_anchor_tile: false,
             rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
@@ -313,7 +350,7 @@ mod tests {
 
         assert!(
             !goals.contains_key(&player_id),
-            "large range_units must not create a basic-attack stop goal outside tile range"
+            "tile-range exclusion must not create a basic-attack stop goal"
         );
     }
 
@@ -339,8 +376,7 @@ mod tests {
         let mut core = core_with_player_plan(PlayerMovementPlan::FixedDefense);
         let attacker_id = UnitInstanceId::from(Uuid::from_u128(1));
         let target_id = UnitInstanceId::from(Uuid::from_u128(2));
-        let mut attacker = runtime_unit(1, Side::Opponent, WorldVec2::new(1.0, 1.0), None);
-        attacker.basic_attack.range_units = 2.0;
+        let attacker = runtime_unit(1, Side::Opponent, WorldVec2::new(1.0, 1.0), None);
         let mut target = runtime_unit(2, Side::Player, WorldVec2::new(1.5, 1.0), None);
         target.mobility_kind = MobilityKind::Airborne;
         core.units.insert(attacker_id, attacker);
@@ -366,8 +402,7 @@ mod tests {
         let enemy_id = UnitInstanceId::from(Uuid::from_u128(1));
         let protected_id = UnitInstanceId::from(Uuid::from_u128(2));
         let closer_combatant_id = UnitInstanceId::from(Uuid::from_u128(3));
-        let mut enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
-        enemy.basic_attack.range_units = 3.0;
+        let enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
         core.units.insert(enemy_id, enemy);
         core.units
             .insert(protected_id, defense_object(2, WorldVec2::new(2.5, 1.0)));
@@ -389,8 +424,7 @@ mod tests {
         let protected_id = UnitInstanceId::from(Uuid::from_u128(2));
         let near_id = UnitInstanceId::from(Uuid::from_u128(3));
         let far_id = UnitInstanceId::from(Uuid::from_u128(4));
-        let mut enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
-        enemy.basic_attack.range_units = 1.0;
+        let enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
         core.units.insert(enemy_id, enemy);
         core.units
             .insert(protected_id, defense_object(2, WorldVec2::new(5.0, 1.0)));
@@ -411,8 +445,7 @@ mod tests {
         let mut core = fixed_defense_core_with_enemy_exit();
         let enemy_id = UnitInstanceId::from(Uuid::from_u128(1));
         let target_id = UnitInstanceId::from(Uuid::from_u128(2));
-        let mut enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
-        enemy.basic_attack.range_units = 1.0;
+        let enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
         core.units.insert(enemy_id, enemy);
         core.units.insert(
             target_id,
@@ -433,8 +466,7 @@ mod tests {
     fn airborne_route_enemy_continues_route_when_no_target_is_in_range() {
         let mut core = fixed_defense_core_with_enemy_exit();
         let enemy_id = UnitInstanceId::from(Uuid::from_u128(1));
-        let mut enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
-        enemy.basic_attack.range_units = 0.5;
+        let enemy = airborne_enemy(1, WorldVec2::new(1.0, 1.0));
         core.units.insert(enemy_id, enemy);
         core.units.insert(
             UnitInstanceId::from(Uuid::from_u128(2)),
@@ -454,7 +486,6 @@ mod tests {
         let mut core = fixed_defense_core_with_enemy_exit();
         let enemy_id = UnitInstanceId::from(Uuid::from_u128(1));
         let mut enemy = airborne_enemy(1, WorldVec2::new(1.5, 1.5));
-        enemy.basic_attack.range_units = 99.0;
         enemy.facing_direction = Some(FacingDirection::Right);
         enemy.basic_attack.defense_tile_range = Some(TileRangePattern {
             include_anchor_tile: false,
@@ -561,6 +592,162 @@ mod tests {
             !goals.contains_key(&enemy_id),
             "empty enemy path should not become unlimited free engage"
         );
+    }
+
+    #[test]
+    fn u06_swept_contact_stops_fast_enemies_at_first_contact_in_four_directions() {
+        for (start, end, expected) in [
+            (
+                WorldVec2::new(0.5, 2.0),
+                WorldVec2::new(7.0, 2.0),
+                WorldVec2::new(3.25, 2.0),
+            ),
+            (
+                WorldVec2::new(7.0, 2.0),
+                WorldVec2::new(0.5, 2.0),
+                WorldVec2::new(4.75, 2.0),
+            ),
+            (
+                WorldVec2::new(4.0, 0.5),
+                WorldVec2::new(4.0, 3.5),
+                WorldVec2::new(4.0, 1.25),
+            ),
+            (
+                WorldVec2::new(4.0, 3.5),
+                WorldVec2::new(4.0, 0.5),
+                WorldVec2::new(4.0, 2.75),
+            ),
+        ] {
+            let mut core = fixed_defense_core_with_enemy_exit();
+            let blocker = UnitInstanceId::from(Uuid::from_u128(1));
+            let enemy = UnitInstanceId::from(Uuid::from_u128(2));
+            let mut guard = blocking_player(1, WorldVec2::new(4.0, 2.0), 1);
+            guard.block_radius_units = 0.75;
+            core.units.insert(blocker, guard);
+            let mut runner = blockable_enemy(2, start);
+            runner.stats.move_speed_units_per_ms = 10_000_000;
+            runner.body.move_speed = 10.0;
+            core.units.insert(enemy, runner);
+            let goals = HashMap::from([(
+                enemy,
+                MovementGoal::MoveToPoint {
+                    point: end,
+                    stop_radius: 0.0,
+                },
+            )]);
+            core.run_continuous_movement_tick(0, 1000, &goals);
+            let position = core.unit_world_position(enemy).unwrap();
+            assert!(
+                position.distance(expected) < 0.00001,
+                "{start:?} -> {position:?}, expected {expected:?}"
+            );
+            assert_eq!(core.blocked_by(enemy), Some(blocker));
+            let tile = core.unit_projected_tile(enemy);
+            core.run_continuous_movement_tick(1000, 1000, &goals);
+            assert_eq!(core.unit_world_position(enemy), Some(position));
+            assert_eq!(core.unit_projected_tile(enemy), tile);
+        }
+    }
+
+    #[test]
+    fn u06_contact_capacity_priority_and_late_acquisition_preserve_current_position() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let blocker = UnitInstanceId::from(Uuid::from_u128(1));
+        let near = UnitInstanceId::from(Uuid::from_u128(3));
+        let far = UnitInstanceId::from(Uuid::from_u128(2));
+        let mut guard = blocking_player(1, WorldVec2::new(4.0, 2.0), 1);
+        guard.block_radius_units = 0.75;
+        core.units.insert(blocker, guard);
+        for (id, start) in [(2, 0.5), (3, 1.0)] {
+            let mut enemy = blockable_enemy(id, WorldVec2::new(start, 2.0));
+            enemy.enemy_movement_plan = Some(EnemyMovementPlan::PathAlongCells {
+                cells: vec![Position::new(0, 2), Position::new(7, 2)],
+            });
+            enemy.stats.move_speed_units_per_ms = 10_000_000;
+            enemy.body.move_speed = 10.0;
+            core.units.insert(enemy.instance_id, enemy);
+        }
+        let goals = [far, near]
+            .into_iter()
+            .map(|id| {
+                (
+                    id,
+                    MovementGoal::MoveToPoint {
+                        point: WorldVec2::new(7.0, 2.0),
+                        stop_radius: 0.0,
+                    },
+                )
+            })
+            .collect();
+        core.run_continuous_movement_tick(0, 1000, &goals);
+        assert_eq!(core.blocked_by(near), Some(blocker));
+        assert_eq!(core.blocked_by(far), None);
+        assert!(core.unit_world_position(far).unwrap().x > 4.75);
+        core.units.get_mut(&blocker).unwrap().block_capacity = 2;
+        let current = WorldVec2::new(4.6, 2.0);
+        core.units
+            .get_mut(&far)
+            .unwrap()
+            .set_world_position(current);
+        core.refresh_block_state();
+        assert_eq!(core.blocked_by(far), Some(blocker));
+        assert_eq!(core.unit_world_position(far), Some(current));
+        core.units
+            .get_mut(&blocker)
+            .unwrap()
+            .set_world_position(WorldVec2::new(1.0, 2.0));
+        core.refresh_block_state();
+        assert_eq!(core.blocked_by(near), None);
+        assert_eq!(core.blocked_by(far), None);
+    }
+
+    #[test]
+    fn u06_blocked_pair_bypasses_only_hostile_basic_range() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let blocker = UnitInstanceId::from(Uuid::from_u128(1));
+        let enemy = UnitInstanceId::from(Uuid::from_u128(2));
+        let mut guard = blocking_player(1, WorldVec2::new(4.5, 1.5), 1);
+        guard.block_radius_units = 0.75;
+        guard.facing_direction = Some(FacingDirection::Right);
+        core.units.insert(blocker, guard);
+        let mut hostile = blockable_enemy(2, WorldVec2::new(3.8, 1.5));
+        hostile.facing_direction = Some(FacingDirection::Left);
+        core.units.insert(enemy, hostile);
+        assert!(!core.is_basic_attack_target_in_range(blocker, enemy));
+        core.refresh_block_state();
+        assert_eq!(core.blocked_by(enemy), Some(blocker));
+        assert!(core.is_basic_attack_target_in_range(blocker, enemy));
+        assert!(core.is_basic_attack_target_in_range(enemy, blocker));
+        let query = core.basic_action_snapshot(blocker, true).unwrap();
+        assert_eq!(query.blocking, vec![enemy]);
+        assert_eq!(query.selected_target_id, Some(enemy));
+        assert_eq!(query.eligible_target_ids, vec![enemy]);
+        assert_eq!(query.block_exception_target_ids, vec![enemy]);
+        let range = TileRangePattern {
+            rows: vec!["@X".to_string()],
+            include_anchor_tile: false,
+        };
+        assert!(!core.is_target_in_tile_range_policy(
+            blocker,
+            enemy,
+            crate::game::battle::tile_range::TileRangePolicy::Pattern,
+            Some(&range)
+        ));
+        core.units.get_mut(&blocker).unwrap().basic_attack.action =
+            crate::game::data::abnormality_data::BasicAttackAction::Heal {
+                flat: 5,
+                spell_power_percent: 0,
+                footprint: None,
+            };
+        assert!(!core.is_basic_attack_target_in_range(blocker, enemy));
+        assert_eq!(core.choose_attack_target_in_range(blocker), None);
+        let query = core.basic_action_snapshot(blocker, true).unwrap();
+        assert_eq!(
+            query.kind,
+            crate::game::behavior::LiveBattleBasicActionKind::Heal
+        );
+        assert!(query.eligible_target_ids.is_empty());
+        assert!(query.block_exception_target_ids.is_empty());
     }
 
     #[test]
@@ -694,7 +881,7 @@ mod tests {
         let third_enemy_id = UnitInstanceId::from(Uuid::from_u128(4));
         let fourth_enemy_id = UnitInstanceId::from(Uuid::from_u128(5));
         core.units
-            .insert(blocker_id, blocking_player(1, WorldVec2::new(1.5, 1.5), 2));
+            .insert(blocker_id, blocking_player(1, WorldVec2::new(1.5, 1.5), 4));
         for (id, unit_id, x) in [
             (2, first_enemy_id, 1.55),
             (3, second_enemy_id, 1.65),
@@ -708,6 +895,19 @@ mod tests {
             core.units.insert(unit_id, enemy);
         }
 
+        let initial_goals = core.build_continuous_attack_goals();
+        assert!(
+            [
+                first_enemy_id,
+                second_enemy_id,
+                third_enemy_id,
+                fourth_enemy_id,
+            ]
+            .iter()
+            .all(|enemy_id| !initial_goals.contains_key(enemy_id)),
+            "capacity four must hold all enemies"
+        );
+        core.units.get_mut(&blocker_id).unwrap().block_capacity = 2;
         let goals = core.build_continuous_attack_goals();
 
         assert!(!goals.contains_key(&fourth_enemy_id));
@@ -792,7 +992,7 @@ mod tests {
     }
 
     #[test]
-    fn fixed_defense_keeps_block_when_enemy_position_drifts_outside_radius() {
+    fn fixed_defense_releases_block_when_enemy_position_leaves_radius() {
         let mut core = fixed_defense_core_with_enemy_exit();
         let blocker_id = UnitInstanceId::from(Uuid::from_u128(1));
         let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
@@ -810,10 +1010,10 @@ mod tests {
         let second_goals = core.build_continuous_attack_goals();
 
         assert!(
-            !second_goals.contains_key(&enemy_id),
-            "normal distance drift must not release a held block engagement"
+            second_goals.contains_key(&enemy_id),
+            "leaving the actual contact radius releases the engagement"
         );
-        assert_eq!(core.blocked_by(enemy_id), Some(blocker_id));
+        assert_eq!(core.blocked_by(enemy_id), None);
     }
 
     #[test]

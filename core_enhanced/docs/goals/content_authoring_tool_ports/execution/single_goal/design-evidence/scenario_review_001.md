@@ -1,0 +1,74 @@
+# R03 scenario grammar — narrow read-only review 001
+
+Result: **no confirmed defect found in the implemented grammar/parser slice at the inspected source.** This is a bounded source review, not a fresh completion audit or a proof that the future resolver/session implementation is correct. Actual value copying, execution, receipt handling and runtime-clock enforcement do not exist in this slice and were not counted as defects merely for being unfinished.
+
+The new public surface, PLAN detailed design007 and frozen Goal finite input/binding requirements were read. No production/source/test/docs/build changes or test/runtime probe execution were performed. The four tests inside scenario.rs were read as source only; root's INPUTS027 execution/result is not claimed as this helper's evidence. Only this report and its JSON hash manifest were written with no-overwrite guards.
+
+Source IDs and exact raw hashes appear in `/tmp/r03_scenario_review_001.json`. Root may continue editing concurrently. Five initial samples were taken after the first source reads and are compared with final hashes; this is not a lock or atomic multi-file snapshot.
+
+## Implemented checks and their actual limits
+
+| Requested focus | Observed source behavior | Review conclusion for this slice |
+|---|---|---|
+| Byte guard before parsing/allocation | `TrialScenario::from_json_slice` validates trusted limits and rejects bytes.len above max_input_bytes before constructing the serde_json deserializer or DOM (SCENARIO:175–210). | Connected. A caller necessarily already owns the input slice; this bounds parser-owned work, not allocation made by the caller before invoking the API. |
+| Depth/node guard | Seed::deserialize checks depth > max_depth and nodes >= max_nodes before deserialize_any, then increments nodes (SCENARIO:239–260). Child seeds use depth+1. | Inclusive value-node ceiling and zero-based root depth are internally consistent. Default maxima prevent counter/depth arithmetic overflow on this route. Object keys are not counted as value nodes; the existing minimal test's seven nodes reflects that definition. |
+| Allocation order inside collections | Sequence visitor does not reserve from a size hint; each child is parsed through the guarded Seed before Vec push. Map visitor decodes a String key, checks duplicates, then guarded child value, then insert (SCENARIO:288–315). | Key/string allocation is bounded by the already admitted raw document; depth/node limits alone are not per-string byte budgets. No unbounded collection preallocation was found. The input byte ceiling is not a claim that total heap usage equals max_input_bytes. |
+| Duplicate JSON keys | Map membership is checked on the decoded String key before its value is parsed (SCENARIO:301–309). | Duplicate escaped spellings of the same key are rejected too. The custom DOM stage prevents serde_json::Value's ordinary last-key-wins behavior from hiding duplicates. |
+| Trailing input | deserializer.end() must succeed after the guarded root value (SCENARIO:195–199). | A second document/trailing non-whitespace is rejected. |
+| Strict authoring envelope | TrialInitial/ResultPointer/Binding/Document use deny_unknown_fields; TrialStep/TrialClock/Assertion use tagged enums with deny_unknown_fields; only DefaultMemory profile is defined (SCENARIO:79–166). | Current authoring object/variant keys are strict. Command payload remains a Value intentionally: ApplicationCommand owns post-binding semantic decoding. Missing execution of that decoder is outside this grammar review. |
+| Combined step/binding ceilings | preparation_steps + steps are checked before creating the all-steps reference Vec; each command's binding count is checked before decoded destination vectors are accumulated (SCENARIO:403–449). | Connected. Step and binding ceilings are checked after the byte/node/depth-bounded DOM and typed Document are built. They are not streaming per-array allocation caps, but no unlimited parse occurs before them. |
+| Prior-result eligibility | Source step must be < current combined index and must name Command, Snapshot or Clock rather than Assert/missing (SCENARIO:386–401). preparation and execution use one combined order. | Correct static eligibility. Actual success/result presence and source-pointer existence are runtime checks to add in the resolver. A future result cannot be referenced just by choosing an index in the other vector. |
+| JSON Pointer codec | Enforces raw pointer-byte and segment caps, leading slash, and only ~0/~1 escapes; source empty pointer selects root, destination root is disallowed (SCENARIO:317–362). | The source root selection is an intentional capability over an earlier public result, not command authority replacement. Decode is once, segment-wise. |
+| Existing destination / array index | at_pointer follows actual object keys; for arrays it rejects empty index, leading zero except "0", non-ASCII digits/signs/"-", usize parse overflow and out-of-range index (SCENARIO:364–384). | Noncanonical destination array indices and append/parent creation are rejected. An object key "01" remains valid, correctly: array rules depend on the traversed container. |
+| Root/type protection | Destination must have ≥2 decoded tokens, root token command or context, and may not target command/type or descendants (SCENARIO:454–474). | Whole command/context replacement, root escape and command-tag replacement are rejected. A nested payload field named type is distinct and can legitimately be bound. |
+| Disjoint destinations | Decoded token vectors are sorted; adjacent duplicate/ancestor prefix is rejected with starts_with (SCENARIO:482–492). | Segment-aware prefix comparison avoids confusing `/a` with `/ab`. Lexicographic vector sorting places a prefix before its descendants, so adjacent comparison covers overlaps. JSON/Pointer alternate spellings that decode identically collide. |
+| Context template | Only source_command_id, battle_event_after_seq and expected_battle_authority are accepted; authority object permits only battle_uuid and battle_state_revision, each with defined scalar/null placeholder types (SCENARIO:518–552). | Strict pre-binding template shape is connected. Empty/null/incomplete authority is allowed as a template; UUID/required-field semantics are deliberately later. |
+| Template size | Command+context and assertion are serialized through a counting writer which errors before count exceeds the inclusive limit; no encoded Vec is allocated just to measure (SCENARIO:445–453,507–509,555–578). | Connected for the pre-binding template. Values copied later can enlarge it and require new output/shape checks; that missing future resolver is not a current parser defect. |
+| Requested clock ceilings | Elapsed and HostTick deltas are u64; each is compared to max_clock_delta_ms, and checked_add sums them across preparation+steps against max_total_clock_ms. NextEventBucket contributes zero (SCENARIO:494–505). | Exact for explicit requested milliseconds. It is not yet a bound on actual simulated time for host speed/next-bucket semantics. See implementation notes below. |
+| Public mutable bypass | TrialScenario has private Document/input metadata, no public raw constructor/Deserialize/Clone, and returns only immutable references/slices. Scenario module is private with selected reexports (SCENARIO:161–232; EXPORT:8–14). | No safe external route was found to mutate a checked scenario or construct one without from_json_slice. Public TrialStep/Binding/TrialInitial types can be independently constructed/deserialized, but cannot be inserted into an existing TrialScenario through the present API. A future executor must continue accepting the checked owner, not arbitrary step vectors. |
+
+The source supports these conclusions without treating source-level tests as executed evidence. Existing tests cover ordinary boundary/negative examples; broader measurements and integration validation remain root-owned.
+
+## Concrete resolver integration obligations, not current-parser defect findings
+
+### 1. There is no existing Deserialize implementation for ApplicationExecutionContext
+
+APP:220–226 derives Debug/Clone/Default/PartialEq/Eq only. Its fields are `source_command_id: Option<String>`, `battle_event_after_seq: u64`, and `expected_battle_authority: Option<ApplicationBattleAuthority>`. ApplicationBattleAuthority derives Deserialize, but it does **not** have deny_unknown_fields (APP:228–232).
+
+Therefore PLAN007's phrase that types/UUID/authority are checked by the existing public decoder cannot literally mean deserializing the whole context into ApplicationExecutionContext. The next resolver must have an explicit strict typed context conversion. Re-run the strict context shape check after bindings, or deserialize a private deny_unknown_fields DTO with the intended defaults and required authority fields, then construct ApplicationExecutionContext. Decoding ApplicationCommand alone does not validate context.
+
+A concrete future negative is a binding that replaces an existing null expected_battle_authority with an object containing the two public fields plus an extra private field. The template validator sees only null before copying. A permissive ApplicationBattleAuthority deserialize would ignore the extra field. This is not an exploit of the present parser, because no copying/executor exists yet; it is a direct integration trap grounded in the actual target type.
+
+### 2. Source pointers cannot use destination-only validation before results exist
+
+validate_source currently checks chronology, step kind and pointer syntax only. This is appropriate before execution because `/01` can be a legitimate object key or an invalid array index depending on the actual prior result. The resolver must reuse the same decoded tokens and container-sensitive traversal, require the earlier step's accepted **public result/snapshot/clock return**, reject missing path/type mismatch, and exclude optional trace/attempt receipt/private candidate objects from its source table.
+
+Source root `""` is valid. Declared JsonValueType and destination semantic types must both be enforced after copy. A Clock HostTick can return None under pause/blocking conditions; the resolver must handle the actual public optional return consistently, rather than inventing an ApplicationResult to satisfy a binding. APP:933–943 and COMBAT:1598–1616 show this existing Option path.
+
+### 3. Recheck the complete resolved request after copying
+
+Pre-binding destinations are disjoint and existing, so applying siblings cannot intentionally rewrite another binding's parent. Keep the validated decoded addresses authoritative; do not decode `~01` twice or switch to a permissive array-index parser.
+
+Copied values can be larger/deeper than their null placeholders and can replace the entire expected_battle_authority object. Before dispatch, bound the combined resolved command/context bytes, nodes/depth and any mandatory stored input/result representation; perform strict context conversion and real ApplicationCommand decoding. Do not return a successful no-op for a failed binding and do not partially update accepted session input. The grammar presently carries declared types but cannot check the future source values.
+
+### 4. Requested time is not actual simulation time
+
+APP exposes three distinct methods: advance_active_battle_by(delta_ms,after_seq), advance_active_battle_for_host_tick(raw_delta_ms,after_seq), and advance_active_battle_to_next_event_bucket() (APP:921–955). They are correctly distinct in TrialClock.
+
+`simulation_delta_for_tick` uses playback speed ratio, remainder and pause (STATE:816–829). HostTick can produce no result, or a simulation delta different from raw_delta_ms; blocking VN also suppresses the tick (COMBAT:1598–1616). NextEventBucket delegates to the runtime's next queued bucket with no supplied millisecond delta (COMBAT:1619–1638). The grammar's zero charge for NextEventBucket is therefore an input-clock accounting rule, not an actual-time bound.
+
+Do not document max_clock_delta_ms/max_total_clock_ms as hard actual battle-time ceilings based on this parser alone. At execution, either preserve their stated input-delta meaning and separately enforce the adopted finite runtime horizon/work limits, or add actual-time admission at the candidate runtime boundary before committing/expanding the requested jump. It must use actual public clock semantics, not relabel NextEventBucket as an arbitrary fixed delta or bypass speed/pause. This note identifies the real boundary; unfinished runtime implementation is not reported as a grammar defect.
+
+### 5. Bind the execution limits to the checked owner or explicit invocation
+
+TrialScenario stores Document/input byte count/hash, but not the ScenarioLimits used to validate it (SCENARIO:170–174). That is safe for the current immutable parser object. When adding copy/execute, the accepted limit basis must be retained by the owner or explicitly supplied/validated at the execution call; do not silently assume defaults if a caller parsed with tighter trusted limits. No public raw-step execution path should bypass the checked aggregate.
+
+## Error/boundary evidence and remaining review limits
+
+Every current parser error uses a RequestFailure in TrialPreparation with field_path `scenario` (SCENARIO:580+). This is coarse but honest; the parser does not claim fabricated line/column or field-specific source precision. No requirement in the inspected grammar design was found that makes this coarse request path itself a defect.
+
+The raw byte ceiling is global. Node count counts Value nodes, not object-key characters, and step/binding/template caps apply after a bounded first parse. These distinctions should remain explicit in measurements/documentation: the implementation is not a proof that peak allocator bytes equal any one numeric ceiling, nor that parsing has a measured CPU deadline.
+
+Focused future negative cases suggested to root, not executed here: escaped-equivalent duplicate object keys; decoded overlap involving `~0`/`~1` and empty object-key segments; object "01" versus array "01" on both source and destination; missing/oversized/deep prior-result copies; replacement of authority object with extra/missing/wrongly typed fields; HostTick None/speed/remainder and far-future NextEventBucket; tighter parse limits preserved at execution; public compile-negative attempts to construct/mutate TrialScenario. Existing tests already cover several simple forms, so source reading is not a reason to repeat unchanged checks without an implementation change.
+
+**Confirmed finding list is empty for this grammar-only review.** The five notes above are explicit integration constraints and source facts for the next resolver/runtime slice. They must not be counted as defects in unimplemented features or as evidence that the complete R03 goal has passed.

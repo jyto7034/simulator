@@ -1,0 +1,53 @@
+{
+  "state": "PARTIAL_SCOPE_PASS",
+  "scope": "D07-B F02/C02",
+  "new_findings": [],
+  "F01": "prior_partial_pass_preserved",
+  "F02": "closed",
+  "F03": "open",
+  "D07_B_complete": false,
+  "entry_exit_equal": true,
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d07_b_f02_001/target/d07_b_f02_correction_001/MANIFEST.json",
+    "bytes": 228271,
+    "sha256": "2eb98e729fe0cc73f8cedebb455c73879a078c1d4989d5120f74b1e502dca0ba"
+  },
+  "source_digest": "e431c18332d1336ef4f0c0f7ef062ed7569c49875acf3d8a18e21ca32a456730",
+  "source_files": 341,
+  "product_source_modified_by_reviewer": false,
+  "direct_focused_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "full_suite_rerun_by_reviewer": false,
+  "full_suite_frozen_evidence_passed": 1545,
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f02_correction_001_review_001/ENTRY_CURRENTNESS_AND_RESTORATION.json",
+      "sha256": "a97d7dee1f4bed04f670d89fc0afa7b60840d93096ee3231c97b9c636b424e97",
+      "bytes": 775
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f02_correction_001_review_001/EXIT_CURRENTNESS_AND_RESTORATION.json",
+      "sha256": "a97d7dee1f4bed04f670d89fc0afa7b60840d93096ee3231c97b9c636b424e97",
+      "bytes": 775
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f02_correction_001_review_001/FOCUSED_RECHECK.log",
+      "sha256": "4640f7326f564b99766809b1b0082084d64d07017984db6905d142217773612d",
+      "bytes": 1781
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f02_correction_001_review_001/REVIEW.md",
+      "sha256": "f8ebe0bad60a6b292336fa829ecf74a10dba33f552f3fb3d05696d8d181e585f",
+      "bytes": 5808
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f02_correction_001_review_001/SCOPE_AND_RECEIPTS_CHECK.json",
+      "sha256": "6043061b3df8acb5828b9a34d5308db683089cab6cefadf4bf751ddd148d3be6",
+      "bytes": 3762
+    }
+  ],
+  "local_document_links_verified": 80,
+  "link_check_note": "Initial literal-path check rejected percent-encoded parentheses; URI-decoded check passed without document changes."
+}

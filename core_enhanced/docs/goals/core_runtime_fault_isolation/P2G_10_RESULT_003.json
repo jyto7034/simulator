@@ -1,0 +1,65 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-005",
+    "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-006",
+    "Content Digest": "sha256:047098ad5309a6e51bdc2d0374a8c97a2cb1948962ce6b1a088c3b043f3cbb9a"
+  },
+  "Resolution Record Ref Set": [
+    {
+      "Artifact Type": "Resolution Record",
+      "Artifact ID": "RR-CRFI-SCHEMA2-10-001",
+      "Content Digest": "sha256:b886db952df7baad1705adc3d1228253c6759f4510f164b567c56380a4ffcbd3"
+    }
+  ],
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRFI-006",
+      "Content Digest": "sha256:047098ad5309a6e51bdc2d0374a8c97a2cb1948962ce6b1a088c3b043f3cbb9a"
+    },
+    "Final Policy Freeze Ref": null,
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [
+      {
+        "Artifact Type": "Post-Freeze Change Record",
+        "Artifact ID": "PFC-CRFI-SCHEMA-001",
+        "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+      },
+      {
+        "Artifact Type": "Post-Freeze Change Record",
+        "Artifact ID": "PFC-CRFI-SCHEMA-002",
+        "Content Digest": "sha256:4504ed61daf7585cddd0919608978b7b8d2843f7ddce7239b6196176e9749959"
+      }
+    ],
+    "Authoritative Change Obligation Declaration Ref Set": [
+      {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRFI-SCHEMA-001",
+        "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+      },
+      {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRFI-SCHEMA-002",
+        "Content Digest": "sha256:3f4b7b6e681731f5f71c4601f105e815cf81a1fc4ea586e5791977d8d6e6febf"
+      }
+    ]
+  },
+  "is_p2g10_complete": true,
+  "checks": {
+    "O10_effectively_resolved": true,
+    "all12_decision_meaning_unchanged": true,
+    "all12_acceptance_arrays_exact": true,
+    "canonical_DR_IDs": true,
+    "open_questions_empty": true
+  },
+  "next": "P2G-20"
+}

@@ -1,0 +1,43 @@
+{
+  "actual_started_at_utc": "2026-10-07T12:27:48.939175+00:00",
+  "actual_closed_at_utc": "2026-10-07T12:27:48.942550+00:00",
+  "before": {
+    "path": "core_enhanced/src/game/world/application.rs",
+    "bytes": 23137,
+    "sha256": "6231ba3c66462ac44158d4d71cbc150645a35bf2d94db5a730627fd0976438ec"
+  },
+  "after": {
+    "path": "core_enhanced/src/game/world/application.rs",
+    "bytes": 23089,
+    "sha256": "4ce0506b3af4f895e5b252ea6c59e41353148328a3abd8f4d23ff39f42ebbdc4"
+  },
+  "preimage": {
+    "archive": {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/source_versions/4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac.tar.gz",
+      "bytes": 1927348,
+      "sha256": "97380cccb229b8b34244511717c547068ba325b6b81403bb0e0b1f928c6fd733"
+    },
+    "member": "core_enhanced/src/game/world/application.rs",
+    "bytes": 21881,
+    "sha256": "a4d70de09101251c2a694a014472980f43e14522d02aa96cda9aac2273b700ba"
+  },
+  "changes": [
+    {
+      "original_bytes": 3450,
+      "observed_bytes": 3498,
+      "kind": "remove_own_new_enum_arm_only"
+    }
+  ],
+  "observed_diff": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_COLLECTION_FAILURE_001.txt",
+    "bytes": 351,
+    "sha256": "e133e98218960a4e866538d21afbfddef466bdbbe52c21c34bb16a6b7daf2e76"
+  },
+  "check010_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check010.json",
+    "bytes": 179695,
+    "sha256": "b4f0284c8da36574f03332aa10f2f314ed3e183fb866754cb5e11e2cd28473f2"
+  },
+  "failed_collection_exact_start_end_utc": "not_captured; reported as selfcheck observation, not an execution interval claim",
+  "no_other_work_reverted": true
+}

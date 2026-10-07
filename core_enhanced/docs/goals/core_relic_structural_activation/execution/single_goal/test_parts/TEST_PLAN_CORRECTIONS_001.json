@@ -1,0 +1,163 @@
+{
+  "schema": "CRSA_TEST_PLAN_CORRECTIONS_V1",
+  "recorded_at_utc": "2026-10-07T08:36:20.303869+00:00",
+  "status": "preparation_corrections_only_no_authoring_or_execution_authorization",
+  "original_plan": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/TEST_PLAN_001.json",
+    "bytes": 40986,
+    "sha256": "0326de1208a8b5e22cf578c861ac564a3bedfb4f26ba855f30a52e343fd6ee4d",
+    "disposition": "preserved unchanged"
+  },
+  "precedence": "Apply these two corrections to TEST_PLAN_001. All other scope, API pending items and T01-T12/E01/E02 mappings remain as recorded. This is not a replacement whole plan.",
+  "corrections": [
+    {
+      "id": "C01",
+      "kind": "test_authorship_and_file_ownership",
+      "supersedes": [
+        "planned_files[0..3].registration wherever Sol authoring or narrow/shared handover is permitted or implied",
+        "shared_file_handover entries for the four exact files below",
+        "any general plan wording that permits another role to author a new test registration"
+      ],
+      "rule": "All new test modules, include declarations and test registrations are authored by Astra. For a shared/product file, transfer exclusive ownership of the whole file to Astra before any test registration edit; Sol must not author that registration. A small registration diff does not permit simultaneous ownership of different ranges.",
+      "files": [
+        {
+          "path": "core_enhanced/src/game/relic.rs",
+          "planned_test_edit": "cfg(test) module registration for u09_structural_tests",
+          "author": "Astra during explicit exclusive whole-file handover"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+          "planned_test_edit": "include of tests/u09_structural_effects.inc.rs inside existing cfg(test) tests",
+          "author": "Astra during explicit exclusive whole-file handover"
+        },
+        {
+          "path": "core_enhanced/src/authoring/trial.rs",
+          "planned_test_edit": "mod u09_structural inside existing cfg(test) tests",
+          "author": "Astra during explicit exclusive whole-file handover"
+        },
+        {
+          "path": "core_enhanced/src/game/world/tests/mod.rs",
+          "planned_test_edit": "mod u09_structural",
+          "author": "Astra during explicit exclusive whole-file handover"
+        }
+      ],
+      "handover_sequence": [
+        "Current owner stops all writes to the entire named file and hands its current exact bytes/digest to Astra under the assigned GEX bundle.",
+        "Astra alone owns the whole file during the handover and writes only the authorized test registration or test-module change; product behavior and previous tests remain intact.",
+        "Astra returns the exact resulting diff/digest and relinquishes whole-file ownership. Sol resumes product writes only after that return is recorded.",
+        "Any further registration change requires the same sequential whole-file handover. No handover or source edit is performed by this correction document."
+      ],
+      "application": "The four paths are mandatory instances; the same rule applies if a later private inline test boundary requires another product file. Root PLAN/NOTES and product behavior stay outside this agent task."
+    },
+    {
+      "id": "C02",
+      "kind": "independent_shield_oracle_arithmetic",
+      "supersedes": [
+        "independent_numeric_oracles[case=shield source and stage].expected area-baseline clause"
+      ],
+      "error": "The original area prose combined the separate R12 pool600/mitigated400-then350 control with this plan row's personal50 and incoming800-then1800 inputs. It was not the arithmetic for the stated fixture.",
+      "unchanged_inputs": {
+        "source_base": 300,
+        "source_attack": 200,
+        "source_attack_denominator": 100,
+        "S": 600,
+        "area_capacity": 600,
+        "single_capacity": 1200,
+        "initial_personal_shield": 50,
+        "incoming_attacks": [
+          800,
+          1800
+        ],
+        "mitigation_percent": 50,
+        "post_mitigation_attacks": [
+          400,
+          900
+        ]
+      },
+      "area_comparison_scope": "Yes: exactly the same two incoming attacks, 50% mitigation and one initial personal50 pool apply to the area control and the single control. In each independent run both attacks hit the same supported recipient; its personal pool is consumed once. No other member drains the shared pool between attacks, and neither expiry nor recharge occurs.",
+      "stage_order": "Mitigation, then that recipient's personal shield, then the source-owned shared pool, then excess HP loss. The single form still uses the shared stage.",
+      "independent_derivation": [
+        "S=300*200/100=600; single2S=1200. Incoming800 and1800 become400 and900.",
+        "Area attack1:400-50=350 shared absorption;600-350=250 remaining; HP loss0.",
+        "Area attack2: personal0;900-250=650 HP loss; shared remaining0.",
+        "Single attack1:400-50=350 shared absorption;1200-350=850 remaining; HP loss0.",
+        "Single attack2: personal0;900-850=50 HP loss; shared remaining0.",
+        "Conservation across both attacks: total mitigated1300 = personal50 + area shared600 + HP650 = personal50 + single shared1200 + HP50."
+      ],
+      "expected": {
+        "area": {
+          "initial_capacity": 600,
+          "attacks": [
+            {
+              "attack": 1,
+              "incoming": 800,
+              "post_mitigation": 400,
+              "personal_before": 50,
+              "personal_absorbed": 50,
+              "personal_after": 0,
+              "shared_before": 600,
+              "shared_absorbed": 350,
+              "shared_after": 250,
+              "hp_lost": 0
+            },
+            {
+              "attack": 2,
+              "incoming": 1800,
+              "post_mitigation": 900,
+              "personal_before": 0,
+              "personal_absorbed": 0,
+              "personal_after": 0,
+              "shared_before": 250,
+              "shared_absorbed": 250,
+              "shared_after": 0,
+              "hp_lost": 650
+            }
+          ],
+          "total_hp_lost": 650,
+          "depleted_after_attack": 2
+        },
+        "single": {
+          "initial_capacity": 1200,
+          "attacks": [
+            {
+              "attack": 1,
+              "incoming": 800,
+              "post_mitigation": 400,
+              "personal_before": 50,
+              "personal_absorbed": 50,
+              "personal_after": 0,
+              "shared_before": 1200,
+              "shared_absorbed": 350,
+              "shared_after": 850,
+              "hp_lost": 0
+            },
+            {
+              "attack": 2,
+              "incoming": 1800,
+              "post_mitigation": 900,
+              "personal_before": 0,
+              "personal_absorbed": 0,
+              "personal_after": 0,
+              "shared_before": 850,
+              "shared_absorbed": 850,
+              "shared_after": 0,
+              "hp_lost": 50
+            }
+          ],
+          "total_hp_lost": 50,
+          "depleted_after_attack": 2
+        }
+      },
+      "historical_control_distinction": "The existing R12 no-personal control with shared600 and post-mitigation400 then350 still has remaining200 then HP loss150. It remains a separate unchanged predecessor example; it is not the expected result for the current equal-input area/single comparison.",
+      "balance_limit": "These source/pool/attack values remain representative fixture constants, not official S formula or duration decisions."
+    }
+  ],
+  "validation": {
+    "original_plan_unchanged": true,
+    "independent_arithmetic": "Fixed-input integer arithmetic and conservation checked without product evaluator or runtime execution.",
+    "product_test_fixture_changes": 0,
+    "builds_tests_probes": 0,
+    "new_files": 1,
+    "api_status": "Sol DESIGN pending; no concrete API assumptions added."
+  }
+}

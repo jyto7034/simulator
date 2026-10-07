@@ -1,0 +1,12 @@
+{
+  "unchanged_outside_audit_directory": true,
+  "entry_sha256": "21d3e6d7359af2065cf8c6cf93568f212addda98c8377fd41a11db91651cd33a",
+  "exit_sha256": "99c07d8bea87f65f2f20d9b3e04b058db08409f39ac55251a1f42e0b17e6bc67",
+  "excluded_prefix": "core_enhanced/docs/goals/core_independent_objects/post_audit/u07_20261005_002/",
+  "target_attribution": {
+    "tracked/dirty": 189,
+    "tracked/clean": 36,
+    "untracked": 6918
+  },
+  "status_entries_outside_audit": 98309
+}

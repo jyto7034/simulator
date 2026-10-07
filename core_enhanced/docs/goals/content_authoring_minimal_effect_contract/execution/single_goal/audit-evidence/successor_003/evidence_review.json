@@ -1,0 +1,558 @@
+{
+  "reviewer": "/root/r01_correction_fresh_audit",
+  "captured_at": "2026-09-09T19:41:03.380533+00:00",
+  "new_gameplay_or_test_executions_this_audit": 0,
+  "validation_input_count": 279,
+  "vi027_sha256": "075b5f1251f025203cc307ddec235633a4a80f9c50f48d02cc6e98f5f939fe6f",
+  "vi023_prior_copy_checks": 279,
+  "vi023_to_vi027_changed": [
+    "core_enhanced/src/game/combat_preview/mod.rs",
+    "core_enhanced/src/game/combat_preview/validation.rs",
+    "core_enhanced/src/game/data/content_pack/mod.rs",
+    "core_enhanced/src/game/data/content_pack/raw.rs",
+    "core_enhanced/src/game/data/content_pack/tests.rs",
+    "core_enhanced/src/game/data/live_ron.rs",
+    "core_enhanced/src/game/data/mod.rs",
+    "core_enhanced/src/game/data/validation.rs"
+  ],
+  "vi023_to_vi027_unchanged": 271,
+  "correction_patch_reconstructed_exactly": true,
+  "correction_patch_sha256": "c35969505505dce8282c16fce7111da7a2cd0eb788a35beb28fc057096f7e142",
+  "independent_rust_ron_enumeration_count": 232,
+  "missing_inputs": [],
+  "prior_r01_target_changed_members": [
+    "core_enhanced/docs/data_loading_contract.md",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/PLAN.md",
+    "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/ACCEPTANCE_EVIDENCE_001.md",
+    "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/EXPERIMENTS.md",
+    "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/EXPERIMENT_NOTES.md",
+    "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/PLAN.md",
+    "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/R01_SUCCESSOR_IMPACT_001.md",
+    "core_enhanced/src/game/combat_preview/mod.rs",
+    "core_enhanced/src/game/combat_preview/validation.rs",
+    "core_enhanced/src/game/data/content_pack/mod.rs",
+    "core_enhanced/src/game/data/content_pack/raw.rs",
+    "core_enhanced/src/game/data/content_pack/tests.rs",
+    "core_enhanced/src/game/data/live_ron.rs",
+    "core_enhanced/src/game/data/mod.rs",
+    "core_enhanced/src/game/data/validation.rs"
+  ],
+  "prior_r01_target_added_members": 188,
+  "prior_r01_runtime_ability_world_tests_data_unchanged": [
+    "core_enhanced/src/game/ability/authoring.rs",
+    "core_enhanced/src/game/ability/authoring/tests.rs",
+    "core_enhanced/src/game/battle/battlefield/field.rs",
+    "core_enhanced/src/game/battle/battlefield/mod.rs",
+    "core_enhanced/src/game/battle/buffs.rs",
+    "core_enhanced/src/game/battle/cooldown.rs",
+    "core_enhanced/src/game/battle/core/basic_attack.rs",
+    "core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+    "core_enhanced/src/game/battle/core/boss_runtime.rs",
+    "core_enhanced/src/game/battle/core/build.rs",
+    "core_enhanced/src/game/battle/core/commands.rs",
+    "core_enhanced/src/game/battle/core/damage_runtime.rs",
+    "core_enhanced/src/game/battle/core/death_runtime.rs",
+    "core_enhanced/src/game/battle/core/field_work.rs",
+    "core_enhanced/src/game/battle/core/ids.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/game/battle/core/movement/blocking.rs",
+    "core_enhanced/src/game/battle/core/movement/engine.rs",
+    "core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+    "core_enhanced/src/game/battle/core/movement/mod.rs",
+    "core_enhanced/src/game/battle/core/movement/path.rs",
+    "core_enhanced/src/game/battle/core/movement/planner.rs",
+    "core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+    "core_enhanced/src/game/battle/core/movement/steering.rs",
+    "core_enhanced/src/game/battle/core/movement/types.rs",
+    "core_enhanced/src/game/battle/core/projectile_math.rs",
+    "core_enhanced/src/game/battle/core/resonance_runtime.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+    "core_enhanced/src/game/battle/core/spatial.rs",
+    "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+    "core_enhanced/src/game/battle/core/summon_runtime.rs",
+    "core_enhanced/src/game/battle/core/tactical_relocation.rs",
+    "core_enhanced/src/game/battle/core/tactical_stance.rs",
+    "core_enhanced/src/game/battle/core/tactical_swap.rs",
+    "core_enhanced/src/game/battle/core/target_usefulness.rs",
+    "core_enhanced/src/game/battle/core/targeting.rs",
+    "core_enhanced/src/game/battle/core/triggers.rs",
+    "core_enhanced/src/game/battle/core/types.rs",
+    "core_enhanced/src/game/battle/core/wave_runtime.rs",
+    "core_enhanced/src/game/battle/damage.rs",
+    "core_enhanced/src/game/battle/enums.rs",
+    "core_enhanced/src/game/battle/event_log.rs",
+    "core_enhanced/src/game/battle/ids.rs",
+    "core_enhanced/src/game/battle/mod.rs",
+    "core_enhanced/src/game/battle/recording.rs",
+    "core_enhanced/src/game/battle/result_stats.rs",
+    "core_enhanced/src/game/battle/scenario.rs",
+    "core_enhanced/src/game/battle/skill_source.rs",
+    "core_enhanced/src/game/battle/stat_pipeline.rs",
+    "core_enhanced/src/game/battle/tile_range.rs",
+    "core_enhanced/src/game/battle/types.rs",
+    "core_enhanced/src/game/world.rs",
+    "core_enhanced/src/game/world/action_capability.rs",
+    "core_enhanced/src/game/world/active_run.rs",
+    "core_enhanced/src/game/world/admin.rs",
+    "core_enhanced/src/game/world/admin/catalog.rs",
+    "core_enhanced/src/game/world/admin/commands.rs",
+    "core_enhanced/src/game/world/admin/fixtures.rs",
+    "core_enhanced/src/game/world/admin/grants.rs",
+    "core_enhanced/src/game/world/admin/tests.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/battle_capability.rs",
+    "core_enhanced/src/game/world/combat.rs",
+    "core_enhanced/src/game/world/combat_trace.rs",
+    "core_enhanced/src/game/world/event_node.rs",
+    "core_enhanced/src/game/world/facility.rs",
+    "core_enhanced/src/game/world/grant_state.rs",
+    "core_enhanced/src/game/world/headquarters.rs",
+    "core_enhanced/src/game/world/helpers.rs",
+    "core_enhanced/src/game/world/maintenance.rs",
+    "core_enhanced/src/game/world/map_content.rs",
+    "core_enhanced/src/game/world/map_encounters.rs",
+    "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+    "core_enhanced/src/game/world/node_flow.rs",
+    "core_enhanced/src/game/world/reward.rs",
+    "core_enhanced/src/game/world/shop.rs",
+    "core_enhanced/src/game/world/snapshot.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/src/game/world/tests/content_generation.rs",
+    "core_enhanced/src/game/world/tests/equipment.rs",
+    "core_enhanced/src/game/world/tests/facility.rs",
+    "core_enhanced/src/game/world/tests/map_flow.rs",
+    "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+    "core_enhanced/src/game/world/tests/mod.rs",
+    "core_enhanced/src/game/world/tests/node_sessions.rs",
+    "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+    "core_enhanced/src/game/world/visual_novel_flow.rs",
+    "core_enhanced/src/game/world/visual_novel_triggers.rs",
+    "core_enhanced/tests/common/mod.rs",
+    "core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+    "core_enhanced/tests/live_item_skill_activation.rs",
+    "core_enhanced/tests/live_skill_catalog_audit.rs",
+    "core_enhanced/tests/ron_loading.rs",
+    "core_enhanced/tests/skill_runtime_contract.rs",
+    "core_enhanced/tests/skill_test/common/board.rs",
+    "core_enhanced/tests/skill_test/common/mod.rs",
+    "core_enhanced/tests/skill_test/common/query.rs",
+    "core_enhanced/tests/skill_test/common/run.rs",
+    "core_enhanced/tests/skill_test/common/scenario.rs",
+    "core_enhanced/tests/skill_test/common/types.rs",
+    "core_enhanced/tests/skill_test/little_red.rs",
+    "core_enhanced/tests/skill_test/melting_love.rs",
+    "core_enhanced/tests/skill_test/mod.rs",
+    "core_enhanced/tests/skill_test/nothing_there.rs",
+    "core_enhanced/tests/skill_test/white_night.rs",
+    "core_enhanced/tests/skill_test_suite.rs",
+    "game_resources/data/abnormalities/base.ron",
+    "game_resources/data/boss_omen/chains.ron",
+    "game_resources/data/boss_runtime/base.ron",
+    "game_resources/data/buffs/base.ron",
+    "game_resources/data/bundle.ron",
+    "game_resources/data/consumables/base.ron",
+    "game_resources/data/employees/definitions.ron",
+    "game_resources/data/enemies/corroded_employees.ron",
+    "game_resources/data/enemies/corroded_wave_presets.ron",
+    "game_resources/data/equipments/base.ron",
+    "game_resources/data/events/rewards/base.ron",
+    "game_resources/data/events/shops/base.ron",
+    "game_resources/data/events/story/base.ron",
+    "game_resources/data/map/battlefield_archetypes.ron",
+    "game_resources/data/map/battlefield_templates.ron",
+    "game_resources/data/map/facility_templates.ron",
+    "game_resources/data/map/node_assignment_profiles.ron",
+    "game_resources/data/map/node_definitions.ron",
+    "game_resources/data/pve/encounters.ron",
+    "game_resources/data/run/policy.ron",
+    "game_resources/data/skill_fragments/base.ron",
+    "game_resources/data/skills/base.ron",
+    "game_resources/data/summoned_units/base.ron",
+    "game_resources/data/visual_novel_triggers/base.ron",
+    "game_resources/data/visual_novels/base.ron"
+  ],
+  "baseline_originals_verified": 1850,
+  "baseline_changed_exactly_attributed": [
+    "Cargo.lock",
+    "core_enhanced/Cargo.toml",
+    "core_enhanced/docs/core_runtime_contract.md",
+    "core_enhanced/docs/data_loading_contract.md",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/PLAN.md",
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/docs/roadmaps/content_authoring/history/2026-09.md",
+    "core_enhanced/src/application.rs",
+    "core_enhanced/src/game/battle/buffs.rs",
+    "core_enhanced/src/game/combat_preview/mod.rs",
+    "core_enhanced/src/game/combat_preview/validation.rs",
+    "core_enhanced/src/game/data/abnormality_data.rs",
+    "core_enhanced/src/game/data/boss_omen_data.rs",
+    "core_enhanced/src/game/data/boss_runtime_data.rs",
+    "core_enhanced/src/game/data/consumable_data.rs",
+    "core_enhanced/src/game/data/corroded_employee_data.rs",
+    "core_enhanced/src/game/data/corroded_wave_data.rs",
+    "core_enhanced/src/game/data/employee_data.rs",
+    "core_enhanced/src/game/data/event_data.rs",
+    "core_enhanced/src/game/data/live_ron.rs",
+    "core_enhanced/src/game/data/mod.rs",
+    "core_enhanced/src/game/data/pve_data.rs",
+    "core_enhanced/src/game/data/reward_data.rs",
+    "core_enhanced/src/game/data/shop_data.rs",
+    "core_enhanced/src/game/data/skill_data.rs",
+    "core_enhanced/src/game/data/skill_fragment_data.rs",
+    "core_enhanced/src/game/data/summoned_unit_data.rs",
+    "core_enhanced/src/game/data/validation.rs",
+    "core_enhanced/src/game/data/visual_novel_data.rs",
+    "core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+    "core_enhanced/src/game/world.rs",
+    "core_enhanced/src/game/world/active_run.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/combat.rs",
+    "core_enhanced/src/game/world/node_flow.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/src/game/world/tests/facility.rs",
+    "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+    "core_enhanced/src/game/world/tests/mod.rs",
+    "core_enhanced/src/game/world/tests/node_sessions.rs"
+  ],
+  "handoff_exact_hash_checks": 6,
+  "pvr_overall_result": "passed",
+  "validation_records": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/full_core_004.json",
+      "sha256": "f975ee41a50e15cc58982f9e1b8ebbd2d08e6d63bb597353ad47e61b667ca57a",
+      "command": "cargo test -p game_core --lib --tests -- --quiet",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": 1217
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/correction_generated_003.json",
+      "sha256": "281d4cddfb592f4255fe8b590b8aab3193bf6bc8a50e187eb654f119109a8104",
+      "command": "cargo test -p game_core --lib generated -- --quiet",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": 16
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/all_targets_003.json",
+      "sha256": "93a2902688abbdc3175e70151602ef632e2ffff068f370a88baf642f9f9f98a1",
+      "command": "cargo check -p game_core --all-targets",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_check_003.json",
+      "sha256": "58051fd9dc7e6e93359a8c16351afdf92a09ce57a3e962ae4239946bdf74021d",
+      "command": "cargo check -p game_core --release --lib",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_build_007.json",
+      "sha256": "7aebcf06f9ee3da9342edb002c018a84405776286aad14c0401c101292ae264e",
+      "command": "cargo build -p game_core --release --no-default-features --bin package_official_content --bin consume_content_pack",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_ab_005.json",
+      "sha256": "651b2f5a7bf9222200c380acf81dfead70f5ee234ccc64703f1159bc5799271f",
+      "command": "python3 core_enhanced/tools/content_pack_release_probe.py --repository . --output-dir /tmp/capg-r02-release-ab-005",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": 10
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/correction_release_diagnostic_004.json",
+      "sha256": "d665fe3741ce395109f51e0dffee98b12cf1349a41746cf35c1acd7b6df62290",
+      "command": "python3 /tmp/capg-r02-source-recheck-004.py",
+      "input": "VALIDATION_INPUT_027.json",
+      "terminal_exit_code": 0,
+      "count": 10
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/api_batch_002.json",
+      "sha256": "a8966be0894d982fd3c4a9233e380d8de51720fb782ac9f913b7a3adc155bda9",
+      "command": "python3 core_enhanced/tools/public_api_external_probe.py --repository . --pack-root /tmp/capg-r02-release-ab-003/live_data --pack official --output-dir /tmp/capg-r02-api-batch-002",
+      "input": "VALIDATION_INPUT_025.json",
+      "terminal_exit_code": 0,
+      "count": 11
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/CORRECTION_REUSE_003.json",
+      "sha256": "1dcdcacb21115f97d69129425e07e5cb2ef05e453a157a21a04d0cf56467da4c",
+      "command": null,
+      "input": null,
+      "terminal_exit_code": null,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_002.json",
+      "sha256": "914f44cab36d0aea0113b672bd8dcf9017c9c91fe92457cbd311ef344eeced23",
+      "command": "target/capg-api/release/public_guards /tmp/capg-r02-public-guards-002.json",
+      "input": "VALIDATION_INPUT_022.json",
+      "terminal_exit_code": 0,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_allocation_001.json",
+      "sha256": "cc36f9a117e7857c37fd95f6be554d20004dd2dae61a9dd124e1f2ba81a5021b",
+      "command": "cargo run --release --offline --locked --manifest-path core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml --target-dir target/capg-api --features allocation-observer --bin public_guards -- /tmp/capg-r02-public-guards-allocation-001.json",
+      "input": "VALIDATION_INPUT_022.json",
+      "terminal_exit_code": 0,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/RESOURCE_OBSERVATION_001.json",
+      "sha256": "3945bef5858f4d21ab701fb2e192f0ae9db9fd9b8e3bee40633f5f1569b4b3aa",
+      "command": null,
+      "input": null,
+      "terminal_exit_code": null,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/PRESERVATION_003.json",
+      "sha256": "be17daadc99a7d601ce88854843ffbba9c73854b72727887536d013058e541c8",
+      "command": null,
+      "input": null,
+      "terminal_exit_code": null,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/CORRECTION_IMPACT_003_FINAL.json",
+      "sha256": "b9f0667046203c8c238985907d9d91f4679a6883519758647727f9ff2b48b449",
+      "command": null,
+      "input": null,
+      "terminal_exit_code": null,
+      "count": null
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/LINK_CHECK_003.json",
+      "sha256": "c87e5d1bd5e4ac7bf7efe1db65838b6da24eec8dcd22ed2ee2a7f0c217b87ad1",
+      "command": null,
+      "input": null,
+      "terminal_exit_code": null,
+      "count": null
+    }
+  ],
+  "full_core_passed_by_target": [
+    1165,
+    4,
+    4,
+    25,
+    15,
+    4
+  ],
+  "full_core_total_passed": 1217,
+  "generated_focused_passed": 16,
+  "execution_sets": [
+    {
+      "group": "release_ab_005",
+      "commands": [
+        {
+          "name": "package_a",
+          "exit_code": 0
+        },
+        {
+          "name": "consume_a1",
+          "exit_code": 0
+        },
+        {
+          "name": "consume_b",
+          "exit_code": 0
+        },
+        {
+          "name": "consume_a2",
+          "exit_code": 0
+        },
+        {
+          "name": "existing_output",
+          "exit_code": 1
+        },
+        {
+          "name": "missing_b_catalog",
+          "exit_code": 1
+        },
+        {
+          "name": "invalid_b_catalog",
+          "exit_code": 1
+        },
+        {
+          "name": "old_b_contract",
+          "exit_code": 1
+        },
+        {
+          "name": "unsupported_b_capability",
+          "exit_code": 1
+        },
+        {
+          "name": "missing_source",
+          "exit_code": 1
+        }
+      ]
+    },
+    {
+      "group": "correction_release_diagnostic_004",
+      "commands": [
+        {
+          "name": "valid_b",
+          "exit_code": 0
+        },
+        {
+          "name": "invalid_b_1",
+          "exit_code": 1
+        },
+        {
+          "name": "invalid_b_2",
+          "exit_code": 1
+        },
+        {
+          "name": "restored_b",
+          "exit_code": 0
+        },
+        {
+          "name": "boss_valid",
+          "exit_code": 0
+        },
+        {
+          "name": "boss_invalid_zone_1",
+          "exit_code": 1
+        },
+        {
+          "name": "boss_invalid_zone_2",
+          "exit_code": 1
+        },
+        {
+          "name": "boss_invalid_route_1",
+          "exit_code": 1
+        },
+        {
+          "name": "boss_invalid_route_2",
+          "exit_code": 1
+        },
+        {
+          "name": "boss_restored",
+          "exit_code": 0
+        }
+      ]
+    },
+    {
+      "group": "api_batch_002",
+      "commands": [
+        {
+          "name": "validated_data_api_audit",
+          "exit_code": 0
+        },
+        {
+          "name": "application_authority_api_audit",
+          "exit_code": 0
+        },
+        {
+          "name": "battle_kernel_api_audit",
+          "exit_code": 0
+        },
+        {
+          "name": "core_public_projection_api_audit",
+          "exit_code": 0
+        },
+        {
+          "name": "history_result_api_audit",
+          "exit_code": 0
+        },
+        {
+          "name": "validated_data_api_audit",
+          "exit_code": 101
+        },
+        {
+          "name": "application_authority_api_audit",
+          "exit_code": 101
+        },
+        {
+          "name": "battle_kernel_api_audit",
+          "exit_code": 101
+        },
+        {
+          "name": "core_public_projection_api_audit",
+          "exit_code": 101
+        },
+        {
+          "name": "history_result_api_audit",
+          "exit_code": 101
+        },
+        {
+          "name": "runtime_architecture_final_validation",
+          "exit_code": 101
+        }
+      ]
+    }
+  ],
+  "api_vi025_to_vi027_changed": [
+    "core_enhanced/src/game/data/content_pack/tests.rs",
+    "core_enhanced/src/game/data/validation.rs"
+  ],
+  "api_error_helper_outside_bytes_unchanged": true,
+  "api_limitation": "Five actual positive consumers and six actual compiler negatives at VI025; reused only for unchanged public/success paths. Current VI027 generated failures use full/focused/current release evidence.",
+  "observer_v22_unchanged_paths": [
+    "core_enhanced/src/game/world.rs",
+    "core_enhanced/src/game/world/action_capability.rs",
+    "core_enhanced/src/game/world/active_run.rs",
+    "core_enhanced/src/game/world/admin.rs",
+    "core_enhanced/src/game/world/admin/catalog.rs",
+    "core_enhanced/src/game/world/admin/commands.rs",
+    "core_enhanced/src/game/world/admin/fixtures.rs",
+    "core_enhanced/src/game/world/admin/grants.rs",
+    "core_enhanced/src/game/world/admin/tests.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/battle_capability.rs",
+    "core_enhanced/src/game/world/combat.rs",
+    "core_enhanced/src/game/world/combat_trace.rs",
+    "core_enhanced/src/game/world/event_node.rs",
+    "core_enhanced/src/game/world/facility.rs",
+    "core_enhanced/src/game/world/grant_state.rs",
+    "core_enhanced/src/game/world/headquarters.rs",
+    "core_enhanced/src/game/world/helpers.rs",
+    "core_enhanced/src/game/world/maintenance.rs",
+    "core_enhanced/src/game/world/map_content.rs",
+    "core_enhanced/src/game/world/map_encounters.rs",
+    "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+    "core_enhanced/src/game/world/node_flow.rs",
+    "core_enhanced/src/game/world/reward.rs",
+    "core_enhanced/src/game/world/shop.rs",
+    "core_enhanced/src/game/world/snapshot.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/src/game/world/tests/content_generation.rs",
+    "core_enhanced/src/game/world/tests/equipment.rs",
+    "core_enhanced/src/game/world/tests/facility.rs",
+    "core_enhanced/src/game/world/tests/map_flow.rs",
+    "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+    "core_enhanced/src/game/world/tests/mod.rs",
+    "core_enhanced/src/game/world/tests/node_sessions.rs",
+    "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+    "core_enhanced/src/game/world/visual_novel_flow.rs",
+    "core_enhanced/src/game/world/visual_novel_triggers.rs",
+    "core_enhanced/tools/runtime_architecture_final_validation/Cargo.lock",
+    "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+    "core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.lock",
+    "core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.toml",
+    "core_enhanced/tools/runtime_architecture_final_validation/default_fixture_api_audit/src/main.rs",
+    "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+    "core_enhanced/tools/runtime_architecture_final_validation/src/p01_exact_replay.rs",
+    "core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs"
+  ],
+  "observer_limitation": "Historical fixture-capability timing/allocation evidence for unchanged measured snapshot/export/ContextIrrelevant staging. No new execution, loader measurement, or product SLA.",
+  "r01_author_probe_limitation": "Historical successor_002 three-test result remains original target execution; reused only for unchanged authoring semantic/parser source paths, with new actual VI027 full/focused/release coverage for changed publication/generation.",
+  "issues": []
+}

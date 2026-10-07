@@ -4,6 +4,8 @@ BossOmenChainDatabase(
             id: "white_night",
             boss_abnormality_id: "o-01-45_white_night",
             min_floor: 3,
+            required_fragment: None,
+            dependencies: [],
             required_steps: 1,
             boss_encounter_id: "suppress_white_night",
             steps: [

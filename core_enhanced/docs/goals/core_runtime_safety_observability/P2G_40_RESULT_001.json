@@ -1,0 +1,24 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "Phase Plan Ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CRSO-001",
+    "Content Digest": "sha256:0afeeb9809f90b980f447d895428337d003be5364ad7e3f7848eac6ea0798fbd"
+  },
+  "Phase Plan Validation Receipt Ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CRSO-001",
+    "Content Digest": null
+  },
+  "P2G-40 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "semantic_review": {
+    "independent_S1_valid_without_S2": true,
+    "all_producer_consumer_cutovers_owned": true,
+    "server_rollback_boundary_owned_S1": true,
+    "observer_bounded_storage_owned_S2": true,
+    "all_integration_seams_have_implementation_owner": true
+  },
+  "next": "P2G-50"
+}

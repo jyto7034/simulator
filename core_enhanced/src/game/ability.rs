@@ -1,4 +1,9 @@
+pub mod flow;
+pub mod objects;
+pub mod sustained;
 use std::{borrow::Borrow, fmt, ops::Deref};
+
+pub mod authoring;
 
 use serde::{Deserialize, Serialize};
 
@@ -119,10 +124,24 @@ pub enum SkillTargetReach {
     Global,
 }
 
+/// Who selects the cast-level target. This remains independent from
+/// `SkillTarget`, which describes effect targeting semantics.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SkillCastSelection {
+    #[serde(rename = "self")]
+    SelfUnit,
+    AutomaticUnit,
+    PlayerUnit,
+    PlayerTile,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum SkillTarget {
     SelfUnit,
+    /// A living ally, including the caster; automatic selection prefers lower HP ratio.
+    AllySingle,
     EnemySingle {
         rule: UnitTargetRule,
     },
@@ -145,17 +164,6 @@ fn default_projectile_hit_policy() -> ProjectileHitPolicy {
     ProjectileHitPolicy::TargetLocked
 }
 
-fn deserialize_nonzero_option_u64<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let value = Option::<u64>::deserialize(deserializer)?;
-    match value {
-        Some(0) => Err(serde::de::Error::custom("expected non-zero u64 value")),
-        other => Ok(other),
-    }
-}
-
 fn default_false() -> bool {
     false
 }
@@ -171,13 +179,13 @@ pub enum DeliveryDef {
         hit_policy: ProjectileHitPolicy,
         #[serde(default = "default_false")]
         allow_targetless_cast: bool,
-        #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+        #[serde(default)]
         max_range_tiles: Option<u32>,
-        #[serde(default, deserialize_with = "deserialize_nonzero_option_u64")]
+        #[serde(default)]
         max_lifetime_ms: Option<u64>,
-        #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+        #[serde(default)]
         max_kills: Option<u32>,
-        #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+        #[serde(default)]
         max_pierces: Option<u32>,
         #[serde(default)]
         collision: SkillProjectileCollisionDef,
@@ -207,17 +215,6 @@ fn default_projectile_collision_radius_units() -> u32 {
     125_000
 }
 
-fn deserialize_nonzero_option_u8<'de, D>(deserializer: D) -> Result<Option<u8>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let value = Option::<u8>::deserialize(deserializer)?;
-    match value {
-        Some(0) => Err(serde::de::Error::custom("expected non-zero max_hits")),
-        other => Ok(other),
-    }
-}
-
 fn deserialize_nonzero_option_u32<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
 where
     D: serde::Deserializer<'de>,
@@ -245,8 +242,176 @@ pub struct SkillProjectileCollisionDef {
     pub piercing: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub despawn_on_hit: Option<bool>,
-    #[serde(default, deserialize_with = "deserialize_nonzero_option_u8")]
+    #[serde(default)]
     pub max_hits: Option<u8>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct DeliveryValidationError {
+    pub field_suffix: &'static str,
+    pub cause: &'static str,
+}
+
+impl DeliveryValidationError {
+    fn new(field_suffix: &'static str, cause: &'static str) -> Self {
+        Self {
+            field_suffix,
+            cause,
+        }
+    }
+}
+
+impl DeliveryDef {
+    pub(crate) fn try_validate_projectile_scalar_contract(
+        &self,
+    ) -> Result<(), DeliveryValidationError> {
+        let Self::Projectile {
+            speed_units_per_ms,
+            max_range_tiles,
+            max_lifetime_ms,
+            max_kills,
+            max_pierces,
+            collision,
+            ..
+        } = self
+        else {
+            return Ok(());
+        };
+        if *speed_units_per_ms == 0 {
+            return Err(DeliveryValidationError::new(
+                "Projectile.speed_units_per_ms",
+                "projectile speed_units_per_ms must be greater than zero",
+            ));
+        }
+        if *max_range_tiles == Some(0) {
+            return Err(DeliveryValidationError::new(
+                "Projectile.max_range_tiles",
+                "projectile max_range_tiles must be greater than zero",
+            ));
+        }
+        if *max_lifetime_ms == Some(0) {
+            return Err(DeliveryValidationError::new(
+                "Projectile.max_lifetime_ms",
+                "projectile max_lifetime_ms must be greater than zero",
+            ));
+        }
+        if *max_kills == Some(0) {
+            return Err(DeliveryValidationError::new(
+                "Projectile.max_kills",
+                "projectile max_kills must be greater than zero",
+            ));
+        }
+        if *max_pierces == Some(0) {
+            return Err(DeliveryValidationError::new(
+                "Projectile.max_pierces",
+                "projectile max_pierces must be greater than zero",
+            ));
+        }
+        if collision.max_hits == Some(0) {
+            return Err(DeliveryValidationError::new(
+                "Projectile.collision.max_hits",
+                "projectile collision max_hits must be greater than zero",
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn try_validate_basic_attack_consumer_contract(
+        &self,
+    ) -> Result<(), DeliveryValidationError> {
+        self.try_validate_projectile_scalar_contract()?;
+        let Self::Projectile {
+            hit_policy,
+            allow_targetless_cast,
+            max_range_tiles,
+            max_lifetime_ms,
+            max_kills,
+            max_pierces,
+            collision,
+            ..
+        } = self
+        else {
+            return match self {
+                Self::Instant => Ok(()),
+                Self::TileArea { .. } => Err(DeliveryValidationError::new(
+                    "TileArea",
+                    "TileArea delivery is skill-only for a basic-attack consumer",
+                )),
+                Self::Projectile { .. } => unreachable!(),
+            };
+        };
+        if *hit_policy != ProjectileHitPolicy::TargetLocked {
+            return Err(DeliveryValidationError::new(
+                "Projectile.hit_policy",
+                "DirectionalCollision is skill-only for a basic-attack consumer",
+            ));
+        }
+        if *allow_targetless_cast {
+            return Err(DeliveryValidationError::new(
+                "Projectile.allow_targetless_cast",
+                "allow_targetless_cast is skill-only for a basic-attack consumer",
+            ));
+        }
+        for (present, field_suffix, cause) in [
+            (
+                max_range_tiles.is_some(),
+                "Projectile.max_range_tiles",
+                "max_range_tiles is skill-only for a basic-attack consumer",
+            ),
+            (
+                max_lifetime_ms.is_some(),
+                "Projectile.max_lifetime_ms",
+                "max_lifetime_ms is skill-only for a basic-attack consumer",
+            ),
+            (
+                max_kills.is_some(),
+                "Projectile.max_kills",
+                "max_kills is skill-only for a basic-attack consumer",
+            ),
+            (
+                max_pierces.is_some(),
+                "Projectile.max_pierces",
+                "max_pierces is skill-only for a basic-attack consumer",
+            ),
+        ] {
+            if present {
+                return Err(DeliveryValidationError::new(field_suffix, cause));
+            }
+        }
+        let default_collision = SkillProjectileCollisionDef::default();
+        for (nondefault, field_suffix, cause) in [
+            (
+                collision.radius_units != default_collision.radius_units,
+                "Projectile.collision.radius_units",
+                "collision.radius_units is skill-only for a basic-attack consumer",
+            ),
+            (
+                collision.hit_targets != default_collision.hit_targets,
+                "Projectile.collision.hit_targets",
+                "collision.hit_targets is skill-only for a basic-attack consumer",
+            ),
+            (
+                collision.piercing != default_collision.piercing,
+                "Projectile.collision.piercing",
+                "collision.piercing is skill-only for a basic-attack consumer",
+            ),
+            (
+                collision.despawn_on_hit.is_some(),
+                "Projectile.collision.despawn_on_hit",
+                "collision.despawn_on_hit is skill-only for a basic-attack consumer",
+            ),
+            (
+                collision.max_hits.is_some(),
+                "Projectile.collision.max_hits",
+                "collision.max_hits is skill-only for a basic-attack consumer",
+            ),
+        ] {
+            if nondefault {
+                return Err(DeliveryValidationError::new(field_suffix, cause));
+            }
+        }
+        Ok(())
+    }
 }
 
 impl Default for SkillProjectileCollisionDef {
@@ -516,6 +681,7 @@ fn default_step_id() -> String {
 pub enum SkillCastTargetingDef {
     /// Explicit cast-level targeting independent from individual step execution targets.
     Explicit {
+        selection: SkillCastSelection,
         target: SkillTarget,
         reach: SkillTargetReach,
         #[serde(default)]
@@ -531,7 +697,25 @@ impl SkillCastTargetingDef {
         target_range: Option<TileRangePattern>,
         air_capable: bool,
     ) -> Self {
+        let selection = match target {
+            SkillTarget::SelfUnit => SkillCastSelection::SelfUnit,
+            SkillTarget::EnemySingle { .. } | SkillTarget::AllySingle => {
+                SkillCastSelection::AutomaticUnit
+            }
+            SkillTarget::CastTarget => SkillCastSelection::PlayerTile,
+        };
+        Self::explicit_with_selection(selection, target, reach, target_range, air_capable)
+    }
+
+    pub fn explicit_with_selection(
+        selection: SkillCastSelection,
+        target: SkillTarget,
+        reach: SkillTargetReach,
+        target_range: Option<TileRangePattern>,
+        air_capable: bool,
+    ) -> Self {
         Self::Explicit {
+            selection,
             target,
             reach,
             target_range,
@@ -557,7 +741,7 @@ pub struct SkillStepDef {
     #[serde(default)]
     pub delivery: DeliveryDef,
     #[serde(default)]
-    pub effects: Vec<SkillEffectDef>,
+    pub effects: Vec<authoring::AuthoredSkillEffect>,
     #[serde(default)]
     pub presentation: SkillPresentationDef,
 }
@@ -567,8 +751,42 @@ fn default_skill_name() -> String {
 }
 
 /// 데이터 기반 스킬 정의 (RON 로드 대상)
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SkillUseEffectRef {
+    pub step: String,
+    pub effect: String,
+}
+
+/// Which applied finite effects remain part of the caster's use of this skill.
+/// Delivery settlement and independently created children are separate owners.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub enum SkillUseLifetime {
+    Action,
+    ActionAndEffects { effects: Vec<SkillUseEffectRef> },
+}
+
+impl SkillUseLifetime {
+    pub fn effects(&self) -> &[SkillUseEffectRef] {
+        match self {
+            Self::Action => &[],
+            Self::ActionAndEffects { effects } => effects,
+        }
+    }
+
+    pub fn owns_effect(&self, step: &str, effect: &str) -> bool {
+        self.effects()
+            .iter()
+            .any(|owner| owner.step == step && owner.effect == effect)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SkillDef {
+    pub use_lifetime: SkillUseLifetime,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub flow: Option<std::sync::Arc<flow::SkillFlowDef>>,
     pub id: SkillId,
     #[serde(default = "default_skill_name")]
     pub name: String,
@@ -587,21 +805,61 @@ pub struct SkillDef {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum SkillEffectDef {
+    PersonalShieldGrant {
+        definition: crate::game::relic::structural::authoring::PersonalShieldGrantDef,
+    },
+    CreateObject {
+        definition: objects::CreateObjectDef,
+    },
+    Pull {
+        max_distance_tiles: u32,
+    },
+    HealthCost {
+        amount: u32,
+        allow_lethal: bool,
+    },
+    RechargeShield {
+        source_skill: SkillId,
+        amount: u32,
+    },
+    ShieldExpr {
+        amount: crate::game::value_expr::AmountExpr,
+        duration_ms: u32,
+        priority: i32,
+        shared_radius_units: Option<u32>,
+    },
+    Sustained {
+        definition: sustained::SustainedEffectDef,
+    },
     Damage {
+        #[serde(deserialize_with = "deserialize_signed_amount")]
         amount: i32,
+        damage_type: crate::game::battle::damage::DamageType,
+    },
+    DamageExpr {
+        amount: crate::game::value_expr::AmountExpr,
         damage_type: crate::game::battle::damage::DamageType,
     },
     ModifyDamage {
         modifiers: crate::game::battle::damage::DamageModifiers,
     },
     Heal {
+        #[serde(deserialize_with = "deserialize_signed_amount")]
         amount: i32,
+    },
+    HealExpr {
+        amount: crate::game::value_expr::AmountExpr,
     },
     ModifyResonance {
+        #[serde(deserialize_with = "deserialize_signed_amount")]
         amount: i32,
     },
-    ModifyStabilization {
+    ModifyTacticalResource {
+        #[serde(deserialize_with = "deserialize_signed_amount")]
         amount: i32,
+    },
+    Resources {
+        operations: Vec<crate::game::resource::ResourceOperation>,
     },
     ModifyStats {
         modifier: crate::game::stats::StatModifier,
@@ -614,6 +872,15 @@ pub enum SkillEffectDef {
     ExtraAttack {
         count: u8,
     },
+}
+impl crate::authoring::clone_shape::CloneShape for SkillTarget {
+    fn visit_clone_shape(
+        &self,
+        meter: &mut crate::authoring::control::CloneMeter,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        // This enum owns only a discriminant and the fixed UnitTargetRule.
+        meter.scan_storage(Some(2))
+    }
 }
 
 impl SkillDef {
@@ -635,7 +902,14 @@ impl SkillDef {
                 reach,
                 target_range,
                 air_capable,
+                ..
             } => Some((target, *reach, target_range.as_ref(), *air_capable)),
+        }
+    }
+
+    pub fn cast_selection(&self) -> SkillCastSelection {
+        match &self.cast_targeting {
+            SkillCastTargetingDef::Explicit { selection, .. } => *selection,
         }
     }
 }
@@ -659,7 +933,9 @@ mod tests {
                 id:"s1",
                 name:"Test Skill",
                 focus_time_ms:200,
-                cast_targeting:Explicit(
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:automatic_unit,
                     target:EnemySingle(rule:Nearest),
                     reach:pattern,
                     air_capable:false,
@@ -669,7 +945,7 @@ mod tests {
                         id:"hit",
                         target:EnemySingle(rule:Nearest),
                         delivery:Instant,
-                        effects:[Damage(amount:10, damage_type: Magic)],
+                        effects:[(id: "effect_01", op: Damage(amount:10, damage_type: Magic))],
                     ),
                 ],
             )
@@ -683,6 +959,7 @@ mod tests {
         assert_eq!(
             def.cast_targeting,
             SkillCastTargetingDef::Explicit {
+                selection: SkillCastSelection::AutomaticUnit,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -719,7 +996,9 @@ mod tests {
             r#"
             (
                 id:"s2",
-                cast_targeting:Explicit(
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:automatic_unit,
                     target:EnemySingle(rule:Nearest),
                     reach:pattern,
                     air_capable:false,
@@ -729,7 +1008,7 @@ mod tests {
                         id:"retarget",
                         target:EnemySingle(rule:Nearest),
                         targeting:RetargetOnStep,
-                        effects:[Damage(amount:10, damage_type: Magic)],
+                        effects:[(id: "effect_01", op: Damage(amount:10, damage_type: Magic))],
                     ),
                 ],
             )
@@ -746,7 +1025,9 @@ mod tests {
             r#"
             (
                 id:"s_damage_mod",
-                cast_targeting:Explicit(
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:automatic_unit,
                     target:EnemySingle(rule:Nearest),
                     reach:pattern,
                     air_capable:false,
@@ -756,9 +1037,8 @@ mod tests {
                         id:"hit",
                         target:EnemySingle(rule:Nearest),
                         effects:[
-                            ModifyDamage(modifiers:(magic_resist_penetration_flat:25)),
-                            Damage(amount:100, damage_type:Magic),
-                        ],
+                            (id: "effect_01", op: ModifyDamage(modifiers:(magic_resist_penetration_flat:25))),
+                            (id: "effect_02", op: Damage(amount:100, damage_type:Magic)),],
                     ),
                 ],
             )
@@ -767,7 +1047,7 @@ mod tests {
         .unwrap();
 
         assert!(matches!(
-            def.steps[0].effects[0],
+            def.steps[0].effects[0].op,
             SkillEffectDef::ModifyDamage { modifiers }
                 if modifiers.magic_resist_penetration_flat == 25
                     && modifiers.armor_penetration_flat == 0
@@ -775,12 +1055,14 @@ mod tests {
     }
 
     #[test]
-    fn skill_step_ron_deserialization_reads_stabilization_modifier() {
+    fn skill_step_ron_deserialization_reads_tactical_resource_modifier() {
         let def: SkillDef = ron::de::from_str(
             r#"
             (
                 id:"stabilize",
-                cast_targeting:Explicit(
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:self,
                     target:SelfUnit,
                     reach:pattern,
                     air_capable:false,
@@ -789,7 +1071,7 @@ mod tests {
                     (
                         id:"restore_stability",
                         target:SelfUnit,
-                        effects:[ModifyStabilization(amount:5)],
+                        effects:[(id: "effect_01", op: ModifyTacticalResource(amount:5))],
                     ),
                 ],
             )
@@ -798,9 +1080,37 @@ mod tests {
         .unwrap();
 
         assert!(matches!(
-            def.steps[0].effects[0],
-            SkillEffectDef::ModifyStabilization { amount: 5 }
+            def.steps[0].effects[0].op,
+            SkillEffectDef::ModifyTacticalResource { amount: 5 }
         ));
+    }
+
+    #[test]
+    fn skill_step_ron_rejects_legacy_stabilization_modifier() {
+        let error = ron::de::from_str::<SkillDef>(
+            r#"
+            (
+                id:"legacy_stabilize",
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:self,
+                    target:SelfUnit,
+                    reach:pattern,
+                    air_capable:false,
+                ),
+                steps:[
+                    (
+                        id:"legacy_restore",
+                        target:SelfUnit,
+                        effects:[(id: "legacy", op: ModifyStabilization(amount:5))],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .expect_err("legacy stabilization effect name must not deserialize");
+
+        assert!(error.to_string().contains("ModifyStabilization"));
     }
 
     #[test]
@@ -809,7 +1119,9 @@ mod tests {
             r#"
             (
                 id:"s3",
-                cast_targeting:Explicit(
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:self,
                     target:SelfUnit,
                     reach:pattern,
                     air_capable:false,
@@ -824,7 +1136,7 @@ mod tests {
                             buff_id:"poison",
                             max:Some(3),
                         ),
-                        effects:[Heal(amount:10)],
+                        effects:[(id: "effect_01", op: Heal(amount:10))],
                     ),
                 ],
             )
@@ -852,7 +1164,9 @@ mod tests {
             r#"
             (
                 id:"s4",
-                cast_targeting:Explicit(
+                use_lifetime: Action,
+                cast_targeting: Explicit(
+                    selection:automatic_unit,
                     target:EnemySingle(rule:LowestHealthEnemy),
                     reach:pattern,
                     air_capable:false,
@@ -861,7 +1175,7 @@ mod tests {
                     (
                         id:"charge",
                         target:SelfUnit,
-                        effects:[Heal(amount:10)],
+                        effects:[(id: "effect_01", op: Heal(amount:10))],
                     ),
                 ],
             )
@@ -872,6 +1186,7 @@ mod tests {
         assert_eq!(
             def.cast_targeting,
             SkillCastTargetingDef::Explicit {
+                selection: SkillCastSelection::AutomaticUnit,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
@@ -1020,12 +1335,68 @@ mod tests {
     }
 
     #[test]
-    fn projectile_collision_ron_rejects_zero_max_hits() {
-        let err = ron::de::from_str::<SkillProjectileCollisionDef>(
+    fn projectile_collision_raw_ron_candidate_defers_zero_max_hits_to_semantic_validation() {
+        let collision = ron::de::from_str::<SkillProjectileCollisionDef>(
             r#"(radius_units:125000, max_hits:Some(0))"#,
         )
-        .expect_err("max_hits == 0 must be rejected");
+        .expect("raw RON parsing may form an unpublished semantic candidate");
+        let error = collision
+            .try_validate_runtime_contract()
+            .expect_err("max_hits == 0 must reject before publication");
 
-        assert!(err.to_string().contains("non-zero max_hits"));
+        assert_eq!(error, "max_hits must be non-zero");
+    }
+}
+
+// RON 0.5 parses a negative number's magnitude before applying its sign.
+// Widen only signed SkillEffectDef amounts, then enforce the existing i32 wire range.
+fn deserialize_signed_amount<'de, D: serde::Deserializer<'de>>(d: D) -> Result<i32, D::Error> {
+    let value = i64::deserialize(d)?;
+    i32::try_from(value).map_err(serde::de::Error::custom)
+}
+
+#[cfg(test)]
+mod signed_amount_tests {
+    use super::*;
+    #[test]
+    fn r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds() {
+        for kind in [
+            "Damage",
+            "Heal",
+            "ModifyResonance",
+            "ModifyTacticalResource",
+        ] {
+            for value in [i32::MIN, i32::MIN + 1, -1, 0, i32::MAX] {
+                let suffix = if kind == "Damage" {
+                    ", damage_type: True"
+                } else {
+                    ""
+                };
+                let raw = format!("{kind}(amount: {value}{suffix})");
+                let op: SkillEffectDef = ron::de::from_str(&raw).unwrap();
+                let actual = match op {
+                    SkillEffectDef::Damage { amount, .. }
+                    | SkillEffectDef::Heal { amount }
+                    | SkillEffectDef::ModifyResonance { amount }
+                    | SkillEffectDef::ModifyTacticalResource { amount } => amount,
+                    _ => unreachable!(),
+                };
+                assert_eq!(actual, value);
+                let encoded = ron::ser::to_string(&op).unwrap();
+                assert!(encoded.contains(&value.to_string()));
+            }
+            for value in [i64::from(i32::MIN) - 1, i64::from(i32::MAX) + 1] {
+                let suffix = if kind == "Damage" {
+                    ", damage_type: True"
+                } else {
+                    ""
+                };
+                assert!(ron::de::from_str::<SkillEffectDef>(&format!(
+                    "{kind}(amount: {value}{suffix})"
+                ))
+                .is_err());
+            }
+        }
+        assert!(ron::de::from_str::<SkillEffectDef>("Heal(amount: 0, unknown: 1)").is_err());
     }
 }

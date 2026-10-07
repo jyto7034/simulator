@@ -1,4 +1,5 @@
 use super::GameCore;
+use crate::game::ability::SkillCastSelection;
 use crate::game::behavior::{
     ActionCapabilityDto, ActionDisabledReasonCode, ActionKind, GameError, PlayerBehavior,
     VisualNovelSnapshotDto,
@@ -17,7 +18,7 @@ impl GameCore {
         &self,
         visual_novel: Option<&VisualNovelSnapshotDto>,
     ) -> Result<Option<Vec<(ActionKind, BattleActionEvaluation)>>, GameError> {
-        if !matches!(self.state.game_state, GameState::InBattle { .. }) {
+        if !matches!(self.state.lifecycle.phase(), GameState::InBattle { .. }) {
             return Ok(None);
         }
 
@@ -67,10 +68,85 @@ impl GameCore {
         );
         let activate_skill = deployment_action(
             if deployment.as_ref().is_some_and(|state| {
+                state.deployed_units.iter().any(|unit| {
+                    if !unit.skill_readiness.eligibility.enabled {
+                        return false;
+                    }
+                    match unit.skill_readiness.selection {
+                        Some(SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile) => {
+                            active.tactical_focus.as_ref().is_some_and(|focus| {
+                                focus.caster_unit_instance_id == unit.unit_instance_id
+                                    && unit.skill_readiness.skill_id.as_ref()
+                                        == Some(&focus.skill_id)
+                            })
+                        }
+                        _ => active.tactical_focus.is_none(),
+                    }
+                })
+            }) {
+                BattleActionEvaluation::Enabled
+            } else {
+                BattleActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+            },
+        );
+        let begin_skill_targeting = deployment_action(
+            if active.tactical_focus.is_none()
+                && deployment.as_ref().is_some_and(|state| {
+                    state.deployed_units.iter().any(|unit| {
+                        unit.skill_readiness.eligibility.enabled
+                            && matches!(
+                                unit.skill_readiness.selection,
+                                Some(
+                                    SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile
+                                )
+                            )
+                    })
+                })
+            {
+                BattleActionEvaluation::Enabled
+            } else {
+                BattleActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+            },
+        );
+        let cancel_skill_targeting = deployment_action(if active.tactical_focus.is_some() {
+            BattleActionEvaluation::Enabled
+        } else {
+            BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant)
+        });
+        let preview_skill_target = cancel_skill_targeting;
+        let set_engagement_stance = deployment_action(
+            if deployment.as_ref().is_some_and(|state| {
+                state.deployed_units.iter().any(|unit| {
+                    unit.tactical_state.stance_eligibility.attack.enabled
+                        || unit.tactical_state.stance_eligibility.defense.enabled
+                })
+            }) {
+                BattleActionEvaluation::Enabled
+            } else {
+                BattleActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+            },
+        );
+        let tactical_relocate = deployment_action(
+            if deployment.as_ref().is_some_and(|state| {
                 state
                     .deployed_units
                     .iter()
-                    .any(|unit| unit.skill_readiness.eligibility.enabled)
+                    .any(|unit| unit.tactical_state.relocation_eligibility.enabled)
+            }) {
+                BattleActionEvaluation::Enabled
+            } else {
+                BattleActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+            },
+        );
+        let tactical_swap = deployment_action(
+            if deployment.as_ref().is_some_and(|state| {
+                state
+                    .deployed_units
+                    .iter()
+                    .filter(|unit| unit.tactical_state.relocation_eligibility.enabled)
+                    .take(2)
+                    .count()
+                    == 2
             }) {
                 BattleActionEvaluation::Enabled
             } else {
@@ -100,7 +176,7 @@ impl GameCore {
             }
         };
 
-        Ok(Some(vec![
+        let mut evaluations = vec![
             (
                 ActionKind::RequestBattleState,
                 if finished {
@@ -119,7 +195,13 @@ impl GameCore {
             ),
             (
                 ActionKind::RetreatBattle,
-                ordinary(BattleActionEvaluation::Enabled),
+                ordinary(if self.active_battle_retreat_available() {
+                    BattleActionEvaluation::Enabled
+                } else {
+                    BattleActionEvaluation::Disabled(
+                        ActionDisabledReasonCode::ProgressionUnavailable,
+                    )
+                }),
             ),
             (
                 ActionKind::PauseBattle,
@@ -139,18 +221,104 @@ impl GameCore {
             ),
             (
                 ActionKind::SetBattleSpeed,
-                ordinary(BattleActionEvaluation::Enabled),
+                ordinary(if active.has_selection() {
+                    BattleActionEvaluation::Disabled(ActionDisabledReasonCode::SelectionActive)
+                } else {
+                    BattleActionEvaluation::Enabled
+                }),
             ),
             (ActionKind::DeployUnit, deploy),
             (ActionKind::RequestDeploymentRangePreview, deploy),
             (ActionKind::WithdrawUnit, withdraw),
+            (ActionKind::SetEngagementStance, set_engagement_stance),
+            (ActionKind::TacticalRelocateUnit, tactical_relocate),
+            (ActionKind::TacticalSwapUnits, tactical_swap),
+            (
+                ActionKind::FocusBattleUnit,
+                ordinary(
+                    if active
+                        .battle
+                        .units
+                        .values()
+                        .any(|unit| unit.is_active() && unit.is_combatant())
+                    {
+                        BattleActionEvaluation::Enabled
+                    } else {
+                        BattleActionEvaluation::Disabled(
+                            ActionDisabledReasonCode::NoEligiblePayload,
+                        )
+                    },
+                ),
+            ),
+            (
+                ActionKind::ClearBattleFocus,
+                ordinary(if active.interaction.focused_unit_instance_id.is_some() {
+                    BattleActionEvaluation::Enabled
+                } else {
+                    BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant)
+                }),
+            ),
+            (ActionKind::BeginDeploymentSelection, deploy),
+            (
+                ActionKind::CancelDeploymentSelection,
+                ordinary(if active.interaction.deployment_employee_uuid.is_some() {
+                    BattleActionEvaluation::Enabled
+                } else {
+                    BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant)
+                }),
+            ),
+            (
+                ActionKind::OpenBattleSettings,
+                ordinary(if active.settings_open() {
+                    BattleActionEvaluation::Disabled(ActionDisabledReasonCode::AlreadyActive)
+                } else {
+                    BattleActionEvaluation::Enabled
+                }),
+            ),
+            (
+                ActionKind::CloseBattleSettings,
+                ordinary(if active.settings_open() {
+                    BattleActionEvaluation::Enabled
+                } else {
+                    BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant)
+                }),
+            ),
+            (ActionKind::BeginSkillTargeting, begin_skill_targeting),
+            (ActionKind::CancelSkillTargeting, cancel_skill_targeting),
+            (ActionKind::PreviewSkillTarget, preview_skill_target),
+            (
+                ActionKind::PreviewTacticalCommand,
+                ordinary(BattleActionEvaluation::Enabled),
+            ),
             (ActionKind::ActivateSkill, activate_skill),
             (ActionKind::AdvanceVisualNovel, advance_visual_novel),
             (
                 ActionKind::SelectVisualNovelChoice,
                 select_visual_novel_choice,
             ),
-        ]))
+        ];
+        if active.settings_open() && !finished {
+            for (action, evaluation) in &mut evaluations {
+                if !super::battle_interaction::settings_allows_action(*action) {
+                    *evaluation =
+                        BattleActionEvaluation::Disabled(ActionDisabledReasonCode::SettingsOpen);
+                }
+            }
+        }
+        debug_assert!(
+            evaluations
+                .iter()
+                .all(|(action, _)| action.route().uses_battle_preflight()),
+            "battle evaluator contains a command owned by another route"
+        );
+        debug_assert!(
+            ActionKind::ALL
+                .iter()
+                .filter(|action| action.route().uses_battle_preflight())
+                .all(|action| evaluations.iter().any(|(candidate, _)| candidate == action)),
+            "battle route descriptor contains a command missing from its evaluator"
+        );
+        Ok(Some(evaluations))
     }
 
     pub(super) fn project_battle_action_capabilities(
@@ -186,10 +354,14 @@ impl GameCore {
             return Ok(false);
         };
         let action = behavior.kind();
+        if !action.route().uses_battle_preflight() {
+            return Ok(false);
+        }
         let Some((_, evaluation)) = evaluations
             .into_iter()
             .find(|(candidate, _)| *candidate == action)
         else {
+            debug_assert!(false, "battle-routed action is missing from its evaluator");
             return Ok(false);
         };
 

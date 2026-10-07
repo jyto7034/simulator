@@ -1,0 +1,205 @@
+{
+  "errors": [],
+  "old_product": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+  "current_product": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+  "changed_product_paths": [
+    "core_enhanced/src/game/battle/core/basic_heal.rs",
+    "core_enhanced/src/game/battle/core/targeting.rs",
+    "core_enhanced/src/game/world/tests/u06_starter.rs"
+  ],
+  "canonical_changed": [
+    "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+  ],
+  "roadmap_body_unchanged": true,
+  "query_production_prefix_unchanged": true,
+  "independent_patch_sha256": "03815f9c64928361a889adf48f14bc47794c67f83d32568f83958847b97a95a4",
+  "exact_original_acceptances": {
+    "u06": 20,
+    "inherited": 141,
+    "r06": 31,
+    "dimensions": 10
+  },
+  "selector_additions": {
+    "V01": [],
+    "V02": [],
+    "V03": [],
+    "V04": [],
+    "V05": [
+      "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action",
+      "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query",
+      "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery"
+    ],
+    "V06": [],
+    "V07": [],
+    "V08": [
+      "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action",
+      "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query",
+      "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery"
+    ],
+    "V09": [],
+    "V10": [],
+    "V11": [],
+    "V12": [],
+    "V13": [],
+    "V14": [],
+    "V15": [
+      "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery"
+    ],
+    "V16": [],
+    "V17": [],
+    "V18": [],
+    "V19": [
+      "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action",
+      "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query",
+      "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery"
+    ],
+    "V20": [
+      "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery"
+    ]
+  },
+  "reused_receipts": 30,
+  "unchanged_old_record_paths": [
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_prepare_003.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_prepare_003.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_gameplay_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_gameplay_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_cost_002.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_cost_002.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_r05_summary_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_r05_summary_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_guards001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_guards001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_guards_allocator001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_guards_allocator001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_prepared_public_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_prepared_public_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_prepared_boundary_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_prepared_boundary_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_input_validation_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_input_validation_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_default_parity_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_default_parity_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_oracle_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_oracle_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_trace_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_trace_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_cli_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_cli_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_profile_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_profile_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_boundary_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_boundary_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_api_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_public_api_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_schema_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_schema_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_independent_area_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_independent_area_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_continuation_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_continuation_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_rewind_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_rewind_001.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_build_on.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_build_on.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_none.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_none.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_detached.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_detached.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_queue_full.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_queue_full.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_on.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_on.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_websocket.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_websocket.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_build_off.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_build_off.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_off.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_off.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_r05_002.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_r05_002.log",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_probe_001/RESULT.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/boundary_001/RESULT.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/input_validation_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/DEFAULT_NUMBERS_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/public_after/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/public_after_trace/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/cli_current/CLI_FINAL_SUMMARY_002.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/public_profile_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/public_boundary_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/public_api/RESULT.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_schema_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_independent_area_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_continuation_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_rewind_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/final_fault_001_SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_fault_final_001/SUMMARY.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_guards001_raw.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/evidence/public_guards_allocator001_raw.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/ADAPTATION_FINAL.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/PC_SUMMARY_CURRENT_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/PC_IMMEDIATE_ACCOUNTED_U06.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/pc_raw_current_001.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/R05_SUMMARY_CURRENT_003.json",
+    "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/r05_raw_current_002.json"
+  ],
+  "unchanged_compatibility_inputs": 419,
+  "unchanged_compatibility_harness": 18,
+  "unchanged_layout_accounting_paths": [
+    "core_enhanced/src/game/battle/core/types.rs",
+    "core_enhanced/src/game/data/abnormality_data.rs",
+    "core_enhanced/src/game/data/equipment_data.rs",
+    "core_enhanced/src/game/battle/types.rs",
+    "core_enhanced/src/game/battle/scenario.rs",
+    "core_enhanced/src/game/battle/core/build.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/authoring/clone_shape.rs"
+  ],
+  "official_basic_heal_definitions": [
+    {
+      "path": "game_resources/data/equipments/base.ron",
+      "flat": 8,
+      "percent": 100
+    },
+    {
+      "path": "game_resources/data/equipments/base.ron",
+      "flat": 4,
+      "percent": 50
+    }
+  ],
+  "exact_prior_auditor_probe_inputs": {
+    "Cargo.lock": "cdb3ce3acaa37ff72fc5a7551e2a64ac0f654f16e81d2d1340a4b429138e7fcb",
+    "Cargo.toml": "b727453259f4d26aa3beb42809cc853aaa895a651e02b7ea1eb9ce71a9fc77b2",
+    "src/main.rs": "4f2865169c5b2efe873c9d97796eeb69373ac3aec20caaaf35167c4bd65263b3"
+  },
+  "probe_summary": {
+    "coefficient_rounds_to_zero": {
+      "actor_spell_power": 0,
+      "attack_starts": 0,
+      "final_hp": 50,
+      "flat": 0,
+      "positive_hp_events": 0,
+      "spell_power_percent": 100,
+      "strict_decode_accepted": true
+    },
+    "positive_control": {
+      "actor_spell_power": 0,
+      "attack_starts": 4,
+      "final_hp": 90,
+      "flat": 10,
+      "positive_hp_events": 4,
+      "spell_power_percent": 0,
+      "strict_decode_accepted": true
+    },
+    "zero": {
+      "actor_spell_power": 0,
+      "attack_starts": 0,
+      "final_hp": 50,
+      "flat": 0,
+      "positive_hp_events": 0,
+      "spell_power_percent": 0,
+      "strict_decode_accepted": true
+    }
+  }
+}

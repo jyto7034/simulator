@@ -1,0 +1,29 @@
+{
+  "start": "2026-09-26T03:31:47.191Z",
+  "end": "2026-09-26T03:31:48.712Z",
+  "cwd": "/tmp/r06-f02-r01-audit.SDwxhw",
+  "command": [
+    "cargo",
+    "test",
+    "--manifest-path",
+    "/tmp/r06-f02-r01-audit.SDwxhw/core_enhanced/Cargo.toml",
+    "--offline",
+    "--locked",
+    "--release",
+    "--lib",
+    "released",
+    "--",
+    "--nocapture",
+    "--test-threads=1",
+    "--skip",
+    "reviewer_probes"
+  ],
+  "code": 0,
+  "signal": null,
+  "probe_hashes": {
+    "original_probes.rs": "6529e4093f290316749b2fe852589ab6360300d563bc6ab19747d8f52e5e18db",
+    "cast_probes.rs": "4c61e791150554df57a0a707507d2457b24a1da53d6fa6ab3a3fdadc6b18141d",
+    "producer_probes.rs": "1c628b5d722475f7ae426df4fec6952e8729892c211a4a4a54033d469a95e6d4",
+    "additional_probes.rs": "8a4df17aeab75bb57065fc9327b150a13ac4693a19286f3aa701e0eefe1dfb50"
+  }
+}

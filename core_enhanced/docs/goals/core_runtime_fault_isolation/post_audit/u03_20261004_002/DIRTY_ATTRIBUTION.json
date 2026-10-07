@@ -1,0 +1,24 @@
+{
+  "vcs_revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "correction_changed_paths": [
+    "core_enhanced/docs/core_runtime_contract.md",
+    "core_enhanced/src/application/fault_tests.rs",
+    "core_enhanced/src/game/battle/core/boss_runtime.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/sustained.rs",
+    "core_enhanced/src/game/battle/runtime_control.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/combat.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/combat.rs"
+  ],
+  "added_paths": [],
+  "auditor_product_mutations": [],
+  "auditor_writes": [
+    "core_enhanced/docs/goals/core_runtime_fault_isolation/post_audit/u03_20261004_002/**",
+    "/tmp/u03-successor-origin-probe/**"
+  ],
+  "cache_effect": "Isolated lib-test build reused shared Cargo cache. No release build was run by the auditor; surviving off release binary identity checked.",
+  "source_before": "Exact367-file predecessor target basis; original dirty work retained.",
+  "frozen_prior_audit_preserved": true
+}

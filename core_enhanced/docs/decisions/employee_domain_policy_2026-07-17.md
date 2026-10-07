@@ -16,7 +16,7 @@
 
 | 영역 | 현재 canonical |
 | --- | --- |
-| 직원 설정, 선발·채용, condition, Psychology의 플레이 규칙 | [game_rulebook.md](../game_rulebook.md) |
+| 직원 설정, 선발·채용, condition, Psychology의 플레이 규칙 | [archive/game_rulebook_legacy_2026-10-04.md](../archive/game_rulebook_legacy_2026-10-04.md) |
 | 직원 identity, recruitment, condition/result, Psychology runtime 경계 | [core_runtime_contract.md](../core_runtime_contract.md) |
 | 단일 `EmployeeDefinition` catalog와 strict loading | [data_loading_contract.md](../data_loading_contract.md) |
 | Unity-facing 직원/후보/condition/Psychology DTO | `/mnt/f/unity projects/ark/docs/unity_core_contract.md` |
@@ -164,7 +164,7 @@ Personality
 - 2026-07-19 후속 Dice Goal은 이 범용 체계를 도입하지 않고 Event 전용
   `EventAptitude` 하나를 직원 Profile에 구현했다.
 - 현재 Event aptitude의 gameplay/runtime/data 계약은 이 역사적 절이 아니라
-  [game_rulebook.md](../game_rulebook.md), [core_runtime_contract.md](../core_runtime_contract.md),
+  [archive/game_rulebook_legacy_2026-10-04.md](../archive/game_rulebook_legacy_2026-10-04.md), [core_runtime_contract.md](../core_runtime_contract.md),
   [data_loading_contract.md](../data_loading_contract.md)가 소유한다.
 
 ### 3.8 장기 신체 상태와 트라우마
@@ -298,7 +298,7 @@ RecruitmentNodeSession
 - skill fragments와 combat profile
 - `EmployeeTrustState`
 
-`docs/game_rulebook.md`도 직원을 장비, 스킬 파편, 신뢰도, HP와 트라우마를 통해 장기 관리하는 대상으로 정의한다.
+`docs/archive/game_rulebook_legacy_2026-10-04.md`도 직원을 장비, 스킬 파편, 신뢰도, HP와 트라우마를 통해 장기 관리하는 대상으로 정의한다.
 
 ### 4.2 후보 프로필과 전문성
 
@@ -318,7 +318,7 @@ RecruitmentNodeSession
 - 현재 `EmployeeTrustState`는 score, traits, memories와 recent reactions를 포함한다.
 - 현재 기본 정책은 `narrative_only`이며 memory/dialogue 중심 기능만 활성화한다.
 - high-risk refusal, trauma, pre-battle, ally-death와 combat modifier 계열 기능은 공식 활성화되지 않았다.
-- 신뢰도는 전투 수치보다 기억, 대사, 판단과 반응의 기준이라는 방향이 `docs/game_rulebook.md`에 기록되어 있다.
+- 신뢰도는 전투 수치보다 기억, 대사, 판단과 반응의 기준이라는 방향이 `docs/archive/game_rulebook_legacy_2026-10-04.md`에 기록되어 있다.
 - 기존 정책 기록은 dormant 기능을 당장 제거하지 않되, 공식 활성화 때 별도 정책 gate를 정하도록 한다.
 - Core가 dialogue cue를 생성할 수 있지만 현재 snapshot이 실제 cue payload 대신 count만 보존하는 경로가 있어 소비 계약은 완결되지 않았다.
 
@@ -509,7 +509,7 @@ Dice System에 직접 필요한 최소 선행 범위는 Profile의 판정 특성
 
 ## 12. 관련 근거
 
-- `docs/game_rulebook.md`: 직원 장기 관리와 신뢰도 정책
+- `docs/archive/game_rulebook_legacy_2026-10-04.md`: 직원 장기 관리와 신뢰도 정책
 - `docs/goals/core_component_refactor_master/employee_growth_trust_refactor.md`: 현재 직원/성장/신뢰도 runtime 감사
 - `docs/goals/core_component_refactor_master/POLICY_DECISIONS.md`: dormant trust 기능과 공식 활성화 보류 기록
 - `docs/decisions/event_employee_check_dice_policy_2026-07-17.md`: 이 직원 계약을 소비해 구현 완료된 후속 주사위 정책 결정

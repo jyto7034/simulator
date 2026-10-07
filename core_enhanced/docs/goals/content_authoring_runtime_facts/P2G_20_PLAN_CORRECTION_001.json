@@ -1,0 +1,7 @@
+{
+  "kind": "external locator correction, no policy change",
+  "input": "WR-CARF-P2G10-001",
+  "prior_plan": "RSP-CARF-P2G20-001",
+  "selected_plan": "RSP-CARF-P2G20-002",
+  "reason": "Actual Cargo/test/module lookup corrects guessed descriptor/binary/test path locators before formal observations. Requirement IDs, exact policy refs, claims, applicability and validation remain byte-equivalent. Earlier read log raw evidence can be bound only through new exact Input+Plan observation envelopes. No current Review Batch or source binding existed for plan001."
+}

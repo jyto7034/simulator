@@ -1,0 +1,6 @@
+{
+  "created_at_utc": "2026-10-06T04:34:23.408289+00:00",
+  "artifact": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_002/EVENT_OWNER_BOUNDARY_001.ko.md",
+  "sha256": "cf72606dfb92ad6691685a9c8b2669e2f2368f62953b2a3eaa236ea3446f77d6",
+  "basis": "existing Event HashMap ownership and explicit new payload scope; no capacity heuristic"
+}

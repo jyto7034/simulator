@@ -1,0 +1,82 @@
+{
+  "event_heavy": {
+    "repeatable": true,
+    "nearest_rank_p95_ns": 13966056,
+    "absolute_cap_ns": 25000000,
+    "absolute_cap_pass": true,
+    "one_sided_exact_regression_p": 1.0,
+    "statistically_supported_regression": false,
+    "deterministic_baseline_parity": true,
+    "allocation_retained_peak_guard_pass": true,
+    "peak_delta_bytes": [
+      255558,
+      255558,
+      255558,
+      255558,
+      255558
+    ],
+    "retained_delta_bytes": [
+      255558,
+      255558,
+      255558,
+      255558,
+      255558
+    ],
+    "allocation_count": [
+      41454,
+      41454,
+      41454,
+      41454,
+      41454
+    ],
+    "reallocation_count": [
+      1944,
+      1944,
+      1944,
+      1944,
+      1944
+    ]
+  },
+  "concurrent_sessions": {
+    "repeatable": true,
+    "nearest_rank_p95_ns": 8050968,
+    "absolute_cap_ns": 10000000,
+    "absolute_cap_pass": true,
+    "one_sided_exact_regression_p": 1.0,
+    "statistically_supported_regression": false,
+    "deterministic_baseline_parity": true,
+    "allocation_retained_peak_guard_pass": false,
+    "peak_delta_bytes": [
+      8874298,
+      9038036,
+      9011969,
+      9041800,
+      8985695
+    ],
+    "retained_delta_bytes": [
+      4196928,
+      4196928,
+      4196928,
+      4196928,
+      4196928
+    ],
+    "allocation_count": [
+      364268,
+      364268,
+      364268,
+      364268,
+      364268
+    ],
+    "reallocation_count": [
+      6660,
+      6660,
+      6660,
+      6660,
+      6660
+    ]
+  },
+  "concurrent_peak_excess_bytes": 11612,
+  "raw_exit_code": 101,
+  "classification": "warning_concurrent_peak_only",
+  "workload_rerun_in_review": false
+}

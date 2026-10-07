@@ -1,0 +1,383 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CRSO-003",
+        "Content Digest": "sha256:061633193d96ccba2f9e89a3f15e70e725633395813a37b07d9af03a4acf889e"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSO-004",
+          "Content Digest": "sha256:4ab226dbc7e3ccbd43d61f849511c6b5b1117d233f7db31f5ac72728f26cee24"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-01-DECIDED-002",
+                "Content Digest": "sha256:258a9abe6d6a54c21a8d6569747d322db8598b5bec1d76dcf748456dd2b297a3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-02-DECIDED-002",
+                "Content Digest": "sha256:4ca40296f7cb5d964a569e1691c11d43768f91b2db8c746a7eed12bac19937bd"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-03-DECIDED-002",
+                "Content Digest": "sha256:89c1bac96cc1a7aef89f891b172d26645c656ca7a14f5a5d36f08d3b0da20a41"
+              }
+            ],
+            "Required claim/boundary": "기존 기본값/ceiling·trusted parser·effective/raw identity",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "Cargo.lock",
+                "core_enhanced/Cargo.toml",
+                "core_enhanced/src/authoring/control.rs",
+                "core_enhanced/src/authoring/trial.rs",
+                "core_enhanced/src/game/battle/event_log.rs",
+                "core_enhanced/src/game/battle/runtime_control.rs",
+                "core_enhanced/src/game/value_expr/mod.rs",
+                "core_enhanced/src/game/value_expr/parse.rs"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-03-DECIDED-002",
+                "Content Digest": "sha256:89c1bac96cc1a7aef89f891b172d26645c656ca7a14f5a5d36f08d3b0da20a41"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-04-DECIDED-002",
+                "Content Digest": "sha256:df514629f2e3f72914bb0d5e356ec25896176c1afad4f67d5a52044b92430bb4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-05-DECIDED-002",
+                "Content Digest": "sha256:3286750c24883cfbd4f9734023810d3c127269afcd14db56db6833adb88695f8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-11-DECIDED-002",
+                "Content Digest": "sha256:16ca777c72f429e00ba4970c6389940dd7a738c88ed47d3259a3d36ba5bef93c"
+              }
+            ],
+            "Required claim/boundary": "실제 host→application→첫 spawn·restore·종료",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/events/combat.rs",
+                "core_enhanced/src/game/world.rs",
+                "core_enhanced/src/game/world/active_run.rs",
+                "core_enhanced/src/game/world/application.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/game/world/node_flow.rs",
+                "core_enhanced/src/game/world/resource_runtime.rs",
+                "game_server/src/env.rs",
+                "game_server/src/game/load_balance_actor/handlers.rs",
+                "game_server/src/game/load_balance_actor/messages.rs",
+                "game_server/src/game/load_balance_actor/mod.rs",
+                "game_server/src/game/player_game_actor/handlers.rs",
+                "game_server/src/game/player_game_actor/messages.rs",
+                "game_server/src/game/player_game_actor/mod.rs",
+                "game_server/src/game/player_game_actor/state.rs",
+                "game_server/src/lib.rs",
+                "game_server/src/main.rs"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-03-DECIDED-002",
+                "Content Digest": "sha256:89c1bac96cc1a7aef89f891b172d26645c656ca7a14f5a5d36f08d3b0da20a41"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-05-DECIDED-002",
+                "Content Digest": "sha256:3286750c24883cfbd4f9734023810d3c127269afcd14db56db6833adb88695f8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-06-DECIDED-002",
+                "Content Digest": "sha256:e0baf611a5402cf547cac87d78d2bfdcfd7236c3e4f2665903a0b1607a9f4e15"
+              }
+            ],
+            "Required claim/boundary": "authoring load→parse→compile→catalog→trial/API/CLI/preview/explain",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring/amount_query.rs",
+                "core_enhanced/src/authoring/mod.rs",
+                "core_enhanced/src/authoring/query.rs",
+                "core_enhanced/src/authoring/trial.rs",
+                "core_enhanced/src/bin/author_content.rs",
+                "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+                "core_enhanced/src/game/data/content_pack/mod.rs",
+                "core_enhanced/src/game/data/content_pack/raw.rs",
+                "core_enhanced/src/game/data/live_ron.rs",
+                "core_enhanced/src/game/data/mod.rs",
+                "core_enhanced/src/game/value_expr/catalog.rs",
+                "core_enhanced/src/game/value_expr/compile.rs",
+                "core_enhanced/src/game/value_expr/eval.rs"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-04-DECIDED-002",
+                "Content Digest": "sha256:df514629f2e3f72914bb0d5e356ec25896176c1afad4f67d5a52044b92430bb4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-07-DECIDED-002",
+                "Content Digest": "sha256:102e8ba045fdd75fbc8e336c1d8d87e1309ec83807634f2be2e4fd7b03995945"
+              }
+            ],
+            "Required claim/boundary": "history 생성·deserialize·import·cursor·snapshot",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core/mod.rs",
+                "core_enhanced/src/game/battle/event_log.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/game/world/snapshot.rs",
+                "core_enhanced/src/game/world/state.rs"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-08-DECIDED-002",
+                "Content Digest": "sha256:0f8af68df2715f4787291d61a564682f2cf86dc659291660180ae024375e8a93"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-10-DECIDED-002",
+                "Content Digest": "sha256:00f3d7aba179e3abaef212f4c72bd5c1d57dfa4611408415acbe247ab7882250"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-11-DECIDED-002",
+                "Content Digest": "sha256:16ca777c72f429e00ba4970c6389940dd7a738c88ed47d3259a3d36ba5bef93c"
+              }
+            ],
+            "Required claim/boundary": "bounded operation summary·peak·rollback·commit·cleanup",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring/control.rs",
+                "core_enhanced/src/game/battle/core/queue.rs",
+                "core_enhanced/src/game/battle/core/runtime_facts.rs",
+                "core_enhanced/src/game/battle/core/sim.rs",
+                "core_enhanced/src/game/battle/runtime_control.rs",
+                "core_enhanced/src/game/world/application.rs"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-09-DECIDED-002",
+                "Content Digest": "sha256:4f9b7fab6a9c97f8c2401758aa2152251a7a9a5c7b81c26fc4ddf3c4be9d4c7f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-10-DECIDED-002",
+                "Content Digest": "sha256:00f3d7aba179e3abaef212f4c72bd5c1d57dfa4611408415acbe247ab7882250"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-11-DECIDED-002",
+                "Content Digest": "sha256:16ca777c72f429e00ba4970c6389940dd7a738c88ed47d3259a3d36ba5bef93c"
+              }
+            ],
+            "Required claim/boundary": "metrics/exporter依存・host task・Prometheus/Grafana設定・boundedness",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "Cargo.lock",
+                "Cargo.toml",
+                "core_enhanced/Cargo.toml",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/evidence/exporter_Cargo.toml.txt",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/evidence/exporter_source_001.json",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/evidence/exporter_src_recorder.rs.txt",
+                "core_enhanced/docs/goals/core_runtime_safety_observability/evidence/exporter_src_registry.rs.txt",
+                "game_server/Cargo.toml",
+                "game_server/src/env.rs",
+                "game_server/src/main.rs"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSO-12-DECIDED-002",
+                "Content Digest": "sha256:3acbdaf63405740bc190868d8104ad28a022958eb8c7c67b25ffd9c6aadafd86"
+              }
+            ],
+            "Required claim/boundary": "既存U01/R05/R06/R07と製品回帰のcurrent basis",
+            "Source type/role": "Workspace Actual; exact frozen local evidence; official dependency evidence for RQ06",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/AUDIT_HANDOFF.md",
+                "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001/target/f01_action_flow_001/MANIFEST.json",
+                "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/AUDIT_CLOSURE.json",
+                "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/COMPLETION_AUDIT.md",
+                "core_enhanced/docs/roadmaps/core_first/execution/u01_closure_20261004_001/RESULT.ko.md"
+              ],
+              "dirty_basis": "preserve current workspace; hash and archive actually reviewed sources"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSO-002",
+                "Content Digest": "sha256:29746f6712bdb39ecc132155f80033aa7a90e9b07bfdac9e06522ec783a55020"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03"
+              ]
+            },
+            "Validation requirement": "CODE_REVIEW_001.ko.md의 해당 RQ current actual·TD delta·V 검증 경계를 정확한 source bytes와 연결한다."
+          }
+        ],
+        "Currentness Boundary": "Workspace only; no deployed/remote compatibility claim. Actual local host/bootstrap execution required by GEX.",
+        "Candidate Publication": "selected only by complete P2G-20 result",
+        "Supersedes Candidate Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CRSO-002",
+          "Content Digest": "sha256:38e52ad98181288e515fb320e4100ef19b37ce03801b27bc6eadd080e8dee6c5"
+        }
+      }
+    }
+  ]
+}

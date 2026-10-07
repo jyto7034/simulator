@@ -1,0 +1,15 @@
+{
+  "start": "2026-09-25T18:23:07.547753+00:00",
+  "end": "2026-09-25T18:23:07.655514+00:00",
+  "command": [
+    "rustfmt",
+    "--edition",
+    "2021",
+    "--check",
+    "--config",
+    "skip_children=true",
+    "src/game/battle/core/runtime_facts.rs",
+    "src/game/battle/core/value_expr_runtime.rs"
+  ],
+  "exit_code": 0
+}

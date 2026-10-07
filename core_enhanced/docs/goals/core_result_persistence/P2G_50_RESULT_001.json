@@ -1,0 +1,66 @@
+{
+  "stage": "P2G-50",
+  "status": "complete",
+  "Goal Set Ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CRRP-001",
+    "Content Digest": "sha256:641132140b489522adbc6dc9139cb4f1ff2d75ee7dc9fd2215e3fc379200f1ec"
+  },
+  "member_ids": [
+    "GOAL-CRRP-01"
+  ],
+  "validator": "P2G_50_VALIDATION_001.json",
+  "command": [
+    "node",
+    "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs",
+    "--freeze",
+    "core_enhanced/docs/goals/core_result_persistence/P2G_30_FREEZE_001.json",
+    "--plan",
+    "core_enhanced/docs/goals/core_result_persistence/P2G_40_PHASE_PLAN_001.json",
+    "--receipt",
+    "core_enhanced/docs/goals/core_result_persistence/P2G_40_VALIDATION_RECEIPT_001.json",
+    "--goal-set",
+    "core_enhanced/docs/goals/core_result_persistence/P2G_50_GOAL_SET.ko.md",
+    "--quality-contract",
+    "2"
+  ],
+  "raw_exit": 0,
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRRP-005",
+      "Content Digest": "sha256:6594f43116416406ba9a159653a2015234fd44668ab1a532895df91b4cb672d5"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRRP-001",
+      "Content Digest": "sha256:107a5385639211cb4687f1414bf94085b379f14fd2e2a551c435bcf9c259d06c"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRRP-001",
+      "Content Digest": "sha256:f47da26534a72cb0553742fa36ea59c8fc6bae01cdf45b8d686cb72143a82a5b"
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CRRP-001",
+      "Content Digest": "sha256:641132140b489522adbc6dc9139cb4f1ff2d75ee7dc9fd2215e3fc379200f1ec"
+    },
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "semantic_review": {
+    "all15_frozen_acceptances": true,
+    "atomic_result_restore_durable_host_delivery": true,
+    "all15_seams_assigned": true,
+    "all10_dimensions_required": true,
+    "pre_post_intent_and_U03_fault_distinct": true,
+    "actual_crash_concurrent_choice_and_socket_required": true,
+    "112_inherited_and31_R06": true,
+    "unsupported_original_protection": true,
+    "no_implementation_or_independent_completion_claim": true
+  },
+  "P2G-50 Resolution Record Ref Set": [],
+  "next": "P2G-60"
+}

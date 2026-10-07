@@ -1,0 +1,1058 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2800" height="3010" viewBox="0 0 2800 3010">
+<title>시설 지도 재검토 시안 02 — 여러 원정에 걸친 탐사</title>
+<desc>기록동 29, 중앙본부동 27, 추출동 28개 탐사 방. 입구와 최종방 포함 총 89개. 1~3층 동간 이동, 4층부터 동별 독립. 방 이름과 수량 및 배치는 검토값.</desc>
+<rect x="0" y="0" width="2800" height="3010" rx="0" fill="#f7f8fc" stroke="none" stroke-width="1"/>
+<text class="" x="80" y="58" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="40" font-weight="700" fill="#25354b">시설 지도 · 재검토 시안 02</text>
+<text class="" x="80" y="108" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="400" fill="#5d6d83">여러 원정에 걸쳐 다른 갈래를 탐사하는 시설  |  고정 지도 · 원정별 활동 배정</text>
+<rect x="2070" y="35" width="640" height="84" rx="15" fill="#e8edf5" stroke="none" stroke-width="1"/>
+<text class="" x="2390" y="60" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#25354b">탐사 방 84 + 입구 1 + 최종방 4 = 89개</text>
+<text class="" x="2390" y="95" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="400" fill="#5d6d83">방 수 · 이름 · 활동 노드 수 · 조우 위치 모두 검토안</text>
+<rect x="90" y="370" width="2650" height="840" rx="24" fill="#e7f2f4" stroke="none" stroke-width="1"/>
+<rect x="90" y="1330" width="850" height="1525" rx="24" fill="#eaf1f8" stroke="none" stroke-width="1"/>
+<rect x="990" y="1330" width="850" height="1525" rx="24" fill="#f0edf7" stroke="none" stroke-width="1"/>
+<rect x="1890" y="1330" width="850" height="1525" rx="24" fill="#eaf4ee" stroke="none" stroke-width="1"/>
+<text class="" x="43" y="450" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">1층</text>
+<text class="" x="43" y="760" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">2층</text>
+<text class="" x="43" y="1070" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">3층</text>
+<text class="" x="43" y="1430" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">4층</text>
+<text class="" x="43" y="1760" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">5층</text>
+<text class="" x="43" y="2090" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">6층</text>
+<text class="" x="43" y="2470" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">7층</text>
+<text class="" x="43" y="2780" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">8층</text>
+<text class="" x="43" y="215" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#57667c">0층</text>
+<text class="" x="1370" y="1260" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="24" font-weight="700" fill="#34475f">4층부터 동간 이동 불가  ·  동 내부에서는 같은 층의 갈래와 고리를 탐사</text>
+<g class="edges">
+<polyline points="305.0,425.6 400.0,402.4" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,402.4 387.2,400.4 389.5,410.1" fill="#91a0b3"/>
+<polygon points="305.0,425.6 317.8,427.6 315.5,417.9" fill="#91a0b3"/>
+<polyline points="600.0,402.4 695.0,425.6" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,425.6 684.5,417.9 682.2,427.6" fill="#91a0b3"/>
+<polygon points="600.0,402.4 610.5,410.1 612.8,400.4" fill="#91a0b3"/>
+<polyline points="305.0,450.0 695.0,450.0" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,450.0 683.0,445.0 683.0,455.0" fill="#91a0b3"/>
+<polygon points="305.0,450.0 317.0,455.0 317.0,445.0" fill="#91a0b3"/>
+<polyline points="305.0,739.3 400.0,719.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,719.7 387.2,717.2 389.3,727.0" fill="#91a0b3"/>
+<polygon points="305.0,739.3 317.8,741.8 315.7,732.0" fill="#91a0b3"/>
+<polyline points="600.0,719.7 695.0,739.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,739.3 684.3,732.0 682.2,741.8" fill="#91a0b3"/>
+<polygon points="600.0,719.7 610.7,727.0 612.8,717.2" fill="#91a0b3"/>
+<polyline points="305.0,780.7 400.0,800.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,800.3 389.3,793.0 387.2,802.8" fill="#91a0b3"/>
+<polygon points="305.0,780.7 315.7,788.0 317.8,778.2" fill="#91a0b3"/>
+<polyline points="600.0,800.3 695.0,780.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,780.7 682.2,778.2 684.3,788.0" fill="#91a0b3"/>
+<polygon points="600.0,800.3 612.8,802.8 610.7,793.0" fill="#91a0b3"/>
+<polyline points="305.0,1049.3 400.0,1029.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,1029.7 387.2,1027.2 389.3,1037.0" fill="#91a0b3"/>
+<polygon points="305.0,1049.3 317.8,1051.8 315.7,1042.0" fill="#91a0b3"/>
+<polyline points="600.0,1029.7 695.0,1049.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1049.3 684.3,1042.0 682.2,1051.8" fill="#91a0b3"/>
+<polygon points="600.0,1029.7 610.7,1037.0 612.8,1027.2" fill="#91a0b3"/>
+<polyline points="305.0,1090.7 400.0,1110.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,1110.3 389.3,1103.0 387.2,1112.8" fill="#91a0b3"/>
+<polygon points="305.0,1090.7 315.7,1098.0 317.8,1088.2" fill="#91a0b3"/>
+<polyline points="600.0,1110.3 695.0,1090.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1090.7 682.2,1088.2 684.3,1098.0" fill="#91a0b3"/>
+<polygon points="600.0,1110.3 612.8,1112.8 610.7,1103.0" fill="#91a0b3"/>
+<polyline points="305.0,1409.3 400.0,1389.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,1389.7 387.2,1387.2 389.3,1397.0" fill="#91a0b3"/>
+<polygon points="305.0,1409.3 317.8,1411.8 315.7,1402.0" fill="#91a0b3"/>
+<polyline points="600.0,1389.7 695.0,1409.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1409.3 684.3,1402.0 682.2,1411.8" fill="#91a0b3"/>
+<polygon points="600.0,1389.7 610.7,1397.0 612.8,1387.2" fill="#91a0b3"/>
+<polyline points="305.0,1450.7 400.0,1470.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,1470.3 389.3,1463.0 387.2,1472.8" fill="#91a0b3"/>
+<polygon points="305.0,1450.7 315.7,1458.0 317.8,1448.2" fill="#91a0b3"/>
+<polyline points="600.0,1470.3 695.0,1450.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1450.7 682.2,1448.2 684.3,1458.0" fill="#91a0b3"/>
+<polygon points="600.0,1470.3 612.8,1472.8 610.7,1463.0" fill="#91a0b3"/>
+<polyline points="600.0,1513.7 695.0,1535.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1535.3 684.4,1527.8 682.2,1537.5" fill="#91a0b3"/>
+<polygon points="600.0,1513.7 610.6,1521.2 612.8,1511.5" fill="#91a0b3"/>
+<polyline points="305.0,1739.3 400.0,1719.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,1719.7 387.2,1717.2 389.3,1727.0" fill="#91a0b3"/>
+<polygon points="305.0,1739.3 317.8,1741.8 315.7,1732.0" fill="#91a0b3"/>
+<polyline points="600.0,1719.7 695.0,1739.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1739.3 684.3,1732.0 682.2,1741.8" fill="#91a0b3"/>
+<polygon points="600.0,1719.7 610.7,1727.0 612.8,1717.2" fill="#91a0b3"/>
+<polyline points="305.0,1780.7 400.0,1800.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,1800.3 389.3,1793.0 387.2,1802.8" fill="#91a0b3"/>
+<polygon points="305.0,1780.7 315.7,1788.0 317.8,1778.2" fill="#91a0b3"/>
+<polyline points="600.0,1800.3 695.0,1780.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,1780.7 682.2,1778.2 684.3,1788.0" fill="#91a0b3"/>
+<polygon points="600.0,1800.3 612.8,1802.8 610.7,1793.0" fill="#91a0b3"/>
+<polyline points="305.0,2069.3 400.0,2049.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,2049.7 387.2,2047.2 389.3,2057.0" fill="#91a0b3"/>
+<polygon points="305.0,2069.3 317.8,2071.8 315.7,2062.0" fill="#91a0b3"/>
+<polyline points="600.0,2049.7 695.0,2069.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,2069.3 684.3,2062.0 682.2,2071.8" fill="#91a0b3"/>
+<polygon points="600.0,2049.7 610.7,2057.0 612.8,2047.2" fill="#91a0b3"/>
+<polyline points="305.0,2110.7 400.0,2130.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,2130.3 389.3,2123.0 387.2,2132.8" fill="#91a0b3"/>
+<polygon points="305.0,2110.7 315.7,2118.0 317.8,2108.2" fill="#91a0b3"/>
+<polyline points="600.0,2130.3 695.0,2110.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,2110.7 682.2,2108.2 684.3,2118.0" fill="#91a0b3"/>
+<polygon points="600.0,2130.3 612.8,2132.8 610.7,2123.0" fill="#91a0b3"/>
+<polyline points="600.0,2173.7 695.0,2195.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,2195.3 684.4,2187.8 682.2,2197.5" fill="#91a0b3"/>
+<polygon points="600.0,2173.7 610.6,2181.2 612.8,2171.5" fill="#91a0b3"/>
+<polyline points="305.0,2449.3 400.0,2429.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,2429.7 387.2,2427.2 389.3,2437.0" fill="#91a0b3"/>
+<polygon points="305.0,2449.3 317.8,2451.8 315.7,2442.0" fill="#91a0b3"/>
+<polyline points="600.0,2429.7 695.0,2449.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,2449.3 684.3,2442.0 682.2,2451.8" fill="#91a0b3"/>
+<polygon points="600.0,2429.7 610.7,2437.0 612.8,2427.2" fill="#91a0b3"/>
+<polyline points="305.0,2490.7 400.0,2510.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="400.0,2510.3 389.3,2503.0 387.2,2512.8" fill="#91a0b3"/>
+<polygon points="305.0,2490.7 315.7,2498.0 317.8,2488.2" fill="#91a0b3"/>
+<polyline points="600.0,2510.3 695.0,2490.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="695.0,2490.7 682.2,2488.2 684.3,2498.0" fill="#91a0b3"/>
+<polygon points="600.0,2510.3 612.8,2512.8 610.7,2503.0" fill="#91a0b3"/>
+<polyline points="1205.0,425.6 1300.0,402.4" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,402.4 1287.2,400.4 1289.5,410.1" fill="#91a0b3"/>
+<polygon points="1205.0,425.6 1217.8,427.6 1215.5,417.9" fill="#91a0b3"/>
+<polyline points="1500.0,402.4 1595.0,425.6" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,425.6 1584.5,417.9 1582.2,427.6" fill="#91a0b3"/>
+<polygon points="1500.0,402.4 1510.5,410.1 1512.8,400.4" fill="#91a0b3"/>
+<polyline points="1205.0,450.0 1595.0,450.0" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,450.0 1583.0,445.0 1583.0,455.0" fill="#91a0b3"/>
+<polygon points="1205.0,450.0 1217.0,455.0 1217.0,445.0" fill="#91a0b3"/>
+<polyline points="1205.0,739.3 1300.0,719.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,719.7 1287.2,717.2 1289.3,727.0" fill="#91a0b3"/>
+<polygon points="1205.0,739.3 1217.8,741.8 1215.7,732.0" fill="#91a0b3"/>
+<polyline points="1500.0,719.7 1595.0,739.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,739.3 1584.3,732.0 1582.2,741.8" fill="#91a0b3"/>
+<polygon points="1500.0,719.7 1510.7,727.0 1512.8,717.2" fill="#91a0b3"/>
+<polyline points="1205.0,780.7 1300.0,800.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,800.3 1289.3,793.0 1287.2,802.8" fill="#91a0b3"/>
+<polygon points="1205.0,780.7 1215.7,788.0 1217.8,778.2" fill="#91a0b3"/>
+<polyline points="1500.0,800.3 1595.0,780.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,780.7 1582.2,778.2 1584.3,788.0" fill="#91a0b3"/>
+<polygon points="1500.0,800.3 1512.8,802.8 1510.7,793.0" fill="#91a0b3"/>
+<polyline points="1205.0,1049.3 1300.0,1029.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,1029.7 1287.2,1027.2 1289.3,1037.0" fill="#91a0b3"/>
+<polygon points="1205.0,1049.3 1217.8,1051.8 1215.7,1042.0" fill="#91a0b3"/>
+<polyline points="1500.0,1029.7 1595.0,1049.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1049.3 1584.3,1042.0 1582.2,1051.8" fill="#91a0b3"/>
+<polygon points="1500.0,1029.7 1510.7,1037.0 1512.8,1027.2" fill="#91a0b3"/>
+<polyline points="1205.0,1090.7 1300.0,1110.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,1110.3 1289.3,1103.0 1287.2,1112.8" fill="#91a0b3"/>
+<polygon points="1205.0,1090.7 1215.7,1098.0 1217.8,1088.2" fill="#91a0b3"/>
+<polyline points="1500.0,1110.3 1595.0,1090.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1090.7 1582.2,1088.2 1584.3,1098.0" fill="#91a0b3"/>
+<polygon points="1500.0,1110.3 1512.8,1112.8 1510.7,1103.0" fill="#91a0b3"/>
+<polyline points="1205.0,1409.3 1300.0,1389.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,1389.7 1287.2,1387.2 1289.3,1397.0" fill="#91a0b3"/>
+<polygon points="1205.0,1409.3 1217.8,1411.8 1215.7,1402.0" fill="#91a0b3"/>
+<polyline points="1500.0,1389.7 1595.0,1409.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1409.3 1584.3,1402.0 1582.2,1411.8" fill="#91a0b3"/>
+<polygon points="1500.0,1389.7 1510.7,1397.0 1512.8,1387.2" fill="#91a0b3"/>
+<polyline points="1205.0,1450.7 1300.0,1470.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,1470.3 1289.3,1463.0 1287.2,1472.8" fill="#91a0b3"/>
+<polygon points="1205.0,1450.7 1215.7,1458.0 1217.8,1448.2" fill="#91a0b3"/>
+<polyline points="1500.0,1470.3 1595.0,1450.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1450.7 1582.2,1448.2 1584.3,1458.0" fill="#91a0b3"/>
+<polygon points="1500.0,1470.3 1512.8,1472.8 1510.7,1463.0" fill="#91a0b3"/>
+<polyline points="1205.0,1739.3 1300.0,1719.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,1719.7 1287.2,1717.2 1289.3,1727.0" fill="#91a0b3"/>
+<polygon points="1205.0,1739.3 1217.8,1741.8 1215.7,1732.0" fill="#91a0b3"/>
+<polyline points="1500.0,1719.7 1595.0,1739.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1739.3 1584.3,1732.0 1582.2,1741.8" fill="#91a0b3"/>
+<polygon points="1500.0,1719.7 1510.7,1727.0 1512.8,1717.2" fill="#91a0b3"/>
+<polyline points="1205.0,1780.7 1300.0,1800.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,1800.3 1289.3,1793.0 1287.2,1802.8" fill="#91a0b3"/>
+<polygon points="1205.0,1780.7 1215.7,1788.0 1217.8,1778.2" fill="#91a0b3"/>
+<polyline points="1500.0,1800.3 1595.0,1780.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1780.7 1582.2,1778.2 1584.3,1788.0" fill="#91a0b3"/>
+<polygon points="1500.0,1800.3 1512.8,1802.8 1510.7,1793.0" fill="#91a0b3"/>
+<polyline points="1500.0,1843.7 1595.0,1865.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,1865.3 1584.4,1857.8 1582.2,1867.5" fill="#91a0b3"/>
+<polygon points="1500.0,1843.7 1510.6,1851.2 1512.8,1841.5" fill="#91a0b3"/>
+<polyline points="1205.0,2069.3 1300.0,2049.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,2049.7 1287.2,2047.2 1289.3,2057.0" fill="#91a0b3"/>
+<polygon points="1205.0,2069.3 1217.8,2071.8 1215.7,2062.0" fill="#91a0b3"/>
+<polyline points="1500.0,2049.7 1595.0,2069.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,2069.3 1584.3,2062.0 1582.2,2071.8" fill="#91a0b3"/>
+<polygon points="1500.0,2049.7 1510.7,2057.0 1512.8,2047.2" fill="#91a0b3"/>
+<polyline points="1205.0,2110.7 1300.0,2130.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,2130.3 1289.3,2123.0 1287.2,2132.8" fill="#91a0b3"/>
+<polygon points="1205.0,2110.7 1215.7,2118.0 1217.8,2108.2" fill="#91a0b3"/>
+<polyline points="1500.0,2130.3 1595.0,2110.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,2110.7 1582.2,2108.2 1584.3,2118.0" fill="#91a0b3"/>
+<polygon points="1500.0,2130.3 1512.8,2132.8 1510.7,2123.0" fill="#91a0b3"/>
+<polyline points="1205.0,2445.6 1300.0,2422.4" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1300.0,2422.4 1287.2,2420.4 1289.5,2430.1" fill="#91a0b3"/>
+<polygon points="1205.0,2445.6 1217.8,2447.6 1215.5,2437.9" fill="#91a0b3"/>
+<polyline points="1500.0,2422.4 1595.0,2445.6" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,2445.6 1584.5,2437.9 1582.2,2447.6" fill="#91a0b3"/>
+<polygon points="1500.0,2422.4 1510.5,2430.1 1512.8,2420.4" fill="#91a0b3"/>
+<polyline points="1205.0,2470.0 1595.0,2470.0" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1595.0,2470.0 1583.0,2465.0 1583.0,2475.0" fill="#91a0b3"/>
+<polygon points="1205.0,2470.0 1217.0,2475.0 1217.0,2465.0" fill="#91a0b3"/>
+<polyline points="2105.0,425.6 2200.0,402.4" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,402.4 2187.2,400.4 2189.5,410.1" fill="#91a0b3"/>
+<polygon points="2105.0,425.6 2117.8,427.6 2115.5,417.9" fill="#91a0b3"/>
+<polyline points="2400.0,402.4 2495.0,425.6" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,425.6 2484.5,417.9 2482.2,427.6" fill="#91a0b3"/>
+<polygon points="2400.0,402.4 2410.5,410.1 2412.8,400.4" fill="#91a0b3"/>
+<polyline points="2105.0,450.0 2495.0,450.0" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,450.0 2483.0,445.0 2483.0,455.0" fill="#91a0b3"/>
+<polygon points="2105.0,450.0 2117.0,455.0 2117.0,445.0" fill="#91a0b3"/>
+<polyline points="2105.0,739.3 2200.0,719.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,719.7 2187.2,717.2 2189.3,727.0" fill="#91a0b3"/>
+<polygon points="2105.0,739.3 2117.8,741.8 2115.7,732.0" fill="#91a0b3"/>
+<polyline points="2400.0,719.7 2495.0,739.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,739.3 2484.3,732.0 2482.2,741.8" fill="#91a0b3"/>
+<polygon points="2400.0,719.7 2410.7,727.0 2412.8,717.2" fill="#91a0b3"/>
+<polyline points="2105.0,780.7 2200.0,800.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,800.3 2189.3,793.0 2187.2,802.8" fill="#91a0b3"/>
+<polygon points="2105.0,780.7 2115.7,788.0 2117.8,778.2" fill="#91a0b3"/>
+<polyline points="2400.0,800.3 2495.0,780.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,780.7 2482.2,778.2 2484.3,788.0" fill="#91a0b3"/>
+<polygon points="2400.0,800.3 2412.8,802.8 2410.7,793.0" fill="#91a0b3"/>
+<polyline points="2105.0,1049.3 2200.0,1029.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,1029.7 2187.2,1027.2 2189.3,1037.0" fill="#91a0b3"/>
+<polygon points="2105.0,1049.3 2117.8,1051.8 2115.7,1042.0" fill="#91a0b3"/>
+<polyline points="2400.0,1029.7 2495.0,1049.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,1049.3 2484.3,1042.0 2482.2,1051.8" fill="#91a0b3"/>
+<polygon points="2400.0,1029.7 2410.7,1037.0 2412.8,1027.2" fill="#91a0b3"/>
+<polyline points="2105.0,1090.7 2200.0,1110.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,1110.3 2189.3,1103.0 2187.2,1112.8" fill="#91a0b3"/>
+<polygon points="2105.0,1090.7 2115.7,1098.0 2117.8,1088.2" fill="#91a0b3"/>
+<polyline points="2400.0,1110.3 2495.0,1090.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,1090.7 2482.2,1088.2 2484.3,1098.0" fill="#91a0b3"/>
+<polygon points="2400.0,1110.3 2412.8,1112.8 2410.7,1103.0" fill="#91a0b3"/>
+<polyline points="2105.0,1409.3 2200.0,1389.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,1389.7 2187.2,1387.2 2189.3,1397.0" fill="#91a0b3"/>
+<polygon points="2105.0,1409.3 2117.8,1411.8 2115.7,1402.0" fill="#91a0b3"/>
+<polyline points="2400.0,1389.7 2495.0,1409.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,1409.3 2484.3,1402.0 2482.2,1411.8" fill="#91a0b3"/>
+<polygon points="2400.0,1389.7 2410.7,1397.0 2412.8,1387.2" fill="#91a0b3"/>
+<polyline points="2105.0,1450.7 2200.0,1470.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,1470.3 2189.3,1463.0 2187.2,1472.8" fill="#91a0b3"/>
+<polygon points="2105.0,1450.7 2115.7,1458.0 2117.8,1448.2" fill="#91a0b3"/>
+<polyline points="2400.0,1470.3 2495.0,1450.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,1450.7 2482.2,1448.2 2484.3,1458.0" fill="#91a0b3"/>
+<polygon points="2400.0,1470.3 2412.8,1472.8 2410.7,1463.0" fill="#91a0b3"/>
+<polyline points="2105.0,1739.3 2200.0,1719.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,1719.7 2187.2,1717.2 2189.3,1727.0" fill="#91a0b3"/>
+<polygon points="2105.0,1739.3 2117.8,1741.8 2115.7,1732.0" fill="#91a0b3"/>
+<polyline points="2400.0,1719.7 2495.0,1739.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,1739.3 2484.3,1732.0 2482.2,1741.8" fill="#91a0b3"/>
+<polygon points="2400.0,1719.7 2410.7,1727.0 2412.8,1717.2" fill="#91a0b3"/>
+<polyline points="2105.0,1780.7 2200.0,1800.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,1800.3 2189.3,1793.0 2187.2,1802.8" fill="#91a0b3"/>
+<polygon points="2105.0,1780.7 2115.7,1788.0 2117.8,1778.2" fill="#91a0b3"/>
+<polyline points="2400.0,1800.3 2495.0,1780.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,1780.7 2482.2,1778.2 2484.3,1788.0" fill="#91a0b3"/>
+<polygon points="2400.0,1800.3 2412.8,1802.8 2410.7,1793.0" fill="#91a0b3"/>
+<polyline points="2105.0,2069.3 2200.0,2049.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,2049.7 2187.2,2047.2 2189.3,2057.0" fill="#91a0b3"/>
+<polygon points="2105.0,2069.3 2117.8,2071.8 2115.7,2062.0" fill="#91a0b3"/>
+<polyline points="2400.0,2049.7 2495.0,2069.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,2069.3 2484.3,2062.0 2482.2,2071.8" fill="#91a0b3"/>
+<polygon points="2400.0,2049.7 2410.7,2057.0 2412.8,2047.2" fill="#91a0b3"/>
+<polyline points="2105.0,2110.7 2200.0,2130.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,2130.3 2189.3,2123.0 2187.2,2132.8" fill="#91a0b3"/>
+<polygon points="2105.0,2110.7 2115.7,2118.0 2117.8,2108.2" fill="#91a0b3"/>
+<polyline points="2400.0,2130.3 2495.0,2110.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,2110.7 2482.2,2108.2 2484.3,2118.0" fill="#91a0b3"/>
+<polygon points="2400.0,2130.3 2412.8,2132.8 2410.7,2123.0" fill="#91a0b3"/>
+<polyline points="2400.0,2173.7 2495.0,2195.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,2195.3 2484.4,2187.8 2482.2,2197.5" fill="#91a0b3"/>
+<polygon points="2400.0,2173.7 2410.6,2181.2 2412.8,2171.5" fill="#91a0b3"/>
+<polyline points="2105.0,2449.3 2200.0,2429.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,2429.7 2187.2,2427.2 2189.3,2437.0" fill="#91a0b3"/>
+<polygon points="2105.0,2449.3 2117.8,2451.8 2115.7,2442.0" fill="#91a0b3"/>
+<polyline points="2400.0,2429.7 2495.0,2449.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,2449.3 2484.3,2442.0 2482.2,2451.8" fill="#91a0b3"/>
+<polygon points="2400.0,2429.7 2410.7,2437.0 2412.8,2427.2" fill="#91a0b3"/>
+<polyline points="2105.0,2490.7 2200.0,2510.3" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2200.0,2510.3 2189.3,2503.0 2187.2,2512.8" fill="#91a0b3"/>
+<polygon points="2105.0,2490.7 2115.7,2498.0 2117.8,2488.2" fill="#91a0b3"/>
+<polyline points="2400.0,2510.3 2495.0,2490.7" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2495.0,2490.7 2482.2,2488.2 2484.3,2498.0" fill="#91a0b3"/>
+<polygon points="2400.0,2510.3 2412.8,2512.8 2410.7,2503.0" fill="#91a0b3"/>
+<polyline points="895.0,450.0 1005.0,450.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1005.0,450.0 993.0,445.0 993.0,455.0" fill="#15858f"/>
+<polygon points="895.0,450.0 907.0,455.0 907.0,445.0" fill="#15858f"/>
+<polyline points="1795.0,450.0 1905.0,450.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1905.0,450.0 1893.0,445.0 1893.0,455.0" fill="#15858f"/>
+<polygon points="1795.0,450.0 1807.0,455.0 1807.0,445.0" fill="#15858f"/>
+<polyline points="895.0,760.0 1005.0,760.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1005.0,760.0 993.0,755.0 993.0,765.0" fill="#15858f"/>
+<polygon points="895.0,760.0 907.0,765.0 907.0,755.0" fill="#15858f"/>
+<polyline points="1795.0,760.0 1905.0,760.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1905.0,760.0 1893.0,755.0 1893.0,765.0" fill="#15858f"/>
+<polygon points="1795.0,760.0 1807.0,765.0 1807.0,755.0" fill="#15858f"/>
+<polyline points="895.0,1070.0 1005.0,1070.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1005.0,1070.0 993.0,1065.0 993.0,1075.0" fill="#15858f"/>
+<polygon points="895.0,1070.0 907.0,1075.0 907.0,1065.0" fill="#15858f"/>
+<polyline points="1795.0,1070.0 1905.0,1070.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1905.0,1070.0 1893.0,1065.0 1893.0,1075.0" fill="#15858f"/>
+<polygon points="1795.0,1070.0 1807.0,1075.0 1807.0,1065.0" fill="#15858f"/>
+<polyline points="205.0,498.0 205.0,640.0 205.0,711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="205.0,711.0 210.0,699.0 200.0,699.0" fill="#627793"/>
+<polyline points="795.0,498.0 795.0,640.0 795.0,711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="795.0,711.0 800.0,699.0 790.0,699.0" fill="#627793"/>
+<polyline points="205.0,808.0 205.0,950.0 205.0,1021.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="205.0,1021.0 210.0,1009.0 200.0,1009.0" fill="#627793"/>
+<polyline points="795.0,808.0 795.0,950.0 795.0,1021.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="795.0,1021.0 800.0,1009.0 790.0,1009.0" fill="#627793"/>
+<polyline points="205.0,1118.0 205.0,1285.0 205.0,1381.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="205.0,1381.0 210.0,1369.0 200.0,1369.0" fill="#627793"/>
+<polyline points="795.0,1118.0 795.0,1285.0 795.0,1381.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="795.0,1381.0 800.0,1369.0 790.0,1369.0" fill="#627793"/>
+<polyline points="205.0,1478.0 205.0,1630.0 205.0,1711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="205.0,1711.0 210.0,1699.0 200.0,1699.0" fill="#627793"/>
+<polyline points="500.0,1539.0 500.0,1630.0 795.0,1630.0 795.0,1711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="795.0,1711.0 800.0,1699.0 790.0,1699.0" fill="#627793"/>
+<polyline points="205.0,1808.0 205.0,1960.0 205.0,2041.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="205.0,2041.0 210.0,2029.0 200.0,2029.0" fill="#627793"/>
+<polyline points="795.0,1808.0 795.0,1960.0 795.0,2041.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="795.0,2041.0 800.0,2029.0 790.0,2029.0" fill="#627793"/>
+<polyline points="205.0,2138.0 205.0,2315.0 205.0,2421.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="205.0,2421.0 210.0,2409.0 200.0,2409.0" fill="#627793"/>
+<polyline points="500.0,2199.0 500.0,2315.0 795.0,2315.0 795.0,2421.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="795.0,2421.0 800.0,2409.0 790.0,2409.0" fill="#627793"/>
+<polyline points="205.0,2518.0 205.0,2640.0 500.0,2640.0 500.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="500.0,2729.0 505.0,2717.0 495.0,2717.0" fill="#627793"/>
+<polyline points="600.0,2409.0 630.0,2409.0 630.0,2640.0 500.0,2640.0 500.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="500.0,2729.0 505.0,2717.0 495.0,2717.0" fill="#627793"/>
+<polyline points="500.0,2579.0 500.0,2640.0 500.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="500.0,2729.0 505.0,2717.0 495.0,2717.0" fill="#627793"/>
+<polyline points="795.0,2518.0 795.0,2640.0 500.0,2640.0 500.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="500.0,2729.0 505.0,2717.0 495.0,2717.0" fill="#627793"/>
+<polyline points="1105.0,498.0 1105.0,640.0 1105.0,711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,711.0 1110.0,699.0 1100.0,699.0" fill="#627793"/>
+<polyline points="1695.0,498.0 1695.0,640.0 1695.0,711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1695.0,711.0 1700.0,699.0 1690.0,699.0" fill="#627793"/>
+<polyline points="1105.0,808.0 1105.0,950.0 1105.0,1021.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,1021.0 1110.0,1009.0 1100.0,1009.0" fill="#627793"/>
+<polyline points="1695.0,808.0 1695.0,950.0 1695.0,1021.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1695.0,1021.0 1700.0,1009.0 1690.0,1009.0" fill="#627793"/>
+<polyline points="1105.0,1118.0 1105.0,1285.0 1105.0,1381.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,1381.0 1110.0,1369.0 1100.0,1369.0" fill="#627793"/>
+<polyline points="1695.0,1118.0 1695.0,1285.0 1695.0,1381.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1695.0,1381.0 1700.0,1369.0 1690.0,1369.0" fill="#627793"/>
+<polyline points="1105.0,1478.0 1105.0,1630.0 1105.0,1711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,1711.0 1110.0,1699.0 1100.0,1699.0" fill="#627793"/>
+<polyline points="1695.0,1478.0 1695.0,1630.0 1695.0,1711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1695.0,1711.0 1700.0,1699.0 1690.0,1699.0" fill="#627793"/>
+<polyline points="1105.0,1808.0 1105.0,1960.0 1105.0,2041.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,2041.0 1110.0,2029.0 1100.0,2029.0" fill="#627793"/>
+<polyline points="1400.0,1869.0 1400.0,1960.0 1695.0,1960.0 1695.0,2041.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1695.0,2041.0 1700.0,2029.0 1690.0,2029.0" fill="#627793"/>
+<polyline points="1105.0,2138.0 1105.0,2315.0 1105.0,2421.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,2421.0 1110.0,2409.0 1100.0,2409.0" fill="#627793"/>
+<polyline points="1695.0,2138.0 1695.0,2315.0 1695.0,2421.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1695.0,2421.0 1700.0,2409.0 1690.0,2409.0" fill="#627793"/>
+<polyline points="1105.0,2518.0 1105.0,2640.0 1400.0,2640.0 1400.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="1400.0,2729.0 1405.0,2717.0 1395.0,2717.0" fill="#627793"/>
+<polyline points="1500.0,2398.0 1530.0,2398.0 1530.0,2640.0 1400.0,2640.0 1400.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="1400.0,2729.0 1405.0,2717.0 1395.0,2717.0" fill="#627793"/>
+<polyline points="1695.0,2518.0 1695.0,2640.0 1400.0,2640.0 1400.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="1400.0,2729.0 1405.0,2717.0 1395.0,2717.0" fill="#627793"/>
+<polyline points="2005.0,498.0 2005.0,640.0 2005.0,711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2005.0,711.0 2010.0,699.0 2000.0,699.0" fill="#627793"/>
+<polyline points="2595.0,498.0 2595.0,640.0 2595.0,711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2595.0,711.0 2600.0,699.0 2590.0,699.0" fill="#627793"/>
+<polyline points="2005.0,808.0 2005.0,950.0 2005.0,1021.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2005.0,1021.0 2010.0,1009.0 2000.0,1009.0" fill="#627793"/>
+<polyline points="2595.0,808.0 2595.0,950.0 2595.0,1021.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2595.0,1021.0 2600.0,1009.0 2590.0,1009.0" fill="#627793"/>
+<polyline points="2005.0,1118.0 2005.0,1285.0 2005.0,1381.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2005.0,1381.0 2010.0,1369.0 2000.0,1369.0" fill="#627793"/>
+<polyline points="2595.0,1118.0 2595.0,1285.0 2595.0,1381.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2595.0,1381.0 2600.0,1369.0 2590.0,1369.0" fill="#627793"/>
+<polyline points="2005.0,1478.0 2005.0,1630.0 2005.0,1711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2005.0,1711.0 2010.0,1699.0 2000.0,1699.0" fill="#627793"/>
+<polyline points="2595.0,1478.0 2595.0,1630.0 2595.0,1711.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2595.0,1711.0 2600.0,1699.0 2590.0,1699.0" fill="#627793"/>
+<polyline points="2005.0,1808.0 2005.0,1960.0 2005.0,2041.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2005.0,2041.0 2010.0,2029.0 2000.0,2029.0" fill="#627793"/>
+<polyline points="2595.0,1808.0 2595.0,1960.0 2595.0,2041.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2595.0,2041.0 2600.0,2029.0 2590.0,2029.0" fill="#627793"/>
+<polyline points="2005.0,2138.0 2005.0,2315.0 2005.0,2421.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2005.0,2421.0 2010.0,2409.0 2000.0,2409.0" fill="#627793"/>
+<polyline points="2300.0,2199.0 2300.0,2315.0 2595.0,2315.0 2595.0,2421.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="2595.0,2421.0 2600.0,2409.0 2590.0,2409.0" fill="#627793"/>
+<polyline points="2005.0,2518.0 2005.0,2640.0 2300.0,2640.0 2300.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="2300.0,2729.0 2305.0,2717.0 2295.0,2717.0" fill="#627793"/>
+<polyline points="2400.0,2409.0 2430.0,2409.0 2430.0,2640.0 2300.0,2640.0 2300.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="2300.0,2729.0 2305.0,2717.0 2295.0,2717.0" fill="#627793"/>
+<polyline points="2300.0,2579.0 2300.0,2640.0 2300.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="2300.0,2729.0 2305.0,2717.0 2295.0,2717.0" fill="#627793"/>
+<polyline points="2595.0,2518.0 2595.0,2640.0 2300.0,2640.0 2300.0,2729.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="2300.0,2729.0 2305.0,2717.0 2295.0,2717.0" fill="#627793"/>
+<polyline points="1400.0,260.0 1400.0,285.0 1105.0,285.0 1105.0,401.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1105.0,401.0 1110.0,389.0 1100.0,389.0" fill="#627793"/>
+<polyline points="695.0,2233.8 450.0,2272.6" fill="none" stroke="#b37b24" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="450.0,2272.6 462.6,2275.7 461.1,2265.8" fill="#b37b24"/>
+<polygon points="695.0,2233.8 682.4,2230.8 683.9,2240.6" fill="#b37b24"/>
+</g>
+<g class="encounter-dependencies"><title>조우 발생의 선행 조건. 방 이동 연결이 아님.</title>
+<polyline points="602.0,699.0 650.0,699.0 650.0,1009.0 602.0,1009.0" fill="none" stroke="#b15c45" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="602.0,1009.0 614.0,1014.0 614.0,1004.0" fill="#b15c45"/>
+<rect x="601" y="879" width="171" height="57" rx="8" fill="#fff5eb" stroke="#b15c45" stroke-width="1"/>
+<text class="" x="687" y="896" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#b15c45">용병 선행 완료 후</text>
+<text class="" x="687" y="921" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#b15c45">늑대 발생 · 이동선 아님</text>
+</g>
+<rect x="450" y="1228" width="1900" height="59" rx="8" fill="#f7f8fc" stroke="none" stroke-width="1"/>
+<text class="" x="1370" y="1260" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="24" font-weight="700" fill="#34475f">4층부터 동간 이동 불가  ·  동 내부에서는 같은 층의 갈래와 고리를 탐사</text>
+<rect x="315" y="285" width="370" height="47" rx="8" fill="#f7f8fc" stroke="none" stroke-width="1"/>
+<text class="" x="500" y="300" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="28" font-weight="700" fill="#356492">A · 기록동</text>
+<text class="" x="500" y="326" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="16" font-weight="400" fill="#617086">탐사 방 29개 · 일반 계열 조우 4개</text>
+<rect x="1215" y="285" width="370" height="47" rx="8" fill="#f7f8fc" stroke="none" stroke-width="1"/>
+<text class="" x="1400" y="300" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="28" font-weight="700" fill="#765993">B · 중앙본부동</text>
+<text class="" x="1400" y="326" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="16" font-weight="400" fill="#617086">탐사 방 27개 · 일반 계열 조우 4개</text>
+<rect x="2115" y="285" width="370" height="47" rx="8" fill="#f7f8fc" stroke="none" stroke-width="1"/>
+<text class="" x="2300" y="300" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="28" font-weight="700" fill="#317964">C · 추출동</text>
+<text class="" x="2300" y="326" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="16" font-weight="400" fill="#617086">탐사 방 28개 · 일반 계열 조우 4개</text>
+<text class="" x="2695" y="397" text-anchor="end" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="700" fill="#16747f">1–3층 공용 구간</text>
+<g class="rooms">
+<g class="room ordinary" data-room="A1-01" tabindex="0" role="button" aria-label="A1-01 접수분소">
+<title>A1-01 · 접수분소 · 6개 활동 노드 (검토값)</title>
+<rect x="110.0" y="406.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="425" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A1-01</text>
+<text class="" x="205" y="449" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">접수분소</text>
+<text class="nodefooter" x="205" y="475" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A1-02" tabindex="0" role="button" aria-label="A1-02 서류분류실">
+<title>A1-02 · 서류분류실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="334.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="353" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A1-02</text>
+<text class="" x="500" y="377" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">서류분류실</text>
+<text class="nodefooter" x="500" y="403" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A1-03" tabindex="0" role="button" aria-label="A1-03 반출대기실">
+<title>A1-03 · 반출대기실 · 6개 활동 노드 (검토값)</title>
+<rect x="700.0" y="406.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="425" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A1-03</text>
+<text class="" x="795" y="449" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">반출대기실</text>
+<text class="nodefooter" x="795" y="475" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A2-01" tabindex="0" role="button" aria-label="A2-01 기록연결실">
+<title>A2-01 · 기록연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="110.0" y="716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A2-01</text>
+<text class="" x="205" y="759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">기록연결실</text>
+<text class="nodefooter" x="205" y="785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="A2-02" tabindex="0" role="button" aria-label="A2-02 용병대기실">
+<title>A2-02 · 용병대기실 · 9개 활동 노드 (검토값)</title>
+<rect x="405.0" y="655.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="500" y="674" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">A2-02</text>
+<text class="" x="500" y="698" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">붉은 두건의 용병</text>
+<text class="nodefooter" x="500" y="724" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">선행 Event/Story · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A2-03" tabindex="0" role="button" aria-label="A2-03 문서정비실">
+<title>A2-03 · 문서정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="777.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="796" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A2-03</text>
+<text class="" x="500" y="820" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">문서정비실</text>
+<text class="nodefooter" x="500" y="846" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A2-04" tabindex="0" role="button" aria-label="A2-04 운송기록실">
+<title>A2-04 · 운송기록실 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A2-04</text>
+<text class="" x="795" y="759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">운송기록실</text>
+<text class="nodefooter" x="795" y="785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A3-01" tabindex="0" role="button" aria-label="A3-01 분실물보관실">
+<title>A3-01 · 분실물보관실 · 9개 활동 노드 (검토값)</title>
+<rect x="110.0" y="1026.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="1045" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A3-01</text>
+<text class="" x="205" y="1069" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">분실물보관실</text>
+<text class="nodefooter" x="205" y="1095" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="A3-02" tabindex="0" role="button" aria-label="A3-02 폐쇄사육실">
+<title>A3-02 · 폐쇄사육실 · 12개 활동 노드 (검토값)</title>
+<rect x="405.0" y="965.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="500" y="984" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">A3-02</text>
+<text class="" x="500" y="1008" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">커다랗고 나쁠 늑대</text>
+<text class="nodefooter" x="500" y="1034" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">용병 선행 완료 후 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="A3-03" tabindex="0" role="button" aria-label="A3-03 탐사기록실">
+<title>A3-03 · 탐사기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="1087.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="1106" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A3-03</text>
+<text class="" x="500" y="1130" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">탐사기록실</text>
+<text class="nodefooter" x="500" y="1156" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A3-04" tabindex="0" role="button" aria-label="A3-04 동간연결실">
+<title>A3-04 · 동간연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="1026.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="1045" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A3-04</text>
+<text class="" x="795" y="1069" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">동간연결실</text>
+<text class="nodefooter" x="795" y="1095" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A4-01" tabindex="0" role="button" aria-label="A4-01 서고입구">
+<title>A4-01 · 서고입구 · 9개 활동 노드 (검토값)</title>
+<rect x="110.0" y="1386.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="1405" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A4-01</text>
+<text class="" x="205" y="1429" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">서고입구</text>
+<text class="nodefooter" x="205" y="1455" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A4-02" tabindex="0" role="button" aria-label="A4-02 자료열람실">
+<title>A4-02 · 자료열람실 · 9개 활동 노드 (검토값)</title>
+<rect x="405.0" y="1325.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="1344" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A4-02</text>
+<text class="" x="500" y="1368" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">자료열람실</text>
+<text class="nodefooter" x="500" y="1394" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A4-03" tabindex="0" role="button" aria-label="A4-03 보존정비실">
+<title>A4-03 · 보존정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="1447.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="1466" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A4-03</text>
+<text class="" x="500" y="1490" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">보존정비실</text>
+<text class="nodefooter" x="500" y="1516" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A4-04" tabindex="0" role="button" aria-label="A4-04 심층분류실">
+<title>A4-04 · 심층분류실 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="1386.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="1405" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A4-04</text>
+<text class="" x="795" y="1429" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">심층분류실</text>
+<text class="nodefooter" x="795" y="1455" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A4-05" tabindex="0" role="button" aria-label="A4-05 폐쇄관측실">
+<title>A4-05 · 폐쇄관측실 · 12개 활동 노드 (검토값)</title>
+<rect x="700.0" y="1514.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2" />
+<text class="" x="795" y="1533" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A4-05</text>
+<text class="" x="795" y="1557" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">폐쇄관측실</text>
+<text class="nodefooter" x="795" y="1583" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="A5-01" tabindex="0" role="button" aria-label="A5-01 회수품분류실">
+<title>A5-01 · 회수품분류실 · 9개 활동 노드 (검토값)</title>
+<rect x="110.0" y="1716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="1735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A5-01</text>
+<text class="" x="205" y="1759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">회수품분류실</text>
+<text class="nodefooter" x="205" y="1785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="A5-02" tabindex="0" role="button" aria-label="A5-02 대형보관고">
+<title>A5-02 · 대형보관고 · 12개 활동 노드 (검토값)</title>
+<rect x="405.0" y="1655.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="500" y="1674" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">A5-02</text>
+<text class="" x="500" y="1698" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">탐욕의 왕</text>
+<text class="nodefooter" x="500" y="1724" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">고정 조우 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="A5-03" tabindex="0" role="button" aria-label="A5-03 기록보존실">
+<title>A5-03 · 기록보존실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="1777.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="1796" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A5-03</text>
+<text class="" x="500" y="1820" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">기록보존실</text>
+<text class="nodefooter" x="500" y="1846" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A5-04" tabindex="0" role="button" aria-label="A5-04 폐기물통로">
+<title>A5-04 · 폐기물통로 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="1716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="1735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A5-04</text>
+<text class="" x="795" y="1759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">폐기물통로</text>
+<text class="nodefooter" x="795" y="1785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A6-01" tabindex="0" role="button" aria-label="A6-01 심층기록홀">
+<title>A6-01 · 심층기록홀 · 9개 활동 노드 (검토값)</title>
+<rect x="110.0" y="2046.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="2065" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A6-01</text>
+<text class="" x="205" y="2089" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">심층기록홀</text>
+<text class="nodefooter" x="205" y="2115" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A6-02" tabindex="0" role="button" aria-label="A6-02 봉인문서실">
+<title>A6-02 · 봉인문서실 · 12개 활동 노드 (검토값)</title>
+<rect x="405.0" y="1985.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="2004" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A6-02</text>
+<text class="" x="500" y="2028" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">봉인문서실</text>
+<text class="nodefooter" x="500" y="2054" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="A6-03" tabindex="0" role="button" aria-label="A6-03 최하층정비실">
+<title>A6-03 · 최하층정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="2107.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="2126" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A6-03</text>
+<text class="" x="500" y="2150" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">최하층정비실</text>
+<text class="nodefooter" x="500" y="2176" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A6-04" tabindex="0" role="button" aria-label="A6-04 기록반출실">
+<title>A6-04 · 기록반출실 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="2046.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="2065" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A6-04</text>
+<text class="" x="795" y="2089" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">기록반출실</text>
+<text class="nodefooter" x="795" y="2115" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="A6-05" tabindex="0" role="button" aria-label="A6-05 정찰대합류실">
+<title>A6-05 · 정찰대합류실 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="2174.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="795" y="2193" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">A6-05</text>
+<text class="" x="795" y="2217" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">마탄의 사수</text>
+<text class="nodefooter" x="795" y="2243" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">호위·생존 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A7-01" tabindex="0" role="button" aria-label="A7-01 최종기록실">
+<title>A7-01 · 최종기록실 · 9개 활동 노드 (검토값)</title>
+<rect x="110.0" y="2426.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="205" y="2445" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A7-01</text>
+<text class="" x="205" y="2469" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">최종기록실</text>
+<text class="nodefooter" x="205" y="2495" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="A7-02" tabindex="0" role="button" aria-label="A7-02 옛기록보관소">
+<title>A7-02 · 옛기록보관소 · 12개 활동 노드 (검토값)</title>
+<rect x="405.0" y="2365.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="2384" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A7-02</text>
+<text class="" x="500" y="2408" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">옛기록보관소</text>
+<text class="nodefooter" x="500" y="2434" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="A7-03" tabindex="0" role="button" aria-label="A7-03 회수기록실">
+<title>A7-03 · 회수기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="405.0" y="2487.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="2506" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A7-03</text>
+<text class="" x="500" y="2530" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">회수기록실</text>
+<text class="nodefooter" x="500" y="2556" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="A7-04" tabindex="0" role="button" aria-label="A7-04 심층연결실">
+<title>A7-04 · 심층연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="700.0" y="2426.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#356492" stroke-width="2"/>
+<text class="" x="795" y="2445" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#356492">A7-04</text>
+<text class="" x="795" y="2469" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#356492">심층연결실</text>
+<text class="nodefooter" x="795" y="2495" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#356492">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B1-01" tabindex="0" role="button" aria-label="B1-01 중앙접수홀">
+<title>B1-01 · 중앙접수홀 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="406.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="425" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B1-01</text>
+<text class="" x="1105" y="449" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">중앙접수홀</text>
+<text class="nodefooter" x="1105" y="475" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">유물 보상 예약 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B1-02" tabindex="0" role="button" aria-label="B1-02 본사연락실">
+<title>B1-02 · 본사연락실 · 6개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="334.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="353" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B1-02</text>
+<text class="" x="1400" y="377" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">본사연락실</text>
+<text class="nodefooter" x="1400" y="403" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">본사 연락 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B1-03" tabindex="0" role="button" aria-label="B1-03 배급대기실">
+<title>B1-03 · 배급대기실 · 6개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="406.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="425" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B1-03</text>
+<text class="" x="1695" y="449" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">배급대기실</text>
+<text class="nodefooter" x="1695" y="475" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B2-01" tabindex="0" role="button" aria-label="B2-01 중앙연결실">
+<title>B2-01 · 중앙연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B2-01</text>
+<text class="" x="1105" y="759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">중앙연결실</text>
+<text class="nodefooter" x="1105" y="785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="B2-02" tabindex="0" role="button" aria-label="B2-02 배전관리실">
+<title>B2-02 · 배전관리실 · 9개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="655.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2" />
+<text class="" x="1400" y="674" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">B2-02</text>
+<text class="" x="1400" y="698" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">절망의 기사</text>
+<text class="nodefooter" x="1400" y="724" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">선행·계약 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B2-03" tabindex="0" role="button" aria-label="B2-03 장비정비실">
+<title>B2-03 · 장비정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="777.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="796" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B2-03</text>
+<text class="" x="1400" y="820" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">장비정비실</text>
+<text class="nodefooter" x="1400" y="846" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B2-04" tabindex="0" role="button" aria-label="B2-04 통제보조실">
+<title>B2-04 · 통제보조실 · 9개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B2-04</text>
+<text class="" x="1695" y="759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">통제보조실</text>
+<text class="nodefooter" x="1695" y="785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B3-01" tabindex="0" role="button" aria-label="B3-01 통제접수실">
+<title>B3-01 · 통제접수실 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="1026.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="1045" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B3-01</text>
+<text class="" x="1105" y="1069" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">통제접수실</text>
+<text class="nodefooter" x="1105" y="1095" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B3-02" tabindex="0" role="button" aria-label="B3-02 옛회의실">
+<title>B3-02 · 옛회의실 · 9개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="965.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="984" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B3-02</text>
+<text class="" x="1400" y="1008" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">옛회의실</text>
+<text class="nodefooter" x="1400" y="1034" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B3-03" tabindex="0" role="button" aria-label="B3-03 중앙기록실">
+<title>B3-03 · 중앙기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="1087.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="1106" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B3-03</text>
+<text class="" x="1400" y="1130" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">중앙기록실</text>
+<text class="nodefooter" x="1400" y="1156" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B3-04" tabindex="0" role="button" aria-label="B3-04 동간연결실">
+<title>B3-04 · 동간연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="1026.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="1045" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B3-04</text>
+<text class="" x="1695" y="1069" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">동간연결실</text>
+<text class="nodefooter" x="1695" y="1095" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B4-01" tabindex="0" role="button" aria-label="B4-01 지휘연결실">
+<title>B4-01 · 지휘연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="1386.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="1405" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B4-01</text>
+<text class="" x="1105" y="1429" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">지휘연결실</text>
+<text class="nodefooter" x="1105" y="1455" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="B4-02" tabindex="0" role="button" aria-label="B4-02 비상회의실">
+<title>B4-02 · 비상회의실 · 9개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="1325.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2" />
+<text class="" x="1400" y="1344" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">B4-02</text>
+<text class="" x="1400" y="1368" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">아무 것도 없는</text>
+<text class="nodefooter" x="1400" y="1394" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">고정 조우 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B4-03" tabindex="0" role="button" aria-label="B4-03 통제정비실">
+<title>B4-03 · 통제정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="1447.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="1466" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B4-03</text>
+<text class="" x="1400" y="1490" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">통제정비실</text>
+<text class="nodefooter" x="1400" y="1516" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B4-04" tabindex="0" role="button" aria-label="B4-04 내부관측실">
+<title>B4-04 · 내부관측실 · 9개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="1386.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="1405" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B4-04</text>
+<text class="" x="1695" y="1429" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">내부관측실</text>
+<text class="nodefooter" x="1695" y="1455" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B5-01" tabindex="0" role="button" aria-label="B5-01 관측기록홀">
+<title>B5-01 · 관측기록홀 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="1716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="1735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B5-01</text>
+<text class="" x="1105" y="1759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">관측기록홀</text>
+<text class="nodefooter" x="1105" y="1785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B5-02" tabindex="0" role="button" aria-label="B5-02 직원대기실">
+<title>B5-02 · 직원대기실 · 9개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="1655.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="1674" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B5-02</text>
+<text class="" x="1400" y="1698" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">직원대기실</text>
+<text class="nodefooter" x="1400" y="1724" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B5-03" tabindex="0" role="button" aria-label="B5-03 관측기록실">
+<title>B5-03 · 관측기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="1777.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="1796" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B5-03</text>
+<text class="" x="1400" y="1820" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">관측기록실</text>
+<text class="nodefooter" x="1400" y="1846" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B5-04" tabindex="0" role="button" aria-label="B5-04 격리연결실">
+<title>B5-04 · 격리연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="1716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="1735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B5-04</text>
+<text class="" x="1695" y="1759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">격리연결실</text>
+<text class="nodefooter" x="1695" y="1785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B5-05" tabindex="0" role="button" aria-label="B5-05 폐쇄실험실">
+<title>B5-05 · 폐쇄실험실 · 12개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="1844.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2" />
+<text class="" x="1695" y="1863" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B5-05</text>
+<text class="" x="1695" y="1887" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">폐쇄실험실</text>
+<text class="nodefooter" x="1695" y="1913" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="B6-01" tabindex="0" role="button" aria-label="B6-01 심층통제홀">
+<title>B6-01 · 심층통제홀 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="2046.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="2065" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B6-01</text>
+<text class="" x="1105" y="2089" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">심층통제홀</text>
+<text class="nodefooter" x="1105" y="2115" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="B6-02" tabindex="0" role="button" aria-label="B6-02 장례의식실">
+<title>B6-02 · 장례의식실 · 9개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="1985.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="1400" y="2004" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">B6-02</text>
+<text class="" x="1400" y="2028" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">죽은 나비들의 장례</text>
+<text class="nodefooter" x="1400" y="2054" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">장례 의식 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B6-03" tabindex="0" role="button" aria-label="B6-03 중앙정비실">
+<title>B6-03 · 중앙정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="2107.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="2126" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B6-03</text>
+<text class="" x="1400" y="2150" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">중앙정비실</text>
+<text class="nodefooter" x="1400" y="2176" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="B6-04" tabindex="0" role="button" aria-label="B6-04 신호중계실">
+<title>B6-04 · 신호중계실 · 9개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="2046.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="2065" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B6-04</text>
+<text class="" x="1695" y="2089" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">신호중계실</text>
+<text class="nodefooter" x="1695" y="2115" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="B7-01" tabindex="0" role="button" aria-label="B7-01 중앙집결실">
+<title>B7-01 · 중앙집결실 · 9개 활동 노드 (검토값)</title>
+<rect x="1010.0" y="2426.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1105" y="2445" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B7-01</text>
+<text class="" x="1105" y="2469" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">중앙집결실</text>
+<text class="nodefooter" x="1105" y="2495" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="B7-02" tabindex="0" role="button" aria-label="B7-02 폐기물집적실">
+<title>B7-02 · 폐기물집적실 · 12개 활동 노드 (검토값)</title>
+<rect x="1305.0" y="2354.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="1400" y="2373" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">B7-02</text>
+<text class="" x="1400" y="2397" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">웃는 시체의 산</text>
+<text class="nodefooter" x="1400" y="2423" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">고정 조우 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="B7-03" tabindex="0" role="button" aria-label="B7-03 최종기록실">
+<title>B7-03 · 최종기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="1600.0" y="2426.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#765993" stroke-width="2"/>
+<text class="" x="1695" y="2445" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#765993">B7-03</text>
+<text class="" x="1695" y="2469" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#765993">최종기록실</text>
+<text class="nodefooter" x="1695" y="2495" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#765993">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C1-01" tabindex="0" role="button" aria-label="C1-01 출입검사실">
+<title>C1-01 · 출입검사실 · 6개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="406.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="425" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C1-01</text>
+<text class="" x="2005" y="449" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">출입검사실</text>
+<text class="nodefooter" x="2005" y="475" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C1-02" tabindex="0" role="button" aria-label="C1-02 의료대기실">
+<title>C1-02 · 의료대기실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="334.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="353" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C1-02</text>
+<text class="" x="2300" y="377" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">의료대기실</text>
+<text class="nodefooter" x="2300" y="403" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C1-03" tabindex="0" role="button" aria-label="C1-03 장비검수실">
+<title>C1-03 · 장비검수실 · 6개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="406.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="425" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C1-03</text>
+<text class="" x="2595" y="449" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">장비검수실</text>
+<text class="nodefooter" x="2595" y="475" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C2-01" tabindex="0" role="button" aria-label="C2-01 전처리접수실">
+<title>C2-01 · 전처리접수실 · 9개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C2-01</text>
+<text class="" x="2005" y="759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">전처리접수실</text>
+<text class="nodefooter" x="2005" y="785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="C2-02" tabindex="0" role="button" aria-label="C2-02 폐쇄휴게실">
+<title>C2-02 · 폐쇄휴게실 · 9개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="655.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="2300" y="674" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">C2-02</text>
+<text class="" x="2300" y="698" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">증오의 여왕</text>
+<text class="nodefooter" x="2300" y="724" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">선행·동행 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C2-03" tabindex="0" role="button" aria-label="C2-03 장비정비실">
+<title>C2-03 · 장비정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="777.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="796" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C2-03</text>
+<text class="" x="2300" y="820" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">장비정비실</text>
+<text class="nodefooter" x="2300" y="846" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C2-04" tabindex="0" role="button" aria-label="C2-04 시료대기실">
+<title>C2-04 · 시료대기실 · 9개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C2-04</text>
+<text class="" x="2595" y="759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">시료대기실</text>
+<text class="nodefooter" x="2595" y="785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C3-01" tabindex="0" role="button" aria-label="C3-01 추출연결실">
+<title>C3-01 · 추출연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="1026.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="1045" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C3-01</text>
+<text class="" x="2005" y="1069" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">추출연결실</text>
+<text class="nodefooter" x="2005" y="1095" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C3-02" tabindex="0" role="button" aria-label="C3-02 보호계약실">
+<title>C3-02 · 보호계약실 · 9개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="965.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2" />
+<text class="" x="2300" y="984" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C3-02</text>
+<text class="" x="2300" y="1008" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">보호계약실</text>
+<text class="nodefooter" x="2300" y="1034" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C3-03" tabindex="0" role="button" aria-label="C3-03 작업기록실">
+<title>C3-03 · 작업기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="1087.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="1106" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C3-03</text>
+<text class="" x="2300" y="1130" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">작업기록실</text>
+<text class="nodefooter" x="2300" y="1156" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C3-04" tabindex="0" role="button" aria-label="C3-04 동간연결실">
+<title>C3-04 · 동간연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="1026.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="1045" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C3-04</text>
+<text class="" x="2595" y="1069" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">동간연결실</text>
+<text class="nodefooter" x="2595" y="1095" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C4-01" tabindex="0" role="button" aria-label="C4-01 제1추출홀">
+<title>C4-01 · 제1추출홀 · 9개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="1386.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="1405" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C4-01</text>
+<text class="" x="2005" y="1429" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">제1추출홀</text>
+<text class="nodefooter" x="2005" y="1455" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="C4-02" tabindex="0" role="button" aria-label="C4-02 배관점검실">
+<title>C4-02 · 배관점검실 · 9개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="1325.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2" />
+<text class="" x="2300" y="1344" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">C4-02</text>
+<text class="" x="2300" y="1368" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">파고드는 천국</text>
+<text class="nodefooter" x="2300" y="1394" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">고정 조우 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C4-03" tabindex="0" role="button" aria-label="C4-03 추출정비실">
+<title>C4-03 · 추출정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="1447.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="1466" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C4-03</text>
+<text class="" x="2300" y="1490" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">추출정비실</text>
+<text class="nodefooter" x="2300" y="1516" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C4-04" tabindex="0" role="button" aria-label="C4-04 시료분류실">
+<title>C4-04 · 시료분류실 · 9개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="1386.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="1405" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C4-04</text>
+<text class="" x="2595" y="1429" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">시료분류실</text>
+<text class="nodefooter" x="2595" y="1455" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C5-01" tabindex="0" role="button" aria-label="C5-01 제2추출홀">
+<title>C5-01 · 제2추출홀 · 9개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="1716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="1735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C5-01</text>
+<text class="" x="2005" y="1759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">제2추출홀</text>
+<text class="nodefooter" x="2005" y="1785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="C5-02" tabindex="0" role="button" aria-label="C5-02 점액격리실">
+<title>C5-02 · 점액격리실 · 12개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="1655.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="2300" y="1674" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">C5-02</text>
+<text class="" x="2300" y="1698" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">녹아내리는 사랑</text>
+<text class="nodefooter" x="2300" y="1724" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">고정 조우 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="C5-03" tabindex="0" role="button" aria-label="C5-03 성분기록실">
+<title>C5-03 · 성분기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="1777.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="1796" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C5-03</text>
+<text class="" x="2300" y="1820" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">성분기록실</text>
+<text class="nodefooter" x="2300" y="1846" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C5-04" tabindex="0" role="button" aria-label="C5-04 정제연결실">
+<title>C5-04 · 정제연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="1716.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="1735" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C5-04</text>
+<text class="" x="2595" y="1759" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">정제연결실</text>
+<text class="nodefooter" x="2595" y="1785" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C6-01" tabindex="0" role="button" aria-label="C6-01 심층추출홀">
+<title>C6-01 · 심층추출홀 · 9개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="2046.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="2065" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C6-01</text>
+<text class="" x="2005" y="2089" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">심층추출홀</text>
+<text class="nodefooter" x="2005" y="2115" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C6-02" tabindex="0" role="button" aria-label="C6-02 고압설비실">
+<title>C6-02 · 고압설비실 · 12개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="1985.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="2004" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C6-02</text>
+<text class="" x="2300" y="2028" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">고압설비실</text>
+<text class="nodefooter" x="2300" y="2054" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="C6-03" tabindex="0" role="button" aria-label="C6-03 심층정비실">
+<title>C6-03 · 심층정비실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="2107.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="2126" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C6-03</text>
+<text class="" x="2300" y="2150" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">심층정비실</text>
+<text class="nodefooter" x="2300" y="2176" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">정비 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C6-04" tabindex="0" role="button" aria-label="C6-04 폐액회수실">
+<title>C6-04 · 폐액회수실 · 9개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="2046.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="2065" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C6-04</text>
+<text class="" x="2595" y="2089" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">폐액회수실</text>
+<text class="nodefooter" x="2595" y="2115" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room encounter" data-room="C6-05" tabindex="0" role="button" aria-label="C6-05 공명격리실">
+<title>C6-05 · 공명격리실 · 12개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="2174.0" width="190" height="88" rx="12" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="2595" y="2193" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#a16b20">C6-05</text>
+<text class="" x="2595" y="2217" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#a16b20">음 / 양</text>
+<text class="nodefooter" x="2595" y="2243" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#a16b20">고정 조우 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="C7-01" tabindex="0" role="button" aria-label="C7-01 추출종료실">
+<title>C7-01 · 추출종료실 · 9개 활동 노드 (검토값)</title>
+<rect x="1910.0" y="2426.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2005" y="2445" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C7-01</text>
+<text class="" x="2005" y="2469" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">추출종료실</text>
+<text class="nodefooter" x="2005" y="2495" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="C7-02" tabindex="0" role="button" aria-label="C7-02 원액보관실">
+<title>C7-02 · 원액보관실 · 12개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="2365.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="2384" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C7-02</text>
+<text class="" x="2300" y="2408" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">원액보관실</text>
+<text class="nodefooter" x="2300" y="2434" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 12노드</text>
+</g>
+<g class="room ordinary" data-room="C7-03" tabindex="0" role="button" aria-label="C7-03 추출기록실">
+<title>C7-03 · 추출기록실 · 6개 활동 노드 (검토값)</title>
+<rect x="2205.0" y="2487.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="2506" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C7-03</text>
+<text class="" x="2300" y="2530" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">추출기록실</text>
+<text class="nodefooter" x="2300" y="2556" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">저장 예약 · 6노드</text>
+</g>
+<g class="room ordinary" data-room="C7-04" tabindex="0" role="button" aria-label="C7-04 심층연결실">
+<title>C7-04 · 심층연결실 · 9개 활동 노드 (검토값)</title>
+<rect x="2500.0" y="2426.0" width="190" height="88" rx="12" fill="#ffffff" stroke="#317964" stroke-width="2"/>
+<text class="" x="2595" y="2445" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#317964">C7-04</text>
+<text class="" x="2595" y="2469" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#317964">심층연결실</text>
+<text class="nodefooter" x="2595" y="2495" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#317964">일반 탐사 · 9노드</text>
+</g>
+<g class="room ordinary" data-room="ENTRY" tabindex="0" role="button" aria-label="ENTRY 시설 입구">
+<title>ENTRY · 시설 입구 · 0개 활동 노드 (검토값)</title>
+<rect x="1300.0" y="174.0" width="200" height="82" rx="12" fill="#ffffff" stroke="#354961" stroke-width="2"/>
+<text class="" x="1400" y="190" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#354961">ENTRY</text>
+<text class="" x="1400" y="214" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#354961">시설 입구</text>
+<text class="nodefooter" x="1400" y="240" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#354961">첫 도착: 중앙접수홀</text>
+</g>
+<g class="room encounter" data-room="A8-F" tabindex="0" role="button" aria-label="A8-F 종말새 최종방">
+<title>A8-F · 종말새 최종방 · 6개 활동 노드 (검토값)</title>
+<rect x="370.0" y="2734.0" width="260" height="92" rx="12" fill="#356492" stroke="#356492" stroke-width="2"/>
+<text class="" x="500" y="2755" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#ffffff">A8-F</text>
+<text class="" x="500" y="2779" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#ffffff">종말새</text>
+<text class="nodefooter" x="500" y="2805" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#ffffff">최종 조우 · 6노드</text>
+</g>
+<g class="room encounter" data-room="B8-F" tabindex="0" role="button" aria-label="B8-F 고요한 오케스트라 최종방">
+<title>B8-F · 고요한 오케스트라 최종방 · 6개 활동 노드 (검토값)</title>
+<rect x="1270.0" y="2734.0" width="260" height="92" rx="12" fill="#765993" stroke="#765993" stroke-width="2"/>
+<text class="" x="1400" y="2755" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#ffffff">B8-F</text>
+<text class="" x="1400" y="2779" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#ffffff">고요한 오케스트라</text>
+<text class="nodefooter" x="1400" y="2805" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#ffffff">최종 조우 · 6노드</text>
+</g>
+<g class="room encounter" data-room="C8-F" tabindex="0" role="button" aria-label="C8-F 백야 최종방">
+<title>C8-F · 백야 최종방 · 6개 활동 노드 (검토값)</title>
+<rect x="2170.0" y="2734.0" width="260" height="92" rx="12" fill="#317964" stroke="#317964" stroke-width="2"/>
+<text class="" x="2300" y="2755" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#ffffff">C8-F</text>
+<text class="" x="2300" y="2779" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#ffffff">백야</text>
+<text class="nodefooter" x="2300" y="2805" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#ffffff">최종 조우 · 6노드</text>
+</g>
+<g class="room encounter" data-room="A6-H" tabindex="0" role="button" aria-label="A6-H 흉탄의 사수 최종방">
+<title>A6-H · 흉탄의 사수 최종방 · 6개 활동 노드 (검토값)</title>
+<rect x="235.0" y="2245.0" width="210" height="90" rx="12" fill="#356492" stroke="#356492" stroke-width="2"/>
+<text class="" x="340" y="2265" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="15" font-weight="700" fill="#ffffff">A6-H</text>
+<text class="" x="340" y="2289" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="18" font-weight="700" fill="#ffffff">흉탄의 사수</text>
+<text class="nodefooter" x="340" y="2315" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="13" font-weight="400" fill="#ffffff">숨김 최종 · 6노드</text>
+</g>
+</g>
+<polyline points="125.0,2900.0 195.0,2900.0" fill="none" stroke="#627793" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="195.0,2900.0 183.0,2895.0 183.0,2905.0" fill="#627793"/>
+<text class="" x="215" y="2900" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#25354b">하강만 가능</text>
+<polyline points="525.0,2900.0 595.0,2900.0" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="595.0,2900.0 583.0,2895.0 583.0,2905.0" fill="#91a0b3"/>
+<polygon points="525.0,2900.0 537.0,2905.0 537.0,2895.0" fill="#91a0b3"/>
+<text class="" x="615" y="2900" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#25354b">동층 양방향</text>
+<polyline points="960.0,2900.0 1030.0,2900.0" fill="none" stroke="#15858f" stroke-width="4" stroke-linejoin="round"/>
+<polygon points="1030.0,2900.0 1018.0,2895.0 1018.0,2905.0" fill="#15858f"/>
+<polygon points="960.0,2900.0 972.0,2905.0 972.0,2895.0" fill="#15858f"/>
+<text class="" x="1050" y="2900" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#25354b">동간 연결 (1–3층)</text>
+<rect x="1565" y="2885" width="24" height="28" rx="5" fill="#fff6e5" stroke="#a16b20" stroke-width="2"/>
+<text class="" x="1604" y="2900" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#25354b">일반 보스 계열·선행 조우 포함 방</text>
+<polyline points="2200.0,2900.0 2270.0,2900.0" fill="none" stroke="#b37b24" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="2270.0,2900.0 2258.0,2895.0 2258.0,2905.0" fill="#b37b24"/>
+<polygon points="2200.0,2900.0 2212.0,2905.0 2212.0,2895.0" fill="#b37b24"/>
+<text class="" x="2290" y="2900" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#25354b">흉탄 조건부 연결</text>
+<text class="" x="1400" y="2950" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#56667c">상자 = 방  |  숫자 = 방 안의 활동 노드 수 검토값 (시작·Gate 제외 / 예약·고정 조우 포함)</text>
+<text class="" x="1400" y="2981" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="16" font-weight="400" fill="#69798d">점선 최종방 연결은 개방 조건을 별도 적용  ·  정비·저장 예약 위치도 검토안  ·  원정마다 보스가 다시 무작위 배치되는 지도 아님</text>
+</svg>

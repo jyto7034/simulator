@@ -19,6 +19,14 @@ pub struct EmployeeDefinitionDatabase {
 }
 
 impl EmployeeDefinitionDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(definitions: Vec<EmployeeDefinition>) -> Self {
+        Self {
+            definitions,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(definitions: Vec<EmployeeDefinition>) -> Self {
         let by_id = once_lock_with(build_string_index(
             &definitions,

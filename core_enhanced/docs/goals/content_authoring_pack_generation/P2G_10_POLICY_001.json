@@ -1,0 +1,1178 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E01-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "공식·사용자 팩을 같은 최신 작성 규격과 공통 검증으로 읽고, 재컴파일 없이 외부 선택 데이터로 실행한다. 진행 중 런의 정의를 파일 편집이나 재로딩으로 바꾸지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAPG-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAPG-E01",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "공식·사용자 팩을 같은 최신 작성 규격과 공통 검증으로 읽고, 재컴파일 없이 외부 선택 데이터로 실행한다. 진행 중 런의 정의를 파일 편집이나 재로딩으로 바꾸지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAPG-E01": [
+            "동일 바이너리에서 외부 A/B 입력을 달리하면 선택된 유효 정의가 실제 런에 반영된다.",
+            "구형/미지원 규격이나 불완전한 외부 입력은 명시적으로 거부되며 embedded 내용으로 성공을 대신하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U04",
+            "U05"
+          ],
+          "spans": [
+            {
+              "line": 12,
+              "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+            },
+            {
+              "line": 13,
+              "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "공식·사용자 팩을 같은 최신 작성 규격과 공통 검증으로 읽고, 재컴파일 없이 외부 선택 데이터로 실행한다. 진행 중 런의 정의를 파일 편집이나 재로딩으로 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAPG-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "동일 바이너리에서 외부 A/B 입력을 달리하면 선택된 유효 정의가 실제 런에 반영된다.",
+          "구형/미지원 규격이나 불완전한 외부 입력은 명시적으로 거부되며 embedded 내용으로 성공을 대신하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-01",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U04",
+            "U05"
+          ],
+          "spans": [
+            {
+              "line": 12,
+              "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+            },
+            {
+              "line": 13,
+              "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAPG-E01",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "승인된 R02 범위의 기존 U/PG 의미를 현재 사용자 채택과 결속; 신규 gameplay 수치·예외·저장 손실 의미를 추가하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E02-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "공식 정의와 등장·획득 경로도 명시적으로 추가·교체·삭제할 수 있다. 팩 의존 순서나 디렉터리 순서는 암묵적 승자를 정하지 않으며 최종 effective catalog의 참조를 검증한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAPG-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAPG-E02",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "공식 정의와 등장·획득 경로도 명시적으로 추가·교체·삭제할 수 있다. 팩 의존 순서나 디렉터리 순서는 암묵적 승자를 정하지 않으며 최종 effective catalog의 참조를 검증한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAPG-E02": [
+            "추가와 명시적 교체·삭제가 최종 정의와 기존 등록·참조 소비자에 적용된다.",
+            "미해결 다중 교체·중복/누락 의존·cycle은 오류다. 명시적 winner/교체 관계가 있으면 파일 열거 순서에 무관한 같은 결과다.",
+            "최종 catalog의 dangling 참조는 거부하고, 명시적으로 제거된 loser에서만 남는 참조는 최종 참조 실패로 오인하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U06",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 14,
+              "exact_text": "| U06 | 추가·변형·교체·등장 및 획득 경로 변경을 허용한다. 공식 정의라는 이유로 보호하거나 add-only 방식으로 제한하지 않는다. 의도적인 override와 충돌 해석은 명시한다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "공식 정의와 등장·획득 경로도 명시적으로 추가·교체·삭제할 수 있다. 팩 의존 순서나 디렉터리 순서는 암묵적 승자를 정하지 않으며 최종 effective catalog의 참조를 검증한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAPG-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "추가와 명시적 교체·삭제가 최종 정의와 기존 등록·참조 소비자에 적용된다.",
+          "미해결 다중 교체·중복/누락 의존·cycle은 오류다. 명시적 winner/교체 관계가 있으면 파일 열거 순서에 무관한 같은 결과다.",
+          "최종 catalog의 dangling 참조는 거부하고, 명시적으로 제거된 loser에서만 남는 참조는 최종 참조 실패로 오인하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-02",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U06",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 14,
+              "exact_text": "| U06 | 추가·변형·교체·등장 및 획득 경로 변경을 허용한다. 공식 정의라는 이유로 보호하거나 add-only 방식으로 제한하지 않는다. 의도적인 override와 충돌 해석은 명시한다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAPG-E02",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "승인된 R02 범위의 기존 U/PG 의미를 현재 사용자 채택과 결속; 신규 gameplay 수치·예외·저장 손실 의미를 추가하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E03-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "검증·합성·컴파일·실행 준비를 통과한 불변 세대만 게시한다. 새 런은 브리핑·starter부터 선택 세대를 고정하고 기존 런은 이전 세대를 유지한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAPG-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAPG-E03",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "검증·합성·컴파일·실행 준비를 통과한 불변 세대만 게시한다. 새 런은 브리핑·starter부터 선택 세대를 고정하고 기존 런은 이전 세대를 유지한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAPG-E03": [
+            "A 런 유지 중 B를 게시해도 A의 정의·상태는 그대로이고 새 B 런의 브리핑·starter·전투·저장은 B에 결속된다.",
+            "B 검증 또는 새 런 준비가 실패하면 기존 런·세션·profile은 바뀌지 않고 B 요청은 오류다. 이전 A를 B 성공처럼 반환하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U05",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 13,
+              "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "검증·합성·컴파일·실행 준비를 통과한 불변 세대만 게시한다. 새 런은 브리핑·starter부터 선택 세대를 고정하고 기존 런은 이전 세대를 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAPG-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "A 런 유지 중 B를 게시해도 A의 정의·상태는 그대로이고 새 B 런의 브리핑·starter·전투·저장은 B에 결속된다.",
+          "B 검증 또는 새 런 준비가 실패하면 기존 런·세션·profile은 바뀌지 않고 B 요청은 오류다. 이전 A를 B 성공처럼 반환하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-03",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U05",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 13,
+              "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAPG-E03",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "승인된 R02 범위의 기존 U/PG 의미를 현재 사용자 채택과 결속; 신규 gameplay 수치·예외·저장 손실 의미를 추가하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E04-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "최신 저장 형식은 실제 resolved content fingerprint와 작성·실행 계약의 일치를 요구한다. 구형 reader/별칭/이중 실행/자동 변환을 도입·유지하지 않으며 개인 저장 파일을 임의로 삭제하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAPG-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAPG-E04",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "최신 저장 형식은 실제 resolved content fingerprint와 작성·실행 계약의 일치를 요구한다. 구형 reader/별칭/이중 실행/자동 변환을 도입·유지하지 않으며 개인 저장 파일을 임의로 삭제하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAPG-E04": [
+            "같은 최신 계약과 실제 콘텐츠로 만든 저장은 새 application에서 복원되고 런 identity·상태·난수 진행 의미를 보존한다.",
+            "ID가 같아도 실제 콘텐츠 또는 계약이 다르면 복원을 명시적으로 거부하며 기존 런·profile·입력 파일은 그대로다.",
+            "fingerprint 없는 이전 형식과 미지원 버전은 거부하고 자동 변환·추정 fingerprint·삭제로 해결하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U04",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 12,
+              "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "최신 저장 형식은 실제 resolved content fingerprint와 작성·실행 계약의 일치를 요구한다. 구형 reader/별칭/이중 실행/자동 변환을 도입·유지하지 않으며 개인 저장 파일을 임의로 삭제하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAPG-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 최신 계약과 실제 콘텐츠로 만든 저장은 새 application에서 복원되고 런 identity·상태·난수 진행 의미를 보존한다.",
+          "ID가 같아도 실제 콘텐츠 또는 계약이 다르면 복원을 명시적으로 거부하며 기존 런·profile·입력 파일은 그대로다.",
+          "fingerprint 없는 이전 형식과 미지원 버전은 거부하고 자동 변환·추정 fingerprint·삭제로 해결하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-04",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U04",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 12,
+              "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAPG-E04",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "승인된 R02 범위의 기존 U/PG 의미를 현재 사용자 채택과 결속; 신규 gameplay 수치·예외·저장 손실 의미를 추가하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E05-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "공식 작성 원본과 사용자가 선택한 live_data 입력을 구별하며 자동 상호 덮어쓰기하지 않는다. 데이터 세대 교체는 개인 profile을 초기화하거나 잃게 하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAPG-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAPG-E05",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "공식 작성 원본과 사용자가 선택한 live_data 입력을 구별하며 자동 상호 덮어쓰기하지 않는다. 데이터 세대 교체는 개인 profile을 초기화하거나 잃게 하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAPG-E05": [
+            "공식 pack 패키징은 명시한 별도 출력에 생성하고 기존 사용자 live_data나 개인 저장을 자동 수정·삭제하지 않는다.",
+            "검증 성공·실패 및 새 런 전환 뒤 사용자 profile과 도감의 적용 가능한 기존 진행이 보존된다."
+          ]
+        },
+        "Exact user approval ref": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U04",
+            "U05"
+          ],
+          "spans": [
+            {
+              "line": 12,
+              "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+            },
+            {
+              "line": 13,
+              "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "공식 작성 원본과 사용자가 선택한 live_data 입력을 구별하며 자동 상호 덮어쓰기하지 않는다. 데이터 세대 교체는 개인 profile을 초기화하거나 잃게 하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAPG-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "공식 pack 패키징은 명시한 별도 출력에 생성하고 기존 사용자 live_data나 개인 저장을 자동 수정·삭제하지 않는다.",
+          "검증 성공·실패 및 새 런 전환 뒤 사용자 profile과 도감의 적용 가능한 기존 진행이 보존된다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-05",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U04",
+            "U05"
+          ],
+          "spans": [
+            {
+              "line": 12,
+              "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+            },
+            {
+              "line": 13,
+              "exact_text": "| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAPG-E05",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "승인된 R02 범위의 기존 U/PG 의미를 현재 사용자 채택과 결속; 신규 gameplay 수치·예외·저장 손실 의미를 추가하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E06-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "콘텐츠 데이터는 공통 typed 기능의 입력이며 OS·임의 파일·네트워크·외부 코드 실행 권한이 아니다. 팩 입력·진단·세대 수명은 제한을 검증하고 불일치·한계 실패를 명시한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAPG-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAPG-E06",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "콘텐츠 데이터는 공통 typed 기능의 입력이며 OS·임의 파일·네트워크·외부 코드 실행 권한이 아니다. 팩 입력·진단·세대 수명은 제한을 검증하고 불일치·한계 실패를 명시한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAPG-E06": [
+            "지원되지 않은 코드/opcode/capability와 허용 root 밖 입력, 경로 충돌·파일 누락·읽기 중 변경·입력 한계 초과는 후보 게시 전에 source를 식별하는 오류로 거부된다.",
+            "동일 입력·선택·계약은 같은 resolved fingerprint를 가지며 이미 게시된 불변 세대는 외부 bytes 변경의 영향을 받지 않는다. 미참조 세대는 영구 전역 수집 없이 회수 가능하다."
+          ]
+        },
+        "Exact user approval ref": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U07",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 15,
+              "exact_text": "| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAPG-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAPG-E06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "콘텐츠 데이터는 공통 typed 기능의 입력이며 OS·임의 파일·네트워크·외부 코드 실행 권한이 아니다. 팩 입력·진단·세대 수명은 제한을 검증하고 불일치·한계 실패를 명시한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAPG-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "지원되지 않은 코드/opcode/capability와 허용 root 밖 입력, 경로 충돌·파일 누락·읽기 중 변경·입력 한계 초과는 후보 게시 전에 source를 식별하는 오류로 거부된다.",
+          "동일 입력·선택·계약은 같은 resolved fingerprint를 가지며 이미 게시된 불변 세대는 외부 bytes 변경의 영향을 받지 않는다. 미참조 세대는 영구 전역 수집 없이 회수 가능하다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-06",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "selectors": [
+            "U07",
+            "PG07"
+          ],
+          "spans": [
+            {
+              "line": 15,
+              "exact_text": "| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |"
+            },
+            {
+              "line": 36,
+              "exact_text": "| PG07 | 팩 합성·content generation·저장 일치 | 최신 schema만 지원한다. 명시적 override 뒤 하나의 effective catalog를 검증한다. 미해결 다중 교체는 오류로 하고 팩/사용자 선택 설정에서 승자를 명시한다. 삭제는 참조 검증이 전제다. 저장은 실제 resolved content fingerprint와 실행 계약 버전의 일치를 요구하고 mismatch에서 기존 파일·런을 바꾸지 않는다. | CA02와 CA19. 기본 제공 방향은 이미 승인; 세부 포맷은 기술 제안. |"
+            }
+          ],
+          "current_user_adoption": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "local_provenance_limit": "historical user conversation not independently retrieved; CA00 requirement record §3 and current user adoption bind existing recorded decisions; technical examples not wholesale gameplay approval"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAPG-E06",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAPG-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "승인된 R02 범위의 기존 U/PG 의미를 현재 사용자 채택과 결속; 신규 gameplay 수치·예외·저장 손실 의미를 추가하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-07",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+          "sha256": "c5019282981c767dedba30857802572314fb3e250dda6c8af6444a90dee68670",
+          "selector": "R02 §§3–7; adopted AUTORUN §§3,5–9; local U04/PG07"
+        },
+        "Disposition": "not_a_policy_element",
+        "Stable Element ID": null,
+        "Initial open Policy Element Revision Ref": null,
+        "Reason": "기존 승인 의미를 보존하는 P2G-20 설계와 GEX 상세화; 여기서 runtime 존재를 주장하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-08",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+          "sha256": "c5019282981c767dedba30857802572314fb3e250dda6c8af6444a90dee68670",
+          "selector": "R02 §§3–7; adopted AUTORUN §§3,5–9; local U04/PG07"
+        },
+        "Disposition": "out_of_scope",
+        "Stable Element ID": null,
+        "Initial open Policy Element Revision Ref": null,
+        "Reason": "상위 요청의 해당 후속 owner에 유지; R02 필수 compile/publication/new-run/save seam은 제외하지 않음"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAPG-09-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAPG-09",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAPG-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAPG-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": [
+          "IN-002",
+          "IN-003",
+          "IN-004",
+          "IN-005"
+        ],
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+          "sha256": "c5019282981c767dedba30857802572314fb3e250dda6c8af6444a90dee68670",
+          "selector": "R02 §§3–7; adopted AUTORUN §§3,5–9; local U04/PG07"
+        },
+        "Disposition": "duplicate",
+        "Stable Element ID": null,
+        "Initial open Policy Element Revision Ref": null,
+        "Reason": "이전 최소 slice의 비변경 범위/역사적 certification과 현재 R02 latest-only 결정을 구분; false certification을 true로 가장하지 않고 R02에서 reader 제거와 대체 negative/roundtrip coverage를 소유"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CAPG-P2G10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAPG-P2G00-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CAPG-20260909",
+          "Policy Topic": "R02 외부 팩·검증 세대·새 런/저장 결속",
+          "Requested Result": "bounded_pipeline: minimum necessary P2G through complete P2G-60 Handoff for R02",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+            "boundary": "R02 minimal bounded P2G through Handoff; GEX is separately authorized by parent request after eligibility."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "R02 external multi-pack snapshot/manifest/namespace/dependency and explicit add/replace/remove, resolved references/compile/generated setup and immutable publication",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "R02 new-run generation selection from briefing/starter, pin and latest fingerprint save/restore with failure atomicity/profile preservation",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "official pack packaging, core headless/direct fixtures, source diagnostics and initial bounded input/resource/determinism verification assigned to R02",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "minimum P2G-00 through P2G-60 artifacts and required structural validation; no production mutation during P2G",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "server, Unity/client, external service deployment and RON editor UI",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "new material gameplay/balance/UX/lifetime/compatibility/data-loss decisions without user decision; arbitrary external code execution",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "personal save deletion, automatic old-save conversion, automatic overwrite between authoring source and user live_data",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "pipeline/validator/AGENTS/global runner/Codex configuration changes, remote publication or installation",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "unrelated R03–R24 features; R02 retains their requirements under parent owners rather than declaring them complete",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN §§1,3,5–9 and selected R02 card"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CAPG-P2G00-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {
+          "CAPG-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAPG-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAPG-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAPG-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAPG-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAPG-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAPG-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAPG-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAPG-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAPG-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAPG-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAPG-E06-DECIDED-001",
+            "Content Digest": null
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAPG-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAPG-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAPG-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAPG-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAPG-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAPG-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

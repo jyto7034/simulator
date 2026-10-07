@@ -1,0 +1,101 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Resolution Record",
+        "Artifact ID": "RR-CARF-O30-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Obligation Key": {
+          "Container Ref": {
+            "Artifact Type": "Change Obligation Declaration",
+            "Artifact ID": "COD-CARF-001",
+            "Content Digest": null
+          },
+          "Obligation ID": "O30"
+        },
+        "Owner Stage": "P2G-30",
+        "Exact Resolved Prerequisite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARF-P2G20-001",
+            "Content Digest": null
+          },
+          "Final Policy Freeze Ref": null,
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CARF-001",
+              "Content Digest": null
+            }
+          ]
+        },
+        "Exact Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARF-P2G20-001",
+            "Content Digest": null
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CARF-P2G30-002",
+            "Content Digest": null
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CARF-001",
+              "Content Digest": null
+            }
+          ]
+        },
+        "Resolution Artifact Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CARF-P2G30-002",
+          "Content Digest": null
+        },
+        "Resolution Evidence": {
+          "Preserved policy membership/Decisions/20acceptance": true,
+          "corrected_boundary": "CRA002 B03/P03 and §6 GF001/002 now selected by all5CRB002 and Freeze seam mappings",
+          "Current prior resolution": {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RR-CARF-O20-001",
+            "Content Digest": null
+          },
+          "closed_obligation": "COD-CARF-001/O30",
+          "remaining_obligations": [
+            {
+              "Container Ref": {
+                "Artifact Type": "Change Obligation Declaration",
+                "Artifact ID": "COD-CARF-001",
+                "Content Digest": null
+              },
+              "Obligation ID": "O40"
+            },
+            {
+              "Container Ref": {
+                "Artifact Type": "Change Obligation Declaration",
+                "Artifact ID": "COD-CARF-001",
+                "Content Digest": null
+              },
+              "Obligation ID": "O50"
+            },
+            {
+              "Container Ref": {
+                "Artifact Type": "Change Obligation Declaration",
+                "Artifact ID": "COD-CARF-001",
+                "Content Digest": null
+              },
+              "Obligation ID": "O60"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

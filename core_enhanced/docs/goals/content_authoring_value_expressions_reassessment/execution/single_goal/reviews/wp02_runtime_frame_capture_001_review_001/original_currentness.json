@@ -1,0 +1,13 @@
+{
+  "start": "2026-09-25T15:31:05.976Z",
+  "end": "2026-09-25T15:31:07.631Z",
+  "cwd": "/mnt/f/work/simulator",
+  "command": [
+    "python3",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/authoring_scripts/r06_wp02_verify_runtime_frame_capture_target_001.py"
+  ],
+  "code": 1,
+  "signal": null,
+  "log": "original_currentness.log",
+  "sha256": "efd0a334e02062204dff91afb5e07069f56f610530138b28ea896ef68f0735ab"
+}

@@ -1,0 +1,1276 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E01-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "공통 명령·행동·조건·효과의 지원 조합으로 콘텐츠를 작성하며, 지원 조합 안의 콘텐츠별 전용 실행 코드를 만들지 않는다. 새 공통 기능 추가는 가능하다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-01",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-007",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "lines": [
+            9,
+            9
+          ],
+          "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAMEC-E01",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "명시적으로 기록된 기존 사용자 결정의 현재 최소 계약 해당 부분. 콘텐츠 초안 전체를 승격하지 않음."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAMEC-E01",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "공통 명령·행동·조건·효과의 지원 조합으로 콘텐츠를 작성하며, 지원 조합 안의 콘텐츠별 전용 실행 코드를 만들지 않는다. 새 공통 기능 추가는 가능하다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAMEC-E01": [
+            "같은 지원 조합을 사용하는 새 정의를 추가할 때 그 콘텐츠 ID를 분기하는 전용 executor가 필요하지 않는다.",
+            "새 동작이 공통 지원 목록 밖이면 공통 기능의 추가 대상으로 구분한다."
+          ]
+        },
+        "Exact user approval ref": {
+          "source_kind": "repository_record_of_existing_user_decision",
+          "source": {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+            "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+            "lines": [
+              9,
+              9
+            ],
+            "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |"
+          },
+          "selector": "U01",
+          "capture_limitation": "과거 대화 원본을 독립 조회한 것이 아니라 인수된 사용자 결정 원문 기록을 참조. 문서의 초안/제안/예시는 승인 근거에서 제외.",
+          "preservation_evidence": "statement와 acceptance는 선택한 기록 의미의 관찰 가능한 재표현. 새 공식 수치·개별 태그 목록·문법·미정 변형·적중 규칙을 추가하지 않음."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "공통 명령·행동·조건·효과의 지원 조합으로 콘텐츠를 작성하며, 지원 조합 안의 콘텐츠별 전용 실행 코드를 만들지 않는다. 새 공통 기능 추가는 가능하다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 지원 조합을 사용하는 새 정의를 추가할 때 그 콘텐츠 ID를 분기하는 전용 executor가 필요하지 않는다.",
+          "새 동작이 공통 지원 목록 밖이면 공통 기능의 추가 대상으로 구분한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E02-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "향후 조합기가 소비할 작성 정보·공통 검증·진단·시험 실행 기반을 엔진에 둔다. RON 조합기 UI 자체는 이번 제작 범위가 아니다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-02",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-007",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "lines": [
+            10,
+            10
+          ],
+          "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAMEC-E02",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "명시적으로 기록된 기존 사용자 결정의 현재 최소 계약 해당 부분. 콘텐츠 초안 전체를 승격하지 않음."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAMEC-E02",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "향후 조합기가 소비할 작성 정보·공통 검증·진단·시험 실행 기반을 엔진에 둔다. RON 조합기 UI 자체는 이번 제작 범위가 아니다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAMEC-E02": [
+            "엔진 소비자가 작성 가능한 기능 정보와 검증 결과·진단을 얻을 수 있다.",
+            "조합기 UI 없이 코어/headless 시험 입구를 사용할 수 있다."
+          ]
+        },
+        "Exact user approval ref": {
+          "source_kind": "repository_record_of_existing_user_decision",
+          "source": {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+            "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+            "lines": [
+              10,
+              10
+            ],
+            "exact_text": "| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |"
+          },
+          "selector": "U02",
+          "capture_limitation": "과거 대화 원본을 독립 조회한 것이 아니라 인수된 사용자 결정 원문 기록을 참조. 문서의 초안/제안/예시는 승인 근거에서 제외.",
+          "preservation_evidence": "statement와 acceptance는 선택한 기록 의미의 관찰 가능한 재표현. 새 공식 수치·개별 태그 목록·문법·미정 변형·적중 규칙을 추가하지 않음."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "향후 조합기가 소비할 작성 정보·공통 검증·진단·시험 실행 기반을 엔진에 둔다. RON 조합기 UI 자체는 이번 제작 범위가 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "엔진 소비자가 작성 가능한 기능 정보와 검증 결과·진단을 얻을 수 있다.",
+          "조합기 UI 없이 코어/headless 시험 입구를 사용할 수 있다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E03-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "범용 유물은 효과 태그와 세부 속성으로 적용 대상을 판별하고 실제 변화는 유물 효과 정의가 소유한다. 전용 유물은 명시한 파편·장비의 고유 구조를 확장한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-03",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-009 → 원문의 공통 정책 링크",
+        "Exact source": {
+          "path": "core_enhanced/docs/tmp/run_relic_system_design_notes_2026-08-21.ko.md",
+          "sha256": "da5665e75101c84d336735342c5521b2510931f137baf0191316ed4461f9c12b",
+          "lines": [
+            147,
+            179
+          ],
+          "exact_text": "### 적용 대상과 강화 항목\n\n2026-09-07 후속 대화에서 **태그 기반 범용 유물을 기본으로 삼되, 전용 유물도 남기기로 했다.**\n모든 유물을 태그 조건만으로 범용화하던 이전 결정을 수정한다.\n\n- 범용 유물은 특정 파편·무기 ID 대신 효과 태그와 세부 속성으로 적용 대상을 판별한다.\n- 전용 유물은 특정 파편·장비의 고유한 구조를 확장한다. 전용 대상과 기본형·개화형 등 적용 형태를\n  개별 설계에 명시한다. 전용 조건의 정식 ID·schema 표현은 후속 구현 검토에서 정한다.\n- 첫 전용 사례는 `붉은 실타래`이며, 래티씨아 기본·개화 파편의 작은·큰 친구에 적용한다.\n  다른 파편의 효과가 같은 일반 태그를 가진다는 이유만으로 연결 대상이 되지는 않는다.\n- 전용 유물도 공용 슬롯·직원 간 이전·중복·연쇄 정책을 따르며, 새 효과에 태그와 출처를 부여한다.\n  범용·전용 구분만으로 희귀도나 획득처를 정하지 않는다.\n- 최종 보스도 같은 범용·전용 정책을 따르며, 침식에는 어느 쪽 유물도 적용하지 않는다.\n\n파편 등의 효과를 스택, 관통, 폭발 같은 태그로 표현한다. 유물은 그 태그가 가리키는 효과를\n강화하며, 새로운 효과를 부여하는 것도 허용한다. 태그가 적용 대상을 판별하고 실제 변화는\n해당 유물의 효과 정의가 소유한다.\n\n다음은 대화에서 구조를 설명하기 위해 사용한 예시다. 정식 태그 이름, 실제 유물 목록이나\n밸런스 수치를 확정한 표가 아니다.\n\n| 효과 예시 | 강화 항목 예시 |\n| --- | --- |\n| 스택 | 획득량, 최대 스택, 스택당 효과 |\n| 투사체 관통 | 관통 횟수, 관통 후 피해 감소 완화 |\n| 폭발 | 폭발 반경, 폭발 피해 |\n\n### 새 효과와 다른 유물의 조합\n\n- 유물로 새로 부여한 효과에도 태그를 붙인다.\n- 다른 유물은 새로 부여된 효과도 태그 조건에 따라 강화할 수 있다.\n- 예를 들어 폭발 부여 유물로 생긴 폭발에 폭발 반경 증가나 폭발 피해 증가 유물을 적용할 수 있다.\n- 2026-09-06 후속 대화에서 기초 태그 초안을 먼저 만들고 스킬·유물에 적용하며 확장하기로 했다."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAMEC-E03",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "명시적으로 기록된 기존 사용자 결정의 현재 최소 계약 해당 부분. 콘텐츠 초안 전체를 승격하지 않음."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAMEC-E03",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "범용 유물은 효과 태그와 세부 속성으로 적용 대상을 판별하고 실제 변화는 유물 효과 정의가 소유한다. 전용 유물은 명시한 파편·장비의 고유 구조를 확장한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAMEC-E03": [
+            "범용 판별은 해당 효과의 태그·세부 속성에 근거하며 특정 콘텐츠 ID 전용 분기를 요구하지 않는다.",
+            "같은 일반 태그라는 이유만으로 전용 대상 조건을 대신 충족하지 않는다.",
+            "태그 자체를 실제 강화 수치나 새 실행 동작으로 간주하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "source_kind": "repository_record_of_existing_user_decision",
+          "source": {
+            "path": "core_enhanced/docs/tmp/run_relic_system_design_notes_2026-08-21.ko.md",
+            "sha256": "da5665e75101c84d336735342c5521b2510931f137baf0191316ed4461f9c12b",
+            "lines": [
+              147,
+              179
+            ],
+            "exact_text": "### 적용 대상과 강화 항목\n\n2026-09-07 후속 대화에서 **태그 기반 범용 유물을 기본으로 삼되, 전용 유물도 남기기로 했다.**\n모든 유물을 태그 조건만으로 범용화하던 이전 결정을 수정한다.\n\n- 범용 유물은 특정 파편·무기 ID 대신 효과 태그와 세부 속성으로 적용 대상을 판별한다.\n- 전용 유물은 특정 파편·장비의 고유한 구조를 확장한다. 전용 대상과 기본형·개화형 등 적용 형태를\n  개별 설계에 명시한다. 전용 조건의 정식 ID·schema 표현은 후속 구현 검토에서 정한다.\n- 첫 전용 사례는 `붉은 실타래`이며, 래티씨아 기본·개화 파편의 작은·큰 친구에 적용한다.\n  다른 파편의 효과가 같은 일반 태그를 가진다는 이유만으로 연결 대상이 되지는 않는다.\n- 전용 유물도 공용 슬롯·직원 간 이전·중복·연쇄 정책을 따르며, 새 효과에 태그와 출처를 부여한다.\n  범용·전용 구분만으로 희귀도나 획득처를 정하지 않는다.\n- 최종 보스도 같은 범용·전용 정책을 따르며, 침식에는 어느 쪽 유물도 적용하지 않는다.\n\n파편 등의 효과를 스택, 관통, 폭발 같은 태그로 표현한다. 유물은 그 태그가 가리키는 효과를\n강화하며, 새로운 효과를 부여하는 것도 허용한다. 태그가 적용 대상을 판별하고 실제 변화는\n해당 유물의 효과 정의가 소유한다.\n\n다음은 대화에서 구조를 설명하기 위해 사용한 예시다. 정식 태그 이름, 실제 유물 목록이나\n밸런스 수치를 확정한 표가 아니다.\n\n| 효과 예시 | 강화 항목 예시 |\n| --- | --- |\n| 스택 | 획득량, 최대 스택, 스택당 효과 |\n| 투사체 관통 | 관통 횟수, 관통 후 피해 감소 완화 |\n| 폭발 | 폭발 반경, 폭발 피해 |\n\n### 새 효과와 다른 유물의 조합\n\n- 유물로 새로 부여한 효과에도 태그를 붙인다.\n- 다른 유물은 새로 부여된 효과도 태그 조건에 따라 강화할 수 있다.\n- 예를 들어 폭발 부여 유물로 생긴 폭발에 폭발 반경 증가나 폭발 피해 증가 유물을 적용할 수 있다.\n- 2026-09-06 후속 대화에서 기초 태그 초안을 먼저 만들고 스킬·유물에 적용하며 확장하기로 했다."
+          },
+          "selector": "태그 기반 유물 효과 / 적용 대상과 강화 항목 — 대화 결정",
+          "capture_limitation": "과거 대화 원본을 독립 조회한 것이 아니라 인수된 사용자 결정 원문 기록을 참조. 문서의 초안/제안/예시는 승인 근거에서 제외.",
+          "preservation_evidence": "statement와 acceptance는 선택한 기록 의미의 관찰 가능한 재표현. 새 공식 수치·개별 태그 목록·문법·미정 변형·적중 규칙을 추가하지 않음."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "범용 유물은 효과 태그와 세부 속성으로 적용 대상을 판별하고 실제 변화는 유물 효과 정의가 소유한다. 전용 유물은 명시한 파편·장비의 고유 구조를 확장한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "범용 판별은 해당 효과의 태그·세부 속성에 근거하며 특정 콘텐츠 ID 전용 분기를 요구하지 않는다.",
+          "같은 일반 태그라는 이유만으로 전용 대상 조건을 대신 충족하지 않는다.",
+          "태그 자체를 실제 강화 수치나 새 실행 동작으로 간주하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E04-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "새로 부여한 효과에도 태그와 출처를 부여하여 다른 유물의 조합 대상이 될 수 있게 한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-04",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-009 → 원문의 공통 정책 링크",
+        "Exact source": {
+          "path": "core_enhanced/docs/tmp/run_relic_system_design_notes_2026-08-21.ko.md",
+          "sha256": "da5665e75101c84d336735342c5521b2510931f137baf0191316ed4461f9c12b",
+          "lines": [
+            150,
+            181
+          ],
+          "exact_text": "모든 유물을 태그 조건만으로 범용화하던 이전 결정을 수정한다.\n\n- 범용 유물은 특정 파편·무기 ID 대신 효과 태그와 세부 속성으로 적용 대상을 판별한다.\n- 전용 유물은 특정 파편·장비의 고유한 구조를 확장한다. 전용 대상과 기본형·개화형 등 적용 형태를\n  개별 설계에 명시한다. 전용 조건의 정식 ID·schema 표현은 후속 구현 검토에서 정한다.\n- 첫 전용 사례는 `붉은 실타래`이며, 래티씨아 기본·개화 파편의 작은·큰 친구에 적용한다.\n  다른 파편의 효과가 같은 일반 태그를 가진다는 이유만으로 연결 대상이 되지는 않는다.\n- 전용 유물도 공용 슬롯·직원 간 이전·중복·연쇄 정책을 따르며, 새 효과에 태그와 출처를 부여한다.\n  범용·전용 구분만으로 희귀도나 획득처를 정하지 않는다.\n- 최종 보스도 같은 범용·전용 정책을 따르며, 침식에는 어느 쪽 유물도 적용하지 않는다.\n\n파편 등의 효과를 스택, 관통, 폭발 같은 태그로 표현한다. 유물은 그 태그가 가리키는 효과를\n강화하며, 새로운 효과를 부여하는 것도 허용한다. 태그가 적용 대상을 판별하고 실제 변화는\n해당 유물의 효과 정의가 소유한다.\n\n다음은 대화에서 구조를 설명하기 위해 사용한 예시다. 정식 태그 이름, 실제 유물 목록이나\n밸런스 수치를 확정한 표가 아니다.\n\n| 효과 예시 | 강화 항목 예시 |\n| --- | --- |\n| 스택 | 획득량, 최대 스택, 스택당 효과 |\n| 투사체 관통 | 관통 횟수, 관통 후 피해 감소 완화 |\n| 폭발 | 폭발 반경, 폭발 피해 |\n\n### 새 효과와 다른 유물의 조합\n\n- 유물로 새로 부여한 효과에도 태그를 붙인다.\n- 다른 유물은 새로 부여된 효과도 태그 조건에 따라 강화할 수 있다.\n- 예를 들어 폭발 부여 유물로 생긴 폭발에 폭발 반경 증가나 폭발 피해 증가 유물을 적용할 수 있다.\n- 2026-09-06 후속 대화에서 기초 태그 초안을 먼저 만들고 스킬·유물에 적용하며 확장하기로 했다.\n  초안과 적용 예시는 [Run 유물 콘텐츠 설계 노트](../skills/run_relic_content_design_notes.ko.md#기초-태그-초안)에\n  기록한다. 정식 태그 목록과 허용할 개별 변형은 대표 유물 설계를 통해 다듬는다."
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAMEC-E04",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "명시적으로 기록된 기존 사용자 결정의 현재 최소 계약 해당 부분. 콘텐츠 초안 전체를 승격하지 않음."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAMEC-E04",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "새로 부여한 효과에도 태그와 출처를 부여하여 다른 유물의 조합 대상이 될 수 있게 한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAMEC-E04": [
+            "원래 효과와 새로 부여한 효과의 출처를 구별할 수 있다.",
+            "새 효과도 다른 유물의 태그 조건을 만족하는 대상이 될 수 있다."
+          ]
+        },
+        "Exact user approval ref": {
+          "source_kind": "repository_record_of_existing_user_decision",
+          "source": {
+            "path": "core_enhanced/docs/tmp/run_relic_system_design_notes_2026-08-21.ko.md",
+            "sha256": "da5665e75101c84d336735342c5521b2510931f137baf0191316ed4461f9c12b",
+            "lines": [
+              150,
+              181
+            ],
+            "exact_text": "모든 유물을 태그 조건만으로 범용화하던 이전 결정을 수정한다.\n\n- 범용 유물은 특정 파편·무기 ID 대신 효과 태그와 세부 속성으로 적용 대상을 판별한다.\n- 전용 유물은 특정 파편·장비의 고유한 구조를 확장한다. 전용 대상과 기본형·개화형 등 적용 형태를\n  개별 설계에 명시한다. 전용 조건의 정식 ID·schema 표현은 후속 구현 검토에서 정한다.\n- 첫 전용 사례는 `붉은 실타래`이며, 래티씨아 기본·개화 파편의 작은·큰 친구에 적용한다.\n  다른 파편의 효과가 같은 일반 태그를 가진다는 이유만으로 연결 대상이 되지는 않는다.\n- 전용 유물도 공용 슬롯·직원 간 이전·중복·연쇄 정책을 따르며, 새 효과에 태그와 출처를 부여한다.\n  범용·전용 구분만으로 희귀도나 획득처를 정하지 않는다.\n- 최종 보스도 같은 범용·전용 정책을 따르며, 침식에는 어느 쪽 유물도 적용하지 않는다.\n\n파편 등의 효과를 스택, 관통, 폭발 같은 태그로 표현한다. 유물은 그 태그가 가리키는 효과를\n강화하며, 새로운 효과를 부여하는 것도 허용한다. 태그가 적용 대상을 판별하고 실제 변화는\n해당 유물의 효과 정의가 소유한다.\n\n다음은 대화에서 구조를 설명하기 위해 사용한 예시다. 정식 태그 이름, 실제 유물 목록이나\n밸런스 수치를 확정한 표가 아니다.\n\n| 효과 예시 | 강화 항목 예시 |\n| --- | --- |\n| 스택 | 획득량, 최대 스택, 스택당 효과 |\n| 투사체 관통 | 관통 횟수, 관통 후 피해 감소 완화 |\n| 폭발 | 폭발 반경, 폭발 피해 |\n\n### 새 효과와 다른 유물의 조합\n\n- 유물로 새로 부여한 효과에도 태그를 붙인다.\n- 다른 유물은 새로 부여된 효과도 태그 조건에 따라 강화할 수 있다.\n- 예를 들어 폭발 부여 유물로 생긴 폭발에 폭발 반경 증가나 폭발 피해 증가 유물을 적용할 수 있다.\n- 2026-09-06 후속 대화에서 기초 태그 초안을 먼저 만들고 스킬·유물에 적용하며 확장하기로 했다.\n  초안과 적용 예시는 [Run 유물 콘텐츠 설계 노트](../skills/run_relic_content_design_notes.ko.md#기초-태그-초안)에\n  기록한다. 정식 태그 목록과 허용할 개별 변형은 대표 유물 설계를 통해 다듬는다."
+          },
+          "selector": "새 효과·출처 — 대화 결정",
+          "capture_limitation": "과거 대화 원본을 독립 조회한 것이 아니라 인수된 사용자 결정 원문 기록을 참조. 문서의 초안/제안/예시는 승인 근거에서 제외.",
+          "preservation_evidence": "statement와 acceptance는 선택한 기록 의미의 관찰 가능한 재표현. 새 공식 수치·개별 태그 목록·문법·미정 변형·적중 규칙을 추가하지 않음."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "새로 부여한 효과에도 태그와 출처를 부여하여 다른 유물의 조합 대상이 될 수 있게 한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "원래 효과와 새로 부여한 효과의 출처를 구별할 수 있다.",
+          "새 효과도 다른 유물의 태그 조건을 만족하는 대상이 될 수 있다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E05-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "기존 RON은 전량 교체 가능하며 구형 별칭·레거시 호환·이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의 삭제하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-05",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-007",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "lines": [
+            12,
+            12
+          ],
+          "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAMEC-E05",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "명시적으로 기록된 기존 사용자 결정의 현재 최소 계약 해당 부분. 콘텐츠 초안 전체를 승격하지 않음."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAMEC-E05",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "기존 RON은 전량 교체 가능하며 구형 별칭·레거시 호환·이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의 삭제하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAMEC-E05": [
+            "최신 규격 도입을 위해 구형 문법 별칭이나 구형/신형 이중 실행·자동 저장 변환을 추가하지 않는다.",
+            "미지원 저장의 처리 때문에 기존 개인 파일이 임의 삭제되지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "source_kind": "repository_record_of_existing_user_decision",
+          "source": {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+            "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+            "lines": [
+              12,
+              12
+            ],
+            "exact_text": "| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |"
+          },
+          "selector": "U04",
+          "capture_limitation": "과거 대화 원본을 독립 조회한 것이 아니라 인수된 사용자 결정 원문 기록을 참조. 문서의 초안/제안/예시는 승인 근거에서 제외.",
+          "preservation_evidence": "statement와 acceptance는 선택한 기록 의미의 관찰 가능한 재표현. 새 공식 수치·개별 태그 목록·문법·미정 변형·적중 규칙을 추가하지 않음."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "기존 RON은 전량 교체 가능하며 구형 별칭·레거시 호환·이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의 삭제하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "최신 규격 도입을 위해 구형 문법 별칭이나 구형/신형 이중 실행·자동 저장 변환을 추가하지 않는다.",
+          "미지원 저장의 처리 때문에 기존 개인 파일이 임의 삭제되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E06-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "외부 콘텐츠 스크립트·플러그인 코드를 실행하지 않는다. 콘텐츠 작성 권한을 OS·파일 시스템·네트워크 실행 권한으로 확대하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-06",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-007",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "lines": [
+            15,
+            15
+          ],
+          "exact_text": "| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |"
+        },
+        "Disposition": "promoted",
+        "Stable Element ID": "CAMEC-E06",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Reason": "명시적으로 기록된 기존 사용자 결정의 현재 최소 계약 해당 부분. 콘텐츠 초안 전체를 승격하지 않음."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CAMEC-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CAMEC-E06",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "외부 콘텐츠 스크립트·플러그인 코드를 실행하지 않는다. 콘텐츠 작성 권한을 OS·파일 시스템·네트워크 실행 권한으로 확대하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CAMEC-E06": [
+            "콘텐츠 정의가 엔진이 지원하는 데이터 조합을 넘어 외부 코드나 임의 OS·파일·네트워크 명령을 실행할 수 없다."
+          ]
+        },
+        "Exact user approval ref": {
+          "source_kind": "repository_record_of_existing_user_decision",
+          "source": {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+            "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+            "lines": [
+              15,
+              15
+            ],
+            "exact_text": "| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |"
+          },
+          "selector": "U07",
+          "capture_limitation": "과거 대화 원본을 독립 조회한 것이 아니라 인수된 사용자 결정 원문 기록을 참조. 문서의 초안/제안/예시는 승인 근거에서 제외.",
+          "preservation_evidence": "statement와 acceptance는 선택한 기록 의미의 관찰 가능한 재표현. 새 공식 수치·개별 태그 목록·문법·미정 변형·적중 규칙을 추가하지 않음."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CAMEC-E06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CAMEC-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "외부 콘텐츠 스크립트·플러그인 코드를 실행하지 않는다. 콘텐츠 작성 권한을 OS·파일 시스템·네트워크 실행 권한으로 확대하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CAMEC-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "콘텐츠 정의가 엔진이 지원하는 데이터 조합을 넘어 외부 코드나 임의 OS·파일·네트워크 명령을 실행할 수 없다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-07",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-006",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA01.md",
+          "sha256": "d10d4ba5839852380516f825d2ade69e21018da6ed424b91dc4567884bb0ea13",
+          "lines": [
+            15,
+            58
+          ],
+          "exact_text": "콘텐츠 정의/형태/효과 정의/소유 사본/시전/직접 타격/피해 segment/전달/상태/연쇄 경로 identity를 구분한다. TargetQuery, ValueExpr, Action 또는 Effect, Condition, Sequence/Branch/Parallel, ResourceRef 등의 최소 작성 단위를 설계한다. 효과별 태그와 실제 변경 가능한 property를 분리하고 consumer별 허용 조합·입출력 타입·단위·상태 필요조건을 descriptor로 정의한다. 보스 graph와 스킬 flow는 제어 책임을 분리한다. 지금 실행하는 primitive만 지원 목록에 등록한다.\n\n## 2. 권장 구조와 선택 이유 — R\n\n**채택안:** 구조화된 ActionFlow와 EffectSite를 typed AST로 선언하고, 컴파일된 node index/result slot/source map으로 낮춘다. 보스는 별도 상태·작업 graph를 유지하며 작은 공통 계약만 공유한다.\n\n**이유:** 임의 jump/string eval 대신 도구가 연결 가능한 타입과 종료·취소를 검증하고, 효과와 action carrier의 변경 범위를 분리하기 위해서다.\n\n## 3. 실제 코드에서 확인할 질문 — D1\n\n현재 SkillDef raw/runtime 변환, range preset, Damage/Heal consumer, Boss compiled 정의, error source 위치 보존을 추적한다. 기존 ID·target·result 타입을 재사용할 수 있는지 비교한다. 최소 typed slice와 외부 로딩·시험 포트를 어디에서 분리해 각각 유효하게 검증할 수 있는지 확인한다. 작성·컴파일·기존 kernel 소비가 후속 미구현 기능 전체를 필요로 하는지 따져, 실제 필요한 계약 부분만 선행으로 제안한다.\n\n연결 후보: `core_enhanced/src/game/ability.rs::SkillDef, SkillStepDef, SkillEffectDef; stats.rs::TriggerType, Effect, StatId; data/skill_data.rs; data/boss_runtime_data.rs; docs/skills/run_relic_content_design_notes.ko.md:267–378`\n\n위 경로는 조사 입구다. 실제 선택 작업에서는 관련 호출자·검증기·소비자·상태·테스트를 모두 연결해 읽고 확인한 범위를 적는다. 새 설계 타입을 현재 API로 가정하지 않는다.\n\n## 4. 구현 전에 작성할 상세 설계 — D2/DG\n\n최소 AST·compiled shape·EffectSite/ActionSite 주소, ID 범위, descriptor↔opcode 연결, unsupported 오류, K01–K10의 필요한 최소 port sketch. 미래 op의 빈 executor는 작성하지 않는다.\n\n공통 [설계 절차](../DESIGN_WORKFLOW.ko.md)의 DG 표를 충족한다. R을 변경하면 현 코드 근거·대안·영향 소비자·P 정책 보존 여부를 기록한다. exact 함수·자료구조는 구현자의 L 설계이며, K 의미 변경은 L1 검토, gameplay 변화는 L2/PG다.\n\n## 5. 구현·시험 묶음\n\n계약·source map → 실제 Damage/Heal/Instant slice → 타입/참조 부정 fixture → CA02가 사용할 최신 최소 schema.\n\n새 상태의 snapshot/rollback/save 영향은 이 작업에서 동반한다. CA19에 모든 저장 구현을 미루지 않는다. 작업 범위에 해당하지 않으면 “해당 없음”과 근거를 적는다.\n\n## 6. 정책 결정 지점\n\nPG01, PG02의 인터페이스 영향 부분. source 식별과 lifetime key는 내부 설계로 제안하되 gameplay 변화는 분리한다.\n\n이미 합의한 사본별 개화·외부 팩·레거시 없음 등의 P 정책은 재질문하지 않는다. 미확인 구현 사실은 D1 조사로 해결한다.\n\n## 7. 필수 검증과 완료 증거\n\nT01. 같은 효과의 태그 AND와 “서로 다른 보유 효과 존재” 조건을 혼동하지 않는다. 소비자에서 실행하지 못하는 연산은 컴파일 단계에서 이유와 위치를 가진 오류가 된다. 피해+자기 회복을 분리한 최소 계획이 작성 가능하다.\n\n**v2 추가 기준:** E01의 두 효과가 독립 property를 갖고, carrier 수정이 공유된 다른 effect에 번질 때 진단된다. exact RON 예제를 최신 parser로 검증한 뒤 문서화한다.\n\n완료 증거는 실제 revision·명령·실행 수·기대/실제 상태·semantic trace·팩 fingerprint·남은 제약을 포함한다. DG 완료와 test PASS를 혼동하지 않는다.\n\n## 8. 금지·비범위\n"
+        },
+        "Candidate": "효과/행동 주소·typed descriptor·SourceMap·unsupported 최소 지원 목록",
+        "Disposition": "not_a_policy_element",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "기존 E01–04를 실현하는 검토 후보. R의 타입명·공개 문법·전체 기능 채택 승인이 아님. 현재 소비자가 못하는 조합을 지원한다고 표시하지 않는 기술적 진단을 설계한다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-08",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-009",
+        "Exact source": {
+          "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+          "sha256": "78aeb97ac30545d2763176cc32ec5c1ae9ecb14015e5a76ba322f96c91d8e1c4",
+          "lines": [
+            266,
+            290
+          ],
+          "exact_text": "## 파편 효과 분해와 유물 설계 검토표\n\n2026-09-07 대화에서 파편의 개별 능력뿐 아니라 그 능력을 구성하는 하위 요소를 분석하고,\n부족한 부분이나 강화했을 때 재미있을 부분을 유물로 채우기로 했다. 원본 파편 문서의 기본형·개화형과\n녹아내리는 사랑의 탱커·딜러 분기를 훑어 아래 **15개 축을 공통 검토 틀**로 정리한다.\n2026-09-08에는 축 수를 유지하면서 복합 효과의 단계·분기를 먼저 기록하고, 반복 발생·집계·소유\n관계를 더 명확히 표현하도록 보완했다. 현재 검토한 파편들을 설명하는 공통 틀이며, 모든 축이 서로\n독립적이거나 이후 모든 효과를 빠짐없이 표현하는 고정 규격이라는 뜻은 아니다.\n\n### 효과 단위로 분해하는 원칙\n\n- **파편 → 효과의 단계·분기·병행 관계 → 개별 효과 → 분해 축** 순서로 읽는다. 풍운승려의 광역\n  물어뜯기와 적중 후 자기 회복은 연결 관계를 적되 각각 분해한다. 공격 범위를 늘렸다는 이유로\n  자기 회복까지 광역 회복으로 바꾸지 않는다.\n- 유물을 설계할 때마다 15개 축을 확인하고, 실제로 변경할 효과와 축을 특정한다. 모든 축에서\n  유물을 하나씩 만들거나 한 유물로 여러 약점을 동시에 해결할 필요는 없다.\n- 원본에 없는 속성은 `해당 없음`, 아직 결정하지 않은 속성은 `미정`으로 남긴다. `미정`을 0이나\n  무제한으로 해석하지 않으며, 유물 설계를 위해 원본의 수치·판정을 임의로 확정하지 않는다.\n  원본의 수치·규칙이 미정인 것과 그 속성을 담을 분해 축이 부족한 것은 구분한다.\n- 소환물처럼 세부 구조가 많은 효과에는 HP·이동·피격·저지·동시 존재 수 등의 **전용 하위 항목**을\n  붙인다. 변신의 교체·복귀 규칙이나 공유 자원의 참가·이탈 규칙도 필요한 효과에서 보충한다.\n  `소환물` 태그만으로 모든 매개체가 같은 유닛 구조나 능력을 가진다고 보지 않으며, 특수 사례 하나마다\n  공통 축을 늘리지 않는다.\n- 파편 침식형은 기존 공통 정책대로 유물 증폭·추가 효과·연쇄의 적용 대상에서 제외한다.\n  침식 아이템으로 변형하는 `침식된 유물`과 구분한다."
+        },
+        "Candidate": "15축·효과별 태그·태그와 실제 변경 속성 구분",
+        "Disposition": "duplicate",
+        "Evidence/decision reference": {
+          "current_policy_elements": [
+            "CAMEC-E01",
+            "CAMEC-E02",
+            "CAMEC-E03",
+            "CAMEC-E04",
+            "CAMEC-E05",
+            "CAMEC-E06"
+          ],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "E03–04의 효과 판별 의미를 점검할 예시/분석 틀. COV-R016/020의 합의 라벨은 독립 승인 증거가 아니며 원문의 초안 상태를 유지한다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-09-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-09",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-009",
+        "Exact source": {
+          "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+          "sha256": "78aeb97ac30545d2763176cc32ec5c1ae9ecb14015e5a76ba322f96c91d8e1c4",
+          "lines": [
+            415,
+            435
+          ],
+          "exact_text": "## 기초 태그 초안\n\n2026-09-06 대화에서 파편들의 기초 태그를 먼저 만들고 스킬·유물에 적용하며 확장하기로 했다.\n아래는 그 검토를 시작할 한글 태그 초안이다. 정식 tag ID, RON/schema와 runtime 지원 목록의 확정이나\n현재 파편·장비 데이터에 태그를 적용했다는 뜻은 아니다. 개별 효과의 미정 수치·대상·판정은 원본\n파편 문서의 open design으로 유지한다.\n\n### 적용 단위와 출처\n\n태그는 **파편 전체가 아니라 개별 효과에 붙인다.** 한 파편의 서로 다른 효과가 가진 태그를 합쳐\n하나의 효과가 모든 조건을 만족한다고 판단하지 않는다.\n\n- 풍운승려의 광역 물어뜯기와 자기 회복은 별도 효과다. 공격의 범위 증가가 자기 회복을 광역 회복으로\n  바꾸지 않는다.\n- Hello의 관통 기본 공격과 Goodbye의 광역 스킬 피해는 따로 분류한다. 허수아비가 강화한 공격도\n  기본 공격이라는 출처를 유지한다.\n- 기본 공격, 파편의 직접 공격, 지속 피해, 장비·유물의 추가 효과 등 어떤 경로에서 발생했는지 함께\n  보존한다. 같은 `피해` 태그가 있어도 모든 적중·처치·흡혈 조건을 공유하는 것은 아니다.\n- 장비의 효과는 파편 자체의 효과와 구분한다. 나무꾼 방어구의 스킬 처치 회복과 액세서리의 흡혈을\n  나무꾼 파편의 기본 효과로 붙이지 않는다.\n"
+        },
+        "Candidate": "같은 효과 태그 조건과 서로 다른 효과 존재 조건, 공유 carrier",
+        "Disposition": "not_a_policy_element",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "태그 판별 대상의 혼동을 검출할 시험·설계 후보. 실제 selector 언어/허용 조합과 carrier 변형 gameplay를 확정하지 않는다. A02 제안은 P2G-20에서 코드 대조한다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-10",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-009",
+        "Exact source": {
+          "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+          "sha256": "78aeb97ac30545d2763176cc32ec5c1ae9ecb14015e5a76ba322f96c91d8e1c4",
+          "lines": [
+            514,
+            606
+          ],
+          "exact_text": "### 세부 속성과 변경 가능한 항목\n\n공통 태그 안의 차이는 세부 속성으로 함께 기록한다. 태그를 가졌다는 사실과 특정 변형을 허용한다는\n판정은 구분한다.\n\n| 공통 태그 | 함께 기록할 차이 |\n| --- | --- |\n| `피해` | 물리·마법·고정 피해, 참조 능력치 |\n| `회복` | 자기·아군 대상, 직접 회복·흡혈 등 회복 방식 |\n| `보호막` | 개인 보호량·여러 아군이 공유하는 보호량 |\n| `제어` | 둔화·속박·빙결·기절·도발·끌어당김 |\n| `스택` | 소유자, 획득·소비 방식, 상한, 전투 또는 런 동안 유지 |\n| `소환물` | 설치물·타일 축적·영역의 구분, 소유자, 생성·종료와 발생 효과의 관계 |\n| `받는피해증가` | 증가율, 지속 시간, 적용할 피해 출처·유형과 재부여·중첩 방식 |\n| `지속영역` | 고정 위치·시전자 추종, 범위와 적용 주기 |\n\n`제어` 전반을 강화하는 유물과 속박에만 반응하는 유물을 같은 체계로 표현한다. `스택`은 공통으로\n찾되 획득량·최대량·스택당 효과 중 실제 변경 가능한 항목을 개별 효과에 명시한다. `스택` 태그만으로\n모든 획득량 증폭을 허용하거나 서로 다른 자원을 병합하지 않는다.\n\n공격력·주문력·최대 HP 중 어떤 값을 참조하는지, 피해 type과 대상 범위가 아직 미정이면 이 태그\n초안으로 확정하지 않는다. 파편·장비의 run-local 진행도와 유물 자체의 전투별 누적 상태 수명도\n기존 공통 정책대로 구분한다.\n\n### 대표 파편 적용 예시\n\n아래는 상세 본문에 근거한 기초 태그 적용 예시다. 화살표 앞뒤는 서로 다른 효과이며,\n한 행의 태그를 파편의 모든 효과에 일괄 부여하지 않는다.\n\n| 파편 | 태그 적용 예시 |\n| --- | --- |\n| 나무꾼 | 도끼 공격 `피해·다중타격` |\n| 허수아비 | 준비 `기본공격강화` → 강화 공격 처치 후 `능력치변경` |\n| 아무 것도 없는 | Hello `기본공격변형` → 변형 평타 `피해·관통` / Goodbye `피해·범위` |\n| 루돌타 | 폭격 순서 `다중타격` → 개별 선물 `피해·범위·폭발` |\n| 풍운승려 | 물어뜯기 `피해·범위` → 유효 적중 후 `회복` |\n| 여왕벌 | 벌집에 저장된 횟수를 조건 충족 시 소비 → `회복` |\n| 음/양 | 회복 장판 `소환물·회복·범위·지속영역` |\n| 이름이 없는 태아 | 울음 `집중유지·지속영역` → 아군에게 `기본공격강화·능력치변경(공격 속도)` |\n| 래티씨아 | 작은·큰 친구 `소환물` → 공격 `피해` / 큰 친구의 공격에는 `범위` 추가 |\n| 죽을 나비의 장례 | 경로를 덮은 나비 `소환물·지연발동` 또는 사망 타일의 나비 축적 `소환물·스택` → 발동 시 `피해·폭발` |\n| 녹아내리는 사랑 탱커 | 고기벽 `소환물·방해물` |\n| 녹아내리는 사랑 딜러 | 감염의 전파 규칙 `전파`와 periodic 피해 `피해·지속피해` → 기폭 `피해·범위·폭발` |\n| 파고드는 천국 | 주시 `스택` → 단계에 따라 `제어(둔화·속박)` |\n| 절망의 기사 | 검 `스택` → 기본형의 집중 공격 / 개화형의 `피해·범위` 내려찍기 |\n\n래티씨아 무기는 단일 기본 공격 `피해` → 피격 대상에게 거미줄 `제어(이동 속도 20% 감소)`로\n기록한다. 이 둔화는 무기의 고유 효과이며, 파편의 친구 공격에 자동 상속하지 않는다. 지속 시간과\n재부여·중첩 판정은 원본 무기 설계의 미정 항목으로 남긴다.\n\n### 발동 사건과 유물 효과 기록\n\n발동 사건은 태그 목록과 별도로 적는다. 초기 검토에 필요한 사건은 다음과 같다.\n\n- 시전, 적중, 처치\n- 실제 HP 회복, 실제 HP 손실\n- 보호막 흡수, 패링 성공\n- 스택 획득·소비\n\n여왕벌의 정확한 일벌 소비 조건처럼 미정인 사건은 원본 문서의 open design으로 남긴다. 피해가\n아닌 HP 비용을 실제 피격 사건으로 취급하거나 보호막 흡수를 실제 HP 손실로 바꾸지 않는다.\n사건별 인정 source, 횟수와 다단 공격 집계는 개별 효과를 설계하며 명시한다.\n\n유물에는 **적용할 태그 조건·발동 사건·추가 조건·변경하거나 생성할 효과**를 적는다.\n`자신을 회복하면 다음 기본 공격을 강화한다`는 설명용 후보는 다음처럼 나눌 수 있다.\n\n| 구분 | 내용 |\n| --- | --- |\n| 발동 사건 | 실제 HP 회복 발생 |\n| 추가 조건 | 회복 대상이 자신 |\n| 적용 대상 | 다음 기본 공격 1회 |\n| 생성 효과 | `기본공격강화` |\n| 후속 결정 | 흡혈·직접 회복 등 인정 source, 발동 횟수, 강화량·중첩·소비 경계 |\n\n이 예시는 특정 회복 source와의 호환성이나 실제 유물 채택을 확정하지 않는다.\n\n### 유물이 만든 효과와 확장\n\n유물이 새로 만든 효과에도 같은 태그 체계를 적용한다.\n\n```text\n유물 A: 공격 적중 시 `피해·범위·폭발` 효과 생성\n유물 B: `폭발` 효과의 반경 증가\n→ 유물 B는 원래 파편의 폭발과 유물 A가 만든 폭발에 모두 적용될 수 있다.\n```\n\n새 폭발의 출처는 유물로 유지한다. 원래 공격의 기본 공격·흡혈·감염 부여 성질을 전부 상속하지\n않는다. 다른 유물의 조건을 실제로 만족하면 연쇄할 수 있으며, 한 연쇄 경로가 동일 유물 사본의\n같은 효과로 돌아오는 순환은 기존 공통 정책대로 막는다.\n\n처형 방식, 피해 축적 방출과 별도 사격 원점처럼 특수한 기능은 해당 유물을 설계할 때 세부 태그를\n추가한다. 공통 태그를 확장하더라도 파편 고유의 대상 제한·판정을 임의로 바꾸지 않는다.\n침식은 기존 정책대로 유물의 증폭·추가 효과·연쇄 발동 대상에서 제외한다."
+        },
+        "Candidate": "property 표·새 효과 조합 예",
+        "Disposition": "duplicate",
+        "Evidence/decision reference": {
+          "current_policy_elements": [
+            "CAMEC-E01",
+            "CAMEC-E02",
+            "CAMEC-E03",
+            "CAMEC-E04",
+            "CAMEC-E05",
+            "CAMEC-E06"
+          ],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "E02–04 지원 계약의 참고 사례. 모든 표의 기능을 첫 slice에 지원한다고 승격하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-11-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-11",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-009",
+        "Exact source": {
+          "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+          "sha256": "78aeb97ac30545d2763176cc32ec5c1ae9ecb14015e5a76ba322f96c91d8e1c4",
+          "lines": [
+            644,
+            665
+          ],
+          "exact_text": "#### 세 계열의 적용 범위\n\n| 계열 | 적용과 계산 의도 | 직접 변경하지 않는 항목 |\n| --- | --- | --- |\n| 공격력 | 직원·무기·일반 강화 등으로 구성한 착용자의 공격력을 높인다. 그 공격력을 참조하는 기본 공격·파편·장비 효과에 원래 참조 규칙대로 반영한다. 기존 `능력치변경` 태그가 있는 효과를 미리 보유할 필요는 없다. | 별도 능력치인 주문력, 공격력과 무관한 고정 효과량. Magic 피해라는 이유만으로 적용·제외를 정하지 않는다. |\n| 공격 속도 | 중립 `100`인 기본 공격 속도에 수치를 가산한다. `+20`이면 `100 → 120`이다. 기본 행동이 회복인 무기는 그 기본 회복 주기에도 적용하는 안으로 둔다. | 파편의 준비·집중 시간, 다중타격 간격·횟수, 지속 피해 tick, 소환물 행동 주기. 별도 효과가 명시한 상속 관계는 원본 검토가 필요하다. |\n| 기본 공격 피해 | 착용자의 직접 기본 공격으로 분류된 피해를 증폭한다. 무기 자체의 단일·범위·직선 공격과 기본 공격 출처를 유지하는 파편의 공격 교체·강화도 포함한다. 각 피해에 한 번 적용한다. | 독립 스킬 피해, 지속 피해, 반사, 별도 장비·유물 proc와 소환물 공격, 회복량. 원래 공격의 피해 type·대상·적중 횟수와 출처를 유지한다. |\n\n- 기본 공격 속도는 [룰북의 시작 직원 선발](../game_rulebook.md#시작-직원-선발)의 중립 `100`과\n  `ceil(무기 기본 주기 × 100 / 기본 공격 속도)` 표기를 따른다. 기본 주기 `1,000ms`에 속도 `120`이면\n  계산 주기는 `834ms`다. `+20`을 현재 속도의 `1.2배`나 주기 `20%` 감소로 해석하지 않는다.\n- 공격력 증가가 참조 효과에 전달되는 시점은 각 효과의 snapshot 규칙을 따른다. 이미 발사·예약된\n  효과의 고정값을 소급해 바꾸는 공통 규칙은 추가하지 않는다. 기존 공격력 버프들과의 정확한 산술\n  계층·반올림은 구현 검토에 남긴다.\n- 기본 공격 피해 계열은 Hello의 변형 평타나 허수아비의 강화 평타에 적용하지만, Goodbye의\n  독립 스킬 피해에 적용하지 않는다. 연출에 탄환이나 포탈이 여러 개 보여도 새 피해 판정을 만들지 않는다.\n- 파편 침식형에는 세 계열의 증폭·추가 효과를 적용하지 않는다. 원래 효과의 요구 조건이 사라지면\n  장착·슬롯은 유지하고 해당 효과만 비활성화하는 공통 정책을 따른다. 순수 회복 무기의 기본 행동에는\n  기본 공격 피해 보너스가 적용되지 않는다.\n- 기존 회복량 증가 유물은 별도 설계를 유지한다. 이번 9종에 주문력·방어·회복 계열의 등급별 항목이나\n  침식된 변형 수치를 추가하지 않는다.\n"
+        },
+        "Candidate": "무기 수치 유물·기본 공격 치유/주기/계산",
+        "Disposition": "out_of_scope",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "수치와 해당 스케줄러/변형은 PG03/CA05/08/12 owner. 현재는 기존 상수 Damage/Heal/Instant의 지원 계약을 검토하므로 이 수치를 결정하지 않아도 된다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-12-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-12",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-010",
+        "Exact source": {
+          "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+          "sha256": "a0a0a0c12e67b4241caddd8606c2874249bdbf89cc34ab485ea6636f6cc5424b",
+          "lines": [
+            4052,
+            4178
+          ],
+          "exact_text": "### 풍운승려\n\n> 상태: Platform·저지 0의 범위 Physical 염주 Staff, 광역 물어뜯기·적중 시 1회 자기 회복 파편,\n> 높은 체력 유지 시 공격력 증가 방어구와 물리 방어 관통 액세서리의 기본 구성 합의 /\n> 이름·수치·대상 선택 등 세부 판정 미정 / 현재 미구현\n\n조우 설계는 `abnormality_design_notes.ko.md`의 `풍운승려` 절이 소유한다. 플레이어 보상은 원거리\n물리 광역 화력을 담당하는 공격형 Staff로 정한다. 무기 분류가 Staff여도 피해 type을 Magic이나\n회복으로 고정하지 않는다. 앞서 검토한 근접 Spear 방향은 채택하지 않는다.\n\n원작 참고: [한국어 기록](https://tiphereth.zasz.su/lc/abnormalities/100105/?lang=kr),\n[전투 패턴](https://lobotomycorporation.wiki.gg/wiki/Clouded_Monk),\n[아미타 무기](https://tiphereth.zasz.su/lc/equip/200105/).\n원작의 돌진·물어뜯기·적중 시 자기 회복을 파편의 모티프로 삼되, 후방 배치를 유지할 수 있도록\n직원 대신 아귀 형상을 보내고 물어뜯기의 피해를 범위 공격으로 각색한다. 형상과 광역 판정은\n플레이어용 각색이지 원작에 그대로 있는 기능은 아니다. 무기는 원작의 석장 대신 염주로 정한다.\n\n#### 필수 항목 — 세부 정책 미정\n\n| 항목 | 값 |\n| --- | --- |\n| `rarity` | `Rare` 후보 |\n| `equip_limit` | open design |\n| `compatibility` | `Staff` 후보 |\n| `cast_selection` | `automatic_unit` 후보 |\n| 역할 | 딜 / 원거리 물리 광역 버스트, 자기 회복은 보조 |\n\n#### 파편 — 아귀의 탐식 (가칭)\n\n공명 만충에서 시전하면 짧게 힘을 모은 뒤 거대한 아귀 형상이 대상 지점을 향해 달려들어, 주위의\n적들을 한 번에 물어뜯는다. **강한 범위 Physical 피해와 적중 시 1회 자기 회복**이 기본 구성이다.\n\n- 시전 대상은 스킬 범위 내 eligible 적 중 Route 진행도가 가장 높은 적으로 자동 선택하는 안이다.\n  수동 시전은 별도 위치 선택 없이 사용하며, 유효한 대상이 없으면 시작할 수 없다.\n- 시전 시작 시 선택한 적의 위치를 공격 중심으로 고정하고, 도착 시 그 범위에 있는 적들에게\n  무기 공격력을 참조한 강한 Physical 피해를 한 번씩 준다. 대상 수에 따라 피해를 나누지 않는다.\n- 아귀 형상은 시각 연출과 공격 전달 수단이다. 직원의 배치 위치·저지·배치 affinity는 바꾸지 않고,\n  HP·저지·명령을 가진 소환물도 만들지 않는다. 이동 경로에 별도 관통 피해는 붙이지 않는다.\n- 적 하나 이상에게 유효하게 적중하면 시전자의 최대 HP에 비례한 일정량을 한 번 회복한다.\n  처치는 요구하지 않으며, 적 수만큼 회복을 반복하거나 피해량 비례 흡혈로 계산하지 않는다.\n- 피해 판정 뒤 회복한다. 빈 범위에 빗나갔거나 공격이 전부 무효화되었다면 회복하지 않는다.\n  회복은 최대 HP를 넘지 않으며, 아군 회복·부활·초과 회복의 보호막 전환은 제공하지 않는다.\n- 적을 오래 공격한 누적량이나 처치 스택 없이 첫 시전부터 버스트를 제공한다. 플레이어의 지속\n  변신, 상시 흡혈, 회복 감소 디버프와 적 조우의 피해 임계치 기반 돌진 취소는 이 기본안에 넣지 않는다.\n- release 전 준비 중 Hard CC에 걸리면 공통 규칙대로 취소되며, 이미 release된 공격은 공통\n  lifecycle을 따른다. 특별한 행동 방해 면역이나 공명 환불을 추가하지 않는다.\n\n피해량과 공격 범위를 주된 성능으로 잡고 회복은 부가 생존으로 둔다. 원작의 첫 충돌 대상 물어뜯기를\n광역으로 바꾸는 것은 원거리 물리 광역 딜러 역할을 위한 각색이다. 단발 범위기 위에 사리 수집이나\n연속 포식 같은 별도 자원 순환을 추가하지 않는다.\n\n#### 무기 — 아미타 (가칭)\n\n> 염주 외형·Staff 분류·범위 Physical 피해, 후방 Platform·저지 0과 묵직한 단발 범위 공격 방향 합의.\n> 사거리·범위·주기·위력·대공 여부·목표 선택 등의 세부 수치와 판정은 미정이다.\n\n| 항목 | 값 |\n| --- | --- |\n| `range_role` | 원거리 광역 물리 딜러 |\n| `weapon_archetype` | `Staff` |\n| `deployment_affinity` | Platform 전용 |\n| `block_capacity` | `0` |\n| `ground_defense_focus` | 해당 없음 |\n| `platform_rest` | open design |\n| `damage_type` | Physical |\n| `targeting_profile` | 범위 내 Route 진행도가 가장 높은 적 우선 초안 |\n| `air_capable` | open design |\n| `interval_ms` | 느린 주기·높은 단발 위력, exact open design |\n| `windup_ms` | open design |\n| `delivery` | 공중에 펼친 염주가 대상 지점을 함께 내려치는 범위 타격 |\n\n- 지팡이에 염주를 장식한 외형이 아니라 염주 자체를 다루는 Staff다. 염주알들을 공중에 펼친 뒤\n  적이 있는 지점을 내려쳐, 충격 범위의 모든 eligible 적에게 Physical 피해를 준다.\n- 염주알이 여러 개 보이더라도 기본 판정은 대상당 한 번인 범위 공격으로 정한다. 적 수나\n  염주알 수에 따라 한 적이 중복 피해를 받거나 적중 trigger가 여러 번 발생하지 않는다.\n- 적이 모일수록 총 화력이 커지되 대상 수로 각 대상의 피해를 나누지 않는다. 낮은 피해를 잘게\n  나누는 초고속 연타보다는 묵직한 타격감을 우선한다.\n- 기본 공격에는 회복·갈애·방어력 감소·누적 성장 효과를 추가하지 않는다. 파편 없이도 범위 물리\n  무기로 완결하고, 다른 호환 파편을 장착해도 기본 공격의 Physical type을 유지한다.\n\n#### 방어구 — 해진 가사 (가칭)\n\n- 기본 능력치는 후방 딜러의 최소 생존을 위한 최대 HP와 물리 방어력으로 구성한다. 수치는 미정이다.\n- **현재 HP가 최대 HP의 일정 비율 이상이면 공격력이 증가**한다. 체력 조건을 벗어나면 해제되고,\n  회복해 조건을 다시 만족하면 재적용한다. 임계 비율과 공격력 증가율은 미정이다.\n- 공격력 강화는 기본 공격과 그 공격력을 참조하는 스킬에 적용한다. 유지 시간에 따른 누적이나\n  반복 발동 스택을 만들지 않으며, 장착 무기의 피해 type을 바꾸지 않는다.\n- 회복의 출처나 전용 파편 사용 여부를 요구하지 않는다. 파편의 자기 회복뿐 아니라 아군의 치료로도\n  체력 조건을 회복할 수 있다. 파편의 피해 판정 뒤 HP가 회복되어도 이미 가한 피해를 증폭하지 않는다.\n- 자체 HP 회복·보호막·피해 감소 효과는 추가하지 않는다.\n\n평온한 상태를 유지할수록 강한 힘을 발휘하는 공격형 방어구로 각색한다. 전용 조합에서는 파편의\n회복이 공격력 조건 복구를 돕지만, 이 방어구가 없어도 파편의 피해와 회복은 그대로 작동한다.\n\n#### 액세서리 — 치아사리 (가칭)\n\n**착용자의 물리 공격이 대상의 물리 방어력 일부를 비율로 무시**하는 액세서리로 정한다.\n\n- 착용자가 가하는 eligible 직접 Physical 기본 공격과 스킬 피해에 적용한다. 원형 범위 공격에도\n  각 대상의 방어력을 기준으로 적용하며, 대상이 많다는 이유로 관통률이 증가하지 않는다.\n- 적에게 방어력 감소 디버프를 남기지 않는다. 착용자의 해당 피해 계산에서만 방어를 일부 무시하므로\n  다른 아군의 공격에는 효과를 제공하지 않는다.\n- 물리 피해를 True 피해로 바꾸지 않고, Magic 피해·회복량·회복 방해·무적에는 영향을 주지 않는다.\n- 염주 무기와 탐식 파편 모두에 적용되지만 전용 조합을 요구하지 않는다. 다른 무기의 eligible\n  Physical 피해에도 독립적으로 사용할 수 있다.\n- 관통률과 다른 방어 감소·관통의 적용 순서는 미정이다. 피해 type 면역이나 무적을 우회하는\n  효과로 확대하지 않는다.\n\n#### 전용 조합과 역할\n\n- 염주 Staff는 평상시 물리 범위 공격, 파편은 필요할 때 사용하는 큰 광역 타격과 보조 자기 회복이다.\n- 해진 가사는 높은 체력 유지에 공격력으로 보상하고, 치아사리는 물리 방어가 높은 적을 상대할\n  효율을 보완한다. 어느 쪽도 전용 파편 사용이나 사리 수집을 전제로 하지 않는다.\n- 파편은 다른 Staff로도 물리 피해와 자기 회복을 완결한다. Staff 분류나 장착 무기의 피해 type을\n  근거로 파편을 Magic으로 바꾸지 않는다.\n- 래티씨아의 소환 성장, 눈의 여왕의 Magic·냉기 제어, 태아의 초고속 선형 공격과 구별되는\n  `느리고 묵직한 원거리 물리 범위 공격 + 단발 광역 버스트`를 목표로 한다.\n\n#### 미결정 사항\n\n- 파편·장비의 최종 이름, 파편 희귀도·중복 장착 제한·호환 범위\n- 기본 공격 사거리·범위·주기·위력·대공 여부·목표 선택·목표 위치 확정 시점과 Platform Rest\n- 파편의 자동 대상 선택·사거리·범위·준비 시간·전달 방식·위력과 대상 이탈·동시 피해 판정\n- 파편의 회복 비율, 보호막 적중 등 유효 적중의 경계와 철수·전투불능 시 lifecycle\n- 방어구 기본 stat·체력 임계 비율·공격력 증가율과 기존 modifier 합성\n- 액세서리 관통률·eligible source·방어 감소 및 다른 관통과의 적용 순서\n- 각 장비 강화 성장치와 실제 전투 수치 검증, 전용 Run 유물의 설계 여부"
+        },
+        "Candidate": "수도승 피해+자기 회복, 개화·침식",
+        "Disposition": "not_a_policy_element",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "분리된 두 효과를 표현하는 구조 시험 후보만 사용. 최대HP 회복식·accepted hit·흡수 판정·공식 수치·개화/침식 구현을 현재 target에 추가하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-13-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-13",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-006 → architecture 링크",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/02_AUTHORING_AND_COMPILER.ko.md",
+          "sha256": "06b0b50a5a0e1f4ea5b84cd1c1c4fbe193f5318b89b3625dfa76985f95f5f281",
+          "lines": [
+            1,
+            88
+          ],
+          "exact_text": "# A02 — 작성 스키마·중간 표현·컴파일 권장안\n\n**제안 구조**다. 아래 이름과 RON 형태는 아직 실제 parser나 compiler에서 검증되지 않았다. 실행 가능한 문법은 각 작업의 코드 조사·설계 점검 후 구현된 최신 schema 하나가 소유한다.\n\n## 1. 작성 모델의 선택\n\n외부 제작 데이터는 **타입화된 선언과 구조화된 flow**로 표현한다. 스킬 내부는 자유로운 임의 jump보다 `Sequence / Branch / Parallel / Repeat / Wait / Invoke`를 기본으로 삼는다. 반복은 횟수·시간·외부 종료와 예산 계약이 명시되어야 한다. 지속 상태는 무한한 스킬 루프가 아니라 별도 activation과 event subscription으로 모델링한다.\n\n보스의 장기 제어는 별도의 phase/behavior/pattern/state/task graph를 유지한다. 두 모델은 TargetQuery·ValueExpr·EffectProgramRef·ActionHandle 같은 작은 계약을 공유하며, 서로의 internal node나 mutable state에 직접 접근하지 않는다.\n\n## 2. 작성 단위\n\n| 단위 | 필수 의미 | 대표 검증 |\n| --- | --- | --- |\n| `DefinitionRef<K>` | namespace·kind·local ID | Skill을 Buff 위치에 참조하면 오류 |\n| `EffectSite` | 콘텐츠/형태 안의 stable effect ID, semantic role, tags, operation | 단일 effect의 태그 AND를 다른 effect 합집합으로 만족시키지 않음 |\n| `TargetQuery` | Unit/Tile/Object 종류, faction/trait/source filter, 정렬, 수 제한 | PlayerUnit·아군·재선정 허용은 consumer 계약으로 검사 |\n| `SpatialScope` | acquisition/search/footprint/anchor/orientation/tracking | 단순 range 하나로 합치지 않음 |\n| `ValueExpr<T>` | typed constants/references/operators/evaluation moment | 시간+HP, 가능성 있는 0 나눗셈, 미정 reference 금지 |\n| `ResourceSpec/Ref` | owner·lifetime·initial/cap·변화·소비 | 수혜자에게 원천 pool을 복제하지 않음 |\n| `ActionFlow` | sequence/branch/parallel/repeat·완료 기준·result slot | 미완료 result 읽기, 합류 shape, 반복 상한 검사 |\n| `PersistentSpec` | state/aura/channel/override·종료 원인·중첩 정책 | cleanup 누락·다른 source 해제 금지 |\n| `TransformSpec` | selector, typed operation, read/write set, preserve set | 비지원 property·공유 scope 변경·참조 손상 금지 |\n| `EventBinding` | event kind, recognition key, predicate, invocation, causal policy | 정의되지 않은 trigger 의미·root reset 금지 |\n\n태그는 사용자 팩에서 추가할 수 있다. 하지만 태그를 붙인다고 행동 capability가 생기지는 않는다. `[shield]`로 표시한 피해 효과에 shield initial capacity를 patch할 수 없다. 실제 capability는 opcode·schema와 compiler 검증이 결정한다.\n\n## 3. 세 단계 표현과 런타임 binding\n\n```text\nAuthoring AST\n  문자열 ID·typed 데이터·원문 위치\n    ↓ resolve/validate\nResolved Definition Graph\n  팩 합성 후 참조·effect site·표현식 dependency\n    ↓ compile\nCompiled Templates\n  stable index·typed opcode·result slot·property handle·SourceMap\n    ↓ compose + revalidate\nEffectivePlanTemplate + SourceBindingTable\n    ↓ 실행에 필요한 입력 snapshot/live reference 바인딩\nActivation / Delivery / State instances\n```\n\n**선택:** flow의 구조화된 AST를 인덱스 기반 immutable node 배열과 explicit continuation/result slot으로 낮춘다. op별 payload는 타입이 있는 enum/struct다. 최적화용 bytecode는 필요성이 입증된 ValueExpr 등 좁은 경계에서만 검토한다. 모든 gameplay를 하나의 bytecode VM으로 바꾸지 않는다.\n\nCompiler는 다음 두 수준에서 실행한다. 팩 게시 전에는 정의·관계·지원 기능·기본 실행 계획을 검증한다. 장착 조합이나 형태 변경 때에는 실제 변형된 계획을 다시 검증한다. 개별 팩이 유효하다고 모든 loadout 조합이 유효한 것은 아니다.\n\n## 4. 선택된 효과와 공유 전달의 관계\n\n`ActionSite`는 release/전달/직접 타격의 주체, `EffectSite`는 그 결과에 적용할 효과 단위다. 하나의 투사체가 피해와 독 부여를 함께 전달할 수 있고 두 effect는 공통 impact context를 참조할 수 있다.\n\n범위 확대가 피해 effect의 footprint만 바꾸는 경우에는 독 부여의 scope가 자동으로 바뀌지 않게 한다. 반대로 투사체 속도·발사 수처럼 공통 carrier 속성을 바꾸려면 **ActionSite 또는 명시한 effect group**을 선택해야 한다. 독립 효과를 선택한 것처럼 위장해 공유 carrier를 변경하지 않는다.\n\n선택적 수정이 현재 공유 구조에서 표현되지 않으면 compiler는 원인·공유 참조를 진단한다. 별도 effect scope를 추가하거나 명시적인 변환 recipe로 분리하되, 조용히 투사체를 복제해 타격·출처·발동 횟수를 바꾸지 않는다.\n\n## 5. PropertyDescriptor와 opcode 연결\n\n제안 descriptor는 `operation_id`, 허용 consumer, typed input/output, property 목록, units, state requirement, capability read/write, finite completion 가능성, 진단 설명을 가진다. 런타임 함수 포인터를 RON에서 받지 않는다. engine registry가 operation 구현을 연결한다.\n\nproperty는 임의의 Rust/JSON 경로가 아니라 `Damage.amount`, `Effect.footprint`, `Shield.initial_capacity`, `Channel.max_duration`, `BasicAttack.speed_bonus_points` 같은 **공개 의미 식별자**를 해석한 typed handle로 접근한다. 배열 위치나 메모리 주소를 제작 API로 노출하지 않는다.\n\nRegistry를 유일한 모든 코드 생성기로 만들 필요는 없다. 대신 registry에 runtime-supported로 공개된 op마다 parser·validation·compiler·executor·descriptor·negative test가 존재하는 일치 검사를 둔다. 계획 vocabulary는 지원 목록과 분리한다.\n\n## 6. 컴파일 검사 순서\n\n1. source snapshot의 syntax·field·kind·단위·required field 검사.\n2. pack 의존·교체 결정을 적용하고 최종 definition 집합 확정.\n3. 최종 집합에서 참조 해석, stable ID·owner·target type 검사.\n4. flow result의 선행 생산과 branch/join·반복·capability 충돌 검사.\n5. 계산식·자원 수명·Action completion·취소·동적 조건 입력 검사.\n6. 변형 write conflict·지원되지 않는 carrier/scope 조합 검사.\n7. compile resource budget·생성 가능한 구조 상한 및 domain setup 검증.\n8. immutable output + source mapping + receipt 생성. 모두 성공해야 게시.\n\nOverride로 제거된 loser 정의의 죽은 참조를 최종 참조 검증에 포함해 유효한 replacement를 막지 않는다. 다만 선택된 팩의 원문 타입 자체가 손상되면 거부한다. 원문과 최종 graph 검증의 책임을 구분한다.\n\n## 7. 스칼라·공식 규칙\n\n수식은 유한한 typed AST를 채택한다. 정수/고정 정밀도 비율과 checked intermediate를 기본안으로 한다. 정확한 percent 단위·반올림·범위를 DG에서 승인 계약과 대조한다. `Min/Max/Clamp`, Count/Sum/Max와 GroupByTile은 별도 연산이다. 부재와 0, 상한 없음과 미정을 구분한다.\n\nAttack/SpellPower는 스탯 입력이고 Physical/Magic/True는 피해 해석 종류다. 공격 속도 증가가 준비·반복·작업·전술 자원 회복 시간을 일괄 가속하지 않게 한다. typed `EvaluationMoment`로 CastStart/Release/Impact/EachTick 등을 구분하며 허용 조합만 노출한다.\n\n## 8. CA01의 종료 범위\n\nCA01은 이 계약을 current code에 연결할 수 있는 최소 schema/compiled shape와 실제 Damage/Heal/Instant slice를 고정한다. 모든 future op를 빈 stub로 등록하지 않는다. CA02는 그 최소 실행 slice로 최신 외부 pack을 게시한다. CA04 이후 새 기능마다 같은 compiler 경계에 추가하며 구형 실행기를 따로 유지하지 않는다.\n\n예제와 type sketch는 [A08](08_WORKED_EXAMPLES.ko.md)을 따른다. 최종 구현에서 예제의 문법이 바뀌면 schema 문서와 해당 예제를 함께 고친다."
+        },
+        "Candidate": "전체 typed AST/graph/IR와 고급 변형",
+        "Disposition": "not_a_policy_element",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "권장 구조 R을 코드에서 필요한 최소 L과 후속 범위로 구분한다. 전체 VM/후반 구현의 일괄 선행 승인 아님."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-14-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-14",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-007",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+          "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a",
+          "lines": [
+            9,
+            23
+          ],
+          "exact_text": "| U01 | 최종 목적은 제3자 제작자가 공통 명령·행동·조건·효과를 조합해 보스·장비·파편·유물을 창작하는 것이다. 지원 조합 안의 콘텐츠별 전용 실행 코드는 금지하며 새 공통 기능 추가는 가능하다. |\n| U02 | RON 조합기 자체는 이번에 만들지 않는다. 향후 조합기가 사용할 작성 정보·공통 검증·진단·시험 실행 기반은 엔진에 둔다. |\n| U03 | 대표 공식 콘텐츠를 최신 RON으로 실제 이식·실행 검증한다. 모든 공식 콘텐츠 데이터의 완성·이식은 강제하지 않지만 전체 합의 구조의 표현력은 대조한다. |\n| U04 | 기존 RON은 전량 교체 가능하다. 구형 문법 별칭·레거시 호환·구형/신형 이중 실행·구형 저장 자동 변환을 만들지 않는다. 기존 개인 저장 파일을 임의로 삭제하지 않는다. |\n| U05 | 외부 live_data의 여러 팩을 읽고 공통 검증을 통과한 정의를 사용한다. 일반 플레이는 새 런부터 적용하고 해당 런은 세대를 고정한다. 시험 전투는 재로딩 성공 후 초기화한다. |\n| U06 | 추가·변형·교체·등장 및 획득 경로 변경을 허용한다. 공식 정의라는 이유로 보호하거나 add-only 방식으로 제한하지 않는다. 의도적인 override와 충돌 해석은 명시한다. |\n| U07 | 외부 스크립트·플러그인 코드는 실행하지 않는다. 콘텐츠 커스터마이징 권한은 OS·파일 시스템·네트워크 권한 부여와 다르다. |\n| U08 | 파편 개화는 개별 파편 instance가 소유한다. 종류별 공통 해금으로 처리하지 않는다. 선택 형태와 사본 귀속 자원도 해당 identity에 연결한다. |\n| U09 | 유물 공식 정책은 공용 3슬롯·독립 사본·요구 조건 미충족 시 장착 유지/효과 휴면·새 효과를 포함한 활성 판정·동일 경로의 동일 사본/효과 재방문 금지다. |\n| U10 | 유물 누적은 다음 전투에 초기화하고 재배치 임시 상태와 전투당 사용 기록을 구분한다. 같은 종류 피해 증폭은 가산하며 별도 공통 피해 증폭 상한을 신설하지 않는다. |\n| U11 | 무기는 제공하는 Attack/SpellPower 성장, 파편은 일반 강화 제거·개화 형태 선택이라는 변경 목표를 적용한다. 방어구·액세서리 자체 특수 효과를 제거하지 않는다. |\n| U12 | 파편 침식형에는 유물 증폭·추가 효과·연쇄 및 지정된 처치/사망 부가 효과를 적용하지 않는다. 정상적인 kill/wave 판정과 직원 대가는 유지한다. 침식된 유물과 구분한다. |\n| U13 | game_server와 Unity 구현·계약 전환은 이번 범위 밖이다. 코어 API와 headless 호스트로 검증하며 실제 클라이언트·네트워크 통합 성공을 주장하지 않는다. |\n\nU09–U12의 상세 원문은 SOURCES의 S08–S09를 따른다. 최신 대화의 U04–U08은 일부 원문에 아직 반영되지 않았으므로 CA00에서 결정 기록과 적용할 계약을 연결한다. 공식 정책을 수정 가능한 rule profile로 노출할 수 있지만, 현행 공식 profile을 임의 변경하지 않는다. 타입·참조·원자성·상태 독점·예산 검증은 콘텐츠 수정 권한과 별개다."
+        },
+        "Candidate": "외부 팩·사본/개화·유물 연쇄·보스·서버/Unity 전체",
+        "Disposition": "out_of_scope",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "선택 카드 O03–05에 따른 후속 owner. 직접 소비/저장 경계 조사는 포함하되 구현·모든 PG 폐쇄는 포함하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CAMEC-15-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "CAND-CAMEC-15",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Intake/source traceability": "IN-001–005",
+        "Exact source": {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_REQUIREMENTS.ko.md",
+          "sha256": "d94bd946d55e65864e824b90519ef0db057a888b5f8a3c7f837affb7d4296441",
+          "lines": [
+            1,
+            90
+          ],
+          "exact_text": "# CA00 — NEXT-0002 원문별 요구·정책 추적 기준선\n\n작성일: 2026-09-09 · 작성자: Codex · 상태: **NEXT-0002 원문 요구·정책 기준선 조사 종료 / 구현·정식 검토 완료 아님**\n\n## 요청과 경계\n\n이번 사용자 요청은 “ROADMAP_STATUS.md를 읽고 다음 단계를 진행… 문서 배치와 P2G/GEX의 적용 버전도 확인… 작업 결과와 근거를 기록한 뒤 현황 문서 갱신”이다. 요청 시작 시 기록 0003의 NEXT-0002를 선택했다. 이전 [NEXT-0001 조사](CA00_NEXT-0001_INTAKE.ko.md)를 이어받는다.\n\n허용 범위는 세 콘텐츠 원문 전체의 요구·정책 출처·상태·검증 계획 조사와 CA00 기록 및 현황 갱신이다. production 코드·RON·store·검증기·AGENTS·P2G/GEX 규칙은 수정하지 않는다. 정식 P2G 단계·Goal 작성·구현·독립 감사는 이번 작업이 아니다. 새로 작성할 다음 카드는 자동 실행하지 않는다.\n\nworktree `/mnt/f/work/simulator`, branch `cleanup/simulator-dirty-worktree-20260803`, HEAD `f318414fb0156a67e04c5479000c2a2683fc0c09`의 기존 dirty 변경을 보존한다. 첫 인수에서 확인한 원본을 초기화하지 않고 관련 해시와 새 변경을 확인한다.\n\n## 1. 결과와 기록 배치\n\n세 콘텐츠 원문 **9,168줄 전체**와 공통 정책 원문 **644줄 전체**를 읽었다. [요구 추적표](CA00_NEXT-0002_COVERAGE.json)에 **354개 COV**를 기록했다. 이 중 콘텐츠 행은 332개, 공통 정책 행은 22개다. 보스의 개별 능력·전환·실패·제작 포트는 **127개 BOSS-COV 하위 행**으로 연결했다. 하위 행은 원래 요구의 분해이며 독립 완료 건수에 더하지 않는다.\n\n| 원본 | source key / 줄 수 | COV | 이번 관찰 |\n| --- | --- | --- | --- |\n| [유물](../../../skills/run_relic_content_design_notes.ko.md) | R / 1,402 | COV-R-001–062 | 기본·개화·전용/범용·단일 전환·15축·수치 제안 분리 |\n| [파편·장비](../../../skills/abnormality_skill_fragments_design_notes.md) | F / 4,500 | COV-F-001–147 | 기본/개화·탱/딜·무기/방어구/액세서리·침식 분리 |\n| [보스·도구](../../../skills/abnormality_design_notes.ko.md) | B / 3,266 | COV-B-001–123 | 보스/보상 분리, phase/행동/전장/작업/승패 및 도구 9종 기록 |\n| [유물 공통 정책](../../../tmp/run_relic_system_design_notes_2026-08-21.ko.md) | P / 467 | COV-P-001–016 | 사용자 결정·획득 보류·과거 참고 구별 |\n| [침식 공통 정책](../../../tmp/ego_corrosion_system_design_notes_2026-08-19.ko.md) | E / 177 | COV-E-001–006 | 실제 시전 대체·철수/처형/대가·clock·기존안 폐기 구별 |\n\n문서의 역할은 다음과 같다.\n\n- 이 파일: 조사 결론, 정책 출처 수준, 현재/목표 차이, 다음 Topic 범위 제안과 미정의 owner.\n- `CA00_NEXT-0002_COVERAGE.json`: 원문 경로·SHA-256·heading·줄, 합의/제안/미정, 효과·형태·단계/분기/병행, 해당 15축 하위 요소, 담당 CA/PG, 조합 후보, 긍정·부정 시험 recipe, 실제 receipt 부재, 남은 위험의 원본.\n- [부속 증거](CA00_NEXT-0002_EVIDENCE.json): revision·dirty 기준, 인수한 입력의 변화, 읽기/문서 검사·보존 결과. 정식 P2G/GEX receipt가 아니다.\n- [ROADMAP_STATUS](../ROADMAP_STATUS.md): 위 결과의 요약과 다음 작업 하나만 소유한다. 계획 원본 COVERAGE/CA00, 기존 정책·Goal·감사 원본은 변경하지 않았다.\n\n`effect_members`는 연결된 효과 문장의 분해이며 새 opcode나 별도 승인 요소가 아니다. 원문 반복/위임 행은 삭제하지 않고 상세 owner와 연결했다. 9종 수치 유물은 각 등급이 독립 정의인 제안임을 `definition_variants`에 표시했다. `section_index`는 세 콘텐츠의 334개 heading 구간을 요구 또는 서사·빈 양식·구획·상태 설명으로 연결한다. heading 교차와 줄 범위 검사는 의미 완전성의 자동 증명이 아니다. 의미 분류는 원문 전체를 읽어 작성한 이번 조사 결과다.\n\n## 2. 작업공간·기존 진행·적용 지침\n\n요청 시작 관찰은 2026-09-09 04:34 UTC다. `git status --porcelain=v1 -uall -z`의 기존 항목은 16,485개(수정 167, 삭제 24, 미추적 16,294)였다. 비교용 텍스트 경로 1,665개의 SHA-256/부재를 수집했다. 이전 조사에서 selected input으로 연결한 38개 원본은 모두 같았다. 전체 자산·개인 저장·ignored 파일까지 보존을 검증한 것은 아니다. 종료 비교의 실제 수량과 변경 경로는 부속 증거를 따른다.\n\n[NEXT-0001 §3–5](CA00_NEXT-0001_INTAKE.ko.md#3-기존-topicgoal실행감사-인수)의 CRAR Working/Review/Freeze/Plan/Goal Set/Handoff, P02 successor 감사, CWBS·Boss·지도 기록을 인수했다. 기존 `(GS-CRAR-P2G50-002, GOAL-CRAR-C2-MASTER)`의 `Complete / High`와 감사 target 해시 일치 관찰은 유지하며 이번 재감사로 표시하지 않는다. 이전 1,159개 테스트 PASS를 재실행하지 않았다. CA01을 위한 정식 Topic·Phase Plan·Goal은 이번에도 생성하지 않았다.\n\n| 지침/배치 | 적용 기준 |\n| --- | --- |\n| 운영 문서 | 이 폴더의 ROADMAP_STATUS v1.2 기록 0003 / OPERATING_RULES v1.1에서 NEXT-0002 선택. 폴더에는 실제 roadmap/·guides/·records/가 존재한다. 과거 배포 설명의 “생성하지 않았다”는 당시 기록이다. |\n| P2G | [저장소 원문](../../../policy_to_goal_pipeline_revised_v2.md), **2026-09-09-r2**, SHA-256 `e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b`. [배포 사본](../guides/policy_to_goal_pipeline_revised_v2.md)과 바이트 동일. Reader·§8.5/8.6/8.9에 따라 inspect와 조사 기록만 수행. |\n| GEX 시작 기준 | 시작 당시 `docs/goal_execution_pipeline.md`, SHA-256 `5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72`. 종료 검사에서는 [archive의 동일 본문](../../../archive/goal_execution_pipeline.md)으로 확인. 기존 Goal·감사는 이 과거 basis로 인수하며 새 revision 결과로 소급하지 않음. |\n| GEX 종료 관찰 | [새 배치 문서](../../../goal_execution_pipeline%281%29.md), **2026-09-09-gex-r1**, SHA-256 `0ec53e9f68a82790c33a61c3b87d326d0af545c8fdbb47a6e97986c65b6a75c6`. 이번 작업 도중 외부 변경으로 나타났으며 Reader 1–165줄을 추가 확인. 본 작업은 계속 inspect; 새 GEX 실행/감사·정식 적용 검증 없음. |\n| 옛 P2G 경로 | `docs/policy_to_goal_pipeline.md`는 부재. [archive](../../../archive/policy_to_goal_pipeline.md)는 과거 CRAR Plan의 bound 지침과 일치한다. 과거 artifact 해석용이며 r2 진행 방식과 섞지 않는다. |\n| 남은 적용 한계 | 옛 P2G/GEX 표준 경로 링크와 실제 파일명이 다르다. 파일 이동·rename·runner routing 교정은 수행하지 않았다. 새 GEX도 accepted Handoff의 exact basis를 확인하도록 명시한다. 후속 정식 작업은 실제 경로/revision과 필수 runner를 대조하고 다른 버전 강제가 있으면 해당 owner로 반환한다. |\n\nGEX 파일의 이동·추가는 Codex가 이번에 수행한 변경이 아니다. 기존 경로를 복원하거나 새 문서를 덮어쓰지 않고 해시와 실제 배치만 기록했다. 이 변경은 GEX 실행을 포함하지 않는 현재 조사 결론을 차단하지 않는다. 다만 시작 시점의 “지침 무변경”이나 모든 baseline 파일 동일성을 종료 결과로 주장하지 않으며, 보존 검사에서 외부 GEX 변경을 별도로 표시한다.\n\n## 3. 정책 출처와 상태\n\n출처 수준을 세 가지로 구별한다. **문서에 기록된 사용자 결정**은 원문을 읽은 근거다. **패키지가 이전 대화의 결정으로 인수한 항목**은 그 로컬 기록을 확보했지만 과거 대화 원문은 새로 확보하지 못한 근거다. **기획 합의·초안·미정**은 해당 콘텐츠의 문서 상태다. 어느 것도 이번 조사만으로 Final Freeze나 current gameplay canonical에 승격되지 않는다.\n\n| 결정 | 확보한 원본/추적 | 현재 계약과의 관계·후속 owner |\n| --- | --- | --- |\n| U01 공통 조합·전용 실행 코드 금지 | [POLICY_GATES U01](../roadmap/POLICY_GATES.ko.md#확정된-사용자-결정), SOURCES S11의 이전 대화/패키지 기록 | 승인 방향을 유지. 현재 모든 콘텐츠의 data-only 지원을 주장하지 않음. CA01/21 |\n| U02 조합기 제외·작성/검증/시험 기반 | 같은 표 U02 | UI 조합기 대신 Core 공개 계약 검토. CA01/03 |\n| U03 대표 실제 이식·전체 표현력 | 같은 표 U03 및 [C01–C07](../roadmap/COVERAGE.ko.md#대표-공식-콘텐츠-실제-이식-목록) | 이번은 전체 요구 추적. 실제 RON 이식·실행 없음. CA20/21 |\n| U04 최신 규격·no legacy/no auto migration·개인 파일 보존 | 같은 표 U04, SOURCES S09의 이전 대화 결정 | 패키지의 승인 기록 인수; 원 대화 미확보. current V4/V5 reader와 전환 목표를 구분. CA02/10/19 |\n| U05 외부 다중 팩·새 Run 세대 pin·시험 초기화 | 같은 표 U05 | 원 대화 미확보. embedded publication은 존재하지만 외부 generation 구현 완료 아님. CA02/03/19 |\n| U06 정의·등록/획득 경로 override 허용 | 같은 표 U06 | 원 대화 미확보. 충돌 해석·삭제 참조 검증은 PG07. CA02/17 |\n| U07 외부 코드 실행 금지·권한 분리 | 같은 표 U07 | 원 대화 미확보. 공통 명령 데이터는 OS/파일/네트워크 권한이 아님. CA02/22 |\n| U08 개별 파편 사본의 개화·형태·자원 | 같은 표 U08, F의 copy-local 자원 세부 | 원 대화 미확보. current 종류별 progress를 우선하지 않음. CA04/10/19 |\n| U09 유물3슬롯·사본·휴면/생성효과·경로 | P147–181, P192–269; COV-P-005/007–012 | 공통 정책의 사용자 결정 기록 확보. 활성 closure/반복/비호환 알고리즘은 PG01/02. CA11–13 |\n| U10 전투 초기화·재배치 분리·동종 가산 | P183–191, P272–289; COV-P-006/013 | 사본 Run 자원과 유물 임시 누적을 혼동하지 않음. CA04/05/11/19 |\n| U11 무기 성장·파편 강화 제거·장비 자체 효과 | P49–104; COV-P-002/003 및 F 공통 header | 문서의 사용자 결정 인수; current 성장/보상/저장 동반 전환 필요. CA05/10 |\n| U12 파편 침식 효과 제외·정상 진행·직원 대가 | P291–305, E26–137; COV-P-014/E001–005 | 침식 유물 variant와 다른 정책. 일반 damage/kill trigger 재사용으로 의미를 바꾸지 않음. CA06/18/19 |\n| U13 Core/headless 범위, server/Unity 제외 | POLICY_GATES U13 | 보스/도구 원문의 UI·서버 문장은 소비 요구의 재료. 실제 클라이언트/네트워크 구현·성공은 이번 범위 밖. CA03/23 |\n\nU04–U08을 미승인으로 되돌리거나 동일 결정을 다시 질문하지 않는다. 후속 P2G가 exact approval binding을 요구하면 현 로컬 결정 기록과 후속 사용자 요청의 승인 범위를 연결한다. 그것만으로 필수 provenance를 충족할 수 없다면 **그 요소의 부족한 근거만** 질문하며 추정 Ref를 만들지 않는다.\n\n| 구분 | 유지한 판단 |\n| --- | --- |\n| 현재 코드 사실 | NEXT-0001 B01–B07의 실제 소스와 기존 audit input 동일성에 한정. 해당 효과의 실행 지원 분류는 아직 미판정. |\n| P 목표 정책 | 위 U 결정과 원문에서 명시한 구조·숫자만 인수. 태아 +20/40/80%, 속도 +15/20/30은 교체 값; 포큐버스 일반 2S는 합의. |\n| R 권장 구조 | typed AST/EffectSite/ActionSite, descriptor, result slot, branch ancestry, boss milestone 등은 로드맵의 제안. 실제 타입/API라고 표기하지 않음. |\n| 미정·예시 | 쐐기 10%p, 9종 수치 유물, 포큐버스 침식4S, 태아 8초/HP6% 등은 공식 수치 승인 아님. 효과 의미가 미정이면 시험 숫자로 덮지 않음. |\n\n## 4. 콘텐츠 추적의 주요 경계\n\n| 경계 | 개별 COV 근거와 결론 |\n| --- | --- |\n| 효과 선택과 carrier | R016–028/061, F135–142: 피해 범위 변경과 자기 Heal·폭격 탐색·cadence·source를 분리. 같은 효과의 태그 AND와 property 지원은 별개. |\n| 기본/개화·탱/딜 | F005–010, F015–018, F027–042, F045–060, F070–071, F082–093, F100–101: 상태·비용·수명·병행 차이를 유지. 녹사랑 탱 개화 없음과 아무 것도 없는 개화 보류는 빈 효과를 창작하지 않음. |\n| 사본/직원/Run 상태 | F034/042/074–075/079/083/088/119, P013: 욕망·양의 탈·시체 질량과 직원 부활 횟수·울대 수신기 대가는 서로 다른 owner. 재배치/이전/Retreat/commit은 개별 수명대로 검토. |\n| 피해·치유·방어 결과 | F012–014/020–025/053–063/072–081/120–131: 피해 감면→흡수→HP손실, 실제 Heal, 이전 source, HP비용, 처형 segment의 인정 단위를 별도 추적. |\n| 연쇄·공유·전파 | R034–046, F046/050/057–060/092/100–101: strike와 segment, 공유 총량과 수혜자 수, tile 집계와 resource 소비, 원천별 감염망, 장비 허용 재귀와 유물 경로 재방문 차단을 분리. |\n| 조건·시간·취소 | F070–071/114–115/134/139/143–147, B080/088/109: timeout/reinput, channel/basic 병행, finite opportunity, 공격 release 시점, 취소 뒤 effect 부재와 같은 timestamp 우선순위. |\n| 보스와 보상 | B006–012/020/112–120은 플레이어 보상이며 boss 구현으로 세지 않음. 파편 파일의 최종보스/백야 절은 비어 있어 B 원문의 미래 보상으로 연결. 원본 장례 무보상과 아종 고정세트 보상 구분. |"
+        },
+        "Candidate": "원문 상태·검토 권한과 콘텐츠 전체 확정 구분",
+        "Disposition": "not_a_policy_element",
+        "Evidence/decision reference": {
+          "current_policy_elements": [],
+          "scope_owner": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CAMEC-P2G00-001",
+            "Content Digest": null
+          }
+        },
+        "Reason": "작업 권한·인수 기록이다. 사용자 질문 및 이번 실행 요청으로 새 gameplay Decision을 만들지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CAMEC-P2G10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAMEC-P2G00-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CAMEC-20260909",
+          "Policy Topic": "CA01 최소 작성·실행 지원 계약",
+          "Requested Result": "필요한 P2G-00/10/20을 거쳐 P2G-20 exit까지; blocker이면 해당 owner 기록 후 정지",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "현재 대화: 콘텐츠 문서 확정 여부에 대한 질의·답변 다음의 사용자 실행 요청",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md를 읽고\n다음 단계를 진행해줘. 첫 인수에서 문서 배치와 P2G/GEX의 적용 버전도\n확인하고, 작업 결과와 근거를 기록한 뒤 현황 문서를 갱신해줘.",
+            "selected_card": {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+              "revision": "v1.3 / record 0004 / NEXT-0003",
+              "sha256": "2d82cb35cfe5a1de57b1d8ee1a58a38cd7a5b80793c51f3ee58ac8bb762735bc",
+              "exact_card": "\n**작업 표지: NEXT-0003 — CA01 최소 작성·실행 지원 계약의 P2G-20 검토까지**\n\n| 항목 | 수행할 내용 |\n| --- | --- |\n| 분류·대상 | 다음 요청에서 선택할 P2G `bounded_pipeline`: CA01 최소 계약 Topic의 필요한 P2G-00/10/20부터 **P2G-20 exit까지**. 정식 identity는 아직 미배정 |\n| 근거·선정 이유 | [NEXT-0002 §7](records/CA00_NEXT-0002_REQUIREMENTS.ko.md#7-다음-topic-범위-제안). 전체 원문 요구 입력을 확보했고 기존 publication·Damage/Heal 경로를 재사용하는 작은 계약을 검토할 수 있음 |\n| 먼저 읽을 것 | 위 범위 제안과 [CA01](roadmap/goals/CA01.md), [요구 원본](records/CA00_NEXT-0002_COVERAGE.json)의 R016–028/061·F135–138, [정책 출처](records/CA00_NEXT-0002_REQUIREMENTS.ko.md#3-정책-출처와-상태), 실제 P2G r2 Reader와 진입 단계 절 |\n| 포함 | 효과별 identity·태그/property descriptor·EffectSite/ActionSite 경계, SourceMap/unsupported 진단, 기존 Damage/Heal/Instant 최소 작성→검증→실행 지원 계약. parser/validator/executor·직접 후행 소비자·필요한 저장/동시 전환을 코드로 검토 |\n| 허용 변경 | 다음 사용자 실행 요청 시: conforming documentation root 안의 Topic 경로/identity 기술 배정, 필요한 Working Policy·P2G-10 결정/질문·P2G-20 review/binding/evidence 작성·범위 내 수리/검증, 안전한 진단, 현황 갱신. 기존 문서 identity가 발견되면 재초기화하지 않음 |\n| 제외 | production 코드·RON·store·검증기·AGENTS·P2G/GEX 규칙 수정, 새 gameplay 선택의 대리 승인, P2G-30 Freeze·Phase/Goal/Handoff·GEX 실행, 외부팩/사본/보스/도구 전체 구현, 서버/Unity |\n| 순서 근거·직접 전제 | 계획상 CA01 후보. 실제 B01–B03과 기존 CRAR/P02 감사 이력·354개 COV 입력 확보. 새 계약 실행 검증·정식 Phase Plan은 없음. 필요한 선행/후행 부분만 P2G-20에서 확인 |\n| 미검토·조정 owner | 정책 의미·필수 provenance는 P2G-10, current source/consumer는 P2G-20, 이후 최소 Atomic Group·유효 중간 상태는 P2G-40. 후반 전체 함수 검토를 일괄 선행으로 만들지 않음 |\n| 종료점 | 같은 범위의 필요한 단계와 검증을 거쳐 P2G-20 결과를 원래 Topic 문서에 기록하고 현황 갱신. P2G-30 또는 다음 Topic은 실행하지 않음 |\n| 중단 조건 | 새 정책/범위/위험/권한 선택, 해결할 수 없는 필수 approval·source/도구 근거, 지침 revision 충돌이 실제 exit를 막으면 영향·근거·필요 질문을 기록하고 정지. 내부 기술 선택은 조사로 해결 |\n\nNEXT-0001/0002를 재시작하지 않는다. 새 NEXT-0003은 이번 요청에서 실행하지 않았다. 다음 사용자 요청이 이 카드를 선택하면 위 Topic 범위와 종료점에 한정하여 진행한다.\n\n"
+            },
+            "authorization_boundary": "사용자 실행 요청이 선택한 카드의 검토 범위와 P2G-20 종료점만 승인. 콘텐츠 전체/개별 gameplay 확정이나 구현 승인이 아니다."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "동일 Topic의 필요한 P2G-00/10/20과 범위 내 artifact 수리·안전한 검증; P2G-20 exit 또는 필수 blocker까지",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "효과별 identity·태그/property descriptor·EffectSite/ActionSite 경계·SourceMap/unsupported 진단·기존 Damage/Heal/Instant 최소 작성→검증→실행 지원 계약 검토",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "parser/validator/executor·직접 후행 소비자·필요한 저장/동시 전환의 코드 검토",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "conforming documentation root에서 미점유 Topic 경로/identity 기술 배정·Working Policy/결정/질문/review/binding/evidence 작성·현황 갱신",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "production 코드·RON·store·검증기·AGENTS·P2G/GEX 규칙 수정",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "새 gameplay 정책·범위·위험·권한 선택의 대리 승인",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "P2G-30 Freeze·Phase/Goal/Handoff·GEX 실행",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "외부팩/사본/보스/도구 전체 구현",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "서버/Unity 전환",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CAMEC-P2G00-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {
+          "CAMEC-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "CAMEC-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CAMEC-E06-DECIDED-001",
+            "Content Digest": null
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CAMEC-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

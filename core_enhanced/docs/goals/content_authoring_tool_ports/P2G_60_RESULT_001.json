@@ -1,0 +1,106 @@
+{
+  "kind": "external complete stage report",
+  "Selected Stage": "P2G-60",
+  "Execution Status": "completed",
+  "Current Handoff Artifact Ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HOF-CATP-P2G60-001",
+    "Content Digest": null
+  },
+  "Current Composite Basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CATP-P2G20-001",
+      "Content Digest": null
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CATP-P2G30-001",
+      "Content Digest": null
+    },
+    "Current Planning Freeze Selection": "selected",
+    "Final Policy Freeze Lifecycle Disposition": "current",
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CATP-P2G40-001",
+      "Content Digest": null
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CATP-P2G50-001",
+      "Content Digest": null
+    },
+    "Derived Applicable Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": [],
+    "Phase Plan Lifecycle Disposition": "current",
+    "Goal Set Lifecycle Disposition": "current"
+  },
+  "P2G-60 Resolution Record Ref Set": [],
+  "Lifecycle": "current",
+  "Validation": {
+    "result": "passed",
+    "required_refs_and_source_hashes": true,
+    "current_chain": true,
+    "phase_goal_trace": [
+      {
+        "element": "CATP-E01",
+        "policy_ref": "PER-CATP-E01-REVIEWED-001",
+        "decision_ref": "DR-CATP-E01-001",
+        "phase": "PHASE-CATP-01",
+        "goal": "GOAL-CATP-01"
+      },
+      {
+        "element": "CATP-E02",
+        "policy_ref": "PER-CATP-E02-REVIEWED-001",
+        "decision_ref": "DR-CATP-E02-001",
+        "phase": "PHASE-CATP-01",
+        "goal": "GOAL-CATP-01"
+      },
+      {
+        "element": "CATP-E03",
+        "policy_ref": "PER-CATP-E03-REVIEWED-001",
+        "decision_ref": "DR-CATP-E03-001",
+        "phase": "PHASE-CATP-01",
+        "goal": "GOAL-CATP-01"
+      },
+      {
+        "element": "CATP-E04",
+        "policy_ref": "PER-CATP-E04-REVIEWED-001",
+        "decision_ref": "DR-CATP-E04-001",
+        "phase": "PHASE-CATP-01",
+        "goal": "GOAL-CATP-01"
+      },
+      {
+        "element": "CATP-E05",
+        "policy_ref": "PER-CATP-E05-REVIEWED-001",
+        "decision_ref": "DR-CATP-E05-001",
+        "phase": "PHASE-CATP-01",
+        "goal": "GOAL-CATP-01"
+      },
+      {
+        "element": "CATP-E06",
+        "policy_ref": "PER-CATP-E06-REVIEWED-001",
+        "decision_ref": "DR-CATP-E06-001",
+        "phase": "PHASE-CATP-01",
+        "goal": "GOAL-CATP-01"
+      }
+    ],
+    "upstream_authoring_state_preserved": true,
+    "remaining_summary_coverage": [
+      "KU30-01",
+      "KU30-02",
+      "KU30-03",
+      "KU30-04",
+      "TR30-01–06",
+      "SC01–06",
+      "Goal scope/validation/authority/reviewer"
+    ],
+    "production_mutations_in_P2G": 0,
+    "new_game_tests_in_P2G": 0,
+    "failures": [],
+    "method": "root exact chain/hash/typed Ref/primary-to-Goal validation plus semantic remaining-boundary review; actual P2G50 standard output retained upstream; no P2G60 standard repository validator"
+  },
+  "P2G authorization": "no GEX activation/mutation/completion granted by P2G",
+  "Parent next action": "select exact child under existing adopted AUTORUN and perform separate GEX-00 intake",
+  "recorded_at_utc": "2026-09-09T20:42:54.646548+00:00"
+}

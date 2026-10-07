@@ -1,0 +1,1548 @@
+{
+  "report_id": "r03_battle_leaf_shape_006",
+  "role": "AUTORUN §8 bounded read-only source/design helper",
+  "completion_audit": false,
+  "workspace": "/mnt/f/work/simulator",
+  "max_roots": 6,
+  "root_count": 6,
+  "production_or_git_mutations": false,
+  "build_or_test_execution": false,
+  "report_files_only": [
+    "/tmp/r03_battle_leaf_shape_006.md",
+    "/tmp/r03_battle_leaf_shape_006.json"
+  ],
+  "scope": "Borrowed native clone ownership and Serialize suitability of six BattleCore leaf root families; root owns implementation, testing and acceptance.",
+  "frozen_optional_trace": "Overflow creates gap only. Optional trace never affects mandatory clone accounting/admission/gameplay/RNG/mandatory receipts.",
+  "roots": [
+    {
+      "root": "UnitSnapshot",
+      "source": "game/battle/types.rs:92-102",
+      "serialize": false,
+      "clone": "derived Clone; every direct child is Copy",
+      "safe_borrowed_serde": false,
+      "proposed": "native exhaustive struct_shape; fixed child records may use scalar/closed-leaf visitors",
+      "fields": {
+        "id": "UnitInstanceId(Uuid)",
+        "owner": "Side",
+        "role": "BattleUnitRole",
+        "threat_class": "BattleUnitThreatClass",
+        "mobility_kind": "MobilityKind",
+        "position": "Position {x:i32,y:i32}",
+        "world_position": "WorldVec2 {x:f32,y:f32}",
+        "stats": "UnitStats {max_health:u32,current_health:u32,attack:u32,defense:i32,magic_resist:i32,attack_interval_ms:u64,move_speed_units_per_ms:u32}"
+      },
+      "owned_dynamic": [],
+      "shared": [],
+      "native_tables": [],
+      "serde_skipped": [],
+      "direct_parent": "BattleCore.graveyard: OwnedHashMap<UnitInstanceId,UnitSnapshot>"
+    },
+    {
+      "root": "BattleScenario",
+      "source": "game/battle/scenario.rs:243-251",
+      "serialize": false,
+      "safe_borrowed_serde": false,
+      "proposed": "native exhaustive struct/enum visitors; reuse reviewed UnitCombatProfile leaf and existing GrowthStack native visitor; stop at resolved boss definition Arc",
+      "fields": {
+        "battlefield": "BattleFieldSpec",
+        "groups": "Vec<ScenarioSpawnGroup>",
+        "events": "Vec<ScenarioEvent>",
+        "terminal_outcomes": "Vec<TerminalOutcome>",
+        "tactical_plan": "TacticalPlan",
+        "boss_runtime": "Option<ResolvedBossEncounterSetup>"
+      },
+      "children": {
+        "BattleFieldSpec": {
+          "width": "u8",
+          "height": "u8",
+          "valid_tiles": "Vec<Position>",
+          "obstacles": "Vec<Position>"
+        },
+        "ScenarioSpawnGroup": {
+          "id": "ScenarioGroupId(String)",
+          "side": "Side",
+          "required_for_victory": "bool",
+          "enemy_movement_plan": "Option<EnemyMovementPlan>",
+          "spawns": "Vec<ScenarioUnitSpawn>"
+        },
+        "ScenarioUnitSpawn": {
+          "unit_ref": "ScenarioUnitRef(String)",
+          "side": "Side",
+          "draft": "BattleUnitDraft",
+          "position": "Position",
+          "instance_salt": "u32"
+        },
+        "BattleUnitDraft": {
+          "owned_uuid": "Uuid",
+          "source": "BattleUnitSource",
+          "threat_class": "BattleUnitThreatClass",
+          "level": "Tier",
+          "stat_scale": "BattleUnitStatScale",
+          "growth_stacks": "GrowthStack {stacks: std::collections::HashMap<GrowthId,i32>}",
+          "equipped_items": "Vec<Uuid>",
+          "equipped_item_enhancements": "Vec<BattleEquipmentEnhancement {base_uuid:Uuid,enhancement_level:u8}>",
+          "employee_start_condition": "Option<EmployeeBattleStartCondition {trauma:u32,battle_hp_bonus_percent:u32}>"
+        },
+        "BattleUnitStatScale": {
+          "max_health_percent": "u32",
+          "attack_percent": "u32",
+          "defense_percent": "u32",
+          "exact_override": "Option<BattleUnitExactStatOverride {max_health:u32,attack:u32,defense:i32,magic_resistance:i32}>"
+        },
+        "BattleUnitSource": {
+          "Employee": "UnitCombatProfile",
+          "Abnormality": "{base_uuid:Uuid}",
+          "CorrodedEmployee": "{profile_id:String,base_uuid:Uuid}",
+          "TestFixture": "{base_uuid:Uuid,profile:UnitCombatProfile}",
+          "DefenseObject": "{base_uuid:Uuid,profile:UnitCombatProfile}",
+          "SummonedUnit": "{definition_id:String,base_uuid:Uuid,profile:UnitCombatProfile,summoner_instance_id:UnitInstanceId,summon_sequence:u64,batch_uuid:Uuid}"
+        },
+        "ScenarioEvent": {
+          "id": "ScenarioEventId(String)",
+          "trigger": "ScenarioTrigger",
+          "action": "ScenarioAction::SpawnGroup {group_id:ScenarioGroupId}"
+        },
+        "ScenarioTrigger": {
+          "AtBattleStart": "unit",
+          "AtTimeMs": "u64",
+          "Wave": "ScenarioWaveActivation"
+        },
+        "ScenarioWaveActivation": {
+          "trigger_id": "String",
+          "priority": "i32",
+          "primary": "ScenarioWavePrimaryTrigger",
+          "deadline_ms": "Option<u64>"
+        },
+        "ScenarioWavePrimaryTrigger": {
+          "AtTimeMs": "{time_ms:u64}",
+          "GroupCleared": "{group_id:ScenarioGroupId}",
+          "ActorHealthAtOrBelowPercent": "{actor_slot_id:BossActorSlotId(String),percent:u8}",
+          "ActorDefeated": "{actor_slot_id:BossActorSlotId(String)}",
+          "ActorReachedPoint": "{actor_slot_id:BossActorSlotId(String),point_id:TacticalPointId(String),radius_cells:u32}"
+        },
+        "TerminalOutcome": {
+          "id": "BattleOutcomeId(String)",
+          "verdict": "BattleVerdict",
+          "condition": "TerminalCondition",
+          "priority": "i32"
+        },
+        "TerminalCondition": {
+          "AllRequiredEnemyGroupsDefeated": "unit",
+          "UnitDefeated": "{unit_ref:ScenarioUnitRef}",
+          "AllPlayerCombatantsDefeated": "unit",
+          "TimeReached": "{time_ms:u64}",
+          "BossSignalLatched": "{signal_id:BossSignalId(String)}"
+        },
+        "TacticalPlan": {
+          "objective": "BattleObjective",
+          "player_plan": "PlayerMovementPlan::FixedDefense",
+          "enemy_plan": "EnemyMovementPlan::PathAlongCells {cells:Vec<Position>}",
+          "points": "Vec<TacticalPoint {id:TacticalPointId(String),position:Position}>",
+          "field_work_objects": "Vec<FieldWorkObjectDef>"
+        },
+        "BattleObjective": {
+          "DefeatBoss": "{unit_ref:ScenarioUnitRef}",
+          "ProtectUnit": "{unit_ref:ScenarioUnitRef}",
+          "Survive": "{time_ms:u64}"
+        },
+        "FieldWorkObjectDef": {
+          "id": "FieldWorkObjectId(String)",
+          "presentation_kind": "FieldWorkPresentationKind::EmergencyRepairTerminal",
+          "position": "Position",
+          "work_cells": "Vec<FieldWorkCellDef {id:FieldWorkCellId(String),position:Position,tile_kind:TacticalTileKind}>",
+          "required_work_ms": "u64",
+          "completion_effect": "FieldWorkCompletionEffect::RepairProtectedUnit {unit_ref:ScenarioUnitRef,flat_hp:u32}"
+        },
+        "ResolvedBossEncounterSetup": {
+          "definition": "Arc<CompiledBossEncounterDefinition>: handle only",
+          "actors": "Vec<ResolvedBossActorSetup {actor_slot_index:usize,unit_ref:ScenarioUnitRef}>",
+          "enemy_stat_scale": "BattleUnitStatScale",
+          "summon_spawn_zones": "Vec<ResolvedBossSummonSpawnZone {id:String,cells:Vec<Position>}>",
+          "summon_routes": "Vec<ResolvedBossSummonRoute {id:String,cells:Vec<Position>}>"
+        },
+        "UnitCombatProfile": "Already explicit serialized_leaf; stats/basic_attack/basic_attack_speed_percent/weapon_profile/movement/resonance/skill_id/skill_activation_mode/deployment_affinity/block_capacity/block_radius_units/blockable/mobility_kind/target_traits/incoming_damage_modifiers. Owned deep children only SkillId(String), TileRangePattern.rows Vec<String>, Vec<UnitTargetTrait>, and nested fixed delivery/profile records; no metadata Arc/map. Collision.despawn_on_hit has skip_serializing_if=None, no hidden owned allocation."
+      },
+      "native_tables": [
+        "draft.growth_stacks.stacks"
+      ],
+      "shared": [
+        "boss_runtime.definition: Arc<CompiledBossEncounterDefinition>"
+      ],
+      "serde_skipped": [
+        "No serde representation for root/runtime scenario records. Do not serialize an improvised mirror that drops native table or Arc ownership."
+      ]
+    },
+    {
+      "root": "BattleEvent (queue enum)",
+      "source": "game/battle/enums.rs:19-164",
+      "serialize": false,
+      "safe_borrowed_serde": false,
+      "proposed": "native exhaustive 21-variant match with explicit all-field patterns, event record admission before children; EventQueue owns BinaryHeap storage and iterates borrowed heap",
+      "variants": {
+        "SpawnGroup": {
+          "time_ms": "u64",
+          "group_id": "ScenarioGroupId(String)",
+          "cause": "BattleEventCause"
+        },
+        "AttackStart": {
+          "time_ms": "u64",
+          "attacker_instance_id": "UnitInstanceId",
+          "target_instance_id": "Option<UnitInstanceId>",
+          "schedule_next": "bool",
+          "cause": "BattleEventCause"
+        },
+        "AttackResolve": {
+          "time_ms": "u64",
+          "attacker_instance_id": "UnitInstanceId",
+          "target_instance_id": "UnitInstanceId",
+          "attack_epoch": "u64",
+          "source_snapshot": "DamageSourceSnapshot",
+          "kind": "AttackKind",
+          "delivery": "AttackDelivery",
+          "cause": "BattleEventCause"
+        },
+        "BasicAttackProjectileAdvance": {
+          "time_ms": "u64",
+          "projectile_id": "Uuid",
+          "cause": "BattleEventCause"
+        },
+        "SkillProjectileImpact": {
+          "time_ms": "u64",
+          "delivery_id": "Uuid",
+          "cast_seq": "u64",
+          "step_index": "usize",
+          "skill_id": "SkillId(String)",
+          "step_id": "String",
+          "caster_instance_id": "UnitInstanceId",
+          "source_snapshot": "DamageSourceSnapshot",
+          "impact_position": "WorldVec2",
+          "first_hit_unit_id": "Option<UnitInstanceId>",
+          "impact_vfx_id": "Option<String>",
+          "terminal": "bool",
+          "cause": "BattleEventCause"
+        },
+        "SkillProjectileAdvance": {
+          "time_ms": "u64",
+          "delivery_id": "Uuid",
+          "cause": "BattleEventCause"
+        },
+        "SkillAreaTick": {
+          "time_ms": "u64",
+          "area_id": "Uuid",
+          "cast_seq": "u64",
+          "step_index": "usize",
+          "skill_id": "SkillId(String)",
+          "step_id": "String",
+          "center": "WorldVec2",
+          "cause": "BattleEventCause"
+        },
+        "SkillAreaExpire": {
+          "time_ms": "u64",
+          "area_id": "Uuid",
+          "cast_seq": "u64",
+          "step_index": "usize",
+          "skill_id": "SkillId(String)",
+          "step_id": "String",
+          "cause": "BattleEventCause"
+        },
+        "AutoCastStart": {
+          "time_ms": "u64",
+          "caster_instance_id": "UnitInstanceId",
+          "cause": "BattleEventCause"
+        },
+        "AutoCastEnd": {
+          "time_ms": "u64",
+          "caster_instance_id": "UnitInstanceId",
+          "cause": "BattleEventCause"
+        },
+        "ManualCastEnd": {
+          "time_ms": "u64",
+          "caster_instance_id": "UnitInstanceId",
+          "cause": "BattleEventCause"
+        },
+        "RestTick": {
+          "time_ms": "u64",
+          "unit_instance_id": "UnitInstanceId",
+          "rest_epoch": "u64"
+        },
+        "FieldWorkCompletion": {
+          "time_ms": "u64",
+          "object_id": "FieldWorkObjectId(String)",
+          "generation": "u64"
+        },
+        "SkillStep": {
+          "time_ms": "u64",
+          "cast_seq": "u64",
+          "step_index": "usize",
+          "caster_instance_id": "UnitInstanceId",
+          "skill_id": "SkillId(String)",
+          "step_id": "String",
+          "cast_target": "Option<SkillCastTarget>",
+          "cause": "BattleEventCause"
+        },
+        "ApplyBuff": {
+          "time_ms": "u64",
+          "caster_instance_id": "UnitInstanceId",
+          "target_instance_id": "UnitInstanceId",
+          "buff_id": "BuffId(u64)",
+          "duration_ms": "u64",
+          "cause": "BattleEventCause"
+        },
+        "BuffTick": {
+          "time_ms": "u64",
+          "caster_instance_id": "UnitInstanceId",
+          "target_instance_id": "UnitInstanceId",
+          "buff_id": "BuffId(u64)",
+          "cause": "BattleEventCause"
+        },
+        "BuffExpire": {
+          "time_ms": "u64",
+          "caster_instance_id": "UnitInstanceId",
+          "target_instance_id": "UnitInstanceId",
+          "buff_id": "BuffId(u64)",
+          "cause": "BattleEventCause"
+        },
+        "ContinuousMovementTick": {
+          "time_ms": "u64"
+        },
+        "BossRuntimeWake": {
+          "time_ms": "u64",
+          "actor_slot_index": "usize",
+          "task_activation_id": "u64"
+        },
+        "BossSummonWake": {
+          "time_ms": "u64",
+          "batch_uuid": "Uuid"
+        },
+        "WaveTriggerWake": {
+          "time_ms": "u64",
+          "trigger_id": "String"
+        }
+      },
+      "fixed_children": {
+        "BattleEventCause": "Copy: Parent{seq:u64}|Root{kind:BattleEventRootCause (Init/Period/System)}",
+        "SkillCastTarget": "Copy: Unit{unit_instance_id:UnitInstanceId}|Tile{position:Position}",
+        "AttackKind": "Copy unit enum Auto/Triggered",
+        "AttackDelivery": "Copy unit enum Instant/Projectile"
+      },
+      "shared": [
+        "Only transitively source_snapshot.skill_cast_source Arc"
+      ],
+      "native_tables": [],
+      "serde_skipped": [],
+      "direct_parent": "EventQueue(BinaryHeap<BattleEvent>); BattleCore.event_queue",
+      "measurement_warning": "Borrowed iter; do not clone/pop/sort/format events for measurement. complete_payload_key formats Debug and can traverse Arc pointees; queue Ord is not clone shape."
+    },
+    {
+      "root": "DamageSourceSnapshot",
+      "source": "game/battle/damage.rs:31-98,143-174,226-246",
+      "serialize": false,
+      "safe_borrowed_serde": false,
+      "proposed": "native exhaustive struct_shape; Option<Arc<_>> handle only; Vec<DamageBonusSnapshot> admission before scan; fixed child visitors",
+      "fields": {
+        "skill_cast_source": "Option<Arc<SkillCastExecutionSource>>",
+        "source_id": "UnitInstanceId",
+        "source_side": "Side",
+        "source_attack": "u32",
+        "source": "DamageSource",
+        "damage_type": "DamageType",
+        "base_damage": "u32",
+        "modifiers": "DamageModifiers",
+        "crit_roll_percent": "Option<u8>",
+        "crit_roll_identity": "CombatRollIdentity",
+        "minimum_damage": "u32",
+        "committed_at_ms": "u64",
+        "on_attack_modifiers": "DamageModifiers",
+        "on_attack_bonus_damage": "Vec<DamageBonusSnapshot>"
+      },
+      "children": {
+        "DamageBonusSnapshot": {
+          "flat": "i32",
+          "percent": "i32",
+          "damage_type": "DamageType"
+        },
+        "CombatRollIdentity": {
+          "roll_kind": "CombatRollKind: BasicAttackCrit|SkillCrit|StatusProc|EnvironmentCrit",
+          "source_unit_id": "Option<UnitInstanceId>",
+          "target_unit_id": "Option<UnitInstanceId>",
+          "source_instance_id": "Uuid",
+          "hit_index": "u32"
+        },
+        "DamageModifiers": "Copy Serialize record of 14 i32 fields (penetration, amplification/reduction, crit); no owned children",
+        "SkillCastExecutionSource": "Arc pointee boundary: skill_id:SkillId(String), caster_instance_id:UnitInstanceId, cast_seq:u64, ability_event_seq:u64, cause:BattleEventCause, proc_origin:Option<SkillProcOrigin>. Do not visit pointee on this clone."
+      },
+      "shared": [
+        "skill_cast_source"
+      ],
+      "native_tables": [],
+      "serde_skipped": [],
+      "warning": "BattleEventLogEntry.skill_effect_source is a different Option<Arc<SkillEffectExecutionSource>> with serde(skip); it requires explicit event-log owner shape, not borrowed log Serialize."
+    },
+    {
+      "root": "BattleUnitSourceIdentity",
+      "source": "game/battle/types.rs:184-216",
+      "serialize": true,
+      "safe_borrowed_serde": true,
+      "proposed": "may add only this concrete enum to serialized_leaf whitelist; no mirrors/formatting",
+      "variants": {
+        "Employee": {
+          "employee_uuid": "Uuid",
+          "base_uuid": "Uuid"
+        },
+        "Abnormality": {
+          "abnormality_id": "String",
+          "base_uuid": "Uuid"
+        },
+        "CorrodedEmployee": {
+          "profile_id": "String",
+          "base_uuid": "Uuid"
+        },
+        "FacilityEntity": {
+          "profile_id": "String",
+          "base_uuid": "Uuid"
+        },
+        "DefenseObject": {
+          "base_uuid": "Uuid"
+        },
+        "TestFixture": {
+          "base_uuid": "Uuid"
+        },
+        "SummonedUnit": {
+          "definition_id": "String",
+          "base_uuid": "Uuid",
+          "summoner_instance_id": "UnitInstanceId",
+          "summon_sequence": "u64",
+          "batch_uuid": "Uuid"
+        }
+      },
+      "shared": [],
+      "native_tables": [],
+      "serde_skipped": [],
+      "serializer_proof": "Internally tagged struct variants without flatten use SerializeStruct in pinned serde_derive 1.0.228 (ser.rs:632-635,885-952). Uuid 1.17.0 uses stack encode_buffer and serialize_str / serialize_bytes, not collect_str; UnitInstanceId transparent wraps Uuid."
+    },
+    {
+      "root": "ActiveBuff / BuffDef family",
+      "source": "game/battle/core/types.rs:496-508;game/battle/buffs.rs:9-90",
+      "serialize": false,
+      "safe_borrowed_serde": false,
+      "proposed": "owner-local native shapes for BuffInstanceKey/ActiveBuff; BuffDef if its separate actual clone is metered; do not recurse through GameDataBase",
+      "children": {
+        "BuffInstanceKey": {
+          "caster_instance_id": "UnitInstanceId",
+          "target_instance_id": "UnitInstanceId",
+          "buff_id": "BuffId(u64)"
+        },
+        "ActiveBuff": {
+          "stacks": "u8",
+          "expires_at_ms": "u64",
+          "next_tick_ms": "Option<u64>"
+        },
+        "BuffDef": {
+          "id": "BuffId",
+          "name": "String",
+          "kind": "BuffKind",
+          "tick_interval_ms": "u64",
+          "max_stacks": "u8",
+          "reapply_policy": "BuffReapplyPolicy"
+        },
+        "BuffKind": "Copy Serialize: PeriodicDamage{damage_per_tick:u32,damage_type:DamageType}|Stun|Freeze|Silence",
+        "BuffReapplyPolicy": "Copy Serialize: StackRefreshDurationKeepCadence|RefreshDuration",
+        "BuffMetadata": {
+          "name": "String",
+          "kind": "BuffKind",
+          "tick_interval_ms": "u64",
+          "max_stacks": "u8",
+          "reapply_policy": "BuffReapplyPolicy"
+        },
+        "BuffDatabase": {
+          "buffs": "Vec<BuffMetadata>",
+          "by_id": "#[serde(skip)] OnceLock<std::collections::HashMap<BuffId,BuffDef>>"
+        }
+      },
+      "shared": [
+        "BattleCore.game_data:Arc<GameDataBase>, stop at handle"
+      ],
+      "native_tables": [
+        "BattleCore.buffs:OwnedHashMap<BuffInstanceKey,ActiveBuff>",
+        "BuffDatabase.by_id native HashMap only if cloning DB value itself; not transitive from ActiveBuff"
+      ],
+      "serde_skipped": [
+        "BuffDatabase.by_id"
+      ],
+      "safe_child_leaf": "BuffMetadata derives Serialize and has one String plus fixed children; BuffDef itself has no Serialize despite same basic shape plus id.",
+      "direct_copy_sites": [
+        "sim.rs:3173 ApplyBuff buff_data.get(buff_id).cloned()",
+        "sim.rs:3282 BuffTick buff_data.get(buff_id).cloned()"
+      ],
+      "scope_note": "Transient BuffDef clones are separate from whole BattleCore clone; ActiveBuff owns neither a BuffDef nor an Arc."
+    }
+  ],
+  "source_inventory": [
+    {
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "bytes": 26986,
+      "sha256": "1caed730779f276b0e83369d2f3bbd818272c557cf56c7775b37a883561aebc1",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 420
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "bytes": 45184,
+      "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 190
+        },
+        {
+          "start": 220,
+          "end": 255
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "bytes": 8734,
+      "sha256": "4b501650a51b5835814fa3a2e689ba19e8de1780144f1c29ddf07f4b28ec783b",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 185
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "bytes": 17929,
+      "sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 470,
+          "end": 535
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "bytes": 351151,
+      "sha256": "46e0da5070f321ca2d3e3bf85f32ac7b2d8a49d763e405d030489122defd2008",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 72,
+          "end": 190
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "bytes": 159917,
+      "sha256": "05b2fa00aa7aed65becf8dbc20da866b35d2dfe4dca4318f4b8cc8fc1013d4d3",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 100
+        },
+        {
+          "start": 510,
+          "end": 550
+        },
+        {
+          "start": 700,
+          "end": 800
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "bytes": 870,
+      "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 29
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "bytes": 55876,
+      "sha256": "82975ec82b87e469eaa206e46a2042a51a12ee4b6adf0375148ab64ace97d7b8",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 315,
+          "end": 395
+        },
+        {
+          "start": 800,
+          "end": 850
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "bytes": 1265,
+      "sha256": "a2b3edc11f43590fc368cf3c9ae7be8919055bdd3d5c2aa448d533a9372714d5",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 44
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/growth.rs",
+      "bytes": 1575,
+      "sha256": "cc752dbc450f64735f6cb0bc6078a930cff934be86ca6e97f6776ac4a23f7694",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 49
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "bytes": 36600,
+      "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 90,
+          "end": 230
+        },
+        {
+          "start": 230,
+          "end": 300
+        },
+        {
+          "start": 388,
+          "end": 410
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/ids.rs",
+      "bytes": 993,
+      "sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 49
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/board.rs",
+      "bytes": 504,
+      "sha256": "3318239bfa2142d812f561c7aff2010221767ebb36520b90b62a7e2f48ec213c",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 21
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+      "bytes": 12148,
+      "sha256": "4ca957c60c97be29f673abda8c73a7e21b0067cad3aba303ca00af84f950913c",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 120,
+          "end": 190
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/stats.rs",
+      "bytes": 18446,
+      "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 195,
+          "end": 225
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/enums.rs",
+      "bytes": 2021,
+      "sha256": "85255ba6c40ba34e3d8aa3c546d5d54e187d84146347f0de7db04c0bc0971b58",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 50
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.17.0/src/external/serde_support.rs",
+      "bytes": 26603,
+      "sha256": "cd5cf95fc393ac2f28f21b435f6b134ab6a9089d59c889359f1f0ee44385a8d7",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 65
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 74659,
+      "sha256": "80eed115bdcf0aa881da5b6c1525e6f19a0d6d8e1101ee4b285840ab7b3a8f19",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1978,
+          "end": 2008
+        },
+        {
+          "start": 2519,
+          "end": 2532
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 20869,
+      "sha256": "5ee66133b8abb0e5badd9b929613bdb2db620fd1c2b32b755cbf2dbf0c983ed1",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 393
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 18774,
+      "sha256": "72c81215a3b7794f3387925524ba75c0359fafa8c84e86122d9d2a8f048f1f23",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 280,
+          "end": 355
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/enums.rs",
+      "bytes": 41909,
+      "sha256": "cac118b9704c9c461d3e8c6146943d097ffc0e531a7fc6e54bf0b81473857b00",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 195
+        },
+        {
+          "start": 274,
+          "end": 310
+        },
+        {
+          "start": 256,
+          "end": 273
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 130316,
+      "sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 3165,
+          "end": 3220
+        },
+        {
+          "start": 3272,
+          "end": 3295
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.228/src/ser.rs",
+      "bytes": 45613,
+      "sha256": "d43be68a3c1d5d4617c30baebe06aceeaf012097ffa343102328ff94349e35e9",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 576,
+          "end": 635
+        },
+        {
+          "start": 885,
+          "end": 965
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/data/abnormality_data.rs",
+      "bytes": 18532,
+      "sha256": "bbda968e58c0bcfdeae09f7796ae4ed1fa92893fd89f8c250e4014a6e3275828",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 70,
+          "end": 116
+        },
+        {
+          "start": 240,
+          "end": 252
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/data/equipment_data.rs",
+      "bytes": 37726,
+      "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 111
+        },
+        {
+          "start": 109,
+          "end": 118
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/tile_range.rs",
+      "bytes": 12639,
+      "sha256": "73930102fc59b03f028189681934de2859b2dad19e76d3622f4967b5f594e8aa",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 67
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/ability.rs",
+      "bytes": 38098,
+      "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 1,
+          "end": 20
+        },
+        {
+          "start": 77,
+          "end": 94
+        },
+        {
+          "start": 160,
+          "end": 260
+        },
+        {
+          "start": 450,
+          "end": 535
+        },
+        {
+          "start": 126,
+          "end": 161
+        }
+      ],
+      "observed_at_utc": null,
+      "scope": "bounded field/serialization/native ownership evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "bytes": 36776,
+      "sha256": "04142c509b0b006359b0cd5e113d52706cb4108b90bbafbd886b704f1a62d5ac",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 90,
+          "end": 116
+        },
+        {
+          "start": 192,
+          "end": 228
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.358130+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "bytes": 45533,
+      "sha256": "20b826044fa46bd7b10cb07bd0fec1a5b540a90228c95ead1bea36fefbe0c2da",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 31,
+          "end": 75
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.367453+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "bytes": 27125,
+      "sha256": "6ed384c71cf9d9913f348ac168cdb0b3ed7900dcd1757bd2459c78984830c922",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 49,
+          "end": 69
+        },
+        {
+          "start": 244,
+          "end": 260
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.398314+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "bytes": 22346,
+      "sha256": "65b6ab56b9e40eb35f195b34dac6472c35055f61234e7ab277a3d143d392870a",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 496,
+          "end": 517
+        },
+        {
+          "start": 662,
+          "end": 672
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.407989+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 24568,
+      "sha256": "76dbffb8484f641a948c49437f45ec100f224a493293080727550e2c1a5e5d00",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 21,
+          "end": 29
+        },
+        {
+          "start": 230,
+          "end": 262
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.427326+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+      "bytes": 12216,
+      "sha256": "2ad7e06157b4fbf5cb6ab1d0ee9ccde20d371bae79693057e85cfb87a5dbe5be",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 125,
+          "end": 137
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.437165+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "bytes": 353311,
+      "sha256": "397f706e58168c78f435fa245153ccdc15cf2f8ec7365cd517f9273aea0c7b4e",
+      "read_method": "Read full source bytes for SHA256; inspect selected UTF-8 line spans; rg/sed discovery followed by hashed excerpt reads",
+      "spans": [
+        {
+          "start": 79,
+          "end": 135
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:23:35.464574+00:00",
+      "scope": "narrow drift follow-up only"
+    },
+    {
+      "path": "/home/acr0tic/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/collections/binary_heap/mod.rs.html",
+      "bytes": 189627,
+      "sha256": "218846109b4b726501f11b0f49c44fa04c19ba6ff7b8d4c39f6e250f5580ffec",
+      "read_method": "Read full HTML bytes for SHA256; strip HTML tags and html.unescape selected source lines; displayed source anchors match line numbers",
+      "spans": [
+        {
+          "start": 274,
+          "end": 279
+        },
+        {
+          "start": 451,
+          "end": 465
+        },
+        {
+          "start": 1034,
+          "end": 1043
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:24:56.404776+00:00",
+      "scope": "bounded field/serialization/native ownership evidence",
+      "rustdoc_version": "1.91.1 (ed61e7d7e 2025-11-07)",
+      "version_verified": "data-rustdoc-version header"
+    },
+    {
+      "path": "/home/acr0tic/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/vec/mod.rs.html",
+      "bytes": 403058,
+      "sha256": "51fb8604038b698379a9fd5e3f104ed3c06d9df0e79a5cc608964113da6dd753",
+      "read_method": "Read full HTML bytes for SHA256; strip HTML tags and html.unescape selected source lines; displayed source anchors match line numbers",
+      "spans": [
+        {
+          "start": 3559,
+          "end": 3566
+        },
+        {
+          "start": 3537,
+          "end": 3547
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:24:56.409592+00:00",
+      "scope": "bounded field/serialization/native ownership evidence",
+      "rustdoc_version": "1.91.1 (ed61e7d7e 2025-11-07)",
+      "version_verified": "data-rustdoc-version header"
+    },
+    {
+      "path": "/home/acr0tic/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/slice.rs.html",
+      "bytes": 87893,
+      "sha256": "adaf7573c58b39ab78a6023084565dbda8dcebdaf17ddd8b04d994af03d2ba0b",
+      "read_method": "Read full HTML bytes for SHA256; strip HTML tags and html.unescape selected source lines; displayed source anchors match line numbers",
+      "spans": [
+        {
+          "start": 394,
+          "end": 456
+        }
+      ],
+      "observed_at_utc": "2026-09-10T09:24:56.410663+00:00",
+      "scope": "bounded field/serialization/native ownership evidence",
+      "rustdoc_version": "1.91.1 (ed61e7d7e 2025-11-07)",
+      "version_verified": "data-rustdoc-version header"
+    }
+  ],
+  "source_drift": [
+    {
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "versions": [
+        {
+          "sha256": "1caed730779f276b0e83369d2f3bbd818272c557cf56c7775b37a883561aebc1",
+          "bytes": 26986,
+          "spans": [
+            {
+              "start": 1,
+              "end": 420
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "6ed384c71cf9d9913f348ac168cdb0b3ed7900dcd1757bd2459c78984830c922",
+          "bytes": 27125,
+          "spans": [
+            {
+              "start": 49,
+              "end": 69
+            },
+            {
+              "start": 244,
+              "end": 260
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.398314+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "versions": [
+        {
+          "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a",
+          "bytes": 45184,
+          "spans": [
+            {
+              "start": 1,
+              "end": 190
+            },
+            {
+              "start": 220,
+              "end": 255
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "20b826044fa46bd7b10cb07bd0fec1a5b540a90228c95ead1bea36fefbe0c2da",
+          "bytes": 45533,
+          "spans": [
+            {
+              "start": 31,
+              "end": 75
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.367453+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "versions": [
+        {
+          "sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+          "bytes": 17929,
+          "spans": [
+            {
+              "start": 470,
+              "end": 535
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "65b6ab56b9e40eb35f195b34dac6472c35055f61234e7ab277a3d143d392870a",
+          "bytes": 22346,
+          "spans": [
+            {
+              "start": 496,
+              "end": 517
+            },
+            {
+              "start": 662,
+              "end": 672
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.407989+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "versions": [
+        {
+          "sha256": "46e0da5070f321ca2d3e3bf85f32ac7b2d8a49d763e405d030489122defd2008",
+          "bytes": 351151,
+          "spans": [
+            {
+              "start": 72,
+              "end": 190
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "397f706e58168c78f435fa245153ccdc15cf2f8ec7365cd517f9273aea0c7b4e",
+          "bytes": 353311,
+          "spans": [
+            {
+              "start": 79,
+              "end": 135
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.464574+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "versions": [
+        {
+          "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f",
+          "bytes": 36600,
+          "spans": [
+            {
+              "start": 90,
+              "end": 230
+            },
+            {
+              "start": 230,
+              "end": 300
+            },
+            {
+              "start": 388,
+              "end": 410
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "04142c509b0b006359b0cd5e113d52706cb4108b90bbafbd886b704f1a62d5ac",
+          "bytes": 36776,
+          "spans": [
+            {
+              "start": 90,
+              "end": 116
+            },
+            {
+              "start": 192,
+              "end": 228
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.358130+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+      "versions": [
+        {
+          "sha256": "4ca957c60c97be29f673abda8c73a7e21b0067cad3aba303ca00af84f950913c",
+          "bytes": 12148,
+          "spans": [
+            {
+              "start": 120,
+              "end": 190
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "2ad7e06157b4fbf5cb6ab1d0ee9ccde20d371bae79693057e85cfb87a5dbe5be",
+          "bytes": 12216,
+          "spans": [
+            {
+              "start": 125,
+              "end": 137
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.437165+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "versions": [
+        {
+          "sha256": "5ee66133b8abb0e5badd9b929613bdb2db620fd1c2b32b755cbf2dbf0c983ed1",
+          "bytes": 20869,
+          "spans": [
+            {
+              "start": 1,
+              "end": 393
+            }
+          ],
+          "observed_at_utc": null
+        },
+        {
+          "sha256": "76dbffb8484f641a948c49437f45ec100f224a493293080727550e2c1a5e5d00",
+          "bytes": 24568,
+          "spans": [
+            {
+              "start": 21,
+              "end": 29
+            },
+            {
+              "start": 230,
+              "end": 262
+            }
+          ],
+          "observed_at_utc": "2026-09-10T09:23:35.427326+00:00"
+        }
+      ],
+      "interpretation": "Root concurrent implementation drift; initial field graph retained, narrow follow-up only. No completion audit of new helpers."
+    }
+  ],
+  "rehash_probe": {
+    "checked_at_utc": "2026-09-10T09:22:58.352630+00:00",
+    "files": [
+      {
+        "path": "core_enhanced/src/game/battle/scenario.rs",
+        "bytes": 27125,
+        "sha256": "6ed384c71cf9d9913f348ac168cdb0b3ed7900dcd1757bd2459c78984830c922"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/damage.rs",
+        "bytes": 45533,
+        "sha256": "20b826044fa46bd7b10cb07bd0fec1a5b540a90228c95ead1bea36fefbe0c2da"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/buffs.rs",
+        "bytes": 8734,
+        "sha256": "4b501650a51b5835814fa3a2e689ba19e8de1780144f1c29ddf07f4b28ec783b"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/types.rs",
+        "bytes": 22346,
+        "sha256": "65b6ab56b9e40eb35f195b34dac6472c35055f61234e7ab277a3d143d392870a"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "bytes": 353311,
+        "sha256": "397f706e58168c78f435fa245153ccdc15cf2f8ec7365cd517f9273aea0c7b4e"
+      },
+      {
+        "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+        "bytes": 159917,
+        "sha256": "05b2fa00aa7aed65becf8dbc20da866b35d2dfe4dca4318f4b8cc8fc1013d4d3"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/skill_source.rs",
+        "bytes": 870,
+        "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/event_log.rs",
+        "bytes": 55876,
+        "sha256": "82975ec82b87e469eaa206e46a2042a51a12ee4b6adf0375148ab64ace97d7b8"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/queue.rs",
+        "bytes": 1265,
+        "sha256": "a2b3edc11f43590fc368cf3c9ae7be8919055bdd3d5c2aa448d533a9372714d5"
+      },
+      {
+        "path": "core_enhanced/src/game/growth.rs",
+        "bytes": 1575,
+        "sha256": "cc752dbc450f64735f6cb0bc6078a930cff934be86ca6e97f6776ac4a23f7694"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/types.rs",
+        "bytes": 36776,
+        "sha256": "04142c509b0b006359b0cd5e113d52706cb4108b90bbafbd886b704f1a62d5ac"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/ids.rs",
+        "bytes": 993,
+        "sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/board.rs",
+        "bytes": 504,
+        "sha256": "3318239bfa2142d812f561c7aff2010221767ebb36520b90b62a7e2f48ec213c"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+        "bytes": 12216,
+        "sha256": "2ad7e06157b4fbf5cb6ab1d0ee9ccde20d371bae79693057e85cfb87a5dbe5be"
+      },
+      {
+        "path": "core_enhanced/src/game/stats.rs",
+        "bytes": 18446,
+        "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269"
+      },
+      {
+        "path": "core_enhanced/src/game/enums.rs",
+        "bytes": 2021,
+        "sha256": "85255ba6c40ba34e3d8aa3c546d5d54e187d84146347f0de7db04c0bc0971b58"
+      },
+      {
+        "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.17.0/src/external/serde_support.rs",
+        "bytes": 26603,
+        "sha256": "cd5cf95fc393ac2f28f21b435f6b134ab6a9089d59c889359f1f0ee44385a8d7"
+      },
+      {
+        "path": "Cargo.lock",
+        "bytes": 74659,
+        "sha256": "80eed115bdcf0aa881da5b6c1525e6f19a0d6d8e1101ee4b285840ab7b3a8f19"
+      },
+      {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "bytes": 24568,
+        "sha256": "76dbffb8484f641a948c49437f45ec100f224a493293080727550e2c1a5e5d00"
+      },
+      {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "bytes": 18774,
+        "sha256": "72c81215a3b7794f3387925524ba75c0359fafa8c84e86122d9d2a8f048f1f23"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/enums.rs",
+        "bytes": 41909,
+        "sha256": "cac118b9704c9c461d3e8c6146943d097ffc0e531a7fc6e54bf0b81473857b00"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "bytes": 130316,
+        "sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207"
+      },
+      {
+        "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.228/src/ser.rs",
+        "bytes": 45613,
+        "sha256": "d43be68a3c1d5d4617c30baebe06aceeaf012097ffa343102328ff94349e35e9"
+      },
+      {
+        "path": "core_enhanced/src/game/data/abnormality_data.rs",
+        "bytes": 18532,
+        "sha256": "bbda968e58c0bcfdeae09f7796ae4ed1fa92893fd89f8c250e4014a6e3275828"
+      },
+      {
+        "path": "core_enhanced/src/game/data/equipment_data.rs",
+        "bytes": 37726,
+        "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/tile_range.rs",
+        "bytes": 12639,
+        "sha256": "73930102fc59b03f028189681934de2859b2dad19e76d3622f4967b5f594e8aa"
+      },
+      {
+        "path": "core_enhanced/src/game/ability.rs",
+        "bytes": 38098,
+        "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195"
+      }
+    ]
+  },
+  "native_heap_proof": {
+    "rustdoc_version": "1.91.1 (ed61e7d7e 2025-11-07)",
+    "evidence": [
+      {
+        "path": "/home/acr0tic/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/collections/binary_heap/mod.rs.html",
+        "sha256": "218846109b4b726501f11b0f49c44fa04c19ba6ff7b8d4c39f6e250f5580ffec",
+        "spans": [
+          {
+            "start": 274,
+            "end": 279
+          },
+          {
+            "start": 451,
+            "end": 465
+          },
+          {
+            "start": 1034,
+            "end": 1043
+          }
+        ],
+        "version_verified": "data-rustdoc-version header"
+      },
+      {
+        "path": "/home/acr0tic/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/vec/mod.rs.html",
+        "sha256": "51fb8604038b698379a9fd5e3f104ed3c06d9df0e79a5cc608964113da6dd753",
+        "spans": [
+          {
+            "start": 3559,
+            "end": 3566
+          },
+          {
+            "start": 3537,
+            "end": 3547
+          }
+        ],
+        "version_verified": "data-rustdoc-version header"
+      },
+      {
+        "path": "/home/acr0tic/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/slice.rs.html",
+        "sha256": "adaf7573c58b39ab78a6023084565dbda8dcebdaf17ddd8b04d994af03d2ba0b",
+        "spans": [
+          {
+            "start": 394,
+            "end": 456
+          }
+        ],
+        "version_verified": "data-rustdoc-version header"
+      }
+    ],
+    "chain": [
+      "BinaryHeap.data: Vec<T,A>",
+      "BinaryHeap::clone -> self.data.clone() without Ord or rebuild",
+      "Vec::clone -> slice::to_vec_in(&**self, allocator.clone())",
+      "slice::to_vec_in Clone branch allocates with s.len(), calls each b.clone(), sets result len=s.len()",
+      "BinaryHeap::iter -> self.data.iter()"
+    ],
+    "admission_recommendation": "For EventQueue's Global allocator and derived native clone: charge record + live heap length before borrowed event iteration, visit children, finish once before actual whole clone; no spare capacity/history charge. Separate clone_from or custom allocator path excluded.",
+    "not_proven": [
+      "Allocator byte/RSS precision",
+      "OOM isolation",
+      "Generalized BattleCore/imported-core coverage"
+    ]
+  },
+  "negative_searches": [
+    {
+      "method": "rg scoped source definitions and global explicit Serialize impl search",
+      "result": "No explicit Serialize impl for UnitSnapshot, BattleScenario, BattleEvent, DamageSourceSnapshot, BuffDef found; definitions derive Clone without Serialize. ActiveBuff similarly has no Serialize."
+    }
+  ],
+  "read_limits": [
+    "No atomic repository snapshot. Each hash/excerpt is one source read; concurrent root changes captured as separate versions.",
+    "Core types beyond the six selected root families and newly added visitors were not audited for complete coverage.",
+    "Root-reported INPUTS047 owned_clone_shape7 pass is parent-reported historical context, not this helper's test execution."
+  ],
+  "followup_obligations": [
+    "Native EventQueue/Scenario visitors and full preclone outer integration remain root-owned implementation choices.",
+    "Transient BuffDef get().cloned() is separate per-operation copy, not ActiveBuff transitive ownership.",
+    "Do not expand LeafSerializer to BuffDatabase or any shared compiled definition graph.",
+    "Use no fake IDs, panic paths, serialized mirrors or source clones to measure ownership."
+  ]
+}

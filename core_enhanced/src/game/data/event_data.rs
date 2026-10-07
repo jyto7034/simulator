@@ -112,6 +112,7 @@ pub struct EventPresentationPanel {
 pub enum EventSceneNext {
     Scene { scene_id: EventSceneId },
     EmployeeCheckChoices { choices: Vec<EventChoiceDefinition> },
+    RelicCorruption { next_scene_id: EventSceneId },
     End,
 }
 
@@ -167,6 +168,14 @@ pub struct EventDatabase {
 }
 
 impl EventDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(events: Vec<EventDefinition>) -> Self {
+        Self {
+            events,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(events: Vec<EventDefinition>) -> Self {
         let by_id = once_lock_with(build_string_index(&events, "event id", |event| {
             event.id.as_str()
@@ -457,6 +466,15 @@ fn validate_scene_next(
                 }
             }
         }
+        EventSceneNext::RelicCorruption { next_scene_id } => {
+            if next_scene_id.as_str().trim().is_empty() {
+                return Err(event_error(
+                    event,
+                    format!("{scene_path}.next.RelicCorruption.next_scene_id"),
+                    "next_scene_id must not be empty",
+                ));
+            }
+        }
         EventSceneNext::End => {}
     }
     Ok(())
@@ -465,6 +483,7 @@ fn validate_scene_next(
 fn scene_targets(scene: &EventSceneDefinition) -> Vec<&EventSceneId> {
     match &scene.next {
         EventSceneNext::Scene { scene_id } => vec![scene_id],
+        EventSceneNext::RelicCorruption { next_scene_id } => vec![next_scene_id],
         EventSceneNext::EmployeeCheckChoices { choices, .. } => choices
             .iter()
             .flat_map(|choice| [&choice.success_scene_id, &choice.failure_scene_id])
@@ -477,7 +496,7 @@ fn scene_is_terminal(scene: &EventSceneDefinition) -> bool {
     match &scene.next {
         EventSceneNext::End => true,
         EventSceneNext::EmployeeCheckChoices { .. } => false,
-        EventSceneNext::Scene { .. } => false,
+        EventSceneNext::Scene { .. } | EventSceneNext::RelicCorruption { .. } => false,
     }
 }
 

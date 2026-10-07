@@ -1,0 +1,152 @@
+{
+  "created_at_utc": "2026-10-06T10:59:52.198256+00:00",
+  "status": "U08_PARTIAL_REQUIRED_VALIDATION_ENVIRONMENT_BLOCKED",
+  "source_sha256": "8734111ce349bc36de5534aff831f89ccf8c9034b7e802e120d87cee5d0e248b",
+  "source_files": 438,
+  "harness_files": 122,
+  "source_and_harness_unchanged_after_documentation": true,
+  "future005_executed": false,
+  "current_goal_complete": false,
+  "u09_started": false,
+  "document_changes": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "before_sha256": "4ff164af310b351a2b3608fee470c43214b76204e7d2af9d217b002cbc4c7318",
+      "after_sha256": "bf339bd47adcb7e2f173706fb3ea4e4c3c0c41b3c46751ddb7aa95ae37abcfb1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before_sha256": "859b69bdfeaf090583e32d6eb447c69bb8d7b761c2e6e743df65ef9669360a75",
+      "after_sha256": "e0e0a42550188c05358cbc456dfe9de9eb79bcde1370532b4cbf0b30993c000e"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "4402a1c074536675be63f446c94848f88fd9224c6ed589c1c639fb96a9857ec3",
+      "after_sha256": "a56fc87eb306db4c6991aaf3c3ed25ac5550007c288e59d8c4af608618d46804"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "before_sha256": "7fd52b85c1b4b9f52b005b571e53a9c2e83fdb6377abd05c435abee0d2487bd8",
+      "after_sha256": "1097bf382073652886671b43947191deb28d3b195dbc78e1c44038843aed4a00"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+      "before_sha256": "6d65752fbbc3384a37d5f17a97b7e2c133a607a45581f42651cef30ae3cc2d22",
+      "after_sha256": "0ba5fd38f9510a33af599de1922d3cda795767cfcdb0ec7466f15faa507f0862"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/EXPERIMENT_NOTES.md.diff",
+      "sha256": "a44f8ebe38020a29a211785741bfb8cfabe9566b987f39020069834efb7d9319",
+      "bytes": 6924
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/GIT_STATUS_SOURCE.txt",
+      "sha256": "c56f0ebc16f7c12aea12d70d76b7e4d21afc84aa140c59428214509b11aaeb3b",
+      "bytes": 21390
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/HANDOFF_LATEST.ko.md.diff",
+      "sha256": "c1878f27b1531652ab3c5d6b676774dd0e210a1818dafe3c37283846e1672584",
+      "bytes": 11539
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/PLAN.md.diff",
+      "sha256": "e4ddc74a447b2a860cc3cceb6f7dfac594e8e0e24bc04f96dcf352ed30ed02b4",
+      "bytes": 3078
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/QUIESCENCE.json",
+      "sha256": "25d6ae4ce2e90ad7e7264d90036284de000a1066bdc0de77e55c8b76bc8fea28",
+      "bytes": 481
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/RECORD.ko.md",
+      "sha256": "4bb5bc4f1a61958ca75ff1df2ac13fd54999ab1c53ec97254338625a343ac93e",
+      "bytes": 5484
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/REFERENCES.json",
+      "sha256": "770da476af4ecfb3511c12c77fae3b3ced88479408c724f1a5c2ade9d90462f8",
+      "bytes": 4747
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/ROADMAP.ko.md.diff",
+      "sha256": "07fedabeed4f4d77a8362a6fbf84c992f279974a2c14689af83fec408a945cfd",
+      "bytes": 6198
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/ROADMAP_STATUS.md.diff",
+      "sha256": "a154dbdeffe28849bf3e880b3e629bb7bebbfe83490a17ba92716a3f6813108f",
+      "bytes": 3807
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/SOURCE_CURRENT.json",
+      "sha256": "e4bde6caddb5d323ca3f9ab9fcdc807e6dbfc8bae88a2467337420b2617791d8",
+      "bytes": 79848
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/SOURCE_DELTA_FROM_GEX00.json",
+      "sha256": "7aaf2289b211495689dbc768d6e9830ee479859b35b7d84bf1a9bbd6dc6199d5",
+      "bytes": 42770
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/before_EXPERIMENT_NOTES.md",
+      "sha256": "859b69bdfeaf090583e32d6eb447c69bb8d7b761c2e6e743df65ef9669360a75",
+      "bytes": 76937
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/before_HANDOFF_LATEST.ko.md",
+      "sha256": "6d65752fbbc3384a37d5f17a97b7e2c133a607a45581f42651cef30ae3cc2d22",
+      "bytes": 97
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/before_PLAN.md",
+      "sha256": "4ff164af310b351a2b3608fee470c43214b76204e7d2af9d217b002cbc4c7318",
+      "bytes": 16819
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/before_ROADMAP.ko.md",
+      "sha256": "7fd52b85c1b4b9f52b005b571e53a9c2e83fdb6377abd05c435abee0d2487bd8",
+      "bytes": 306054
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_025/before_ROADMAP_STATUS.md",
+      "sha256": "4402a1c074536675be63f446c94848f88fd9224c6ed589c1c639fb96a9857ec3",
+      "bytes": 54388
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "sha256": "bf339bd47adcb7e2f173706fb3ea4e4c3c0c41b3c46751ddb7aa95ae37abcfb1",
+      "bytes": 18298
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "sha256": "e0e0a42550188c05358cbc456dfe9de9eb79bcde1370532b4cbf0b30993c000e",
+      "bytes": 82435
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "sha256": "a56fc87eb306db4c6991aaf3c3ed25ac5550007c288e59d8c4af608618d46804",
+      "bytes": 55280
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "sha256": "1097bf382073652886671b43947191deb28d3b195dbc78e1c44038843aed4a00",
+      "bytes": 306951
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+      "sha256": "0ba5fd38f9510a33af599de1922d3cda795767cfcdb0ec7466f15faa507f0862",
+      "bytes": 11211
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261006_001.ko.md",
+      "sha256": "6d65752fbbc3384a37d5f17a97b7e2c133a607a45581f42651cef30ae3cc2d22",
+      "bytes": 97
+    }
+  ],
+  "root_review": "Planning/read-only evidence and documentation review; not independent completion audit",
+  "block": "AF_UNIX bind EPERM and AF_INET socket EPERM with approval never; original failure and diagnostics preserved"
+}

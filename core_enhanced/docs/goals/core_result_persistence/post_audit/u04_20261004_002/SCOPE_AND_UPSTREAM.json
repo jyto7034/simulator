@@ -1,0 +1,56 @@
+{
+  "at_utc": "2026-10-04T09:52:28.747334+00:00",
+  "product_roots_fresh_enumeration_matches": true,
+  "product_member_count": 367,
+  "record_roots_fresh_enumeration_matches": true,
+  "record_count": 2376,
+  "manifest_index_and_archive_hashes_match": true,
+  "exact_upstream_artifact_digests_verified": [
+    {
+      "path": "core_enhanced/docs/goals/core_result_persistence/P2G_30_FREEZE_001.json",
+      "sha256": "0998c2977ab3421ffa11c3aa58368f7e989c81592302ef759d875c07109c31cd",
+      "refs": [
+        {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRRP-001",
+          "Content Digest": "sha256:107a5385639211cb4687f1414bf94085b379f14fd2e2a551c435bcf9c259d06c"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_result_persistence/P2G_40_PHASE_PLAN_001.json",
+      "sha256": "7596be9a292352ed6f2e307ae45098f353af30b4d024b86fc8e81a84c8d78d1c",
+      "refs": [
+        {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CRRP-001",
+          "Content Digest": "sha256:f47da26534a72cb0553742fa36ea59c8fc6bae01cdf45b8d686cb72143a82a5b"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_result_persistence/P2G_60_HANDOFF_001.json",
+      "sha256": "b4e02bae6560a8ec41b6e4c146c2ca39ea43b7f1986e9f77ef140bc2031173f0",
+      "refs": [
+        {
+          "Artifact Type": "Handoff Artifact",
+          "Artifact ID": "HA-CRRP-001",
+          "Content Digest": "sha256:a3ffdc4e479682db553b243fcc475f6a1edb65a5509572d05654210c5848e6c7"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_result_persistence/P2G_50_GOAL_SET.ko.md",
+      "sha256": "641132140b489522adbc6dc9139cb4f1ff2d75ee7dc9fd2215e3fc379200f1ec",
+      "canonical_host_obligation_line": 82
+    }
+  ],
+  "all_frozen_acceptance_meanings_match_current_coverage_and_prior_audit": true,
+  "counts": {
+    "acceptances": 15,
+    "validation_seams": 15,
+    "dimensions": 10,
+    "inherited": 112,
+    "separate_r06": 31
+  }
+}

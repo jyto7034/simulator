@@ -1,0 +1,166 @@
+{
+  "old_locked_pairs": 311,
+  "new_locked_pairs": 343,
+  "added_versions": [
+    [
+      "atomic-waker",
+      "1.1.2"
+    ],
+    [
+      "crossbeam-epoch",
+      "0.9.21"
+    ],
+    [
+      "evmap",
+      "11.0.0"
+    ],
+    [
+      "futures-channel",
+      "0.3.31"
+    ],
+    [
+      "generator",
+      "0.8.10"
+    ],
+    [
+      "h2",
+      "0.4.19"
+    ],
+    [
+      "hashbag",
+      "0.1.13"
+    ],
+    [
+      "http",
+      "1.5.0"
+    ],
+    [
+      "http-body",
+      "1.1.0"
+    ],
+    [
+      "http-body-util",
+      "0.1.5"
+    ],
+    [
+      "hyper",
+      "1.11.1"
+    ],
+    [
+      "hyper-util",
+      "0.1.21"
+    ],
+    [
+      "ipnet",
+      "2.12.2"
+    ],
+    [
+      "left-right",
+      "0.11.8"
+    ],
+    [
+      "loom",
+      "0.7.2"
+    ],
+    [
+      "metrics",
+      "0.24.6"
+    ],
+    [
+      "metrics-exporter-prometheus",
+      "0.18.3"
+    ],
+    [
+      "metrics-util",
+      "0.20.4"
+    ],
+    [
+      "portable-atomic",
+      "1.15.0"
+    ],
+    [
+      "quanta",
+      "0.12.6"
+    ],
+    [
+      "rand_xoshiro",
+      "0.7.0"
+    ],
+    [
+      "rapidhash",
+      "4.5.1"
+    ],
+    [
+      "raw-cpuid",
+      "11.6.0"
+    ],
+    [
+      "scoped-tls",
+      "1.0.1"
+    ],
+    [
+      "sketches-ddsketch",
+      "0.3.1"
+    ],
+    [
+      "socket2",
+      "0.6.5"
+    ],
+    [
+      "tower-service",
+      "0.3.3"
+    ],
+    [
+      "try-lock",
+      "0.2.5"
+    ],
+    [
+      "want",
+      "0.3.1"
+    ],
+    [
+      "web-sys",
+      "0.3.95"
+    ],
+    [
+      "windows-link",
+      "0.2.1"
+    ],
+    [
+      "windows-result",
+      "0.4.1"
+    ]
+  ],
+  "original_versions_preserved": true,
+  "epoch_reverse_dependencies": [
+    "game_server",
+    "metrics-util"
+  ],
+  "exporter_features": [
+    "_hyper-server",
+    "async-runtime",
+    "http-body-util",
+    "http-listener",
+    "hyper",
+    "hyper-util",
+    "ipnet",
+    "tokio",
+    "tracing"
+  ],
+  "verified_dependency_files": 122,
+  "external_archives": [
+    {
+      "name": "grafana",
+      "url": "https://dl.grafana.com/grafana/release/13.2.3/grafana_13.2.3_36482603486_linux_amd64.tar.gz",
+      "sha256": "6107ad27016296aac38e0d7ffa8753ab540b5541ad27e94790f771289d733235",
+      "archive_current": true
+    },
+    {
+      "name": "prometheus",
+      "url": "https://github.com/prometheus/prometheus/releases/download/v3.15.0/prometheus-3.15.0.linux-amd64.tar.gz",
+      "sha256": "2a542df32eac02ee17b9d844fb2aa1de00dafa5476579ba8a3ba862e9d572ea0",
+      "archive_current": true
+    }
+  ],
+  "storage_review": "AtomicBucket.clear_with synchronously detaches/drains; fixed classic distributions; crossbeam defer+flush FIFO queue and one in-flight callback per participant; runtime has one collector and at most one blocking HTTP renderer. Fixture allocator has four test buckets/no HTTP, separate production ten/thirteen buckets."
+}

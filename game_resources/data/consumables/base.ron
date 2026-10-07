@@ -69,7 +69,7 @@ ConsumableDatabase(
             id: "deployment_anchor_patch",
             uuid: "660e8400-e29b-41d4-a716-446655440106",
             name: "Deployment Anchor Patch",
-            description: "Reduces one employee's deployment stabilization cost on the next combat node.",
+            description: "Reduces one employee's deployment tactical-point cost on the next combat node.",
             tier: Uncommon,
             rarity: TETH,
             price: 85,

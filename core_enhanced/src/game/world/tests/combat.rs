@@ -1,20 +1,71 @@
+fn projection_after_test_retreat(mut before: Value, retreats: u8) -> Value {
+    let attempt = &mut before["game_state_context"]["abnormality_attempt"];
+    assert!(
+        attempt.is_object(),
+        "fixture must expose its retreat ledger"
+    );
+    attempt["attempts_started"] = json!(retreats);
+    attempt["remaining_attempts"] = json!(3 - retreats);
+    attempt["retreats_used"] = json!(retreats);
+    attempt["remaining_retreats"] = json!(2 - retreats);
+    before
+}
+
+fn settle_test_combat_result(
+    core: &mut GameCore,
+    battle_uuid: Uuid,
+    battle: CombatBattleState,
+) -> Result<(), GameError> {
+    core.execute_application(
+        super::super::application::ApplicationRoute::BattleElapsedAdvance,
+        move |draft| draft.transition_finished_live_battle_to_result(battle_uuid, battle),
+    )
+}
+
 use super::*;
+// External content-pack fixtures and their loader are only available on Unix.
+#[cfg(unix)]
+#[path = "resource_lifetimes.rs"]
+mod resource_lifetimes;
 use crate::game::ability::SkillEffectDef;
+use crate::game::battle::buffs::BuffId;
 use crate::game::battle::core::movement::types::EventLogVec2;
 use crate::game::battle::core::sim::BattleDeployCurrentHpPolicy;
-use crate::game::battle::event_log::{BattleEventLogEntry, BattleLogEvent};
+use crate::game::battle::core::{CompendiumCandidate, CompendiumCandidateKind};
+use crate::game::battle::enums::BattleEvent;
+use crate::game::battle::event_log::{
+    BattleEventCause, BattleEventLogEntry, BattleLogEvent, BATTLE_HISTORY_MAX_ENCODED_BYTES,
+};
 use crate::game::battle::result_stats::collect_battle_result_stats;
 use crate::game::battle::tile_range::TileRangePattern;
 use crate::game::battle::types::{
-    BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass, BattleWinner,
-    ParticipantBattleResult,
+    BattleOutcomeId, BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass,
+    BattleVerdict, BattleWinner, EngagementStance, ParticipantBattleResult,
 };
 use crate::game::behavior::ActionDisabledReasonCode;
-use crate::game::behavior::{LiveBattleHudBarMode, LiveBattlePresentationEventKindDto};
+use crate::game::behavior::{
+    LiveBattleHudBarMode, LiveBattlePresentationEventKindDto, LiveBattleTileEffectDto,
+};
+use crate::game::combat_preview::DeploymentZoneKind;
 use crate::game::data::Item;
 use crate::game::enums::Side;
 use crate::game::resources::{CombatBattleState, RunFailureReason};
 use crate::game::stats::UnitStats;
+
+fn fixture_verdict(winner: BattleWinner) -> BattleVerdict {
+    match winner {
+        BattleWinner::Player => BattleVerdict::Victory,
+        BattleWinner::Opponent => BattleVerdict::Defeat,
+        BattleWinner::Draw => panic!("named-outcome fixtures cannot use Draw"),
+    }
+}
+
+fn fixture_outcome_id(winner: BattleWinner) -> BattleOutcomeId {
+    match fixture_verdict(winner) {
+        BattleVerdict::Victory => BattleOutcomeId::new("victory"),
+        BattleVerdict::Defeat => BattleOutcomeId::new("defeat"),
+    }
+}
 
 fn test_result_stats(
     winner: BattleWinner,
@@ -32,70 +83,85 @@ fn test_result_stats(
 fn encounter_compendium_spawn_log() -> BattleEventLog {
     let abnormality_uuid = Uuid::from_u128(20_005);
     let corrosion_uuid = Uuid::from_u128(21_001);
-    BattleEventLog {
-        version: crate::game::battle::event_log::BATTLE_EVENT_LOG_VERSION,
-        entries: vec![
-            BattleEventLogEntry {
-                time_ms: 0,
-                seq: 1,
-                cause: crate::game::battle::event_log::BattleEventCause::default(),
-                source_command_id: None,
-                event: BattleLogEvent::UnitSpawned {
-                    unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(
-                        Uuid::from_u128(0xC011_EC71),
-                    ),
-                    owner: Side::Opponent,
-                    role: BattleUnitRole::Combatant,
-                    threat_class: BattleUnitThreatClass::Elite,
-                    mobility_kind: crate::game::battle::types::MobilityKind::Ground,
+    BattleEventLog::from_entries(vec![
+        BattleEventLogEntry {
+            skill_effect_source: None,
+            time_ms: 0,
+            seq: 1,
+            cause: crate::game::battle::event_log::BattleEventCause::default(),
+            source_command_id: None,
+            event: BattleLogEvent::UnitSpawned {
+                unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
+                    0xC011_EC71,
+                )),
+                owner: Side::Opponent,
+                role: BattleUnitRole::Combatant,
+                threat_class: BattleUnitThreatClass::Elite,
+                mobility_kind: crate::game::battle::types::MobilityKind::Ground,
+                base_uuid: abnormality_uuid,
+                unit_source: BattleUnitSourceIdentity::Abnormality {
+                    abnormality_id: "defense_risk_abno".to_string(),
                     base_uuid: abnormality_uuid,
-                    unit_source: BattleUnitSourceIdentity::Abnormality {
-                        abnormality_id: "defense_risk_abno".to_string(),
-                        base_uuid: abnormality_uuid,
-                    },
-                    world_position: EventLogVec2::default(),
-                    stats: UnitStats::default(),
                 },
+                world_position: EventLogVec2::default(),
+                stats: UnitStats::default(),
             },
-            BattleEventLogEntry {
-                time_ms: 1_000,
-                seq: 2,
-                cause: crate::game::battle::event_log::BattleEventCause::default(),
-                source_command_id: None,
-                event: BattleLogEvent::UnitSpawned {
-                    unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(
-                        Uuid::from_u128(0xC011_EC72),
-                    ),
-                    owner: Side::Opponent,
-                    role: BattleUnitRole::Combatant,
-                    threat_class: BattleUnitThreatClass::Normal,
-                    mobility_kind: crate::game::battle::types::MobilityKind::Ground,
+        },
+        BattleEventLogEntry {
+            skill_effect_source: None,
+            time_ms: 1_000,
+            seq: 2,
+            cause: crate::game::battle::event_log::BattleEventCause::default(),
+            source_command_id: None,
+            event: BattleLogEvent::UnitSpawned {
+                unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
+                    0xC011_EC72,
+                )),
+                owner: Side::Opponent,
+                role: BattleUnitRole::Combatant,
+                threat_class: BattleUnitThreatClass::Normal,
+                mobility_kind: crate::game::battle::types::MobilityKind::Ground,
+                base_uuid: corrosion_uuid,
+                unit_source: BattleUnitSourceIdentity::CorrodedEmployee {
+                    profile_id: "corroded_guard".to_string(),
                     base_uuid: corrosion_uuid,
-                    unit_source: BattleUnitSourceIdentity::CorrodedEmployee {
-                        profile_id: "corroded_guard".to_string(),
-                        base_uuid: corrosion_uuid,
-                    },
-                    world_position: EventLogVec2::default(),
-                    stats: UnitStats::default(),
                 },
+                world_position: EventLogVec2::default(),
+                stats: UnitStats::default(),
             },
-            BattleEventLogEntry {
-                time_ms: 2_000,
-                seq: 3,
-                cause: crate::game::battle::event_log::BattleEventCause::default(),
-                source_command_id: None,
-                event: BattleLogEvent::UnitDied {
-                    unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(
-                        Uuid::from_u128(0xC011_EC72),
-                    ),
-                    owner: Side::Opponent,
-                    killer_instance_id: None,
-                    world_position: EventLogVec2::default(),
-                    position: crate::game::resources::Position { x: 0, y: 0 },
-                },
+        },
+        BattleEventLogEntry {
+            skill_effect_source: None,
+            time_ms: 2_000,
+            seq: 3,
+            cause: crate::game::battle::event_log::BattleEventCause::default(),
+            source_command_id: None,
+            event: BattleLogEvent::UnitDied {
+                unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
+                    0xC011_EC72,
+                )),
+                owner: Side::Opponent,
+                killer_instance_id: None,
+                world_position: EventLogVec2::default(),
+                position: crate::game::resources::Position { x: 0, y: 0 },
             },
-        ],
-    }
+        },
+    ])
+}
+
+fn encounter_compendium_candidates() -> Vec<CompendiumCandidate> {
+    vec![
+        CompendiumCandidate {
+            id: "defense_risk_abno".to_string(),
+            kind: CompendiumCandidateKind::Abnormality,
+            base_uuid: Uuid::from_u128(20_005),
+        },
+        CompendiumCandidate {
+            id: "corroded_guard".to_string(),
+            kind: CompendiumCandidateKind::CorrodedEmployee,
+            base_uuid: Uuid::from_u128(21_001),
+        },
+    ]
 }
 
 fn install_encounter_compendium_combat_result(
@@ -105,26 +171,62 @@ fn install_encounter_compendium_combat_result(
 ) {
     let event_log = encounter_compendium_spawn_log();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner,
+        outcome_id: fixture_outcome_id(winner),
+        verdict: fixture_verdict(winner),
+        grant_node_bonus: winner == BattleWinner::Player,
+        advance_encounter_progression: winner == BattleWinner::Player,
         result_stats: test_result_stats(winner, &event_log, &[]),
         event_log,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: encounter_compendium_candidates(),
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(core, node_id.0, battle).unwrap();
+}
+
+fn install_victorious_source_combat_result(
+    core: &mut GameCore,
+    node_id: MapNodeId,
+    encounter_id: &str,
+    abnormality_id: &str,
+) -> Result<(), GameError> {
+    let event_log = BattleEventLog::default();
+    let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
+        primary_abnormality_id: Some(abnormality_id.to_string()),
+        encounter_id: encounter_id.to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Boss,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Player == BattleWinner::Player,
+        result_stats: test_result_stats(BattleWinner::Player, &event_log, &[]),
+        event_log,
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+        employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![CompendiumCandidate {
+            id: abnormality_id.to_string(),
+            kind: CompendiumCandidateKind::Abnormality,
+            base_uuid: node_id.0,
+        }],
+    };
+    settle_test_combat_result(core, node_id.0, battle)
 }
 
 fn force_map_combat_node(
@@ -141,6 +243,64 @@ fn force_map_combat_node(
             encounter_id: Some(encounter_id.to_string()),
         },
     )
+}
+
+#[test]
+fn presentation_and_battle_start_resolvers_preserve_complete_manifested_previews_and_cache_roles() {
+    for (category, kind_id, encounter_id) in [
+        (
+            MapNodeCategory::Combat,
+            "combat_defense",
+            "defense_encounter",
+        ),
+        (MapNodeCategory::Boss, "boss", "boss_risk_encounter"),
+    ] {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 0xC0_5103);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_map_combat_node(&mut core, category, kind_id, encounter_id);
+
+        let selection = core
+            .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .expect("presentation resolution should succeed");
+        let BehaviorResult::NodePreview {
+            combat_preview: Some(presentation),
+            ..
+        } = selection
+        else {
+            panic!("manifested combat should publish a presentation preview");
+        };
+
+        core.state
+            .run
+            .as_mut()
+            .expect("run state")
+            .combat_previews
+            .get_mut(&node_id)
+            .expect("presentation resolution should publish its cache")
+            .encounter_id = Some("cached-presentation-only".to_string());
+
+        let cached_presentation = core
+            .combat_preview_for_node(node_id)
+            .expect("cache resolution should succeed")
+            .expect("manifested combat should retain its cached preview");
+        assert_eq!(
+            cached_presentation.encounter_id.as_deref(),
+            Some("cached-presentation-only")
+        );
+
+        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .expect("battle start must regenerate from current authority");
+        let regenerated_battle_start = core
+            .state
+            .active_battle
+            .as_ref()
+            .expect("battle should be active")
+            .combat_preview
+            .clone();
+        assert_eq!(regenerated_battle_start, presentation);
+        assert_ne!(regenerated_battle_start, cached_presentation);
+    }
 }
 
 fn game_data_with_event_definitions_for_combat_tests(
@@ -340,19 +500,25 @@ fn combat_result_without_node_session_is_rejected() {
     })
     .unwrap();
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("abno".to_string()),
         encounter_id: "encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ChooseOne,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     }));
 
     let err = core.handle_complete_combat_result().unwrap_err();
@@ -368,6 +534,10 @@ fn combat_result_without_node_session_is_rejected() {
         .unwrap()
         .clone();
     battle.winner = BattleWinner::Player;
+    battle.outcome_id = fixture_outcome_id(BattleWinner::Player);
+    battle.verdict = fixture_verdict(BattleWinner::Player);
+    battle.grant_node_bonus = true;
+    battle.advance_encounter_progression = true;
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
 
     let err = core.handle_complete_combat_result().unwrap_err();
@@ -379,7 +549,19 @@ fn combat_result_without_node_session_is_rejected() {
 fn combat_trace_export_failure_does_not_block_result_transition() {
     let run_seed = 0xC0BA_77FA_11;
     let battle_uuid = Uuid::from_u128(0xC0BA_77FA_11);
-    let mut core = GameCore::new(empty_game_data(), run_seed);
+    let mut core = GameCore::new(game_data_with_pve_encounters(), run_seed);
+    let player = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player);
+    let node = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    core.execute(player, PlayerBehavior::SelectMapNode { node_id: node })
+        .unwrap();
+    core.execute(player, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
     let trace_path =
         crate::game::world::combat_trace::debug_combat_trace_path(run_seed, battle_uuid);
     let trace_run_dir = trace_path.parent().expect("trace run directory");
@@ -393,35 +575,35 @@ fn combat_trace_export_failure_does_not_block_result_transition() {
     std::fs::File::create(trace_run_dir).expect("create trace directory blocker");
 
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("trace_failure_abno".to_string()),
         encounter_id: "trace_failure_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: Uuid::from_u128(0xC0BA_77FA_12),
         winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: false,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Player, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
 
-    core.transition_finished_live_battle_to_result(battle_uuid, battle)
+    settle_test_combat_result(&mut core, battle_uuid, battle)
         .expect("diagnostic failure must not reject the gameplay transition");
 
     assert_eq!(core.get_state(), GameState::CombatResult { battle_uuid });
     assert!(core.state.active_battle.is_none());
-    assert_eq!(
-        core.state
-            .active_node_content
-            .as_ref()
-            .expect("active combat result content")
-            .as_combat_battle()
-            .expect("combat result")
-            .encounter_id,
-        "trace_failure_encounter"
+    assert!(
+        matches!(&core.state.confirmed_combat_result.as_ref().unwrap().summary,
+        crate::game::behavior::SelectedEventSnapshotDto::CombatBattle { encounter_id, has_event_log: false, .. } if encounter_id == "trace_failure_encounter")
     );
     assert!(!trace_path.exists());
 
@@ -429,7 +611,7 @@ fn combat_trace_export_failure_does_not_block_result_transition() {
 }
 
 #[test]
-fn encounter_compendium_profile_merge_is_strict_monotonic_and_catalog_resolved() {
+fn encounter_compendium_profile_merge_is_single_set_monotonic_and_catalog_resolved() {
     use std::collections::BTreeSet;
 
     use crate::game::encounter_compendium::EncounterCompendiumProfileState;
@@ -437,17 +619,14 @@ fn encounter_compendium_profile_merge_is_strict_monotonic_and_catalog_resolved()
     let game_data = game_data_with_pve_encounters();
     let mut core = GameCore::new(game_data.clone(), 0xC011_EC70);
     core.merge_encounter_compendium_profile(EncounterCompendiumProfileState {
-        discovered_abnormality_ids: BTreeSet::from(["defense_risk_abno".to_string()]),
-        defeated_abnormality_ids: BTreeSet::new(),
-        discovered_corrosion_profile_ids: BTreeSet::from(["corroded_guard".to_string()]),
-        defeated_corrosion_profile_ids: BTreeSet::new(),
+        registered_ids: BTreeSet::from([
+            "defense_risk_abno".to_string(),
+            "corroded_guard".to_string(),
+        ]),
     })
     .unwrap();
     core.merge_encounter_compendium_profile(EncounterCompendiumProfileState {
-        discovered_abnormality_ids: BTreeSet::from(["low_risk_abno".to_string()]),
-        defeated_abnormality_ids: BTreeSet::new(),
-        discovered_corrosion_profile_ids: BTreeSet::new(),
-        defeated_corrosion_profile_ids: BTreeSet::new(),
+        registered_ids: BTreeSet::from(["low_risk_abno".to_string()]),
     })
     .unwrap();
     let after_union = core.encounter_compendium_profile();
@@ -486,8 +665,7 @@ fn encounter_compendium_profile_merge_is_strict_monotonic_and_catalog_resolved()
         .iter()
         .find(|entry| entry.abnormality_id == "boss_risk_abno")
         .unwrap();
-    assert!(!undiscovered.discovered);
-    assert!(!undiscovered.defeated);
+    assert!(!undiscovered.registered);
     assert_eq!(undiscovered.name, None);
     assert_eq!(undiscovered.risk_level, None);
     assert_eq!(
@@ -496,15 +674,12 @@ fn encounter_compendium_profile_merge_is_strict_monotonic_and_catalog_resolved()
     );
 
     core.merge_encounter_compendium_profile(EncounterCompendiumProfileState {
-        discovered_abnormality_ids: BTreeSet::from(["dormant_abnormality".to_string()]),
-        defeated_abnormality_ids: BTreeSet::new(),
-        discovered_corrosion_profile_ids: BTreeSet::new(),
-        defeated_corrosion_profile_ids: BTreeSet::new(),
+        registered_ids: BTreeSet::from(["dormant_abnormality".to_string()]),
     })
     .unwrap();
     assert!(core
         .encounter_compendium_profile()
-        .discovered_abnormality_ids
+        .registered_ids
         .contains("dormant_abnormality"));
 
     let serialized = serde_json::to_string(&core.encounter_compendium_profile()).unwrap();
@@ -519,6 +694,39 @@ fn encounter_compendium_profile_merge_is_strict_monotonic_and_catalog_resolved()
 }
 
 #[test]
+fn successful_opponent_spawn_populates_process_local_candidate_ledger() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0xC011_EC74);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let active = core.state.active_battle.as_ref().expect("active battle");
+    let candidates = active.battle.compendium_candidates();
+    assert!(candidates.iter().any(|candidate| {
+        candidate.id == "defense_risk_abno"
+            && candidate.kind == CompendiumCandidateKind::Abnormality
+    }));
+    assert_eq!(
+        active.clone().battle.compendium_candidates(),
+        candidates,
+        "same-process active-session cloning must retain the attempt ledger"
+    );
+    assert!(core
+        .encounter_compendium_profile()
+        .registered_ids
+        .is_empty());
+}
+
+#[test]
 fn active_run_transaction_rollback_preserves_profile_and_peak_but_restores_floor_anchor() {
     use crate::game::encounter_compendium::EncounterCompendiumProfileState;
 
@@ -528,14 +736,10 @@ fn active_run_transaction_rollback_preserves_profile_and_peak_but_restores_floor
     core.state.run_power_authority.current_floor_power_anchor = 100;
     let rollback = core
         .capture_active_run_transaction_rollback()
+        .unwrap()
         .expect("not-started state should support a transaction rollback snapshot");
     core.merge_encounter_compendium_profile(EncounterCompendiumProfileState {
-        discovered_abnormality_ids: std::collections::BTreeSet::from([
-            "dormant_after_capture".to_string()
-        ]),
-        defeated_abnormality_ids: std::collections::BTreeSet::new(),
-        discovered_corrosion_profile_ids: std::collections::BTreeSet::new(),
-        defeated_corrosion_profile_ids: std::collections::BTreeSet::new(),
+        registered_ids: std::collections::BTreeSet::from(["dormant_after_capture".to_string()]),
     })
     .unwrap();
     core.state.run_power_authority.power_model_version = 2;
@@ -546,7 +750,7 @@ fn active_run_transaction_rollback_preserves_profile_and_peak_but_restores_floor
 
     assert!(core
         .encounter_compendium_profile()
-        .discovered_abnormality_ids
+        .registered_ids
         .contains("dormant_after_capture"));
     assert_eq!(core.state.run_power_authority.power_model_version, 2);
     assert_eq!(core.state.run_power_authority.run_peak_certified_power, 900);
@@ -562,20 +766,18 @@ fn failed_common_transaction_preserves_profile_knowledge_from_before_and_during_
 
     let mut core = GameCore::new(game_data_with_pve_encounters(), 0xC011_EC73);
     core.merge_encounter_compendium_profile(EncounterCompendiumProfileState {
-        discovered_abnormality_ids: std::collections::BTreeSet::from([
-            "dormant_before_common_transaction".to_string(),
+        registered_ids: std::collections::BTreeSet::from([
+            "dormant_before_common_transaction".to_string()
         ]),
-        ..Default::default()
     })
     .unwrap();
 
     let error = core
         .with_state_transaction(|core| -> Result<(), crate::game::behavior::GameError> {
             core.merge_encounter_compendium_profile(EncounterCompendiumProfileState {
-                discovered_abnormality_ids: std::collections::BTreeSet::from([
+                registered_ids: std::collections::BTreeSet::from([
                     "dormant_during_common_transaction".to_string(),
                 ]),
-                ..Default::default()
             })?;
             Err(crate::game::behavior::GameError::InvalidAction)
         })
@@ -586,13 +788,42 @@ fn failed_common_transaction_preserves_profile_knowledge_from_before_and_during_
         crate::game::behavior::GameError::InvalidAction
     ));
     assert_eq!(
-        core.encounter_compendium_profile()
-            .discovered_abnormality_ids,
+        core.encounter_compendium_profile().registered_ids,
         std::collections::BTreeSet::from([
             "dormant_before_common_transaction".to_string(),
             "dormant_during_common_transaction".to_string(),
         ])
     );
+}
+
+#[test]
+fn common_non_battle_transaction_rejects_active_battle_before_running_operation() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0xC011_EC73);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let before = battle_advance_atomic_snapshot(&core);
+    let mut operation_ran = false;
+
+    let error = core
+        .with_state_transaction(|_| -> Result<(), GameError> {
+            operation_ran = true;
+            Ok(())
+        })
+        .unwrap_err();
+
+    assert!(matches!(error, GameError::InvalidAction));
+    assert!(!operation_ran);
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
 }
 
 #[test]
@@ -679,6 +910,382 @@ fn run_power_authority_initializes_at_floor_manifestation_and_peaks_on_actual_co
 }
 
 #[test]
+fn durable_continue_recomputes_battle_setup_instead_of_trusting_serialized_preview_cache() {
+    let game_data = game_data_with_pve_encounters();
+    let player_id = Uuid::from_u128(1);
+    let mut source = GameCore::new(game_data.clone(), 0xC011_CAC4);
+    start_new_game_with_default_starters(&mut source, player_id);
+
+    let save_point_id = force_first_available_node(
+        &mut source,
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
+    );
+    let (dispatch_id, headquarters_id, crossroads_id, combat_id) = {
+        let run = source.state.run.as_ref().unwrap();
+        let node_id_for_slot = |slot_id: &str| {
+            run.map
+                .nodes
+                .iter()
+                .find(|node| node.slot_id.as_str() == slot_id)
+                .expect("standard branching fixture slot")
+                .id
+        };
+        (
+            node_id_for_slot("dispatch_hall"),
+            node_id_for_slot("hq_terminal"),
+            node_id_for_slot("crossroads_archive"),
+            node_id_for_slot("containment_guard"),
+        )
+    };
+
+    let power_model_version = source.run_policy().combat_difficulty.power_model_version;
+    let floor_power_anchor = source.state.run_power_authority.current_floor_power_anchor;
+    let mut hard_difficulty = crate::game::map::MapNodeCombatDifficulty {
+        power_model_version,
+        difficulty_profile_id: "default_facility".to_string(),
+        class: crate::game::map::MapNodeCombatDifficultyClass::Ordinary(
+            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Hard,
+        ),
+        monolith_stage: None,
+        floor_power_anchor,
+        target_power: 0,
+    };
+    let hard_tuning = source
+        .run_policy()
+        .resolved_tuning_for_manifested_node(&hard_difficulty)
+        .expect("hard ordinary difficulty must resolve from live policy");
+    hard_difficulty.target_power = floor_power_anchor
+        .saturating_mul(u64::from(hard_tuning.target_power_percent))
+        .saturating_add(99)
+        / 100;
+
+    {
+        let run = source.state.run.as_mut().unwrap();
+        let target = run.map.node_mut(combat_id).unwrap();
+        target.kind_id = MapNodeKindId::new("combat_defense");
+        target.category = MapNodeCategory::Combat;
+        target.payload = MapNodePayload::Encounter {
+            encounter_id: Some("defense_encounter".to_string()),
+        };
+        target.combat_difficulty = Some(hard_difficulty);
+        target.state = MapNodeState::Available;
+
+        for completed_id in [headquarters_id, crossroads_id] {
+            run.map.node_mut(completed_id).unwrap().state = MapNodeState::Completed;
+            run.map_progression.completed_node_ids.push(completed_id);
+        }
+        run.map_progression
+            .completed_node_ids
+            .sort_by_key(|id| id.0.as_u128());
+        run.map_progression.completed_node_ids.dedup();
+        run.map_progression.current_node_id = Some(crossroads_id);
+        run.map_progression.available_node_ids = vec![combat_id];
+    }
+
+    let preview_result = source
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode { node_id: combat_id },
+        )
+        .expect("target combat preview must be selectable");
+    let BehaviorResult::NodePreview {
+        combat_preview: Some(authoritative_preview),
+        ..
+    } = preview_result
+    else {
+        panic!("target combat must publish a preview");
+    };
+    assert_eq!(
+        authoritative_preview.enemy_stat_scale.max_health_percent,
+        110
+    );
+    assert_eq!(authoritative_preview.enemy_stat_scale.attack_percent, 110);
+    assert_eq!(authoritative_preview.enemy_stat_scale.defense_percent, 110);
+    source
+        .execute(player_id, PlayerBehavior::CancelSelectedNode)
+        .expect("preview cancellation must return to planning");
+
+    // Restore the real SavePoint path while retaining only the presentation cache
+    // created above. Completing the SavePoint makes the cached target reachable.
+    {
+        let run = source.state.run.as_mut().unwrap();
+        run.map.node_mut(combat_id).unwrap().state = MapNodeState::Unavailable;
+        run.map.node_mut(save_point_id).unwrap().state = MapNodeState::Available;
+        run.map_progression.current_node_id = Some(dispatch_id);
+        run.map_progression.available_node_ids = vec![save_point_id];
+    }
+    source
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode {
+                node_id: save_point_id,
+            },
+        )
+        .expect("SavePoint preview must be selectable");
+    source
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("SavePoint entry must succeed");
+    source
+        .execute(player_id, PlayerBehavior::CompleteNode)
+        .expect("SavePoint completion must publish a durable checkpoint");
+    assert!(
+        source
+            .state
+            .run
+            .as_ref()
+            .unwrap()
+            .map_progression
+            .available_node_ids
+            .contains(&combat_id),
+        "SavePoint completion must make the cached combat target reachable"
+    );
+
+    let exported = source
+        .export_active_run_checkpoint()
+        .unwrap()
+        .expect("completed SavePoint must be exportable");
+    let control_payload = exported.core_payload_json.clone();
+    let mut mutated_document: serde_json::Value =
+        serde_json::from_slice(&exported.core_payload_json).unwrap();
+    let combat_key = combat_id.0.to_string();
+    let persisted_preview =
+        &mut mutated_document["continuation"]["current"]["combat_previews"][&combat_key];
+    assert!(persisted_preview.get("enemy_stat_scale").is_none());
+    persisted_preview["spawn_waves"][0]["enemy_entries"][0]["abnormality_id"] =
+        json!("low_risk_abno");
+    refresh_active_run_checksum(&mut mutated_document);
+    let mutated_payload = serde_json::to_vec(&mutated_document).unwrap();
+
+    let mut control = GameCore::new(game_data.clone(), 0xBAD_C011);
+    control
+        .continue_from_active_run_checkpoint(
+            player_id,
+            &control_payload,
+            exported.loads_used,
+            exported.run_peak_certified_power,
+        )
+        .expect("unmodified V7 checkpoint must Continue");
+    assert_eq!(
+        control.state.run.as_ref().unwrap().combat_previews[&combat_id].enemy_stat_scale,
+        Default::default(),
+        "serialized presentation cache intentionally omits the internal setup scale"
+    );
+    control
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode { node_id: combat_id },
+        )
+        .unwrap();
+    control
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("control combat start must succeed");
+    let control_active = control.state.active_battle.as_ref().unwrap();
+    let control_enemy = control_active
+        .battle
+        .units
+        .values()
+        .find(|unit| unit.owner == Side::Opponent)
+        .expect("time-zero control enemy must spawn");
+    assert_eq!(control_active.combat_preview, authoritative_preview);
+    assert_eq!(
+        control_enemy.source_identity,
+        crate::game::battle::types::BattleUnitSourceIdentity::Abnormality {
+            abnormality_id: "defense_risk_abno".to_string(),
+            base_uuid: Uuid::from_u128(20_005),
+        }
+    );
+    let control_enemy_stats = control_enemy.stats;
+
+    let mut mutated = GameCore::new(game_data, 0xBAD_CAC4);
+    mutated
+        .continue_from_active_run_checkpoint(
+            player_id,
+            &mutated_payload,
+            exported.loads_used,
+            exported.run_peak_certified_power,
+        )
+        .expect("structurally valid cache mutation must Continue");
+    let continued_cache = &mutated.state.run.as_ref().unwrap().combat_previews[&combat_id];
+    assert_eq!(continued_cache.enemy_stat_scale, Default::default());
+    assert_eq!(
+        continued_cache.spawn_waves[0].enemy_entries[0].abnormality_id,
+        "low_risk_abno"
+    );
+    mutated
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode { node_id: combat_id },
+        )
+        .unwrap();
+    mutated
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("mutated-cache combat start must still succeed");
+    let mutated_active = mutated.state.active_battle.as_ref().unwrap();
+    let mutated_enemy = mutated_active
+        .battle
+        .units
+        .values()
+        .find(|unit| unit.owner == Side::Opponent)
+        .expect("time-zero mutated-case enemy must spawn");
+
+    assert_eq!(mutated_active.combat_preview, authoritative_preview);
+    assert_eq!(mutated_active.combat_preview, control_active.combat_preview);
+    assert_eq!(mutated_enemy.source_identity, control_enemy.source_identity);
+    assert_eq!(
+        serde_json::to_value(mutated_enemy.stats).unwrap(),
+        serde_json::to_value(control_enemy_stats).unwrap()
+    );
+}
+
+#[test]
+fn native_runtime_facts_preserve_actual_same_definition_inventory_copies_through_player_drafts() {
+    use crate::game::battle::{core::BattleCore, scenario::*};
+    use crate::game::combat_setup::player_spawns::player_scenario_start_from_positions;
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xCA04_007);
+    start_new_game_with_default_starters(&mut core, Uuid::from_u128(1));
+    let employees: Vec<_> = core.state.roster.iter().take(2).map(|e| e.uuid).collect();
+    assert_eq!(employees.len(), 2);
+    let mut expected = std::collections::BTreeMap::new();
+    let mut expected_slots = std::collections::BTreeMap::new();
+    let mut expected_layouts = std::collections::BTreeMap::new();
+    for id in &employees {
+        let item_slot = &core.state.roster.get(id).unwrap().loadout.item_slot;
+        expected_layouts.insert(*id, item_slot.layout_kind());
+        for (address, equipped) in item_slot.iter_with_address() {
+            let owned = core
+                .state
+                .inventory
+                .equipments
+                .get_item(&equipped.instance_uuid)
+                .unwrap();
+            assert_eq!(owned.equipped_to, Some(*id));
+            expected.insert(equipped.instance_uuid, equipped.base_uuid);
+            expected_slots.insert(equipped.instance_uuid, address);
+        }
+    }
+    assert!(expected
+        .values()
+        .any(|base| expected.values().filter(|other| *other == base).count() >= 2));
+    let saved = serde_json::to_vec(&core.state.inventory).unwrap();
+    let restored: crate::game::resources::Inventory = serde_json::from_slice(&saved).unwrap();
+    for copy in expected.keys() {
+        assert!(restored.equipments.get_item(copy).is_some());
+    }
+    let start = player_scenario_start_from_positions(
+        &core.state.roster,
+        &restored,
+        &core.state.skill_fragments,
+        core.game_data.as_ref(),
+        employees
+            .iter()
+            .enumerate()
+            .map(|(i, id)| (*id, Position::new(i as i32 + 1, 1)))
+            .collect(),
+    )
+    .unwrap();
+    for spawn in &start.spawn_group.spawns {
+        assert_eq!(
+            spawn.draft.equipment_layout,
+            Some(expected_layouts[&spawn.draft.owned_uuid])
+        );
+        for binding in &spawn.draft.equipped_items {
+            let copy = binding.persistent_copy_uuid.unwrap();
+            assert_eq!(expected[&copy], binding.base_uuid);
+            assert_eq!(binding.slot, Some(expected_slots[&copy]));
+        }
+    }
+    let group_id = start.spawn_group.id.clone();
+    let scenario = BattleScenario {
+        battlefield: BattleFieldSpec {
+            object_placement: None,
+            width: 5,
+            height: 5,
+            valid_tiles: vec![],
+            obstacles: vec![],
+        },
+        groups: vec![start.spawn_group],
+        events: vec![ScenarioEvent {
+            id: ScenarioEventId::new("native_copy_spawn"),
+            trigger: ScenarioTrigger::AtBattleStart,
+            action: ScenarioAction::SpawnGroup { group_id },
+        }],
+        terminal_outcomes: BattleScenario::fixture_survival_outcomes(10_000),
+        tactical_plan: Default::default(),
+        boss_runtime: None,
+    };
+    for trigger in [
+        ScenarioTrigger::AtBattleStart,
+        ScenarioTrigger::Wave(ScenarioWaveActivation {
+            trigger_id: "native_copy_wave".into(),
+            priority: 0,
+            primary: ScenarioWavePrimaryTrigger::AtTimeMs { time_ms: 0 },
+            deadline_ms: None,
+        }),
+    ] {
+        let mut scenario = scenario.clone();
+        scenario.events[0].trigger = trigger;
+        let mut battle = BattleCore::new_from_scenario(scenario, core.game_data.clone(), 9);
+        let mut execution = battle.start_battle_execution().unwrap();
+        battle
+            .step_battle_execution_until(&mut execution, 0)
+            .unwrap();
+        let observed: std::collections::BTreeMap<_, _> = battle
+            .runtime_fact_view()
+            .providers()
+            .map(|(provider, _)| {
+                (
+                    provider.persistent_copy_uuid.unwrap(),
+                    (provider.definition_uuid, provider.runtime_item_instance_id),
+                )
+            })
+            .collect();
+        assert_eq!(
+            observed
+                .iter()
+                .map(|(copy, (definition, _))| (*copy, *definition))
+                .collect::<std::collections::BTreeMap<_, _>>(),
+            expected
+        );
+        let runtime_ids: std::collections::BTreeSet<_> = battle
+            .runtime_fact_view()
+            .providers()
+            .map(|(provider, _)| provider.runtime_item_instance_id)
+            .collect();
+        assert_eq!(runtime_ids.len(), expected.len());
+        let mut runtime_slots = std::collections::BTreeMap::new();
+        for unit in battle.units.values() {
+            let slots = unit
+                .equipment_slots
+                .as_deref()
+                .expect("player projection must retain a known equipment layout");
+            assert_eq!(slots.layout, expected_layouts[&unit.source_owned_uuid]);
+            for entry in slots.slots.iter().flatten() {
+                let copy = entry.binding.persistent_copy_uuid.unwrap();
+                runtime_slots.insert(
+                    copy,
+                    (entry.binding.slot.unwrap(), entry.runtime_item_instance_id),
+                );
+            }
+        }
+        assert_eq!(
+            runtime_slots
+                .iter()
+                .map(|(copy, (slot, _))| (*copy, *slot))
+                .collect::<std::collections::BTreeMap<_, _>>(),
+            expected_slots
+        );
+        for (copy, (_, runtime_id)) in &runtime_slots {
+            assert_eq!(*runtime_id, observed[copy].1);
+        }
+        let snapshot = battle.runtime_fact_snapshot().unwrap();
+        drop(battle);
+        assert_eq!(snapshot.providers.len(), expected.len());
+    }
+}
+
+#[test]
 fn certified_power_tracks_level_equipment_enhancement_and_fragment_loadout() {
     let mut core = GameCore::new(live_game_data_from_ron(), 0xC011_EC74);
     let player_id = Uuid::from_u128(1);
@@ -719,7 +1326,11 @@ fn certified_power_tracks_level_equipment_enhancement_and_fragment_loadout() {
         .loadout
         .item_slot
         .clone();
-    let equipped_instance_id = original_item_slot.iter().next().unwrap().instance_uuid;
+    let equipped_instance_id = original_item_slot
+        .iter()
+        .find(|equipped| equipped.equipment_type == EquipmentType::Armor)
+        .unwrap()
+        .instance_uuid;
     core.state
         .inventory
         .equipments
@@ -779,11 +1390,11 @@ fn certified_power_tracks_level_equipment_enhancement_and_fragment_loadout() {
 }
 
 #[test]
-fn consuming_victory_commits_spawned_compendium_union_across_checkpoint_and_new_run() {
+fn consuming_victory_commits_all_attempt_candidates_across_checkpoint_and_new_run() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 0xC011_EC72);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -804,7 +1415,10 @@ fn consuming_victory_commits_spawned_compendium_union_across_checkpoint_and_new_
         .spawn_waves
         .push(crate::game::combat_preview::SpawnWave {
             id: "preview_only_unspawned_wave".to_string(),
-            time_ms: 99_999,
+            activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                "preview_only_unspawned_wave",
+                99_999,
+            ),
             spawn_zone_ids: vec![],
             route_id: None,
             enemy_entries: vec![crate::game::combat_preview::SpawnWaveEnemyEntry {
@@ -824,29 +1438,18 @@ fn consuming_victory_commits_spawned_compendium_union_across_checkpoint_and_new_
 
     let committed = core.encounter_compendium_profile();
     assert_eq!(
-        committed.discovered_abnormality_ids,
-        std::collections::BTreeSet::from(["defense_risk_abno".to_string()])
+        committed.registered_ids,
+        std::collections::BTreeSet::from([
+            "defense_risk_abno".to_string(),
+            "corroded_guard".to_string(),
+        ])
     );
-    assert_eq!(
-        committed.discovered_corrosion_profile_ids,
-        std::collections::BTreeSet::from(["corroded_guard".to_string()])
-    );
-    assert!(!committed
-        .discovered_abnormality_ids
-        .contains("low_risk_abno"));
-    assert_eq!(
-        committed.defeated_abnormality_ids,
-        std::collections::BTreeSet::from(["defense_risk_abno".to_string()])
-    );
-    assert_eq!(
-        committed.defeated_corrosion_profile_ids,
-        std::collections::BTreeSet::from(["corroded_guard".to_string()])
-    );
+    assert!(!committed.registered_ids.contains("low_risk_abno"));
 
     core.handle_load_run_checkpoint().unwrap();
     assert_eq!(core.encounter_compendium_profile(), committed);
 
-    core.transition_to(GameState::NotStarted).unwrap();
+    core.execute(player_id, PlayerBehavior::AbandonRun).unwrap();
     core.execute(
         player_id,
         PlayerBehavior::StartNewGame {
@@ -859,16 +1462,10 @@ fn consuming_victory_commits_spawned_compendium_union_across_checkpoint_and_new_
 }
 
 #[test]
-fn retryable_defeat_and_retreat_do_not_commit_but_exhausted_defeat_does() {
+fn every_defeat_and_retreat_leave_registered_set_unchanged() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 0xC011_EC73);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should queue delivery");
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -884,87 +1481,49 @@ fn retryable_defeat_and_retreat_do_not_commit_but_exhausted_defeat_does() {
     let retry = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
-    assert!(matches!(retry, BehaviorResult::NodePreview { .. }));
+    assert!(matches!(retry, BehaviorResult::NodeCompleted { .. }));
     assert_eq!(
         core.encounter_compendium_profile(),
         crate::game::encounter_compendium::EncounterCompendiumProfileState::default()
     );
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count,
-        "retryable defeat must not deliver research"
-    );
 
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     core.merge_encounter_compendium_profile(
         crate::game::encounter_compendium::EncounterCompendiumProfileState {
-            discovered_abnormality_ids: std::collections::BTreeSet::from([
-                "low_risk_abno".to_string()
-            ]),
-            defeated_abnormality_ids: std::collections::BTreeSet::new(),
-            discovered_corrosion_profile_ids: std::collections::BTreeSet::new(),
-            defeated_corrosion_profile_ids: std::collections::BTreeSet::new(),
+            registered_ids: std::collections::BTreeSet::from(["low_risk_abno".to_string()]),
         },
     )
     .unwrap();
     execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle).unwrap();
     assert_eq!(
-        core.encounter_compendium_profile()
-            .discovered_abnormality_ids,
+        core.encounter_compendium_profile().registered_ids,
         std::collections::BTreeSet::from(["low_risk_abno".to_string()]),
         "battle-entry rollback must not replace newer game-global profile knowledge"
-    );
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count,
-        "retreat must not deliver research"
     );
 
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
-    core.state
-        .run
-        .as_mut()
-        .unwrap()
-        .abnormality_attempts
-        .get_mut(&node_id)
-        .unwrap()
-        .attempts_started = crate::game::world::state::ABNORMALITY_MAX_ATTEMPTS;
     install_encounter_compendium_combat_result(&mut core, node_id, BattleWinner::Opponent);
     let completed = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
-    let BehaviorResult::NodeCompleted {
-        research_deliveries,
-        ..
-    } = completed
-    else {
+    let BehaviorResult::NodeCompleted { .. } = completed else {
         panic!("exhausted defeat should consume the node and return to planning");
     };
-    assert_eq!(research_deliveries.len(), 1);
-    assert_eq!(research_deliveries[0].fragment_id, fragment_id);
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count + 1
-    );
 
-    assert!(core
-        .encounter_compendium_profile()
-        .discovered_abnormality_ids
-        .contains("defense_risk_abno"));
-    assert!(core
-        .encounter_compendium_profile()
-        .discovered_corrosion_profile_ids
-        .contains("corroded_guard"));
-    assert!(core
-        .encounter_compendium_profile()
-        .defeated_abnormality_ids
-        .is_empty());
-    assert!(core
-        .encounter_compendium_profile()
-        .defeated_corrosion_profile_ids
-        .is_empty());
+    assert_eq!(
+        core.encounter_compendium_profile().registered_ids,
+        std::collections::BTreeSet::from(["low_risk_abno".to_string()])
+    );
 }
 
 #[test]
@@ -975,6 +1534,7 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
     let unit_instance_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xE1));
     let mut event_log = BattleEventLog::default();
     event_log.entries.push(BattleEventLogEntry {
+        skill_effect_source: None,
         seq: 1,
         time_ms: 0,
         cause: Default::default(),
@@ -1006,30 +1566,29 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
     let result_stats = test_result_stats(BattleWinner::Player, &event_log, &participant_results);
 
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("abno".to_string()),
         encounter_id: "encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: battle_uuid,
         winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Player == BattleWinner::Player,
         event_log,
         result_stats,
-        bonus_objectives: vec![
-            crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto {
-                id: "fast_clear".to_string(),
-                condition:
-                    crate::game::data::pve_data::PveBonusObjectiveConditionData::ClearWithin {
-                        time_ms: 90_000,
-                    },
-                research_bonus: 20,
-                satisfied: true,
-                presentation: Some("abnormality_part_obtained".to_string()),
-            },
-        ],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results,
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![CompendiumCandidate {
+            id: "low_risk_abno".to_string(),
+            kind: CompendiumCandidateKind::Abnormality,
+            base_uuid: Uuid::from_u128(10_001),
+        }],
     }));
 
     let selected = core
@@ -1038,6 +1597,8 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
         .expect("combat selected event");
 
     assert_eq!(selected["type"], "combat_battle");
+    assert_eq!(selected["outcome_id"], "victory");
+    assert_eq!(selected["verdict"], "victory");
     assert_eq!(selected["result_stats"]["battle"]["duration_ms"], 0);
     assert_eq!(selected["result_stats"]["battle"]["winner"], "Player");
     assert_eq!(
@@ -1049,13 +1610,12 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
         selected["result_stats"]["mvp"]["employee_uuid"],
         serde_json::json!(employee_uuid)
     );
-    assert_eq!(selected["bonus_objectives"][0]["id"], "fast_clear");
-    assert_eq!(selected["bonus_objectives"][0]["satisfied"], true);
-    assert_eq!(selected["bonus_objectives"][0]["research_bonus"], 20);
+    assert_eq!(selected["has_event_log"], true);
+    assert!(selected.get("bonus_objectives").is_none());
 }
 
 #[test]
-fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() {
+fn combat_terminal_settlement_failure_does_not_partially_apply_rewards_on_retry() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -1070,7 +1630,8 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
 
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
+    let employee_uuid = employee_ids[0];
     let experience_before = core
         .roster()
         .unwrap()
@@ -1100,15 +1661,20 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
     }];
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Player == BattleWinner::Player,
         result_stats: test_result_stats(BattleWinner::Player, &event_log, &participant_results),
         event_log,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![RewardOption {
             id: "combat_xp".to_string(),
@@ -1129,13 +1695,8 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
         }],
         participant_results,
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
 
     core.state
         .run
@@ -1143,15 +1704,10 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
         .unwrap()
         .map_progression
         .current_node_id = None;
-    assert_eq!(
-        action_capability(&core, ActionKind::CompleteCombatResult)
-            .expect("combat completion remains relevant")
-            .disabled_reason_code,
-        Some(ActionDisabledReasonCode::CompletionUnavailable)
-    );
+    let grant_roots_before = serialized_grant_roots(&core);
 
     for _ in 0..2 {
-        let err = core.handle_complete_combat_result().unwrap_err();
+        let err = settle_test_combat_result(&mut core, node_id.0, battle.clone()).unwrap_err();
         assert!(matches!(err, GameError::InvalidAction));
         let employee_after = core.roster().unwrap().get(&employee_uuid).unwrap();
         assert_eq!(employee_after.experience, experience_before);
@@ -1167,8 +1723,157 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
             completed_node_count_before
         );
         assert!(core.state.node_session.is_some());
-        assert!(matches!(core.get_state(), GameState::CombatResult { .. }));
+        assert!(matches!(core.get_state(), GameState::InBattle { .. }));
+        assert_eq!(serialized_grant_roots(&core), grant_roots_before);
+        assert!(core
+            .encounter_compendium_profile()
+            .registered_ids
+            .is_empty());
     }
+}
+
+#[test]
+fn normal_boss_direct_victory_uses_exclusive_first_and_repeat_source_branches() {
+    let player_id = Uuid::from_u128(1);
+    let fragment_id =
+        crate::game::data::skill_fragment_data::SkillFragmentId::from("fragment_boss_risk_abno");
+
+    let mut first = GameCore::new(game_data_with_pve_encounters(), 0xB055_0001);
+    start_new_game_with_mode_and_default_starters(&mut first, player_id, GameMode::Endless);
+    let first_node = force_map_combat_node(
+        &mut first,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "boss_risk_encounter",
+    );
+    first
+        .state
+        .run
+        .as_mut()
+        .unwrap()
+        .normal_boss_cycle
+        .assigned_source_ids
+        .push("source_boss_risk".to_string());
+    first
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode {
+                node_id: first_node,
+            },
+        )
+        .unwrap();
+    first
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    install_victorious_source_combat_result(
+        &mut first,
+        first_node,
+        "boss_risk_encounter",
+        "boss_risk_abno",
+    )
+    .unwrap();
+    first
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+    let first_run = first.state.run.as_ref().unwrap();
+    assert_eq!(first.state.skill_fragments.count(&fragment_id), 1);
+    assert_eq!(first.state.skill_fragments.fragment_dust(), 0);
+    assert!(first_run
+        .completed_reward_source_ids
+        .contains("source_boss_risk"));
+    assert!(first_run.normal_boss_cycle.assigned_source_ids.is_empty());
+
+    let mut repeat = GameCore::new(game_data_with_pve_encounters(), 0xB055_0002);
+    start_new_game_with_mode_and_default_starters(&mut repeat, player_id, GameMode::Endless);
+    let repeat_node = force_map_combat_node(
+        &mut repeat,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "boss_risk_encounter",
+    );
+    {
+        let run = repeat.state.run.as_mut().unwrap();
+        run.completed_reward_source_ids
+            .insert("source_boss_risk".to_string());
+        run.normal_boss_cycle
+            .assigned_source_ids
+            .push("source_boss_risk".to_string());
+    }
+    repeat
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode {
+                node_id: repeat_node,
+            },
+        )
+        .unwrap();
+    repeat
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    install_victorious_source_combat_result(
+        &mut repeat,
+        repeat_node,
+        "boss_risk_encounter",
+        "boss_risk_abno",
+    )
+    .unwrap();
+    repeat
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+    let repeat_run = repeat.state.run.as_ref().unwrap();
+    assert_eq!(repeat.state.skill_fragments.count(&fragment_id), 0);
+    assert_eq!(repeat.state.skill_fragments.fragment_dust(), 10);
+    assert!(repeat_run
+        .completed_reward_source_ids
+        .contains("source_boss_risk"));
+    assert!(repeat_run.normal_boss_cycle.assigned_source_ids.is_empty());
+}
+
+#[test]
+fn normal_boss_repeat_reward_failure_rolls_back_cycle_ledger_and_result_state() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0xB055_0003);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "boss_risk_encounter",
+    );
+    {
+        let run = core.state.run.as_mut().unwrap();
+        run.completed_reward_source_ids
+            .insert("source_boss_risk".to_string());
+        run.normal_boss_cycle
+            .assigned_source_ids
+            .push("source_boss_risk".to_string());
+    }
+    core.state
+        .skill_fragments
+        .add_fragment_dust(u32::MAX)
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let state_before = core.get_run_snapshot_json().unwrap();
+    let error = install_victorious_source_combat_result(
+        &mut core,
+        node_id,
+        "boss_risk_encounter",
+        "boss_risk_abno",
+    )
+    .unwrap_err();
+    assert!(matches!(error, GameError::InvalidAction));
+    assert_eq!(core.get_run_snapshot_json().unwrap(), state_before);
+    assert_eq!(core.state.skill_fragments.fragment_dust(), u32::MAX);
+    assert!(matches!(core.get_state(), GameState::InBattle { .. }));
+    let run = core.state.run.as_ref().unwrap();
+    assert!(run.completed_reward_source_ids.contains("source_boss_risk"));
+    assert_eq!(
+        run.normal_boss_cycle.assigned_source_ids,
+        ["source_boss_risk"]
+    );
 }
 
 #[test]
@@ -1199,6 +1904,7 @@ fn combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee() 
     let first_unit = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xC0_1001));
     let second_unit = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xC0_1002));
     let spawn = |seq, unit_instance_id| BattleEventLogEntry {
+        skill_effect_source: None,
         seq,
         time_ms: seq * 100,
         cause: Default::default(),
@@ -1218,10 +1924,7 @@ fn combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee() 
             stats: UnitStats::default(),
         },
     };
-    let event_log = BattleEventLog {
-        entries: vec![spawn(1, first_unit), spawn(2, second_unit)],
-        ..BattleEventLog::default()
-    };
+    let event_log = BattleEventLog::from_entries(vec![spawn(1, first_unit), spawn(2, second_unit)]);
     let participant_results = vec![
         ParticipantBattleResult {
             unit_instance_id: second_unit,
@@ -1247,26 +1950,31 @@ fn combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee() 
     assert!(result_stats.employees[0].survived);
     assert!(result_stats.employees[0].became_incapacitated);
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Player == BattleWinner::Player,
         event_log,
         result_stats,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results,
         employee_conditions,
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
+    let inventory_before = serde_json::to_value(&core.state.inventory).unwrap();
+    let skill_fragments_before = serde_json::to_value(&core.state.skill_fragments).unwrap();
+    let uuid_manager_before = serde_json::to_value(&core.state.uuid_manager).unwrap();
+    let enkephalin_before = serde_json::to_value(&core.state.enkephalin).unwrap();
 
     core.execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
@@ -1284,6 +1992,22 @@ fn combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee() 
         employee.experience,
         experience_before + run_policy().growth.post_battle_survival_xp,
         "employee-level survival XP must be granted once across redeploy instances"
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.inventory).unwrap(),
+        inventory_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.skill_fragments).unwrap(),
+        skill_fragments_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.uuid_manager).unwrap(),
+        uuid_manager_before
+    );
+    assert_eq!(
+        serde_json::to_value(&core.state.enkephalin).unwrap(),
+        enkephalin_before
     );
 }
 
@@ -1311,29 +2035,27 @@ fn combat_defeat_commits_attempt_incapacitation_without_reapplying_it() {
         .apply_incapacitation(run_policy().post_battle.incapacitation_trauma);
     let unit_instance_id =
         crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xC0_2001));
-    let event_log = BattleEventLog {
-        entries: vec![BattleEventLogEntry {
-            seq: 1,
-            time_ms: 0,
-            cause: Default::default(),
-            source_command_id: None,
-            event: BattleLogEvent::UnitSpawned {
-                unit_instance_id,
-                owner: Side::Player,
-                role: BattleUnitRole::Combatant,
-                threat_class: BattleUnitThreatClass::Normal,
-                mobility_kind: Default::default(),
+    let event_log = BattleEventLog::from_entries(vec![BattleEventLogEntry {
+        skill_effect_source: None,
+        seq: 1,
+        time_ms: 0,
+        cause: Default::default(),
+        source_command_id: None,
+        event: BattleLogEvent::UnitSpawned {
+            unit_instance_id,
+            owner: Side::Player,
+            role: BattleUnitRole::Combatant,
+            threat_class: BattleUnitThreatClass::Normal,
+            mobility_kind: Default::default(),
+            base_uuid: employee_uuid,
+            unit_source: BattleUnitSourceIdentity::Employee {
+                employee_uuid,
                 base_uuid: employee_uuid,
-                unit_source: BattleUnitSourceIdentity::Employee {
-                    employee_uuid,
-                    base_uuid: employee_uuid,
-                },
-                world_position: EventLogVec2::default(),
-                stats: UnitStats::default(),
             },
-        }],
-        ..BattleEventLog::default()
-    };
+            world_position: EventLogVec2::default(),
+            stats: UnitStats::default(),
+        },
+    }]);
     let participant_results = vec![ParticipantBattleResult {
         unit_instance_id,
         owned_uuid: employee_uuid,
@@ -1345,242 +2067,38 @@ fn combat_defeat_commits_attempt_incapacitation_without_reapplying_it() {
     }];
     let result_stats = test_result_stats(BattleWinner::Opponent, &event_log, &participant_results);
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log,
         result_stats,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results,
         employee_conditions,
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
-    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
+    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
     let employee = core.state.roster.get(&employee_uuid).unwrap();
     assert_eq!(
         employee.condition.trauma,
         run_policy().post_battle.incapacitation_trauma
     );
     assert_eq!(employee.condition.physical_damage, 1);
-}
-
-#[test]
-fn endless_final_response_completion_returns_run_complete_without_planning_delivery() {
-    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
-    let node_id = force_map_combat_node(
-        &mut core,
-        MapNodeCategory::Combat,
-        "combat_low_risk",
-        "low_risk_encounter",
-    );
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-    let victory_research_gain = run_policy().abnormality_research.victory_research_gain;
-    let research = &mut core.state.run.as_mut().unwrap().abnormality_research;
-    for (abnormality_id, entry) in &mut research.entries {
-        if abnormality_id == "low_risk_abno" {
-            entry.research_points = entry
-                .research_required
-                .saturating_sub(victory_research_gain);
-            entry.response_complete = false;
-            entry.completed_at_floor = None;
-            entry.unique_fragment_granted = false;
-        } else {
-            entry.research_points = entry.research_required;
-            entry.response_complete = true;
-            entry.completed_at_floor = Some(0);
-            entry.unique_fragment_granted = true;
-        }
-    }
-    assert!(!research.all_response_complete());
-
-    let pending_fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&pending_fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&pending_fragment_id, 100)
-        .expect("final response setup should queue a planning-return delivery");
-
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
-    let participant_results = vec![ParticipantBattleResult {
-        unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
-            0xC0_1002,
-        )),
-        owned_uuid: employee_uuid,
-        side: Side::Player,
-        survived: true,
-        final_hp: 100,
-        max_hp: 100,
-        became_incapacitated: false,
-    }];
-    let event_log = BattleEventLog::default();
-    let battle = CombatBattleState {
-        primary_abnormality_id: Some("low_risk_abno".to_string()),
-        encounter_id: "low_risk_encounter".to_string(),
-        node_type: crate::game::combat_preview::CombatNodeType::Defense,
-        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
-        abnormality_uuid: node_id.0,
-        winner: BattleWinner::Player,
-        result_stats: test_result_stats(BattleWinner::Player, &event_log, &participant_results),
-        event_log,
-        bonus_objectives: vec![],
-        reward_mode: RewardMode::ClaimAll,
-        rewards: vec![],
-        participant_results,
-        employee_conditions: core.state.roster.clone(),
-    };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
-
-    let result = core
-        .execute(player_id, PlayerBehavior::CompleteCombatResult)
-        .unwrap();
-
-    let BehaviorResult::CombatRewardsGranted {
-        skill_fragment_diffs,
-        completion,
-        ..
-    } = result
-    else {
-        panic!("expected combat rewards granted");
-    };
-    let BehaviorResult::RunComplete { map } = *completion else {
-        panic!("final Endless response must immediately complete the run");
-    };
-    assert!(!map.nodes.is_empty());
-    assert!(matches!(core.get_state(), GameState::RunComplete));
-    assert!(skill_fragment_diffs.iter().any(|diff| {
-        diff.fragment_id == pending_fragment_id
-            && diff.count_before == starting_fragment_count
-            && diff.count_after == starting_fragment_count + 1
-    }));
-    let research = &core.state.run.as_ref().unwrap().abnormality_research;
-    let entry = research.entries.get("low_risk_abno").unwrap();
-    assert_eq!(entry.research_points, 100);
-    assert!(entry.response_complete);
-    assert!(entry.unique_fragment_granted);
-    assert!(research.all_response_complete());
-    assert_eq!(
-        core.state.skill_fragments.count(&pending_fragment_id),
-        starting_fragment_count + 1,
-        "RunComplete must not deliver the queued Safe Zone research copy"
-    );
-    assert_eq!(
-        core.state
-            .skill_fragments
-            .pending_research_deliveries()
-            .collect::<Vec<_>>(),
-        vec![(&pending_fragment_id, 1)]
-    );
-}
-
-#[test]
-fn endless_combat_victory_adds_satisfied_bonus_objective_research() {
-    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
-    let node_id = force_map_combat_node(
-        &mut core,
-        MapNodeCategory::Combat,
-        "combat_low_risk",
-        "low_risk_encounter",
-    );
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-    core.state
-        .run
-        .as_mut()
-        .unwrap()
-        .abnormality_research
-        .entries
-        .get_mut("low_risk_abno")
-        .unwrap()
-        .research_points = 40;
-
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
-    let participant_results = vec![ParticipantBattleResult {
-        unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
-            0xC0_1003,
-        )),
-        owned_uuid: employee_uuid,
-        side: Side::Player,
-        survived: true,
-        final_hp: 100,
-        max_hp: 100,
-        became_incapacitated: false,
-    }];
-    let event_log = BattleEventLog::default();
-    let battle = CombatBattleState {
-        primary_abnormality_id: Some("low_risk_abno".to_string()),
-        encounter_id: "low_risk_encounter".to_string(),
-        node_type: crate::game::combat_preview::CombatNodeType::Defense,
-        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
-        abnormality_uuid: node_id.0,
-        winner: BattleWinner::Player,
-        result_stats: test_result_stats(BattleWinner::Player, &event_log, &participant_results),
-        event_log,
-        bonus_objectives: vec![
-            crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto {
-                id: "fast_clear".to_string(),
-                condition:
-                    crate::game::data::pve_data::PveBonusObjectiveConditionData::ClearWithin {
-                        time_ms: 90_000,
-                    },
-                research_bonus: 40,
-                satisfied: true,
-                presentation: Some("abnormality_part_obtained".to_string()),
-            },
-        ],
-        reward_mode: RewardMode::ClaimAll,
-        rewards: vec![],
-        participant_results,
-        employee_conditions: core.state.roster.clone(),
-    };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
-
-    core.execute(player_id, PlayerBehavior::CompleteCombatResult)
-        .unwrap();
-
-    let entry = core
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .abnormality_research
-        .entries
-        .get("low_risk_abno")
-        .unwrap();
-    assert_eq!(entry.research_points, 100);
-    assert!(entry.response_complete);
 }
 
 #[test]
@@ -1624,7 +2142,19 @@ fn combat_map_node_fails_run_when_no_employee_can_be_deployed() {
         }
     ));
     assert!(core.state.node_session.is_none());
-    assert!(core.get_action_capabilities().is_empty());
+    assert_eq!(
+        core.get_action_capabilities(),
+        vec![
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicState,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+        ]
+    );
 }
 
 #[test]
@@ -1771,7 +2301,7 @@ fn checkpoint_availability_defers_no_deployable_failure_for_explicit_decision() 
 
 #[test]
 fn defense_combat_node_smoke_writes_debug_event_log_export() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0101);
+    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0101);
     let player_id = Uuid::from_u128(0xD3F3_0101);
     start_new_game_with_default_starters(&mut core, player_id);
     let node_id = force_map_combat_node(
@@ -1889,7 +2419,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         player_unit.hud.bar_mode,
         LiveBattleHudBarMode::HpAndResonance
     );
-    assert_eq!(player_unit.hud.resonance_current, Some(0));
+    assert_eq!(player_unit.hud.resonance_current, Some(20));
     assert!(player_unit.hud.resonance_max.is_some());
     assert!(
         player_unit.range_previews.is_some(),
@@ -1973,40 +2503,33 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         state => panic!("expected combat result, got {state:?}"),
     };
 
-    let battle = core
-        .state
-        .active_node_content
-        .as_ref()
-        .unwrap()
-        .as_combat_battle()
-        .unwrap();
+    let trace_path =
+        crate::game::world::combat_trace::debug_combat_trace_path(core.run_seed, battle_uuid);
+    let trace: Value = serde_json::from_slice(&std::fs::read(&trace_path).unwrap()).unwrap();
     assert_eq!(
-        battle.node_type,
-        crate::game::combat_preview::CombatNodeType::Defense
+        trace["node_type"],
+        json!(crate::game::combat_preview::CombatNodeType::Defense)
     );
+    let event_log: BattleEventLog = serde_json::from_value(trace["event_log"].clone()).unwrap();
     assert_eq!(
-        battle.event_log.version,
+        event_log.version,
         crate::game::battle::event_log::BATTLE_EVENT_LOG_VERSION
     );
-    assert!(battle
-        .event_log
-        .entries
-        .iter()
-        .any(|entry| matches!(entry.event, BattleLogEvent::BattleStart { .. })));
-    assert!(battle
-        .event_log
-        .entries
-        .iter()
-        .any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
-    assert!(battle
-        .event_log
-        .entries
-        .iter()
-        .any(|entry| matches!(entry.event, BattleLogEvent::BattleEnd { .. })));
-
-    let path = write_world_debug_event_log_export("defense_combat_node_smoke", &battle.event_log);
-    println!("wrote debug event log: {}", path.display());
+    for predicate in [
+        (|event: &BattleLogEvent| matches!(event, BattleLogEvent::BattleStart { .. }))
+            as fn(&BattleLogEvent) -> bool,
+        |event| matches!(event, BattleLogEvent::UnitSpawned { .. }),
+        |event| matches!(event, BattleLogEvent::BattleEnd { .. }),
+    ] {
+        assert!(event_log
+            .entries
+            .iter()
+            .any(|entry| predicate(&entry.event)));
+    }
+    let path = write_world_debug_event_log_export("defense_combat_node_smoke", &event_log);
     assert!(path.exists());
+    assert!(core.state.active_node_content.is_none());
+    assert!(core.state.confirmed_combat_result.is_some());
     let trace_path =
         crate::game::world::combat_trace::debug_combat_trace_path(core.run_seed, battle_uuid);
     assert!(trace_path.exists());
@@ -2015,7 +2538,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
 
 #[test]
 fn live_ron_defense_route_playable_path_runs_to_combat_result() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0001);
+    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0001);
     let player_id = Uuid::from_u128(0xD3F3);
     start_new_game_with_default_starters(&mut core, player_id);
     let node_id = force_map_combat_node(
@@ -2089,6 +2612,18 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         }
     ));
     assert!(matches!(core.get_state(), GameState::InBattle { .. }));
+    deploy_positions.retain(|position| {
+        core.state.active_battle.as_ref().is_some_and(|active| {
+            active
+                .battle
+                .player_tactical_slot_occupant(*position, None)
+                .is_none()
+        })
+    });
+    assert!(
+        deploy_positions.len() >= 2,
+        "live defense should expose multiple unoccupied ground deployment cells"
+    );
     for (employee_uuid, position) in employee_ids.iter().take(2).zip(deploy_positions.iter()) {
         let result = execute_current_battle_mutation(
             &mut core,
@@ -2135,7 +2670,13 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
                 third_position,
                 battle_update.checkpoint.deployment.as_ref(),
             ) {
-                if deployment.current_cost >= deployment.base_deploy_cost {
+                let deploy_cost = deployment
+                    .unit_deploy_costs
+                    .iter()
+                    .find(|cost| cost.employee_uuid == employee_uuid)
+                    .map(|cost| cost.effective_deploy_cost)
+                    .unwrap_or(u32::MAX);
+                if battle_update.checkpoint.tactical_resource.current >= deploy_cost {
                     let result = execute_current_battle_mutation(
                         &mut core,
                         player_id,
@@ -2166,30 +2707,20 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         GameState::CombatResult { battle_uuid } => battle_uuid,
         state => panic!("expected combat result, got {state:?}"),
     };
-    let (combat_node_uuid, event_log_entry_count) = {
-        let battle = core
-            .state
-            .active_node_content
-            .as_ref()
-            .unwrap()
-            .as_combat_battle()
-            .unwrap();
-        assert_eq!(
-            battle.node_type,
-            crate::game::combat_preview::CombatNodeType::Defense
-        );
-        assert!(battle
-            .event_log
-            .entries
-            .iter()
-            .any(|entry| matches!(entry.event, BattleLogEvent::BattleEnd { .. })));
-        assert!(battle
-            .event_log
-            .entries
-            .iter()
-            .any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
-        (battle.abnormality_uuid, battle.event_log.entries.len())
-    };
+    let trace_path =
+        crate::game::world::combat_trace::debug_combat_trace_path(core.run_seed, battle_uuid);
+    let trace: Value = serde_json::from_slice(&std::fs::read(&trace_path).unwrap()).unwrap();
+    let event_log: BattleEventLog = serde_json::from_value(trace["event_log"].clone()).unwrap();
+    assert!(event_log
+        .entries
+        .iter()
+        .any(|entry| matches!(entry.event, BattleLogEvent::BattleEnd { .. })));
+    assert!(event_log
+        .entries
+        .iter()
+        .any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
+    let combat_node_uuid: Uuid = serde_json::from_value(trace["combat_node_uuid"].clone()).unwrap();
+    let event_log_entry_count = event_log.entries.len();
     let trace_path =
         crate::game::world::combat_trace::debug_combat_trace_path(core.run_seed, battle_uuid);
     assert!(trace_path.exists(), "debug combat trace file should exist");
@@ -2278,7 +2809,7 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
     assert_eq!(setup.battle_uuid, battle_uuid);
     assert_eq!(first_update.battle_uuid, battle_uuid);
     assert_eq!(first_update.battle_state_revision, 1);
-    assert_eq!(setup.setup_version, 1);
+    assert_eq!(setup.setup_version, 2);
     assert_eq!(setup.encounter_id, "suppress_warm_hearted_woodsman");
     assert!(setup.battlefield.width > 0);
     assert!(setup.battlefield.height > 0);
@@ -2309,9 +2840,21 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
             entry.event,
             LiveBattlePresentationEventKindDto::BattleStart { .. }
         )));
-    assert!(core.get_action_capabilities().is_empty());
+    assert_eq!(
+        core.get_action_capabilities(),
+        vec![
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicState,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+        ]
+    );
     let snapshot = core.get_run_snapshot_json().unwrap();
-    assert_eq!(snapshot["skill_catalog"]["version"], 2);
+    assert_eq!(snapshot["skill_catalog"]["version"], 3);
     assert_eq!(snapshot["game_state_context"]["type"], "in_battle");
     assert_eq!(snapshot["game_state_context"]["battle_state_revision"], 1);
     assert_eq!(
@@ -2378,8 +2921,12 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
     assert!(deployment.deployed_units.is_empty());
     assert_eq!(deployment.battle_time_ms, 0);
     assert_eq!(
-        deployment.current_cost,
-        run_policy().live_deployment.initial_cost
+        battle_update.checkpoint.tactical_resource.current,
+        run_policy().tactical_resource.initial
+    );
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.maximum,
+        run_policy().tactical_resource.maximum
     );
     assert!(events.iter().any(|entry| matches!(
         entry.event,
@@ -2796,6 +3343,2538 @@ fn live_defense_battle_state_rejects_future_since_seq() {
     ));
 }
 
+#[derive(Debug, PartialEq, Eq)]
+struct BattleAdvanceAtomicSnapshot {
+    run_seed: u64,
+    run_payload_json: String,
+    run_checkpoint_json: String,
+    player_profile_json: String,
+    battle_time_ms: u64,
+    terminal_outcome: Option<crate::game::battle::core::sim::BattleFinishSignal>,
+    finalized: bool,
+    event_log_json: String,
+    event_queue: Vec<String>,
+    battle_core_state: String,
+    runtime_facts: String,
+    battle_state_revision: u64,
+    employee_attempt: String,
+    live_deployment: String,
+    tactical_resource: String,
+    playback: crate::game::behavior::BattlePlaybackState,
+    playback_delta_remainder: u64,
+    tactical_focus: Option<crate::game::behavior::LiveBattleTacticalFocusDto>,
+    interaction: crate::game::behavior::LiveBattleInteractionDto,
+    visual_novel_json: String,
+    visual_novel_triggers_json: String,
+    uuid_manager_json: String,
+    game_state: String,
+    active_node_content: String,
+    active_battle_present: bool,
+}
+
+fn battle_advance_atomic_snapshot(core: &GameCore) -> BattleAdvanceAtomicSnapshot {
+    let active = core
+        .state
+        .active_battle
+        .as_ref()
+        .expect("atomic snapshot requires an active battle");
+    BattleAdvanceAtomicSnapshot {
+        run_seed: core.run_seed,
+        run_payload_json: serde_json::to_string(&core.state.run.as_ref().map(|run| {
+            crate::game::world::state::RunCheckpointPayload::capture(
+                &core.state,
+                run,
+                core.game_data.identity(),
+            )
+            .unwrap()
+        }))
+        .unwrap(),
+        run_checkpoint_json: serde_json::to_string(&core.state.run_checkpoint).unwrap(),
+        player_profile_json: serde_json::to_string(&core.state.player_profile).unwrap(),
+        battle_time_ms: active.execution.last_event_time_ms(),
+        terminal_outcome: active.execution.terminal_outcome(),
+        finalized: active.execution.is_finalized(),
+        event_log_json: active.battle.event_log.to_json_string().unwrap(),
+        event_queue: active.battle.event_queue_debug_snapshot(),
+        battle_core_state: active.battle.transaction_debug_snapshot(),
+        runtime_facts: serde_json::to_string(&active.battle.runtime_fact_view()).unwrap(),
+        battle_state_revision: active.battle_state_revision,
+        employee_attempt: format!("{:?}", active.employee_attempt),
+        live_deployment: format!("{:?}", active.live_deployment),
+        tactical_resource: format!("{:?}", active.tactical_resource),
+        playback: active.playback,
+        playback_delta_remainder: active.playback_delta_remainder,
+        tactical_focus: active.tactical_focus_dto(),
+        interaction: active.interaction_dto(),
+        visual_novel_json: serde_json::to_string(&core.state.visual_novel).unwrap(),
+        visual_novel_triggers_json: serde_json::to_string(&core.state.visual_novel_triggers)
+            .unwrap(),
+        uuid_manager_json: serde_json::to_string(&core.state.uuid_manager).unwrap(),
+        game_state: format!("{:?}", core.state.lifecycle.phase()),
+        active_node_content: format!("{:?}", core.state.active_node_content),
+        active_battle_present: core.state.active_battle.is_some(),
+    }
+}
+
+struct TacticalWorldMutationFixture {
+    core: GameCore,
+    player_id: Uuid,
+    first_employee_uuid: Uuid,
+    second_employee_uuid: Uuid,
+    first_position: Position,
+    second_position: Position,
+}
+
+fn tactical_world_mutation_fixture(seed: u64) -> TacticalWorldMutationFixture {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), seed);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let first_position = ground_deployment_cell_with_right_range(&preview);
+    let employees = core.roster().unwrap().combat_eligible_employee_ids();
+    let first_employee_uuid = employees[0];
+    let second_employee_uuid = employees[1];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let second_position = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .combat_preview
+        .deployment_zones
+        .iter()
+        .filter(|zone| zone.kind == DeploymentZoneKind::Ground)
+        .flat_map(|zone| zone.cells.iter().copied())
+        .find(|position| *position != first_position)
+        .expect("atomic tactical fixture must expose two ground deployment cells");
+    TacticalWorldMutationFixture {
+        core,
+        player_id,
+        first_employee_uuid,
+        second_employee_uuid,
+        first_position,
+        second_position,
+    }
+}
+
+fn execute_current_battle_mutation_after(
+    core: &mut GameCore,
+    player_id: Uuid,
+    behavior: PlayerBehavior,
+    after_seq: u64,
+) -> Result<BehaviorResult, GameError> {
+    let active = core
+        .state
+        .active_battle
+        .as_ref()
+        .expect("battle mutation test requires active battle");
+    let authority = crate::game::behavior::BattleStateAuthorityDto {
+        battle_uuid: active.battle_uuid,
+        battle_state_revision: active.battle_state_revision,
+    };
+    core.execute_with_transport_context(player_id, behavior, None, after_seq, Some(authority))
+}
+
+fn assert_future_cursor_rejection_is_atomic(
+    core: &mut GameCore,
+    player_id: Uuid,
+    behavior: PlayerBehavior,
+) {
+    let future_seq = u64::MAX;
+    let before = battle_advance_atomic_snapshot(core);
+    let retry_behavior = behavior.clone();
+    let error = execute_current_battle_mutation_after(core, player_id, behavior, future_seq)
+        .expect_err("a future event cursor must reject the tactical mutation");
+    assert!(matches!(
+        error,
+        GameError::InvalidBattleResyncSeq {
+            requested,
+            latest,
+        } if requested == future_seq && latest < future_seq
+    ));
+    assert_eq!(battle_advance_atomic_snapshot(core), before);
+
+    let retry_error =
+        execute_current_battle_mutation_after(core, player_id, retry_behavior, future_seq)
+            .expect_err("retry from the same basis must reject identically");
+    assert_eq!(format!("{retry_error:?}"), format!("{error:?}"));
+    assert_eq!(battle_advance_atomic_snapshot(core), before);
+}
+
+#[test]
+fn ca003_playback_commands_reject_future_cursor_atomically_and_retry_identically() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        ..
+    } = tactical_world_mutation_fixture(0xCA03_0001);
+
+    assert_future_cursor_rejection_is_atomic(&mut core, player_id, PlayerBehavior::PauseBattle);
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+
+    assert_future_cursor_rejection_is_atomic(&mut core, player_id, PlayerBehavior::ResumeBattle);
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle).unwrap();
+
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetBattleSpeed {
+            speed: crate::game::behavior::BattlePlaybackSpeed::X2,
+        },
+    );
+}
+
+#[test]
+fn tactical_world_future_cursor_is_atomic_for_deploy() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        first_position,
+        ..
+    } = tactical_world_mutation_fixture(0xA701_C020);
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    );
+}
+
+#[test]
+fn tactical_world_future_cursor_is_atomic_for_withdraw() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        first_position,
+        ..
+    } = tactical_world_mutation_fixture(0xA701_C021);
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::WithdrawUnit {
+            employee_uuid: first_employee_uuid,
+        },
+    );
+}
+
+#[test]
+fn tactical_world_future_cursor_is_atomic_for_stance() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        first_position,
+        ..
+    } = tactical_world_mutation_fixture(0xA701_C022);
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    core.advance_active_battle_by(1_500).unwrap();
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetEngagementStance {
+            employee_uuid: first_employee_uuid,
+            stance: EngagementStance::Defense,
+        },
+    );
+}
+
+#[test]
+fn tactical_world_future_cursor_is_atomic_for_relocation() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        first_position,
+        second_position,
+        ..
+    } = tactical_world_mutation_fixture(0xA701_C023);
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    core.advance_active_battle_by(1_500).unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetEngagementStance {
+            employee_uuid: first_employee_uuid,
+            stance: EngagementStance::Defense,
+        },
+    )
+    .unwrap();
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .tactical_resource
+        .set_current_for_test(10);
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::TacticalRelocateUnit {
+            employee_uuid: first_employee_uuid,
+            destination: second_position,
+            facing: FacingDirection::Left,
+        },
+    );
+}
+
+#[test]
+fn tactical_world_future_cursor_is_atomic_for_swap() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        second_employee_uuid,
+        first_position,
+        second_position,
+    } = tactical_world_mutation_fixture(0xA701_C024);
+    for (employee_uuid, position, facing) in [
+        (first_employee_uuid, first_position, FacingDirection::Right),
+        (second_employee_uuid, second_position, FacingDirection::Left),
+    ] {
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::DeployUnit {
+                employee_uuid,
+                position,
+                facing,
+            },
+        )
+        .unwrap();
+    }
+    core.advance_active_battle_by(1_500).unwrap();
+    for employee_uuid in [first_employee_uuid, second_employee_uuid] {
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid,
+                stance: EngagementStance::Defense,
+            },
+        )
+        .unwrap();
+    }
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .tactical_resource
+        .set_current_for_test(10);
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::TacticalSwapUnits {
+            first_employee_uuid,
+            second_employee_uuid,
+            first_facing: FacingDirection::Up,
+            second_facing: FacingDirection::Down,
+        },
+    );
+}
+
+#[test]
+fn tactical_world_revision_overflow_rejects_before_mutation() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        first_position,
+        ..
+    } = tactical_world_mutation_fixture(0xA701_C026);
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .battle_state_revision = u64::MAX;
+    let before = battle_advance_atomic_snapshot(&core);
+    let error = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect_err("revision overflow must reject before tactical mutation");
+    assert!(matches!(error, GameError::BattleStateRevisionOverflow));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
+}
+
+#[test]
+fn tactical_world_late_employee_reconciliation_failure_is_atomic() {
+    let TacticalWorldMutationFixture {
+        mut core,
+        player_id,
+        first_employee_uuid,
+        second_employee_uuid,
+        first_position,
+        second_position,
+    } = tactical_world_mutation_fixture(0xA701_C025);
+    let first_deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: first_unit_instance_id,
+        ..
+    } = first_deployed
+    else {
+        panic!("expected first deployment");
+    };
+    let second_deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: second_employee_uuid,
+            position: second_position,
+            facing: FacingDirection::Left,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: second_unit_instance_id,
+        ..
+    } = second_deployed
+    else {
+        panic!("expected second deployment");
+    };
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        assert!(active
+            .battle
+            .units
+            .get(&first_unit_instance_id)
+            .unwrap()
+            .is_active());
+        active
+            .battle
+            .units
+            .get_mut(&second_unit_instance_id)
+            .unwrap()
+            .lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+        active.employee_attempt.roster.clear();
+    }
+
+    let before = battle_advance_atomic_snapshot(&core);
+    let error = core
+        .handle_withdraw_unit(first_employee_uuid, None, 0)
+        .expect_err("missing employee attempt state must fail at real reconciliation");
+    assert!(matches!(error, GameError::BattleRuntimeFault(fault)
+        if fault.code == crate::game::battle::runtime_control::RuntimeFaultCode::Invariant
+            && fault.site == "reconcile_incapacitated_roster"));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct BattleStartAtomicSnapshot {
+    game_state: String,
+    active_node_content: String,
+    node_session: String,
+    run_snapshot: String,
+    inventory_snapshot: String,
+    roster_snapshot: String,
+    uuid_manager: String,
+    enkephalin: String,
+    visual_novel: String,
+    visual_novel_triggers: String,
+    active_battle_present: bool,
+}
+
+fn battle_start_atomic_snapshot(core: &GameCore) -> BattleStartAtomicSnapshot {
+    BattleStartAtomicSnapshot {
+        game_state: format!("{:?}", core.state.lifecycle.phase()),
+        active_node_content: format!("{:?}", core.state.active_node_content),
+        node_session: format!("{:?}", core.state.node_session),
+        run_snapshot: serde_json::to_string(&core.get_run_snapshot_json().unwrap()).unwrap(),
+        inventory_snapshot: serde_json::to_string(&core.get_inventory_snapshot_json().unwrap())
+            .unwrap(),
+        roster_snapshot: serde_json::to_string(&core.get_employee_roster_snapshot_json().unwrap())
+            .unwrap(),
+        uuid_manager: serde_json::to_string(&core.state.uuid_manager).unwrap(),
+        enkephalin: format!("{:?}", core.state.enkephalin),
+        visual_novel: serde_json::to_string(&core.state.visual_novel).unwrap(),
+        visual_novel_triggers: serde_json::to_string(&core.state.visual_novel_triggers).unwrap(),
+        active_battle_present: core.state.active_battle.is_some(),
+    }
+}
+
+fn game_data_with_track_and_rejoin_fixture(with_boss_binding: bool) -> Arc<GameDataBase> {
+    let mut game_data = game_data_with_pve_encounters();
+    let database = Arc::get_mut(&mut game_data)
+        .expect("fixture game data should be uniquely owned before GameCore construction");
+    if with_boss_binding {
+        database.boss_runtime_data = Arc::new(
+            crate::game::data::boss_runtime_data::tests::valid_catalog()
+                .compile()
+                .expect("TrackAndRejoin fixture catalog should compile"),
+        );
+    }
+    let abnormalities = Arc::make_mut(&mut database.abnormality_data);
+    let actor = abnormalities
+        .items
+        .iter_mut()
+        .find(|item| item.id == "defense_route_abno")
+        .expect("TrackAndRejoin fixture actor should exist");
+    actor.max_health = 100_000;
+    actor.attack = 0;
+    let pve = Arc::make_mut(&mut database.pve_data);
+    let encounter = pve
+        .encounters
+        .iter_mut()
+        .find(|encounter| encounter.id == "defense_route_encounter")
+        .expect("TrackAndRejoin fixture encounter should exist");
+    let trigger_id = encounter.waves[0].activation.trigger_id.clone();
+    encounter.waves[0].activation =
+        crate::game::data::pve_data::PveWaveActivationData::at_time(trigger_id, 10);
+    encounter.boss_runtime =
+        with_boss_binding.then(|| crate::game::data::pve_data::PveBossRuntimeBindingData {
+            encounter_id: crate::game::data::boss_runtime_data::BossEncounterRuntimeId::new(
+                "tracking_encounter",
+            ),
+            actors: vec![crate::game::data::pve_data::PveBossActorBindingData {
+                actor_slot_id: crate::game::data::boss_runtime_data::BossActorSlotId::new(
+                    "primary",
+                ),
+                wave_id: "wave_0".to_string(),
+                spawn_index: 0,
+            }],
+        });
+    game_data
+}
+
+fn game_data_with_raw_track_and_rejoin_source_fixture() -> Arc<GameDataBase> {
+    let boss_source =
+        ron::ser::to_string(&crate::game::data::boss_runtime_data::tests::valid_catalog())
+            .expect("TrackAndRejoin raw Boss catalog should serialize");
+    let mut pve = crate::game::data::live_ron::parse_live_ron::<PveEncounterDatabase>(
+        "data/pve/encounters.ron",
+        "pve_encounters",
+        crate::game::data::live_ron::GameplayRonSourceSet::embedded().pve_encounters,
+    )
+    .expect("embedded PvE source should parse before fixture mutation");
+    pve.encounters
+        .retain(|encounter| encounter.id != "reference_cwbs_final_boss");
+    for live_encounter in &mut pve.encounters {
+        live_encounter.boss_runtime = None;
+    }
+    let encounter = pve
+        .encounters
+        .iter_mut()
+        .find(|encounter| encounter.id == "suppress_nameless_fetus")
+        .expect("raw source fixture encounter should exist");
+    let actor_wave = encounter
+        .waves
+        .iter_mut()
+        .find(|wave| wave.id == "primary_abnormality")
+        .expect("raw source fixture actor wave should exist");
+    let trigger_id = actor_wave.activation.trigger_id.clone();
+    actor_wave.activation =
+        crate::game::data::pve_data::PveWaveActivationData::at_time(trigger_id, 10);
+    encounter.boss_runtime = Some(crate::game::data::pve_data::PveBossRuntimeBindingData {
+        encounter_id: crate::game::data::boss_runtime_data::BossEncounterRuntimeId::new(
+            "tracking_encounter",
+        ),
+        actors: vec![crate::game::data::pve_data::PveBossActorBindingData {
+            actor_slot_id: crate::game::data::boss_runtime_data::BossActorSlotId::new("primary"),
+            wave_id: actor_wave.id.clone(),
+            spawn_index: 0,
+        }],
+    });
+    let pve_source =
+        ron::ser::to_string(&pve).expect("TrackAndRejoin raw PvE binding should serialize");
+    let mut sources = crate::game::data::live_ron::GameplayRonSourceSet::embedded();
+    let mut summoned: crate::game::data::summoned_unit_data::SummonedUnitCatalogData =
+        ron::de::from_str(sources.summoned_units).unwrap();
+    summoned.definitions.clear(); // retain official non-boss object references
+    let summoned_source = ron::ser::to_string(&summoned).unwrap();
+    sources.boss_runtime = &boss_source;
+    sources.summoned_units = &summoned_source;
+    sources.pve_encounters = &pve_source;
+    GameDataBase::load_live_sources(sources)
+        .expect("whole raw TrackAndRejoin source candidate should publish atomically")
+        .into_fixture_database_arc()
+}
+
+fn start_track_and_rejoin_fixture_at_approach(
+    game_data: Arc<GameDataBase>,
+    seed: u64,
+) -> (
+    GameCore,
+    Uuid,
+    Uuid,
+    crate::game::battle::ids::UnitInstanceId,
+) {
+    let mut core = GameCore::new(game_data, seed);
+    let player_id = Uuid::from_u128(seed as u128);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "defense_route_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("TrackAndRejoin fixture preview should resolve");
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("TrackAndRejoin fixture should enter live battle");
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("player should deploy before the Boss actor wave");
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: player_unit_id,
+        ..
+    } = deployed
+    else {
+        panic!("expected player deployment result");
+    };
+    core.advance_active_battle_by(10)
+        .expect("late Boss actor wave should advance");
+    let actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .into_iter()
+        .next()
+        .expect("Boss actor runtime snapshot at approach");
+    assert_eq!(actor.state_id.as_deref(), Some("approach"));
+    assert_eq!(actor.target_id, Some(player_unit_id));
+    (core, player_id, employee_uuid, player_unit_id)
+}
+
+#[test]
+fn track_and_rejoin_raw_live_bundle_reaches_typed_world_setup_identity() {
+    let mut core = GameCore::new(
+        game_data_with_raw_track_and_rejoin_source_fixture(),
+        0xB055_0400,
+    );
+    let player_id = Uuid::from_u128(0xB055_0400);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_nameless_fetus",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("raw TrackAndRejoin source fixture preview should resolve");
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("raw TrackAndRejoin source fixture should enter live battle");
+    assert!(
+        !serde_json::to_string(&started)
+            .unwrap()
+            .contains("boss_runtime"),
+        "raw source publication must not widen the public battle shape"
+    );
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("player should deploy before the raw authored actor wave");
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: player_unit_id,
+        ..
+    } = deployed
+    else {
+        panic!("expected raw source fixture player deployment");
+    };
+    let spawned = core
+        .advance_active_battle_by(10)
+        .expect("raw authored Boss actor wave should advance");
+    let BehaviorResult::BattleAdvanced {
+        battle_update,
+        finished: false,
+        ..
+    } = spawned
+    else {
+        panic!("expected active raw source fixture after actor spawn");
+    };
+    let actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .into_iter()
+        .next()
+        .expect("raw binding should create one typed Boss actor runtime");
+    let actor_id = actor
+        .unit_id
+        .expect("raw actor binding should resolve exactly");
+    assert_eq!(actor.pattern_id.as_deref(), Some("track_and_rejoin"));
+    assert_eq!(actor.state_id.as_deref(), Some("approach"));
+    assert_eq!(actor.target_id, Some(player_unit_id));
+    assert!(battle_update
+        .events_delta
+        .events
+        .iter()
+        .any(|entry| matches!(
+            entry.event,
+            LiveBattlePresentationEventKindDto::UnitSpawned {
+                unit_instance_id,
+                owner: Side::Opponent,
+                ..
+            } if unit_instance_id == actor_id
+        )));
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+}
+
+#[test]
+fn track_and_rejoin_fixture_runs_from_world_setup_through_reconnect_and_route_combat() {
+    let mut core = GameCore::new(game_data_with_track_and_rejoin_fixture(true), 0xB055_0401);
+    let player_id = Uuid::from_u128(0xB055_0401);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "defense_route_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("TrackAndRejoin fixture preview should resolve");
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("TrackAndRejoin fixture should enter live battle");
+    let BehaviorResult::BattleAdvanced {
+        battle_setup_snapshot: Some(setup),
+        battle_update: initial_update,
+        finished: false,
+        ..
+    } = started
+    else {
+        panic!("expected TrackAndRejoin battle setup and initial update");
+    };
+    assert!(!serde_json::to_string(&setup)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert!(!serde_json::to_string(&initial_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .unit_id,
+        None,
+        "encounter runtime should exist before the authored late actor spawn"
+    );
+
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("player should deploy before the Boss actor wave");
+    let BehaviorResult::BattleUnitDeployed { battle_update, .. } = deployed else {
+        panic!("expected deployment update");
+    };
+    let player_unit_id = battle_update
+        .events_delta
+        .events
+        .iter()
+        .find_map(|entry| match entry.event {
+            LiveBattlePresentationEventKindDto::UnitDeployed {
+                employee_uuid: event_employee_uuid,
+                unit_instance_id,
+                ..
+            } if event_employee_uuid == employee_uuid => Some(unit_instance_id),
+            _ => None,
+        })
+        .expect("deployment update should expose the player runtime identity");
+
+    let before_reconnect = battle_advance_atomic_snapshot(&core);
+    let reconnect = core
+        .active_battle_reconnect_projection(0)
+        .expect("pre-spawn reconnect projection should succeed");
+    assert!(matches!(reconnect, BehaviorResult::BattleAdvanced { .. }));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before_reconnect);
+
+    let spawned = core
+        .advance_active_battle_by(10)
+        .expect("late Boss actor spawn should advance");
+    let BehaviorResult::BattleAdvanced {
+        battle_update: spawned_update,
+        finished: false,
+        ..
+    } = spawned
+    else {
+        panic!("expected active battle after Boss actor spawn");
+    };
+    let initial_actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .into_iter()
+        .next()
+        .expect("Boss actor runtime snapshot");
+    let actor_id = initial_actor
+        .unit_id
+        .expect("late actor should bind exactly");
+    assert_eq!(
+        initial_actor.pattern_id.as_deref(),
+        Some("track_and_rejoin")
+    );
+    assert_eq!(initial_actor.state_id.as_deref(), Some("approach"));
+    assert_eq!(initial_actor.target_id, Some(player_unit_id));
+    assert!(spawned_update
+        .events_delta
+        .events
+        .iter()
+        .any(|entry| matches!(
+            entry.event,
+            LiveBattlePresentationEventKindDto::UnitSpawned {
+                unit_instance_id,
+                owner: Side::Opponent,
+                ..
+            } if unit_instance_id == actor_id
+        )));
+
+    let before_active_reconnect = battle_advance_atomic_snapshot(&core);
+    let active_reconnect = core
+        .active_battle_reconnect_projection(spawned_update.events_delta.to_seq)
+        .expect("active Pattern reconnect projection should succeed");
+    let BehaviorResult::BattleAdvanced {
+        battle_update: active_reconnect_update,
+        ..
+    } = active_reconnect
+    else {
+        panic!("expected active Pattern reconnect update");
+    };
+    assert!(active_reconnect_update.events_delta.events.is_empty());
+    assert_eq!(
+        battle_advance_atomic_snapshot(&core),
+        before_active_reconnect
+    );
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0],
+        initial_actor
+    );
+
+    let locked_target = initial_actor.target_id;
+    let mut last_cursor = initial_actor.route_cursor_index;
+    let mut observed_rejoin = false;
+    let mut movement_start_count = spawned_update
+        .events_delta
+        .events
+        .iter()
+        .filter(|entry| {
+            matches!(
+                entry.event,
+                LiveBattlePresentationEventKindDto::MovementSegmentStarted {
+                    unit_instance_id,
+                    ..
+                } if unit_instance_id == actor_id
+            )
+        })
+        .count();
+    let mut reached_route_combat = false;
+    for _ in 0..120 {
+        let advanced = core
+            .advance_active_battle_by(100)
+            .expect("TrackAndRejoin world slice should advance");
+        let BehaviorResult::BattleAdvanced {
+            battle_update,
+            finished: false,
+            ..
+        } = advanced
+        else {
+            panic!("TrackAndRejoin fixture should not terminate before RouteCombat");
+        };
+        movement_start_count += battle_update
+            .events_delta
+            .events
+            .iter()
+            .filter(|entry| {
+                matches!(
+                    entry.event,
+                    LiveBattlePresentationEventKindDto::MovementSegmentStarted {
+                        unit_instance_id,
+                        ..
+                    } if unit_instance_id == actor_id
+                )
+            })
+            .count();
+        let actor = core
+            .state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()
+            .into_iter()
+            .next()
+            .expect("Boss actor runtime snapshot while active");
+        assert!(actor.route_cursor_index >= last_cursor);
+        last_cursor = actor.route_cursor_index;
+        if actor.pattern_id.is_some() {
+            assert_eq!(actor.target_id, locked_target);
+        }
+        observed_rejoin |= actor.state_id.as_deref() == Some("rejoin");
+        if actor.control_node_id.as_deref() == Some("route_combat") && actor.pattern_id.is_none() {
+            reached_route_combat = true;
+            break;
+        }
+    }
+    assert!(
+        observed_rejoin,
+        "world slice should enter authored rejoin State"
+    );
+    assert!(
+        reached_route_combat,
+        "world slice should resume RouteCombat"
+    );
+    assert!(
+        movement_start_count >= 2,
+        "approach and rejoin must use movement leaf"
+    );
+
+    let before_final_reconnect = battle_advance_atomic_snapshot(&core);
+    let reconnect = core
+        .active_battle_reconnect_projection(0)
+        .expect("post-pattern reconnect projection should succeed");
+    let BehaviorResult::BattleAdvanced { battle_update, .. } = reconnect else {
+        panic!("expected reconnect battle update");
+    };
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert_eq!(
+        battle_advance_atomic_snapshot(&core),
+        before_final_reconnect
+    );
+}
+
+#[test]
+fn track_and_rejoin_paired_no_binding_keeps_ordinary_route_authority() {
+    let mut core = GameCore::new(game_data_with_track_and_rejoin_fixture(false), 0xB055_0402);
+    let player_id = Uuid::from_u128(0xB055_0402);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "defense_route_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("paired ordinary fixture preview should resolve");
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("paired ordinary fixture should enter live battle");
+    let BehaviorResult::BattleAdvanced {
+        battle_setup_snapshot: Some(setup),
+        battle_update: initial_update,
+        finished: false,
+        ..
+    } = started
+    else {
+        panic!("expected paired ordinary setup and initial update");
+    };
+    assert!(!serde_json::to_string(&setup)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert!(!serde_json::to_string(&initial_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert!(active.battle.scenario().boss_runtime.is_none());
+    assert!(active
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .is_empty());
+
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("paired ordinary player deployment should succeed");
+    let spawned = core
+        .advance_active_battle_by(10)
+        .expect("paired ordinary late wave should advance");
+    let BehaviorResult::BattleAdvanced {
+        battle_update,
+        finished: false,
+        ..
+    } = spawned
+    else {
+        panic!("expected paired ordinary battle to remain active");
+    };
+    let actor_id = battle_update
+        .events_delta
+        .events
+        .iter()
+        .find_map(|entry| match entry.event {
+            LiveBattlePresentationEventKindDto::UnitSpawned {
+                unit_instance_id,
+                owner: Side::Opponent,
+                ..
+            } => Some(unit_instance_id),
+            _ => None,
+        })
+        .expect("paired ordinary wave should expose its actor identity");
+    let moved = core
+        .advance_active_battle_by(100)
+        .expect("ordinary planner tick should advance the authored route");
+    let BehaviorResult::BattleAdvanced {
+        battle_update: moved_update,
+        finished: false,
+        ..
+    } = moved
+    else {
+        panic!("expected paired ordinary battle after planner tick");
+    };
+    assert!(moved_update
+        .events_delta
+        .events
+        .iter()
+        .any(|entry| matches!(
+            entry.event,
+            LiveBattlePresentationEventKindDto::MovementSegmentStarted {
+                unit_instance_id,
+                ..
+            } if unit_instance_id == actor_id
+        )));
+    let actor = &core.state.active_battle.as_ref().unwrap().battle.units[&actor_id];
+    assert!(actor.enemy_movement_plan.is_some());
+    assert!(core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .is_empty());
+
+    let before_reconnect = battle_advance_atomic_snapshot(&core);
+    let reconnect = core
+        .active_battle_reconnect_projection(0)
+        .expect("paired ordinary reconnect projection should succeed");
+    let BehaviorResult::BattleAdvanced { battle_update, .. } = reconnect else {
+        panic!("expected paired ordinary reconnect update");
+    };
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before_reconnect);
+}
+
+#[test]
+fn track_and_rejoin_no_target_uses_authored_route_without_public_boss_state() {
+    let mut game_data = game_data_with_track_and_rejoin_fixture(true);
+    let database =
+        Arc::get_mut(&mut game_data).expect("fixture game data should remain uniquely owned");
+    let mut catalog = crate::game::data::boss_runtime_data::tests::valid_catalog();
+    let crate::game::data::boss_runtime_data::BossControlNodeData::PatternCall { selector, .. } =
+        &mut catalog.actor_behaviors[0].nodes[0]
+    else {
+        unreachable!()
+    };
+    let crate::game::data::boss_runtime_data::BossPatternSelectorData::FixedSequence {
+        candidates,
+        ..
+    } = selector
+    else {
+        unreachable!()
+    };
+    let crate::game::data::boss_runtime_data::BossParameterValueData::TargetQuery(query) =
+        &mut candidates[0].arguments[0].value
+    else {
+        unreachable!()
+    };
+    query
+        .filters
+        .push(crate::game::data::boss_runtime_data::BossTargetFilterData::Grounded);
+    database.boss_runtime_data = Arc::new(catalog.compile().unwrap());
+
+    let mut core = GameCore::new(game_data, 0xB055_0403);
+    let player_id = Uuid::from_u128(0xB055_0403);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "defense_route_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("no-target fixture should enter live battle");
+    let BehaviorResult::BattleAdvanced {
+        finished: false, ..
+    } = started
+    else {
+        panic!("expected active no-target battle");
+    };
+    let active = core.state.active_battle.as_mut().unwrap();
+    for unit in active
+        .battle
+        .units
+        .values_mut()
+        .filter(|unit| unit.owner == Side::Player)
+    {
+        unit.mobility_kind = crate::game::battle::types::MobilityKind::Airborne;
+    }
+    let spawned = core.advance_active_battle_by(10).unwrap();
+    let BehaviorResult::BattleAdvanced {
+        battle_update,
+        finished: false,
+        ..
+    } = spawned
+    else {
+        panic!("expected active no-target battle after actor spawn");
+    };
+    let actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .into_iter()
+        .next()
+        .expect("no-target actor runtime");
+    assert_eq!(actor.control_node_id.as_deref(), Some("route_combat"));
+    assert!(actor.pattern_id.is_none());
+    assert!(actor.target_id.is_none());
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+
+    let before_reconnect = battle_advance_atomic_snapshot(&core);
+    core.active_battle_reconnect_projection(0).unwrap();
+    assert_eq!(battle_advance_atomic_snapshot(&core), before_reconnect);
+}
+
+#[test]
+fn track_and_rejoin_timeout_uses_battle_time_and_pause_freezes_both_deadlines() {
+    let mut game_data = game_data_with_track_and_rejoin_fixture(true);
+    let database =
+        Arc::get_mut(&mut game_data).expect("fixture game data should remain uniquely owned");
+    let abnormalities = Arc::make_mut(&mut database.abnormality_data);
+    abnormalities
+        .items
+        .iter_mut()
+        .find(|item| item.id == "defense_route_abno")
+        .unwrap()
+        .movement
+        .speed_units_per_ms = 0;
+    let (mut core, player_id, _, _) =
+        start_track_and_rejoin_fixture_at_approach(game_data, 0xB055_0404);
+    let approach = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    let approach_state_activation = approach.state_activation_id;
+
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle)
+        .expect("fixture battle should pause");
+    let paused = battle_advance_atomic_snapshot(&core);
+    assert!(core
+        .advance_active_battle_for_server_tick(50_000)
+        .expect("paused server tick should be a valid no-op")
+        .is_none());
+    assert_eq!(battle_advance_atomic_snapshot(&core), paused);
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle)
+        .expect("fixture battle should resume");
+
+    core.advance_active_battle_by(4_999).unwrap();
+    let before_approach_deadline = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(
+        before_approach_deadline.state_id.as_deref(),
+        Some("approach")
+    );
+    assert_eq!(
+        before_approach_deadline.state_activation_id,
+        approach_state_activation
+    );
+    core.advance_active_battle_by(1).unwrap();
+    let rejoin = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(rejoin.state_id.as_deref(), Some("rejoin"));
+    assert_ne!(rejoin.state_activation_id, approach_state_activation);
+
+    core.advance_active_battle_by(4_999).unwrap();
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .state_activation_id,
+        rejoin.state_activation_id
+    );
+    core.advance_active_battle_by(1).unwrap();
+    let route = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(route.control_node_id.as_deref(), Some("route_combat"));
+    assert!(route.pattern_id.is_none());
+    assert_ne!(route.state_activation_id, rejoin.state_activation_id);
+}
+
+#[test]
+fn track_and_rejoin_withdrawn_target_invalidates_once_without_reacquisition() {
+    let (mut core, player_id, employee_uuid, player_unit_id) =
+        start_track_and_rejoin_fixture_at_approach(
+            game_data_with_track_and_rejoin_fixture(true),
+            0xB055_0405,
+        );
+    let initial_actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    let pattern_activation_id = initial_actor.pattern_activation_id;
+
+    let withdrawn = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::WithdrawUnit { employee_uuid },
+    )
+    .expect("locked target withdrawal should commit");
+    let BehaviorResult::BattleUnitWithdrawn { battle_update, .. } = withdrawn else {
+        panic!("expected target withdrawal update");
+    };
+    assert_eq!(
+        battle_update
+            .events_delta
+            .events
+            .iter()
+            .filter(|entry| matches!(
+                entry.event,
+                LiveBattlePresentationEventKindDto::UnitWithdrawn {
+                    unit_instance_id,
+                    ..
+                } if unit_instance_id == player_unit_id
+            ))
+            .count(),
+        1
+    );
+
+    let mut reached_route_combat = false;
+    for _ in 0..120 {
+        core.advance_active_battle_by(100).unwrap();
+        let actor = core
+            .state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .clone();
+        assert!(
+            actor.target_id.is_none(),
+            "withdrawn target must not be reacquired"
+        );
+        if actor.control_node_id.as_deref() == Some("route_combat") && actor.pattern_id.is_none() {
+            reached_route_combat = true;
+            let resident_activation = actor.state_activation_id;
+            core.advance_active_battle_by(100).unwrap();
+            let stable = core
+                .state
+                .active_battle
+                .as_ref()
+                .unwrap()
+                .battle
+                .boss_actor_runtime_debug_snapshots()[0]
+                .clone();
+            assert_eq!(stable.state_activation_id, resident_activation);
+            assert_ne!(stable.pattern_activation_id, pattern_activation_id);
+            break;
+        }
+    }
+    assert!(reached_route_combat);
+}
+
+#[test]
+fn track_and_rejoin_active_locked_target_with_unusable_path_takes_authored_recovery() {
+    let (mut core, _, _, player_unit_id) = start_track_and_rejoin_fixture_at_approach(
+        game_data_with_track_and_rejoin_fixture(true),
+        0xB055_0406,
+    );
+    let initial_actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .battle
+        .units
+        .get_mut(&player_unit_id)
+        .unwrap()
+        .set_world_position(crate::game::battle::core::movement::types::WorldVec2::new(
+            -100.0, -100.0,
+        ));
+
+    core.advance_active_battle_by(100).unwrap();
+
+    let recovered = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(recovered.state_id.as_deref(), Some("rejoin"));
+    assert_eq!(recovered.target_id, Some(player_unit_id));
+    assert_ne!(
+        recovered.state_activation_id,
+        initial_actor.state_activation_id
+    );
+    assert!(core.state.active_battle.as_ref().unwrap().battle.units[&player_unit_id].is_active());
+
+    let mut reached_route_combat = false;
+    for _ in 0..120 {
+        core.advance_active_battle_by(100).unwrap();
+        let actor = core
+            .state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .clone();
+        if actor.control_node_id.as_deref() == Some("route_combat") && actor.pattern_id.is_none() {
+            assert!(actor.target_id.is_none());
+            reached_route_combat = true;
+            break;
+        }
+    }
+    assert!(reached_route_combat);
+
+    let before_reconnect = battle_advance_atomic_snapshot(&core);
+    core.active_battle_reconnect_projection(0).unwrap();
+    assert_eq!(battle_advance_atomic_snapshot(&core), before_reconnect);
+}
+
+#[test]
+fn track_and_rejoin_actor_death_terminates_once_before_stale_runtime_work() {
+    let (mut core, _, _, _) = start_track_and_rejoin_fixture_at_approach(
+        game_data_with_track_and_rejoin_fixture(true),
+        0xB055_0407,
+    );
+    let actor_id = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .unit_id
+        .unwrap();
+    {
+        let actor = core
+            .state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .battle
+            .units
+            .get_mut(&actor_id)
+            .unwrap();
+        actor.stats.current_health = 0;
+        actor.lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+    }
+
+    let finished = core
+        .advance_active_battle_by(0)
+        .expect("terminal reconciliation should accept injected actor death");
+    let BehaviorResult::BattleAdvanced {
+        battle_update,
+        finished: true,
+        ..
+    } = finished
+    else {
+        panic!("required Boss actor death should finish the encounter exactly once");
+    };
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert!(core.state.active_battle.is_none());
+    assert!(matches!(core.get_state(), GameState::CombatResult { .. }));
+    assert!(matches!(
+        core.advance_active_battle_by(0),
+        Err(GameError::InvalidAction)
+    ));
+}
+
+fn enter_live_little_red_reference(
+    game_data: Arc<GameDataBase>,
+    seed: u64,
+    deploy_employee: bool,
+) -> (
+    GameCore,
+    Uuid,
+    Option<Uuid>,
+    Option<crate::game::battle::ids::UnitInstanceId>,
+) {
+    let mut core = GameCore::new(game_data, seed);
+    let player_id = Uuid::from_u128(seed as u128);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "suppress_little_red",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("live Little Red preview should resolve");
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("live Little Red should enter battle through the production setup path");
+    let BehaviorResult::BattleAdvanced {
+        battle_setup_snapshot: Some(setup),
+        battle_update,
+        finished: false,
+        ..
+    } = started
+    else {
+        panic!("expected active live Little Red setup");
+    };
+    assert_eq!(setup.encounter_id, "suppress_little_red");
+    assert!(!serde_json::to_string(&setup)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert!(active.battle.scenario().boss_runtime.is_some());
+    let actors = active.battle.boss_actor_runtime_debug_snapshots();
+    assert_eq!(actors.len(), 1);
+    assert!(actors[0].unit_id.is_none());
+
+    if !deploy_employee {
+        return (core, player_id, None, None);
+    }
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("player should deploy before the live Little Red wave");
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id, ..
+    } = deployed
+    else {
+        panic!("expected live Little Red deployment result");
+    };
+    (core, player_id, Some(employee_uuid), Some(unit_instance_id))
+}
+
+fn isolate_live_little_red_target(
+    core: &mut GameCore,
+    player_unit_id: crate::game::battle::ids::UnitInstanceId,
+) {
+    let active = core.state.active_battle.as_mut().unwrap();
+    for (unit_id, unit) in &mut active.battle.units {
+        if unit.owner != Side::Player {
+            continue;
+        }
+        if *unit_id == player_unit_id {
+            unit.stats.max_health = 1_000_000;
+            unit.stats.current_health = 1_000_000;
+        } else {
+            unit.set_world_position(crate::game::battle::core::movement::types::WorldVec2::new(
+                -100.0, -100.0,
+            ));
+        }
+    }
+}
+
+#[test]
+fn live_little_red_runs_finite_pursuit_pause_reconnect_route_combat_and_terminal_flow() {
+    let (mut core, player_id, _, player_unit_id) =
+        enter_live_little_red_reference(live_game_data_from_ron(), 0xB055_0501, true);
+    let player_unit_id = player_unit_id.unwrap();
+    isolate_live_little_red_target(&mut core, player_unit_id);
+
+    let spawned = core
+        .advance_active_battle_by(5_000)
+        .expect("the production Little Red wave should spawn");
+    let BehaviorResult::BattleAdvanced {
+        battle_update,
+        finished: false,
+        ..
+    } = spawned
+    else {
+        panic!("live Little Red should remain active after spawning");
+    };
+    assert!(!serde_json::to_string(&battle_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    let initial_actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    let actor_id = initial_actor
+        .unit_id
+        .expect("Little Red should bind exactly");
+    assert_eq!(
+        initial_actor.pattern_id.as_deref(),
+        Some("little_red_pursuit")
+    );
+    assert_eq!(initial_actor.state_id.as_deref(), Some("move_to_target"));
+    assert_eq!(initial_actor.target_id, Some(player_unit_id));
+
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle)
+        .expect("live Little Red battle should pause");
+    let paused = battle_advance_atomic_snapshot(&core);
+    assert!(core
+        .advance_active_battle_for_server_tick(50_000)
+        .expect("paused server tick should be a valid no-op")
+        .is_none());
+    assert_eq!(battle_advance_atomic_snapshot(&core), paused);
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle)
+        .expect("live Little Red battle should resume");
+
+    let before_reconnect = battle_advance_atomic_snapshot(&core);
+    let reconnect = core
+        .active_battle_reconnect_projection(battle_update.events_delta.to_seq)
+        .expect("active live Little Red reconnect should succeed");
+    let BehaviorResult::BattleAdvanced {
+        battle_update: reconnect_update,
+        ..
+    } = reconnect
+    else {
+        panic!("expected live Little Red reconnect update");
+    };
+    assert!(reconnect_update.events_delta.events.is_empty());
+    assert!(!serde_json::to_string(&reconnect_update)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before_reconnect);
+
+    let mut saw_rejoin = false;
+    let mut reached_route_combat = false;
+    let mut last_route_cursor = initial_actor.route_cursor_index;
+    for _ in 0..120 {
+        let advanced = core
+            .advance_active_battle_by(100)
+            .expect("live Little Red pursuit slice should advance");
+        let BehaviorResult::BattleAdvanced {
+            finished: false, ..
+        } = advanced
+        else {
+            panic!("live Little Red should reach RouteCombat before terminal resolution");
+        };
+        let actor = core
+            .state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .clone();
+        assert!(actor.route_cursor_index >= last_route_cursor);
+        last_route_cursor = actor.route_cursor_index;
+        if actor.pattern_id.is_some() {
+            assert_eq!(actor.target_id, Some(player_unit_id));
+        }
+        saw_rejoin |= actor.state_id.as_deref() == Some("rejoin_forward_route");
+        if actor.control_node_id.as_deref() == Some("route_combat") && actor.pattern_id.is_none() {
+            reached_route_combat = true;
+            break;
+        }
+    }
+    assert!(saw_rejoin);
+    assert!(reached_route_combat);
+
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        let actor = active.battle.units.get_mut(&actor_id).unwrap();
+        actor.stats.current_health = 0;
+        actor.lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+    }
+    let interrupted = core
+        .advance_active_battle_by(0)
+        .expect("live Little Red death should reconcile without stale runtime work");
+    assert!(matches!(
+        interrupted,
+        BehaviorResult::BattleAdvanced {
+            finished: false,
+            ..
+        }
+    ));
+    let interrupted_actor = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(interrupted_actor.unit_id, Some(actor_id));
+    assert_eq!(
+        interrupted_actor.control_node_id.as_deref(),
+        Some("route_combat")
+    );
+    assert!(interrupted_actor.pattern_id.is_none());
+    assert!(interrupted_actor.state_id.is_none());
+    assert!(interrupted_actor.target_id.is_none());
+    let repeated = core
+        .advance_active_battle_by(0)
+        .expect("dead Boss actor should not schedule duplicate runtime work");
+    assert!(matches!(
+        repeated,
+        BehaviorResult::BattleAdvanced {
+            finished: false,
+            ..
+        }
+    ));
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0],
+        interrupted_actor
+    );
+
+    for unit in core
+        .state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .battle
+        .units
+        .values_mut()
+        .filter(|unit| unit.owner == Side::Opponent)
+    {
+        unit.stats.current_health = 0;
+        unit.lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+    }
+    let terminal = core
+        .advance_active_battle_by(0)
+        .expect("all required live opponents dead should resolve terminal state");
+    assert!(matches!(
+        terminal,
+        BehaviorResult::BattleAdvanced { finished: true, .. }
+    ));
+    assert!(core.state.active_battle.is_none());
+    assert!(matches!(core.get_state(), GameState::CombatResult { .. }));
+    assert!(matches!(
+        core.advance_active_battle_by(0),
+        Err(GameError::InvalidAction)
+    ));
+}
+
+#[test]
+fn live_cwbs_reference_connects_conditional_wave_summon_signal_outcome_and_victory_registration() {
+    const ENCOUNTER_ID: &str = "reference_cwbs_final_boss";
+    const BOSS_ID: &str = "x-00-00_cwbs_reference_boss";
+    const MINION_ID: &str = "cwbs_reference_minion";
+
+    let game_data = live_game_data_from_ron();
+    let encounter = game_data
+        .pve_data
+        .get_by_id(ENCOUNTER_ID)
+        .expect("live CWBS reference encounter");
+    assert!(encounter.is_reference_only());
+
+    let mut core = GameCore::new(game_data, 0xC0B5_0601);
+    let player_id = Uuid::from_u128(0xC0B5_0601);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_reference_only",
+        ENCOUNTER_ID,
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("reference preview should resolve only when explicitly addressed");
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("reference encounter should enter through the normal combat setup path");
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("reference battle should allow a player deployment");
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: player_unit_id,
+        ..
+    } = deployed
+    else {
+        panic!("expected deployed player unit");
+    };
+    {
+        let player = core
+            .state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .battle
+            .units
+            .get_mut(&player_unit_id)
+            .unwrap();
+        player.stats.max_health = 1_000_000;
+        player.stats.current_health = 1_000_000;
+        player.stats.attack = 0;
+    }
+
+    let initial = core
+        .advance_active_battle_by(0)
+        .expect("time-zero reference wave and summon should settle");
+    assert!(matches!(
+        initial,
+        BehaviorResult::BattleAdvanced {
+            finished: false,
+            ..
+        }
+    ));
+    let boss_unit_id = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .unit_id
+        .expect("reference boss actor should bind to the time-zero Wave spawn");
+    {
+        let battle = &core.state.active_battle.as_ref().unwrap().battle;
+        let summon = battle.summon_runtime_debug_snapshot();
+        assert_eq!(summon.pending_count, 0);
+        assert_eq!(summon.batch_count, 1);
+        assert_eq!(summon.counters.len(), 1);
+        assert_eq!(summon.counters[0].1, MINION_ID);
+        assert_eq!((summon.counters[0].2, summon.counters[0].3), (1, 1));
+        assert!(battle.units.values().any(|unit| {
+            unit.is_active()
+                && matches!(
+                    &unit.source_identity,
+                    BattleUnitSourceIdentity::SummonedUnit { definition_id, .. }
+                        if definition_id == MINION_ID
+                )
+        }));
+        assert!(battle.units.contains_key(&boss_unit_id));
+        let candidates = battle.compendium_candidates();
+        assert!(candidates.iter().any(|candidate| {
+            candidate
+                == &CompendiumCandidate {
+                    id: BOSS_ID.to_string(),
+                    kind: CompendiumCandidateKind::Abnormality,
+                    base_uuid: Uuid::parse_str("c0de0600-0000-0000-0000-000000000001").unwrap(),
+                }
+        }));
+        assert!(candidates.iter().any(|candidate| {
+            candidate.id == "corroded_rusher"
+                && candidate.kind == CompendiumCandidateKind::CorrodedEmployee
+        }));
+        assert_eq!(
+            candidates.len(),
+            2,
+            "the summoned unit must never become a compendium candidate"
+        );
+    }
+
+    core.advance_active_battle_by(1_000)
+        .expect("authored cleanup signal should remove the exact summon batch");
+    {
+        let battle = &core.state.active_battle.as_ref().unwrap().battle;
+        let summon = battle.summon_runtime_debug_snapshot();
+        assert_eq!((summon.counters[0].2, summon.counters[0].3), (0, 1));
+        assert!(summon.batches[0].2, "batch clear should latch exactly once");
+        assert!(battle.boss_signal_latched_for_test(
+            &crate::game::data::boss_runtime_data::BossSignalId::new("cwbs_reference_cleanup",),
+        ));
+        assert!(!battle.units.values().any(|unit| {
+            unit.is_active()
+                && matches!(
+                    &unit.source_identity,
+                    BattleUnitSourceIdentity::SummonedUnit { definition_id, .. }
+                        if definition_id == MINION_ID
+                )
+        }));
+    }
+
+    {
+        let battle = &mut core.state.active_battle.as_mut().unwrap().battle;
+        for unit in battle
+            .units
+            .values_mut()
+            .filter(|unit| unit.owner == Side::Opponent && unit.is_active())
+        {
+            unit.stats.current_health = 0;
+            unit.lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+        }
+    }
+    let settled = core
+        .advance_active_battle_by(0)
+        .expect("required Wave groups should settle to the named Victory outcome");
+    assert!(matches!(
+        settled,
+        BehaviorResult::BattleAdvanced { finished: true, .. }
+    ));
+    let receipt = core
+        .state
+        .confirmed_combat_result
+        .as_ref()
+        .expect("confirmed result");
+    let crate::game::behavior::SelectedEventSnapshotDto::CombatBattle {
+        outcome_id,
+        verdict,
+        rewards,
+        ..
+    } = &receipt.summary
+    else {
+        panic!("combat summary")
+    };
+    assert_eq!(outcome_id.as_str(), "reference_victory");
+    assert_eq!(*verdict, BattleVerdict::Victory);
+    assert!(rewards.is_empty());
+    let committed_profile = core.encounter_compendium_profile();
+
+    core.execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .expect("reference Victory should consume atomically");
+    let profile = core.encounter_compendium_profile();
+    assert_eq!(profile, committed_profile);
+    assert!(profile.registered_ids.contains(BOSS_ID));
+    assert!(profile.registered_ids.contains("corroded_rusher"));
+    assert!(!profile.registered_ids.contains(MINION_ID));
+    assert!(!core.state.player_profile.all_live_final_bosses_defeated);
+}
+
+#[test]
+fn live_little_red_no_target_and_locked_target_failure_paths_rejoin_authored_route() {
+    let (mut no_target, _, _, _) =
+        enter_live_little_red_reference(legacy_sword_live_game_data_from_ron(), 0xB055_0502, false);
+    for unit in no_target
+        .state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .battle
+        .units
+        .values_mut()
+        .filter(|unit| unit.owner == Side::Player)
+    {
+        unit.set_world_position(crate::game::battle::core::movement::types::WorldVec2::new(
+            -100.0, -100.0,
+        ));
+    }
+    no_target.advance_active_battle_by(5_000).unwrap();
+    let actor = no_target
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(actor.control_node_id.as_deref(), Some("route_combat"));
+    assert!(actor.pattern_id.is_none());
+    assert!(actor.target_id.is_none());
+
+    for (seed, failure) in [(0xB055_0503, "invalidation"), (0xB055_0504, "path")] {
+        let (mut core, player_id, employee_uuid, player_unit_id) =
+            enter_live_little_red_reference(legacy_sword_live_game_data_from_ron(), seed, true);
+        let player_unit_id = player_unit_id.unwrap();
+        isolate_live_little_red_target(&mut core, player_unit_id);
+        core.advance_active_battle_by(5_000).unwrap();
+        let initial = core
+            .state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .clone();
+        assert_eq!(initial.target_id, Some(player_unit_id));
+        let pattern_activation_id = initial.pattern_activation_id;
+
+        if failure == "invalidation" {
+            execute_current_battle_mutation(
+                &mut core,
+                player_id,
+                PlayerBehavior::WithdrawUnit {
+                    employee_uuid: employee_uuid.unwrap(),
+                },
+            )
+            .expect("locked live Little Red target should withdraw");
+        } else {
+            core.state
+                .active_battle
+                .as_mut()
+                .unwrap()
+                .battle
+                .units
+                .get_mut(&player_unit_id)
+                .unwrap()
+                .set_world_position(crate::game::battle::core::movement::types::WorldVec2::new(
+                    -100.0, -100.0,
+                ));
+        }
+
+        let mut reached_route_combat = false;
+        for _ in 0..120 {
+            core.advance_active_battle_by(100).unwrap();
+            let actor = core
+                .state
+                .active_battle
+                .as_ref()
+                .unwrap()
+                .battle
+                .boss_actor_runtime_debug_snapshots()[0]
+                .clone();
+            if failure == "invalidation" {
+                assert!(actor.target_id.is_none());
+            }
+            if actor.control_node_id.as_deref() == Some("route_combat")
+                && actor.pattern_id.is_none()
+            {
+                assert_ne!(actor.pattern_activation_id, pattern_activation_id);
+                reached_route_combat = true;
+                break;
+            }
+        }
+        assert!(reached_route_combat, "{failure} should reach RouteCombat");
+    }
+}
+
+#[test]
+fn live_little_red_timeout_uses_battle_time_and_has_an_exhaustive_rejoin_exit() {
+    let mut game_data = live_game_data_from_ron();
+    let database = Arc::get_mut(&mut game_data)
+        .expect("live data should remain uniquely owned before GameCore construction");
+    Arc::make_mut(&mut database.abnormality_data)
+        .items
+        .iter_mut()
+        .find(|item| item.id == "f-01-57_little_red")
+        .unwrap()
+        .movement
+        .speed_units_per_ms = 0;
+    let (mut core, _, _, player_unit_id) =
+        enter_live_little_red_reference(game_data, 0xB055_0505, true);
+    let player_unit_id = player_unit_id.unwrap();
+    isolate_live_little_red_target(&mut core, player_unit_id);
+    core.advance_active_battle_by(5_000).unwrap();
+    let approach = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(approach.state_id.as_deref(), Some("move_to_target"));
+
+    core.advance_active_battle_by(9_999).unwrap();
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .state_activation_id,
+        approach.state_activation_id
+    );
+    core.advance_active_battle_by(1).unwrap();
+    let rejoin = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(rejoin.state_id.as_deref(), Some("rejoin_forward_route"));
+    assert_ne!(rejoin.state_activation_id, approach.state_activation_id);
+
+    core.advance_active_battle_by(9_999).unwrap();
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .boss_actor_runtime_debug_snapshots()[0]
+            .state_activation_id,
+        rejoin.state_activation_id
+    );
+    core.advance_active_battle_by(1).unwrap();
+    let route = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()[0]
+        .clone();
+    assert_eq!(route.control_node_id.as_deref(), Some("route_combat"));
+    assert!(route.pattern_id.is_none());
+}
+
+#[test]
+fn live_non_opt_in_boss_encounter_keeps_ordinary_runtime_and_public_shape() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xB055_0506);
+    let player_id = Uuid::from_u128(0xB055_0506);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "suppress_big_bad_wolf",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    assert!(!serde_json::to_string(&started)
+        .unwrap()
+        .contains("boss_runtime"));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert!(active.battle.scenario().boss_runtime.is_none());
+    assert!(active
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .is_empty());
+
+    let before_reconnect = battle_advance_atomic_snapshot(&core);
+    core.active_battle_reconnect_projection(0).unwrap();
+    assert_eq!(battle_advance_atomic_snapshot(&core), before_reconnect);
+    let spawned = core.advance_active_battle_by(5_000).unwrap();
+    assert!(!serde_json::to_string(&spawned)
+        .unwrap()
+        .contains("boss_runtime"));
+    assert!(core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .boss_actor_runtime_debug_snapshots()
+        .is_empty());
+}
+
+#[test]
+fn late_boss_setup_failure_does_not_mutate_world_or_session_state() {
+    let mut game_data = game_data_with_pve_encounters();
+    let database = Arc::get_mut(&mut game_data)
+        .expect("fixture game data should be uniquely owned before GameCore construction");
+    let boss_runtime = crate::game::data::boss_runtime_data::tests::valid_catalog()
+        .compile()
+        .expect("Boss fixture catalog should compile");
+    database.boss_runtime_data = Arc::new(boss_runtime);
+    let pve = Arc::make_mut(&mut database.pve_data);
+    let encounter = pve
+        .encounters
+        .iter_mut()
+        .find(|encounter| encounter.id == "boss_risk_encounter")
+        .expect("Boss fixture encounter should exist");
+    encounter.boss_runtime = Some(crate::game::data::pve_data::PveBossRuntimeBindingData {
+        encounter_id: crate::game::data::boss_runtime_data::BossEncounterRuntimeId::new(
+            "tracking_encounter",
+        ),
+        actors: vec![crate::game::data::pve_data::PveBossActorBindingData {
+            actor_slot_id: crate::game::data::boss_runtime_data::BossActorSlotId::new("primary"),
+            wave_id: "wave_0".to_string(),
+            spawn_index: 0,
+        }],
+    });
+
+    let mut core = GameCore::new(game_data, 0xB055_0210);
+    let player_id = Uuid::from_u128(0xB055_0211);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "boss_risk_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .expect("Boss node selection should reach confirmation");
+    let before = battle_start_atomic_snapshot(&core);
+
+    let error = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect_err("route-dependent Boss setup should reject a route-less Boss arena");
+
+    assert!(matches!(
+        error,
+        GameError::InvalidStaticData(message) if message.contains("requires a non-empty authored route")
+    ));
+    assert_eq!(battle_start_atomic_snapshot(&core), before);
+    assert!(core.state.active_battle.is_none());
+}
+
+#[test]
+fn mutating_advance_rejects_future_cursor_without_any_state_change() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xB055_C003);
+    let player_id = Uuid::from_u128(0xB055_C003);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let before = battle_advance_atomic_snapshot(&core);
+    let error = core
+        .advance_active_battle_by_after_seq(10, u64::MAX)
+        .expect_err("future cursor must reject a mutating advance");
+    assert!(matches!(error, GameError::InvalidBattleResyncSeq { .. }));
+    let after = battle_advance_atomic_snapshot(&core);
+
+    assert_eq!(after, before);
+}
+
+#[test]
+fn elapsed_and_bucket_advance_reject_revision_overflow_without_any_state_change() {
+    for entrypoint in ["elapsed", "bucket"] {
+        let seed = if entrypoint == "elapsed" {
+            0xB055_C004
+        } else {
+            0xB055_C005
+        };
+        let mut core = GameCore::new(live_game_data_from_ron(), seed);
+        let player_id = Uuid::from_u128(seed as u128);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_map_combat_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_monster",
+            "suppress_burrowing_heaven",
+        );
+        core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+        core.state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .battle_state_revision = u64::MAX;
+
+        let before = battle_advance_atomic_snapshot(&core);
+        let error = match entrypoint {
+            "elapsed" => core
+                .advance_active_battle_by_after_seq(10, 0)
+                .expect_err("elapsed advance must reject revision overflow"),
+            "bucket" => core
+                .advance_active_battle_to_next_event_bucket()
+                .expect_err("bucket advance must reject revision overflow"),
+            _ => unreachable!(),
+        };
+        assert!(matches!(error, GameError::BattleStateRevisionOverflow));
+        assert_eq!(battle_advance_atomic_snapshot(&core), before);
+    }
+}
+
+#[test]
+fn advance_rolls_back_core_and_world_when_visual_novel_trigger_fails() {
+    let mut game_data = live_game_data_from_ron();
+    let database = Arc::get_mut(&mut game_data)
+        .expect("live data should be uniquely owned before GameCore construction");
+    let trigger_database = Arc::get_mut(&mut database.visual_novel_trigger_data)
+        .expect("trigger data should be uniquely owned before GameCore construction");
+    trigger_database.triggers.push(VisualNovelTrigger {
+        id: VisualNovelTriggerId::new("valid_vn_before_missing_vn"),
+        source: VisualNovelTriggerSource::BattleTimeReached { battle_time_ms: 1 },
+        vn_id: crate::game::data::visual_novel_data::VisualNovelId::new(
+            "white_night_confession_intro",
+        ),
+        repeat: VisualNovelTriggerRepeat::OncePerBattle,
+        checkpoint_policy: VisualNovelTriggerCheckpointPolicy::RewindWithRunCheckpoint,
+        priority: 2_000,
+        blocking: false,
+    });
+    trigger_database.triggers.push(VisualNovelTrigger {
+        id: VisualNovelTriggerId::new("missing_vn_during_battle_advance"),
+        source: VisualNovelTriggerSource::BattleTimeReached { battle_time_ms: 1 },
+        vn_id: crate::game::data::visual_novel_data::VisualNovelId::new("missing_vn"),
+        repeat: VisualNovelTriggerRepeat::OncePerBattle,
+        checkpoint_policy: VisualNovelTriggerCheckpointPolicy::RewindWithRunCheckpoint,
+        priority: 1_000,
+        blocking: false,
+    });
+    let mut core = GameCore::new(game_data, 0xB055_C006);
+    let player_id = Uuid::from_u128(0xB055_C006);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let before = battle_advance_atomic_snapshot(&core);
+    let error = core
+        .advance_active_battle_for_server_tick_after_seq(10, 0)
+        .expect_err("missing trigger VN must fail after staged Core work");
+    assert!(matches!(error, GameError::InvalidStaticData(_)));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
+}
+
+#[test]
+fn advance_rolls_back_core_and_world_when_employee_reconcile_fails() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0xB055_C007);
+    let player_id = Uuid::from_u128(0xB055_C007);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id, ..
+    } = deployed
+    else {
+        panic!("expected deployed employee");
+    };
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        let unit = active.battle.units.get_mut(&unit_instance_id).unwrap();
+        unit.stats.current_health = 0;
+        unit.lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+        active.employee_attempt.roster = crate::game::employee::EmployeeRoster::new();
+    }
+
+    let before = battle_advance_atomic_snapshot(&core);
+    let error = core
+        .advance_active_battle_by_after_seq(50, 0)
+        .expect_err("missing attempt employee must fail reconciliation");
+    assert!(matches!(error, GameError::BattleRuntimeFault(fault)
+        if fault.code == crate::game::battle::runtime_control::RuntimeFaultCode::Invariant
+            && fault.site == "reconcile_incapacitated_roster"));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
+    let retry = core.advance_active_battle_by_after_seq(50, 0).unwrap_err();
+    assert!(matches!(retry, GameError::BattleRuntimeFault(fault)
+        if fault.site == "reconcile_incapacitated_roster"));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
+}
+
+#[test]
+fn finishing_advance_rejects_future_cursor_without_consuming_terminal_state() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xB055_C008);
+    let player_id = Uuid::from_u128(0xB055_C008);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let before = battle_advance_atomic_snapshot(&core);
+    let error = core
+        .advance_active_battle_by_after_seq(10, u64::MAX)
+        .expect_err("future cursor must reject before terminal state is consumed");
+    assert!(matches!(error, GameError::InvalidBattleResyncSeq { .. }));
+    assert_eq!(battle_advance_atomic_snapshot(&core), before);
+    assert!(core
+        .state
+        .active_battle
+        .as_ref()
+        .is_some_and(|active| !active.execution.is_finished()));
+}
+
+#[test]
+fn elapsed_and_bucket_advance_publish_equivalent_success_state() {
+    fn start(seed: u64) -> GameCore {
+        let mut core = GameCore::new(live_game_data_from_ron(), seed);
+        let player_id = Uuid::from_u128(seed as u128);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_map_combat_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_monster",
+            "suppress_burrowing_heaven",
+        );
+        core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+        core
+    }
+
+    let mut elapsed_core = start(0xB055_C009);
+    let mut bucket_core = start(0xB055_C009);
+    let elapsed = elapsed_core
+        .advance_active_battle_by_after_seq(50, 0)
+        .expect("elapsed advance should succeed");
+    let bucket = bucket_core
+        .advance_active_battle_to_next_event_bucket()
+        .expect("bucket advance should succeed");
+
+    assert_eq!(
+        serde_json::to_value(&elapsed).unwrap(),
+        serde_json::to_value(&bucket).unwrap()
+    );
+    let elapsed_active = elapsed_core.state.active_battle.as_ref().unwrap();
+    let bucket_active = bucket_core.state.active_battle.as_ref().unwrap();
+    assert_eq!(
+        elapsed_active.execution.last_event_time_ms(),
+        bucket_active.execution.last_event_time_ms()
+    );
+    assert_eq!(
+        elapsed_active.battle.event_log.to_json_string().unwrap(),
+        bucket_active.battle.event_log.to_json_string().unwrap()
+    );
+    assert_eq!(
+        elapsed_active.battle.event_queue_debug_snapshot(),
+        bucket_active.battle.event_queue_debug_snapshot()
+    );
+    assert_eq!(
+        elapsed_active.battle_state_revision,
+        bucket_active.battle_state_revision
+    );
+}
+
+#[test]
+fn live_world_tick_reaches_authored_time_outcome_without_revision_churn() {
+    let mut game_data = live_game_data_from_ron();
+    let database = Arc::get_mut(&mut game_data)
+        .expect("live data should be uniquely owned before GameCore construction");
+    let pve = Arc::get_mut(&mut database.pve_data)
+        .expect("PVE data should be uniquely owned before GameCore construction");
+    let encounter = pve
+        .encounters
+        .iter_mut()
+        .find(|encounter| encounter.id == "suppress_burrowing_heaven")
+        .expect("live encounter fixture");
+    encounter
+        .terminal_outcomes
+        .retain(|outcome| outcome.verdict == BattleVerdict::Victory);
+    let victory_outcome_id = encounter.terminal_outcomes[0].id.clone();
+    encounter
+        .outcome_policies
+        .retain(|policy| policy.outcome_id == victory_outcome_id);
+    encounter.terminal_outcomes[0].condition =
+        crate::game::data::pve_data::PveTerminalConditionData::TimeReached { time_ms: 10 };
+    for wave in &mut encounter.waves {
+        wave.required_for_victory = false;
+    }
+
+    let mut core = GameCore::new(game_data, 0xB055_C001);
+    let player_id = Uuid::from_u128(0xB055_C001);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let revision_before = core
+        .state
+        .active_battle
+        .as_ref()
+        .expect("battle should be active before the cap tick")
+        .battle_state_revision;
+
+    let result = core
+        .advance_active_battle_for_server_tick(10)
+        .expect("server tick should succeed")
+        .expect("server tick should emit the terminal update");
+    let BehaviorResult::BattleAdvanced {
+        finished,
+        battle_update,
+        ..
+    } = result
+    else {
+        panic!("expected terminal battle update");
+    };
+
+    assert!(finished);
+    assert_eq!(battle_update.checkpoint.battle_time_ms, 10);
+    assert_eq!(battle_update.battle_state_revision, revision_before + 1);
+    assert!(matches!(core.get_state(), GameState::CombatResult { .. }));
+    assert!(core.state.active_battle.is_none());
+    assert!(matches!(
+        core.advance_active_battle_for_server_tick(1),
+        Err(GameError::InvalidAction)
+    ));
+}
+
 #[test]
 fn live_defense_setup_loss_recovery_preserves_battle_revision_and_state() {
     let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_5101);
@@ -2884,8 +5963,368 @@ fn live_defense_setup_loss_recovery_preserves_battle_revision_and_state() {
 }
 
 #[test]
+fn expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_5102);
+    let player_id = Uuid::from_u128(0xD3F3_5102);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let (expired_through, latest_before_expiry) = {
+        let active = core.state.active_battle.as_mut().unwrap();
+        let latest = active.battle.event_log.latest_seq();
+        let expired_through = latest + 1;
+        active.battle.event_log.append_with_encoded_len_for_test(
+            BattleEventLogEntry {
+                skill_effect_source: None,
+                time_ms: active.execution.last_event_time_ms(),
+                seq: expired_through,
+                cause: BattleEventCause::default(),
+                source_command_id: None,
+                event: BattleLogEvent::BattleEnd {
+                    winner: BattleWinner::Draw,
+                },
+            },
+            Some(BATTLE_HISTORY_MAX_ENCODED_BYTES - 1),
+        );
+        (expired_through, latest)
+    };
+    assert!(latest_before_expiry > 0);
+
+    let error = core
+        .execute(
+            player_id,
+            PlayerBehavior::RequestBattleState { since_seq: Some(0) },
+        )
+        .expect_err("a strict cursor below the retained floor must request snapshot resync");
+    assert!(matches!(
+        error,
+        GameError::BattleSnapshotResyncRequired {
+            requested: 0,
+            oldest_available_after_seq,
+            latest,
+        } if oldest_available_after_seq == expired_through && latest == expired_through
+    ));
+
+    let recover = |core: &mut GameCore| {
+        let result = core
+            .execute(player_id, PlayerBehavior::RecoverBattleSetupLoss)
+            .expect("setup-loss recovery must tolerate an expired diagnostic cursor");
+        let BehaviorResult::BattleAdvanced {
+            battle_setup_snapshot: Some(_),
+            battle_update,
+            ..
+        } = result
+        else {
+            panic!("expected setup plus typed resync snapshot");
+        };
+        battle_update
+    };
+    let first = recover(&mut core);
+    let retry = recover(&mut core);
+
+    assert_eq!(
+        first.message_type,
+        crate::game::behavior::LiveBattleUpdateMessageType::SnapshotResyncRequired
+    );
+    assert_eq!(first.events_delta.after_seq, expired_through);
+    assert_eq!(first.events_delta.to_seq, expired_through);
+    assert!(first.events_delta.events.is_empty());
+    assert_eq!(
+        serde_json::to_value(&first).unwrap(),
+        serde_json::to_value(&retry).unwrap()
+    );
+}
+
+#[test]
+fn live_freischutz_field_work_setup_progress_and_recovery_are_authoritative() {
+    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xF43_5101);
+    let player_id = Uuid::from_u128(0xF43_5101);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "suppress_freischutz",
+    );
+
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let started = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let BehaviorResult::BattleAdvanced {
+        battle_uuid,
+        battle_setup_snapshot: Some(setup),
+        battle_update: first_update,
+        finished: false,
+        ..
+    } = started
+    else {
+        panic!("expected Freischutz live battle start");
+    };
+    assert_eq!(setup.setup_version, 2);
+    assert_eq!(setup.encounter_id, "suppress_freischutz");
+    assert_eq!(setup.field_work_objects.len(), 1);
+    let setup_object = &setup.field_work_objects[0];
+    assert_eq!(setup_object.id, "black_box_emergency_repair");
+    assert_eq!(setup_object.position, Position::new(2, 6));
+    assert_eq!(setup_object.required_work_ms, 10_000);
+    assert_eq!(setup_object.work_cells.len(), 1);
+    assert_eq!(setup_object.work_cells[0].id, "repair_cell");
+    assert_eq!(setup_object.work_cells[0].position, Position::new(2, 6));
+    assert_eq!(
+        setup_object.work_cells[0].tile_kind,
+        crate::game::battle::types::TacticalTileKind::Ground
+    );
+    assert!(matches!(
+        setup_object.presentation_kind,
+        crate::game::behavior::LiveBattleFieldWorkPresentationKindDto::EmergencyRepairTerminal
+    ));
+    assert!(matches!(
+        setup_object.completion_effect,
+        crate::game::behavior::LiveBattleFieldWorkCompletionEffectDto::RepairProtectedUnit {
+            ref unit_ref,
+            flat_hp: 100,
+        } if unit_ref == "black_box_device"
+    ));
+    let initial_object = &first_update.checkpoint.field_work_objects[0];
+    assert_eq!(initial_object.id, "black_box_emergency_repair");
+    assert_eq!(initial_object.accumulated_work_ms, 0);
+    assert_eq!(initial_object.required_work_ms, 10_000);
+    assert!(matches!(
+        initial_object.status,
+        crate::game::behavior::LiveBattleFieldWorkObjectStatusDto::Active
+    ));
+    assert_eq!(initial_object.work_cells[0].worker_unit_instance_id, None);
+
+    let employee_uuid = first_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .expect("deployment state")
+        .unit_deploy_costs
+        .iter()
+        .find(|entry| entry.eligibility.enabled)
+        .expect("deployable starter")
+        .employee_uuid;
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: Position::new(2, 6),
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        battle_update: deployed_update,
+        ..
+    } = deployed
+    else {
+        panic!("expected direct deployment onto the work cell");
+    };
+    let deployed_unit = deployed_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .unwrap()
+        .deployed_units
+        .iter()
+        .find(|entry| entry.employee_uuid == employee_uuid)
+        .expect("deployed employee projection");
+    assert_eq!(deployed_unit.position, Position::new(2, 6));
+    assert_eq!(
+        deployed_unit.tactical_state.stance,
+        EngagementStance::Defense
+    );
+    assert_eq!(
+        deployed_unit.tactical_state.activity,
+        crate::game::battle::types::UnitExclusiveActivity::FieldWorking
+    );
+    assert_eq!(
+        deployed_unit.tactical_state.tile_effect,
+        LiveBattleTileEffectDto::None
+    );
+    assert_eq!(deployed_unit.tactical_state.effective_block_capacity, 0);
+    let worker_unit_instance_id = deployed_unit.unit_instance_id;
+    assert!(!deployed_unit.skill_readiness.eligibility.enabled);
+    let worker_checkpoint = deployed_update
+        .checkpoint
+        .units
+        .iter()
+        .find(|unit| unit.unit_instance_id == worker_unit_instance_id)
+        .expect("worker checkpoint actor");
+    assert_eq!(
+        worker_checkpoint.control.skill_start_disabled_reason,
+        Some(ActionDisabledReasonCode::FieldWorking)
+    );
+    assert_eq!(
+        deployed_update.checkpoint.field_work_objects[0].work_cells[0].worker_unit_instance_id,
+        Some(worker_unit_instance_id)
+    );
+    assert!(deployed_update
+        .events_delta
+        .events
+        .iter()
+        .any(|entry| matches!(
+            entry.event,
+            LiveBattlePresentationEventKindDto::FieldWorkAssignmentStarted {
+                ref object_id,
+                ref work_cell_id,
+                worker_unit_instance_id: event_worker,
+            } if object_id == "black_box_emergency_repair"
+                && work_cell_id == "repair_cell"
+                && event_worker == worker_unit_instance_id
+        )));
+
+    let paused =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: paused_update,
+        ..
+    } = paused
+    else {
+        panic!("expected paused field work update");
+    };
+    assert!(paused_update.checkpoint.playback.paused);
+    assert_eq!(
+        paused_update.checkpoint.field_work_objects[0].accumulated_work_ms,
+        0
+    );
+    assert!(core
+        .advance_active_battle_for_server_tick(1_000)
+        .unwrap()
+        .is_none());
+    let resumed =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle)
+            .unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: resumed_update,
+        ..
+    } = resumed
+    else {
+        panic!("expected resumed field work update");
+    };
+    assert!(!resumed_update.checkpoint.playback.paused);
+    assert_eq!(
+        resumed_update.checkpoint.field_work_objects[0].accumulated_work_ms, 0,
+        "paused wall time must not contribute or catch up on resume"
+    );
+
+    let advanced = core
+        .advance_active_battle_for_server_tick(1_000)
+        .unwrap()
+        .expect("running field work should produce a revisioned update");
+    let BehaviorResult::BattleAdvanced {
+        battle_update: advanced_update,
+        finished: false,
+        ..
+    } = advanced
+    else {
+        panic!("expected running Freischutz battle update");
+    };
+    assert_eq!(
+        advanced_update.checkpoint.field_work_objects[0].accumulated_work_ms,
+        1_000
+    );
+    let current_revision = advanced_update.battle_state_revision;
+
+    let recovered = core
+        .execute(player_id, PlayerBehavior::RecoverBattleSetupLoss)
+        .unwrap();
+    let BehaviorResult::BattleAdvanced {
+        battle_uuid: recovered_battle_uuid,
+        battle_setup_snapshot: Some(recovered_setup),
+        battle_update: recovered_update,
+        ..
+    } = recovered
+    else {
+        panic!("expected field work setup-loss recovery projection");
+    };
+    assert_eq!(recovered_battle_uuid, battle_uuid);
+    assert_eq!(recovered_setup.field_work_objects, setup.field_work_objects);
+    assert_eq!(recovered_update.battle_state_revision, current_revision);
+    assert_eq!(
+        recovered_update.checkpoint.field_work_objects,
+        advanced_update.checkpoint.field_work_objects
+    );
+    let recovered_unit = recovered_update
+        .checkpoint
+        .units
+        .iter()
+        .find(|unit| unit.unit_instance_id == worker_unit_instance_id)
+        .expect("recovered worker checkpoint");
+    assert_eq!(
+        recovered_unit.tactical_state.as_ref().unwrap().activity,
+        crate::game::battle::types::UnitExclusiveActivity::FieldWorking
+    );
+}
+
+#[test]
+fn disconnect_auto_pause_is_idempotent_and_requires_explicit_resume() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0100);
+    let player_id = Uuid::from_u128(0xD3F3_0100);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let revision_before = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle_state_revision;
+    assert!(core.auto_pause_active_battle_for_disconnect().unwrap());
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert!(active.playback.paused);
+    assert_eq!(active.battle_state_revision, revision_before + 1);
+
+    assert!(!core.auto_pause_active_battle_for_disconnect().unwrap());
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle_state_revision,
+        revision_before + 1
+    );
+    assert!(core
+        .advance_active_battle_for_server_tick(50_000)
+        .unwrap()
+        .is_none());
+
+    let resumed =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle)
+            .unwrap();
+    let BehaviorResult::BattlePlaybackChanged { battle_update, .. } = resumed else {
+        panic!("explicit ResumeBattle should publish playback state");
+    };
+    assert!(!battle_update.checkpoint.playback.paused);
+    assert_eq!(battle_update.battle_state_revision, revision_before + 2);
+}
+
+#[test]
 fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0101);
+    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0101);
     let player_id = Uuid::from_u128(0xD3F3_0101);
     start_new_game_with_default_starters(&mut core, player_id);
     let node_id = force_map_combat_node(
@@ -2958,6 +6397,7 @@ fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
     };
     let playback = battle_update.checkpoint.playback;
     let paused_time_ms = battle_update.checkpoint.battle_time_ms;
+    let paused_resource = battle_update.checkpoint.tactical_resource;
     let paused_seq = battle_update.events_delta.to_seq;
     assert!(playback.paused);
     assert_eq!(paused_time_ms, 0);
@@ -2990,8 +6430,25 @@ fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
         paused_snapshot["game_state_context"]["playback"]["paused"],
         true
     );
+    assert_eq!(
+        paused_snapshot["game_state_context"]["tactical_resource"]["current"],
+        serde_json::json!(paused_resource.current)
+    );
+    assert!(paused_snapshot["game_state_context"]["deployment"]
+        .get("current_cost")
+        .is_none());
+    let mut legacy_root_context = paused_snapshot["game_state_context"].clone();
+    legacy_root_context
+        .as_object_mut()
+        .unwrap()
+        .remove("tactical_resource");
+    assert!(
+        serde_json::from_value::<crate::game::behavior::GameStateContextDto>(legacy_root_context)
+            .is_err(),
+        "tactical_resource is required in the root in-battle context"
+    );
 
-    let paused_tick = core.advance_active_battle_for_server_tick(10).unwrap();
+    let paused_tick = core.advance_active_battle_for_server_tick(50_000).unwrap();
     assert!(paused_tick.is_none());
     let state = core
         .execute(
@@ -3006,6 +6463,7 @@ fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
     let battle_time_ms = battle_update.checkpoint.battle_time_ms;
     assert!(playback.paused);
     assert_eq!(battle_time_ms, paused_time_ms);
+    assert_eq!(battle_update.checkpoint.tactical_resource, paused_resource);
     assert_eq!(battle_update.battle_state_revision, 3);
 
     let resumed =
@@ -3038,7 +6496,7 @@ fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
     );
 
     let advanced = core
-        .advance_active_battle_for_server_tick(10)
+        .advance_active_battle_for_server_tick(1_000)
         .unwrap()
         .expect("resume should advance the live battle");
     let BehaviorResult::BattleAdvanced {
@@ -3053,8 +6511,172 @@ fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
     let playback = battle_update.checkpoint.playback;
     assert!(!finished);
     assert!(!playback.paused);
-    assert_eq!(battle_time_ms, 10);
+    assert_eq!(battle_time_ms, 1_000);
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.current,
+        paused_resource.current.saturating_add(1),
+        "paused wall time must not recover or catch up after resume"
+    );
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.maximum,
+        paused_resource.maximum
+    );
     assert_eq!(battle_update.battle_state_revision, 5);
+}
+
+#[test]
+fn paused_live_battle_commits_deploy_and_withdraw_without_advancing_time() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0108);
+    let player_id = Uuid::from_u128(0xD3F3_0108);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let paused =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: paused_update,
+        ..
+    } = paused
+    else {
+        panic!("expected paused battle update");
+    };
+    let frozen_time_ms = paused_update.checkpoint.battle_time_ms;
+    let paused_revision = paused_update.battle_state_revision;
+    let initial_resource = paused_update.checkpoint.tactical_resource.current;
+    assert!(paused_update.checkpoint.playback.paused);
+    assert_eq!(frozen_time_ms, 0);
+
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        battle_update: deployed_update,
+        ..
+    } = deployed
+    else {
+        panic!("expected paused deployment update");
+    };
+    let deployed_resource = deployed_update.checkpoint.tactical_resource.current;
+    assert_eq!(deployed_update.battle_state_revision, paused_revision + 1);
+    assert_eq!(deployed_update.checkpoint.battle_time_ms, frozen_time_ms);
+    assert!(deployed_update.checkpoint.playback.paused);
+    assert!(deployed_resource < initial_resource);
+
+    let before_rejected_deploy =
+        serde_json::to_value(core.active_battle_reconnect_projection(0).unwrap()).unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect_err("an already deployed employee must be rejected while paused");
+    let after_rejected_deploy =
+        serde_json::to_value(core.active_battle_reconnect_projection(0).unwrap()).unwrap();
+    assert_eq!(after_rejected_deploy, before_rejected_deploy);
+
+    let withdrawn = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::WithdrawUnit { employee_uuid },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitWithdrawn {
+        battle_update: withdrawn_update,
+        ..
+    } = withdrawn
+    else {
+        panic!("expected paused withdrawal update");
+    };
+    assert_eq!(
+        withdrawn_update.battle_state_revision,
+        deployed_update.battle_state_revision + 1
+    );
+    assert_eq!(withdrawn_update.checkpoint.battle_time_ms, frozen_time_ms);
+    assert!(withdrawn_update.checkpoint.playback.paused);
+    let withdrawn_redeploy = &withdrawn_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .expect("live deployment state after withdrawal")
+        .redeploying_units[0];
+    assert_eq!(
+        withdrawn_redeploy.ready_at_ms,
+        frozen_time_ms + run_policy().live_deployment.withdraw_redeploy_cooldown_ms
+    );
+    assert_eq!(
+        withdrawn_update.checkpoint.tactical_resource.current, deployed_resource,
+        "withdrawal must not refund the committed deployment cost"
+    );
+
+    let before_rejected_withdraw =
+        serde_json::to_value(core.active_battle_reconnect_projection(0).unwrap()).unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::WithdrawUnit { employee_uuid },
+    )
+    .expect_err("an already withdrawn employee must be rejected while paused");
+    let after_rejected_withdraw =
+        serde_json::to_value(core.active_battle_reconnect_projection(0).unwrap()).unwrap();
+    assert_eq!(after_rejected_withdraw, before_rejected_withdraw);
+
+    assert!(core
+        .advance_active_battle_for_server_tick(10)
+        .unwrap()
+        .is_none());
+    let state = core
+        .execute(
+            player_id,
+            PlayerBehavior::RequestBattleState { since_seq: None },
+        )
+        .unwrap();
+    let BehaviorResult::BattleState { battle_update, .. } = state else {
+        panic!("expected latest paused battle state");
+    };
+    assert_eq!(
+        battle_update.battle_state_revision,
+        withdrawn_update.battle_state_revision
+    );
+    assert_eq!(battle_update.checkpoint.battle_time_ms, frozen_time_ms);
+    assert!(battle_update.checkpoint.playback.paused);
+    let reconnect_redeploy = &battle_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .expect("reconnect deployment state")
+        .redeploying_units[0];
+    assert_eq!(
+        reconnect_redeploy.ready_at_ms,
+        withdrawn_redeploy.ready_at_ms
+    );
+    assert_eq!(
+        reconnect_redeploy.deploy_cost,
+        withdrawn_redeploy.deploy_cost
+    );
 }
 
 #[test]
@@ -3183,7 +6805,7 @@ fn visual_novel_session_for_battle(
 fn start_live_defense_battle_for_vn_test(
     seed: u64,
 ) -> (GameCore, Uuid, Uuid, crate::game::map::MapNodeId) {
-    let mut core = GameCore::new(live_game_data_from_ron(), seed);
+    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), seed);
     let player_id = Uuid::from_u128(seed as u128);
     start_new_game_with_default_starters(&mut core, player_id);
     let node_id = force_map_combat_node(
@@ -3399,7 +7021,19 @@ fn blocking_visual_novel_pauses_live_battle_tick_and_uses_battle_update_transpor
         .unwrap()
         .latest_event_log_seq();
 
-    assert!(core.get_action_capabilities().is_empty());
+    assert_eq!(
+        core.get_action_capabilities(),
+        vec![
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicState,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+        ]
+    );
     let reconnect = core.active_battle_reconnect_projection(0).unwrap();
     let BehaviorResult::BattleAdvanced {
         battle_update: blocking_update,
@@ -3591,7 +7225,7 @@ fn blocking_visual_novel_execution_preflight_rejects_every_omitted_battle_action
 
 #[test]
 fn live_defense_playback_speed_scales_server_tick_delta() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0102);
+    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0102);
     let player_id = Uuid::from_u128(0xD3F3_0102);
     start_new_game_with_default_starters(&mut core, player_id);
     let node_id = force_map_combat_node(
@@ -3815,7 +7449,8 @@ fn pending_deployment_range_preview_returns_all_facings_without_mutating_battle(
         .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
     let deploy_position = ground_deployment_cell_with_right_range(&preview);
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
+    let employee_uuid = employee_ids[0];
 
     let not_live = core
         .execute(
@@ -3838,12 +7473,7 @@ fn pending_deployment_range_preview_returns_all_facings_without_mutating_battle(
         .unwrap()
         .battle_update_dto_after(0, &core.state.roster)
         .unwrap();
-    let before_cost = before_update
-        .checkpoint
-        .deployment
-        .as_ref()
-        .unwrap()
-        .current_cost;
+    let before_resource = before_update.checkpoint.tactical_resource.current;
     assert!(before_update
         .checkpoint
         .deployment
@@ -3869,33 +7499,17 @@ fn pending_deployment_range_preview_returns_all_facings_without_mutating_battle(
     assert_eq!(result.position, deploy_position);
     assert_eq!(
         result.facings.right.range_previews.basic_attack.cells,
-        vec![
-            deploy_position,
-            Position::new(deploy_position.x + 1, deploy_position.y)
-        ]
+        vec![Position::new(deploy_position.x + 1, deploy_position.y)]
     );
     assert!(!result.facings.right.range_previews.active_skill.available);
-    assert!(!result
-        .facings
-        .up
-        .range_previews
-        .basic_attack
-        .cells
-        .is_empty());
-    assert!(!result
-        .facings
-        .down
-        .range_previews
-        .basic_attack
-        .cells
-        .is_empty());
-    assert!(!result
-        .facings
-        .left
-        .range_previews
-        .basic_attack
-        .cells
-        .is_empty());
+    // The typed result always carries every facing. A one-cell forward weapon can
+    // legitimately project an empty range when a rotated cell falls off-grid.
+    let _all_facings = (
+        &result.facings.up,
+        &result.facings.down,
+        &result.facings.left,
+        &result.facings.right,
+    );
 
     let after_update = core
         .state
@@ -3909,13 +7523,307 @@ fn pending_deployment_range_preview_returns_all_facings_without_mutating_battle(
         "preview must not emit event_log events"
     );
     let after_deployment = after_update.checkpoint.deployment.as_ref().unwrap();
-    assert_eq!(after_deployment.current_cost, before_cost);
+    assert_eq!(
+        after_update.checkpoint.tactical_resource.current,
+        before_resource
+    );
     assert!(after_deployment.deployed_units.is_empty());
     assert!(!after_update
         .checkpoint
         .units
         .iter()
         .any(|unit| matches!(unit.unit_source, BattleUnitSourceIdentity::Employee { .. })));
+}
+
+#[test]
+fn control_status_checkpoint_reconnect_projects_exact_derived_state_and_requires_shape() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0xCC02_0001);
+    let player_id = Uuid::from_u128(0xCC02_0002);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = ground_deployment_cell_with_right_range(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id, ..
+    } = deployed
+    else {
+        panic!("expected live deploy result");
+    };
+
+    core.advance_active_battle_by(5)
+        .expect("battle clock should advance before reconnect projection");
+    let battle_time_ms = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .execution
+        .last_event_time_ms();
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        for (buff_name, duration_ms) in [("stun", 100), ("freeze", 200), ("silence", 300)] {
+            active
+                .battle
+                .process_event_for_test(
+                    BattleEvent::ApplyBuff {
+                        time_ms: battle_time_ms,
+                        caster_instance_id: unit_instance_id,
+                        target_instance_id: unit_instance_id,
+                        buff_id: BuffId::from_name(buff_name),
+                        duration_ms,
+                        cause: BattleEventCause::default(),
+                    },
+                    battle_time_ms,
+                )
+                .unwrap();
+        }
+    }
+
+    let update = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle_update_dto_after(0, &core.state.roster)
+        .unwrap();
+    assert_eq!(update.checkpoint.battle_time_ms, battle_time_ms);
+    assert_eq!(
+        update.checkpoint.tactical_resource,
+        crate::game::behavior::LiveBattleTacticalResourceDto {
+            current: run_policy().tactical_resource.initial
+                - run_policy().tactical_resource.base_deploy_cost,
+            maximum: run_policy().tactical_resource.maximum,
+            recovery_per_second: run_policy().tactical_resource.recovery_per_second,
+        }
+    );
+    let unit = update
+        .checkpoint
+        .units
+        .iter()
+        .find(|unit| unit.unit_instance_id == unit_instance_id)
+        .expect("controlled unit should be present in reconnect checkpoint");
+    assert!(unit.control.hard_cc_active);
+    assert_eq!(
+        unit.control.hard_cc_release_time_ms,
+        Some(battle_time_ms.saturating_add(200))
+    );
+    assert!(unit.control.silenced);
+    assert_eq!(
+        unit.control.skill_start_disabled_reason,
+        Some(ActionDisabledReasonCode::HardCrowdControl)
+    );
+
+    let checkpoint_json = serde_json::to_value(&update.checkpoint).unwrap();
+    let mut missing_resource_json = checkpoint_json.clone();
+    missing_resource_json
+        .as_object_mut()
+        .unwrap()
+        .remove("tactical_resource");
+    assert!(
+        serde_json::from_value::<crate::game::behavior::LiveBattleStateCheckpointDto>(
+            missing_resource_json
+        )
+        .is_err(),
+        "tactical_resource is a required checkpoint field"
+    );
+
+    let mut legacy_deployment_json = checkpoint_json.clone();
+    legacy_deployment_json["deployment"]
+        .as_object_mut()
+        .unwrap()
+        .insert("current_cost".to_string(), serde_json::json!(10));
+    assert!(
+        serde_json::from_value::<crate::game::behavior::LiveBattleStateCheckpointDto>(
+            legacy_deployment_json
+        )
+        .is_err(),
+        "legacy resource fields must not parse through deployment"
+    );
+
+    let mut checkpoint_json = checkpoint_json;
+    let controlled_json = checkpoint_json["units"]
+        .as_array_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|unit| unit["control"]["hard_cc_active"] == serde_json::Value::Bool(true))
+        .expect("serialized checkpoint should include the control projection");
+    controlled_json.as_object_mut().unwrap().remove("control");
+    assert!(
+        serde_json::from_value::<crate::game::behavior::LiveBattleStateCheckpointDto>(
+            checkpoint_json
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn all_weaponless_roster_uses_existing_no_deployable_run_rule() {
+    let mut core = GameCore::new(empty_game_data(), 0xA11C_E003);
+    let player_id = Uuid::from_u128(0xA11C_E003);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
+    for employee_uuid in employee_ids {
+        force_unequip_employee_weapon(&mut core, employee_uuid);
+    }
+    assert_eq!(
+        core.current_run_failure_reason().unwrap(),
+        Some(RunFailureReason::NoDeployableEmployees)
+    );
+}
+
+#[test]
+fn weaponless_employee_is_listed_but_battle_actions_reject_with_condition_priority() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0xA11C_E001);
+    let player_id = Uuid::from_u128(0xA11C_E001);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = first_ground_deployment_cell(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    force_unequip_employee_weapon(&mut core, employee_uuid);
+
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let candidate = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .live_deployment_dto(core.roster().unwrap())
+        .unwrap()
+        .unit_deploy_costs
+        .into_iter()
+        .find(|candidate| candidate.employee_uuid == employee_uuid)
+        .expect("weaponless employee remains visible in the formation candidate list");
+    assert_eq!(
+        candidate.eligibility.disabled_reason_code,
+        Some(ActionDisabledReasonCode::WeaponRequired)
+    );
+    let root = core.get_run_snapshot_json().unwrap();
+    let root_candidate = root["game_state_context"]["deployment"]["unit_deploy_costs"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|candidate| candidate["employee_uuid"] == serde_json::json!(employee_uuid))
+        .expect("root checkpoint must preserve weaponless formation candidate");
+    assert_eq!(
+        root_candidate["eligibility"]["disabled_reason_code"],
+        "weapon_required"
+    );
+
+    let (resource_before, revision_before, seq_before) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.tactical_resource.current(),
+            active.battle_state_revision,
+            active.latest_event_log_seq(),
+        )
+    };
+    let deploy_error = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect_err("weaponless deployment must fail closed");
+    assert!(matches!(
+        deploy_error,
+        GameError::ActionUnavailable {
+            action: ActionKind::DeployUnit,
+            reason: ActionDisabledReasonCode::WeaponRequired,
+        }
+    ));
+    let range_error = core
+        .execute(
+            player_id,
+            PlayerBehavior::RequestDeploymentRangePreview {
+                employee_uuid,
+                position: deploy_position,
+            },
+        )
+        .expect_err("weaponless range preview must fail closed");
+    assert!(matches!(
+        range_error,
+        GameError::ActionUnavailable {
+            action: ActionKind::RequestDeploymentRangePreview,
+            reason: ActionDisabledReasonCode::WeaponRequired,
+        }
+    ));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.tactical_resource.current(), resource_before);
+    assert_eq!(active.battle_state_revision, revision_before);
+    assert_eq!(active.latest_event_log_seq(), seq_before);
+    assert!(active
+        .live_deployment
+        .as_ref()
+        .unwrap()
+        .redeploy_locks
+        .is_empty());
+
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .employee_attempt
+        .roster
+        .get_mut(&employee_uuid)
+        .unwrap()
+        .condition
+        .physical_damage = crate::game::employee::MAX_PHYSICAL_DAMAGE - 1;
+    let condition_error = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect_err("condition reason must outrank weapon_required");
+    assert!(
+        matches!(
+            &condition_error,
+            GameError::ActionUnavailable {
+                action: ActionKind::DeployUnit,
+                reason: ActionDisabledReasonCode::CriticalPhysicalDamage,
+            }
+        ),
+        "unexpected condition-priority error: {condition_error:?}"
+    );
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.tactical_resource.current(), resource_before);
+    assert_eq!(active.battle_state_revision, revision_before);
+    assert_eq!(active.latest_event_log_seq(), seq_before);
 }
 
 #[test]
@@ -3946,10 +7854,7 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     assert!(pending_range_preview.basic_attack.available);
     assert_eq!(
         pending_range_preview.basic_attack.cells,
-        vec![
-            deploy_position,
-            Position::new(deploy_position.x + 1, deploy_position.y)
-        ]
+        vec![Position::new(deploy_position.x + 1, deploy_position.y)]
     );
     assert!(!pending_range_preview.active_skill.available);
 
@@ -3971,17 +7876,18 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     else {
         panic!("expected live deploy result");
     };
+    assert!(!battle_update.action_capabilities.is_empty());
     let deployment = battle_update
         .checkpoint
         .deployment
         .as_ref()
         .expect("live deploy update should expose deployment state");
     assert_eq!(
-        deployment.current_cost,
+        battle_update.checkpoint.tactical_resource.current,
         run_policy()
-            .live_deployment
-            .initial_cost
-            .saturating_sub(run_policy().live_deployment.base_deploy_cost)
+            .tactical_resource
+            .initial
+            .saturating_sub(run_policy().tactical_resource.base_deploy_cost)
     );
     assert_eq!(deployment.deployed_units.len(), 1);
     assert_eq!(deployment.deployed_units[0].employee_uuid, employee_uuid);
@@ -4041,15 +7947,37 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
         checkpoint_range_previews.active_skill.reason,
         pending_range_preview.active_skill.reason
     );
-    if let Some(deployment) = core
-        .state
+    core.state
         .active_battle
         .as_mut()
-        .and_then(|battle| battle.live_deployment.as_mut())
-    {
-        deployment.current_cost = run_policy().live_deployment.base_deploy_cost;
-    }
-    let second_deployed = execute_current_battle_mutation(
+        .unwrap()
+        .tactical_resource
+        .set_current_for_test(run_policy().tactical_resource.base_deploy_cost);
+    let second_deploy_position = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .combat_preview
+        .deployment_zones
+        .iter()
+        .filter(|zone| zone.kind == DeploymentZoneKind::Ground)
+        .flat_map(|zone| zone.cells.iter().copied())
+        .find(|position| *position != deploy_position)
+        .expect("fixture should expose a second ground deployment cell");
+    let (
+        revision_before_occupied_deploy,
+        resource_before_occupied_deploy,
+        seq_before_occupied_deploy,
+    ) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.battle_state_revision,
+            active.tactical_resource.current(),
+            active.latest_event_log_seq(),
+        )
+    };
+    let occupied_error = execute_current_battle_mutation(
         &mut core,
         player_id,
         PlayerBehavior::DeployUnit {
@@ -4058,7 +7986,30 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
             facing: FacingDirection::Right,
         },
     )
-    .expect("allied deployment should allow shared deployment tiles");
+    .expect_err("active allied tactical slots must reject a second deployment");
+    assert!(matches!(occupied_error, GameError::PositionOccupied));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(
+            active.battle_state_revision,
+            revision_before_occupied_deploy
+        );
+        assert_eq!(
+            active.tactical_resource.current(),
+            resource_before_occupied_deploy
+        );
+        assert_eq!(active.latest_event_log_seq(), seq_before_occupied_deploy);
+    }
+    let second_deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: second_employee_uuid,
+            position: second_deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("a distinct allied deployment tile should remain valid");
     let BehaviorResult::BattleUnitDeployed {
         unit_instance_id: second_unit_instance_id,
         ..
@@ -4066,7 +8017,7 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     else {
         panic!("expected second live deploy result");
     };
-    let expected_withdraw_redeploy_hp = {
+    let (expected_withdraw_redeploy_hp, initial_runtime_state) = {
         let active = core
             .state
             .active_battle
@@ -4077,15 +8028,31 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
             .units
             .get_mut(&unit_instance_id)
             .expect("deployed unit should exist in battle core");
+        let initial_runtime_state = (
+            unit.resonance_current,
+            unit.next_action_time,
+            unit.next_basic_attack_ms,
+        );
         let damaged_hp = unit.stats.max_health / 2;
         unit.stats.current_health = damaged_hp;
-        damaged_hp
+        unit.resonance_current = if unit.resonance_current == 0 {
+            unit.resonance_max
+        } else {
+            0
+        };
+        unit.next_action_time = 999_999;
+        unit.next_basic_attack_ms = 999_999;
+        unit.current_target = Some(second_unit_instance_id);
+        unit.pending_basic_attack = true;
+        unit.pending_cast = true;
+        let recovered_hp = damaged_hp
             .saturating_add(
                 unit.stats.max_health.saturating_mul(
                     BattleDeployCurrentHpPolicy::WITHDRAW_REDEPLOY_RECOVERY_PERCENT,
                 ) / 100,
             )
-            .min(unit.stats.max_health)
+            .min(unit.stats.max_health);
+        (recovered_hp, initial_runtime_state)
     };
 
     let withdrawn = execute_current_battle_mutation(
@@ -4102,6 +8069,7 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     else {
         panic!("expected live withdraw result");
     };
+    assert!(!battle_update.action_capabilities.is_empty());
     let deployment = battle_update
         .checkpoint
         .deployment
@@ -4111,18 +8079,16 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     assert!(deployment.deployed_units.iter().any(|unit| {
         unit.employee_uuid == second_employee_uuid
             && unit.unit_instance_id == second_unit_instance_id
-            && unit.position == deploy_position
+            && unit.position == second_deploy_position
     }));
     assert_eq!(deployment.redeploying_units.len(), 1);
     assert_eq!(deployment.redeploying_units[0].employee_uuid, employee_uuid);
     assert_eq!(deployment.redeploying_units[0].ready_at_ms, 30_000);
     assert_eq!(
         deployment.redeploying_units[0].deploy_cost,
-        run_policy()
-            .live_deployment
-            .base_deploy_cost
-            .saturating_mul(run_policy().live_deployment.redeploy_cost_multiplier_pct)
-            / 100
+        (u64::from(run_policy().tactical_resource.base_deploy_cost)
+            * u64::from(run_policy().tactical_resource.redeploy_cost_multiplier_pct))
+        .div_ceil(100) as u32
     );
 
     let revision_after_withdraw = core
@@ -4184,7 +8150,7 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
             .live_deployment
             .as_mut()
             .expect("live deployment should remain available");
-        deployment.current_cost = deployment
+        let deploy_cost = deployment
             .redeploy_locks
             .get(&employee_uuid)
             .expect("withdraw should create redeploy lock")
@@ -4194,6 +8160,7 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
             .get_mut(&employee_uuid)
             .expect("withdraw should create redeploy lock")
             .ready_at_ms = ready_at_ms;
+        active.tactical_resource.set_current_for_test(deploy_cost);
     }
     let redeployed = execute_current_battle_mutation(
         &mut core,
@@ -4222,10 +8189,43 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
         .deployment
         .as_ref()
         .expect("redeploy update should expose deployment state");
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.current, 0,
+        "redeploy must commit its full locked price exactly once"
+    );
     assert!(deployment.redeploying_units.is_empty());
-    assert!(deployment.deployed_units.iter().any(|unit| {
-        unit.employee_uuid == employee_uuid && unit.unit_instance_id == redeployed_unit_instance_id
-    }));
+    let redeployed_projection = deployment
+        .deployed_units
+        .iter()
+        .find(|unit| {
+            unit.employee_uuid == employee_uuid
+                && unit.unit_instance_id == redeployed_unit_instance_id
+        })
+        .expect("redeployed employee must be projected");
+    assert_eq!(
+        redeployed_projection.tactical_state.stance,
+        EngagementStance::Attack
+    );
+    assert_eq!(
+        redeployed_projection
+            .tactical_state
+            .relocation_cooldown_until_ms,
+        0,
+        "redeploy creates a new runtime instance with no inherited relocation cooldown"
+    );
+    assert_eq!(
+        redeployed_projection
+            .tactical_state
+            .relocation_eligibility
+            .disabled_reason_code,
+        Some(ActionDisabledReasonCode::InsufficientResources)
+    );
+    assert_eq!(
+        redeployed_projection
+            .tactical_state
+            .stance_cooldown_until_ms,
+        battle_update.checkpoint.battle_time_ms + 1_500
+    );
     let active = core
         .state
         .active_battle
@@ -4253,6 +8253,882 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     assert_eq!(redeployed_unit.current_target, None);
     assert!(!redeployed_unit.pending_basic_attack);
     assert!(!redeployed_unit.pending_cast);
+    assert_eq!(
+        (
+            redeployed_unit.resonance_current,
+            redeployed_unit.next_action_time,
+            redeployed_unit.next_basic_attack_ms,
+        ),
+        initial_runtime_state,
+        "redeploy must rebuild initial charge/cooldowns instead of inheriting transient state"
+    );
+}
+
+#[test]
+fn live_defense_stance_command_projects_cooldown_focus_pause_and_atomic_rejections() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = ground_deployment_cell_with_right_range(&preview);
+    let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
+    let employee_uuid = employee_ids[0];
+    let undeployed_employee_uuid = employee_ids[1];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id,
+        battle_update,
+        ..
+    } = deployed
+    else {
+        panic!("expected deploy result");
+    };
+    let deployed_tactical = &battle_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .unwrap()
+        .deployed_units[0]
+        .tactical_state;
+    assert_eq!(deployed_tactical.stance, EngagementStance::Attack);
+    assert_eq!(deployed_tactical.tile_effect, LiveBattleTileEffectDto::None);
+    assert_eq!(deployed_tactical.stance_cooldown_until_ms, 1_500);
+    assert!(!deployed_tactical.stance_eligibility.defense.enabled);
+    assert_eq!(
+        deployed_tactical
+            .stance_eligibility
+            .defense
+            .disabled_reason_code,
+        Some(ActionDisabledReasonCode::StanceCooldown)
+    );
+
+    let (revision_before, seq_before, resource_before) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.battle_state_revision,
+            active.latest_event_log_seq(),
+            active.tactical_resource.current(),
+        )
+    };
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid,
+                stance: EngagementStance::Defense,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            action: ActionKind::SetEngagementStance,
+            reason: ActionDisabledReasonCode::StanceCooldown,
+        })
+    ));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.battle_state_revision, revision_before);
+    assert_eq!(active.latest_event_log_seq(), seq_before);
+    assert_eq!(active.tactical_resource.current(), resource_before);
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid: undeployed_employee_uuid,
+                stance: EngagementStance::Defense,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            action: ActionKind::SetEngagementStance,
+            reason: ActionDisabledReasonCode::UnitUnavailable,
+        })
+    ));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.battle_state_revision, revision_before);
+    assert_eq!(active.latest_event_log_seq(), seq_before);
+    assert_eq!(active.tactical_resource.current(), resource_before);
+
+    core.advance_active_battle_by(1_500).unwrap();
+    let resource_before_toggle = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .tactical_resource
+        .current();
+    let changed = execute_current_battle_mutation_with_source(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetEngagementStance {
+            employee_uuid,
+            stance: EngagementStance::Defense,
+        },
+        "stance-defense",
+    )
+    .unwrap();
+    let BehaviorResult::BattleEngagementStanceChanged {
+        stance,
+        battle_update,
+        ..
+    } = changed
+    else {
+        panic!("expected stance result");
+    };
+    assert!(!battle_update.action_capabilities.is_empty());
+    assert_eq!(stance, EngagementStance::Defense);
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.current, resource_before_toggle,
+        "stance changes must not consume tactical resource"
+    );
+    let tactical = battle_update
+        .checkpoint
+        .units
+        .iter()
+        .find(|unit| unit.unit_instance_id == unit_instance_id)
+        .and_then(|unit| unit.tactical_state)
+        .expect("deployed unit checkpoint must expose tactical state");
+    assert_eq!(tactical.stance, EngagementStance::Defense);
+    assert_eq!(tactical.tile_effect, LiveBattleTileEffectDto::DefenseFocus);
+    assert_eq!(tactical.stance_cooldown_until_ms, 3_000);
+    assert_eq!(
+        battle_update
+            .checkpoint
+            .units
+            .iter()
+            .find(|unit| unit.unit_instance_id == unit_instance_id)
+            .unwrap()
+            .control
+            .skill_start_disabled_reason,
+        Some(ActionDisabledReasonCode::DefenseStance)
+    );
+    assert!(battle_update.events_delta.events.iter().any(|entry| {
+        entry.source_command_id.as_deref() == Some("stance-defense")
+            && matches!(
+                entry.event,
+                LiveBattlePresentationEventKindDto::StanceChanged {
+                    unit_instance_id: event_unit_id,
+                    before: EngagementStance::Attack,
+                    after: EngagementStance::Defense,
+                    cooldown_until_ms: 3_000,
+                } if event_unit_id == unit_instance_id
+            )
+    }));
+
+    let (revision_before_same, seq_before_same, resource_before_same) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.battle_state_revision,
+            active.latest_event_log_seq(),
+            active.tactical_resource.current(),
+        )
+    };
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid,
+                stance: EngagementStance::Defense,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            reason: ActionDisabledReasonCode::AlreadyActive,
+            ..
+        })
+    ));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.battle_state_revision, revision_before_same);
+    assert_eq!(active.latest_event_log_seq(), seq_before_same);
+    assert_eq!(active.tactical_resource.current(), resource_before_same);
+
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    assert!(core
+        .advance_active_battle_for_server_tick(50_000)
+        .unwrap()
+        .is_none());
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .execution
+            .last_event_time_ms(),
+        1_500
+    );
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid,
+                stance: EngagementStance::Attack,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            reason: ActionDisabledReasonCode::StanceCooldown,
+            ..
+        })
+    ));
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle).unwrap();
+    core.advance_active_battle_by(1_500).unwrap();
+    let changed_back = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetEngagementStance {
+            employee_uuid,
+            stance: EngagementStance::Attack,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleEngagementStanceChanged { battle_update, .. } = changed_back else {
+        panic!("expected attack stance result");
+    };
+    let tactical = battle_update
+        .checkpoint
+        .units
+        .iter()
+        .find(|unit| unit.unit_instance_id == unit_instance_id)
+        .and_then(|unit| unit.tactical_state)
+        .unwrap();
+    assert_eq!(tactical.stance, EngagementStance::Attack);
+    assert_eq!(tactical.tile_effect, LiveBattleTileEffectDto::None);
+}
+
+#[test]
+fn live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = ground_deployment_cell_with_right_range(&preview);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let relocation_destination = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .combat_preview
+        .deployment_zones
+        .iter()
+        .filter(|zone| zone.kind == DeploymentZoneKind::Ground)
+        .flat_map(|zone| zone.cells.iter().copied())
+        .find(|position| *position != deploy_position)
+        .expect("fixture should expose a relocation destination");
+
+    let deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id, ..
+    } = deployed
+    else {
+        panic!("expected deploy result");
+    };
+    let tactical = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .live_deployment_dto(&core.state.roster)
+        .unwrap()
+        .deployed_units[0]
+        .tactical_state;
+    assert_eq!(tactical.relocation_eligibility.disabled_reason_code, None);
+
+    core.advance_active_battle_by(1_500).unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetEngagementStance {
+            employee_uuid,
+            stance: EngagementStance::Defense,
+        },
+    )
+    .unwrap();
+    let (outside_deployment_position, platform_position) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        let deployment_cells = active
+            .combat_preview
+            .deployment_zones
+            .iter()
+            .flat_map(|zone| zone.cells.iter().copied())
+            .collect::<std::collections::HashSet<_>>();
+        let outside = active
+            .battle
+            .battlefield
+            .valid_positions()
+            .into_iter()
+            .find(|position| !deployment_cells.contains(position))
+            .expect("fixture should expose a non-deployment battlefield cell");
+        let platform = active
+            .combat_preview
+            .deployment_zones
+            .iter()
+            .filter(|zone| zone.kind == DeploymentZoneKind::Platform)
+            .flat_map(|zone| zone.cells.iter().copied())
+            .next()
+            .expect("fixture should expose a platform deployment cell");
+        (outside, platform)
+    };
+    let (
+        revision_before_destination_rejections,
+        seq_before_destination_rejections,
+        resource_before_destination_rejections,
+    ) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.battle_state_revision,
+            active.latest_event_log_seq(),
+            active.tactical_resource.current(),
+        )
+    };
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalRelocateUnit {
+                employee_uuid,
+                destination: outside_deployment_position,
+                facing: FacingDirection::Right,
+            },
+        ),
+        Err(GameError::OutOfBounds)
+    ));
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalRelocateUnit {
+                employee_uuid,
+                destination: platform_position,
+                facing: FacingDirection::Right,
+            },
+        ),
+        Err(GameError::InvalidAction)
+    ));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(
+            active.battle_state_revision,
+            revision_before_destination_rejections
+        );
+        assert_eq!(
+            active.latest_event_log_seq(),
+            seq_before_destination_rejections
+        );
+        assert_eq!(
+            active.tactical_resource.current(),
+            resource_before_destination_rejections
+        );
+    }
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        active
+            .tactical_resource
+            .set_current_for_test(run_policy().tactical_relocation.cost - 1);
+    }
+    let (revision_before_resource_rejection, seq_before_resource_rejection) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        let tactical = active
+            .live_deployment_dto(&core.state.roster)
+            .unwrap()
+            .deployed_units[0]
+            .tactical_state;
+        assert_eq!(
+            tactical.relocation_eligibility.disabled_reason_code,
+            Some(ActionDisabledReasonCode::InsufficientResources)
+        );
+        (active.battle_state_revision, active.latest_event_log_seq())
+    };
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalRelocateUnit {
+                employee_uuid,
+                destination: relocation_destination,
+                facing: FacingDirection::Right,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            action: ActionKind::TacticalRelocateUnit,
+            reason: ActionDisabledReasonCode::InsufficientResources,
+        })
+    ));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(
+            active.battle_state_revision,
+            revision_before_resource_rejection
+        );
+        assert_eq!(active.latest_event_log_seq(), seq_before_resource_rejection);
+        assert_eq!(
+            active.tactical_resource.current(),
+            run_policy().tactical_relocation.cost - 1
+        );
+    }
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        active.tactical_resource.set_current_for_test(10);
+        let unit = active.battle.units.get_mut(&unit_instance_id).unwrap();
+        unit.stats.current_health = 43;
+        unit.resonance_current = 17;
+        unit.next_basic_attack_ms = 8_000;
+        unit.ranged_reposition_until_ms = 9_000;
+    }
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    assert!(core
+        .advance_active_battle_for_server_tick(50_000)
+        .unwrap()
+        .is_none());
+    let (revision_before, seq_before, resource_before) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.battle_state_revision,
+            active.latest_event_log_seq(),
+            active.tactical_resource.current(),
+        )
+    };
+
+    let relocated = execute_current_battle_mutation_with_source(
+        &mut core,
+        player_id,
+        PlayerBehavior::TacticalRelocateUnit {
+            employee_uuid,
+            destination: relocation_destination,
+            facing: FacingDirection::Right,
+        },
+        "relocate-paused",
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitTacticallyRelocated {
+        destination,
+        facing,
+        battle_update,
+        ..
+    } = relocated
+    else {
+        panic!("expected relocation result");
+    };
+    assert!(!battle_update.action_capabilities.is_empty());
+    assert_eq!(destination, relocation_destination);
+    assert_eq!(facing, FacingDirection::Right);
+    assert_eq!(battle_update.checkpoint.battle_time_ms, 1_500);
+    assert!(battle_update.checkpoint.playback.paused);
+    assert_eq!(battle_update.battle_state_revision, revision_before + 1);
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.current,
+        resource_before - run_policy().tactical_relocation.cost
+    );
+    let deployed = &battle_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .unwrap()
+        .deployed_units[0];
+    assert_eq!(deployed.position, relocation_destination);
+    assert_eq!(deployed.facing, FacingDirection::Right);
+    assert_eq!(deployed.tactical_state.stance, EngagementStance::Defense);
+    assert_eq!(
+        deployed.tactical_state.tile_effect,
+        LiveBattleTileEffectDto::DefenseFocus
+    );
+    assert_eq!(deployed.tactical_state.stance_cooldown_until_ms, 3_000);
+    assert_eq!(deployed.tactical_state.relocation_cooldown_until_ms, 11_500);
+    assert_eq!(
+        deployed
+            .tactical_state
+            .relocation_eligibility
+            .disabled_reason_code,
+        Some(ActionDisabledReasonCode::RelocationCooldown)
+    );
+    assert!(battle_update.events_delta.events.iter().any(|entry| {
+        entry.source_command_id.as_deref() == Some("relocate-paused")
+            && matches!(
+                entry.event,
+                LiveBattlePresentationEventKindDto::UnitTacticallyRelocated {
+                    unit_instance_id: event_unit_id,
+                    from_position,
+                    to_position,
+                    cooldown_until_ms: 11_500,
+                    ..
+                } if event_unit_id == unit_instance_id
+                    && from_position == deploy_position
+                    && to_position == relocation_destination
+            )
+    }));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        let unit = &active.battle.units[&unit_instance_id];
+        assert_eq!(unit.stats.current_health, 43);
+        assert_eq!(unit.resonance_current, 17);
+        assert_eq!(unit.next_basic_attack_ms, 8_000);
+        assert_eq!(unit.ranged_reposition_until_ms, 9_000);
+    }
+
+    let revision_after = battle_update.battle_state_revision;
+    let seq_after = battle_update.events_delta.to_seq;
+    let resource_after = battle_update.checkpoint.tactical_resource.current;
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalRelocateUnit {
+                employee_uuid,
+                destination: deploy_position,
+                facing: FacingDirection::Left,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            action: ActionKind::TacticalRelocateUnit,
+            reason: ActionDisabledReasonCode::RelocationCooldown,
+        })
+    ));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(active.battle_state_revision, revision_after);
+        assert_eq!(active.latest_event_log_seq(), seq_after);
+        assert_eq!(active.tactical_resource.current(), resource_after);
+        assert_eq!(active.latest_event_log_seq(), seq_before + 1);
+    }
+
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle).unwrap();
+    core.advance_active_battle_by(10_000).unwrap();
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        active
+            .tactical_resource
+            .set_current_for_test(run_policy().tactical_relocation.cost);
+    }
+    let (revision_before_noop, seq_before_noop, resource_before_noop) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (
+            active.battle_state_revision,
+            active.latest_event_log_seq(),
+            active.tactical_resource.current(),
+        )
+    };
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalRelocateUnit {
+                employee_uuid,
+                destination: relocation_destination,
+                facing: FacingDirection::Right,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            reason: ActionDisabledReasonCode::AlreadyActive,
+            ..
+        })
+    ));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(active.battle_state_revision, revision_before_noop);
+        assert_eq!(active.latest_event_log_seq(), seq_before_noop);
+        assert_eq!(active.tactical_resource.current(), resource_before_noop);
+    }
+
+    let facing_only = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::TacticalRelocateUnit {
+            employee_uuid,
+            destination: relocation_destination,
+            facing: FacingDirection::Left,
+        },
+    )
+    .expect("same-tile facing-only relocation should pay and start cooldown");
+    let BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. } = facing_only else {
+        panic!("expected facing-only relocation result");
+    };
+    assert_eq!(battle_update.checkpoint.tactical_resource.current, 0);
+    assert_eq!(
+        battle_update
+            .checkpoint
+            .deployment
+            .as_ref()
+            .unwrap()
+            .deployed_units[0]
+            .facing,
+        FacingDirection::Left
+    );
+}
+
+#[test]
+fn live_tactical_swap_costs_once_updates_once_and_works_while_paused() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 0x5c03);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let first_position = ground_deployment_cell_with_right_range(&preview);
+    let employees = core.roster().unwrap().combat_eligible_employee_ids();
+    let first_employee_uuid = employees[0];
+    let second_employee_uuid = employees[1];
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let second_position = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .combat_preview
+        .deployment_zones
+        .iter()
+        .filter(|zone| zone.kind == DeploymentZoneKind::Ground)
+        .flat_map(|zone| zone.cells.iter().copied())
+        .find(|position| *position != first_position)
+        .expect("fixture must expose two ground deployment cells");
+    let first_deploy = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: first_employee_uuid,
+            position: first_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: first_unit_id,
+        ..
+    } = first_deploy
+    else {
+        panic!("expected first deployment");
+    };
+    let second_deploy = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: second_employee_uuid,
+            position: second_position,
+            facing: FacingDirection::Left,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: second_unit_id,
+        ..
+    } = second_deploy
+    else {
+        panic!("expected second deployment");
+    };
+    core.advance_active_battle_by(1_500).unwrap();
+    for employee_uuid in [first_employee_uuid, second_employee_uuid] {
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::SetEngagementStance {
+                employee_uuid,
+                stance: EngagementStance::Defense,
+            },
+        )
+        .unwrap();
+    }
+    {
+        let active = core.state.active_battle.as_mut().unwrap();
+        active.tactical_resource.set_current_for_test(10);
+        active
+            .battle
+            .units
+            .get_mut(&first_unit_id)
+            .unwrap()
+            .stats
+            .current_health = 43;
+        active
+            .battle
+            .units
+            .get_mut(&second_unit_id)
+            .unwrap()
+            .stats
+            .current_health = 57;
+    }
+    execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    let (revision_before, seq_before) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (active.battle_state_revision, active.latest_event_log_seq())
+    };
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalSwapUnits {
+                first_employee_uuid,
+                second_employee_uuid: first_employee_uuid,
+                first_facing: FacingDirection::Up,
+                second_facing: FacingDirection::Down,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            action: ActionKind::TacticalSwapUnits,
+            reason: ActionDisabledReasonCode::AlreadyActive,
+        })
+    ));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(active.battle_state_revision, revision_before);
+        assert_eq!(active.latest_event_log_seq(), seq_before);
+        assert_eq!(active.tactical_resource.current(), 10);
+    }
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .tactical_resource
+        .set_current_for_test(4);
+    assert!(matches!(
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::TacticalSwapUnits {
+                first_employee_uuid,
+                second_employee_uuid,
+                first_facing: FacingDirection::Up,
+                second_facing: FacingDirection::Down,
+            },
+        ),
+        Err(GameError::ActionUnavailable {
+            action: ActionKind::TacticalSwapUnits,
+            reason: ActionDisabledReasonCode::InsufficientResources,
+        })
+    ));
+    {
+        let active = core.state.active_battle.as_ref().unwrap();
+        assert_eq!(active.battle_state_revision, revision_before);
+        assert_eq!(active.latest_event_log_seq(), seq_before);
+        assert_eq!(active.tactical_resource.current(), 4);
+        assert_eq!(
+            active.battle.unit_projected_tile(first_unit_id),
+            Some(first_position)
+        );
+        assert_eq!(
+            active.battle.unit_projected_tile(second_unit_id),
+            Some(second_position)
+        );
+    }
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .tactical_resource
+        .set_current_for_test(10);
+
+    let swapped = execute_current_battle_mutation_with_source(
+        &mut core,
+        player_id,
+        PlayerBehavior::TacticalSwapUnits {
+            first_employee_uuid,
+            second_employee_uuid,
+            first_facing: FacingDirection::Up,
+            second_facing: FacingDirection::Down,
+        },
+        "swap-paused",
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitsTacticallySwapped {
+        first_destination,
+        second_destination,
+        battle_update,
+        ..
+    } = swapped
+    else {
+        panic!("expected tactical swap result");
+    };
+    assert!(!battle_update.action_capabilities.is_empty());
+    assert_eq!(first_destination, second_position);
+    assert_eq!(second_destination, first_position);
+    assert_eq!(battle_update.battle_state_revision, revision_before + 1);
+    assert_eq!(battle_update.checkpoint.battle_time_ms, 1_500);
+    assert!(battle_update.checkpoint.playback.paused);
+    assert_eq!(battle_update.checkpoint.tactical_resource.current, 5);
+    assert_eq!(battle_update.events_delta.to_seq, seq_before + 1);
+    let deployment = battle_update.checkpoint.deployment.as_ref().unwrap();
+    let first = deployment
+        .deployed_units
+        .iter()
+        .find(|unit| unit.employee_uuid == first_employee_uuid)
+        .unwrap();
+    let second = deployment
+        .deployed_units
+        .iter()
+        .find(|unit| unit.employee_uuid == second_employee_uuid)
+        .unwrap();
+    assert_eq!(
+        (first.position, first.facing),
+        (second_position, FacingDirection::Up)
+    );
+    assert_eq!(
+        (second.position, second.facing),
+        (first_position, FacingDirection::Down)
+    );
+    assert_eq!(first.tactical_state.relocation_cooldown_until_ms, 11_500);
+    assert_eq!(second.tactical_state.relocation_cooldown_until_ms, 11_500);
+    assert_eq!(first.tactical_state.stance, EngagementStance::Defense);
+    assert_eq!(second.tactical_state.stance, EngagementStance::Defense);
+    assert!(battle_update.events_delta.events.iter().any(|entry| {
+        entry.source_command_id.as_deref() == Some("swap-paused")
+            && matches!(
+                entry.event,
+                LiveBattlePresentationEventKindDto::UnitsTacticallySwapped {
+                    first_unit_instance_id,
+                    second_unit_instance_id,
+                    cooldown_until_ms: 11_500,
+                    ..
+                } if first_unit_instance_id == first_unit_id
+                    && second_unit_instance_id == second_unit_id
+            )
+    }));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.battle.units[&first_unit_id].stats.current_health, 43);
+    assert_eq!(
+        active.battle.units[&second_unit_id].stats.current_health,
+        57
+    );
 }
 
 #[test]
@@ -4271,7 +9147,9 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
         .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
     let deploy_position = first_ground_deployment_cell(&preview);
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let employee_uuids = core.roster().unwrap().combat_eligible_employee_ids();
+    let employee_uuid = employee_uuids[0];
+    let guard_employee_uuid = employee_uuids[1];
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
 
@@ -4286,12 +9164,40 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
     )
     .unwrap();
     let BehaviorResult::BattleUnitDeployed {
-        unit_instance_id,
-        battle_update: deployed_update,
-        ..
+        unit_instance_id, ..
     } = deployed
     else {
         panic!("expected live deploy result");
+    };
+    let guard_position = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .combat_preview
+        .deployment_zones
+        .iter()
+        .filter(|zone| zone.kind == DeploymentZoneKind::Ground)
+        .flat_map(|zone| zone.cells.iter().copied())
+        .find(|position| *position != deploy_position)
+        .expect("fixture should expose a guard deployment cell");
+    let guard_deployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid: guard_employee_uuid,
+            position: guard_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .expect("a second living player combatant should keep the reconciliation battle active");
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: guard_unit_instance_id,
+        battle_update: guard_deployed_update,
+        ..
+    } = guard_deployed
+    else {
+        panic!("expected guard deploy result");
     };
 
     {
@@ -4326,13 +9232,16 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
     };
     assert_eq!(
         advanced_update.battle_state_revision,
-        deployed_update.battle_state_revision + 1
+        guard_deployed_update.battle_state_revision + 1
     );
     assert!(advanced_update
         .checkpoint
         .deployment
         .as_ref()
-        .is_some_and(|deployment| deployment.deployed_units.is_empty()));
+        .is_some_and(|deployment| {
+            deployment.deployed_units.len() == 1
+                && deployment.deployed_units[0].unit_instance_id == guard_unit_instance_id
+        }));
 
     let state = core
         .execute(
@@ -4352,20 +9261,19 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
         .deployment
         .as_ref()
         .expect("battle state should expose live deployment");
-    assert!(
-        deployment.deployed_units.is_empty(),
-        "defeated units removed from battlefield must not remain deployed in DTO state"
+    assert_eq!(deployment.deployed_units.len(), 1);
+    assert_eq!(
+        deployment.deployed_units[0].unit_instance_id, guard_unit_instance_id,
+        "only the living guard may remain in the deployed DTO state"
     );
     assert_eq!(deployment.redeploying_units.len(), 1);
     assert_eq!(deployment.redeploying_units[0].employee_uuid, employee_uuid);
     assert_eq!(deployment.redeploying_units[0].ready_at_ms, 90_000);
     assert_eq!(
         deployment.redeploying_units[0].deploy_cost,
-        run_policy()
-            .live_deployment
-            .base_deploy_cost
-            .saturating_mul(run_policy().live_deployment.redeploy_cost_multiplier_pct)
-            / 100
+        (u64::from(run_policy().tactical_resource.base_deploy_cost)
+            * u64::from(run_policy().tactical_resource.redeploy_cost_multiplier_pct))
+        .div_ceil(100) as u32
     );
 
     let persistent_employee = core
@@ -4423,7 +9331,7 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
             .live_deployment
             .as_mut()
             .expect("live deployment should remain available");
-        deployment.current_cost = deployment
+        let deploy_cost = deployment
             .redeploy_locks
             .get(&employee_uuid)
             .expect("death should create redeploy lock")
@@ -4433,6 +9341,7 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
             .get_mut(&employee_uuid)
             .expect("death should create redeploy lock")
             .ready_at_ms = ready_at_ms;
+        active.tactical_resource.set_current_for_test(deploy_cost);
     }
     let redeployed = execute_current_battle_mutation(
         &mut core,
@@ -4526,7 +9435,8 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
         let deployment = active.live_deployment.as_mut().unwrap();
         let lock = deployment.redeploy_locks.get_mut(&employee_uuid).unwrap();
         lock.ready_at_ms = active.execution.last_event_time_ms();
-        deployment.current_cost = lock.deploy_cost;
+        let deploy_cost = lock.deploy_cost;
+        active.tactical_resource.set_current_for_test(deploy_cost);
     }
     let third_deployment = execute_current_battle_mutation(
         &mut core,
@@ -4585,14 +9495,20 @@ fn live_deployment_reconciles_defeated_player_unit_during_authoritative_advance(
     let deployment = active
         .live_deployment_dto(active.employee_roster())
         .expect("live deployment projection");
-    assert!(!deployment
+    assert!(deployment
         .redeploying_units
         .iter()
         .any(|unit| unit.employee_uuid == employee_uuid));
-    assert!(!deployment
+    let unavailable = deployment
         .unit_deploy_costs
         .iter()
-        .any(|unit| unit.employee_uuid == employee_uuid));
+        .find(|unit| unit.employee_uuid == employee_uuid)
+        .expect("ineligible employee remains visible");
+    assert!(!unavailable.eligibility.enabled);
+    assert_eq!(
+        unavailable.eligibility.disabled_reason_code,
+        attempt_employee.battle_deployment_disabled_reason()
+    );
 
     execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle)
         .expect("battle-stage abandonment should discard the active employee attempt");
@@ -4652,9 +9568,9 @@ fn deploy_cost_reduction_consumable_reduces_live_deployment_cost_for_employee() 
         .and_then(|active| active.live_deployment_dto(&core.state.roster))
         .expect("live deployment dto");
     let reduced_cost = run_policy()
-        .live_deployment
+        .tactical_resource
         .base_deploy_cost
-        .saturating_sub(run_policy().live_deployment.base_deploy_cost.div_ceil(2));
+        .saturating_sub(run_policy().tactical_resource.base_deploy_cost.div_ceil(2));
     let unit_cost = deployment
         .unit_deploy_costs
         .iter()
@@ -4662,7 +9578,7 @@ fn deploy_cost_reduction_consumable_reduces_live_deployment_cost_for_employee() 
         .expect("employee deploy cost dto");
     assert_eq!(
         unit_cost.base_deploy_cost,
-        run_policy().live_deployment.base_deploy_cost
+        run_policy().tactical_resource.base_deploy_cost
     );
     assert_eq!(unit_cost.effective_deploy_cost, reduced_cost);
 
@@ -4677,20 +9593,80 @@ fn deploy_cost_reduction_consumable_reduces_live_deployment_cost_for_employee() 
     )
     .unwrap();
 
-    let BehaviorResult::BattleUnitDeployed { battle_update, .. } = deployed else {
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: first_unit_instance_id,
+        battle_update,
+        ..
+    } = deployed
+    else {
         panic!("expected live deploy result");
     };
-    let deployment = battle_update
+    assert_eq!(
+        battle_update.checkpoint.tactical_resource.current,
+        run_policy()
+            .tactical_resource
+            .initial
+            .saturating_sub(reduced_cost)
+    );
+
+    let withdrawn = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::WithdrawUnit { employee_uuid },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitWithdrawn { battle_update, .. } = withdrawn else {
+        panic!("expected withdrawal after reduced initial deployment");
+    };
+    let redeploy_cost = (u64::from(run_policy().tactical_resource.base_deploy_cost)
+        * u64::from(run_policy().tactical_resource.redeploy_cost_multiplier_pct))
+    .div_ceil(100) as u32;
+    let reduced_redeploy_cost = redeploy_cost.saturating_sub(redeploy_cost.div_ceil(2));
+    let candidate = battle_update
         .checkpoint
         .deployment
         .as_ref()
-        .expect("live deploy update should expose deployment state");
+        .unwrap()
+        .unit_deploy_costs
+        .iter()
+        .find(|cost| cost.employee_uuid == employee_uuid)
+        .unwrap();
+    assert_eq!(candidate.base_deploy_cost, redeploy_cost);
+    assert_eq!(candidate.effective_deploy_cost, reduced_redeploy_cost);
+
+    let cost_before_redeploy = {
+        let active = core.state.active_battle.as_mut().unwrap();
+        let now_ms = active.execution.last_event_time_ms();
+        let deployment = active.live_deployment.as_mut().unwrap();
+        deployment
+            .redeploy_locks
+            .get_mut(&employee_uuid)
+            .unwrap()
+            .ready_at_ms = now_ms;
+        active.tactical_resource.current()
+    };
+    let redeployed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleUnitDeployed {
+        unit_instance_id: second_unit_instance_id,
+        battle_update,
+        ..
+    } = redeployed
+    else {
+        panic!("expected reduced-cost redeployment");
+    };
+    assert_ne!(second_unit_instance_id, first_unit_instance_id);
     assert_eq!(
-        deployment.current_cost,
-        run_policy()
-            .live_deployment
-            .initial_cost
-            .saturating_sub(reduced_cost)
+        battle_update.checkpoint.tactical_resource.current,
+        cost_before_redeploy.saturating_sub(reduced_redeploy_cost)
     );
 }
 
@@ -4699,6 +9675,8 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
     let skill_id = SkillId::from("manual_fragment_guard");
     let fragment = active_skill_fragment("manual_fragment", 0xD3F3_2001, skill_id.as_str());
     let skill = SkillDef {
+        use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: skill_id.clone(),
         name: skill_id.to_string(),
         kind: Default::default(),
@@ -4723,6 +9701,8 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
         }],
     };
     let area_skill = SkillDef {
+        use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("catalog_target_area"),
         name: "Catalog Target Area".to_string(),
         kind: Default::default(),
@@ -4792,12 +9772,20 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
         .get_mut(&employee_uuid)
         .unwrap()
         .apply_consumable_modifier(Uuid::from_u128(0xD3F3_3004), &consumable);
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid,
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -4868,6 +9856,19 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
         deployed["skill_readiness"]["resonance_max"]
     );
 
+    let paused =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: paused_update,
+        ..
+    } = paused
+    else {
+        panic!("expected playback update before paused manual activation");
+    };
+    let frozen_time_ms = paused_update.checkpoint.battle_time_ms;
+    let paused_revision = paused_update.battle_state_revision;
+    assert!(paused_update.checkpoint.playback.paused);
+
     let activated = execute_current_battle_mutation(
         &mut core,
         player_id,
@@ -4886,6 +9887,9 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
     else {
         panic!("expected live skill activation result");
     };
+    assert_eq!(battle_update.battle_state_revision, paused_revision + 1);
+    assert_eq!(battle_update.checkpoint.battle_time_ms, frozen_time_ms);
+    assert!(battle_update.checkpoint.playback.paused);
     let events = &battle_update.events_delta.events;
     assert!(events.iter().any(|entry| {
         matches!(
@@ -4898,10 +9902,62 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
         )
     }));
 
-    let advanced = core.advance_active_battle_by(1).unwrap();
+    assert!(core
+        .advance_active_battle_for_server_tick(10)
+        .unwrap()
+        .is_none());
+
+    let speed_changed = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::SetBattleSpeed {
+            speed: crate::game::behavior::BattlePlaybackSpeed::X2,
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: speed_update,
+        ..
+    } = speed_changed
+    else {
+        panic!("expected stored speed update while paused");
+    };
+    assert_eq!(
+        speed_update.battle_state_revision,
+        battle_update.battle_state_revision + 1
+    );
+    assert_eq!(speed_update.checkpoint.battle_time_ms, frozen_time_ms);
+    assert!(speed_update.checkpoint.playback.paused);
+    assert_eq!(
+        speed_update.checkpoint.playback.speed,
+        crate::game::behavior::BattlePlaybackSpeed::X2
+    );
+
+    let resumed =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::ResumeBattle)
+            .unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: resumed_update,
+        ..
+    } = resumed
+    else {
+        panic!("expected resume after paused manual activation");
+    };
+    assert_eq!(
+        resumed_update.battle_state_revision,
+        speed_update.battle_state_revision + 1
+    );
+    assert_eq!(resumed_update.checkpoint.battle_time_ms, frozen_time_ms);
+    assert!(!resumed_update.checkpoint.playback.paused);
+
+    let advanced = core
+        .advance_active_battle_for_server_tick(1)
+        .unwrap()
+        .expect("stored x2 speed should advance the resumed battle");
     let BehaviorResult::BattleAdvanced { battle_update, .. } = advanced else {
         panic!("expected battle advance after manual cast");
     };
+    assert_eq!(battle_update.checkpoint.battle_time_ms, frozen_time_ms + 2);
     let events = &battle_update.events_delta.events;
     assert!(events.iter().any(|entry| {
         matches!(
@@ -4916,7 +9972,7 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
 }
 
 #[test]
-fn manual_fragment_readiness_disables_payload_when_target_is_missing() {
+fn automatic_unit_manual_fragment_readiness_disables_when_no_target_exists() {
     let skill_id = SkillId::from("manual_fragment_mark_target");
     let fragment = active_skill_fragment("target_fragment", 0xD3F3_2005, skill_id.as_str());
     let tile_range = crate::game::battle::tile_range::TileRangePattern {
@@ -4924,6 +9980,8 @@ fn manual_fragment_readiness_disables_payload_when_target_is_missing() {
         rows: vec![".@X".to_string()],
     };
     let skill = SkillDef {
+        use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: skill_id.clone(),
         name: skill_id.to_string(),
         kind: Default::default(),
@@ -4969,20 +10027,31 @@ fn manual_fragment_readiness_disables_payload_when_target_is_missing() {
         weapon,
         Uuid::from_u128(0xE006_0001),
     );
+    let initial_charge = consumable_meta(
+        0xE005,
+        "u05_initial_charge",
+        ConsumableTier::Critical,
+        ConsumableEffect::InitialSkillCharge { percent: 100 },
+    );
     core.roster_mut()
         .unwrap()
         .get_mut(&employee_uuid)
         .unwrap()
-        .combat_profile
-        .battle_profile
-        .resonance
-        .start = 100;
-    core.state.skill_fragments.add(&fragment).unwrap();
+        .apply_consumable_modifier(Uuid::from_u128(0xE005_0001), &initial_charge);
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid,
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -5022,7 +10091,7 @@ fn manual_fragment_readiness_disables_payload_when_target_is_missing() {
         deployed["skill_readiness"]["manual_activation_allowed"], false,
         "Core must not advertise a skill payload with no valid target"
     );
-    assert_eq!(deployed["skill_readiness"]["target_required"], true);
+    assert_eq!(deployed["skill_readiness"]["target_required"], false);
     assert_eq!(deployed["skill_readiness"]["target_available"], false);
     assert_eq!(
         deployed["skill_readiness"]["eligibility"]["disabled_reason_code"],
@@ -5049,11 +10118,539 @@ fn manual_fragment_readiness_disables_payload_when_target_is_missing() {
     ));
 }
 
-#[test]
-fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
-    let skill_id = SkillId::from("manual_fragment_stabilize");
-    let fragment = active_skill_fragment("stabilization_fragment", 0xD3F3_2002, skill_id.as_str());
+fn player_unit_skill_focus_fixture() -> (
+    GameCore,
+    Uuid,
+    Uuid,
+    SkillId,
+    crate::game::battle::ids::UnitInstanceId,
+    crate::game::battle::ids::UnitInstanceId,
+) {
+    let skill_id = SkillId::from("manual_fragment_player_unit");
+    let fragment = active_skill_fragment("player_unit_fragment", 0xD3F3_2006, skill_id.as_str());
     let skill = SkillDef {
+        use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+        flow: None,
+        id: skill_id.clone(),
+        name: skill_id.to_string(),
+        kind: Default::default(),
+        cast_targeting: SkillCastTargetingDef::explicit_with_selection(
+            SkillCastSelection::PlayerUnit,
+            SkillTarget::EnemySingle {
+                rule: Default::default(),
+            },
+            crate::game::ability::SkillTargetReach::Global,
+            None,
+            false,
+        ),
+        focus_time_ms: 0,
+        focus_permissions: Default::default(),
+        steps: vec![SkillStepDef {
+            id: "player_selected_hit".to_string(),
+            delay_ms: 0,
+            target: SkillTarget::EnemySingle {
+                rule: Default::default(),
+            },
+            targeting: crate::game::ability::StepTargetingMode::ReuseCastTarget,
+            when: Default::default(),
+            repeat: Default::default(),
+            delivery: DeliveryDef::Instant,
+            effects: vec![SkillEffectDef::Damage {
+                amount: 10,
+                damage_type: crate::game::battle::damage::DamageType::Magic,
+            }
+            .authored("effect_01")],
+            presentation: Default::default(),
+        }],
+    };
+    let weapon = weapon_equipment(0xE008, "player_unit_fragment_sword", WeaponArchetype::Sword);
+    let mut core = GameCore::new(
+        game_data_with_pve_equipment_and_active_skill_fragments(
+            vec![weapon.clone()],
+            vec![skill],
+            vec![fragment.clone()],
+        ),
+        123,
+    );
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    grant_and_equip_weapon(
+        &mut core,
+        employee_uuid,
+        weapon,
+        Uuid::from_u128(0xE008_0001),
+    );
+    let initial_charge = consumable_meta(
+        0xE005,
+        "u05_initial_charge",
+        ConsumableTier::Critical,
+        ConsumableEffect::InitialSkillCharge { percent: 100 },
+    );
+    core.roster_mut()
+        .unwrap()
+        .get_mut(&employee_uuid)
+        .unwrap()
+        .apply_consumable_modifier(Uuid::from_u128(0xE005_0001), &initial_charge);
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
+    core.execute(
+        player_id,
+        PlayerBehavior::EquipSkillFragment {
+            employee_uuid,
+            copy_uuid,
+        },
+    )
+    .unwrap();
+
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = first_ground_deployment_cell(&preview);
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+    let spawned = core
+        .advance_active_battle_for_server_tick(5_000)
+        .unwrap()
+        .expect("the first authored opponent wave should spawn");
+    let BehaviorResult::BattleAdvanced {
+        battle_update: spawned_update,
+        ..
+    } = spawned
+    else {
+        panic!("expected opponent wave advance");
+    };
+    let target_id = spawned_update
+        .checkpoint
+        .units
+        .iter()
+        .find(|unit| unit.owner == Side::Opponent)
+        .expect("player-selected unit skill requires an opponent")
+        .unit_instance_id;
+    let caster_id = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .live_deployment
+        .as_ref()
+        .unwrap()
+        .deployed_units[&employee_uuid]
+        .unit_instance_id;
+    let caster = core
+        .state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .battle
+        .units
+        .get_mut(&caster_id)
+        .unwrap();
+    caster.next_action_time = 0;
+    caster.resonance_current = caster.resonance_max;
+    (
+        core,
+        player_id,
+        employee_uuid,
+        skill_id,
+        caster_id,
+        target_id,
+    )
+}
+
+#[test]
+fn player_unit_skill_focus_preview_cancel_and_paused_activation_are_atomic() {
+    let (mut core, player_id, employee_uuid, skill_id, _caster_id, target_id) =
+        player_unit_skill_focus_fixture();
+    let deploy_position = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .battle
+        .unit_projected_tile(_caster_id)
+        .unwrap();
+    let exact_target = SkillCastTarget::Unit {
+        unit_instance_id: target_id,
+    };
+    let current = core
+        .execute(
+            player_id,
+            PlayerBehavior::RequestBattleState { since_seq: None },
+        )
+        .unwrap();
+    let BehaviorResult::BattleState {
+        battle_update: current_update,
+        ..
+    } = current
+    else {
+        panic!("expected current battle state");
+    };
+    assert!(current_update.action_capabilities.iter().any(|capability| {
+        capability.action == ActionKind::BeginSkillTargeting && capability.enabled
+    }));
+    assert!(
+        !current_update.action_capabilities.iter().any(|capability| {
+            capability.action == ActionKind::ActivateSkill && capability.enabled
+        })
+    );
+    assert!(
+        !current_update.action_capabilities.iter().any(|capability| {
+            matches!(
+                capability.action,
+                ActionKind::CancelSkillTargeting | ActionKind::PreviewSkillTarget
+            )
+        })
+    );
+
+    let (revision_before_focus, seq_before_focus) = {
+        let active = core.state.active_battle.as_ref().unwrap();
+        (active.battle_state_revision, active.latest_event_log_seq())
+    };
+    let no_focus_error = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::ActivateSkill {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+            target: Some(exact_target),
+        },
+    )
+    .expect_err("player-selected activation must require matching focus");
+    assert!(matches!(
+        no_focus_error,
+        GameError::ActionUnavailable {
+            action: ActionKind::ActivateSkill,
+            reason: ActionDisabledReasonCode::NoEligiblePayload,
+        }
+    ));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.battle_state_revision, revision_before_focus);
+    assert_eq!(active.latest_event_log_seq(), seq_before_focus);
+
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::BeginSkillTargeting {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+        },
+    );
+
+    let focused = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::BeginSkillTargeting {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleSkillTargetingFocusChanged {
+        battle_update: focus_update,
+        ..
+    } = focused
+    else {
+        panic!("expected authoritative focus update");
+    };
+    assert_eq!(
+        focus_update.battle_state_revision,
+        revision_before_focus + 1
+    );
+    assert_eq!(
+        focus_update.checkpoint.playback.speed,
+        crate::game::behavior::BattlePlaybackSpeed::X0_5
+    );
+    assert!(!focus_update.checkpoint.playback.paused);
+    let focus = focus_update
+        .checkpoint
+        .tactical_focus
+        .as_ref()
+        .expect("checkpoint must expose authoritative targeting focus");
+    assert_eq!(focus.skill_id, skill_id);
+    assert_eq!(
+        focus.purpose,
+        crate::game::behavior::LiveBattleTacticalFocusPurposeDto::PlayerUnitSkill
+    );
+    assert_eq!(
+        focus.restore_playback.speed,
+        crate::game::behavior::BattlePlaybackSpeed::X1
+    );
+    let focused_unit = focus_update
+        .checkpoint
+        .deployment
+        .as_ref()
+        .unwrap()
+        .deployed_units
+        .iter()
+        .find(|unit| unit.employee_uuid == employee_uuid)
+        .unwrap();
+    let focused_readiness = &focused_unit.skill_readiness;
+    assert_eq!(
+        focused_readiness.selection,
+        Some(SkillCastSelection::PlayerUnit)
+    );
+    assert!(focused_readiness.target_required);
+    assert!(focus_update.action_capabilities.iter().any(|capability| {
+        capability.action == ActionKind::ActivateSkill && capability.enabled
+    }));
+    assert!(!focus_update.action_capabilities.iter().any(|capability| {
+        capability.action == ActionKind::BeginSkillTargeting && capability.enabled
+    }));
+    assert!(focus_update.action_capabilities.iter().any(|capability| {
+        capability.action == ActionKind::CancelSkillTargeting && capability.enabled
+    }));
+    assert!(focus_update.action_capabilities.iter().any(|capability| {
+        capability.action == ActionKind::PreviewSkillTarget && capability.enabled
+    }));
+
+    let mismatch_preview = core
+        .execute(
+            player_id,
+            PlayerBehavior::PreviewSkillTarget {
+                employee_uuid,
+                skill_id: skill_id.clone(),
+                target: SkillCastTarget::Tile {
+                    position: deploy_position,
+                },
+            },
+        )
+        .unwrap();
+    let BehaviorResult::SkillTargetPreview { result } = mismatch_preview else {
+        panic!("expected read-only target preview");
+    };
+    assert_eq!(
+        result.battle_state_revision,
+        focus_update.battle_state_revision
+    );
+    assert_eq!(
+        result.eligibility.disabled_reason_code,
+        Some(ActionDisabledReasonCode::SkillTargetTypeMismatch)
+    );
+
+    let valid_preview = core
+        .execute(
+            player_id,
+            PlayerBehavior::PreviewSkillTarget {
+                employee_uuid,
+                skill_id: skill_id.clone(),
+                target: exact_target,
+            },
+        )
+        .unwrap();
+    let BehaviorResult::SkillTargetPreview { result } = valid_preview else {
+        panic!("expected valid read-only target preview");
+    };
+    assert!(result.eligibility.enabled);
+    assert_eq!(
+        result.battle_state_revision,
+        focus_update.battle_state_revision
+    );
+
+    let reconnected = core
+        .execute(
+            player_id,
+            PlayerBehavior::RequestBattleState { since_seq: None },
+        )
+        .unwrap();
+    let BehaviorResult::BattleState { battle_update, .. } = reconnected else {
+        panic!("expected reconnect checkpoint");
+    };
+    assert_eq!(
+        battle_update.battle_state_revision,
+        focus_update.battle_state_revision
+    );
+    assert_eq!(
+        battle_update.checkpoint.tactical_focus,
+        focus_update.checkpoint.tactical_focus
+    );
+
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::ActivateSkill {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+            target: Some(exact_target),
+        },
+    );
+    assert_future_cursor_rejection_is_atomic(
+        &mut core,
+        player_id,
+        PlayerBehavior::CancelSkillTargeting,
+    );
+
+    let missing_target_error = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::ActivateSkill {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+            target: None,
+        },
+    )
+    .expect_err("player-unit activation must require an explicit unit payload");
+    assert!(matches!(
+        missing_target_error,
+        GameError::ActionUnavailable {
+            action: ActionKind::ActivateSkill,
+            reason: ActionDisabledReasonCode::SkillTargetRequired,
+        }
+    ));
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert_eq!(
+        active.battle_state_revision,
+        focus_update.battle_state_revision
+    );
+    assert!(active.tactical_focus.is_some());
+    assert_eq!(active.latest_event_log_seq(), seq_before_focus);
+
+    let cancelled =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::CancelSkillTargeting)
+            .unwrap();
+    let BehaviorResult::BattleSkillTargetingFocusChanged {
+        battle_update: cancel_update,
+        ..
+    } = cancelled
+    else {
+        panic!("expected focus cancellation update");
+    };
+    assert_eq!(
+        cancel_update.battle_state_revision,
+        focus_update.battle_state_revision + 1
+    );
+    assert!(cancel_update.checkpoint.tactical_focus.is_none());
+    assert_eq!(
+        cancel_update.checkpoint.playback,
+        crate::game::behavior::BattlePlaybackState::default()
+    );
+    assert_eq!(
+        core.state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .latest_event_log_seq(),
+        seq_before_focus
+    );
+    assert!(cancel_update.action_capabilities.iter().any(|capability| {
+        capability.action == ActionKind::BeginSkillTargeting && capability.enabled
+    }));
+    assert!(!cancel_update
+        .action_capabilities
+        .iter()
+        .any(|capability| { capability.action == ActionKind::CancelSkillTargeting }));
+
+    let paused =
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::PauseBattle).unwrap();
+    let BehaviorResult::BattlePlaybackChanged {
+        battle_update: pause_update,
+        ..
+    } = paused
+    else {
+        panic!("expected pause update");
+    };
+    let focused_while_paused = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::BeginSkillTargeting {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleSkillTargetingFocusChanged {
+        battle_update: paused_focus_update,
+        ..
+    } = focused_while_paused
+    else {
+        panic!("expected paused focus update");
+    };
+    assert_eq!(
+        paused_focus_update.battle_state_revision,
+        pause_update.battle_state_revision + 1
+    );
+    assert!(paused_focus_update.checkpoint.playback.paused);
+    assert_eq!(
+        paused_focus_update.checkpoint.playback.speed,
+        crate::game::behavior::BattlePlaybackSpeed::X0_5
+    );
+    assert!(
+        paused_focus_update
+            .checkpoint
+            .tactical_focus
+            .as_ref()
+            .unwrap()
+            .restore_playback
+            .paused
+    );
+
+    let revision_before_activation = paused_focus_update.battle_state_revision;
+    let activated = execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::ActivateSkill {
+            employee_uuid,
+            skill_id: skill_id.clone(),
+            target: Some(exact_target),
+        },
+    )
+    .unwrap();
+    let BehaviorResult::BattleSkillActivated { battle_update, .. } = activated else {
+        panic!("expected player-selected skill activation");
+    };
+    assert_eq!(
+        battle_update.battle_state_revision,
+        revision_before_activation + 1
+    );
+    assert!(battle_update.checkpoint.tactical_focus.is_none());
+    assert!(battle_update.checkpoint.playback.paused);
+    assert_eq!(
+        battle_update.checkpoint.playback.speed,
+        crate::game::behavior::BattlePlaybackSpeed::X1
+    );
+    assert!(battle_update.events_delta.events.iter().any(|entry| {
+        matches!(
+            &entry.event,
+            LiveBattlePresentationEventKindDto::ManualCastStart {
+                skill_id: actual_skill_id,
+                target: Some(SkillCastTarget::Unit { unit_instance_id }),
+                ..
+            } if actual_skill_id == &skill_id && *unit_instance_id == target_id
+        )
+    }));
+}
+
+#[test]
+fn manual_fragment_can_restore_tactical_resource_and_enable_extra_deployment() {
+    let skill_id = SkillId::from("manual_fragment_tactical_resource");
+    let fragment =
+        active_skill_fragment("tactical_resource_fragment", 0xD3F3_2002, skill_id.as_str());
+    let skill = SkillDef {
+        use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: skill_id.clone(),
         name: skill_id.to_string(),
         kind: Default::default(),
@@ -5066,22 +10663,23 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
         focus_time_ms: 0,
         focus_permissions: Default::default(),
         steps: vec![SkillStepDef {
-            id: "restore_stabilization".to_string(),
+            id: "restore_tactical_resource".to_string(),
             delay_ms: 0,
             target: SkillTarget::SelfUnit,
             targeting: Default::default(),
             when: Default::default(),
             repeat: Default::default(),
             delivery: DeliveryDef::Instant,
-            effects: vec![SkillEffectDef::ModifyStabilization {
-                amount: run_policy().live_deployment.max_cost as i32 + 50,
-            }],
+            effects: vec![SkillEffectDef::ModifyTacticalResource {
+                amount: run_policy().tactical_resource.maximum as i32 + 50,
+            }
+            .authored("effect_01")],
             presentation: Default::default(),
         }],
     };
     let weapon = weapon_equipment(
         0xE007,
-        "stabilization_fragment_sword",
+        "tactical_resource_fragment_sword",
         WeaponArchetype::Sword,
     );
     let mut core = GameCore::new(
@@ -5099,20 +10697,31 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
     let second_uuid = employee_ids[1];
     let third_uuid = employee_ids[2];
     grant_and_equip_weapon(&mut core, caster_uuid, weapon, Uuid::from_u128(0xE007_0001));
+    let initial_charge = consumable_meta(
+        0xE005,
+        "u05_initial_charge",
+        ConsumableTier::Critical,
+        ConsumableEffect::InitialSkillCharge { percent: 100 },
+    );
     core.roster_mut()
         .unwrap()
         .get_mut(&caster_uuid)
         .unwrap()
-        .combat_profile
-        .battle_profile
-        .resonance
-        .start = 100;
-    core.state.skill_fragments.add(&fragment).unwrap();
+        .apply_consumable_modifier(Uuid::from_u128(0xE005_0001), &initial_charge);
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.execute(
         player_id,
         PlayerBehavior::EquipSkillFragment {
             employee_uuid: caster_uuid,
-            fragment_id: fragment.id.clone(),
+            copy_uuid,
         },
     )
     .unwrap();
@@ -5168,7 +10777,7 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
         (
             active.battle_state_revision,
             deployment.next_instance_salt,
-            deployment.current_cost,
+            active.tactical_resource.current(),
         )
     };
 
@@ -5198,7 +10807,7 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
             facing: FacingDirection::Right,
         },
     )
-    .expect_err("third deployment should require restored stabilization");
+    .expect_err("third deployment should require restored tactical resource");
     assert!(matches!(
         insufficient,
         GameError::ActionUnavailable {
@@ -5210,7 +10819,10 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
     let deployment = active.live_deployment.as_ref().unwrap();
     assert_eq!(active.battle_state_revision, revision_before_failed_deploy);
     assert_eq!(deployment.next_instance_salt, salt_before_failed_deploy);
-    assert_eq!(deployment.current_cost, cost_before_failed_deploy);
+    assert_eq!(
+        active.tactical_resource.current(),
+        cost_before_failed_deploy
+    );
     assert!(!deployment.deployed_units.contains_key(&third_uuid));
 
     execute_current_battle_mutation(
@@ -5225,16 +10837,11 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
     .unwrap();
     let advanced = core.advance_active_battle_by(1).unwrap();
     let BehaviorResult::BattleAdvanced { battle_update, .. } = advanced else {
-        panic!("expected live deployment after stabilization skill");
+        panic!("expected live deployment after tactical-resource skill");
     };
-    let deployment = battle_update
-        .checkpoint
-        .deployment
-        .as_ref()
-        .expect("live deployment should be exposed after stabilization skill");
     assert_eq!(
-        deployment.current_cost,
-        run_policy().live_deployment.max_cost
+        battle_update.checkpoint.tactical_resource.current,
+        run_policy().tactical_resource.maximum
     );
 
     let deployed = execute_current_battle_mutation(
@@ -5248,7 +10855,7 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
     )
     .unwrap();
     let BehaviorResult::BattleUnitDeployed { battle_update, .. } = deployed else {
-        panic!("expected third deployment after stabilization restore");
+        panic!("expected third deployment after tactical-resource restore");
     };
     let deployment = battle_update
         .checkpoint
@@ -5257,12 +10864,139 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
         .expect("live deploy update should expose deployment state");
     assert_eq!(deployment.deployed_units.len(), 3);
     assert_eq!(
-        deployment.current_cost,
+        battle_update.checkpoint.tactical_resource.current,
         run_policy()
-            .live_deployment
-            .max_cost
-            .saturating_sub(run_policy().live_deployment.base_deploy_cost)
+            .tactical_resource
+            .maximum
+            .saturating_sub(run_policy().tactical_resource.base_deploy_cost)
     );
+}
+
+#[test]
+fn authored_skill_negative_tactical_resource_delta_clamps_at_zero() {
+    let skill_id = SkillId::from("manual_fragment_tactical_resource_drain");
+    let fragment = active_skill_fragment(
+        "tactical_resource_drain_fragment",
+        0xD3F3_2003,
+        skill_id.as_str(),
+    );
+    let skill = SkillDef {
+        use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+        flow: None,
+        id: skill_id.clone(),
+        name: skill_id.to_string(),
+        kind: Default::default(),
+        cast_targeting: SkillCastTargetingDef::explicit(
+            SkillTarget::SelfUnit,
+            Default::default(),
+            None,
+            false,
+        ),
+        focus_time_ms: 0,
+        focus_permissions: Default::default(),
+        steps: vec![SkillStepDef {
+            id: "drain_tactical_resource".to_string(),
+            delay_ms: 0,
+            target: SkillTarget::SelfUnit,
+            targeting: Default::default(),
+            when: Default::default(),
+            repeat: Default::default(),
+            delivery: DeliveryDef::Instant,
+            effects: vec![
+                SkillEffectDef::ModifyTacticalResource { amount: i32::MIN }.authored("effect_01")
+            ],
+            presentation: Default::default(),
+        }],
+    };
+    let weapon = weapon_equipment(
+        0xE008,
+        "tactical_resource_drain_sword",
+        WeaponArchetype::Sword,
+    );
+    let mut core = GameCore::new(
+        game_data_with_pve_equipment_and_active_skill_fragments(
+            vec![weapon.clone()],
+            vec![skill],
+            vec![fragment.clone()],
+        ),
+        124,
+    );
+    let player_id = Uuid::from_u128(2);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    grant_and_equip_weapon(
+        &mut core,
+        employee_uuid,
+        weapon,
+        Uuid::from_u128(0xE008_0001),
+    );
+    let initial_charge = consumable_meta(
+        0xE005,
+        "u05_initial_charge",
+        ConsumableTier::Critical,
+        ConsumableEffect::InitialSkillCharge { percent: 100 },
+    );
+    core.roster_mut()
+        .unwrap()
+        .get_mut(&employee_uuid)
+        .unwrap()
+        .apply_consumable_modifier(Uuid::from_u128(0xE005_0001), &initial_charge);
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
+    core.execute(
+        player_id,
+        PlayerBehavior::EquipSkillFragment {
+            employee_uuid,
+            copy_uuid,
+        },
+    )
+    .unwrap();
+
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    let deploy_position = first_ground_deployment_cell(&preview);
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::DeployUnit {
+            employee_uuid,
+            position: deploy_position,
+            facing: FacingDirection::Right,
+        },
+    )
+    .unwrap();
+
+    execute_current_battle_mutation(
+        &mut core,
+        player_id,
+        PlayerBehavior::ActivateSkill {
+            employee_uuid,
+            skill_id,
+            target: None,
+        },
+    )
+    .unwrap();
+    let advanced = core.advance_active_battle_by(1).unwrap();
+    let BehaviorResult::BattleAdvanced { battle_update, .. } = advanced else {
+        panic!("expected battle update after tactical-resource drain");
+    };
+    assert_eq!(battle_update.checkpoint.tactical_resource.current, 0);
 }
 
 #[test]
@@ -5285,11 +11019,22 @@ fn retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation() {
         .unwrap();
     let BehaviorResult::BattleAdvanced {
         battle_uuid: first_battle_uuid,
+        battle_update: first_update,
         ..
     } = entered
     else {
         panic!("expected first active battle");
     };
+    assert_eq!(
+        first_update.checkpoint.tactical_resource.current,
+        run_policy().tactical_resource.initial
+    );
+    core.state
+        .active_battle
+        .as_mut()
+        .unwrap()
+        .tactical_resource
+        .apply_delta(-7);
     for index in 1..=58_u128 {
         core.state
             .inventory
@@ -5308,8 +11053,8 @@ fn retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation() {
 
     assert_eq!(
         core.get_run_snapshot_json().unwrap(),
-        exact_pre_entry,
-        "battle-stage abandonment must restore the exact authoritative pre-entry projection"
+        projection_after_test_retreat(exact_pre_entry.clone(), 1),
+        "retreat changes only its ledger in the authoritative pre-entry projection"
     );
 
     let reentered = core
@@ -5317,6 +11062,7 @@ fn retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation() {
         .unwrap();
     let BehaviorResult::BattleAdvanced {
         battle_uuid: second_battle_uuid,
+        battle_update: second_update,
         ..
     } = reentered
     else {
@@ -5326,8 +11072,16 @@ fn retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation() {
         second_battle_uuid, first_battle_uuid,
         "restored UUID/RNG continuation must reproduce the abandoned entry identity"
     );
+    assert_eq!(
+        second_update.checkpoint.tactical_resource.current,
+        run_policy().tactical_resource.initial,
+        "retreat must discard the previous battle-local resource pool"
+    );
     execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle).unwrap();
-    assert_eq!(core.get_run_snapshot_json().unwrap(), exact_pre_entry);
+    assert_eq!(
+        core.get_run_snapshot_json().unwrap(),
+        projection_after_test_retreat(exact_pre_entry, 2)
+    );
 }
 
 #[test]
@@ -5352,26 +11106,27 @@ fn committed_fatal_defeat_preempts_retry_while_attempts_remain() {
     }
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         result_stats: test_result_stats(BattleWinner::Opponent, &event_log, &[]),
         event_log,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions,
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
@@ -5561,36 +11316,37 @@ fn install_no_deployable_combat_result(
     }
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner,
+        outcome_id: fixture_outcome_id(winner),
+        verdict: fixture_verdict(winner),
+        grant_node_bonus: winner == BattleWinner::Player,
+        advance_encounter_progression: winner == BattleWinner::Player,
         result_stats: test_result_stats(winner, &event_log, &[]),
         event_log,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions,
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(core, node_id.0, battle).unwrap();
 }
 
 #[test]
-fn no_deployable_defeat_allows_immediate_recovery_nodes_then_rechecks() {
+fn weaponless_recruitment_is_not_a_no_deployable_recovery_path() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 129);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     assert!(core.state.run_checkpoint.can_load());
-    let (combat_id, recruitment_id, save_point_id) =
+    let (combat_id, _recruitment_id, _save_point_id) =
         install_combat_recovery_test_map(&mut core, true);
     core.execute(
         player_id,
@@ -5604,84 +11360,29 @@ fn no_deployable_defeat_allows_immediate_recovery_nodes_then_rechecks() {
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
-    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
-    assert_eq!(
-        core.selectable_map_node_ids(),
-        vec![recruitment_id, save_point_id]
-    );
-    let snapshot = core.get_run_snapshot_json().unwrap();
-    assert_eq!(
-        snapshot["map_navigation"]["selectable_node_ids"],
-        json!([recruitment_id, save_point_id])
-    );
-    assert_eq!(
-        snapshot["combat_recovery_restriction"],
-        json!({
-            "reason": "NoDeployableEmployees",
-            "allowed_node_ids": [recruitment_id, save_point_id],
-        })
-    );
-    assert!(snapshot["action_capabilities"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .any(
-            |capability| capability["action"] == json!("LoadRunCheckpoint")
-                && capability["enabled"] == json!(true)
-        ));
-    let save_point_projection = snapshot["map"]["nodes"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|node| node["id"] == json!(save_point_id))
-        .unwrap();
-    assert_eq!(save_point_projection["state"], json!("Available"));
-
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectMapNode {
-            node_id: recruitment_id,
-        },
-    )
-    .unwrap();
-    let entered = core
-        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-    let BehaviorResult::HeadquartersContactState {
-        recruitment_candidates,
-        ..
-    } = entered
-    else {
-        panic!("typed recovery node should enter headquarters recruitment");
-    };
-    let employee_definition_id = recruitment_candidates[0].employee_definition_id.clone();
-    let recruited = core
-        .execute(
-            player_id,
-            PlayerBehavior::RecruitEmployee {
-                employee_definition_id,
-            },
-        )
-        .unwrap();
     assert!(matches!(
-        recruited,
-        BehaviorResult::EmployeeRecruited { .. }
+        result,
+        BehaviorResult::RunFailureDecisionRequired {
+            reason: RunFailureReason::NoDeployableEmployees,
+            ..
+        }
+    ));
+    assert!(matches!(
+        core.get_state(),
+        GameState::AwaitingRunFailureDecision {
+            reason: RunFailureReason::NoDeployableEmployees,
+            ..
+        }
     ));
     assert!(!core.has_combat_recovery_restriction());
-    assert!(!core
-        .roster()
-        .unwrap()
-        .combat_eligible_employee_ids()
-        .is_empty());
-    assert!(matches!(core.get_state(), GameState::ViewingMap));
 }
 
 #[test]
-fn no_deployable_victory_uses_the_same_typed_recovery_restriction() {
+fn weaponless_victory_commits_rewards_then_fails_the_run() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 131);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let (combat_id, recruitment_id, save_point_id) =
+    let (combat_id, _recruitment_id, _save_point_id) =
         install_combat_recovery_test_map(&mut core, true);
     core.execute(
         player_id,
@@ -5698,51 +11399,6 @@ fn no_deployable_victory_uses_the_same_typed_recovery_restriction() {
     let BehaviorResult::CombatRewardsGranted { completion, .. } = result else {
         panic!("victory should retain its normal committed reward result");
     };
-    assert!(matches!(*completion, BehaviorResult::NodeCompleted { .. }));
-    assert_eq!(
-        core.selectable_map_node_ids(),
-        vec![recruitment_id, save_point_id]
-    );
-}
-
-#[test]
-fn recovery_node_that_resolves_without_restoring_deployability_fails_run() {
-    let mut core = GameCore::new(game_data_with_pve_encounters(), 132);
-    let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let (combat_id, recruitment_id, _) = install_combat_recovery_test_map(&mut core, true);
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectMapNode { node_id: combat_id },
-    )
-    .unwrap();
-    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-    install_no_deployable_combat_result(&mut core, combat_id, BattleWinner::Opponent);
-    core.execute(player_id, PlayerBehavior::CompleteCombatResult)
-        .unwrap();
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("recovery-node activity should queue delivery");
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectMapNode {
-            node_id: recruitment_id,
-        },
-    )
-    .unwrap();
-    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-
-    let result = core
-        .execute(player_id, PlayerBehavior::RequestEmergencySupplies)
-        .unwrap();
-    let BehaviorResult::EmergencySuppliesGranted { completion, .. } = result else {
-        panic!("headquarters supplies should resolve its node");
-    };
     assert!(matches!(
         *completion,
         BehaviorResult::RunFailed {
@@ -5756,18 +11412,38 @@ fn recovery_node_that_resolves_without_restoring_deployability_fails_run() {
             reason: RunFailureReason::NoDeployableEmployees
         }
     ));
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count,
-        "recovery resolution ending in RunFailed must not deliver research"
-    );
-    assert_eq!(
-        core.state
-            .skill_fragments
-            .pending_research_deliveries()
-            .collect::<Vec<_>>(),
-        vec![(&fragment_id, 1)]
-    );
+}
+
+#[test]
+fn weaponless_headquarters_does_not_defer_failure() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 132);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let (combat_id, _recruitment_id, _) = install_combat_recovery_test_map(&mut core, true);
+    core.execute(
+        player_id,
+        PlayerBehavior::SelectMapNode { node_id: combat_id },
+    )
+    .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    install_no_deployable_combat_result(&mut core, combat_id, BattleWinner::Opponent);
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+    assert!(matches!(
+        result,
+        BehaviorResult::RunFailed {
+            reason: RunFailureReason::NoDeployableEmployees,
+            ..
+        }
+    ));
+    assert!(matches!(
+        core.get_state(),
+        GameState::RunFailed {
+            reason: RunFailureReason::NoDeployableEmployees
+        }
+    ));
 }
 
 #[test]
@@ -5842,7 +11518,7 @@ fn headquarters_without_authored_candidates_is_not_a_recovery_capability() {
 }
 
 #[test]
-fn repeated_retreats_never_consume_attempts_or_resolve_the_node() {
+fn two_retreats_consume_only_retreat_budget_and_third_entry_cannot_retreat() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -5858,7 +11534,7 @@ fn repeated_retreats_never_consume_attempts_or_resolve_the_node() {
     let pre_entry = core.get_run_snapshot_json().unwrap();
     let mut first_battle_uuid = None;
 
-    for _ in 0..4 {
+    for retreat in 1..=2 {
         let entered = core
             .execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
@@ -5875,7 +11551,10 @@ fn repeated_retreats_never_consume_attempts_or_resolve_the_node() {
             execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle)
                 .unwrap();
         assert!(matches!(result, BehaviorResult::NodePreview { .. }));
-        assert_eq!(core.get_run_snapshot_json().unwrap(), pre_entry);
+        assert_eq!(
+            core.get_run_snapshot_json().unwrap(),
+            projection_after_test_retreat(pre_entry.clone(), retreat)
+        );
     }
 
     assert!(core
@@ -5889,10 +11568,18 @@ fn repeated_retreats_never_consume_attempts_or_resolve_the_node() {
             node.state != crate::game::map::MapNodeState::Completed
                 && node.visibility == crate::game::map::MapNodeVisibility::Revealed
         }));
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let before = core.get_run_snapshot_json().unwrap();
+    assert!(
+        execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle)
+            .is_err()
+    );
+    assert_eq!(core.get_run_snapshot_json().unwrap(), before);
 }
 
 #[test]
-fn failed_live_defense_battle_reenters_until_attempts_are_exhausted() {
+fn failed_live_defense_battle_consumes_node_on_first_defeat() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -5908,56 +11595,48 @@ fn failed_live_defense_battle_reenters_until_attempts_are_exhausted() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
 
-    let BehaviorResult::NodePreview {
-        node_id: failed_node_id,
-        ..
-    } = result
-    else {
-        panic!("expected failed combat to return to node confirm while attempts remain");
-    };
-    assert_eq!(failed_node_id, node_id);
-    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
-    let snapshot = core.get_run_snapshot_json().unwrap();
+    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
+    assert_eq!(core.get_state(), GameState::ViewingMap);
     assert_eq!(
-        snapshot["game_state_context"]["abnormality_attempt"]["attempts_started"],
-        json!(1)
-    );
-    assert_eq!(
-        snapshot["game_state_context"]["abnormality_attempt"]["remaining_attempts"],
-        json!(2)
+        core.run_state().unwrap().map.node(node_id).unwrap().state,
+        MapNodeState::Completed
     );
     assert!(core.state.active_battle.is_none());
     assert!(core.state.active_node_content.is_none());
-    assert!(core.state.node_session.is_some());
+    assert!(core.state.node_session.is_none());
+    assert!(core
+        .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .is_err());
 }
 
 #[test]
-fn final_boss_retreat_is_also_exact_and_non_consuming() {
+fn final_boss_retreat_changes_only_its_budget() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -5987,7 +11666,11 @@ fn final_boss_retreat_is_also_exact_and_non_consuming() {
         execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle)
             .unwrap();
     assert!(matches!(result, BehaviorResult::NodePreview { .. }));
-    assert_eq!(core.get_run_snapshot_json().unwrap(), pre_entry);
+    assert_eq!(
+        core.get_run_snapshot_json().unwrap(),
+        projection_after_test_retreat(pre_entry, 1)
+    );
+    assert!(!core.state.player_profile.standard_tutorial_completed);
 }
 
 #[test]
@@ -5995,13 +11678,7 @@ fn final_boss_defeat_with_valid_checkpoint_requires_explicit_decision() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should queue delivery");
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     {
         let run = core.state.run.as_mut().expect("run state");
         run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
@@ -6025,26 +11702,27 @@ fn final_boss_defeat_with_valid_checkpoint_requires_explicit_decision() {
         .unwrap();
     let event_log = encounter_compendium_spawn_log();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Boss,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         result_stats: test_result_stats(BattleWinner::Opponent, &event_log, &[]),
         event_log,
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
@@ -6074,24 +11752,8 @@ fn final_boss_defeat_with_valid_checkpoint_requires_explicit_decision() {
     assert!(!action_kinds.contains(&ActionKind::AbandonRun));
     assert!(core
         .encounter_compendium_profile()
-        .discovered_abnormality_ids
-        .contains("defense_risk_abno"));
-    assert!(core
-        .encounter_compendium_profile()
-        .discovered_corrosion_profile_ids
-        .contains("corroded_guard"));
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count,
-        "RunFailed must not synthesize a planning-return delivery"
-    );
-    assert_eq!(
-        core.state
-            .skill_fragments
-            .pending_research_deliveries()
-            .collect::<Vec<_>>(),
-        vec![(&fragment_id, 1)]
-    );
+        .registered_ids
+        .is_empty());
 }
 
 #[test]
@@ -6099,7 +11761,7 @@ fn forced_boss_omen_defeat_immediately_fails_endless_run() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     core.state.run_checkpoint.loads_used = crate::game::world::state::RUN_CHECKPOINT_MAX_LOADS;
     let node_id = force_map_combat_node(
         &mut core,
@@ -6119,26 +11781,27 @@ fn forced_boss_omen_defeat_immediately_fails_endless_run() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Boss,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
@@ -6151,7 +11814,19 @@ fn forced_boss_omen_defeat_immediately_fails_endless_run() {
             ..
         }
     ));
-    assert!(core.get_action_capabilities().is_empty());
+    assert_eq!(
+        core.get_action_capabilities(),
+        vec![
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicState,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+        ]
+    );
 }
 
 #[test]
@@ -6159,7 +11834,7 @@ fn forced_boss_omen_failure_requires_decision_and_executes_valid_checkpoint_load
     let mut core = GameCore::new(game_data_with_pve_encounters(), 134);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
     let checkpoint_map = core.current_map_view().unwrap();
     let node_id = force_map_combat_node(
         &mut core,
@@ -6179,26 +11854,27 @@ fn forced_boss_omen_failure_requires_decision_and_executes_valid_checkpoint_load
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Boss,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
     let failed = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
@@ -6298,26 +11974,27 @@ fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() 
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Boss,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Player == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Player, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
@@ -6328,6 +12005,18 @@ fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() 
     };
     assert!(matches!(*completion, BehaviorResult::NodeCompleted { .. }));
     assert!(matches!(core.get_state(), GameState::ViewingMap));
+    let final_fragment_id = crate::game::data::skill_fragment_data::SkillFragmentId::from(
+        "fragment_final_boss_risk_abno",
+    );
+    assert_eq!(core.state.skill_fragments.count(&final_fragment_id), 1);
+    assert_eq!(core.state.skill_fragments.fragment_dust(), 0);
+    assert!(core
+        .state
+        .run
+        .as_ref()
+        .unwrap()
+        .completed_reward_source_ids
+        .contains("source_final_boss_risk"));
     assert_eq!(
         core.roster()
             .unwrap()
@@ -6361,16 +12050,24 @@ fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() 
     let gate_ids = core.selectable_map_node_ids();
     assert_eq!(gate_ids.len(), 1);
     let gate_id = gate_ids[0];
-    assert!(core
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .map
-        .node(gate_id)
-        .is_some_and(
-            |node| node.category == MapNodeCategory::Gate && node.kind_id.as_str() == "gate_stairs"
-        ));
+    let run = core.state.run.as_ref().unwrap();
+    assert_eq!(run.map_progression.current_node_id, Some(node_id));
+    assert_eq!(run.map_progression.completed_node_ids, vec![node_id]);
+    assert_eq!(run.map_progression.available_node_ids, vec![gate_id]);
+    assert_eq!(
+        run.map.node(node_id).unwrap().state,
+        MapNodeState::Completed
+    );
+    assert!(run.map.node(gate_id).is_some_and(|node| {
+        node.category == MapNodeCategory::Gate
+            && node.kind_id.as_str() == "gate_stairs"
+            && node.state == MapNodeState::Available
+            && node.visibility == MapNodeVisibility::Revealed
+    }));
+    let template = core.facility_template_for_map(&run.map).unwrap();
+    assert!(run
+        .map_progression
+        .validate_checkpoint_state(&run.map, &template));
 
     core.execute(
         player_id,
@@ -6397,10 +12094,18 @@ fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() 
             .trauma,
         81
     );
+    assert_eq!(core.state.skill_fragments.count(&final_fragment_id), 1);
+    assert!(core
+        .state
+        .run
+        .as_ref()
+        .unwrap()
+        .completed_reward_source_ids
+        .contains("source_final_boss_risk"));
 }
 
 #[test]
-fn boss_kind_combat_defeat_reenters_while_attempts_remain() {
+fn boss_kind_combat_defeat_consumes_node_on_first_defeat() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -6424,37 +12129,135 @@ fn boss_kind_combat_defeat_reenters_while_attempts_remain() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("boss_abno".to_string()),
         encounter_id: "boss_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Boss,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
 
-    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
-    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
-    let snapshot = core.get_run_snapshot_json().unwrap();
+    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
+    assert_eq!(core.get_state(), GameState::ViewingMap);
     assert_eq!(
-        snapshot["game_state_context"]["abnormality_attempt"]["remaining_attempts"],
-        json!(2)
+        core.run_state().unwrap().map.node(node_id).unwrap().state,
+        MapNodeState::Completed
+    );
+    assert!(!core.state.player_profile.standard_tutorial_completed);
+}
+
+#[test]
+fn standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    {
+        let run = core.state.run.as_mut().expect("run state");
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+            floor_index: run_policy().setup.standard_floor_count - 1,
+            max_floors: run_policy().setup.standard_floor_count,
+        };
+    }
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "boss_risk_encounter",
+    );
+    core.state.run.as_mut().unwrap().map.terminals = vec![MapTerminalNode {
+        node_id,
+        resolution: FacilityTerminalResolution::StandardCompletion,
+    }];
+
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let event_log = BattleEventLog::default();
+    let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
+        primary_abnormality_id: Some("boss_risk_abno".to_string()),
+        encounter_id: "boss_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Boss,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
+        result_stats: test_result_stats(BattleWinner::Opponent, &event_log, &[]),
+        event_log,
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+        employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
+    };
+    let mut retreat_core = core.clone();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
+
+    let defeated = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+    assert!(matches!(
+        defeated,
+        BehaviorResult::RunFailed {
+            reason: RunFailureReason::BossDefeated,
+            ..
+        }
+    ));
+    assert!(matches!(
+        core.get_state(),
+        GameState::RunFailed {
+            reason: RunFailureReason::BossDefeated
+        }
+    ));
+    assert!(!core.state.player_profile.standard_tutorial_completed);
+    assert_eq!(
+        core.run_state().unwrap().map.node(node_id).unwrap().state,
+        MapNodeState::Completed
+    );
+    assert!(core.export_active_run_checkpoint().unwrap().is_none());
+    let retreated = execute_current_battle_mutation(
+        &mut retreat_core,
+        player_id,
+        PlayerBehavior::RetreatBattle,
+    )
+    .unwrap();
+    assert!(matches!(retreated, BehaviorResult::NodePreview { .. }));
+    assert!(
+        !retreat_core
+            .state
+            .player_profile
+            .standard_tutorial_completed
+    );
+    assert_eq!(
+        retreat_core
+            .run_state()
+            .unwrap()
+            .abnormality_attempt_state(node_id)
+            .retreats_used,
+        1
     );
 }
 
@@ -6473,12 +12276,6 @@ fn event_started_combat_victory_consumes_event_node() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should queue delivery");
     core.set_enkephalin(5);
     let event_node_id =
         force_single_event_node_run_for_combat_tests(&mut core, "event_started_victory");
@@ -6489,32 +12286,28 @@ fn event_started_combat_victory_consumes_event_node() {
         "event_started_victory",
         "fight",
     );
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count,
-        "Event entry and nested combat start must not deliver research"
-    );
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: event_node_id.0,
         winner: BattleWinner::Player,
+        outcome_id: fixture_outcome_id(BattleWinner::Player),
+        verdict: fixture_verdict(BattleWinner::Player),
+        grant_node_bonus: BattleWinner::Player == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Player == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Player, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: event_node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, event_node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
@@ -6530,19 +12323,9 @@ fn event_started_combat_victory_consumes_event_node() {
     };
     assert_eq!(enkephalin, 5);
     assert_eq!(core.get_enkephalin(), 5);
-    let BehaviorResult::NodeCompleted {
-        research_deliveries,
-        ..
-    } = *completion
-    else {
+    let BehaviorResult::NodeCompleted { .. } = *completion else {
         panic!("authored Event room victory should consume the node after rewards");
     };
-    assert_eq!(research_deliveries.len(), 1);
-    assert_eq!(research_deliveries[0].fragment_id, fragment_id);
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count + 1
-    );
     assert!(core
         .state
         .run
@@ -6554,7 +12337,7 @@ fn event_started_combat_victory_consumes_event_node() {
 }
 
 #[test]
-fn event_started_combat_defeat_reenters_while_attempts_remain() {
+fn event_started_combat_defeat_consumes_node_and_clears_session() {
     let event = combat_choice_event_definition(
         "event_started_defeat",
         "fight",
@@ -6578,49 +12361,57 @@ fn event_started_combat_defeat_reenters_while_attempts_remain() {
         "fight",
     );
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: event_node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: event_node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, event_node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
 
-    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
-    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
-    let session = core
-        .state
-        .run
-        .as_ref()
+    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
+    assert_eq!(core.get_state(), GameState::ViewingMap);
+    assert_eq!(
+        core.run_state()
+            .unwrap()
+            .map
+            .node(event_node_id)
+            .unwrap()
+            .state,
+        MapNodeState::Completed
+    );
+    assert!(core
+        .run_state()
         .unwrap()
         .event_sessions
         .get(&event_node_id)
-        .expect("event combat session should remain for retry");
-    assert_eq!(
-        session
-            .committed_check
-            .as_ref()
-            .map(|check| check.choice_id.as_str()),
-        Some("fight")
-    );
-    assert!(session.started_combat.is_some());
+        .is_none());
+    assert!(core
+        .execute(
+            player_id,
+            PlayerBehavior::SelectMapNode {
+                node_id: event_node_id
+            }
+        )
+        .is_err());
 }
 
 #[test]
@@ -6649,32 +12440,33 @@ fn event_started_combat_defeat_has_no_duplicate_event_reward_policy() {
         "fight",
     );
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: event_node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: event_node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, event_node_id.0, battle).unwrap();
 
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
 
-    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
+    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
     assert_eq!(
         core.get_enkephalin(),
         5,
@@ -6796,7 +12588,7 @@ fn consumable_modifier_survives_abandonment_and_expires_on_committed_result() {
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
 
-    for _ in 0..2 {
+    for retreat in 1..=2 {
         core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
         execute_current_battle_mutation(&mut core, player_id, PlayerBehavior::RetreatBattle)
@@ -6815,37 +12607,38 @@ fn consumable_modifier_survives_abandonment_and_expires_on_committed_result() {
         let snapshot = core.get_run_snapshot_json().unwrap();
         assert_eq!(
             snapshot["game_state_context"]["abnormality_attempt"]["remaining_attempts"],
-            json!(3)
+            json!(3 - retreat)
         );
     }
 
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
+        typed_resource_result: None,
+        runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
         abnormality_uuid: node_id.0,
         winner: BattleWinner::Opponent,
+        outcome_id: fixture_outcome_id(BattleWinner::Opponent),
+        verdict: fixture_verdict(BattleWinner::Opponent),
+        grant_node_bonus: BattleWinner::Opponent == BattleWinner::Player,
+        advance_encounter_progression: BattleWinner::Opponent == BattleWinner::Player,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
-        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results: vec![],
         employee_conditions: core.state.roster.clone(),
+        compendium_candidates: vec![],
     };
-    core.state.active_battle = None;
-    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
-    core.transition_to(GameState::CombatResult {
-        battle_uuid: node_id.0,
-    })
-    .unwrap();
+    settle_test_combat_result(&mut core, node_id.0, battle).unwrap();
     let result = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
-    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
+    assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
     assert!(core
         .roster()
         .unwrap()
@@ -6854,3 +12647,862 @@ fn consumable_modifier_survives_abandonment_and_expires_on_committed_result() {
         .active_consumable_modifier
         .is_none());
 }
+
+#[test]
+fn owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_continuation() {
+    use crate::authoring::{
+        clone_shape::controlled_clone,
+        control::{
+            self, CancellationToken, ExecutionLimits, ExecutionPhase, NativeStorageProvenance,
+        },
+    };
+    let game_data = game_data_with_pve_encounters();
+    let limits = ExecutionLimits {
+        max_work: 1 << 30,
+        max_clone_slots: 1 << 20,
+        ..ExecutionLimits::default()
+    };
+    let token = CancellationToken::default();
+    let phase = ExecutionPhase::TrialPreparation;
+    let player_id = Uuid::from_u128(1);
+    let (mut source, _, provenance) = control::run_with_provenance(
+        &limits,
+        &token,
+        phase,
+        NativeStorageProvenance::fresh(),
+        || {
+            let mut core = GameCore::new(game_data, 127);
+            start_new_game_with_default_starters(&mut core, player_id);
+            let node_id = force_first_available_node(
+                &mut core,
+                MapNodeCategory::SavePoint,
+                "save_point",
+                MapNodePayload::SavePoint,
+            );
+            core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+                .unwrap();
+            core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+                .unwrap();
+            core.execute(player_id, PlayerBehavior::CompleteNode)
+                .unwrap();
+            core.save_run_checkpoint_for_test().unwrap();
+            let node_id = force_map_combat_node(
+                &mut core,
+                MapNodeCategory::Combat,
+                "combat_defense",
+                "defense_encounter",
+            );
+            core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+                .unwrap();
+            core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+                .unwrap();
+            assert!(core
+                .state
+                .active_battle
+                .as_ref()
+                .unwrap()
+                .entry_snapshot
+                .is_some());
+            assert!(core.state.run_checkpoint.payload.is_some());
+            core
+        },
+    )
+    .unwrap();
+    let original = source.get_run_snapshot_json().unwrap();
+    let (candidate, usage, _) =
+        control::run_with_provenance(&limits, &token, phase, provenance, || {
+            controlled_clone(&source)
+        })
+        .unwrap();
+    let mut candidate = candidate.unwrap();
+    assert_eq!(candidate.get_run_snapshot_json().unwrap(), original);
+    assert!(std::ptr::eq(&*source.game_data, &*candidate.game_data));
+    assert!(Arc::ptr_eq(
+        source.state.continue_state.encoded.as_ref().unwrap(),
+        candidate.state.continue_state.encoded.as_ref().unwrap()
+    ));
+    let mut exact = limits.clone();
+    exact.max_work = usage.work;
+    exact.max_clone_slots = usage.clone_slots_peak;
+    let (copy, exact_usage, _) =
+        control::run_with_provenance(&exact, &token, phase, provenance, || {
+            controlled_clone(&source)
+        })
+        .unwrap();
+    assert!(copy.is_ok());
+    assert_eq!(usage, exact_usage);
+    drop(copy);
+    for short_work in [true, false] {
+        let mut short = exact.clone();
+        if short_work {
+            short.max_work -= 1;
+        } else {
+            short.max_clone_slots -= 1;
+        }
+        let failure = control::run_with_provenance(&short, &token, phase, provenance, || {
+            controlled_clone(&source)
+        })
+        .err()
+        .unwrap();
+        assert_eq!(
+            failure.code,
+            if short_work {
+                "authoring_work_limit"
+            } else {
+                "authoring_clone_limit"
+            }
+        );
+        assert_eq!(source.get_run_snapshot_json().unwrap(), original);
+    }
+    // Both independent native copies restore their retained entry + checkpoint
+    // and continue with the same UUID state after the actual retreat command.
+    execute_current_battle_mutation(&mut candidate, player_id, PlayerBehavior::RetreatBattle)
+        .unwrap();
+    assert_eq!(source.get_run_snapshot_json().unwrap(), original);
+    execute_current_battle_mutation(&mut source, player_id, PlayerBehavior::RetreatBattle).unwrap();
+    assert_eq!(
+        candidate.get_run_snapshot_json().unwrap(),
+        source.get_run_snapshot_json().unwrap()
+    );
+    assert_eq!(
+        serde_json::to_value(&candidate.state.uuid_manager).unwrap(),
+        serde_json::to_value(&source.state.uuid_manager).unwrap()
+    );
+}
+
+#[test]
+fn owned_capture_shape_prices_only_captured_roots_and_rejects_before_delivery() {
+    use crate::authoring::control::{
+        self, CancellationToken, ExecutionLimits, ExecutionPhase, ExecutionUsage,
+        NativeStorageProvenance,
+    };
+    use crate::game::world::{
+        grant_state::EconomyGrantState,
+        state::{BattleEmployeeAttemptState, BattleEntrySnapshot, RunCheckpointPayload},
+    };
+    fn check<T: crate::authoring::clone_shape::CloneShape>(
+        provenance: NativeStorageProvenance,
+        capture: impl Fn() -> Result<T, GameError>,
+    ) -> ExecutionUsage {
+        let limits = ExecutionLimits::default();
+        let token = CancellationToken::default();
+        let phase = ExecutionPhase::TrialPreparation;
+        let (value, usage, _) =
+            control::run_with_provenance(&limits, &token, phase, provenance, &capture).unwrap();
+        let value = value.ok().unwrap();
+        // Independent completed-owner visitor includes fixed fields freshly
+        // created by capture, while never traversing the excluded source roots.
+        let (_, completed_usage, _) =
+            control::run_with_provenance(&limits, &token, phase, provenance, || {
+                let mut meter = control::CloneMeter::default();
+                value.visit_clone_shape(&mut meter).unwrap();
+                meter.finish("completed_storage", "completed_copy").unwrap();
+            })
+            .unwrap();
+        assert_eq!(usage, completed_usage);
+        drop(value);
+        let exact = ExecutionLimits {
+            max_work: usage.work,
+            max_clone_slots: usage.clone_slots_peak,
+            ..limits.clone()
+        };
+        let (value, exact_usage, _) =
+            control::run_with_provenance(&exact, &token, phase, provenance, &capture).unwrap();
+        assert!(value.is_ok());
+        assert_eq!(usage, exact_usage);
+        drop(value);
+        for short_work in [true, false] {
+            let mut short = exact.clone();
+            if short_work {
+                short.max_work -= 1;
+            } else {
+                short.max_clone_slots -= 1;
+            }
+            let failure = control::run_with_provenance(&short, &token, phase, provenance, &capture)
+                .err()
+                .unwrap();
+            assert_eq!(
+                failure.code,
+                if short_work {
+                    "authoring_work_limit"
+                } else {
+                    "authoring_clone_limit"
+                }
+            );
+        }
+        usage
+    }
+    fn check_all(core: &GameCore, provenance: NativeStorageProvenance) -> Vec<ExecutionUsage> {
+        vec![
+            check(provenance, || {
+                core.state
+                    .clone_non_battle_transaction_state()?
+                    .ok_or(GameError::InvalidAction)
+            }),
+            check(provenance, || BattleEntrySnapshot::capture(&core.state)),
+            check(provenance, || {
+                RunCheckpointPayload::capture(
+                    &core.state,
+                    core.state.run.as_ref().unwrap(),
+                    core.content_identity(),
+                )
+            }),
+            check(provenance, || EconomyGrantState::capture(&core.state)),
+            check(provenance, || {
+                BattleEmployeeAttemptState::new(&core.state.roster)
+            }),
+        ]
+    }
+    let data = game_data_with_pve_encounters();
+    let limits = ExecutionLimits::default();
+    let (mut source, _, provenance) = control::run_with_provenance(
+        &limits,
+        &CancellationToken::default(),
+        ExecutionPhase::TrialPreparation,
+        NativeStorageProvenance::fresh(),
+        || {
+            let mut core = GameCore::new(data, 127);
+            start_new_game_with_default_starters(&mut core, Uuid::from_u128(1));
+            core
+        },
+    )
+    .unwrap();
+    let before = source.get_run_snapshot_json().unwrap();
+    let usage = check_all(&source, provenance);
+    assert_eq!(source.get_run_snapshot_json().unwrap(), before);
+    // These captures deliberately exclude the permanent profile. A borrowed
+    // whole-state surrogate would incorrectly charge its large dormant ID.
+    source
+        .state
+        .player_profile
+        .encounter_compendium
+        .registered_ids
+        .insert("uncaptured_id".repeat(16384));
+    assert_eq!(check_all(&source, provenance), usage);
+    assert_eq!(source.get_run_snapshot_json().unwrap(), before);
+}
+
+#[test]
+fn owned_capture_shape_sticky_failure_restores_run_state_and_moves_live_profile() {
+    use crate::authoring::control::{self, CancellationToken, ExecutionLimits, ExecutionPhase};
+    let mut source = GameCore::new(game_data_with_pve_encounters(), 0xC011_EC73);
+    source
+        .state
+        .player_profile
+        .encounter_compendium
+        .registered_ids
+        .insert("before".into());
+    let before_uuid = serde_json::to_value(&source.state.uuid_manager).unwrap();
+    let before_amount = source.state.enkephalin.amount;
+    let reached = std::cell::Cell::new(false);
+    let failure = control::run(
+        &ExecutionLimits::default(),
+        &CancellationToken::default(),
+        ExecutionPhase::TrialExecution,
+        || {
+            source.with_state_transaction(|core| {
+                reached.set(true);
+                core.state.enkephalin.amount = 999;
+                core.state.uuid_manager.next_employee();
+                core.state
+                    .player_profile
+                    .encounter_compendium
+                    .registered_ids
+                    .insert("during".into());
+                control::charge(u64::MAX, "late_transaction_failure")
+            })
+        },
+    )
+    .err()
+    .unwrap();
+    assert!(reached.get());
+    assert_eq!(failure.code, "authoring_work_limit");
+    assert_eq!(failure.site, "late_transaction_failure");
+    assert_eq!(source.state.enkephalin.amount, before_amount);
+    assert_eq!(
+        serde_json::to_value(&source.state.uuid_manager).unwrap(),
+        before_uuid
+    );
+    assert_eq!(
+        source
+            .state
+            .player_profile
+            .encounter_compendium
+            .registered_ids,
+        std::collections::BTreeSet::from(["before".into(), "during".into()])
+    );
+    assert!(!control::is_active());
+}
+
+#[test]
+fn authoring_lifecycle_tracks_actual_time_and_retreat_uuid_reuse_and_inner_rollback() {
+    use crate::game::world::authoring_lifecycle::TrialBattleStatus;
+    let data = live_game_data_from_ron();
+    assert!(GameCore::new(data.clone(), 127)
+        .authoring_lifecycle()
+        .is_none());
+    let mut core = GameCore::new_for_authoring(data.into(), 127);
+    let player = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player);
+    let node = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_monster",
+        "suppress_burrowing_heaven",
+    );
+    core.execute(player, PlayerBehavior::SelectMapNode { node_id: node })
+        .unwrap();
+    let before = core.authoring_lifecycle().unwrap();
+    assert_eq!(before.entries, 0);
+    assert!(!before.is_ready());
+    let before_run = core.get_run_snapshot_json().unwrap();
+    let before_observation = serde_json::to_value(core.authoring_observation().unwrap()).unwrap();
+    let error = core.with_state_transaction(|draft| {
+        draft.execute(player, PlayerBehavior::ConfirmEnterNode)?;
+        assert!(draft.authoring_lifecycle().unwrap().is_ready());
+        Err::<(), _>(GameError::InvalidAction)
+    });
+    assert!(error.is_err());
+    assert_eq!(core.authoring_lifecycle(), Some(before));
+    assert_eq!(core.get_run_snapshot_json().unwrap(), before_run);
+    assert_eq!(
+        serde_json::to_value(core.authoring_observation().unwrap()).unwrap(),
+        before_observation
+    );
+    assert!(core.state.active_battle.is_none());
+
+    core.execute(player, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let started = core.authoring_lifecycle().unwrap();
+    assert!(started.is_ready());
+    assert_eq!(started.entries, 1);
+    assert_eq!(started.total_elapsed_ms, 0);
+    assert_eq!(started.current.unwrap().status, TrialBattleStatus::Running);
+    let uuid = started.current.unwrap().battle_uuid;
+    execute_current_battle_mutation(&mut core, player, PlayerBehavior::PauseBattle).unwrap();
+    assert!(core
+        .advance_active_battle_for_server_tick_after_seq(10, 0)
+        .unwrap()
+        .is_none());
+    assert_eq!(core.authoring_lifecycle(), Some(started));
+    execute_current_battle_mutation(&mut core, player, PlayerBehavior::ResumeBattle).unwrap();
+    execute_current_battle_mutation(
+        &mut core,
+        player,
+        PlayerBehavior::SetBattleSpeed {
+            speed: crate::game::behavior::BattlePlaybackSpeed::X2,
+        },
+    )
+    .unwrap();
+    assert!(core
+        .advance_active_battle_for_server_tick_after_seq(10, 0)
+        .unwrap()
+        .is_some());
+    let scaled = core.authoring_lifecycle().unwrap();
+    assert_eq!(scaled.total_elapsed_ms, 20);
+    core.advance_active_battle_to_next_event_bucket().unwrap();
+    let advanced = core.authoring_lifecycle().unwrap();
+    let actual = core
+        .state
+        .active_battle
+        .as_ref()
+        .unwrap()
+        .execution
+        .last_event_time_ms();
+    assert_eq!(advanced.total_elapsed_ms, actual);
+    assert_eq!(advanced.current.unwrap().last_battle_time_ms, actual);
+    assert!(actual > 20);
+    assert_eq!(core.clone().authoring_lifecycle(), Some(advanced));
+    execute_current_battle_mutation(&mut core, player, PlayerBehavior::RetreatBattle).unwrap();
+    let retreated = core.authoring_lifecycle().unwrap();
+    assert!(!retreated.is_ready());
+    assert_eq!(retreated.current.unwrap().status, TrialBattleStatus::Exited);
+    assert_eq!(retreated.total_elapsed_ms, actual);
+    assert!(core.authoring_observation().unwrap().active.is_none());
+    assert!(core
+        .authoring_observation()
+        .unwrap()
+        .last_terminal
+        .is_none());
+    core.execute(player, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let restarted = core.authoring_lifecycle().unwrap();
+    assert!(restarted.is_ready());
+    assert_eq!(restarted.entries, 2);
+    assert_eq!(restarted.current.unwrap().entry_ordinal, 2);
+    assert_eq!(restarted.current.unwrap().battle_uuid, uuid);
+    assert_eq!(restarted.total_elapsed_ms, actual);
+    let key = core
+        .authoring_observation()
+        .unwrap()
+        .active
+        .unwrap()
+        .key
+        .unwrap();
+    assert_eq!(key.entry_ordinal, 2);
+    assert_eq!(key.battle_uuid, uuid);
+}
+
+#[test]
+fn authoring_lifecycle_keeps_actual_terminal_after_removal_including_time_zero() {
+    use crate::authoring::trace::{TraceAttempt, TraceLimits, TraceOptions};
+    use crate::game::world::authoring_lifecycle::TrialBattleStatus;
+    for terminal_time in [0, 10] {
+        let mut data = live_game_data_from_ron();
+        let database = Arc::get_mut(&mut data).unwrap();
+        let pve = Arc::get_mut(&mut database.pve_data).unwrap();
+        let encounter = pve
+            .encounters
+            .iter_mut()
+            .find(|entry| entry.id == "suppress_burrowing_heaven")
+            .unwrap();
+        encounter
+            .terminal_outcomes
+            .retain(|outcome| outcome.verdict == BattleVerdict::Victory);
+        let outcome_id = encounter.terminal_outcomes[0].id.clone();
+        encounter
+            .outcome_policies
+            .retain(|policy| policy.outcome_id == outcome_id);
+        encounter.terminal_outcomes[0].condition = if terminal_time == 0 {
+            crate::game::data::pve_data::PveTerminalConditionData::AllRequiredEnemyGroupsDefeated
+        } else {
+            crate::game::data::pve_data::PveTerminalConditionData::TimeReached {
+                time_ms: terminal_time,
+            }
+        };
+        for wave in &mut encounter.waves {
+            wave.required_for_victory = false;
+        }
+        let mut prior_update = None;
+        let mut prior_mandatory = None;
+        for trace_options in [
+            None,
+            Some(TraceOptions::default()),
+            Some(TraceOptions {
+                limits: Some(TraceLimits::default()),
+            }),
+        ] {
+            let enabled = trace_options.is_some();
+            let _trace_attempt = TraceAttempt::enter(trace_options.unwrap_or_default()).unwrap();
+            let mut core = if enabled {
+                GameCore::new_for_authoring(data.clone().into(), 0xC011_EC74)
+            } else {
+                GameCore::new(data.clone(), 0xC011_EC74)
+            };
+            if let Some(options) = trace_options {
+                core.set_authoring_trace_options(options);
+            }
+            let player = Uuid::from_u128(1);
+            start_new_game_with_default_starters(&mut core, player);
+            let node = force_map_combat_node(
+                &mut core,
+                MapNodeCategory::Combat,
+                "combat_monster",
+                "suppress_burrowing_heaven",
+            );
+            core.execute(player, PlayerBehavior::SelectMapNode { node_id: node })
+                .unwrap();
+            let started = core
+                .execute(player, PlayerBehavior::ConfirmEnterNode)
+                .unwrap();
+            let result = if terminal_time > 0 {
+                core.advance_active_battle_by_after_seq(50, 0).unwrap()
+            } else {
+                started
+            };
+            let BehaviorResult::BattleAdvanced {
+                finished: true,
+                battle_update,
+                ..
+            } = result
+            else {
+                panic!("actual public terminal result required")
+            };
+            let actual_time = battle_update.checkpoint.battle_time_ms;
+            let update = serde_json::to_value(&battle_update).unwrap();
+            if let Some(prior) = &prior_update {
+                assert_eq!(prior, &update);
+            }
+            prior_update = Some(update);
+            if terminal_time == 0 {
+                assert_eq!(actual_time, 0);
+            } else {
+                assert!(actual_time >= terminal_time && actual_time <= 50);
+            }
+            assert!(core.state.active_battle.is_none());
+            if !enabled {
+                assert!(core.authoring_lifecycle().is_none());
+                core.execute(player, PlayerBehavior::CompleteCombatResult)
+                    .unwrap();
+                continue;
+            }
+            let finished = core.authoring_lifecycle().unwrap();
+            assert!(finished.is_ready());
+            assert_eq!(finished.total_elapsed_ms, actual_time);
+            let battle = finished.current.unwrap();
+            assert_eq!(battle.last_battle_time_ms, actual_time);
+            assert!(battle.time_zero_completed);
+            assert_eq!(battle.status, TrialBattleStatus::Finished);
+            assert_eq!(battle.terminal_verdict, Some(BattleVerdict::Victory));
+            let observation = core.authoring_observation().unwrap();
+            assert!(observation.active.is_none());
+            crate::game::world::authoring_observation::assert_terminal_storage_contract(&core);
+            let capsule = observation.last_terminal.unwrap();
+            assert_eq!(capsule.key.entry_ordinal, battle.entry_ordinal);
+            assert_eq!(capsule.key.battle_uuid, battle.battle_uuid);
+            assert_eq!(capsule.actual_time_ms, actual_time);
+            assert_eq!(capsule.outcome_id.as_str(), outcome_id);
+            assert_eq!(capsule.verdict, BattleVerdict::Victory);
+            assert_eq!(capsule.mandatory.key, Some(capsule.key));
+            let retained = serde_json::to_value(&observation).unwrap();
+            assert!(retained["last_terminal"].get("trace").is_none());
+            if let Some(prior) = &prior_mandatory {
+                assert_eq!(prior, &retained);
+            }
+            prior_mandatory = Some(retained.clone());
+            let trace_view = core.authoring_trace().unwrap();
+            assert!(trace_view.active.is_none());
+            let (trace_key, trace) = trace_view.last_terminal.unwrap();
+            assert_eq!(trace_key, capsule.key);
+            assert_eq!(trace.enabled, trace_options.unwrap().limits.is_some());
+            assert!(trace.gap.is_none());
+            let trace_bytes = trace.ndjson.to_vec();
+            let cloned = core.clone();
+            assert!(std::ptr::eq(
+                cloned
+                    .authoring_observation()
+                    .unwrap()
+                    .last_terminal
+                    .unwrap(),
+                capsule
+            ));
+            let result = core.execute(player, PlayerBehavior::CompleteCombatResult);
+            assert!(result.is_ok(), "{result:?}");
+            let consumed = core.authoring_lifecycle().unwrap();
+            assert!(!consumed.is_ready());
+            assert_eq!(consumed.total_elapsed_ms, actual_time);
+            assert_eq!(
+                consumed.current.unwrap().terminal_verdict,
+                battle.terminal_verdict
+            );
+            assert_eq!(consumed.current.unwrap().status, TrialBattleStatus::Exited);
+            assert_eq!(
+                serde_json::to_value(core.authoring_observation().unwrap()).unwrap(),
+                retained
+            );
+            let trace_view = core.authoring_trace().unwrap();
+            let (key, trace) = trace_view.last_terminal.unwrap();
+            assert_eq!(key, trace_key);
+            assert_eq!(trace.ndjson, trace_bytes);
+        }
+    }
+}
+
+include!("r09_combat.inc.rs");
+
+// Private fixture and complete root oracle for the public application fault tests.
+// The typed dynamic expression is compiled by the real skill catalog before entry.
+impl GameCore {
+    pub(crate) fn u03_expression_fault_fixture() -> (Self, Uuid, Uuid, u64) {
+        let authored = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r11/hello_world_result.ron"))
+            .replace("Ratio(numerator: Read(Time(RemainingTime)), denominator: Const((value: 100, unit: Milliseconds)), rounding: Floor)",
+                     "Ratio(numerator: Const((value: 1, unit: Magnitude)), denominator: Read(Stat(subject: Source, stat: SpellPower)), rounding: Floor)");
+        let (mut core, player, employee) =
+            r11_live_sustained_fixture(false, false, 0, Some(&authored));
+        execute_current_battle_mutation(
+            &mut core,
+            player,
+            PlayerBehavior::ActivateSkill {
+                employee_uuid: employee,
+                skill_id: "r08_strike".into(),
+                target: None,
+            },
+        )
+        .unwrap();
+        core.advance_active_battle_for_server_tick(400).unwrap();
+        let activation = core
+            .state
+            .active_battle
+            .as_ref()
+            .unwrap()
+            .battle
+            .sustained_effect_snapshot()
+            .unwrap()
+            .active[0]
+            .activation;
+        (core, player, employee, activation)
+    }
+    pub(crate) fn u03_complete_root_fingerprint(&self) -> String {
+        format!("{:?}", battle_advance_atomic_snapshot(self))
+    }
+    pub(crate) fn u03_exhaust_battle_revision_fixture(&mut self) {
+        self.state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .battle_state_revision = u64::MAX;
+    }
+}
+
+impl GameCore {
+    pub(crate) fn u03_reconcile_origin_fixture() -> (Self, Uuid, Uuid, Position) {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 0xB055_C007);
+        let player_id = Uuid::from_u128(0xB055_C007);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_map_combat_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_defense",
+            "defense_encounter",
+        );
+        let preview = core
+            .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        let deploy_position = first_ground_deployment_cell(&preview);
+        let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+        let deployed = execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::DeployUnit {
+                employee_uuid,
+                position: deploy_position,
+                facing: FacingDirection::Right,
+            },
+        )
+        .unwrap();
+        assert!(matches!(
+            deployed,
+            BehaviorResult::BattleUnitDeployed { .. }
+        ));
+        (core, player_id, employee_uuid, deploy_position)
+    }
+
+    pub(crate) fn u03_corrupt_reconcile_fixture(&mut self, kind: &str) {
+        if kind == "context" {
+            self.state.lifecycle.transition_to(GameState::InBattle {
+                battle_uuid: Uuid::nil(),
+            });
+            return;
+        }
+        let active = self.state.active_battle.as_mut().unwrap();
+        let unit_id = active
+            .live_deployment
+            .as_ref()
+            .unwrap()
+            .deployed_units
+            .values()
+            .next()
+            .unwrap()
+            .unit_instance_id;
+        let unit = active.battle.units.get_mut(&unit_id).unwrap();
+        match kind {
+            "incapacitated" => {
+                unit.stats.current_health = 0;
+                unit.lifecycle = crate::game::battle::core::types::RuntimeUnitLifecycle::Dead;
+                active.employee_attempt.roster = crate::game::employee::EmployeeRoster::new();
+            }
+            "corroded_roster" => {
+                unit.corroded = true;
+                active.employee_attempt.roster = crate::game::employee::EmployeeRoster::new();
+            }
+            "corroded_source" => {
+                unit.corroded = true;
+                unit.source_identity =
+                    crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                        base_uuid: Uuid::nil(),
+                    };
+            }
+            _ => panic!("unknown corruption fixture"),
+        }
+    }
+}
+
+impl GameCore {
+    pub(crate) fn u03_manual_reconcile_fixture() -> (Self, Uuid, Uuid, Position) {
+        let TacticalWorldMutationFixture {
+            mut core,
+            player_id,
+            first_employee_uuid,
+            second_employee_uuid,
+            first_position,
+            second_position,
+        } = tactical_world_mutation_fixture(0xB055_C008);
+        execute_current_battle_mutation(
+            &mut core,
+            player_id,
+            PlayerBehavior::DeployUnit {
+                employee_uuid: first_employee_uuid,
+                position: first_position,
+                facing: FacingDirection::Right,
+            },
+        )
+        .unwrap();
+        let retained: Vec<_> = core
+            .roster()
+            .unwrap()
+            .iter()
+            .filter(|employee| employee.uuid != first_employee_uuid)
+            .cloned()
+            .collect();
+        core.u03_corrupt_reconcile_fixture("corroded_roster");
+        for employee in retained {
+            core.state
+                .active_battle
+                .as_mut()
+                .unwrap()
+                .employee_attempt
+                .roster
+                .add(employee);
+        }
+        (core, player_id, second_employee_uuid, second_position)
+    }
+}
+
+impl GameCore {
+    pub(crate) fn u03_boss_activation_fault_fixture() -> Self {
+        let authored = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/r12/world_corrosion.ron"
+        ));
+        let (mut core, _, _) =
+            r12_live_cross_fixture(false, false, 0, Some(authored), false, true, true);
+        core.state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .battle
+            .u03_exhaust_boss_activation_fixture();
+        core
+    }
+}
+
+impl GameCore {
+    pub(crate) fn u03_sustained_origin_fixture(unsupported: bool) -> (Self, Uuid, Uuid, u64) {
+        let authored = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/r11/hello_world_result.ron"
+        ));
+        let authored = if unsupported {
+            authored
+                .replace(
+                    "goodbye_skill: Some(\"r11_goodbye\")",
+                    "goodbye_skill: None",
+                )
+                .replace(
+                    "Read(Time(RemainingTime))",
+                    "Const((value: 100, unit: Milliseconds))",
+                )
+        } else {
+            authored.to_owned()
+        };
+        let (mut core, player, employee) =
+            r11_live_sustained_fixture(false, false, 0, Some(&authored));
+        execute_current_battle_mutation(
+            &mut core,
+            player,
+            PlayerBehavior::ActivateSkill {
+                employee_uuid: employee,
+                skill_id: "r08_strike".into(),
+                target: None,
+            },
+        )
+        .unwrap();
+        core.advance_active_battle_for_server_tick(400).unwrap();
+        let active = core.state.active_battle.as_mut().unwrap();
+        let activation = active.battle.sustained_effect_snapshot().unwrap().active[0].activation;
+        for unit in active.battle.units.values_mut() {
+            if unit.owner == crate::game::enums::Side::Player {
+                unit.resonance_current = unit.resonance_max;
+            }
+        }
+        (core, player, employee, activation)
+    }
+    pub(crate) fn u03_corrupt_goodbye_fixture(&mut self) {
+        self.state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .battle
+            .u03_missing_goodbye_definition_fixture();
+    }
+    pub(crate) fn u03_admitted_deadline_fixture(focus: u32) -> (Self, Uuid, Uuid) {
+        let authored = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/r11/hello_world_result.ron"
+        ))
+        .replace("focus_time_ms: 100", &format!("focus_time_ms: {focus}"));
+        let (mut core, player, employee) =
+            r11_live_sustained_fixture(false, false, 0, Some(&authored));
+        core.state
+            .active_battle
+            .as_mut()
+            .unwrap()
+            .execution
+            .u03_exhaust_simulation_time_fixture();
+        (core, player, employee)
+    }
+    pub(crate) fn u03_swap_origin_fixture(missing_first: bool) -> (Self, Uuid, Uuid, Uuid) {
+        let TacticalWorldMutationFixture {
+            mut core,
+            player_id,
+            first_employee_uuid,
+            second_employee_uuid,
+            first_position,
+            second_position,
+        } = tactical_world_mutation_fixture(0xB055_C009);
+        for (employee_uuid, position) in [
+            (first_employee_uuid, first_position),
+            (second_employee_uuid, second_position),
+        ] {
+            execute_current_battle_mutation(
+                &mut core,
+                player_id,
+                PlayerBehavior::DeployUnit {
+                    employee_uuid,
+                    position,
+                    facing: FacingDirection::Right,
+                },
+            )
+            .unwrap();
+        }
+        let active = core.state.active_battle.as_mut().unwrap();
+        let employee = if missing_first {
+            first_employee_uuid
+        } else {
+            second_employee_uuid
+        };
+        let unit =
+            active.live_deployment.as_ref().unwrap().deployed_units[&employee].unit_instance_id;
+        assert!(active.battle.units.remove(&unit).is_some());
+        (core, player_id, first_employee_uuid, second_employee_uuid)
+    }
+}
+
+#[test]
+fn trusted_goodbye_failure_keeps_private_gamecore_retry_and_complete_root() {
+    let (mut core, player, employee, activation) = GameCore::u03_sustained_origin_fixture(false);
+    core.u03_corrupt_goodbye_fixture();
+    let before = battle_advance_atomic_snapshot(&core);
+    for _ in 0..2 {
+        let error = execute_current_battle_mutation(
+            &mut core,
+            player,
+            PlayerBehavior::ReinputSustainedSkill {
+                employee_uuid: employee,
+                skill_id: "r08_strike".into(),
+                activation,
+                target: None,
+            },
+        )
+        .unwrap_err();
+        assert!(matches!(error, GameError::BattleRuntimeFault(fault)
+            if fault.site == "reinput_goodbye_definition"));
+        assert_eq!(battle_advance_atomic_snapshot(&core), before);
+    }
+}
+
+include!("u04_continuation.inc.rs");
+
+include!("u06_interaction.inc.rs");

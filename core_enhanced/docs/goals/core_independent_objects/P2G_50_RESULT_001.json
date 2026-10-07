@@ -1,0 +1,52 @@
+{
+  "stage": "P2G-50",
+  "status": "complete",
+  "Goal Set Ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CIOB-001",
+    "Content Digest": "sha256:72b487261c9c23392315dfe7c3c5c4b88b2ad1ddb6a4cc9223cb08333fe4f368"
+  },
+  "member_ids": [
+    "GOAL-CIOB-01"
+  ],
+  "validator": "P2G_50_VALIDATION_001.json",
+  "raw_exit": 0,
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CIOB-003",
+      "Content Digest": "sha256:b9f65c193e4cb512a5d6c41224896a65f3e4a0b12f8b66c2f6acafc457976f60"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CIOB-001",
+      "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CIOB-001",
+      "Content Digest": "sha256:b0dd7deb6894ec5e50bf71e72ee784227bed8de60f05044efc0db7eb8274cdad"
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CIOB-001",
+      "Content Digest": "sha256:72b487261c9c23392315dfe7c3c5c4b88b2ad1ddb6a4cc9223cb08333fe4f368"
+    },
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "semantic_review": {
+    "all20_frozen_acceptances": true,
+    "six_minimal_standalone_nodes_single_integrated_phase": true,
+    "all20_seams_owned": true,
+    "all10_dimensions_required": true,
+    "161_inherited_and31_R06": true,
+    "independent_object_capabilities_and_spawn_cost_atomicity_preserved": true,
+    "current_corrosion_timing_preserved": true,
+    "supported_restore_and_original_protection": true,
+    "no_implementation_or_independent_completion_claim": true
+  },
+  "P2G-50 Resolution Record Ref Set": [],
+  "next": "P2G-60"
+}

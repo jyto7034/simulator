@@ -1,0 +1,726 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-04-002",
+        "Content Digest": "sha256:5c86454a109b61cec705c17d6f4f6edc5c4c52f4b339489d79ef69b997409040"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-04-001",
+          "Content Digest": "sha256:e2829eb8c433d75627a4d6335d76beb5e35a27cb9378806e2a2007379084bd00"
+        },
+        "Affected Element IDs": [
+          "PE-CRSA-04"
+        ],
+        "Decision Name": "공개 typed property와 개인 방어막 지원 일치",
+        "Exact Decision": "작성자가 선택·변경할 속성은 실제 executor와 연결된 명시 typed capability로 공개한다. 이번 범위는 기존 damage amount와 생성 효과, 효과별 피해 footprint, 지원 대상 구조, 포큐버스 개인 방어막 생성량, regular basic 피해·속도 값 및 필요한 구조 recipe다. 기존 R12 공용 보호 기능은 보존하고 개인 방어막과 의미를 혼동하지 않는다. effect와 carrier/action의 범위를 구분하고 본편 전용 임의 필드나 문자열 경로를 public write 권한으로 노출하지 않는다. 변형 뒤 없어진 속성을 여전히 지원한다고 표시하지 않는다.",
+        "Decision Authority": "Repository-documented latest user agreement governs personal grant/range behavior; H04 section5 explicit in-scope gameplay delegation governs new eligibility/lifecycle/composition choices. AI delegated choices are not direct user answers.",
+        "Exact User Approval Reference": {
+          "prior_intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "successor_intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-002",
+            "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+          },
+          "items": [
+            "CH-IN-01",
+            "CH-IN-02",
+            "CH-IN-03",
+            "CH-IN-04",
+            "CH-IN-05",
+            "CH-IN-06",
+            "CH-IN-08"
+          ],
+          "delegation_span": "H04 section5 implementation policy discretion; current IN001 preserve latest rules/changes and continue authorized work",
+          "explicit_hold": "Fragment3755–3759,3943–3950: official personal formula/coefficient/final footprint held; no canonical balance adopted."
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-002",
+            "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+          },
+          "changed_record": "CH-IN-01",
+          "fragments": "CH-IN-02 Porccubus3753–3953",
+          "relics": "CH-IN-03 single-recipient transformation991–1076",
+          "code_fact_context": "sustained.rs personal target members and caster/target expiry; shield selection personal/priority/ordinal. This is factual support, not implicit authority."
+        },
+        "Reason": "새 개인 보호 구조의 공개 capability를 실제 consumer와 일치시킨다. 기존 공용 API를 의미 변경하지 않는다.",
+        "Impact": [
+          "공개 descriptor·validation·explain·실제 실행이 같은 속성과 타입을 사용하며 없는/비공개/단위 불일치 property는 명시 거절된다.",
+          "단일 지원에서 제거된 area 속성에 반경 modifier가 적용되거나 대상 선택 사거리·별도 회복이 함께 늘어나지 않는다."
+        ],
+        "Alternatives not selected": [
+          "Old shared pool/2S/4S carryover contradicts latest agreement.",
+          "Late-entry or reentry grant, recipient accessory amplification and retarget would create unapproved extra value.",
+          "Replacing only newly-in-range recipients would leave stale old-grant set on recast; selected whole same-provider-effect replacement gives one current set.",
+          "Cancelling personal shield on range exit contradicts latest agreement; applying permanent range independence to fetus changes its original channel.",
+          "Official balance choice or penalty invention is not needed to demonstrate authored functional behavior."
+        ],
+        "Compatibility and data impact": "No product/source change yet; existing R12 generic shared and existing saves retain their exact meaning. New explicitly authored personal grant uses existing battle-local finite lifetime and ends at battle boundary. No durable data migration/delete.",
+        "Revisability": "Delegated functional choices may be changed with successor policy/evidence. Representative balance is play-validation material, not final official content."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-DECIDED-002",
+        "Content Digest": "sha256:beb0db67e19e0e066568f9250b77ba6c28ab83cba1c300e06f76152225c05b05"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-04-OPEN-002",
+          "Content Digest": "sha256:41be1a20073d79332c77e47eb25de4371745ae957077ad1f99ae253a940d3b30"
+        },
+        "Policy Statement": "작성자가 선택·변경할 속성은 실제 executor와 연결된 명시 typed capability로 공개한다. 이번 범위는 기존 damage amount와 생성 효과, 효과별 피해 footprint, 지원 대상 구조, 포큐버스 개인 방어막 생성량, regular basic 피해·속도 값 및 필요한 구조 recipe다. 기존 R12 공용 보호 기능은 보존하고 개인 방어막과 의미를 혼동하지 않는다. effect와 carrier/action의 범위를 구분하고 본편 전용 임의 필드나 문자열 경로를 public write 권한으로 노출하지 않는다. 변형 뒤 없어진 속성을 여전히 지원한다고 표시하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-04-002",
+          "Content Digest": "sha256:5c86454a109b61cec705c17d6f4f6edc5c4c52f4b339489d79ef69b997409040"
+        },
+        "Observable Policy Acceptance": [
+          "공개 descriptor·validation·explain·실제 실행이 같은 속성과 타입을 사용하며 없는/비공개/단위 불일치 property는 명시 거절된다.",
+          "단일 지원에서 제거된 area 속성에 반경 modifier가 적용되거나 대상 선택 사거리·별도 회복이 함께 늘어나지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-08-002",
+        "Content Digest": "sha256:935e17003efffee7eee154df484a3638b183533cf39ecf8bc74e991603dea675"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-08-001",
+          "Content Digest": "sha256:a8b25dbfc9c45ec7c186a937ee9fd344f67414ec873cf48d0b12878b56153471"
+        },
+        "Affected Element IDs": [
+          "PE-CRSA-08"
+        ],
+        "Decision Name": "단일 지원의 입력과 효과별 거리·수명",
+        "Exact Decision": "범위 지원을 단일 지원으로 바꾸는 recipe는 원래 자격과 authored 시전 선택 거리 안의 아군 한 명을 정상 수동 입력으로 선택한다. 태아는 시전자 제외, 포큐버스는 시전자 포함 자격을 보존한다. 선택 대상은 해당 activation 동안 고정하며 자동 대체·중간 재지정·무제한 선택 사거리를 추가하지 않는다. 태아는 거리 밖에서 지원 membership을 제거하고 같은 activation/UnitInstanceId가 유효 거리 안으로 돌아오면 같은 owner에 재가입한다. 포큐버스는 시전 시 생성한 개인 방어막을 단순 범위 이탈 후에도 유지하고 재진입·시전자 이동으로 추가 부여하거나 충전하지 않는다. 대상 철수·전투불능·사망으로 identity가 무효해지면 해당 대상 연결/방어막만 종료하며 재배치된 새 identity에 이전하지 않는다. 원 source의 비용·channel 여부·만료를 바꾸지 않는다.",
+        "Decision Authority": "Repository-documented latest user agreement governs personal grant/range behavior; H04 section5 explicit in-scope gameplay delegation governs new eligibility/lifecycle/composition choices. AI delegated choices are not direct user answers.",
+        "Exact User Approval Reference": {
+          "prior_intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "successor_intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-002",
+            "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+          },
+          "items": [
+            "CH-IN-01",
+            "CH-IN-02",
+            "CH-IN-03",
+            "CH-IN-04",
+            "CH-IN-05",
+            "CH-IN-06",
+            "CH-IN-08"
+          ],
+          "delegation_span": "H04 section5 implementation policy discretion; current IN001 preserve latest rules/changes and continue authorized work",
+          "explicit_hold": "Fragment3755–3759,3943–3950: official personal formula/coefficient/final footprint held; no canonical balance adopted."
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-002",
+            "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+          },
+          "changed_record": "CH-IN-01",
+          "fragments": "CH-IN-02 Porccubus3753–3953",
+          "relics": "CH-IN-03 single-recipient transformation991–1076",
+          "code_fact_context": "sustained.rs personal target members and caster/target expiry; shield selection personal/priority/ordinal. This is factual support, not implicit authority."
+        },
+        "Reason": "새 직접 합의인 포큐버스 이탈 유지와 기존 태아 channel membership을 분리한다. 선택 방식은 기존 위임된 정상 수동 선택을 유지한다.",
+        "Impact": [
+          "정상 선택·무자격/거리 밖 거절, 태아 자기 제외/거리 이탈·복귀와 포큐버스 자기 허용/부여 뒤 이탈 유지·재진입 무충전을 실제 명령과 효과로 검증하며 자동 retarget이 없다.",
+          "대상 철수/사망/재배치 및 source 종료에서 각 효과의 연결/방어막 수명이 맞고 새 identity나 다른 아군으로 이전하지 않는다. 한 대상 무효화가 다른 포큐버스 대상의 유효 방어막을 종료하지 않는다."
+        ],
+        "Alternatives not selected": [
+          "Old shared pool/2S/4S carryover contradicts latest agreement.",
+          "Late-entry or reentry grant, recipient accessory amplification and retarget would create unapproved extra value.",
+          "Replacing only newly-in-range recipients would leave stale old-grant set on recast; selected whole same-provider-effect replacement gives one current set.",
+          "Cancelling personal shield on range exit contradicts latest agreement; applying permanent range independence to fetus changes its original channel.",
+          "Official balance choice or penalty invention is not needed to demonstrate authored functional behavior."
+        ],
+        "Compatibility and data impact": "No product/source change yet; existing R12 generic shared and existing saves retain their exact meaning. New explicitly authored personal grant uses existing battle-local finite lifetime and ends at battle boundary. No durable data migration/delete.",
+        "Revisability": "Delegated functional choices may be changed with successor policy/evidence. Representative balance is play-validation material, not final official content."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-DECIDED-002",
+        "Content Digest": "sha256:541a4d003fcb43b5dd4cb6208dd522d2738ed78b87483790cd4b8b8eefa34138"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-08-OPEN-002",
+          "Content Digest": "sha256:fc6f4288b798b71726488712cbb07051e5bd6386311792c4dbc6e33e684add5a"
+        },
+        "Policy Statement": "범위 지원을 단일 지원으로 바꾸는 recipe는 원래 자격과 authored 시전 선택 거리 안의 아군 한 명을 정상 수동 입력으로 선택한다. 태아는 시전자 제외, 포큐버스는 시전자 포함 자격을 보존한다. 선택 대상은 해당 activation 동안 고정하며 자동 대체·중간 재지정·무제한 선택 사거리를 추가하지 않는다. 태아는 거리 밖에서 지원 membership을 제거하고 같은 activation/UnitInstanceId가 유효 거리 안으로 돌아오면 같은 owner에 재가입한다. 포큐버스는 시전 시 생성한 개인 방어막을 단순 범위 이탈 후에도 유지하고 재진입·시전자 이동으로 추가 부여하거나 충전하지 않는다. 대상 철수·전투불능·사망으로 identity가 무효해지면 해당 대상 연결/방어막만 종료하며 재배치된 새 identity에 이전하지 않는다. 원 source의 비용·channel 여부·만료를 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-08-002",
+          "Content Digest": "sha256:935e17003efffee7eee154df484a3638b183533cf39ecf8bc74e991603dea675"
+        },
+        "Observable Policy Acceptance": [
+          "정상 선택·무자격/거리 밖 거절, 태아 자기 제외/거리 이탈·복귀와 포큐버스 자기 허용/부여 뒤 이탈 유지·재진입 무충전을 실제 명령과 효과로 검증하며 자동 retarget이 없다.",
+          "대상 철수/사망/재배치 및 source 종료에서 각 효과의 연결/방어막 수명이 맞고 새 identity나 다른 아군으로 이전하지 않는다. 한 대상 무효화가 다른 포큐버스 대상의 유효 방어막을 종료하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSA-09-002",
+        "Content Digest": "sha256:16ea7cbe20e67be0aba1ac5a66347156ed3adaf3a395a67875fd905c90e67e2c"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-09-001",
+          "Content Digest": "sha256:e7370fa552706a7175ed6c21aa3587aa3458ad97fe9d20d5c8624afb5e358f99"
+        },
+        "Affected Element IDs": [
+          "PE-CRSA-09"
+        ],
+        "Decision Name": "포큐버스 시전시 개인 방어막과 단일 강화",
+        "Exact Decision": "포큐버스는 시전 release 순간 authored 범위 안의 active player 직원(시전자 포함, Ground/Platform, Guest·소환물·오브젝트 제외)에게 각 한 개의 유한 개인 방어막을 원자 부여한다. 각 대상의 초기량·잔량·만료와 UnitInstanceId는 독립이며 제공자는 시전자다. 늦게 진입한 대상에게 부여하지 않고 단순 범위 이탈 뒤 유지하며 재진입·시전자 이동으로 재부여/복제/충전하지 않는다. 단일 recipe는 원 자격 안에서 선택한 한 명에게만 authored 강화 개인 방어막 하나를 생성하며 원 대상 수를 보호량에 곱하지 않는다. 일반/침식 강화량은 작성된 typed 값으로 검증하고 옛 공용2S/4S를 기본값으로 승계하지 않는다. 유물의 typed 초기량 연산 후 작성된 source 생성 modifier를 생성 시 한 번 적용하고 수혜자 장비로 다시 증폭하지 않는다. 피격 대상의 방어·감면 후 개인 보호 단계에서 흡수하고 초과분은 기존 후속 보호/HP 규칙으로 처리한다. 다른 개인 방어막과는 기존 priority 내림차순·동률 생성순, 개인→기존 공유 보호 순서를 유지하며 다른 제공자의 잔량은 합치지 않는다. HP 비용·희생은 흡수하지 않고 회복/Rest/시간은 충전하지 않는다. 각 방어막은 소진/작성된 만료/해당 대상 identity 종료 시 끝난다. 시전자 철수·전투불능·사망 또는 전투 종료는 그 제공자의 부여분을 종료한다. 같은 제공자 전투 identity와 같은 원 파편/장비 사본·효과의 재시전은 새 부여 집합과 함께 이전 부여분 전체(새 범위 밖 대상 포함)를 원자 교체하며 잔량을 합산하지 않는다. 다른 제공자·원 사본·효과의 독립 보호는 유지한다. 실패/취소는 이전 부여분·공명·RNG/ID를 보존한다. release 후 Hard CC/Silence만으로 이미 생성한 비집중 방어막을 취소하지 않고 일반 공격·저지는 병행한다. 공식 개인량식/계수·최종 범위·기간·일반/침식 밸런스·패널티는 이 기능 결정의 대표 authored 값으로 확정하지 않는다.",
+        "Decision Authority": "Repository-documented latest user agreement governs personal grant/range behavior; H04 section5 explicit in-scope gameplay delegation governs new eligibility/lifecycle/composition choices. AI delegated choices are not direct user answers.",
+        "Exact User Approval Reference": {
+          "prior_intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-001",
+            "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+          },
+          "successor_intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-002",
+            "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+          },
+          "items": [
+            "CH-IN-01",
+            "CH-IN-02",
+            "CH-IN-03",
+            "CH-IN-04",
+            "CH-IN-05",
+            "CH-IN-06",
+            "CH-IN-08"
+          ],
+          "delegation_span": "H04 section5 implementation policy discretion; current IN001 preserve latest rules/changes and continue authorized work",
+          "explicit_hold": "Fragment3755–3759,3943–3950: official personal formula/coefficient/final footprint held; no canonical balance adopted."
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSA-002",
+            "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+          },
+          "changed_record": "CH-IN-01",
+          "fragments": "CH-IN-02 Porccubus3753–3953",
+          "relics": "CH-IN-03 single-recipient transformation991–1076",
+          "code_fact_context": "sustained.rs personal target members and caster/target expiry; shield selection personal/priority/ordinal. This is factual support, not implicit authority."
+        },
+        "Reason": "직접 합의인 독립 잔량/부여 시점/이탈 유지/2S·4S 보류를 반영한다. H04§5의 넓은 gameplay 위임으로 eligibility·provider/recipient 종료·원자 재시전·priority·modifier 합성 세부를 명시한다. 기존 finite owner/개인 보호 순서를 재사용하며 새 재산/상속·저장 전환을 만들지 않는다. 공식 사용자 보류 값은 건드리지 않는다.",
+        "Impact": [
+          "정상 공개 시전에서 대상별1회 개인 부여·독립 흡수·늦은 진입 미부여·이탈 유지·재진입/시전자 이동 무충전과 선택1명 강화 결과를 독립 숫자로 검증한다. 대상 수나 수혜자 modifier가 개인량을 증식하지 않고 source modifier는 한 번이며 기존 R12 공유 보호 동작을 보존한다.",
+          "HP 비용 우회·방어 후 흡수/초과분·기존 보호 priority·회복/Rest 무충전·개별 소진/만료/대상종료·source 종료·release 후 CC·같은 출처 재시전 전체교체/다른 출처 독립 및 늦은 실패 원자성을 검증한다. 시험용 보호량/기간/강화량을 공식 밸런스로 채택하지 않는다."
+        ],
+        "Alternatives not selected": [
+          "Old shared pool/2S/4S carryover contradicts latest agreement.",
+          "Late-entry or reentry grant, recipient accessory amplification and retarget would create unapproved extra value.",
+          "Replacing only newly-in-range recipients would leave stale old-grant set on recast; selected whole same-provider-effect replacement gives one current set.",
+          "Cancelling personal shield on range exit contradicts latest agreement; applying permanent range independence to fetus changes its original channel.",
+          "Official balance choice or penalty invention is not needed to demonstrate authored functional behavior."
+        ],
+        "Compatibility and data impact": "No product/source change yet; existing R12 generic shared and existing saves retain their exact meaning. New explicitly authored personal grant uses existing battle-local finite lifetime and ends at battle boundary. No durable data migration/delete.",
+        "Revisability": "Delegated functional choices may be changed with successor policy/evidence. Representative balance is play-validation material, not final official content."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-DECIDED-002",
+        "Content Digest": "sha256:c36136cc44069c8b1d723d8405c071f5e82c06fad0e9f9aac12f9a7c26ed416e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-09-OPEN-002",
+          "Content Digest": "sha256:922272bf977969dee8004c0d90d145c740168a535a5603340c67c76490a4a699"
+        },
+        "Policy Statement": "포큐버스는 시전 release 순간 authored 범위 안의 active player 직원(시전자 포함, Ground/Platform, Guest·소환물·오브젝트 제외)에게 각 한 개의 유한 개인 방어막을 원자 부여한다. 각 대상의 초기량·잔량·만료와 UnitInstanceId는 독립이며 제공자는 시전자다. 늦게 진입한 대상에게 부여하지 않고 단순 범위 이탈 뒤 유지하며 재진입·시전자 이동으로 재부여/복제/충전하지 않는다. 단일 recipe는 원 자격 안에서 선택한 한 명에게만 authored 강화 개인 방어막 하나를 생성하며 원 대상 수를 보호량에 곱하지 않는다. 일반/침식 강화량은 작성된 typed 값으로 검증하고 옛 공용2S/4S를 기본값으로 승계하지 않는다. 유물의 typed 초기량 연산 후 작성된 source 생성 modifier를 생성 시 한 번 적용하고 수혜자 장비로 다시 증폭하지 않는다. 피격 대상의 방어·감면 후 개인 보호 단계에서 흡수하고 초과분은 기존 후속 보호/HP 규칙으로 처리한다. 다른 개인 방어막과는 기존 priority 내림차순·동률 생성순, 개인→기존 공유 보호 순서를 유지하며 다른 제공자의 잔량은 합치지 않는다. HP 비용·희생은 흡수하지 않고 회복/Rest/시간은 충전하지 않는다. 각 방어막은 소진/작성된 만료/해당 대상 identity 종료 시 끝난다. 시전자 철수·전투불능·사망 또는 전투 종료는 그 제공자의 부여분을 종료한다. 같은 제공자 전투 identity와 같은 원 파편/장비 사본·효과의 재시전은 새 부여 집합과 함께 이전 부여분 전체(새 범위 밖 대상 포함)를 원자 교체하며 잔량을 합산하지 않는다. 다른 제공자·원 사본·효과의 독립 보호는 유지한다. 실패/취소는 이전 부여분·공명·RNG/ID를 보존한다. release 후 Hard CC/Silence만으로 이미 생성한 비집중 방어막을 취소하지 않고 일반 공격·저지는 병행한다. 공식 개인량식/계수·최종 범위·기간·일반/침식 밸런스·패널티는 이 기능 결정의 대표 authored 값으로 확정하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSA-09-002",
+          "Content Digest": "sha256:16ea7cbe20e67be0aba1ac5a66347156ed3adaf3a395a67875fd905c90e67e2c"
+        },
+        "Observable Policy Acceptance": [
+          "정상 공개 시전에서 대상별1회 개인 부여·독립 흡수·늦은 진입 미부여·이탈 유지·재진입/시전자 이동 무충전과 선택1명 강화 결과를 독립 숫자로 검증한다. 대상 수나 수혜자 modifier가 개인량을 증식하지 않고 source modifier는 한 번이며 기존 R12 공유 보호 동작을 보존한다.",
+          "HP 비용 우회·방어 후 흡수/초과분·기존 보호 priority·회복/Rest 무충전·개별 소진/만료/대상종료·source 종료·release 후 CC·같은 출처 재시전 전체교체/다른 출처 독립 및 늦은 실패 원자성을 검증한다. 시험용 보호량/기간/강화량을 공식 밸런스로 채택하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRSA-005",
+        "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSA-004",
+          "Content Digest": "sha256:56b534d693792557c90fc9c802771705d97a5b807f0fc846886ed683a192b5b4"
+        },
+        "Predecessor Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRSA-001",
+          "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+        },
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRSA-20261007",
+          "Policy Topic": "U09 유한 활성·속성 변형과 구조형 공식 사례",
+          "Requested Result": "bounded_pipeline P2G-00 through P2G-60, followed under existing user authorization by GEX implementation/testing/whole independent audit/correction and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+            "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+            "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Same-effect tag/property/exact ID/form AND, seeded finite activation and property/structural composition with explicit Replace conflicts",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 implementation and C05"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Agreed Porccubus cast-time per-recipient personal-shield and single-recipient strengthening, fetus state transition and monk damage-footprint cases",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09/C06 and completion criteria",
+                "successor_source": {
+                  "path": "core_enhanced/docs/roadmaps/core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md",
+                  "bytes": 2974,
+                  "sha256": "077df65c23e1d7b909e7c9e86fdb1600aeaabb3b1e381775adf5073ccdc44f38",
+                  "archive_member": "core_enhanced/docs/roadmaps/core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md"
+                }
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Effective plan, generated-effect properties/source, dormant explanation, execution/protection/persistent states/query/copy/restore/same-run generation boundaries",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 together-transition and output columns"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Normal external RON and negative fixtures, applicable predecessor regressions, performance/resource lifetime, independent whole-goal completion",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 completion and current continuous request"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "U10 event subscriber/causal chains and other independent future roadmap cards, full shop/activity/UI implementation",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 output consumer U10 and U10/U16/U26 owners"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unseeded-cycle blanket input refusal, arbitrary activation gameplay cap, UUID-order silent Replace winner or automatic exposure of every builtin-only property",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 explicit exclusions and D-03 uncertainty"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Unity-first work, individual final-boss unique implementations, whole-roadmap detailed design and retroactive alteration of prior evidence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "Current user request and ROADMAP global scope"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSA-002",
+          "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRSA-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-01-REVIEWED-001",
+            "Content Digest": "sha256:ca31d4429793a92960a3366e4f156e327d0f4704dab82ad55d306e0de39b382a"
+          },
+          "PE-CRSA-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-02-REVIEWED-001",
+            "Content Digest": "sha256:27b2394009f0e9e7646afdf32054a574fa4399937cf6ede0671188242cf70450"
+          },
+          "PE-CRSA-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-03-REVIEWED-001",
+            "Content Digest": "sha256:661d78eaa539e5741d525a65353443e876c57a8d8b50a91232ea2b2e70e95ac4"
+          },
+          "PE-CRSA-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-04-DECIDED-002",
+            "Content Digest": "sha256:beb0db67e19e0e066568f9250b77ba6c28ab83cba1c300e06f76152225c05b05"
+          },
+          "PE-CRSA-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-05-REVIEWED-001",
+            "Content Digest": "sha256:f3c4dfc859d3bdc2f8a1a137d1fe2a61ecccf241a87f98c396b6f8685537a102"
+          },
+          "PE-CRSA-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-06-REVIEWED-001",
+            "Content Digest": "sha256:99878b0420474d8d06114b4da11a1c570586ad4feb472b85d23a7550318b3324"
+          },
+          "PE-CRSA-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-07-REVIEWED-001",
+            "Content Digest": "sha256:9049041fa35eefef628735d8e30eee40f3849cf2383c451652091db85cf69fdf"
+          },
+          "PE-CRSA-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-08-DECIDED-002",
+            "Content Digest": "sha256:541a4d003fcb43b5dd4cb6208dd522d2738ed78b87483790cd4b8b8eefa34138"
+          },
+          "PE-CRSA-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-09-DECIDED-002",
+            "Content Digest": "sha256:c36136cc44069c8b1d723d8405c071f5e82c06fad0e9f9aac12f9a7c26ed416e"
+          },
+          "PE-CRSA-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-10-REVIEWED-001",
+            "Content Digest": "sha256:de279657b97723fede69f18ef6c14a856fa4c0aba105667b91d7afa779748491"
+          },
+          "PE-CRSA-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-11-REVIEWED-001",
+            "Content Digest": "sha256:ffd04b5d1f8cf408b3ba6106906ba4bdeee659af072895d470063793278f0932"
+          },
+          "PE-CRSA-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-12-REVIEWED-001",
+            "Content Digest": "sha256:5c8d112fd3572efb6cb68b45c8f0a465d238ffd76eb90f6574813b65c66b7fb2"
+          },
+          "PE-CRSA-13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-13-REVIEWED-001",
+            "Content Digest": "sha256:a35e05c0e46fe30c411b27b59cbc48bfc48573ae7b63a6b71fd36e61d8a2e57b"
+          },
+          "PE-CRSA-14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-14-REVIEWED-001",
+            "Content Digest": "sha256:8c7b298dccd9fdcfcf8fb512601bc7319050d7275d082496246d4e881b51151f"
+          },
+          "PE-CRSA-15": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-15-REVIEWED-001",
+            "Content Digest": "sha256:00b4991c11bd1059303fd7383b2212576e71489748081571e36120c592b430f3"
+          },
+          "PE-CRSA-16": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-16-REVIEWED-001",
+            "Content Digest": "sha256:bca89f62c1a34e1d6ef1f4f72beef8d352ea2042f46431a49d7bf8b7826c7546"
+          },
+          "PE-CRSA-17": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-17-REVIEWED-001",
+            "Content Digest": "sha256:188ed9d21dec23cb9fb6cd0560ff4e5df81530eba1e079083006ecb1d41e44cc"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-01-001",
+            "Content Digest": "sha256:b1a00188db64fb601f2e67f42bb039959f5d53b5157fdf6804a265bb1953ee2b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-02-001",
+            "Content Digest": "sha256:9723e482e4e207a24f0be4ee319eb5699545daa6c4728935b0ecfda2228a9577"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-03-001",
+            "Content Digest": "sha256:adde7875597b40961e62bd86390c5eb1645ab9fcc09e11eedd7537783b305a31"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-04-002",
+            "Content Digest": "sha256:5c86454a109b61cec705c17d6f4f6edc5c4c52f4b339489d79ef69b997409040"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-05-001",
+            "Content Digest": "sha256:691cca75c7a3f7afa194b43447171452cbd7e516657693c424e7a82f86aa45bc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-06-001",
+            "Content Digest": "sha256:443580647a8f54f8b740f2fc7b23f5e60afb8630e6f0f88c2077e502d40897c6"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-07-001",
+            "Content Digest": "sha256:60cea43e9a8b1def628da5881408fae3e18b0e487f28bd353c946be2bee9d223"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-08-002",
+            "Content Digest": "sha256:935e17003efffee7eee154df484a3638b183533cf39ecf8bc74e991603dea675"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-09-002",
+            "Content Digest": "sha256:16ea7cbe20e67be0aba1ac5a66347156ed3adaf3a395a67875fd905c90e67e2c"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-10-001",
+            "Content Digest": "sha256:b73630c9cdb3fcf5634439f5b398b0f642821fd416e76cc8cbae290560c50767"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-11-001",
+            "Content Digest": "sha256:0ff86a6a66c5d7be5d8f87b31284fec2f20382023f2117542b3a2a6e2c3cf4ac"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-12-001",
+            "Content Digest": "sha256:806d09c136365fd9efad897e89176ff8f06e8e2ce56304d2e4da912dd758523d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-13-001",
+            "Content Digest": "sha256:65da35fe4799554b18d0c9aaa2c39e62adab6882fd685e035fc971af6165abf1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-14-001",
+            "Content Digest": "sha256:08a6d176ad6a0cb1c0b41143116c2728b6fac1d591087056eebfdd34fb365360"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-15-001",
+            "Content Digest": "sha256:94308d92ad8878d53d888c71ca4714774a49bf911b1ebc877d24b77a31e338e3"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-16-001",
+            "Content Digest": "sha256:5db20e35801c14849bd05dcc32ac6f3e87863a9fd1b57dad901a7075561dbe35"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-17-001",
+            "Content Digest": "sha256:06f27e73cb433d9f538a72b0c1cd5745ff750f6166c251328263de7e2f9d6fa4"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Resolution Record",
+        "Artifact ID": "RES-CRSA-CHG001-O10-001",
+        "Content Digest": "sha256:7c7be8d42bd39c1dc3c2d0663aa6b5f8f6968e6fbdea09e2015355862d18b001"
+      },
+      "payload": {
+        "Obligation Key": {
+          "Container Ref": {
+            "Artifact Type": "Change Obligation Declaration",
+            "Artifact ID": "COD-CRSA-001",
+            "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+          },
+          "Obligation ID": "O10"
+        },
+        "Owner Stage": "P2G-10",
+        "Exact Resolved Prerequisite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-004",
+            "Content Digest": "sha256:56b534d693792557c90fc9c802771705d97a5b807f0fc846886ed683a192b5b4"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRSA-001",
+            "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CRSA-001",
+            "Content Digest": "sha256:2eafa0278ec9eab0dbb7e8a4175eacdea1957d4d53f55355a338fc4d324fe7d0"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CRSA-001",
+            "Content Digest": "sha256:737ee86dbba08490929b013b6623fbb934ef21ecd48ec0ecd45d17aa5cf60034"
+          },
+          "Handoff Artifact Ref": {
+            "Artifact Type": "Handoff Artifact",
+            "Artifact ID": "HA-CRSA-001",
+            "Content Digest": "sha256:1c9609c24969fe4acf542e71514b4e903895a71207a652f304a2a2321b2f68dc"
+          },
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        },
+        "Exact Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSA-005",
+            "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+          },
+          "Final Policy Freeze Ref": null,
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        },
+        "Resolution Artifact Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSA-005",
+          "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+        },
+        "Resolution Evidence": {
+          "decision_refs": [
+            {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CRSA-04-002",
+              "Content Digest": "sha256:5c86454a109b61cec705c17d6f4f6edc5c4c52f4b339489d79ef69b997409040"
+            },
+            {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CRSA-08-002",
+              "Content Digest": "sha256:935e17003efffee7eee154df484a3638b183533cf39ecf8bc74e991603dea675"
+            },
+            {
+              "Artifact Type": "Decision Revision",
+              "Artifact ID": "DR-CRSA-09-002",
+              "Content Digest": "sha256:16ea7cbe20e67be0aba1ac5a66347156ed3adaf3a395a67875fd905c90e67e2c"
+            }
+          ],
+          "policy_closure_exact": [
+            "PE-CRSA-04",
+            "PE-CRSA-08",
+            "PE-CRSA-09"
+          ],
+          "14_unchanged_refs_preserved": true,
+          "latest_direct_agreement_applied": true,
+          "delegated_details_not_user_answers": true,
+          "explicit_official_value_holds_preserved": true,
+          "no_question_required": "H04 explicit broad gameplay delegation includes these functional choices; no direct held formula/range value selected.",
+          "downstream_not_resolved": [
+            "O20",
+            "O30",
+            "O40",
+            "O50",
+            "O60"
+          ]
+        }
+      }
+    }
+  ]
+}

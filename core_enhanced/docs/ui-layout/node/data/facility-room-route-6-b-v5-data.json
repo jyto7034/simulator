@@ -1,0 +1,163 @@
+{
+  "id": "6B",
+  "base": "facility-room-route-6-b-v5",
+  "activity_count": 6,
+  "title": "주경로와 안쪽 곁방",
+  "idea": [
+    "주경로 네 자리에 두 자리짜리 곁방을 덧붙이고, 출구는 한 곳으로 모음.",
+    "곁방 끝까지 추가 탐사하거나 주경로만 통과. 지원 거점·작은 조우 방의 후보."
+  ],
+  "nodes": [
+    {
+      "id": "S",
+      "x": 650,
+      "y": 235,
+      "name": "입구",
+      "zone": null
+    },
+    {
+      "id": "G",
+      "x": 650,
+      "y": 1190,
+      "name": "Gate",
+      "zone": null
+    },
+    {
+      "id": "1",
+      "x": 650,
+      "y": 420,
+      "name": "접수 전실",
+      "zone": 0
+    },
+    {
+      "id": "2",
+      "x": 650,
+      "y": 610,
+      "name": "연결 홀",
+      "zone": 0
+    },
+    {
+      "id": "3",
+      "x": 650,
+      "y": 800,
+      "name": "안내 복도",
+      "zone": 0
+    },
+    {
+      "id": "4",
+      "x": 650,
+      "y": 990,
+      "name": "출구 전실",
+      "zone": 0
+    },
+    {
+      "id": "5",
+      "x": 1250,
+      "y": 610,
+      "name": "부속실",
+      "zone": 1
+    },
+    {
+      "id": "6",
+      "x": 1250,
+      "y": 900,
+      "name": "안쪽 보관실",
+      "zone": 1
+    }
+  ],
+  "groups": [
+    {
+      "label": "주경로 · 4자리",
+      "color": "blue",
+      "ids": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "rect": [
+        450,
+        315,
+        400,
+        780
+      ]
+    },
+    {
+      "label": "곁방 · 2자리",
+      "color": "amber",
+      "ids": [
+        5,
+        6
+      ],
+      "rect": [
+        1050,
+        490,
+        400,
+        500
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "a": "1",
+      "b": "2",
+      "one_way": false
+    },
+    {
+      "a": "2",
+      "b": "3",
+      "one_way": false
+    },
+    {
+      "a": "3",
+      "b": "4",
+      "one_way": false
+    },
+    {
+      "a": "2",
+      "b": "5",
+      "one_way": false
+    },
+    {
+      "a": "5",
+      "b": "6",
+      "one_way": false
+    },
+    {
+      "a": "S",
+      "b": "1",
+      "one_way": false,
+      "via": []
+    },
+    {
+      "a": "4",
+      "b": "G",
+      "one_way": true,
+      "via": []
+    }
+  ],
+  "status": "review_proposal",
+  "start_and_gate_excluded": true,
+  "activity_types": "Unassigned; existing expedition assignment rules apply.",
+  "validation": {
+    "activity_count": 6,
+    "exit_approaches": [
+      "4"
+    ],
+    "shortest_activity_path": 4,
+    "dead_end_slots": [
+      "6"
+    ],
+    "mandatory_activity_slots": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "all_nodes_reachable": true,
+    "every_activity_can_reach_exit": true,
+    "no_direct_entry_exit": true,
+    "no_node_or_connector_collisions": true,
+    "note": "Activity slots, not battle counts. Connectivity only; no difficulty rating or unlock rules."
+  }
+}

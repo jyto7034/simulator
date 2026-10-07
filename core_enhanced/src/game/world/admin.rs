@@ -5,7 +5,7 @@ mod grants;
 #[cfg(test)]
 mod tests;
 
-pub use commands::AdminCommand;
+pub(crate) use commands::AdminCommand;
 
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -16,13 +16,33 @@ use crate::game::{behavior::GameError, enums::RewardMode};
 const ADMIN_NODE_NS: u64 = 0x4144_4d49_4e4e_4f44; // "ADMINNOD"
 
 #[derive(Debug, Clone, Serialize)]
-pub struct AdminCommandOutput {
+pub(crate) struct AdminCommandOutput {
     pub result_type: &'static str,
     pub payload: Value,
 }
 
 impl GameCore {
+    pub(crate) fn prepare_admin_command(
+        &mut self,
+        command: AdminCommand,
+    ) -> Result<super::PreparedApplicationCommit<AdminCommandOutput>, GameError> {
+        self.prepare_application_for_publication(
+            super::application::ApplicationRoute::AdminCommand,
+            move |draft| draft.execute_admin_command_draft(command),
+        )
+    }
+
     pub fn execute_admin_command(
+        &mut self,
+        command: AdminCommand,
+    ) -> Result<AdminCommandOutput, GameError> {
+        self.execute_application(
+            super::application::ApplicationRoute::AdminCommand,
+            move |draft| draft.execute_admin_command_draft(command),
+        )
+    }
+
+    fn execute_admin_command_draft(
         &mut self,
         command: AdminCommand,
     ) -> Result<AdminCommandOutput, GameError> {
@@ -84,6 +104,17 @@ impl GameCore {
                 material_id,
                 amount,
             } => self.admin_grant_equipment_material(&material_id, amount)?,
+            AdminCommand::AdminGrantRelic {
+                definition_id,
+                count,
+            } => self.admin_grant_relic(&definition_id, count)?,
+            AdminCommand::AdminGrantRelicCorruptionCatalyst { amount } => self
+                .admin_grant_relic_resources(
+                    crate::game::reward::RewardEffect::GrantRelicCorruptionCatalyst { amount },
+                )?,
+            AdminCommand::AdminGrantEquipmentDust { amount } => self.admin_grant_relic_resources(
+                crate::game::reward::RewardEffect::GrantEquipmentDust { amount },
+            )?,
             AdminCommand::AdminGrantFragmentDust { amount } => {
                 self.admin_grant_fragment_dust(amount)?
             }

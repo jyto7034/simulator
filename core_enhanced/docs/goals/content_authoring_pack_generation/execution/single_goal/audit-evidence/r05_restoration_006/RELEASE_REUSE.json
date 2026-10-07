@@ -1,0 +1,89 @@
+{
+  "reviewer": "/root/r02_r05_fresh_audit",
+  "original_execution": "resource_pack_regression_077",
+  "final_changed_paths": [
+    "core_enhanced/src/game/battle/core/commands.rs",
+    "core_enhanced/src/game/battle/core/queue.rs",
+    "core_enhanced/src/game/battle/core/resource_runtime.rs",
+    "core_enhanced/src/game/battle/core/runtime_facts.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/runtime_facts.rs",
+    "core_enhanced/src/game/resource/runtime.rs",
+    "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+    "core_enhanced/tools/authoring_trial_api_probe/examples/cost.rs",
+    "core_enhanced/tools/authoring_trial_api_probe/examples/source_receipt.rs",
+    "core_enhanced/tools/authoring_trial_api_probe/examples/typed_adversarial.rs",
+    "core_enhanced/tools/authoring_trial_api_probe/examples/typed_refusal.rs",
+    "core_enhanced/tools/authoring_typed_resource_external_probe.py",
+    "core_enhanced/tools/authoring_typed_resource_order_probe.py"
+  ],
+  "modified_count": 11,
+  "added_count": 3,
+  "unchanged_pack_startup_save_seam_inputs": [
+    {
+      "path": "core_enhanced/src/bin/consume_content_pack.rs",
+      "sha256": "e9aa82e8683537d3172a815b139c2ce8c7eedc527a0c815bc10ac7542f5ace53"
+    },
+    {
+      "path": "core_enhanced/src/bin/package_official_content.rs",
+      "sha256": "3897e39261e3a37fd4f0e5a22d54858f648bb630e592cc045d9713c787b73c7d"
+    },
+    {
+      "path": "core_enhanced/tools/content_pack_release_probe.py",
+      "sha256": "04fce674a702224b630a7a12ac569b46f520d8f009c2024a84ec907af87ffebd"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/packaging.rs",
+      "sha256": "f959be690301d7bc0f2ccf9c1865d5bfb7979aa84cbbe7a6e09780d1a72f10fd"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "sha256": "77621d26586d47f12f24b5fe822cfd2c3684493e6b5779f7ac6c467620fa1551"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "sha256": "bc44c2121aa494661ab03b203cb34085f13ac02dd20d284e43d3648a29b7b0fb"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "sha256": "2cbcf06e0efebf64ad8ca58df22f2b38de078945954b5073d890d285c43f826b"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+      "sha256": "ba7d5c35d303793e2e52a3cd593a2ba811105ee8ba3e053ad1c2724baf720f31"
+    },
+    {
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "sha256": "39b0c45cc9efa11c0e803e25b2348439e2ab2fc00b2563880b7539a5bb5c7182"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "sha256": "e9f51dfa5ac24f647044bd4492b61c7ea295494e08cb3dc6b712640173e2450b"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "sha256": "36ba3058aacfd27980ea3211e2c0fd6be088367139808487e018a9076965c057"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "51432cd9f466938b97074fee310c270ac032bc8866d21235173a4dd4c469e52f"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "e3a712be3d4ce5b132a06790aa2608e9c3ce7a9bfa1921c74c921e815bc703a3"
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "d1011b34d8de383f7e885faeb98c2b33e0446eb4fbf128160106fc13dd46290e"
+    }
+  ],
+  "actual_diff": "RELEASE077_TO_FINAL.patch",
+  "review": "Seven production deltas change runtime action/delivery source storage to immutable Arc capabilities and retain/admit their allocation before payload publication. Four other modified deltas and three added inputs are typed-resource tests and cost/source-receipt/resource probe code. No acquisition, closed catalog adapters, parser, resolver, canonical identity, packager, StartNewGame or checkpoint path changed after077. Old077 is used for original packaging and bounded briefing/starter A/B/A oracles only, never post077 action execution or final binary identity. Final103 includes all original pack/generation/save tests, final107 current packager/source receipt/public A/B combat and final108 actual current consumer B startup/late refusal retry independently cover shared-path current behavior. Full compiled/generated validation source is unchanged; generated behavior after final runtime changes is directly exercised by103/108. No semantic inference about battle execution rests on077.",
+  "source_delta_owner": "GS-CARL-P2G50-001 / GOAL-CARL-01",
+  "audit_script_attempt_note": "An initial read-only archive comparison assumed every final probe existed at077 and raised KeyError; rerun treats the three explicitly absent probe paths as additions. No source or evidence input was changed and no game execution failed.",
+  "passed": true
+}

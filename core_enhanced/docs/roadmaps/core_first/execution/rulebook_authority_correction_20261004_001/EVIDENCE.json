@@ -1,0 +1,62 @@
+{
+  "recorded_at": "2026-10-04T13:16:27.756362+00:00",
+  "scope": "document authority correction; no product or frozen evidence edits",
+  "restoration_source": {
+    "archive": "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/target/u04_001/SOURCE_BEFORE.tar.gz",
+    "archive_sha256": "864cc45f0daae762a6e878506322ee4ad0159b313df0666ee17ef8a7d5850ddb",
+    "member": "core_enhanced/docs/game_rulebook.md",
+    "member_sha256": "69e3648b2532cd09f4836d3a9052c2e875427d11640c6c7605b1877053d1e944"
+  },
+  "u04_after_equals_u05_before_sha256": "ef7637cb40ec8de40cecf1d9fe4ad9aabf6d4f54b06dcb1efbeccca7fd09fd06",
+  "before_archive_sha256": "fd49801a4b797424c32e663499c1de27297ff1e5e28c24d7d563c5155d8046f4",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "before_mtime": "2026-10-04T20:56:30.640968+09:00",
+      "before_sha256": "8fb081f1d4b4e16b98b034b05986d39c4023cb7044980507a6db650662ff37a8",
+      "after_sha256": "033dc5f4be0fd98759f3d92b44f56afe23485323c1b3a378ddf54dbdb8f421b4"
+    },
+    {
+      "path": "core_enhanced/docs/game_rulebook_next.md",
+      "before_mtime": "2026-10-03T18:58:01.843220+09:00",
+      "before_sha256": "1d73ff1f2da6c234884d3515750fd4fde13e78d72082f85be7f9ea9c1b3bb9f9",
+      "after_sha256": "a5b97a3c6d3e5774298aede8e211051c5fa758c2145ce71d346240cdaf5d9576"
+    },
+    {
+      "path": "core_enhanced/docs/README.md",
+      "before_mtime": "2026-10-04T02:19:36.603749+09:00",
+      "before_sha256": "f9d072df3e89e36e8d156d69f25cd4a5b41aecb12335f8c9fc1968cda7894faa",
+      "after_sha256": "3d8677ea4d32732a6c5101409e3f832b2e08d29cfca42f02ba79ab56d0f6a43b"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "before_mtime": "2026-10-04T18:59:55.630135+09:00",
+      "before_sha256": "f058dbc2b417fa691f835fb1bff7843c1fe413d04c571be50aac09c23e8ea4d4",
+      "after_sha256": "e2c089dea09d81f0e11be6b12f4681d08b3ae2d6d17a9463dc1b8d89a3b6349b"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_mtime": "2026-10-04T18:59:55.622412+09:00",
+      "before_sha256": "6d756bf8f238149e2c20d1c1200c1c9c7087e0eb78441f13b2efdfaa714fdc3d",
+      "after_sha256": "9daff2363f07b0780075a73b78041bc72fdb569aefef4ac592c4c31d6861f958"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+      "before_mtime": "2026-10-04T02:18:56.997465+09:00",
+      "before_sha256": "f82730653f4cf2ac14b1a9fb0b4247236fc14e5b47cc0da21d9deabb89f1cdff",
+      "after_sha256": "04f4588a03fa24794c7647351c8a0164b4f7b7757afc76aea79feca4b5152e4c"
+    }
+  ],
+  "validation": {
+    "historical_gameplay_body_equals_pre_u04": true,
+    "latest_gameplay_body_unchanged": true,
+    "before_archive_members_match_recorded_hashes": true,
+    "corrected_documents_match_recorded_hashes": true,
+    "u04_after_matches_u05_before": true,
+    "restoration_archive_unchanged": true,
+    "added_relative_links_exist": true,
+    "added_lines_have_no_trailing_whitespace": true,
+    "product_tests": "not run; document-only changes",
+    "git_diff_check": "pass"
+  }
+}

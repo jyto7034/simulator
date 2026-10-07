@@ -1,8 +1,13 @@
 use super::*;
 use crate::game::ability::{
-    DeliveryDef, SkillCastTargetingDef, SkillDef, SkillId, SkillStepDef, SkillTarget,
+    DeliveryDef, SkillCastSelection, SkillCastTargetingDef, SkillDef, SkillId, SkillStepDef,
+    SkillTarget,
 };
-use crate::game::battle::{event_log::BattleEventLog, tile_range::FacingDirection};
+use crate::game::battle::{
+    buffs::{BuffDatabase, BuffKind, BuffMetadata, BuffReapplyPolicy},
+    event_log::{BattleEventLog, SkillCastTarget},
+    tile_range::FacingDirection,
+};
 use crate::game::combat_preview::{
     ThreatWarning, ThreatWarningSource, ThreatWarningStatus, ThreatWarningTag,
 };
@@ -24,7 +29,7 @@ use crate::game::data::{
     },
     pve_data::{
         PveBattlefieldOverrideData, PveEncounter, PveEncounterClass, PveEncounterDatabase,
-        PveWaveData, PveWaveEnemyData, PveWaveSource,
+        PveEncounterRewardSource, PveWaveData, PveWaveEnemyData, PveWaveSource,
     },
     reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata},
     run_policy_data::RunPolicyData,
@@ -68,6 +73,42 @@ use crate::game::visual_novel::{VisualNovelTriggerConsumedKey, VisualNovelTrigge
 use serde_json::{json, Value};
 use std::sync::Arc;
 
+fn refresh_active_run_checksum(document: &mut Value) {
+    use sha2::{Digest, Sha256};
+    let (payload, checksum) = if document["version"] == 11 {
+        ("continuation", "continuation_sha256")
+    } else {
+        ("checkpoint", "checkpoint_sha256")
+    };
+    fn sorted(value: &Value) -> Value {
+        match value {
+            Value::Object(map) => serde_json::to_value(
+                map.iter()
+                    .map(|(key, value)| (key, sorted(value)))
+                    .collect::<std::collections::BTreeMap<_, _>>(),
+            )
+            .unwrap(),
+            Value::Array(values) => Value::Array(values.iter().map(sorted).collect()),
+            value => value.clone(),
+        }
+    }
+    document[checksum] = json!(format!(
+        "{:x}",
+        Sha256::digest(serde_json::to_vec(&sorted(&document[payload])).unwrap())
+    ));
+}
+
+impl GameCore {
+    // Test fixtures mutate roots directly. Publish that fixture explicitly;
+    // production SavePoint and Continue capture remain independent operations.
+    fn save_run_checkpoint_for_test(&mut self) -> Result<(), GameError> {
+        self.save_run_checkpoint()?;
+        self.refresh_continue_after_operation(super::application::ApplicationRoute::Behavior(
+            ActionKind::CompleteNode,
+        ))
+    }
+}
+
 fn action_capability(
     core: &GameCore,
     action: ActionKind,
@@ -77,8 +118,159 @@ fn action_capability(
         .find(|capability| capability.action == action)
 }
 
+fn assert_persisted_active_shop_session_equal(core: &GameCore, node_id: MapNodeId) {
+    let persisted = core
+        .state
+        .run
+        .as_ref()
+        .expect("paired Shop session requires a run")
+        .shop_sessions
+        .get(&node_id)
+        .expect("persisted Shop session");
+    let active = core
+        .state
+        .active_node_content
+        .as_ref()
+        .expect("active Shop session")
+        .as_shop()
+        .expect("active content should be Shop");
+    assert_eq!(
+        serde_json::to_value(persisted).expect("persisted Shop session serializes"),
+        serde_json::to_value(active).expect("active Shop session serializes"),
+        "persisted and active Shop sessions must be complete-value equal"
+    );
+}
+
+fn assert_persisted_active_event_session_equal(core: &GameCore, node_id: MapNodeId) {
+    let persisted = core
+        .state
+        .run
+        .as_ref()
+        .expect("paired Event session requires a run")
+        .event_sessions
+        .get(&node_id)
+        .expect("persisted Event session");
+    let active = core
+        .state
+        .active_node_content
+        .as_ref()
+        .expect("active Event session")
+        .as_event()
+        .expect("active content should be Event");
+    assert_eq!(
+        persisted, active,
+        "persisted and active Event sessions must be complete-value equal"
+    );
+}
+
+fn non_battle_state_without_profile_fingerprint(core: &GameCore) -> Value {
+    let run_payload = core.state.run.as_ref().map(|run| {
+        crate::game::world::state::RunCheckpointPayload::capture(
+            &core.state,
+            run,
+            core.game_data.identity(),
+        )
+        .unwrap()
+    });
+    let run_combat_recovery_restriction = core
+        .state
+        .run
+        .as_ref()
+        .map(|run| format!("{:?}", run.combat_recovery_restriction));
+    serde_json::json!({
+        "player": &core.state.player,
+        "game_state": core.state.lifecycle.phase(),
+        "active_node_content": core
+            .get_selected_event_snapshot_json()
+            .expect("active node content should project while fingerprinting"),
+        "pending_mastered_elite_sweep": core
+            .staged_mastered_elite_sweep_result()
+            .map(|result| serde_json::to_value(result).expect("sweep result serializes")),
+        "node_session": &core.state.node_session,
+        "run_payload": run_payload,
+        "run_combat_recovery_restriction": run_combat_recovery_restriction,
+        "visual_novel": &core.state.visual_novel,
+        "visual_novel_triggers": &core.state.visual_novel_triggers,
+        "uuid_manager": &core.state.uuid_manager,
+        "enkephalin": &core.state.enkephalin,
+        "inventory": &core.state.inventory,
+        "roster": &core.state.roster,
+        "starter_candidates": &core.state.starter_candidates,
+        "pending_game_mode": &core.state.pending_game_mode,
+        "skill_fragments": &core.state.skill_fragments,
+        "skill_fragment_policy": format!("{:?}", core.state.skill_fragment_policy),
+        "active_battle_present": core.state.active_battle.is_some(),
+        "run_checkpoint": &core.state.run_checkpoint,
+        "run_power_authority": &core.state.run_power_authority,
+    })
+}
+
+fn assert_non_battle_fingerprint_unchanged_except(
+    before: &Value,
+    after: &Value,
+    mutable_roots: &[&str],
+) {
+    let before = before
+        .as_object()
+        .expect("before non-battle fingerprint must be an object");
+    let after = after
+        .as_object()
+        .expect("after non-battle fingerprint must be an object");
+    assert_eq!(before.len(), after.len(), "fingerprint root count changed");
+    for (root, before_value) in before {
+        assert!(
+            after.contains_key(root),
+            "fingerprint root '{root}' disappeared"
+        );
+        if !mutable_roots.contains(&root.as_str()) {
+            assert_eq!(
+                after.get(root),
+                Some(before_value),
+                "non-battle root '{root}' changed outside the branch contract"
+            );
+        }
+    }
+}
+
+fn assert_run_payload_fingerprint_unchanged_except(
+    before: &Value,
+    after: &Value,
+    mutable_fields: &[&str],
+) {
+    let before = before["run_payload"]
+        .as_object()
+        .expect("before run payload fingerprint must be an object");
+    let after = after["run_payload"]
+        .as_object()
+        .expect("after run payload fingerprint must be an object");
+    assert_eq!(before.len(), after.len(), "run payload field count changed");
+    for (field, before_value) in before {
+        assert!(
+            after.contains_key(field),
+            "run payload field '{field}' disappeared"
+        );
+        if !mutable_fields.contains(&field.as_str()) {
+            assert_eq!(
+                after.get(field),
+                Some(before_value),
+                "run payload field '{field}' changed outside the branch contract"
+            );
+        }
+    }
+}
+
 fn action_capability_enabled(core: &GameCore, action: ActionKind) -> bool {
     action_capability(core, action).is_some_and(|capability| capability.enabled)
+}
+
+fn serialized_grant_roots(core: &GameCore) -> Value {
+    json!({
+        "inventory": &core.state.inventory,
+        "skill_fragments": &core.state.skill_fragments,
+        "roster": &core.state.roster,
+        "uuid_manager": &core.state.uuid_manager,
+        "enkephalin": &core.state.enkephalin,
+    })
 }
 
 fn execute_current_battle_mutation(
@@ -131,10 +323,36 @@ fn test_game_data_builder() -> GameDataBuilder {
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
         .with_visual_novel_triggers(test_hq_briefing_visual_novel_trigger_database())
-        .with_equipment(vec![starter_equipment_meta()])
+        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
+}
+
+fn test_control_buff_database() -> Arc<BuffDatabase> {
+    Arc::new(BuffDatabase::new(vec![
+        BuffMetadata {
+            name: "stun".to_string(),
+            kind: BuffKind::Stun,
+            tick_interval_ms: 0,
+            max_stacks: 1,
+            reapply_policy: BuffReapplyPolicy::RefreshDuration,
+        },
+        BuffMetadata {
+            name: "freeze".to_string(),
+            kind: BuffKind::Freeze,
+            tick_interval_ms: 0,
+            max_stacks: 1,
+            reapply_policy: BuffReapplyPolicy::RefreshDuration,
+        },
+        BuffMetadata {
+            name: "silence".to_string(),
+            kind: BuffKind::Silence,
+            tick_interval_ms: 0,
+            max_stacks: 1,
+            reapply_policy: BuffReapplyPolicy::RefreshDuration,
+        },
+    ]))
 }
 
 fn test_hq_briefing_visual_novel_database() -> VisualNovelDatabase {
@@ -213,8 +431,12 @@ fn test_employee_definition_database() -> EmployeeDefinitionDatabase {
         name: format!("Candidate {index}"),
         starter_eligible: true,
         initial_loadout: EmployeeInitialLoadout {
-            equipment_ids: vec!["standard_armor".to_string()],
+            equipment_ids: vec![
+                "standard_training_sword".to_string(),
+                "standard_armor".to_string(),
+            ],
             baseline_skill_fragment_ids: vec![starter_basic_attack_fragment_id()],
+            active_skill_fragment_id: None,
         },
         profile: profile("테스트 후보", "테스트용 시작 직원 후보"),
     });
@@ -233,6 +455,9 @@ fn start_new_game_with_mode_and_default_starters(
     player_id: Uuid,
     game_mode: GameMode,
 ) -> BehaviorResult {
+    if game_mode == GameMode::Endless {
+        core.state.player_profile.standard_tutorial_completed = true;
+    }
     let start = core
         .execute(
             player_id,
@@ -286,198 +511,340 @@ fn start_new_game_with_default_starters(core: &mut GameCore, player_id: Uuid) ->
 }
 
 fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
+    let sweep_base_reward_uuid = Uuid::from_u128(40_001);
+    let mut abnormalities = vec![
+        test_abnormality_meta("low_risk_abno", 20_001),
+        test_boss_abnormality_meta("boss_risk_abno", 20_002),
+        test_abnormality_meta("elite_risk_abno", 20_003),
+        test_abnormality_meta("ambush_risk_abno", 20_004),
+        test_abnormality_meta("defense_risk_abno", 20_005),
+        test_abnormality_meta("defense_route_abno", 20_006),
+        test_abnormality_meta("defense_corridor_abno", 20_007),
+        test_boss_abnormality_meta("final_boss_risk_abno", 20_008),
+    ];
+    let fragments = abnormalities
+        .iter_mut()
+        .enumerate()
+        .map(|(index, abnormality)| {
+            let fragment_id = SkillFragmentId::from(format!("fragment_{}", abnormality.id));
+            abnormality.response_complete_skill_fragment_id = Some(fragment_id.clone());
+            SkillFragmentMetadata {
+                corrosion_class:
+                    crate::game::data::skill_fragment_data::FragmentCorrosionClass::Ordinary,
+                id: fragment_id,
+                uuid: Uuid::from_u128(30_000 + index as u128),
+                name: format!("{} fragment", abnormality.id),
+                description: "test encounter source fragment".to_string(),
+                rarity: SkillFragmentRarity::Rare,
+                equip_limit: SkillFragmentEquipLimit::OwnedCopies,
+                origin: None,
+                sources: Vec::new(),
+                dependencies: Vec::new(),
+                compatibility: Default::default(),
+                effect: SkillFragmentEffectDef::BasicAttackModifier {
+                    attack_bonus: 1,
+                    attack_interval_ms_reduction: 0,
+                },
+            }
+        })
+        .collect::<Vec<_>>();
     test_game_data_builder()
-        .with_abnormalities(vec![
-            test_abnormality_meta("low_risk_abno", 20_001),
-            test_boss_abnormality_meta("boss_risk_abno", 20_002),
-            test_abnormality_meta("elite_risk_abno", 20_003),
-            test_abnormality_meta("ambush_risk_abno", 20_004),
-            test_abnormality_meta("defense_risk_abno", 20_005),
-            test_abnormality_meta("defense_route_abno", 20_006),
-            test_abnormality_meta("defense_corridor_abno", 20_007),
-            test_boss_abnormality_meta("final_boss_risk_abno", 20_008),
-        ])
+        .with_buff_data(test_control_buff_database())
+        .with_abnormalities(abnormalities)
+        .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(fragments))
+        .with_rewards(RewardDatabase::new(vec![RewardMetadata {
+            id: "sweep_base_reward".to_string(),
+            uuid: sweep_base_reward_uuid,
+            name: "Sweep base reward".to_string(),
+            description: "Test authored combat reward".to_string(),
+            icon: "test".to_string(),
+            effects: vec![
+                RewardEffect::GrantEnkephalin { amount: 7 },
+                RewardEffect::GrantFragmentDust { amount: 3 },
+            ],
+        }]))
         .with_corroded_employee_data(Arc::new(CorrodedEmployeeProfileDatabase::new(vec![
             test_corroded_employee_profile("corroded_guard", 21_001),
         ])))
-        .with_pve(PveEncounterDatabase::new(vec![
-            PveEncounter {
-                id: "normal_corroded_encounter".to_string(),
-                encounter_class: PveEncounterClass::Normal,
-                primary_abnormality_id: None,
-                risk_level: crate::game::enums::RiskLevel::ZAYIN,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: Some(PveBattlefieldOverrideData {
-                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::OpenHall),
-                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
-                }),
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_corroded_pve_wave("corroded_guard")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "low_risk_encounter".to_string(),
-                encounter_class: PveEncounterClass::Elite,
-                primary_abnormality_id: Some("low_risk_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::ZAYIN,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: Some(PveBattlefieldOverrideData {
-                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::OpenHall),
-                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
-                }),
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_defense_pve_wave("low_risk_abno")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "boss_risk_encounter".to_string(),
-                encounter_class: PveEncounterClass::NormalBoss,
-                primary_abnormality_id: Some("boss_risk_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::ALEPH,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Boss),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: None,
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_pve_wave("boss_risk_abno")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "final_boss_risk_encounter".to_string(),
-                encounter_class: PveEncounterClass::FinalBoss,
-                primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::ALEPH,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Boss),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: None,
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_pve_wave("final_boss_risk_abno")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "elite_risk_encounter".to_string(),
-                encounter_class: PveEncounterClass::Elite,
-                primary_abnormality_id: Some("elite_risk_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::WAW,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: None,
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_defense_pve_wave("elite_risk_abno")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "elite_survival_timer_encounter".to_string(),
-                encounter_class: PveEncounterClass::Elite,
-                primary_abnormality_id: Some("ambush_risk_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::WAW,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: Some(45_000),
-                battlefield: None,
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_defense_pve_wave("ambush_risk_abno")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "defense_encounter".to_string(),
-                encounter_class: PveEncounterClass::Elite,
-                primary_abnormality_id: Some("defense_risk_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::HE,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: Some(PveBattlefieldOverrideData {
-                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
-                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
-                }),
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![PveWaveData {
-                    route_id: Some("defense_main".to_string()),
-                    ..test_pve_wave("defense_risk_abno")
-                }],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "defense_route_encounter".to_string(),
-                encounter_class: PveEncounterClass::Elite,
-                primary_abnormality_id: Some("defense_route_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::HE,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: Some(PveBattlefieldOverrideData {
-                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Corridor),
-                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
-                }),
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_defense_pve_wave("defense_route_abno")],
-                static_obstacles: vec![],
-            },
-            PveEncounter {
-                id: "defense_corridor_encounter".to_string(),
-                encounter_class: PveEncounterClass::Elite,
-                primary_abnormality_id: Some("defense_corridor_abno".to_string()),
-                risk_level: crate::game::enums::RiskLevel::TETH,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                suppression_research: None,
-                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
-                mission_variant: None,
-                survive_timer_ms: None,
-                battlefield: Some(PveBattlefieldOverrideData {
-                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Corridor),
-                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
-                }),
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![test_defense_pve_wave("defense_corridor_abno")],
-                static_obstacles: vec![],
-            },
-        ]))
+        .with_pve(PveEncounterDatabase::new_with_reward_sources(
+            vec![
+                PveEncounter {
+                    id: "normal_corroded_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Normal,
+                    primary_abnormality_id: None,
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::ZAYIN,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: Some(PveBattlefieldOverrideData {
+                        archetype: Some(
+                            crate::game::combat_preview::BattlefieldArchetype::OpenHall,
+                        ),
+                        size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                    }),
+                    tactical_plan: None,
+                    waves: vec![test_corroded_pve_wave("corroded_guard")],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "low_risk_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Elite,
+                    primary_abnormality_id: Some("low_risk_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::ZAYIN,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: Some(PveBattlefieldOverrideData {
+                        archetype: Some(
+                            crate::game::combat_preview::BattlefieldArchetype::OpenHall,
+                        ),
+                        size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                    }),
+                    tactical_plan: None,
+                    waves: vec![test_defense_pve_wave("low_risk_abno")],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "boss_risk_encounter".to_string(),
+                    encounter_class: PveEncounterClass::NormalBoss,
+                    primary_abnormality_id: Some("boss_risk_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::ALEPH,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Boss),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: None,
+                    tactical_plan: None,
+                    waves: vec![test_pve_wave("boss_risk_abno")],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "final_boss_risk_encounter".to_string(),
+                    encounter_class: PveEncounterClass::FinalBoss,
+                    primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::ALEPH,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Boss),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: None,
+                    tactical_plan: None,
+                    waves: vec![test_pve_wave("final_boss_risk_abno")],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "elite_risk_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Elite,
+                    primary_abnormality_id: Some("elite_risk_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::WAW,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![sweep_base_reward_uuid],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: None,
+                    tactical_plan: None,
+                    waves: vec![test_defense_pve_wave("elite_risk_abno")],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "elite_survival_timer_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Elite,
+                    primary_abnormality_id: Some("ambush_risk_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::WAW,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(Some(45_000)),
+                    battlefield: None,
+                    tactical_plan: None,
+                    waves: vec![PveWaveData {
+                        required_for_victory: false,
+                        ..test_defense_pve_wave("ambush_risk_abno")
+                    }],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "defense_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Elite,
+                    primary_abnormality_id: Some("defense_risk_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::HE,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: Some(PveBattlefieldOverrideData {
+                        archetype: Some(
+                            crate::game::combat_preview::BattlefieldArchetype::ChokePoint,
+                        ),
+                        size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                    }),
+                    tactical_plan: None,
+                    waves: vec![PveWaveData {
+                        route_id: Some("defense_main".to_string()),
+                        ..test_pve_wave("defense_risk_abno")
+                    }],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "defense_route_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Elite,
+                    primary_abnormality_id: Some("defense_route_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::HE,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: Some(PveBattlefieldOverrideData {
+                        archetype: Some(
+                            crate::game::combat_preview::BattlefieldArchetype::Corridor,
+                        ),
+                        size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                    }),
+                    tactical_plan: None,
+                    waves: vec![test_defense_pve_wave("defense_route_abno")],
+                    static_obstacles: vec![],
+                },
+                PveEncounter {
+                    id: "defense_corridor_encounter".to_string(),
+                    encounter_class: PveEncounterClass::Elite,
+                    primary_abnormality_id: Some("defense_corridor_abno".to_string()),
+                    boss_runtime: None,
+                    risk_level: crate::game::enums::RiskLevel::TETH,
+                    outcome_policies: PveEncounter::fixture_outcome_policies(
+                        RewardMode::ClaimAll,
+                        vec![],
+                    ),
+                    node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                    mission_variant: None,
+                    terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                    battlefield: Some(PveBattlefieldOverrideData {
+                        archetype: Some(
+                            crate::game::combat_preview::BattlefieldArchetype::Corridor,
+                        ),
+                        size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                    }),
+                    tactical_plan: None,
+                    waves: vec![test_defense_pve_wave("defense_corridor_abno")],
+                    static_obstacles: vec![],
+                },
+            ],
+            vec![
+                PveEncounterRewardSource {
+                    reward_source_id: "source_low_risk".to_string(),
+                    encounter_id: "low_risk_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_low_risk_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_boss_risk".to_string(),
+                    encounter_id: "boss_risk_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_boss_risk_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 10 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_final_boss_risk".to_string(),
+                    encounter_id: "final_boss_risk_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_final_boss_risk_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 20 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_elite_risk".to_string(),
+                    encounter_id: "elite_risk_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_elite_risk_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_elite_survival".to_string(),
+                    encounter_id: "elite_survival_timer_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_ambush_risk_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_defense".to_string(),
+                    encounter_id: "defense_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_defense_risk_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_defense_route".to_string(),
+                    encounter_id: "defense_route_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_defense_route_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                },
+                PveEncounterRewardSource {
+                    reward_source_id: "source_defense_corridor".to_string(),
+                    encounter_id: "defense_corridor_encounter".to_string(),
+                    fragment_id: SkillFragmentId::from("fragment_defense_corridor_abno"),
+                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                },
+            ],
+        ))
+        .build_arc()
+}
+
+// Explicit pre-U06 sword/baseline inputs for inherited battle numerical oracles.
+// U06 official loadout acceptance tests use live_game_data_from_ron unchanged.
+fn legacy_sword_live_game_data_from_ron() -> Arc<GameDataBase> {
+    let live = crate::game::data::ValidatedGameData::load_live_embedded().unwrap();
+    let mut definitions = live.employee_definition_data.definitions.clone();
+    for definition in &mut definitions {
+        definition.initial_loadout = if definition.starter_eligible {
+            let mut equipment_ids = vec!["standard_training_sword".into(), "standard_armor".into()];
+            if definition.employee_definition_id == "maintenance_tech" {
+                equipment_ids.push("archive_scanner".into());
+            }
+            EmployeeInitialLoadout {
+                equipment_ids,
+                baseline_skill_fragment_ids: vec!["starter_basic_attack_enhancement".into()],
+                active_skill_fragment_id: None,
+            }
+        } else {
+            EmployeeInitialLoadout::default()
+        };
+    }
+    GameDataBuilder::from_validated(&live)
+        .with_employee_definitions(EmployeeDefinitionDatabase::new(definitions))
         .build_arc()
 }
 
 fn live_game_data_from_ron() -> Arc<GameDataBase> {
-    GameDataBase::load_live_embedded().expect("embedded live gameplay RON must be valid")
+    crate::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid")
+        .into_fixture_database_arc()
 }
 
 fn test_abnormality_meta(id: &str, uuid: u128) -> AbnormalityMetadata {
@@ -544,7 +911,7 @@ fn test_corroded_employee_profile(id: &str, uuid: u128) -> CorrodedEmployeeProfi
 fn test_pve_wave(abnormality_id: &str) -> PveWaveData {
     PveWaveData {
         id: "wave_0".to_string(),
-        time_ms: 0,
+        activation: crate::game::data::pve_data::PveWaveActivationData::at_time("wave_0", 0),
         spawn_zone_ids: Vec::new(),
         route_id: None,
         required_for_victory: true,
@@ -559,7 +926,7 @@ fn test_pve_wave(abnormality_id: &str) -> PveWaveData {
 fn test_corroded_pve_wave(profile_id: &str) -> PveWaveData {
     PveWaveData {
         id: "wave_0".to_string(),
-        time_ms: 0,
+        activation: crate::game::data::pve_data::PveWaveActivationData::at_time("wave_0", 0),
         spawn_zone_ids: Vec::new(),
         route_id: Some("defense_main".to_string()),
         required_for_victory: true,
@@ -672,6 +1039,26 @@ fn starter_equipment_meta() -> EquipmentMetadata {
     equipment
 }
 
+fn starter_weapon_meta() -> EquipmentMetadata {
+    let mut equipment = equipment_meta(
+        0x650e_8400_e29b_41d4_a716_4466_5544_0030,
+        "standard_training_sword",
+        EquipmentType::Weapon,
+    );
+    let profile = equipment
+        .weapon_profile
+        .as_mut()
+        .expect("starter weapon fixture must author a weapon profile");
+    profile.block_capacity = 1;
+    let defense_focus = profile
+        .ground_defense_focus
+        .as_mut()
+        .expect("starter weapon fixture must author ground defense focus");
+    defense_focus.block_capacity_bonus = 1;
+    defense_focus.incoming_damage_reduction_percent = 10;
+    equipment
+}
+
 fn test_shop_metadata(id: &str, uuid: Uuid, context: ShopContext) -> ShopMetadata {
     ShopMetadata {
         id: id.to_string(),
@@ -700,6 +1087,12 @@ fn test_shop_metadata(id: &str, uuid: Uuid, context: ShopContext) -> ShopMetadat
 }
 
 fn equipment_with_starter_assets(mut equipment: Vec<EquipmentMetadata>) -> Vec<EquipmentMetadata> {
+    if !equipment
+        .iter()
+        .any(|item| item.id == "standard_training_sword")
+    {
+        equipment.push(starter_weapon_meta());
+    }
     if !equipment.iter().any(|item| item.id == "standard_armor") {
         equipment.push(starter_equipment_meta());
     }
@@ -735,6 +1128,35 @@ fn grant_and_equip_weapon(
         .add_item(OwnedEquipment::new(owned_uuid, Arc::new(weapon)))
         .unwrap();
     core.handle_equip_item(owned_uuid, employee_uuid).unwrap();
+}
+
+fn force_unequip_employee_weapon(core: &mut GameCore, employee_uuid: Uuid) -> Uuid {
+    let weapon_instance_uuid = core
+        .roster()
+        .unwrap()
+        .get(&employee_uuid)
+        .unwrap()
+        .loadout
+        .item_slot
+        .iter()
+        .find(|equipped| equipped.equipment_type == EquipmentType::Weapon)
+        .map(|equipped| equipped.instance_uuid)
+        .expect("test employee must start armed");
+    core.roster_mut()
+        .unwrap()
+        .get_mut(&employee_uuid)
+        .unwrap()
+        .loadout
+        .item_slot
+        .remove_by_instance(weapon_instance_uuid)
+        .unwrap();
+    core.inventory_mut()
+        .unwrap()
+        .equipments
+        .get_item_mut(&weapon_instance_uuid)
+        .unwrap()
+        .equipped_to = None;
+    weapon_instance_uuid
 }
 
 fn consumable_meta(
@@ -819,11 +1241,11 @@ fn game_data_with_skill_fragments(fragments: Vec<SkillFragmentMetadata>) -> Arc<
     let skills = fragments
         .iter()
         .filter_map(|fragment| match &fragment.effect {
-            SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id, ..
-            } => Some(SkillDef {
-                id: imitation_skill_id.clone(),
-                name: imitation_skill_id.to_string(),
+            SkillFragmentEffectDef::ActiveSkill { forms, .. } => Some(SkillDef {
+                use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+                flow: None,
+                id: forms["base"].skill_id.clone(),
+                name: forms["base"].skill_id.to_string(),
                 kind: Default::default(),
                 cast_targeting: SkillCastTargetingDef::explicit(
                     SkillTarget::SelfUnit,
@@ -862,11 +1284,11 @@ fn game_data_with_equipment_and_skill_fragments(
     let skills = fragments
         .iter()
         .filter_map(|fragment| match &fragment.effect {
-            SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id, ..
-            } => Some(SkillDef {
-                id: imitation_skill_id.clone(),
-                name: imitation_skill_id.to_string(),
+            SkillFragmentEffectDef::ActiveSkill { forms, .. } => Some(SkillDef {
+                use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+                flow: None,
+                id: forms["base"].skill_id.clone(),
+                name: forms["base"].skill_id.to_string(),
                 kind: Default::default(),
                 cast_targeting: SkillCastTargetingDef::explicit(
                     SkillTarget::SelfUnit,
@@ -904,9 +1326,10 @@ fn game_data_with_equipment_and_skill_fragments(
 fn game_data_with_pve_equipment_and_active_skill_fragments(
     equipment: Vec<EquipmentMetadata>,
     skills: Vec<SkillDef>,
-    fragments: Vec<SkillFragmentMetadata>,
+    mut fragments: Vec<SkillFragmentMetadata>,
 ) -> Arc<GameDataBase> {
     let base = game_data_with_pve_encounters();
+    fragments.extend(base.skill_fragment_data.fragments.iter().cloned());
     GameDataBuilder::empty()
         .with_abnormality_data(base.abnormality_data.clone())
         .with_corroded_employee_data(base.corroded_employee_data.clone())
@@ -921,7 +1344,7 @@ fn game_data_with_pve_equipment_and_active_skill_fragments(
         .with_visual_novel_trigger_data(base.visual_novel_trigger_data.clone())
         .with_pve_data(base.pve_data.clone())
         .with_skills(SkillDatabase::new(skills))
-        .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(fragments))
+        .with_skill_fragments(SkillFragmentDatabase::new(fragments))
         .build_arc()
 }
 
@@ -970,6 +1393,7 @@ fn game_data_with_visual_novel_triggers(
 
 fn active_skill_fragment(id: &str, uuid: u128, skill_id: &str) -> SkillFragmentMetadata {
     SkillFragmentMetadata {
+        corrosion_class: crate::game::data::skill_fragment_data::FragmentCorrosionClass::Ordinary,
         id: SkillFragmentId::from(id),
         uuid: Uuid::from_u128(uuid),
         name: id.to_string(),
@@ -981,9 +1405,22 @@ fn active_skill_fragment(id: &str, uuid: u128, skill_id: &str) -> SkillFragmentM
         dependencies: vec![],
         compatibility: Default::default(),
         effect: SkillFragmentEffectDef::ActiveSkill {
-            imitation_skill_id: SkillId::from(skill_id),
-            upgrade_skill_ids: Default::default(),
-            awakened_skill_id: None,
+            forms: std::collections::BTreeMap::from([(
+                "base".into(),
+                crate::game::data::skill_fragment_data::SkillFragmentForm {
+                    resonance_max: 100,
+                    skill_id: SkillId::from(skill_id),
+                    compatibility: None,
+                    bloom_recipe: None,
+                },
+            )]),
+            passive_guard: None,
+            dismantle_recipe: Some(
+                crate::game::data::skill_fragment_data::SkillFragmentRecipe {
+                    enkephalin: 2,
+                    materials: vec![],
+                },
+            ),
         },
     }
 }
@@ -1038,6 +1475,7 @@ fn force_first_available_node(
             .expect("run state")
             .run_progression
             .run_seed;
+        let floor_power_anchor = core.state.run_power_authority.current_floor_power_anchor;
         let generated = crate::game::map::FacilityMapGenerator::generate(
             run_seed,
             GameMode::Standard,
@@ -1045,7 +1483,7 @@ fn force_first_available_node(
             &crate::game::map::FacilityRunState::default(),
             &core.game_data.map_catalogs,
             core.run_policy(),
-            100,
+            floor_power_anchor,
         )
         .expect("test category must resolve to an authored facility template");
         let run = core.state.run.as_mut().expect("run state");
@@ -1119,7 +1557,7 @@ fn force_first_available_node(
         .find(|node| node.slot_id == target_slot_id)
         .expect("node assigned to forced category slot")
         .id;
-    let mut completed_node_ids = Vec::new();
+    let mut current_node_id = None;
     for slot_id in path.iter().take(path.len().saturating_sub(1)) {
         let node = run
             .map
@@ -1129,7 +1567,7 @@ fn force_first_available_node(
             .expect("path node");
         node.state = MapNodeState::Completed;
         node.visibility = MapNodeVisibility::Revealed;
-        completed_node_ids.push(node.id);
+        current_node_id = Some(node.id);
     }
     let node = run.map.node_mut(node_id).expect("node exists");
     node.category = category;
@@ -1137,8 +1575,22 @@ fn force_first_available_node(
     node.payload = payload;
     node.state = MapNodeState::Available;
     node.visibility = MapNodeVisibility::Revealed;
+    for other in &mut run.map.nodes {
+        if other.id != node_id && other.state == MapNodeState::Available {
+            other.state = MapNodeState::Unavailable;
+        }
+    }
+    let mut completed_node_ids = run
+        .map
+        .nodes
+        .iter()
+        .filter(|node| node.state == MapNodeState::Completed)
+        .map(|node| node.id)
+        .collect::<Vec<_>>();
+    completed_node_ids.sort_by_key(|id| id.0.as_u128());
+    completed_node_ids.dedup();
     run.map_progression = crate::game::map::MapProgression {
-        current_node_id: completed_node_ids.last().copied(),
+        current_node_id,
         available_node_ids: vec![node_id],
         completed_node_ids,
     };
@@ -1192,16 +1644,37 @@ fn write_world_debug_event_log_export(
         .join("debug_event_log_exports");
     let out_path = out_dir.join(format!("{name}.json"));
     std::fs::create_dir_all(&out_dir).expect("create debug_event_log_exports directory");
-    event_log
-        .write_pretty_json(&out_path)
+    let file = std::fs::File::create(&out_path).expect("create debug event log json");
+    serde_json::to_writer_pretty(std::io::BufWriter::new(file), event_log)
         .expect("write debug event log json");
     out_path
 }
 
 mod facility;
 
+mod checkpoint_validation;
+#[cfg(unix)]
+mod content_generation;
+
 mod node_sessions;
+mod u06_starter;
+mod u07_objects;
 
 mod equipment;
 
 mod combat;
+
+mod mastered_elite_sweep;
+
+mod r07_copies;
+
+mod u08_relics;
+
+mod u08_query_owner;
+
+mod u08_carriers;
+mod u08_continue_owner;
+mod u08_event_owner;
+mod u08_lifecycle;
+
+mod u09_structural;

@@ -1,0 +1,16 @@
+{
+  "validator": "p2g40-receipt-validator/1.2.0",
+  "result": "passed",
+  "counts": {
+    "freeze_members": 15,
+    "work_packages": 5,
+    "dependency_edges": 9,
+    "cyclic_sccs": 0,
+    "atomic_groups": 1,
+    "final_execution_nodes": 2,
+    "phases": 1,
+    "audit_rows": 1,
+    "integration_rows": 15
+  },
+  "failures": []
+}

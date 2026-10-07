@@ -53,6 +53,7 @@ pub(crate) struct GeneratedFacilityCapstone {
 struct SlotAssignment {
     category: MapNodeCategory,
     fixed_kind_id: Option<MapNodeKindId>,
+    payload_override: Option<MapNodePayload>,
 }
 
 pub(crate) struct FacilityMapGenerator;
@@ -166,14 +167,24 @@ impl FacilityMapGenerator {
                                 schedule.profile.id, schedule.profile.difficulty_profile_id
                             )
                         })?;
-                    assign_combat_difficulties(
-                        &mut map,
-                        &assignments,
-                        difficulty_profile,
-                        run_policy.combat_difficulty.power_model_version,
-                        floor_power_anchor,
-                        assignment_seed,
-                    )?;
+                    if schedule.profile.fixed_slot_assignments.is_empty() {
+                        assign_combat_difficulties(
+                            &mut map,
+                            &assignments,
+                            difficulty_profile,
+                            run_policy.combat_difficulty.power_model_version,
+                            floor_power_anchor,
+                            assignment_seed,
+                        )?;
+                    } else {
+                        assign_fixed_standard_combat_difficulties(
+                            &mut map,
+                            &assignments,
+                            difficulty_profile,
+                            run_policy.combat_difficulty.power_model_version,
+                            floor_power_anchor,
+                        )?;
+                    }
                     return Ok(GeneratedFacilityMap {
                         map,
                         facility_run_state: next_state,
@@ -252,6 +263,7 @@ impl FacilityMapGenerator {
                     FacilitySlotRole::Start => SlotAssignment {
                         category: MapNodeCategory::Start,
                         fixed_kind_id: Some(MapNodeKindId::new("start")),
+                        payload_override: None,
                     },
                     FacilitySlotRole::Entry
                     | FacilitySlotRole::Ordinary
@@ -259,6 +271,7 @@ impl FacilityMapGenerator {
                     | FacilitySlotRole::Terminal(_) => SlotAssignment {
                         category: slot.allowed_categories[0],
                         fixed_kind_id: None,
+                        payload_override: None,
                     },
                 };
                 (slot.id.clone(), assignment)
@@ -360,16 +373,21 @@ fn assign_template(
     seed: u64,
     requirements: FacilityGenerationRequirements,
 ) -> Result<HashMap<MapSlotId, SlotAssignment>, String> {
+    if !profile.fixed_slot_assignments.is_empty() {
+        return assign_fixed_template(template, profile, catalogs);
+    }
     let mut assignments = HashMap::new();
     for slot in &template.slots {
         let fixed = match slot.role {
             FacilitySlotRole::Start => Some(SlotAssignment {
                 category: MapNodeCategory::Start,
                 fixed_kind_id: Some(MapNodeKindId::new("start")),
+                payload_override: None,
             }),
             FacilitySlotRole::Entry | FacilitySlotRole::Terminal(_) => Some(SlotAssignment {
                 category: slot.allowed_categories[0],
                 fixed_kind_id: None,
+                payload_override: None,
             }),
             FacilitySlotRole::Ordinary | FacilitySlotRole::ManifestedBonus
                 if requirements.guarantee_reachable_shop
@@ -378,6 +396,7 @@ fn assign_template(
                 Some(SlotAssignment {
                     category: MapNodeCategory::Shop,
                     fixed_kind_id: None,
+                    payload_override: None,
                 })
             }
             FacilitySlotRole::Ordinary | FacilitySlotRole::ManifestedBonus => {
@@ -463,6 +482,79 @@ fn assign_template(
     Ok(assignments)
 }
 
+fn assign_fixed_template(
+    template: &FacilityTemplate,
+    profile: &NodeAssignmentProfile,
+    catalogs: &GameplayMapCatalogs,
+) -> Result<HashMap<MapSlotId, SlotAssignment>, String> {
+    let expected = template
+        .slots
+        .iter()
+        .filter(|slot| slot.role != FacilitySlotRole::Start)
+        .map(|slot| slot.id.as_str())
+        .collect::<HashSet<_>>();
+    let authored = profile
+        .fixed_slot_assignments
+        .iter()
+        .map(|assignment| assignment.slot_id.as_str())
+        .collect::<HashSet<_>>();
+    if authored.len() != profile.fixed_slot_assignments.len() || authored != expected {
+        return Err(format!(
+            "fixed assignment profile '{}' must author every non-Start slot exactly once",
+            profile.id
+        ));
+    }
+
+    let mut assignments = HashMap::new();
+    for slot in &template.slots {
+        if slot.role == FacilitySlotRole::Start {
+            assignments.insert(
+                slot.id.clone(),
+                SlotAssignment {
+                    category: MapNodeCategory::Start,
+                    fixed_kind_id: Some(MapNodeKindId::new("start")),
+                    payload_override: None,
+                },
+            );
+            continue;
+        }
+        let fixed = profile
+            .fixed_slot_assignments
+            .iter()
+            .find(|assignment| assignment.slot_id == slot.id)
+            .expect("fixed assignment set equality was checked");
+        let definition = catalogs
+            .map_node_definitions
+            .nodes
+            .iter()
+            .find(|definition| definition.kind_id == fixed.kind_id)
+            .ok_or_else(|| {
+                format!(
+                    "fixed slot '{}' references missing node definition '{}'",
+                    slot.id.as_str(),
+                    fixed.kind_id.as_str()
+                )
+            })?;
+        if !slot.allowed_categories.contains(&definition.category) {
+            return Err(format!(
+                "fixed slot '{}' cannot accept {:?} node '{}'",
+                slot.id.as_str(),
+                definition.category,
+                fixed.kind_id.as_str()
+            ));
+        }
+        assignments.insert(
+            slot.id.clone(),
+            SlotAssignment {
+                category: definition.category,
+                fixed_kind_id: Some(fixed.kind_id.clone()),
+                payload_override: Some(fixed.payload.clone()),
+            },
+        );
+    }
+    Ok(assignments)
+}
+
 fn tagged_assignment(
     slot: &FacilityRoomSlot,
     profile: &NodeAssignmentProfile,
@@ -493,6 +585,7 @@ fn tagged_assignment(
     Ok(Some(SlotAssignment {
         category: assignment.category,
         fixed_kind_id: assignment.kind_id.clone(),
+        payload_override: None,
     }))
 }
 
@@ -525,6 +618,7 @@ fn backtrack_assign(
             SlotAssignment {
                 category,
                 fixed_kind_id: None,
+                payload_override: None,
             },
         );
         if partial_counts_can_finish(template, assignments, constraints, slots, index + 1)
@@ -648,10 +742,14 @@ fn build_run_map(
             u64::try_from(index).map_err(|_| "facility node index overflowed u64")?,
         ));
         let definition = resolve_definition(assignment, catalogs, &mut rng)?;
-        let (kind_id, payload) = definition.map_or_else(
+        let (kind_id, default_payload) = definition.map_or_else(
             || (MapNodeKindId::new("start"), MapNodePayload::None),
             |definition| (definition.kind_id.clone(), definition.payload.clone()),
         );
+        let payload = assignment
+            .payload_override
+            .clone()
+            .unwrap_or(default_payload);
         let state = match slot.role {
             FacilitySlotRole::Start => MapNodeState::Completed,
             FacilitySlotRole::Entry => MapNodeState::Available,
@@ -739,6 +837,9 @@ fn assign_combat_difficulties(
             let role = match terminal.resolution {
                 crate::game::map::FacilityTerminalResolution::RunFinalBoss => {
                     Some(CombatNodeDifficultyRole::FinalBoss)
+                }
+                crate::game::map::FacilityTerminalResolution::StandardCompletion => {
+                    Some(CombatNodeDifficultyRole::NormalBoss)
                 }
                 crate::game::map::FacilityTerminalResolution::SpecialRunCompletion => {
                     Some(CombatNodeDifficultyRole::MonolithRemanifestation)
@@ -856,6 +957,62 @@ fn assign_combat_difficulties(
                 floor_power_anchor,
                 tuning.tuning.target_power_percent,
             ),
+        });
+    }
+    Ok(())
+}
+
+fn assign_fixed_standard_combat_difficulties(
+    map: &mut RunMap,
+    assignments: &HashMap<MapSlotId, SlotAssignment>,
+    profile: &CombatDifficultyProfile,
+    power_model_version: u32,
+    integrity_floor_anchor: u64,
+) -> Result<(), String> {
+    for node in &mut map.nodes {
+        if !matches!(
+            node.category,
+            MapNodeCategory::Combat | MapNodeCategory::Boss
+        ) {
+            continue;
+        }
+        let class = if node.category == MapNodeCategory::Boss {
+            MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::NormalBoss)
+        } else if assignments
+            .get(&node.slot_id)
+            .and_then(|assignment| assignment.fixed_kind_id.as_ref())
+            .is_some_and(|kind_id| kind_id.as_str() == "combat_elite")
+        {
+            MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::Elite)
+        } else {
+            MapNodeCombatDifficultyClass::Ordinary(
+                crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard,
+            )
+        };
+        let tuning_exists = match class {
+            MapNodeCombatDifficultyClass::Ordinary(band) => profile
+                .ordinary_bands
+                .iter()
+                .any(|entry| entry.band == band),
+            MapNodeCombatDifficultyClass::Role(role) => {
+                profile.role_tuning.iter().any(|entry| entry.role == role)
+            }
+        };
+        if !tuning_exists {
+            return Err(format!(
+                "fixed Standard difficulty profile '{}' has no tuning for {:?}",
+                profile.id, class
+            ));
+        }
+        node.combat_difficulty = Some(MapNodeCombatDifficulty {
+            power_model_version,
+            difficulty_profile_id: profile.id.clone(),
+            class,
+            monolith_stage: None,
+            // Fixed Standard never derives tuning from this value. It is retained only
+            // as the existing versioned Active Run checkpoint-integrity witness.
+            floor_power_anchor: integrity_floor_anchor,
+            target_power: 0,
         });
     }
     Ok(())
@@ -1039,10 +1196,259 @@ mod tests {
     }
 
     #[test]
-    fn ordinary_quota_and_final_boss_role_are_manifested_once_with_fixed_targets() {
+    fn standard_is_exact_authored_fixed_and_seed_independent() {
         let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
         let policy = RunPolicyData::builtin();
-        let generated = FacilityMapGenerator::generate(
+        let expected = [
+            (
+                "standard_intro_a",
+                crate::game::map::FacilityTerminalResolution::FloorGate,
+                vec![
+                    ("entry", "start", MapNodePayload::None),
+                    (
+                        "intake_corridor",
+                        "combat_monster",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("normal_corroded_patrol".to_string()),
+                        },
+                    ),
+                    (
+                        "records_annex",
+                        "event_sealed_archive",
+                        MapNodePayload::Event {
+                            event_id: Some(crate::game::data::event_data::EventId::new(
+                                "sealed_archive_recovery_01",
+                            )),
+                        },
+                    ),
+                    (
+                        "supply_annex",
+                        "reward_treasure",
+                        MapNodePayload::Reward {
+                            reward_pool_id: Some("tutorial_f1_training_budget".to_string()),
+                        },
+                    ),
+                    (
+                        "containment_guard",
+                        "combat_monster",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("normal_breach_response".to_string()),
+                        },
+                    ),
+                    ("floor_gate", "gate_stairs", MapNodePayload::None),
+                ],
+            ),
+            (
+                "standard_branching_a",
+                crate::game::map::FacilityTerminalResolution::FloorGate,
+                vec![
+                    ("entry", "start", MapNodePayload::None),
+                    (
+                        "dispatch_hall",
+                        "combat_monster",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("normal_black_box_pressure".to_string()),
+                        },
+                    ),
+                    ("save_archive", "save_point", MapNodePayload::SavePoint),
+                    (
+                        "maintenance_bay",
+                        "maintenance",
+                        MapNodePayload::Maintenance,
+                    ),
+                    (
+                        "hq_terminal",
+                        "headquarters_contact",
+                        MapNodePayload::HeadquartersContact {
+                            shop_pool_id: Some("headquarters_basic_supplies".to_string()),
+                            candidate_count: 3,
+                        },
+                    ),
+                    (
+                        "supply_depot",
+                        "shop_general",
+                        MapNodePayload::Shop {
+                            shop_id: Some("unknown_exploration_shop".to_string()),
+                            shop_pool_id: None,
+                        },
+                    ),
+                    (
+                        "crossroads_archive",
+                        "event_sealed_archive",
+                        MapNodePayload::Event {
+                            event_id: Some(crate::game::data::event_data::EventId::new(
+                                "sealed_archive_recovery_01",
+                            )),
+                        },
+                    ),
+                    (
+                        "containment_guard",
+                        "combat_elite",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("suppress_porcubbus".to_string()),
+                        },
+                    ),
+                    ("floor_gate", "gate_stairs", MapNodePayload::None),
+                ],
+            ),
+            (
+                "standard_final_a",
+                crate::game::map::FacilityTerminalResolution::StandardCompletion,
+                vec![
+                    ("entry", "start", MapNodePayload::None),
+                    (
+                        "west_containment",
+                        "combat_monster",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("normal_breach_response".to_string()),
+                        },
+                    ),
+                    (
+                        "east_containment",
+                        "reward_treasure",
+                        MapNodePayload::Reward {
+                            reward_pool_id: Some("tutorial_f3_salvage".to_string()),
+                        },
+                    ),
+                    (
+                        "records_core",
+                        "event_sealed_archive",
+                        MapNodePayload::Event {
+                            event_id: Some(crate::game::data::event_data::EventId::new(
+                                "sealed_archive_recovery_01",
+                            )),
+                        },
+                    ),
+                    (
+                        "maintenance_core",
+                        "maintenance",
+                        MapNodePayload::Maintenance,
+                    ),
+                    (
+                        "supply_core",
+                        "shop_general",
+                        MapNodePayload::Shop {
+                            shop_id: Some("unknown_exploration_shop".to_string()),
+                            shop_pool_id: None,
+                        },
+                    ),
+                    (
+                        "lower_containment",
+                        "combat_monster",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("normal_black_box_pressure".to_string()),
+                        },
+                    ),
+                    (
+                        "upper_containment",
+                        "headquarters_contact",
+                        MapNodePayload::HeadquartersContact {
+                            shop_pool_id: Some("headquarters_basic_supplies".to_string()),
+                            candidate_count: 3,
+                        },
+                    ),
+                    (
+                        "final_approach",
+                        "reward_treasure",
+                        MapNodePayload::Reward {
+                            reward_pool_id: Some("tutorial_f3_budget".to_string()),
+                        },
+                    ),
+                    (
+                        "final_chamber",
+                        "boss_abnormality",
+                        MapNodePayload::Encounter {
+                            encounter_id: Some("suppress_nothing_there".to_string()),
+                        },
+                    ),
+                ],
+            ),
+        ];
+
+        for (floor_index, (template_id, terminal_resolution, expected_nodes)) in
+            expected.iter().enumerate()
+        {
+            let left = FacilityMapGenerator::generate(
+                91,
+                GameMode::Standard,
+                floor_index as u32,
+                &FacilityRunState::default(),
+                &catalogs,
+                &policy,
+                150,
+            )
+            .unwrap();
+            let right = FacilityMapGenerator::generate(
+                9_901,
+                GameMode::Standard,
+                floor_index as u32,
+                &FacilityRunState::default(),
+                &catalogs,
+                &policy,
+                150,
+            )
+            .unwrap();
+            assert_eq!(left.map.map_template_id.as_str(), *template_id);
+            assert_eq!(right.map.map_template_id.as_str(), *template_id);
+            assert_eq!(left.map.nodes.len(), expected_nodes.len());
+            for (slot_id, kind_id, payload) in expected_nodes {
+                let left_node = left
+                    .map
+                    .nodes
+                    .iter()
+                    .find(|node| node.slot_id.as_str() == *slot_id)
+                    .unwrap();
+                let right_node = right
+                    .map
+                    .nodes
+                    .iter()
+                    .find(|node| node.slot_id.as_str() == *slot_id)
+                    .unwrap();
+                assert_eq!(left_node.kind_id.as_str(), *kind_id);
+                assert_eq!(&left_node.payload, payload);
+                assert_eq!(left_node.kind_id, right_node.kind_id);
+                assert_eq!(left_node.category, right_node.category);
+                assert_eq!(left_node.payload, right_node.payload);
+                assert_eq!(left_node.combat_difficulty, right_node.combat_difficulty);
+                if let Some(difficulty) = left_node.combat_difficulty.as_ref() {
+                    assert_eq!(difficulty.difficulty_profile_id, "tutorial_fixed_v1");
+                    assert_eq!(difficulty.floor_power_anchor, 150);
+                    assert_eq!(difficulty.target_power, 0);
+                    assert_eq!(difficulty.monolith_stage, None);
+                    assert_ne!(
+                        difficulty.class,
+                        MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::FinalBoss)
+                    );
+                }
+            }
+            assert_eq!(left.map.terminals.len(), 1);
+            assert_eq!(left.map.terminals[0].resolution, *terminal_resolution);
+        }
+
+        let floor_two = FacilityMapGenerator::generate(
+            91,
+            GameMode::Standard,
+            1,
+            &FacilityRunState::default(),
+            &catalogs,
+            &policy,
+            150,
+        )
+        .unwrap();
+        assert_eq!(
+            floor_two
+                .map
+                .nodes
+                .iter()
+                .find(|node| node.slot_id.as_str() == "containment_guard")
+                .unwrap()
+                .combat_difficulty
+                .as_ref()
+                .unwrap()
+                .class,
+            MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::Elite)
+        );
+        let floor_three = FacilityMapGenerator::generate(
             91,
             GameMode::Standard,
             2,
@@ -1052,45 +1458,19 @@ mod tests {
             150,
         )
         .unwrap();
-        let ordinary = generated
-            .map
-            .nodes
-            .iter()
-            .filter_map(|node| match node.combat_difficulty.as_ref()?.class {
-                MapNodeCombatDifficultyClass::Ordinary(band) => Some(band),
-                MapNodeCombatDifficultyClass::Role(_) => None,
-            })
-            .collect::<Vec<_>>();
-        for band in [
-            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Easy,
-            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard,
-            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Hard,
-        ] {
-            let quota = policy.combat_difficulty.profiles[0]
-                .ordinary_bands
+        assert_eq!(
+            floor_three
+                .map
+                .nodes
                 .iter()
-                .find(|entry| entry.band == band)
+                .find(|node| node.slot_id.as_str() == "final_chamber")
                 .unwrap()
-                .quota_percent as usize;
-            let count = ordinary.iter().filter(|actual| **actual == band).count();
-            let product = ordinary.len() * quota;
-            assert!(count == product / 100 || count == product.div_ceil(100));
-        }
-        assert!(ordinary.len() >= 2);
-        let final_boss = generated
-            .map
-            .nodes
-            .iter()
-            .find_map(|node| {
-                let difficulty = node.combat_difficulty.as_ref()?;
-                (difficulty.class
-                    == MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::FinalBoss))
-                .then_some(difficulty)
-            })
-            .expect("Standard final floor must manifest the final boss role");
-        assert_eq!(final_boss.floor_power_anchor, 150);
-        assert_eq!(final_boss.target_power, 300);
-        assert_eq!(final_boss.power_model_version, 2);
+                .combat_difficulty
+                .as_ref()
+                .unwrap()
+                .class,
+            MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::NormalBoss)
+        );
     }
 
     #[test]

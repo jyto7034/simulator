@@ -1,0 +1,73 @@
+{
+  "state": "PARTIAL_SCOPE_PASS",
+  "scope": "D07-B F03 C03 runtime boundaries and observation equivalence",
+  "new_blocking_findings_in_scope": [],
+  "open_observations": [
+    {
+      "id": "C03-OBS01",
+      "status": "reproduced_unresolved",
+      "owner": "C15 public input/serialization integration",
+      "full_completion_requires": "resolution and verification, or explicit scope/policy decision"
+    }
+  ],
+  "remaining": [
+    "C06-C15"
+  ],
+  "F03_complete": false,
+  "D07_B_complete": false,
+  "entry_exit_equal": true,
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d07_b_f03_legacy_001/target/d07_b_f03_legacy_001/MANIFEST.json",
+    "bytes": 254992,
+    "sha256": "23aea02009bb0a850439d39c974908f556eb7ffe9862e0a8876745926ed7df48"
+  },
+  "source_digest": "f9883de09a463ad9de856e6cbc3022abc2c27a0b5101cc71f9df9e7c488a7e51",
+  "source_files": 343,
+  "frozen_records": 414,
+  "product_source_modified_by_reviewer": false,
+  "direct_focused_tests": {
+    "passed": 2,
+    "failed": 0,
+    "executions": 30
+  },
+  "full_suite_rerun_by_reviewer": false,
+  "full_suite_frozen_evidence_passed": 1552,
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/ENTRY_CURRENTNESS_AND_RESTORATION.json",
+      "bytes": 859,
+      "sha256": "b403f0800dd175a4bb92e0cb3ae3bdc5b6d66ce473a38b19b518f83b8046caba"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/EXIT_CURRENTNESS_AND_RESTORATION.json",
+      "bytes": 859,
+      "sha256": "b403f0800dd175a4bb92e0cb3ae3bdc5b6d66ce473a38b19b518f83b8046caba"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/FOCUSED_RECHECK.log",
+      "bytes": 6593,
+      "sha256": "fbd1e879a809acb02a6473bd3316881df0f4f272b66bc349bd40a0c1806f68b4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/REVIEW.md",
+      "bytes": 7271,
+      "sha256": "082d03d59ffabc2e67e6738f9ee14b72778214318ef73933806cbdf277dc0cf5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/RON_MIN_PROBE.log",
+      "bytes": 337,
+      "sha256": "699e00965076a3722423ae5ff0d198fa73539a68d1d7c6f9fd479a9eed509644"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/SCOPE_AND_RECEIPTS_CHECK.json",
+      "bytes": 7128,
+      "sha256": "f81dc47d56a8f51d2b63a51b1e39b8ed1ace3c09e788d45f0d1c3de0c8b51d1f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/reviews/wp02_d07_b_f03_legacy_001_review_001/ron_min_probe.rs",
+      "bytes": 598,
+      "sha256": "85ce5ebd1455347d478debfcac2c192f48e304958050c01d7c0281f82b18d443"
+    }
+  ],
+  "local_links_verified": 87
+}

@@ -1,0 +1,1553 @@
+{
+  "report_id": "r03_inner_clone_sites_007",
+  "role": "AUTORUN §8 bounded read-only source/design investigation",
+  "completion_audit": false,
+  "workspace": "/mnt/f/work/simulator",
+  "allowed_writes_only": [
+    "/tmp/r03_inner_clone_sites_007.md",
+    "/tmp/r03_inner_clone_sites_007.json"
+  ],
+  "repo_mutations": false,
+  "build_test_runtime_execution": false,
+  "parent_test_report": "INPUT051 battle398/world317 pass is parent-reported context only; not independently executed or completion-audited.",
+  "scope": "Inner native copies in boss/spawn/summon and actual sim.rs, runtime compiled-definition ownership, first-copy preflight and real return/rollback seams. Catalog compilation functions are loader work; search hits located but not an exhaustive compile pipeline audit.",
+  "requested_path_resolution": {
+    "requested": "game/battle/core/simulation.rs",
+    "actual": "game/battle/core/sim.rs",
+    "method": "rg --files under core; requested filename absent"
+  },
+  "source_inventory": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141624,
+      "sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "first_observed_at_utc": "2026-09-10T09:52:30.214466+00:00",
+      "last_observed_at_utc": "2026-09-10T09:54:11.895766+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 1,
+          "end": 470
+        },
+        {
+          "start": 478,
+          "end": 641
+        },
+        {
+          "start": 730,
+          "end": 880
+        },
+        {
+          "start": 930,
+          "end": 950
+        },
+        {
+          "start": 1061,
+          "end": 1095
+        },
+        {
+          "start": 1167,
+          "end": 1380
+        },
+        {
+          "start": 1430,
+          "end": 1530
+        },
+        {
+          "start": 1748,
+          "end": 1897
+        },
+        {
+          "start": 2140,
+          "end": 2178
+        },
+        {
+          "start": 641,
+          "end": 730
+        },
+        {
+          "start": 1089,
+          "end": 1167
+        },
+        {
+          "start": 1400,
+          "end": 1431
+        },
+        {
+          "start": 1529,
+          "end": 1639
+        },
+        {
+          "start": 1947,
+          "end": 2020
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "bytes": 42538,
+      "sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b",
+      "first_observed_at_utc": "2026-09-10T09:52:30.230592+00:00",
+      "last_observed_at_utc": "2026-09-10T09:55:45.208750+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 1,
+          "end": 350
+        },
+        {
+          "start": 349,
+          "end": 724
+        },
+        {
+          "start": 725,
+          "end": 748
+        },
+        {
+          "start": 935,
+          "end": 968
+        },
+        {
+          "start": 1010,
+          "end": 1070
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "bytes": 66508,
+      "sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "first_observed_at_utc": "2026-09-10T09:52:30.246038+00:00",
+      "last_observed_at_utc": "2026-09-10T09:54:11.924123+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 1,
+          "end": 295
+        },
+        {
+          "start": 296,
+          "end": 504
+        },
+        {
+          "start": 505,
+          "end": 640
+        },
+        {
+          "start": 661,
+          "end": 813
+        },
+        {
+          "start": 840,
+          "end": 892
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 130858,
+      "sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "first_observed_at_utc": "2026-09-10T09:52:30.263676+00:00",
+      "last_observed_at_utc": "2026-09-10T09:55:45.213072+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 3150,
+          "end": 3225
+        },
+        {
+          "start": 3270,
+          "end": 3305
+        },
+        {
+          "start": 1254,
+          "end": 1339
+        },
+        {
+          "start": 1516,
+          "end": 1546
+        },
+        {
+          "start": 1819,
+          "end": 1860
+        },
+        {
+          "start": 2645,
+          "end": 2692
+        },
+        {
+          "start": 3390,
+          "end": 3420
+        },
+        {
+          "start": 3298,
+          "end": 3314
+        },
+        {
+          "start": 3387,
+          "end": 3442
+        },
+        {
+          "start": 330,
+          "end": 410
+        },
+        {
+          "start": 458,
+          "end": 527
+        },
+        {
+          "start": 695,
+          "end": 716
+        },
+        {
+          "start": 895,
+          "end": 930
+        },
+        {
+          "start": 1394,
+          "end": 1475
+        },
+        {
+          "start": 1698,
+          "end": 1722
+        },
+        {
+          "start": 2041,
+          "end": 2118
+        },
+        {
+          "start": 2280,
+          "end": 2375
+        },
+        {
+          "start": 2838,
+          "end": 2895
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "bytes": 161189,
+      "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+      "first_observed_at_utc": "2026-09-10T09:53:34.458626+00:00",
+      "last_observed_at_utc": "2026-09-10T09:55:01.703454+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 99,
+          "end": 153
+        },
+        {
+          "start": 513,
+          "end": 781
+        },
+        {
+          "start": 844,
+          "end": 895
+        },
+        {
+          "start": 155,
+          "end": 165
+        },
+        {
+          "start": 228,
+          "end": 285
+        },
+        {
+          "start": 320,
+          "end": 371
+        },
+        {
+          "start": 435,
+          "end": 452
+        },
+        {
+          "start": 490,
+          "end": 513
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "bytes": 361303,
+      "sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec",
+      "first_observed_at_utc": "2026-09-10T09:54:11.904528+00:00",
+      "last_observed_at_utc": "2026-09-10T09:56:31.522796+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 370,
+          "end": 460
+        },
+        {
+          "start": 306,
+          "end": 349
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "bytes": 44161,
+      "sha256": "b2b76f5a779f2949ba1c6beb22442c4007757eeaf6bddd581518f49cb392e427",
+      "first_observed_at_utc": "2026-09-10T09:54:11.933539+00:00",
+      "last_observed_at_utc": "2026-09-10T09:54:11.933539+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 232,
+          "end": 252
+        },
+        {
+          "start": 341,
+          "end": 370
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 29004,
+      "sha256": "de81066710b1235a0e1a6bda0747ba04e52b1faac99c4d5af0dc6e51b721c8ca",
+      "first_observed_at_utc": "2026-09-10T09:55:01.675323+00:00",
+      "last_observed_at_utc": "2026-09-10T09:55:01.675323+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 1,
+          "end": 35
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "bytes": 84303,
+      "sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66",
+      "first_observed_at_utc": "2026-09-10T09:55:01.693642+00:00",
+      "last_observed_at_utc": "2026-09-10T09:55:01.693642+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 170,
+          "end": 231
+        },
+        {
+          "start": 255,
+          "end": 305
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "bytes": 8734,
+      "sha256": "4b501650a51b5835814fa3a2e689ba19e8de1780144f1c29ddf07f4b28ec783b",
+      "first_observed_at_utc": "2026-09-10T09:55:01.722010+00:00",
+      "last_observed_at_utc": "2026-09-10T09:55:01.722010+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 58,
+          "end": 91
+        },
+        {
+          "start": 173,
+          "end": 179
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "bytes": 65786,
+      "sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5",
+      "first_observed_at_utc": "2026-09-10T09:56:31.511157+00:00",
+      "last_observed_at_utc": "2026-09-10T09:56:31.511157+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 84,
+          "end": 99
+        },
+        {
+          "start": 128,
+          "end": 143
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/ability.rs",
+      "bytes": 38098,
+      "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195",
+      "first_observed_at_utc": "2026-09-10T09:56:31.541130+00:00",
+      "last_observed_at_utc": "2026-09-10T09:56:31.541130+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 614,
+          "end": 638
+        },
+        {
+          "start": 723,
+          "end": 765
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "bytes": 6247,
+      "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "first_observed_at_utc": "2026-09-10T09:56:31.548024+00:00",
+      "last_observed_at_utc": "2026-09-10T09:56:31.548024+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 43,
+          "end": 75
+        }
+      ],
+      "scope": "bounded direct ownership/caller/return/rollback evidence"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "bytes": 141640,
+      "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+      "first_observed_at_utc": "2026-09-10T09:59:53.970300+00:00",
+      "last_observed_at_utc": "2026-09-10T09:59:53.970300+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 389,
+          "end": 400
+        },
+        {
+          "start": 1871,
+          "end": 1880
+        }
+      ],
+      "scope": "narrow concurrent drift follow-up, not implementation audit"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 131392,
+      "sha256": "04ac837994c1cdebccf3b01177d058ea88f73491fca14be0e55818f326ccd302",
+      "first_observed_at_utc": "2026-09-10T09:59:53.970285+00:00",
+      "last_observed_at_utc": "2026-09-10T10:00:18.364811+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 3193,
+          "end": 3210
+        },
+        {
+          "start": 3308,
+          "end": 3325
+        },
+        {
+          "start": 3404,
+          "end": 3421
+        },
+        {
+          "start": 587,
+          "end": 643
+        },
+        {
+          "start": 2234,
+          "end": 2270
+        },
+        {
+          "start": 2397,
+          "end": 2418
+        },
+        {
+          "start": 2508,
+          "end": 2568
+        },
+        {
+          "start": 2600,
+          "end": 2635
+        }
+      ],
+      "scope": "narrow concurrent drift follow-up, not implementation audit"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "bytes": 8952,
+      "sha256": "742f04a540e0794e52479f2b34735ee72e9d5ca3fc4239a760af4482fd3aad19",
+      "first_observed_at_utc": "2026-09-10T09:59:53.970626+00:00",
+      "last_observed_at_utc": "2026-09-10T09:59:53.970626+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 64,
+          "end": 86
+        }
+      ],
+      "scope": "narrow concurrent drift follow-up, not implementation audit"
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "bytes": 30797,
+      "sha256": "cb9b64ad8dd10c5f2fdaebbddf3d7c5c64ac47dfd61603521f3aeaac6a406395",
+      "first_observed_at_utc": "2026-09-10T09:59:53.980750+00:00",
+      "last_observed_at_utc": "2026-09-10T09:59:53.980750+00:00",
+      "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+      "spans": [
+        {
+          "start": 21,
+          "end": 35
+        }
+      ],
+      "scope": "narrow concurrent drift follow-up, not implementation audit"
+    }
+  ],
+  "rehash_probe": {
+    "checked_at_utc": "2026-09-10T09:59:28.727530+00:00",
+    "files": [
+      {
+        "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+        "bytes": 141640,
+        "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+        "bytes": 42538,
+        "sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+        "bytes": 66508,
+        "sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "bytes": 131392,
+        "sha256": "04ac837994c1cdebccf3b01177d058ea88f73491fca14be0e55818f326ccd302"
+      },
+      {
+        "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+        "bytes": 161189,
+        "sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "bytes": 361303,
+        "sha256": "d9b6f0b7e48cdd9a8d0cf2e72ddb678ac58c2a260e6cc7cb24d3dcacdae276ec"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+        "bytes": 44161,
+        "sha256": "b2b76f5a779f2949ba1c6beb22442c4007757eeaf6bddd581518f49cb392e427"
+      },
+      {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "bytes": 30797,
+        "sha256": "cb9b64ad8dd10c5f2fdaebbddf3d7c5c64ac47dfd61603521f3aeaac6a406395"
+      },
+      {
+        "path": "core_enhanced/src/game/events/combat.rs",
+        "bytes": 84303,
+        "sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/buffs.rs",
+        "bytes": 8952,
+        "sha256": "742f04a540e0794e52479f2b34735ee72e9d5ca3fc4239a760af4482fd3aad19"
+      },
+      {
+        "path": "core_enhanced/src/game/data/skill_data.rs",
+        "bytes": 65786,
+        "sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5"
+      },
+      {
+        "path": "core_enhanced/src/game/ability.rs",
+        "bytes": 38098,
+        "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195"
+      },
+      {
+        "path": "core_enhanced/src/game/ability/authoring.rs",
+        "bytes": 6247,
+        "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a"
+      }
+    ]
+  },
+  "source_drift": [
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "versions": [
+        {
+          "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+          "bytes": 141624,
+          "sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+          "first_observed_at_utc": "2026-09-10T09:52:30.214466+00:00",
+          "last_observed_at_utc": "2026-09-10T09:54:11.895766+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 1,
+              "end": 470
+            },
+            {
+              "start": 478,
+              "end": 641
+            },
+            {
+              "start": 730,
+              "end": 880
+            },
+            {
+              "start": 930,
+              "end": 950
+            },
+            {
+              "start": 1061,
+              "end": 1095
+            },
+            {
+              "start": 1167,
+              "end": 1380
+            },
+            {
+              "start": 1430,
+              "end": 1530
+            },
+            {
+              "start": 1748,
+              "end": 1897
+            },
+            {
+              "start": 2140,
+              "end": 2178
+            },
+            {
+              "start": 641,
+              "end": 730
+            },
+            {
+              "start": 1089,
+              "end": 1167
+            },
+            {
+              "start": 1400,
+              "end": 1431
+            },
+            {
+              "start": 1529,
+              "end": 1639
+            },
+            {
+              "start": 1947,
+              "end": 2020
+            }
+          ],
+          "scope": "bounded direct ownership/caller/return/rollback evidence"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+          "bytes": 141640,
+          "sha256": "8957d1fab18b35ff72a0a34bdb930d8daed259fac1a4164df64e9d3b65bd0705",
+          "first_observed_at_utc": "2026-09-10T09:59:53.970300+00:00",
+          "last_observed_at_utc": "2026-09-10T09:59:53.970300+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 389,
+              "end": 400
+            },
+            {
+              "start": 1871,
+              "end": 1880
+            }
+          ],
+          "scope": "narrow concurrent drift follow-up, not implementation audit"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "versions": [
+        {
+          "path": "core_enhanced/src/game/battle/core/sim.rs",
+          "bytes": 130858,
+          "sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+          "first_observed_at_utc": "2026-09-10T09:52:30.263676+00:00",
+          "last_observed_at_utc": "2026-09-10T09:55:45.213072+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 3150,
+              "end": 3225
+            },
+            {
+              "start": 3270,
+              "end": 3305
+            },
+            {
+              "start": 1254,
+              "end": 1339
+            },
+            {
+              "start": 1516,
+              "end": 1546
+            },
+            {
+              "start": 1819,
+              "end": 1860
+            },
+            {
+              "start": 2645,
+              "end": 2692
+            },
+            {
+              "start": 3390,
+              "end": 3420
+            },
+            {
+              "start": 3298,
+              "end": 3314
+            },
+            {
+              "start": 3387,
+              "end": 3442
+            },
+            {
+              "start": 330,
+              "end": 410
+            },
+            {
+              "start": 458,
+              "end": 527
+            },
+            {
+              "start": 695,
+              "end": 716
+            },
+            {
+              "start": 895,
+              "end": 930
+            },
+            {
+              "start": 1394,
+              "end": 1475
+            },
+            {
+              "start": 1698,
+              "end": 1722
+            },
+            {
+              "start": 2041,
+              "end": 2118
+            },
+            {
+              "start": 2280,
+              "end": 2375
+            },
+            {
+              "start": 2838,
+              "end": 2895
+            }
+          ],
+          "scope": "bounded direct ownership/caller/return/rollback evidence"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/sim.rs",
+          "bytes": 131392,
+          "sha256": "04ac837994c1cdebccf3b01177d058ea88f73491fca14be0e55818f326ccd302",
+          "first_observed_at_utc": "2026-09-10T09:59:53.970285+00:00",
+          "last_observed_at_utc": "2026-09-10T10:00:18.364811+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 3193,
+              "end": 3210
+            },
+            {
+              "start": 3308,
+              "end": 3325
+            },
+            {
+              "start": 3404,
+              "end": 3421
+            },
+            {
+              "start": 587,
+              "end": 643
+            },
+            {
+              "start": 2234,
+              "end": 2270
+            },
+            {
+              "start": 2397,
+              "end": 2418
+            },
+            {
+              "start": 2508,
+              "end": 2568
+            },
+            {
+              "start": 2600,
+              "end": 2635
+            }
+          ],
+          "scope": "narrow concurrent drift follow-up, not implementation audit"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/clone_shape.rs",
+      "versions": [
+        {
+          "path": "core_enhanced/src/authoring/clone_shape.rs",
+          "bytes": 29004,
+          "sha256": "de81066710b1235a0e1a6bda0747ba04e52b1faac99c4d5af0dc6e51b721c8ca",
+          "first_observed_at_utc": "2026-09-10T09:55:01.675323+00:00",
+          "last_observed_at_utc": "2026-09-10T09:55:01.675323+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 1,
+              "end": 35
+            }
+          ],
+          "scope": "bounded direct ownership/caller/return/rollback evidence"
+        },
+        {
+          "path": "core_enhanced/src/authoring/clone_shape.rs",
+          "bytes": 30797,
+          "sha256": "cb9b64ad8dd10c5f2fdaebbddf3d7c5c64ac47dfd61603521f3aeaac6a406395",
+          "first_observed_at_utc": "2026-09-10T09:59:53.980750+00:00",
+          "last_observed_at_utc": "2026-09-10T09:59:53.980750+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 21,
+              "end": 35
+            }
+          ],
+          "scope": "narrow concurrent drift follow-up, not implementation audit"
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "versions": [
+        {
+          "path": "core_enhanced/src/game/battle/buffs.rs",
+          "bytes": 8734,
+          "sha256": "4b501650a51b5835814fa3a2e689ba19e8de1780144f1c29ddf07f4b28ec783b",
+          "first_observed_at_utc": "2026-09-10T09:55:01.722010+00:00",
+          "last_observed_at_utc": "2026-09-10T09:55:01.722010+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 58,
+              "end": 91
+            },
+            {
+              "start": 173,
+              "end": 179
+            }
+          ],
+          "scope": "bounded direct ownership/caller/return/rollback evidence"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/buffs.rs",
+          "bytes": 8952,
+          "sha256": "742f04a540e0794e52479f2b34735ee72e9d5ca3fc4239a760af4482fd3aad19",
+          "first_observed_at_utc": "2026-09-10T09:59:53.970626+00:00",
+          "last_observed_at_utc": "2026-09-10T09:59:53.970626+00:00",
+          "read_method": "Read full file bytes for SHA256 and inspect selected UTF-8 line spans; rg/sed discovery first; replayed captured excerpts where tool output was truncated",
+          "spans": [
+            {
+              "start": 64,
+              "end": 86
+            }
+          ],
+          "scope": "narrow concurrent drift follow-up, not implementation audit"
+        }
+      ]
+    }
+  ],
+  "site_groups": [
+    {
+      "id": "B01",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        395,
+        1876
+      ],
+      "functions": [
+        "BossEncounterRuntime::plan_next",
+        "BattleCore::run_boss_runtime_boundary"
+      ],
+      "returns": [
+        "Result<Option<BossRuntimeTransitionPlan>,GameError>",
+        "Result<(),GameError>"
+      ],
+      "copy": "Two deep BossEncounterRuntime copies per boundary iteration, in addition to staged BattleCore copy",
+      "ownership": "actors/tasks/maps/sets/route+zone Vec; definitions Arc handles",
+      "existing_preflight": "Whole BattleCore at 1867 covers only staged clone 1868; not later per-iteration copies",
+      "minimum": "Remove outer .cloned() by borrowing runtime for plan_next(&staged,...); use controlled_clone(self)? for the plan's mutable next. Keeping both requires charging both.",
+      "rollback": "Plan next/effects are local; boundary's staged Core is committed only at 1889; any Result error discards local plan/staged Core.",
+      "priority": "first necessary inner-clone connection",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding",
+      "later_observation": "09:59:53 UTC: root changed plan_next to controlled_clone and boundary to borrowed runtime; captured later input hash8957d1fa...; no test/audit execution by helper."
+    },
+    {
+      "id": "B02",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        348,
+        355,
+        371,
+        380,
+        381
+      ],
+      "functions": [
+        "BossEncounterRuntime::from_setup"
+      ],
+      "returns": [
+        "Self"
+      ],
+      "copy": "unit_ref Strings into actors; spawn-zone/route Vec deep; definition Arc handle only",
+      "existing_preflight": "Constructor copies occur before any BattleCore whole-clone preflight",
+      "minimum": "Prefer production fallible constructor or projected borrowed admission at fallible events/combat prepare caller before new_from_database; no empty-runtime/panic fallback.",
+      "rollback": "BattleCore::new_from_database is also infallible Self (mod.rs438-446); events/combat.rs219 parent returns Result<ResolvedCombatSetupPlan,GameError>. Existing spawn/board/obstacle charges do not price nested strings/routes.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B03",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        442,
+        526,
+        1082,
+        1266
+      ],
+      "functions": [
+        "plan_next",
+        "enter_phase",
+        "advance_actor_once",
+        "advance_pattern_once"
+      ],
+      "returns": [
+        "Result<... ,GameError> for all"
+      ],
+      "copy": "Compiled phase transition, phase, control node, pattern transition are owned records, not Arc-only",
+      "minimum": "For 442 copy only timing/target_phase_index (Copy); for 526 hold definition Arc locally and borrow phase; 1082 borrow node from existing local behavior Arc; 1266 borrow via a stable local definition Arc or controlled clone exact transition.",
+      "rollback": "Mutates local next runtime; fallible propagation to plan/boundary preserves committed Core.",
+      "definition_shape": "Phase: id String, actor-binding Vec with behavior Arcs, transition Vec with id/actor String; node State tasks/transitions owned; PatternCall candidates Arc handles+optional cooldown String, outcome route Strings; pattern transition id/condition/loop-guard String.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B04",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        1242,
+        1291
+      ],
+      "functions": [
+        "advance_pattern_once"
+      ],
+      "returns": [
+        "Result<bool,GameError>"
+      ],
+      "copy": "ActiveBossPattern deep clone, twice on state-transition branch",
+      "minimum": "controlled_clone borrowed pattern at each retained copy; alternatively extract definition+frame Arcs and scalar identity/index, borrowing task/result state only until decisions complete.",
+      "rollback": "These copies occur after whole-core preflight and sometimes after cancel_current_state on local next; outer plan discard is the rollback.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B05",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        639,
+        668,
+        684,
+        697,
+        712,
+        763,
+        766,
+        768,
+        769,
+        770,
+        772,
+        774,
+        783,
+        786,
+        1209,
+        1318,
+        1367
+      ],
+      "functions": [
+        "admit_state_tasks",
+        "admit_pattern",
+        "advance_pattern_once",
+        "resolve_loop_target"
+      ],
+      "returns": [
+        "Result<ActiveBossState,GameError>",
+        "Result<(),GameError>",
+        "Result<bool,GameError>",
+        "Result<CompiledBossPatternTransitionTarget,GameError>"
+      ],
+      "copy": "Task/definition/batch/cooldown/pattern/loop IDs Strings; placement SpawnZone String; occupancy allowed Vec; route/removal-signal Options Strings",
+      "minimum": "Pre-admit existing borrowed task fields and task output-vector slots before any copied/formatted task construction; controlled clone each actual String/owned definition payload. New formatted request ID requires bounded formatting admission, not measuring constructed task after first allocation.",
+      "fixed_only": [
+        1358,
+        1370,
+        1373
+      ],
+      "fixed_note": "CompiledBossPatternTransitionTarget holds usize/unit only, though not derived Copy; BossTargetLock:945 also fixed fields. Ordinary Arc clones at 535,549,585,831,849,1077,1219,1220,1323 do not copy pointee.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B06",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        1438
+      ],
+      "functions": [
+        "route_cells_for_actor"
+      ],
+      "returns": [
+        "Vec<Position>"
+      ],
+      "copy": "Deep Vec allocation of Copy positions",
+      "callers": [
+        "poll_actor_once:968 -> Result<bool,GameError>",
+        "select_rejoin_route_index:1408 -> Option<usize>",
+        "boss_movement_directive:2001 -> BossMovementDirective"
+      ],
+      "minimum": "Return borrowed &[Position] with shared self/core lifetime; all three consumers inspect only. This removes clone without inventing failed route/target behavior.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B07",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        1521,
+        1530
+      ],
+      "functions": [
+        "summon_task_views",
+        "summon_request_is_active"
+      ],
+      "returns": [
+        "Vec<BossSummonTaskView>",
+        "bool"
+      ],
+      "copy": "All active summon task records deep-cloned into sorted Vec; bool query also constructs same Vec",
+      "minimum": "Use direct borrowed identity scan for summon_request_is_active; make private materializing summon_task_views fallible, admit output storage and control each source task clone before push.",
+      "callers": [
+        "summon_runtime capture_boss_summon_requests:152 -> Result<(),GameError>",
+        "settle_one_summon_request:177 -> Result<bool,GameError>"
+      ],
+      "rollback": "capture/settle run on boundary staged Core; do not translate control failure to false/no active request (would cancel valid task).",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B08",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        1583,
+        1614,
+        1628,
+        1810,
+        1811
+      ],
+      "functions": [
+        "settle_summon_task",
+        "note_summon_batch_cleared",
+        "note_signal_emitted",
+        "boss_actor_adapter_view"
+      ],
+      "returns": [
+        "Result<bool,GameError>",
+        "()",
+        "()",
+        "Option<BossActorAdapterView>"
+      ],
+      "copy": "String IDs for tables and adapter output",
+      "minimum": "settle_summon_task can ? before insert; private note helpers can become Result propagated through reconcile_summon_batches and BossRuntimeTransitionPlan::commit; adapter can borrow IDs or provide fallible private materialization.",
+      "rollback": "note_signal_emitted invoked by plan.commit after next_runtime assignment; changing to fallible commit requires propagation before boundary commit. note_batch called after cleared_emitted flag, so must propagate to enclosing staged owner. Wave adapter callers return Option / use and_then; no control-to-None domain fallback.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "B09",
+      "file": "game/battle/core/boss_runtime.rs",
+      "lines": [
+        2169,
+        2172
+      ],
+      "functions": [
+        "resolve_target_query"
+      ],
+      "returns": [
+        "Result<BossTargetQueryData,GameError>"
+      ],
+      "copy": "Two Vec<Copy> fields filters/order_by",
+      "minimum": "Return borrowed query with explicit shared lifetime across literal/frame, or controlled_clone(query); no DB graph traversal.",
+      "input_sha256": "9e3b7232449ffa7bf6156341ffed663d3f839d116f1278e677a5fa0e6c292c5a",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "P01",
+      "file": "game/battle/core/spawn_kernel.rs",
+      "lines": [
+        351,
+        367
+      ],
+      "functions": [
+        "identity_request",
+        "normalize_request"
+      ],
+      "returns": [
+        "SpawnRequest",
+        "Result<SpawnRequest,SpawnRequestSettlement>"
+      ],
+      "copy": "Full request: id/source Strings, occupancy Vec, placements Vec of occupant Vec",
+      "existing_preflight": "normalize happens at execute_spawn_request599; whole core preflight at622 is too late",
+      "minimum": "Add separate fallible control channel around preserved domain normalization; Result<Result<SpawnRequest,SpawnRequestSettlement>,SpawnKernelError> or dedicated enum. identity fallback on domain invalid only, never control failure.",
+      "rollback": "Normalization precedes ledger mutation. Request identity and invalid-domain fallback must preserve exact-once behavior.",
+      "input_sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "P02",
+      "file": "game/battle/core/spawn_kernel.rs",
+      "lines": [
+        408,
+        471,
+        513,
+        530,
+        545,
+        615,
+        620
+      ],
+      "functions": [
+        "reserve_request",
+        "bind_trigger",
+        "cancel_for_summoner_removal",
+        "cancel_request",
+        "reject_request",
+        "execute_spawn_request"
+      ],
+      "returns": [
+        "Result<_,SpawnKernelError>"
+      ],
+      "copy": "Request copies into reservation and String table keys",
+      "minimum": "controlled clone before argument evaluation/key insertion; map latched control errors to existing ExecutionInterrupted. Where consumed request can move into reservation, clone only its ID beforehand.",
+      "rollback": "Whole-Core before snapshot is taken after reservation; existing interruption test1027-1066 intentionally retains Pending. Do not claim function restores pre-request ledger; outer authoring candidate owns earlier state.",
+      "input_sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "P03",
+      "file": "game/battle/core/spawn_kernel.rs",
+      "lines": [
+        421,
+        608
+      ],
+      "functions": [
+        "settlement",
+        "execute_spawn_request cached return"
+      ],
+      "returns": [
+        "Option<SpawnRequestSettlement>",
+        "Result<SpawnRequestSettlement,SpawnKernelError>"
+      ],
+      "copy": "Spawned unit_ids Vec; rejection MutationFailed String; cancellation removal/dependency String (other variants fixed)",
+      "minimum": "Borrow cached settlement then controlled clone before returning; private settlement can return Result<Option<...>,SpawnKernelError>; do not default None on limit.",
+      "rollback": "Cached path occurs before whole-core preflight and must not invoke placement callback on failed copy or successful replay.",
+      "input_sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "P04",
+      "file": "game/battle/core/spawn_kernel.rs",
+      "lines": [
+        456,
+        466,
+        484,
+        489,
+        493,
+        498,
+        502,
+        520,
+        535,
+        550,
+        616,
+        660
+      ],
+      "functions": [
+        "bind_trigger",
+        "settle_trigger",
+        "cancel/reject helpers",
+        "execute_spawn_request"
+      ],
+      "returns": [
+        "Result<_,SpawnKernelError>"
+      ],
+      "copy": "Trigger/request ID error and ledger Strings; settlement duplicate for caller/cache",
+      "minimum": "Charge every actual duplicate before insertion; last copy at660 occurs after mutation and needs explicit rollback on control error. Domain rejection remains cached exactly once; control interruption must remain uncached.",
+      "rollback": "For execute success, retain before through settlement-copy and cache update; if copy fails restore before. Domain rejection already consumes before at655, so unify fallible body or structure Option/move ownership without performing another unmetered rollback clone.",
+      "input_sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "P05",
+      "file": "game/battle/core/spawn_kernel.rs",
+      "lines": [
+        573,
+        579
+      ],
+      "functions": [
+        "record_compendium_candidate",
+        "compendium_candidates"
+      ],
+      "returns": [
+        "Result<bool,CompendiumCandidateError>",
+        "Vec<CompendiumCandidate>"
+      ],
+      "copy": "candidate.id String duplicated for ID set; getter materializes every candidate",
+      "minimum": "Existing error enum only OrderConflict/IdentityConflict cannot receive GameError with ?. Private fallible adapter or caller preadmission before body; borrowed iterator avoids duplicate Vec where consumer allows. Preserve ordinary public signature if retaining facade.",
+      "rollback": "Source consumers must distinguish mandatory compendium from optional authoring trace; no control-failure fake duplicate/order error.",
+      "input_sha256": "d36bbb0156b8a9fb1bc1a34483b4b2eb3d87e05c322d6fef636ea831219d871b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "S01",
+      "file": "game/battle/core/summon_runtime.rs",
+      "lines": [
+        141,
+        167,
+        170,
+        182,
+        185,
+        196,
+        232,
+        245,
+        274
+      ],
+      "functions": [
+        "settle_boss_summons",
+        "capture_boss_summon_requests",
+        "settle_one_summon_request"
+      ],
+      "returns": [
+        "Result<bool,GameError>",
+        "Result<(),GameError>"
+      ],
+      "copy": "sorted request IDs Vec; trigger/key Strings; pending/view duplicate; SpawnRequest args",
+      "minimum": "Pre-admit collection output before collect and controlled-clone source IDs/tasks. In settle_one pending must clone before mutation borrow; second pending.view clone can be removed by destructuring pending (or metered if retained).",
+      "rollback": "These copies precede commit_summon_batch full-core preflight. Fallible propagation via outer boss boundary; direct earlier Pending/trigger changes have no per-function rollback.",
+      "input_sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "S02",
+      "file": "game/battle/core/summon_runtime.rs",
+      "lines": [
+        225,
+        473,
+        482
+      ],
+      "functions": [
+        "settle_one_summon_request",
+        "commit_summon_batch"
+      ],
+      "returns": [
+        "Result<_,GameError>"
+      ],
+      "copy": "Arc<CompiledSummonedUnitDefinition>, Arc<CompiledBossActorBehaviorDefinition>, per-member Arc handle",
+      "minimum": "Constant handle cost only; never recurse shared definition graph. Pointee combat_profile copy at365 is separate deep operation.",
+      "definition_evidence": "boss_runtime_data.get_summoned_unit880-884 and get_actor_behavior850-856 return Option<&Arc<_>>.",
+      "input_sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "S03",
+      "file": "game/battle/core/summon_runtime.rs",
+      "lines": [
+        330,
+        365,
+        390,
+        404,
+        419,
+        431,
+        443,
+        445
+      ],
+      "functions": [
+        "commit_summon_batch"
+      ],
+      "returns": [
+        "Result<(),GameError>"
+      ],
+      "copy": "route Vec, each member's UnitCombatProfile, request duplicate, returned unit_ids Vec, counter/signal/batch ID Strings",
+      "minimum": "Use controlled copies directly from borrowed fields before allocation. Native projected output admission for spawns/members Vec must precede construction. Moving unit_ids from settlement may remove a duplicate only if finish_summon_trigger comparison keeps needed value.",
+      "rollback": "before at309 protects only explicit restores; adding ? after execute_spawn_request commits at394 can skip restore. Wrap remaining fallible body/result and restore before on errors or explicitly map each failure. Existing set_boss_summon_task_result(...)? at465 / behavior lookup479 / attach482 / record_spawned_units491 also return through outer boundary rather than every local restore.",
+      "input_sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "S04",
+      "file": "game/battle/core/summon_runtime.rs",
+      "lines": [
+        514,
+        600,
+        705,
+        770,
+        773,
+        845
+      ],
+      "functions": [
+        "reconcile_summon_batches",
+        "summon_candidate_placements",
+        "summon_spawn_request",
+        "summon_occupancy_policy"
+      ],
+      "returns": [
+        "Result<bool,GameError>",
+        "Result<Vec<SpawnPlacement>,GameError>",
+        "SpawnRequest",
+        "SpawnOccupancyPolicy"
+      ],
+      "copy": "Batch snapshot String/Vec; counter key String; spawn-zone Vec<Position>; request Strings; policy Vec<Copy>",
+      "minimum": "Batch/zone copies can ? in existing Result functions; request/policy builders need private Result plumbing to their Result callers or borrowed preadmission. AroundSummoner and occupants are new collection materialization requiring before-allocation work/storage admission.",
+      "rollback": "reconcile mutates members/counters before some subsequent copies; outer staged boundary rollback is authority. Insufficient-space branch repeats placement computation at281; reuse already computed available count if semantics unchanged.",
+      "input_sha256": "9947f790d3ee32a47c863d32e5d4dcfb800bc6ab6e2fb84e3129ccb8c330a957",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "M01",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        3196,
+        3305,
+        3395
+      ],
+      "functions": [
+        "process_event_inner ApplyBuff/BuffTick/BuffExpire"
+      ],
+      "returns": [
+        "Result<(),GameError>"
+      ],
+      "copy": "BuffDef deep name String; remaining fields Copy",
+      "minimum": "get(...).map(controlled_clone).transpose()? with owner-local BuffDef visitor, or extract only actually used Copy fields from borrowed def (name/id not consumed by handlers). Keep missing definition Ok(()) distinct from control Err.",
+      "rollback": "Per-event control wrapper polls after process_event_inner. Fresh-session outer candidate/command transaction owns gameplay rollback; handler itself has no clone checkpoint.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding",
+      "later_observation": "09:59:53 UTC: root connected all three BuffDef handlers via map(controlled_clone).transpose() and added native BuffDef shape; captured later sim04ac8379.../buff742f04a5... hashes; no new audit."
+    },
+    {
+      "id": "M02",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        1520,
+        1524,
+        1831
+      ],
+      "functions": [
+        "enqueue_scenario_events",
+        "start_battle_execution_with_setup"
+      ],
+      "returns": [
+        "Result<(),GameError>",
+        "Result<BattleExecutionState,GameError>"
+      ],
+      "copy": "ScenarioEvent Vec with Strings and wave activation deep; obstacle Vec<Copy>",
+      "existing_preflight": "scenario_event_copy charges only outer len; startup obstacle charge executes after vector already cloned",
+      "minimum": "controlled_clone source events / wave activation / obstacles before copy; borrow obstacles if mutable field access can split safely. Time-zero construction is before an existing complete battle clone.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "M03",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        2880,
+        2098
+      ],
+      "functions": [
+        "process_event_inner AutoCastStart",
+        "build_skill_step_commands"
+      ],
+      "returns": [
+        "Result<(),GameError>",
+        "Result<(Vec<SkillCommand>,SkillStepResult),GameError>"
+      ],
+      "copy": "AutoCastStart full SkillDef; damage source template with bonus Vec+source Arc",
+      "minimum": "AutoCastStart bypasses existing cloned_skill_definition (mod.rs322-330 charge_serialized+clone): use that helper to preserve admission before copy; template can directly controlled_clone(template)?.",
+      "definition_evidence": "SkillDatabase.get_by_id133-136 returns &SkillDef, not &Arc. SkillDef has Strings/steps and AuthoredSkillEffect source Arc skipped by serde.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "M04",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        1278,
+        1308,
+        1336,
+        1709
+      ],
+      "functions": [
+        "compute_terminal_outcome",
+        "finish_battle",
+        "finish_signal",
+        "finalize_battle_execution"
+      ],
+      "returns": [
+        "Option<TerminalOutcome>",
+        "BattleResult",
+        "BattleStepOutcome",
+        "Result<BattleResult,GameError>"
+      ],
+      "copy": "Outcome/finish IDs Strings; result stats accumulator native owner; debug event log Arc-backed owner",
+      "minimum": "Prefer borrowed outcome until consuming fields; terminal private helpers need fallible propagation to finalize/step, or explicit projected preadmission at actual caller. Do not set state.finalized before a newly fallible finish without outer transaction protection.",
+      "scope": "Terminal cluster ownership located; accumulator transitive graph not re-audited in this bounded pass.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "M05",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        1427,
+        1451,
+        1458
+      ],
+      "functions": [
+        "record_spawned_units"
+      ],
+      "returns": [
+        "Result<(),GameError>"
+      ],
+      "copy": "materialized unit_records Vec including SourceIdentity deep Strings; compendium IDs",
+      "minimum": "Admit record Vec before collect; controlled clone identities/IDs via fallible iteration. Recording-context closure already returns Result so direct propagation available.",
+      "rollback": "Inside summon batch after mutation; local before restoration or documented outer staged rollback required.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "M06",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        351,
+        473,
+        485,
+        490,
+        495,
+        520,
+        521,
+        708,
+        903,
+        2323,
+        2324,
+        2353,
+        2359,
+        2360,
+        2371,
+        2854,
+        2862
+      ],
+      "functions": [
+        "should_fire_triggered_ability",
+        "invoke_ability_with_accepted_target_tile",
+        "live_skill_readiness",
+        "resolve_manual_skill_base_request",
+        "execute_skill_step",
+        "process_event_inner"
+      ],
+      "returns": [
+        "bool",
+        "()",
+        "Option<DTO>",
+        "Result<tuple,GameError>",
+        "()",
+        "Result<(),GameError>"
+      ],
+      "copy": "Skill/step IDs Strings; SkillPresentationDef four Option<String>; recording_skill_proc_origin fixed; execution_source Option<Arc> handle only",
+      "minimum": "Result functions can propagate; comparison-only manual skill ID at903 can borrow. Infallible event-path leaf may return early only with latched control failure and proven mandatory process_event poll before commit; never invent eligibility/default result. Public read-only DTO helper should get separate fallible materialization seam if used for mandatory authoring output.",
+      "scope": "This identifies concrete sibling sites; exhaustive command/observer caller polling is root follow-up, not established here.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding"
+    },
+    {
+      "id": "M07",
+      "file": "game/battle/core/sim.rs",
+      "lines": [
+        633,
+        2260,
+        2525,
+        2526,
+        2533,
+        2544,
+        2612,
+        2613,
+        2616,
+        2617
+      ],
+      "functions": [
+        "start_manual_skill_cast",
+        "record_skill_step_live_signals",
+        "execute_skill_step"
+      ],
+      "returns": [
+        "Result<(),GameError>",
+        "SkillStepResult",
+        "()"
+      ],
+      "copy": "Skill/step IDs Strings; footprint TileRangePattern Vec<String>; impact targets Vec<Copy>; area SkillTileAreaDeliveryDef fixed-owned record; cast_origin Option<Arc> handle only at2410/2564; effect.source() Option<&Arc<EffectSource>> at2083.",
+      "minimum": "Control copied arguments before entering record/register helpers; callee preflight cannot cover argument evaluation. Prefer fallible private flow; existing sticky-failure early return is valid only under documented mandatory caller poll and outer candidate rollback.",
+      "rollback": "Some copies occur after delivery ID allocation/log emission; outer candidate rollback must cover failed argument copy; never fabricate ID or default gameplay success.",
+      "source_evidence": "sim captured 10:00:18 UTC, plus preserved 006 DeliveryDef/SkillTileAreaDeliveryDef native graph proof; authoring.rs69 returns source Arc.",
+      "input_sha256": "544b88ba72e8184648958b2042e5e38f319a7a83a708484ca1d1f97505c71e8b",
+      "status": "source/design observation, not implementation completion finding"
+    }
+  ],
+  "helper_observation": {
+    "file": "authoring/clone_shape.rs",
+    "lines": [
+      21,
+      35
+    ],
+    "semantics": [
+      "inactive scope -> unchanged value.clone()",
+      "active poll -> borrowed native visit -> finish admission/copy work -> actual clone -> post-copy poll -> Ok candidate",
+      "Err discards local candidate only; previous caller mutation is not rolled back by helper"
+    ]
+  },
+  "constraints": [
+    "Optional trace overflow is gap-only and must not affect mandatory admission/control/copy work.",
+    "Control failures must never enter domain normalization fallback, cached rejection, invalid request, false target/eligibility or default result semantics.",
+    "No fake IDs, panics or skipped mandatory writes as clone failure handling.",
+    "Whole-core preflight prices only that specific native clone, not earlier/later independent inner copies.",
+    "No blanket Serialize leaf for compiled records containing Arc/native tables/skipped fields."
+  ],
+  "read_limits": [
+    "Sequential per-file observations, no atomic workspace snapshot.",
+    "Source tests were read only as proposed focused validation seams; none executed.",
+    "Controlled-clone additions in parent-concurrent source observed narrowly, not audited as complete implementation.",
+    "No generalized imported-core or R23 safety coverage claimed."
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "recorded_at_utc": "2026-10-07T07:43:54.127113+00:00",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSA-001",
+    "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+  },
+  "Policy Intake Snapshot Ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CRSA-001",
+    "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSA-002",
+    "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+  },
+  "Produced Candidate Disposition Ref Set": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-01-001",
+      "Content Digest": "sha256:5fa45e40f4284e98de577630790b47dacff927431d961a6f9402bb95f17410d4"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-02-001",
+      "Content Digest": "sha256:ba84b6023634f5244634d2450179e8db35155f4fe38416ebef0ca1a3965601f2"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-03-001",
+      "Content Digest": "sha256:3d446c444501a87cdef96b31de0b776a08ebfa676ee1252dbd82941615cac0e4"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-04-001",
+      "Content Digest": "sha256:b510c3904af70a7880d4129ff91e761369d25edac255b9787dc77a6b94164348"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-05-001",
+      "Content Digest": "sha256:a85c4284acde2b5c2d657809662cfcaf6a093e06f87546f8e01f5622ee5cc47b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-06-001",
+      "Content Digest": "sha256:34635b3c08481a639d60c71d909e55c5cdeebe95853208c2d6aaa928c9acab6c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-07-001",
+      "Content Digest": "sha256:9196cc9cddcb3e1025cea5e18b715e67f2a02527e5553bfbe622528d52635a3b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-08-001",
+      "Content Digest": "sha256:538b5e51256e1f9bed48498d4a53dabe8ef7452008e74b447fedc097f7da28d7"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-09-001",
+      "Content Digest": "sha256:f4af7d2826235146c0ffa7bb3da8511a0b0b16e370905abff767e878b0a64e21"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-10-001",
+      "Content Digest": "sha256:350b063085da1387495f4a64c536b7e5cf277f310de4cf0f12ac38607688259a"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-11-001",
+      "Content Digest": "sha256:1675e09e1ca6eb37133b32808ce8f28ed67a07b2094545f3d639bf835b82c8ff"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-12-001",
+      "Content Digest": "sha256:e41f914fb6edfc047eb1e4a77fbdd215b354c4816d89eac961d1c3fb9e92133c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-13-001",
+      "Content Digest": "sha256:014f5f84505d1d1734e3e17afe0787b0216d17ed5b8bd7272cee166b3af2ddee"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-14-001",
+      "Content Digest": "sha256:4bf060589bec1d664c4cd218a54ea5d31096ac65380ef7b88bb0c1ca2ac6eda1"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-15-001",
+      "Content Digest": "sha256:91e8a5abe32fa4b4041e2b2ddd6563f536c768b1e74bc55abcc2f0ed2ffafe87"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-16-001",
+      "Content Digest": "sha256:e85fded385a764b9f355210b5731e08284bdd1fac480afd524acaab66b4f608d"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-17-001",
+      "Content Digest": "sha256:0d6904413d8fc6f8b4a41f47d68cf411b9a82e0044741fc7975316a988452de6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-18-001",
+      "Content Digest": "sha256:89b0f9d84979c419659c55b63f70192b4a55ad62916e04e2585745a32d05710f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-19-001",
+      "Content Digest": "sha256:8e914d938f2d181154652fc5deb3ae4338ff8a74781d2d8092fc9fe9b8e8b4af"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRSA-20-001",
+      "Content Digest": "sha256:909fdbe26c87e7be9efb692050dc7119a393182850f828ebd9e7d3998c4382b2"
+    }
+  ],
+  "policy_elements": 17,
+  "acceptance_sentences": 34,
+  "current_decisions": 17,
+  "open_questions": [],
+  "is_p2g10_complete": true,
+  "checks": {
+    "approved_scope_preserved": true,
+    "intake_exact_preserved": true,
+    "all_candidates_disposed_once": true,
+    "all_in_scope_decided_with_acceptance": true,
+    "decision_leaf_and_ref_sets_exact": true,
+    "no_unresolved_applicable_change": true,
+    "digest_payload_refs_valid": true
+  },
+  "finding_triage": [
+    {
+      "id": "TRIAGE-CRSA-01",
+      "classification": "material_policy",
+      "disposition": "Existing agreed semantics retained;H04 explicit broad in-scope delegation closes remaining arithmetic/selection/hit details. No fresh user question or answer invented.",
+      "decisions": [
+        "DR-CRSA-05-001",
+        "DR-CRSA-08-001",
+        "DR-CRSA-11-001"
+      ],
+      "evidence": "Current policy source evidence and H04 section5. These details do not add reward/cost/ownership transfer;range/identity preserve original support. Full-absorbed hit choice is explicit delegated gameplay detail."
+    },
+    {
+      "id": "TRIAGE-CRSA-02",
+      "classification": "out_of_scope",
+      "disposition": "Official S formula/duration,corrupt4S comparison/penalty and whole original boss behavior remain future content;representative structural cases still must execute now.",
+      "evidence": "D03/D04 and ROADMAP U09/U21 split"
+    },
+    {
+      "id": "TRIAGE-CRSA-03",
+      "classification": "implementation_gap",
+      "disposition": "Current relic schema only numeric damage. Actual implementation review not yet performed;no code-reviewed status issued.",
+      "evidence": "Limited P2G-10 fact lookup only,source refs included"
+    },
+    {
+      "id": "TRIAGE-CRSA-04",
+      "classification": "technical_decision",
+      "disposition": "Existing settled FlowMetric HpLost>0 is observable as actual HP decrease,including fullshield0. Preserve this meaning for chosen monk hit gate.",
+      "evidence": "flow.rs + damage_runtime.rs exact reviewed spans;not a P2G-20 batch"
+    }
+  ],
+  "policy_source_evidence": [
+    {
+      "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+      "bytes": 124654,
+      "sha256": "72fb3834029c66e2dc0a5a7bf159aefe1fe7c7a0e96317e2fef3b818a1a38942",
+      "reviewed_span": "991–1180: single-support/fetus adopted values versus open details"
+    },
+    {
+      "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+      "bytes": 312903,
+      "sha256": "32fd41d7bdfd2221f2c27898de998f1be4ee2167e4db95cd6507d06b2b59a180",
+      "reviewed_span": "3346–3528,3750–3884,4066–4193: three player fragment structures"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R15.ko.md",
+      "bytes": 3856,
+      "sha256": "a8754399457f11ac21c468d884d0288851513cd932cd22a5347dea44c7b6f139",
+      "reviewed_span": "entire scoped R15 card"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/COVERAGE.ko.md",
+      "bytes": 6106,
+      "sha256": "815f2cd18ae8e08337d0eef9776edd559fd7ee3d329ec35e450b8467a5202aec",
+      "reviewed_span": "C02,C04,C05 and scope distinction"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/CONTRACTS.ko.md",
+      "bytes": 7435,
+      "sha256": "b23fec04689e915df729460c6b373a25db433996921f4c9cf825a240afc6f0f1",
+      "reviewed_span": "55–62 K07"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+      "bytes": 12090,
+      "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+      "reviewed_span": "137–146,277–296 T13/T27/T28"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/EXPERIMENT_NOTES.md",
+      "bytes": 8386,
+      "sha256": "674d6d9da2174098ab680c44dc0e4c99a42cc95321e61457ed514643241b4ece",
+      "reviewed_span": "R11/R12 integrated contract paragraphs; historical state labels not current completion"
+    },
+    {
+      "path": "core_enhanced/src/game/data/relic_data.rs",
+      "bytes": 12622,
+      "sha256": "daa4ddf8653a59aabdfd40e49b2855125c0f80d16daeb2d58c894a69e233fa8c",
+      "reviewed_span": "8–80 current damage-only schema fact"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/flow.rs",
+      "bytes": 23956,
+      "sha256": "2a04b224831857f2441d6c61769d25e6dcfeb90437e395977946dfea0f831f7e",
+      "reviewed_span": "20–45 public settled metrics"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+      "bytes": 20022,
+      "sha256": "17dc746f3c365c486675eee436b1b03988fadd9fcce444be599a7da09abdbea0",
+      "reviewed_span": "173–209 result phase2 before reading HpLost"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "bytes": 45023,
+      "sha256": "10d31895331bffe37ffe34c9809829671551b67a426803c8b925e1002519b1e9",
+      "reviewed_span": "541,592–596 actual HP decrement owns metric"
+    }
+  ],
+  "limited_fact_review_scope": "Only current relic schema support and settled actual-HP-loss metric for decision. No product/test execution;not formal P2G-20 evidence.",
+  "archive": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/POLICY_EVIDENCE_001.tar.gz",
+    "bytes": 160621,
+    "sha256": "54b48572d2bed16ce1adc1787d6745f584aa728be3e9b8cceb5d4a798b6ef89f"
+  },
+  "production_mutation": false,
+  "next": "P2G-20",
+  "new_user_request_required": false
+}

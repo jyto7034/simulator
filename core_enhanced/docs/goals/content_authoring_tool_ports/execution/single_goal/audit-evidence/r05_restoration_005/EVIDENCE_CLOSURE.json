@@ -1,0 +1,429 @@
+{
+  "checked_at": "2026-09-12T11:16:41.081900+00:00",
+  "stage": "CLOSURE",
+  "predecessors": [
+    {
+      "label": "R01",
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_008.json",
+        "sha256": "773e2127cffdfce1a496beb01db8267b87c2d4e1ec79bd399d9328de69a3d277",
+        "bytes": 4708772
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_007.md",
+        "sha256": "c2d2b41530e4e7fefeca5715de4af7b9a2340d7a5f9a0244e150e4ebe6bcf8fe",
+        "bytes": 22236
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r05_restoration_008/AUDIT_OUTPUTS.json",
+        "sha256": "0e550d13e6f8a5a5a7f90b19cea853adbd39ca4f4482fc8851fd114fc96cf8c6",
+        "bytes": 4938
+      },
+      "sealed_output_count": 14,
+      "manifest_equal": true
+    },
+    {
+      "label": "R02",
+      "target": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_008.json",
+        "sha256": "fbf32708db3b45a2d6a71dd7bbf2257d766dfc02682c5a0c0c517f69d8f8f691",
+        "bytes": 4709007
+      },
+      "report": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_006.md",
+        "sha256": "26192de088423250aaf7d12c10e3f86328593ea2c8779b14ad03bb8f8ef96252",
+        "bytes": 28426
+      },
+      "registry": {
+        "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r05_restoration_006/AUDIT_OUTPUTS.json",
+        "sha256": "05a1b51d67da50cea69f91b75bd4f9ccc7e05c7dcbe0f168f30e640a017bdff3",
+        "bytes": 4072
+      },
+      "sealed_output_count": 11,
+      "manifest_equal": true
+    }
+  ],
+  "applicable_reuse": "R01 archive49modified+16added/349source,56exactexternal vectors and original numerical guards; R02 current pack/readers/source meaning. Own R03 source judgment separate.",
+  "source_rows": 349,
+  "final_records": [
+    {
+      "number": 102,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_legacy_guards_102.json",
+        "sha256": "254f8fc397a9c88231e9ffb8e3bd056dc5700cad86e5b668350f5fcdec8a1ed7",
+        "bytes": 498
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_legacy_guards_102.log",
+        "sha256": "d90d179f72cff23e9d932b570542fe030f29128950b6b3acb0f9d1cbf380fd2f",
+        "bytes": 264
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 103,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_core_alltargets_103.json",
+        "sha256": "3ec36bc9830f1c835982a684840d9ec1746d499f53c702bed41e6ab4457a78d6",
+        "bytes": 1502
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_core_alltargets_103.log",
+        "sha256": "c3a9f9cf63048b2342c1a932df3bf6318d5b9b9e43c130e461971ac433ebd1c6",
+        "bytes": 156821
+      },
+      "source_matches": 349,
+      "passed": 1410,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 104,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_release_build_104.json",
+        "sha256": "87b485d59754a6989ae3fa85e61344f736936c1187e5f5863223a1888616b17a",
+        "bytes": 591
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_release_build_104.log",
+        "sha256": "6569b572d8ca5fa573cbfb029a1c94aa2ca7c820a268e359f0569ed747905a1b",
+        "bytes": 5846
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 105,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_build_105.json",
+        "sha256": "b6084c3e9f63b50fc2c22f47ccc596d5b21fd56fe1e3ce6e720fa5a723b6ec02",
+        "bytes": 674
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_build_105.log",
+        "sha256": "93cb9d76fe2e55643daf1ccd49afc5598261d94ce0486a07250b2541f2570e36",
+        "bytes": 6204
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 106,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_final_106.json",
+        "sha256": "76ef3de15e164a78a111050789015e74f70b5ed4bc8b6687b49fa8a3171731f4",
+        "bytes": 864
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_final_106.log",
+        "sha256": "0fe96b164f7f33b4e4ab10dfc0fefb7b892e41bcf898c59db565729f4dcaaa96",
+        "bytes": 657
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 107,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_predecessor_consumers_107.json",
+        "sha256": "ad546d059f53b8ddf01b93e03e2c56a23992d37519dc7449dd7418557e6b9db1",
+        "bytes": 523
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_predecessor_consumers_107.log",
+        "sha256": "bf71904a5958ad4cb2faaf23f93aefab139d74165d10b3f8c191847341a01158",
+        "bytes": 450
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 108,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_predecessor_diagnostics_108.json",
+        "sha256": "8073583d306da9b3956be47b5b0adce30b2a65d709d5c05a85b9bc45c6075e03",
+        "bytes": 527
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_predecessor_diagnostics_108.log",
+        "sha256": "8fe190d4a6cad5c82e150dbe3787689c47fde8972fbcce63a6555914b2a64962",
+        "bytes": 2938
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 109,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_negative_109.json",
+        "sha256": "c846770679a42010d311949d55a6eef1c0422762b69ae908785fa4610036d0e3",
+        "bytes": 1064
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_negative_109.log",
+        "sha256": "22eee9ef88d79363d2f6be1745ce47bcea20ec40b6ec0a74c101f02665164df1",
+        "bytes": 535
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 110,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_limits_110.json",
+        "sha256": "a899ad4c82c352f5df55d5251d35fb29b37663164ac3f704cad4a54253aea244",
+        "bytes": 1052
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_public_limits_110.log",
+        "sha256": "6a6ba1c43d1381163f112c7522a8c710afe8ee6ff425f54f239e22a61676c68a",
+        "bytes": 26
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 111,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_order_111.json",
+        "sha256": "8e2f506cf36430c7e3673320d9e6ed45ccfdaeb53be21e48f727ac5a30d0b0b8",
+        "bytes": 835
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_order_111.log",
+        "sha256": "5ded41bd1f6fcc2f5d9908fe5a31df45d07d034c0c186fd25e946bde7e822701",
+        "bytes": 90
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 112,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_plain_112.json",
+        "sha256": "6d7b920143438c5e0431f37608f0fe47290992c6c3aaa8e7468c066a018b73a0",
+        "bytes": 1031
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_plain_112.log",
+        "sha256": "2f865f00e45b978e2be8ab33d5ef752c6410e122dc3e0564d719e85671c5735a",
+        "bytes": 77
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 113,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_plain_large_113.json",
+        "sha256": "439e98afd079b5dc07b9546c6dba984c72b0432a4405da08da9f4bb2982cafdc",
+        "bytes": 1089
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_plain_large_113.log",
+        "sha256": "6d3f2672531da955ed31314b6ea4c3a68c0d0b82f9a5887545b77f71af278a1c",
+        "bytes": 77
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 114,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_allocator_build_114.json",
+        "sha256": "d23f967c2a3257565c464f9e49bc6626cf008bac5e0df93c0dc2c558e2f3677a",
+        "bytes": 731
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_allocator_build_114.log",
+        "sha256": "a97200edb51d8e6dcdbfca8ab5c5f8cf2b3d7eebd2e4cfde31aab0490fe229b7",
+        "bytes": 6135
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 115,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_allocator_115.json",
+        "sha256": "35af9ba47267d301e92b6a385055c7fdd8024541ab011d7ba31723092055f22b",
+        "bytes": 1049
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_allocator_115.log",
+        "sha256": "5f4e3701befbcbb88e369b3a1558f0f0a4d433fd80cd76a6c33fe608ad916517",
+        "bytes": 76
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "number": 116,
+      "record": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_allocator_large_116.json",
+        "sha256": "a5f7a66cfe42ef5b069972a5ee9f3f5579e774cc7004bcd36fd04783375b6c67",
+        "bytes": 1106
+      },
+      "log": {
+        "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/resource_cost_allocator_large_116.log",
+        "sha256": "68970c43ee382e8bfd6d9a85f44a31dc5f0bfa8828b4d8d4b63cb8166bc7a62d",
+        "bytes": 76
+      },
+      "source_matches": 349,
+      "passed": 0,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "evidence_only_added": [
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_007.json",
+    "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_007.json",
+    "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_TARGET_001.json",
+    "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/AUDIT_TARGET_CORRECTION_001.json",
+    "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/GEX_10_RESULT_002.json",
+    "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/AUDIT_TARGETS_ENTRY_001.json",
+    "core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/AUDIT_TARGET_CORRECTION_TOOL_002.py",
+    "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/AUDIT_TARGET_004.json",
+    "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_005.json",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/COVERAGE.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/GOALS.json",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/HANDOFF.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ROADMAP.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/roadmap/ACCEPTANCE.ko.md"
+  ],
+  "consumer_groups": [
+    "cli",
+    "api",
+    "combat",
+    "resource",
+    "buff",
+    "invalid",
+    "delivery",
+    "preview",
+    "runtime_facts",
+    "runtime_source",
+    "replacement",
+    "source_receipt",
+    "runtime_application"
+  ],
+  "public_oracles": {
+    "api": {
+      "passed": true,
+      "positive_runtime_consumers": 5,
+      "negative_compile_consumers": 6,
+      "pack_root": "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_resource_lifetimes/execution/single_goal/evidence/RESOURCE_PACK_RELEASE_001/live_data",
+      "pack": "official",
+      "scope": "Existing standalone assertion bodies retained; negative result requires the original forbidden API diagnostic, not a loader or Cargo failure."
+    },
+    "combat": {
+      "passed": true,
+      "commands": 12,
+      "api_replays": 6,
+      "cli_simulations": 4,
+      "cli_explanations": 2,
+      "accepted_steps_per_run": 13,
+      "receipts_per_run": 15,
+      "a_damage": 18,
+      "b_damage": 36,
+      "first_application_time_ms": 7950,
+      "input_sha256": "610160945e08714b7c7f054a51b371ea067635f4b23127dfc23f123067ee87db"
+    },
+    "resource": {
+      "passed": true,
+      "commands": 10,
+      "api_replays": 6,
+      "cli_simulations": 2,
+      "cli_explanations": 2,
+      "input_sha256": "610160945e08714b7c7f054a51b371ea067635f4b23127dfc23f123067ee87db"
+    },
+    "buff": {
+      "passed": true,
+      "commands": 10,
+      "api_replays": 6,
+      "cli_simulations": 2,
+      "cli_explanations": 2,
+      "input_sha256": "610160945e08714b7c7f054a51b371ea067635f4b23127dfc23f123067ee87db"
+    },
+    "delivery": {
+      "passed": true,
+      "commands": 9,
+      "api_replays": 4,
+      "cli_simulations": 2,
+      "cli_explanations": 3,
+      "terminal_time_ms": 19950,
+      "semantic_occurrence_key": "battle key + actual application ordinal; authored source, cast, target and time retained",
+      "scope": "actual HP applications; native delivery UUID not exposed; log eviction/sequence-shift and Preview separate"
+    },
+    "preview": {
+      "passed": true,
+      "commands": 4,
+      "api_replays": 4,
+      "discovery_replays": 1,
+      "positive_previews": 9
+    },
+    "replacement": {
+      "a_continuation_replays": 3,
+      "acquisition_failures": 6,
+      "b_completed_replays": 3,
+      "failed_attempts": 54,
+      "modes": 3,
+      "passed": true,
+      "replacement_failures": 48,
+      "successful_replacements": 3
+    },
+    "source_receipt": {
+      "a_independent_continuations": 3,
+      "b_independent_replays": 3,
+      "exact_initial_next_step_rejection": 3,
+      "exact_ready_boundaries": 3,
+      "failed_replacements": 36,
+      "off_on_gap_receipts_equal_per_source": true,
+      "only_source_receipt_differs_across_equal_byte_length_inputs": true,
+      "passed": true,
+      "post_load_caller_edit_proofs": 3,
+      "same_semantic_different_bytes": true,
+      "successful_replacements": 3
+    },
+    "invalid": {
+      "passed": true,
+      "cases": 13,
+      "api_invalid_attempts": 26,
+      "cli_invalid_attempts": 26,
+      "commands": 29,
+      "scenario_sha256": "610160945e08714b7c7f054a51b371ea067635f4b23127dfc23f123067ee87db"
+    }
+  },
+  "errors": [],
+  "passed": true
+}

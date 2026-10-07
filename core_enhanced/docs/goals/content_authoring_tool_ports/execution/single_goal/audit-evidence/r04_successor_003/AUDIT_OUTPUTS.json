@@ -1,0 +1,124 @@
+{
+  "at_utc": "2026-09-11T01:32:48.468593+00:00",
+  "goal_set_ref": "GS-CATP-P2G50-001",
+  "goal_id": "GOAL-CATP-01",
+  "record_id": "ATR-CATP-R03-003",
+  "reviewer": "/root/r03_r04_fresh_audit; separate same-model agent, no fork or implementation participation",
+  "verdict": "Complete / High",
+  "currentness": "current / unchanged",
+  "target": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_003.json",
+  "target_sha256": "a9e68225527c259f5c1eca054b12a92982139ed041928001f436889b6c7fb16c",
+  "entry_closure_identical": true,
+  "manifest_members": 4197,
+  "required_absences": 2,
+  "external_inventories": 39,
+  "external_files": 2515,
+  "default_binaries": 3,
+  "required_predecessor_registered_outputs": {
+    "R01": 13,
+    "R02": 11
+  },
+  "completion_conditions": 8,
+  "frozen_acceptances": 13,
+  "integration_seams": 9,
+  "required_dimensions": 10,
+  "full_owner_tests_reused": 1361,
+  "fresh_gameplay_executions": 0,
+  "evidence_reconstruction_checks": 1489,
+  "output_checks": 1728,
+  "consumer_guard_checks": 284,
+  "supplemental_checks": 160,
+  "blocking_findings": 0,
+  "nonblocking_observations": [
+    "O01 R04 evidence-map skill-runtime count25 should be15; actual full1361 verified"
+  ],
+  "registered_output_count": 17,
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/COMPLETION_AUDIT_003.md",
+      "sha256": "86a4176ca5ca930f7e2fa1f9cbba66e22ba9fcf754df03b26d28fff1de5b37df",
+      "bytes": 26655
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/audit_observations.md",
+      "sha256": "a155ce443cf5b95c8eafd670c6abc5d2e3f372b8896673151794eeaed32093ee",
+      "bytes": 4895
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/closure.json",
+      "sha256": "aa5ce866c0a2d7f76b486a65e8a47faa066967dbb89fd26dfe39d8faaabd80b2",
+      "bytes": 32506
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/consumer_guard_review.json",
+      "sha256": "0c8e8e1d9b5947571a100f2d3b4e429adb30cc1a7f36aad5c7c6e661ff833866",
+      "bytes": 36467
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/consumer_guard_review_initial.json",
+      "sha256": "404b1360914b22a393cb21c800ff3bc7c2308de35224bffb5bb10bba9720c196",
+      "bytes": 36470
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/entry.json",
+      "sha256": "cd91e81e88f4827eadb1d25db8c9b58cd8446697319c98b59f71f559f9b0927c",
+      "bytes": 32506
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/evidence_review.json",
+      "sha256": "771e82b0e808594e13435f5ad612330b528ed8df01e11c013a85e9dcbe4013a3",
+      "bytes": 265338
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/evidence_review_initial.json",
+      "sha256": "d5b306770426c0c576c03659a6c4209ef1ba6f965ad4a26d97927fbfd18abb0a",
+      "bytes": 213732
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/evidence_review_second.json",
+      "sha256": "6340c6c17c2e7ee8c483cdc239e11c6718877aa13e89c9c081cc82c29eb449ce",
+      "bytes": 213731
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/output_review.json",
+      "sha256": "5272417a833c6639f48abd376be9cd8007133935f750972492f1e51efbd1f838",
+      "bytes": 809210
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/source_review.md",
+      "sha256": "77188cb70db275924d4d1ae3d799a89eb5e663085b3c1e52b9660dea646cfe6d",
+      "bytes": 10573
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/supplemental_review.json",
+      "sha256": "0846cd32e13f92fe6c365cf510f7cad9985ef79788995b0273d9ee11d7f7bf71",
+      "bytes": 17560
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/verify_consumers_guards.py",
+      "sha256": "65485fb1822054a8f385c7de5032ba3ce63782b1a1815cf603fe2863d3220051",
+      "bytes": 5524
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/verify_currentness.py",
+      "sha256": "8d7f22cfb810cff88616e816320cc98cc9a03cdef6c6c7508ef688a8200212d2",
+      "bytes": 3700
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/verify_evidence.py",
+      "sha256": "065eeb955e2e33fa3fd5f76cfda8167748e7244ff0c1bccc6d7aa02fdb3811d3",
+      "bytes": 5659
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/verify_outputs.py",
+      "sha256": "f7dc5ed887162f8e1cee0485cdaa56a5761a13293dd8b8539c9ce6ded6f4f7f1",
+      "bytes": 10014
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/audit-evidence/r04_successor_003/verify_supplemental.py",
+      "sha256": "b765bf24d4626d8841bfe1b8337ec625202f451a2a4b8a0aaa3f01e7c84cf0e3",
+      "bytes": 4056
+    }
+  ],
+  "self_excluded": true
+}

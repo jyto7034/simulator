@@ -1,0 +1,214 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CATP-P2G40-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CATP-P2G40-001",
+    "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "d35acb4f202f2b836f6bd89d35153b04a93fd71ea1678b2a5fc7abbd587abb66"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CATP-P2G30-001",
+    "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_30_FREEZE_001.json",
+    "sha256": "3d79c9364b8c4ac786c688c75406eb55c8446d925d0c85bdb1cd33f3d8807e98"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CATP-P2G20-001",
+    "review_batch_ref": "RB-CATP-P2G20-001",
+    "reviewed_source_basis_ref": "RSB-CATP-P2G20-001",
+    "code_review_binding_count": 6,
+    "bound_final_policy_freeze_ref": "FPF-CATP-P2G30-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 6,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "CATP-E01",
+        "policy_element_revision_ref": "PER-CATP-E01-REVIEWED-001"
+      },
+      {
+        "element_id": "CATP-E02",
+        "policy_element_revision_ref": "PER-CATP-E02-REVIEWED-001"
+      },
+      {
+        "element_id": "CATP-E03",
+        "policy_element_revision_ref": "PER-CATP-E03-REVIEWED-001"
+      },
+      {
+        "element_id": "CATP-E04",
+        "policy_element_revision_ref": "PER-CATP-E04-REVIEWED-001"
+      },
+      {
+        "element_id": "CATP-E05",
+        "policy_element_revision_ref": "PER-CATP-E05-REVIEWED-001"
+      },
+      {
+        "element_id": "CATP-E06",
+        "policy_element_revision_ref": "PER-CATP-E06-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 6,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "CATP-E01",
+        "phase_id": "PHASE-CATP-01"
+      },
+      {
+        "element_id": "CATP-E02",
+        "phase_id": "PHASE-CATP-01"
+      },
+      {
+        "element_id": "CATP-E03",
+        "phase_id": "PHASE-CATP-01"
+      },
+      {
+        "element_id": "CATP-E04",
+        "phase_id": "PHASE-CATP-01"
+      },
+      {
+        "element_id": "CATP-E05",
+        "phase_id": "PHASE-CATP-01"
+      },
+      {
+        "element_id": "CATP-E06",
+        "phase_id": "PHASE-CATP-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 3,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 2,
+    "standalone_work_package_count": 1,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CATP-01": [
+        "WP-CATP-01",
+        "WP-CATP-02"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CATP-03"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 3,
+    "edge_count": 4,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CATP-01",
+        "WP-CATP-02"
+      ]
+    ],
+    "final_execution_node_count": 2,
+    "condensation_edge_count": 1,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 2,
+    "assigned_once_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CATP-01": "PHASE-CATP-01",
+      "WP-CATP-03": "PHASE-CATP-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 9,
+    "mapped_count": 9,
+    "assigned_execution_node_count": 9,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CATP-P2G30-001",
+      "Content Digest": null
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CATP-P2G40-001",
+      "Content Digest": null
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_00_INITIAL_001.json",
+        "sha256": "fcb3f7480a387369757581e6a42e606dc2ae079a849d44c6836383e5229c1608"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_10_POLICY_001.json",
+        "sha256": "eea71a35d9f66ddcf3c5fb60d395ca65dd9ee6117813869e57b7d32c12c83fa6"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_20_REVIEW_001.json",
+        "sha256": "758a4390eff67a75b2ff1317a015795f54565cc71062f03c6829090a20bb403b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "0aef3066029105968090bf1b9b6b6959486fb89954d2fd5bf374248c00a448ee"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_30_FREEZE_001.json",
+        "sha256": "3d79c9364b8c4ac786c688c75406eb55c8446d925d0c85bdb1cd33f3d8807e98"
+      }
+    ]
+  }
+}

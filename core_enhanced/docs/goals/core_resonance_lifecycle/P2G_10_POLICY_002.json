@@ -1,0 +1,1653 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CRSL-002",
+        "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CRSL-20261004",
+        "Snapshot Kind": "successor",
+        "Predecessor Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSL-001",
+          "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+        },
+        "Created By Stage": "P2G-10",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "user request",
+            "Exact Content or Content Reference": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md의 활성 범위를\nP2G와 GEX에 따라 순차적으로 구현해줘.\n\nU00 인수와 U01 F01 교정부터 시작하고, 내가 중단을 요청하거나\n로드맵의 승인 범위를 완료할 때까지 다음 작업으로 계속 진행해줘.\n\n이번 요청은 각 작업에 필요한 다음 과정을 모두 포함해:\n- P2G 정책 정리·코드 검토·계획·Goal·인계\n- GEX 구현·자체 검증·독립 감사\n- 감사 finding 교정·재감사\n- 선행 조건 충족 후 다음 작업 선택과 실행\n\n단계 전환이나 감사 인계마다 재승인을 요청하지 마.\n필요한 독립 감사에는 구현에 참여하지 않은 별도 에이전트(GPT-6 Astra / High)를 활용하고,\n감사 통과 전에는 그 결과에 의존하는 후속 구현을 시작하지 마.\n\n구현 중 필요한 정책은 기존 명시적 합의와 승인 범위 안에서\n재량으로 판단해줘. 결정·이유·영향·위임 근거를 해당 정책 문서에\n남기고, 필요한 P2G 갱신·재검증 후 구현을 이어가줘.\n\n기존 계획과 유효한 증거를 재사용하고, 로드맵 전체를 미리\n상세 설계하거나 완료된 단계를 불필요하게 반복하지 마.\n\n작업별 결과·검증·남은 문제와 다음 위치를 계속 기록하고,\n의미 있는 진척은 간결하게 보고하되 보고만 하고 멈추지는 마.\n기존 사용자 변경과 과거 감사 원본은 보존해줘.\n\n내 중단 요청, 승인 범위 완료, 또는 현재 권한과 환경으로\n해결할 수 없는 실제 장애에서만 멈춰줘.\n중단 시 완료·미완료 상태와 정확한 재개 위치를 남겨줘.",
+            "User-Provided Locator": "Original continuous Core-first request, preserved verbatim in U04 intake",
+            "User-Stated Constraint": "순차 P2G/GEX, 기존 합의·승인 범위 내 정책 판단과 기록, 구현 비참여 Astra High 독립 감사·교정, 선행 통과 전 종속 구현 금지, 원본/사용자 변경 보존, 중간 재승인 없이 계속",
+            "Capture Limitation": "None; copied original request, not a new user decision"
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "sha256": "f058dbc2b417fa691f835fb1bff7843c1fe413d04c571be50aac09c23e8ea4d4"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+              "sha256": "b3da8b823eee0cf7b96e607a1da6d1e92810ef029744a3ad52fd2ceb03706b2c"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+              "sha256": "f82730653f4cf2ac14b1a9fb0b4247236fc14e5b47cc0da21d9deabb89f1cdff"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rulebook_next.md",
+              "sha256": "1d73ff1f2da6c234884d3515750fd4fde13e78d72082f85be7f9ea9c1b3bb9f9"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules_next/combat.md",
+              "sha256": "b6f91130194d6f7f50c5c7722be28393aecb388ec4aea21a7793bdb1844fa77a"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules_next/battle-controls.md",
+              "sha256": "03059d96604a7367be6d09ac4d334cf50524a5e7c7392d37796a68dfc3d0bf55"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules_next/open-decisions.md",
+              "sha256": "dea7199184f7b8191293cbfe42946b5d6cca1d66daefbb360e439b3b402acb2b"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/skill_target_contract.md",
+              "sha256": "84bf9c6c27cf3d991b7f29952bb14fac1849eef0db0dfc0fc0f61e5b8c1f0734"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u01_closure_20261004_001/RESULT.ko.md",
+              "sha256": "30cf7d753bdb102fd642971744f9c0f4bb4364c49ba09b772caa61ff0b275ed8"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/post_audit/20261004_f01_001/COMPLETION_AUDIT.md",
+              "sha256": "a7b46195634da1d1293e1f12ec53e38604ce7fc982eb06262961a346b5e8864f"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-012",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/COMPLETION_AUDIT.md",
+              "sha256": "fbd8986a6bb90a803dbb6f911ea80d777243ea31bf869c112e621f8f7c9c0417"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-013",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/EXIT_CURRENTNESS.json",
+              "sha256": "54b86d608544b472ce8a280b60c9d015546af6fbce370ca97a8d949b12a1740e"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-014",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/AUDIT_ARTIFACTS.json",
+              "sha256": "fd0ab4eb04073c6fbe16193ec43ce3dabb387de3862afeaf8d2972ebe26be426"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-015",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_result_persistence/execution/single_goal/target/u04_003/MANIFEST.json",
+              "sha256": "f53fed3ecc1f6abc65b480f8f6a735e1fe3a4a1d385948244bdd980972bbe42c"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-016",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u04_closure_20261004_001/RESULT.ko.md",
+              "sha256": "7708aa61325dcae68926eb3b67f6913aca0441c34969851ffe8cc97a6b4e7553"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-017",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u04_closure_20261004_001/PUBLICATION_RECORD.json",
+              "sha256": "355c7bc72f439c059c3eb5653276fb1b975a0e74c8b6fa4b8f92726801592cdc"
+            },
+            "User-Provided Locator": "ROADMAP §5 U05/B02,B03,B04,B09, P03/P05, CF-D06/07, U01/U04 prerequisites",
+            "User-Stated Constraint": "공명 접수·소비·사용 종료·양수 획득·대상 계약과 현재 침식 caller 호환을 함께 전환; 새 침식 피해는 U19, 미합의 최종보스·미래 owner 선구현 제외",
+            "Capture Limitation": "Exact local bytes captured; raw intake does not establish policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-018",
+            "Intake Kind": "existing canonical reference discovered during bounded review",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rulebook.md",
+              "sha256": "ef7637cb40ec8de40cecf1d9fe4ad9aabf6d4f54b06dcb1efbeccca7fd09fd06"
+            },
+            "User-Provided Locator": "Original request preserve existing valid contracts; next combat.md:71-73 deployment effects",
+            "User-Stated Constraint": "Keep valid deployment effects; apply newer P03 employee base charge",
+            "Capture Limitation": "Existing canonical input, not a new user answer or permission; exact bytes in evidence/CLARIFICATION_SOURCE_001.tar.gz"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSL-01-002",
+        "Content Digest": "sha256:3384acfefbe8ce27a22ae3ed430f6f9a3e71be39e9c8a792b3c25348c826ea43"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-01-001",
+          "Content Digest": "sha256:5f28145fee667b3792b6423ab7a2a1a6da5c609b0d8b5fc0ca5bcc519badfe9f"
+        },
+        "Affected Element IDs": [
+          "PE-CRSL-01"
+        ],
+        "Decision Name": "직원 배치 기본량과 명시 효과",
+        "Exact Decision": "아군 직원의 최초 배치와 재배치 기본 공명은 장착한 실제 파편별 최대 공명의 20%를 내림한 값이다. 그 뒤 현재 유효한 InitialSkillCharge와 authored 배치 시 추가 획득을 기존 수치/상한/순서로 적용한다. 이전 개체의 공명·사용 잠금은 새 개체로 이전하지 않는다. 같은 개체의 전술 이동은 재배치 초기화가 아니다.",
+        "Decision Authority": "AI delegated material-policy decision applying adopted explicit agreements; not a new user answer",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "item": "IN-001",
+          "delegation": "IN-004 CF-D06/07",
+          "scope": "U05/B02,B03,B04,B09 current-state boundary",
+          "clarification": "Original IN-001/CF-D06 scoped policy discretion; ownership evidence REV-CRSL-ABORT-001; no new user answer"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          },
+          "span": "IN-006:71-73,140; IN-018:426-429; REV-CRSL-ABORT-001"
+        },
+        "Reason": "P03의 배치 기본량과 유효 배치 효과 재적용을 함께 보존한다. 기존 소모품 효과를 새로 만들거나 폐기하지 않으며 floor를 명시 bonus까지 덮는 최종값으로 해석하지 않는다.",
+        "Impact": [
+          "추가 효과 없는 최대1/4/5/99/100 직원의 최초/재배치 기본값은0/0/1/19/20이다.",
+          "현재 InitialSkillCharge 40%의 최대100 직원은 기본20에 기존 bonus40을 더한60으로 배치/재배치되고 상한을 넘지 않는다.",
+          "전술 이동은 공명을 초기화하지 않으며 재배치는 이전 개체의 충전량/사용 자격을 상속하지 않는다."
+        ],
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "채택한 P03/P05와 U05의 소비·실제 사용 종료·빈 타일·현재 침식 타이밍을 적용",
+          "derived_from_ownership": "P03의 배치 기본량과 유효 배치 효과 재적용을 함께 보존한다. 기존 소모품 효과를 새로 만들거나 폐기하지 않으며 floor를 명시 bonus까지 덮는 최종값으로 해석하지 않는다.",
+          "no_new_game_rule": "기존 명시 비용/초기량/충전/취소를 적용; 새 비용·보상·확률·환불·상속 예외 없음",
+          "local_impact": "현재 전투 개체의 공명·입력·사용 수명과 동일 상태의 관측/복원만 전환; 독립 자산/진행 유지",
+          "user_data_preserved": "기존 감사·사용자 변경·저장 원본 보존; 미지원은 명시 거절하고 자동 삭제/변환 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSL-01-DECIDED-002",
+        "Content Digest": "sha256:cbc5ade4319c7d8f28da63bdbf936b608cfd0513ddab3d4e725418d252b87819"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSL-01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-01-DECIDED-001",
+          "Content Digest": "sha256:5493a5b6642e98a95fb822c1e8fd5a240e0f7932a0ce9df2648c1fdb0e222399"
+        },
+        "Policy Statement": "아군 직원의 최초 배치와 재배치 기본 공명은 장착한 실제 파편별 최대 공명의 20%를 내림한 값이다. 그 뒤 현재 유효한 InitialSkillCharge와 authored 배치 시 추가 획득을 기존 수치/상한/순서로 적용한다. 이전 개체의 공명·사용 잠금은 새 개체로 이전하지 않는다. 같은 개체의 전술 이동은 재배치 초기화가 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-01-002",
+          "Content Digest": "sha256:3384acfefbe8ce27a22ae3ed430f6f9a3e71be39e9c8a792b3c25348c826ea43"
+        },
+        "Observable Policy Acceptance": [
+          "추가 효과 없는 최대1/4/5/99/100 직원의 최초/재배치 기본값은0/0/1/19/20이다.",
+          "현재 InitialSkillCharge 40%의 최대100 직원은 기본20에 기존 bonus40을 더한60으로 배치/재배치되고 상한을 넘지 않는다.",
+          "전술 이동은 공명을 초기화하지 않으며 재배치는 이전 개체의 충전량/사용 자격을 상속하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSL-02-002",
+        "Content Digest": "sha256:4e97530b93f80bb00c9cc20da55638baa44e0f8501835cdc3755240b0ac3e577"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-02-001",
+          "Content Digest": "sha256:7fa965c5409f2c6d0ddd9c56f487094805ed431eeca0186bb4577961374d402d"
+        },
+        "Affected Element IDs": [
+          "PE-CRSL-02"
+        ],
+        "Decision Name": "직원 전투 시간 자동 충전",
+        "Exact Decision": "배치되어 살아 있는 아군 직원은 전투 시간1초마다 공명1을 자동 획득한다. 초기 조절값이며 공격·방어·작업·침묵은 이를 막지 않고 정지·철수·전투불능에는 충전하지 않는다. 초과량과 차단 중 놓친 충전은 비축/보충하지 않는다. 직원의 기본 공격 방출·가한 피해·받은 피해 기본 획득과 Rest 공명5 보너스를 제거한다. Rest HP 회복과 명시 콘텐츠 자원은 유지한다. 적·소환물의 기존 autonomous skill charge/시전 주기는 이 직원 규칙만으로 초당1/20%로 변경하지 않는다.",
+        "Decision Authority": "AI delegated material-policy decision applying adopted explicit agreements; not a new user answer",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "item": "IN-001",
+          "delegation": "IN-004 CF-D06/07",
+          "scope": "U05/B02,B03,B04,B09 current-state boundary",
+          "clarification": "Original IN-001/CF-D06 scoped policy discretion; ownership evidence REV-CRSL-ABORT-001; no new user answer"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          },
+          "span": "IN-006:140-147; IN-002 U05/current-state boundary; REV-CRSL-ABORT-001"
+        },
+        "Reason": "P03은 배치되어 살아 있는 직원의 자원을 규정한다. 별도 적/소환물 owner의 현재 authored 자동 주기를 유지하며 향후 owner의 새로운 전투 주기를 U05에서 정하지 않는다.",
+        "Impact": [
+          "공격 없는 치유 직원도 같은 전투 시간에 충전하며 배속은 wall time만 바꾼다.",
+          "Pause/철수/전투불능·상한/차단 시간을 지난 뒤 누락분을 보충하지 않는다.",
+          "직원 기본 공격·피해·Rest는 공명 추가분을 만들지 않고 Rest HP 회복은 유지한다.",
+          "기존 적 자동 스킬이 직원 기본 획득 제거 때문에 영구 정지하거나 새 초당1 주기로 바뀌지 않는다."
+        ],
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "채택한 P03/P05와 U05의 소비·실제 사용 종료·빈 타일·현재 침식 타이밍을 적용",
+          "derived_from_ownership": "P03은 배치되어 살아 있는 직원의 자원을 규정한다. 별도 적/소환물 owner의 현재 authored 자동 주기를 유지하며 향후 owner의 새로운 전투 주기를 U05에서 정하지 않는다.",
+          "no_new_game_rule": "기존 명시 비용/초기량/충전/취소를 적용; 새 비용·보상·확률·환불·상속 예외 없음",
+          "local_impact": "현재 전투 개체의 공명·입력·사용 수명과 동일 상태의 관측/복원만 전환; 독립 자산/진행 유지",
+          "user_data_preserved": "기존 감사·사용자 변경·저장 원본 보존; 미지원은 명시 거절하고 자동 삭제/변환 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSL-02-DECIDED-002",
+        "Content Digest": "sha256:3afa1f49ce0f66bc55abc956d12f8a55abe60016cd99ffdc738b92270f68ad9d"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSL-02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-02-DECIDED-001",
+          "Content Digest": "sha256:c31896f7939f7bd3d89d4c48ba295140545bf99faa6d25bc8b4598db8987f306"
+        },
+        "Policy Statement": "배치되어 살아 있는 아군 직원은 전투 시간1초마다 공명1을 자동 획득한다. 초기 조절값이며 공격·방어·작업·침묵은 이를 막지 않고 정지·철수·전투불능에는 충전하지 않는다. 초과량과 차단 중 놓친 충전은 비축/보충하지 않는다. 직원의 기본 공격 방출·가한 피해·받은 피해 기본 획득과 Rest 공명5 보너스를 제거한다. Rest HP 회복과 명시 콘텐츠 자원은 유지한다. 적·소환물의 기존 autonomous skill charge/시전 주기는 이 직원 규칙만으로 초당1/20%로 변경하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-02-002",
+          "Content Digest": "sha256:4e97530b93f80bb00c9cc20da55638baa44e0f8501835cdc3755240b0ac3e577"
+        },
+        "Observable Policy Acceptance": [
+          "공격 없는 치유 직원도 같은 전투 시간에 충전하며 배속은 wall time만 바꾼다.",
+          "Pause/철수/전투불능·상한/차단 시간을 지난 뒤 누락분을 보충하지 않는다.",
+          "직원 기본 공격·피해·Rest는 공명 추가분을 만들지 않고 Rest HP 회복은 유지한다.",
+          "기존 적 자동 스킬이 직원 기본 획득 제거 때문에 영구 정지하거나 새 초당1 주기로 바뀌지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRSL-12-002",
+        "Content Digest": "sha256:e9fbf7fd7deb22f6b2d9ebeb185d06d575ad16806aab3926ab349d86d47f2566"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-12-001",
+          "Content Digest": "sha256:24bbb5d3ef488afeb51fc36196e93cf84475eed49b5fb21728dc9dc4d6eb91e5"
+        },
+        "Affected Element IDs": [
+          "PE-CRSL-12"
+        ],
+        "Decision Name": "공개 작성과 전종 적용",
+        "Exact Decision": "현재 모든 skill 및 Flow·시간제 버프·채널·독립 생성의 실제 사용 종료를 공개 작성 계약으로 표현하고 전종 적용성을 확인한다. 직원 공명에서 제거한 기본 획득/임의 postcast lock과 Rest 보너스 필드는 해당 live 작성 경계에서 조용히 무시하지 않는다. 적/소환물 autonomous cadence의 유효 필드는 소유 범위를 명시하고 보존하며 직원에게 잘못 적용하지 않는다. query는 사용 잠금과 획득 불가 이유를 실제 상태와 일치하게 관측한다. action control 종료·effect settlement·resource lifetime을 사용 잠금 종료와 합치지 않는다.",
+        "Decision Authority": "AI delegated material-policy decision applying adopted explicit agreements; not a new user answer",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "item": "IN-001",
+          "delegation": "IN-004 CF-D06/07",
+          "scope": "U05/B02,B03,B04,B09 current-state boundary",
+          "clarification": "Original IN-001/CF-D06 scoped policy discretion; ownership evidence REV-CRSL-ABORT-001; no new user answer"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          },
+          "span": "IN-002 U05 together-boundaries/residual; IN-001; REV-CRSL-ABORT-001"
+        },
+        "Reason": "현재 공통 profile을 직원 규칙의 재정의로 적 AI까지 조용히 바꾸지 않는다. public schema에 각 의미의 실제 owner를 유지하면서 직원 구형 계약만 거절한다. 구체 분리 타입과 검증 방식은 기술 owner가 정한다.",
+        "Impact": [
+          "공개 loader→catalog/query→normal command→실제 실행에서 전종 종료 규칙을 추적하고 미분류/암묵 fallback이 없다.",
+          "직원/Rest 경계의 제거 필드는 정확한 field 경로 오류로 거절되며 적 autonomous용 유효 데이터는 실제 해당 consumer에서 사용된다.",
+          "발사 뒤 effects unsettled와 사용 잠금 해제가 동시에 사실일 수 있고 query가 모순 없이 표시한다."
+        ],
+        "Delegation Criteria": {
+          "existing_agreements_preserved": "채택한 P03/P05와 U05의 소비·실제 사용 종료·빈 타일·현재 침식 타이밍을 적용",
+          "derived_from_ownership": "현재 공통 profile을 직원 규칙의 재정의로 적 AI까지 조용히 바꾸지 않는다. public schema에 각 의미의 실제 owner를 유지하면서 직원 구형 계약만 거절한다. 구체 분리 타입과 검증 방식은 기술 owner가 정한다.",
+          "no_new_game_rule": "기존 명시 비용/초기량/충전/취소를 적용; 새 비용·보상·확률·환불·상속 예외 없음",
+          "local_impact": "현재 전투 개체의 공명·입력·사용 수명과 동일 상태의 관측/복원만 전환; 독립 자산/진행 유지",
+          "user_data_preserved": "기존 감사·사용자 변경·저장 원본 보존; 미지원은 명시 거절하고 자동 삭제/변환 없음"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSL-12-DECIDED-002",
+        "Content Digest": "sha256:4bed4c97b666aa7f3533506e4d675f6af397bf5b0b832a685af4183bd04c2d7c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSL-12",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-12-DECIDED-001",
+          "Content Digest": "sha256:81c4452104a6da00dfd644953988f4531229e41cae68319b934d096d03cfee6f"
+        },
+        "Policy Statement": "현재 모든 skill 및 Flow·시간제 버프·채널·독립 생성의 실제 사용 종료를 공개 작성 계약으로 표현하고 전종 적용성을 확인한다. 직원 공명에서 제거한 기본 획득/임의 postcast lock과 Rest 보너스 필드는 해당 live 작성 경계에서 조용히 무시하지 않는다. 적/소환물 autonomous cadence의 유효 필드는 소유 범위를 명시하고 보존하며 직원에게 잘못 적용하지 않는다. query는 사용 잠금과 획득 불가 이유를 실제 상태와 일치하게 관측한다. action control 종료·effect settlement·resource lifetime을 사용 잠금 종료와 합치지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-12-002",
+          "Content Digest": "sha256:e9fbf7fd7deb22f6b2d9ebeb185d06d575ad16806aab3926ab349d86d47f2566"
+        },
+        "Observable Policy Acceptance": [
+          "공개 loader→catalog/query→normal command→실제 실행에서 전종 종료 규칙을 추적하고 미분류/암묵 fallback이 없다.",
+          "직원/Rest 경계의 제거 필드는 정확한 field 경로 오류로 거절되며 적 autonomous용 유효 데이터는 실제 해당 consumer에서 사용된다.",
+          "발사 뒤 effects unsettled와 사용 잠금 해제가 동시에 사실일 수 있고 query가 모순 없이 표시한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-01-002",
+        "Content Digest": "sha256:230d42db0ffa77b36b5dd3cca2988e27bcfa3fbed6eb05e26f4e74e72c03a51d"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-01",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:140; IN-002 U05/B02"
+        },
+        "Candidate Statement": "아군 직원의 최초 배치와 재배치 기본 공명은 장착한 실제 파편별 최대 공명의 20%를 내림한 값이다. 그 뒤 현재 유효한 InitialSkillCharge와 authored 배치 시 추가 획득을 기존 수치/상한/순서로 적용한다. 이전 개체의 공명·사용 잠금은 새 개체로 이전하지 않는다. 같은 개체의 전술 이동은 재배치 초기화가 아니다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-01",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-01-OPEN-001",
+          "Content Digest": "sha256:1a4756bb77339afd698ac20ad9c6e3657d16d144041934ecd982bc4fb01dea91"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-01-002",
+          "Content Digest": "sha256:3384acfefbe8ce27a22ae3ed430f6f9a3e71be39e9c8a792b3c25348c826ea43"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-02-002",
+        "Content Digest": "sha256:73f3699cc7ae84e30f91fca4a2bcc2277ea278118eb8ebded8d1d62016dd8297"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-02",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:141-147; IN-002 U05/B02"
+        },
+        "Candidate Statement": "배치되어 살아 있는 아군 직원은 전투 시간1초마다 공명1을 자동 획득한다. 초기 조절값이며 공격·방어·작업·침묵은 이를 막지 않고 정지·철수·전투불능에는 충전하지 않는다. 초과량과 차단 중 놓친 충전은 비축/보충하지 않는다. 직원의 기본 공격 방출·가한 피해·받은 피해 기본 획득과 Rest 공명5 보너스를 제거한다. Rest HP 회복과 명시 콘텐츠 자원은 유지한다. 적·소환물의 기존 autonomous skill charge/시전 주기는 이 직원 규칙만으로 초당1/20%로 변경하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-02",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-02-OPEN-001",
+          "Content Digest": "sha256:2fcfa70091ba9ff084dd63ee2137d76169a8d635bea821f4cc621ef2fd7c9276"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-02-002",
+          "Content Digest": "sha256:4e97530b93f80bb00c9cc20da55638baa44e0f8501835cdc3755240b0ac3e577"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-03-002",
+        "Content Digest": "sha256:2092b25444f4950133f440ea98c9a00080924e5fbc0c7dcae1319a645bf94c6a"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-03",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:146-147,195; IN-002 U05/B04"
+        },
+        "Candidate Statement": "Stun·Freeze 또는 실제 스킬 사용 잠금 동안 자동 충전과 파편·유물의 명시 추가 획득을 포함한 모든 양수 공명 획득을 막는다. 침묵만으로 획득을 막지 않는다. 소비·감소·배치 초기화는 양수 획득으로 오인하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-03",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-03-OPEN-001",
+          "Content Digest": "sha256:bd2a92f8d907fc67a0f9dd71b6d61876b019eaae9b5ed8adff0d839078154618"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-03-001",
+          "Content Digest": "sha256:2d43342d4185960b599e634715494accc2259fa97c285cfdaa1e73d12bb76e61"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-04-002",
+        "Content Digest": "sha256:7a831e137513c192b26070b718a4c8c46fdd81af601361f998382d18e9b42e24"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-04",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:149-150,174-182; IN-002 U05/B03 and start gate"
+        },
+        "Candidate Statement": "최신 조건을 통과한 최종 입력은 그 접수에서 현재 공명을 전부 정확히 한 번 소비하고 해당 사용에 귀속된 실행 자격과 획득 잠금을 만든다. pending 실행은 이미 소비한 공명이 0이라는 이유로 거절하지 않고 같은 자격을 사용한다. 자격은 다른 사용/개체/스킬로 이전하거나 재사용하지 않는다. 실제 실행 시점은 기존 시전·일시정지 계약을 따른다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-04",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-04-OPEN-001",
+          "Content Digest": "sha256:e533717511ec63d489eaaa8ba01f0a604b414dbf763ef62ee4c5a57a8bb01e0d"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-04-001",
+          "Content Digest": "sha256:80eaa272d75c0f8eeff3f8b9b72a6ac95ff6d6fce200da238a0bfa396847bfb7"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-05-002",
+        "Content Digest": "sha256:b92857aed5a408f5d21e5bb6a77d1b5e5fbcc270851c7343b171e08a1e6a1354"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-05",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:152-161; IN-002 U05/B04"
+        },
+        "Candidate Statement": "즉발은 효과 적용과 사용 동작 종료, 발사체는 발사 동작 종료, 연속 공격은 마지막 공격 동작 종료, 채널은 채널 종료까지 잠근다. 일정 시간 버프는 해당 사용의 버프가 실제로 끝날 때까지 잠근다. 독립 장판·소환물·지속 피해와 영구 버프는 생성·부여 동작 종료까지만 잠근다. 하나의 사용에 여러 해당 의무가 있으면 남아 있는 사용 의무가 모두 끝나야 종료하며, 독립 child 생존이나 발사체 명중 자체를 추가 의무로 만들지 않는다. 사용 종료 뒤 별도 1초 잠금은 없다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-05",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-05-OPEN-001",
+          "Content Digest": "sha256:e9d16b7766ffb987425b1b924e50a7b73508fdd6d586f45cd7876099212958c8"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-05-001",
+          "Content Digest": "sha256:b1e31b4a61671f1dec0a3763045af7f6f36eea8b23edac8df082080e55d09259"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-06-002",
+        "Content Digest": "sha256:eb28f56652c8771e43a71788e12968f4fbbbe37d40bd455c80cb9157a7a92b0b"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-06",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:163-167; IN-010/011 U01 cancellation"
+        },
+        "Candidate Statement": "Stun·Freeze는 시전·연속 공격·채널을 취소하고 환불·자동 재개하지 않는다. 이미 적용한 시간제 버프는 전투 시간에 따라 유지/만료하며 그 사용 잠금도 유지한다. 침묵은 새 시작만 막고 이미 접수한 사용을 소급 취소하지 않는다. 취소된 미방출 작업은 재실행하지 않으며 이미 방출한 독립 효과는 자신의 기존 수명을 유지한다. 개체의 철수·죽음은 기존 수명 정리 계약을 따르며 다른 객체의 방출 효과를 임의 환수하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-06",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-06-OPEN-001",
+          "Content Digest": "sha256:52e9b01d58c4126fde3bc6fa037804a70cac3463e7c23bd9a4ae8f17ff51442f"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-06-001",
+          "Content Digest": "sha256:914f510cb8369ca37a7dd8ace429e3e08669084769420780e1928bd85c3a68b9"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-07-002",
+        "Content Digest": "sha256:bfe4ac791460047c9ebbdfc8980b5e72749041da4afabc906575dc12a92f6909"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-07",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:166-167,180-182; IN-009 Skill Execution Lifecycle"
+        },
+        "Candidate Statement": "시전 중 직접 효과에 필요한 고정 유닛이 무효가 되면 해당 사용을 환불 없이 취소하고 남은 사용 의무가 없으면 충전 잠금을 해제한다. 무효 유닛 직접 효과를 다른 유닛으로 이전하지 않는다. 이미 접수한 타일 anchor를 사용하는 범위 효과에는 원래 anchor 유닛 생존을 필수로 추가하지 않으며, 방출된 효과는 기존 자체 수명을 따른다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-07",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-07-OPEN-001",
+          "Content Digest": "sha256:e54d31e032eb6cde9e7a60d4cf48baefbf232e8774060db4c2accce7e3e33dfe"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-07-001",
+          "Content Digest": "sha256:290c1a669818ec1bf4bc93f1c9edff7ad8d1dfbd569c58ff96007997eba97e9e"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-08-002",
+        "Content Digest": "sha256:cf9e29012ded37dfbaa683bd8180791e832618f360e80e69f1e235c1a142e0c9"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-08",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:171-178; IN-009 Skill Cast Selection"
+        },
+        "Candidate Statement": "자신·자동 유닛·플레이어 유닛·플레이어 타일 선택을 명시하며 누락/다른 종류를 자동 선택으로 보정하지 않는다. 새 접수는 생존/배치·수동 가능 여부·공격 태세·행동 제한·CC/침묵·장착 스킬·가득 찬 공명과 대상의 해당 관계/공중/사거리/효과 자격을 최신 상태에서 검사한다. 자동 유닛의 실제 효과 usefulness 규칙은 유지한다. 수동 타일은 유효 전장 tile과 사거리로 선택하며 적 점유나 현재 hostile 피해 대상을 필수로 요구하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-08",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-08-OPEN-001",
+          "Content Digest": "sha256:c9d63c2c24eb11b868917e850eff892bd9041ef0cd8d912a47d044a8b4b76d50"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-08-001",
+          "Content Digest": "sha256:6865d3eb0db0b44ca53ac028cff5e7ed2899c51a323da6a8690fd12a42cd98d2"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-09-002",
+        "Content Digest": "sha256:969355469874e08595844d917c8d25a9ec75457761d193c91d04b60a9c599226"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-09",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:178-184; IN-007 포커스와 배속; IN-009 Skill Cast Selection"
+        },
+        "Candidate Statement": "미리보기는 읽기 전용이며 최종 사용은 최신 조건을 다시 검사한다. 실패는 선택 상태·배속·공명을 그대로 유지한다. 취소는 비용 없이 선택을 끝내고 기존 포커스 복원 배속으로 돌아간다. 성공은 선택 대상을 고정하고 기존 공통 포커스 종료/배속 복원 계약을 함께 적용한다. 수동 스킬용 추가 대기와 수동 기본 공격은 도입하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-09",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-09-OPEN-001",
+          "Content Digest": "sha256:4fa096731343644e4cb0b8807a0f24e1d08563035a26e831c4cc47b9ea59222b"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-09-001",
+          "Content Digest": "sha256:728f9fe7a9ccfdf9f3e7b533f2b9ff931c66e308cbdac1c504118b2f0d8dbd7d"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-10-002",
+        "Content Digest": "sha256:6cbebd4eb337dcf2e467d44a675bd7bf7ad8d01a336fefefc0dcdf49d5e3d8d5"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-10",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-006:180-182; IN-009 SkillTarget/TileArea"
+        },
+        "Candidate Statement": "성공 시 유닛 identity 또는 타일과 유닛의 접수 당시 tile을 고정한다. 직접 플레이어 대상은 이후 유효성 상실 시 다른 적으로 옮기지 않으며 유닛 기반 범위/타일 범위는 접수 anchor를 유지한다. 플레이어 지정 selection과 단계별 자동 재지정의 결합은 작성 단계에서 거절한다. 비플레이어 selection의 명시 RetargetOnStep은 기존 계약을 보존한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-10",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-10-OPEN-001",
+          "Content Digest": "sha256:a331b3e681484c81a9b378470ff11e3712787328bc058374d1d87c3f5e14980d"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-10-001",
+          "Content Digest": "sha256:d26a67a20464aadab8e34eed23aa3fb0310d1fa3128229f1dcb3612749f7273e"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-11-002",
+        "Content Digest": "sha256:fb054667536aa478e22e8647658ceecd5592fc6018f88efdf204d0479fbd9a73"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-11",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-002 U05 prerequisite/completion/residual; IN-006 공명 공통규칙"
+        },
+        "Candidate Statement": "현재 침식 사용 caller도 유효 접수 시 한 번 소비한 실행 자격으로 기존 시작 gate를 통과해야 한다. 공명 소비와 종료 reset/재소비가 충돌하지 않게 한다. 현재 침식 연출·실행 타이밍과 피해 내용은 유지하며 입력 순간으로 실행을 앞당기지 않는다. 새 적 분류별 침식 피해는 U19가 소유한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-11",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-11-OPEN-001",
+          "Content Digest": "sha256:948452974e030fd951b6beebd1e935dc44b7b6e9509d52a4c058c4ac243c068d"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-11-001",
+          "Content Digest": "sha256:ab9b7358ed590eef427da2290279e59b34697298b1e12b1902013001f9f3704a"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-12-002",
+        "Content Digest": "sha256:986b5857c3e1a3e83f1d31fa8f70ee9b893b3d23f9cccd65675ded44ee4cd8f7"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-12",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-002 U05 together-boundaries/residual; IN-001"
+        },
+        "Candidate Statement": "현재 모든 skill 및 Flow·시간제 버프·채널·독립 생성의 실제 사용 종료를 공개 작성 계약으로 표현하고 전종 적용성을 확인한다. 직원 공명에서 제거한 기본 획득/임의 postcast lock과 Rest 보너스 필드는 해당 live 작성 경계에서 조용히 무시하지 않는다. 적/소환물 autonomous cadence의 유효 필드는 소유 범위를 명시하고 보존하며 직원에게 잘못 적용하지 않는다. query는 사용 잠금과 획득 불가 이유를 실제 상태와 일치하게 관측한다. action control 종료·effect settlement·resource lifetime을 사용 잠금 종료와 합치지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-12",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-12-OPEN-001",
+          "Content Digest": "sha256:e3072165083b5a72e2aad0564ccc3a941e1b8a65437309c529dabe17a93ae12d"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-12-002",
+          "Content Digest": "sha256:e9fbf7fd7deb22f6b2d9ebeb185d06d575ad16806aab3926ab349d86d47f2566"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-13-002",
+        "Content Digest": "sha256:9627c6f8f8600a86ec3334b575744af9b065a7888e203f3096f3d97cb1d3eba9"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-13",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-012..017 U04 closure; IN-004 CF-D01; IN-002 U05 restore fixtures"
+        },
+        "Candidate Statement": "동일 actor 재접속은 접수 자격·선택/배속·실제 사용 잠금과 전투 상태를 중복 소비 없이 보존한다. 프로세스 종료의 미확정 전투 Continue와 명시 SavePoint load는 U04의 해당 복구 경계를 그대로 따른다. 지원 형식은 새 상태를 일관되게 복원하고 미지원 구형 저장은 원본 보존과 명시 거절을 적용한다. 숨은 초기화로 권리·진행을 바꾸지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-13",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-13-OPEN-001",
+          "Content Digest": "sha256:6d050479627132dab6a4b54ce73ff526745443a731e58ca9384f2ca0bee2d49e"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-13-001",
+          "Content Digest": "sha256:325c40135768e15da91d33e4afab6978549fdf71a9cbbd08594021d6059b1fd8"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-14-002",
+        "Content Digest": "sha256:462b677246b4eb4a79619c05ff4d28005df186d1009c8577b5ec3b197939a7a7"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-14",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-001; IN-010..017; IN-002 U05"
+        },
+        "Candidate Statement": "U01 취소·U04 복원 및 선행127조건과 별도 R06 계약을 영향에 따라 인수/재검증한다. 유효 과거 증거와 사용자 변경·감사 원본을 보존한다. 자체 검증과 구현 비참여 GPT-6 Astra High 독립 감사 및 finding 교정·재감사가 닫히기 전에는 의존 후속 구현을 시작하지 않는다. 이후 미래 actor/장비/보스/Unity 기능은 해당 owner가 이 공통 계약을 소비한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRSL-14",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSL-14-OPEN-001",
+          "Content Digest": "sha256:97d6e59a822cd3c94d53c1e1626a4f571ca76361f430b495d48212c518f22f47"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRSL-14-001",
+          "Content Digest": "sha256:14a3fb2b22abee2ebc2570d4e197b8979707d9ba1132383acf5f5a965b4d0e24"
+        },
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-OUT-01-002",
+        "Content Digest": "sha256:399e05abcf2ff986601521f4ee1375b60e616e2b14a89030a9e61d8f15adbc56"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-OUT-01",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-002 U05 exclusions; IN-001"
+        },
+        "Candidate Statement": "새 적 분류별 침식 피해와 전체 보호/보스 기능",
+        "Disposition": "out_of_scope",
+        "Evidence/Decision Reference": "U19; 현재 caller 자격/타이밍만 U05",
+        "Stable Element ID": null,
+        "Initial Open Policy Element Revision Ref": null,
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-OUT-02-002",
+        "Content Digest": "sha256:01888d3fba7b86ab784f6cdd8130e8af4e4304ea0e25a3ebdd5faf8930a7c7cf"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-OUT-02",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-002 U05 exclusions; IN-001"
+        },
+        "Candidate Statement": "독립 child 전체 생존을 사용 잠금으로 묶거나 미래 actor/장비/유물 기능을 선추가",
+        "Disposition": "out_of_scope",
+        "Evidence/Decision Reference": "U05 제외; U07 이후 해당 owner",
+        "Stable Element ID": null,
+        "Initial Open Policy Element Revision Ref": null,
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRSL-OUT-03-002",
+        "Content Digest": "sha256:6f684fdbd5d5cf282fcd6a83e2dd9168dff884624d5bc1236a49615e696e54d8"
+      },
+      "payload": {
+        "Candidate ID": "C-CRSL-OUT-03",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRSL-002",
+            "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+          },
+          "Exact User-Approved Target Scope/Change Request": {
+            "delegation": "IN-001/CF-D06",
+            "scope_unchanged": true,
+            "findings": [
+              "MF-CRSL-001",
+              "MF-CRSL-002"
+            ]
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-002",
+            "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRSL-001",
+            "Content Digest": "sha256:7bced37bbd8a406b1826bd920d012fbe885fef5cb8050124a8256b08d2f21635"
+          },
+          "span": "IN-002 U05 exclusions; IN-001"
+        },
+        "Candidate Statement": "미합의 최종보스·Unity 화면·전체 미래 로드맵 상세 설계",
+        "Disposition": "out_of_scope",
+        "Evidence/Decision Reference": "ROADMAP USER-01/02와 이후 owner; 연속 요청 범위",
+        "Stable Element ID": null,
+        "Initial Open Policy Element Revision Ref": null,
+        "Reevaluation Evidence": "Existing 17 candidates remain promoted/out_of_scope; 3 current policy revisions clarified; no scope expansion"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRSL-003",
+        "Content Digest": "sha256:2bbc2e858b134686ebeb2272f6d9bc5236a5bc37c902dd085dd2539ae9c2c53a"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSL-002",
+          "Content Digest": "sha256:51fedf66aeb83958b887fa21fcea5d4885b2d2b1f3d1c2495a539e40ba1ec6e8"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRSL-20261004",
+          "Policy Topic": "U05 공명 접수 자격과 실제 스킬 사용 수명",
+          "Requested Result": "bounded_pipeline P2G-00→60, then authorized GEX implementation/verification/independent audit/correction",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "Policy Intake Snapshot.IN-001",
+            "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+            "delegation": "IN-004 CF-D06/07 and original continuous request",
+            "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction"
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "최초/재배치20% 내림·전투시간 초당1 공명과 기본 타격/피격/Rest 추가 공명 제거를 현재 입력/작성 데이터에서 전환한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 B02; P03 공명과 스킬 사용"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "유효 최종 입력에서 공명 전량을 즉시 한 번 소비하고 pending 실행에 접수 자격을 유지하며 거부 무소비·취소 무환불·중복 소비 방지를 인수한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 B03 and together-boundaries"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "실제 스킬 유형별 사용 종료와 방출/독립 생성물 수명을 구분하고 잠금·HardCC 중 모든 양수 추가 획득 gate 및 종료 재충전을 통일한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 B04; P03 사용 종료 표/CC/침묵"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "대상 종류·수명·유효 효과·오래된 preview를 최종 접수에서 검증하고 접수한 tile anchor와 직접 효과의 임의 retarget 금지를 유지한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 B09; P03 수동 스킬; P05"
+              }
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "현재 침식 caller의 소비/접수 자격 호환을 함께 전환하고 별도 합의 없이 실제 연출/실행 타이밍을 입력 순간으로 옮기지 않는다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 scope/prerequisites/residual uncertainty; ROADMAP D07"
+              }
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "입력 validate→접수/소비→start gate→cast/Flow/buff/channel/생성종료→획득 gate→query·RON 제거필드·복원 fixture를 함께 전환하고 현재 전종 적용성을 점검한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 together-boundaries and completion"
+              }
+            },
+            {
+              "Scope Item ID": "I07",
+              "Approved Disposition": "in",
+              "Statement": "U01 취소와 U04 결과/복원 및 유효한 선행 안전성·공개 제작/실행 증거를 인수하고 영향 조건 검증·비참여 독립 감사·교정을 수행한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 prerequisites; original continuous request"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "적 분류별 최신 침식 피해와 전체 보호/보스 기능의 선구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 explicit exclusions; U19 owner"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "독립 child/방출물 전체 생존 수명을 사용 잠금으로 묶거나 U07 이후의 새 actor/장비/유물/모드 기능을 선구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U05 explicit exclusions and downstream consumers"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "미합의 최종보스 고유 구현과 Unity 후속 화면 구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "ROADMAP USER-01/02 and U05 Core/authoring scope"
+              }
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "로드맵 전체 미래 상세 설계, 무관한 제품 정리, 과거 감사/사용자 변경의 덮어쓰기",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U05/B02,B03,B04,B09 and named P03/P05 input",
+                "delegation": "IN-004 CF-D06/07 and original continuous request",
+                "boundary": "Current U04 independent Complete/High and attributed status-only closure consumed; bounded P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "Original continuous request and ROADMAP §5 owner sequence"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSL-002",
+          "Content Digest": "sha256:fc41eb8842bb1592bad3983e9a20a53a3f43358307ce3e29a516e4481e4c1727"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRSL-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-01-DECIDED-002",
+            "Content Digest": "sha256:cbc5ade4319c7d8f28da63bdbf936b608cfd0513ddab3d4e725418d252b87819"
+          },
+          "PE-CRSL-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-02-DECIDED-002",
+            "Content Digest": "sha256:3afa1f49ce0f66bc55abc956d12f8a55abe60016cd99ffdc738b92270f68ad9d"
+          },
+          "PE-CRSL-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-03-DECIDED-001",
+            "Content Digest": "sha256:d5896cd6c0bc19b31210aa5bde6155f6cf4230d47be8080399d3867719f40461"
+          },
+          "PE-CRSL-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-04-DECIDED-001",
+            "Content Digest": "sha256:99192a33121e4c79b53dafe40e135f08c9208f7052647b7148498f64e07f9a05"
+          },
+          "PE-CRSL-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-05-DECIDED-001",
+            "Content Digest": "sha256:f2f699cc806a43d0b0efe35fa26b9a7e47358a5ebf0040201364cc5f8d97c75b"
+          },
+          "PE-CRSL-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-06-DECIDED-001",
+            "Content Digest": "sha256:414cc501d40f5e54626da86a501918157cb8e282e574391d75d37d9a6de0f1f4"
+          },
+          "PE-CRSL-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-07-DECIDED-001",
+            "Content Digest": "sha256:85ea8f3c86ccd9d65c2f179bc5cb6ca71f6db4c8717896e067909241f37c797d"
+          },
+          "PE-CRSL-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-08-DECIDED-001",
+            "Content Digest": "sha256:f82b1882d29cb8a32d9841fb65205e9bcb22ac600818b537f509f93f23c92cc4"
+          },
+          "PE-CRSL-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-09-DECIDED-001",
+            "Content Digest": "sha256:491204d03587cce44f086f2932a237db3ca92bf371eeb3eb111e7ffa264c629e"
+          },
+          "PE-CRSL-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-10-DECIDED-001",
+            "Content Digest": "sha256:c302d785e196a30e06b9a769f5bb03f4adb1e0b37a9baade0364d248b185c9c4"
+          },
+          "PE-CRSL-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-11-DECIDED-001",
+            "Content Digest": "sha256:e0751d4cd9ef1943aeea24124415ce83537a0f6fedbb2973db3cefd80b36cf49"
+          },
+          "PE-CRSL-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-12-DECIDED-002",
+            "Content Digest": "sha256:4bed4c97b666aa7f3533506e4d675f6af397bf5b0b832a685af4183bd04c2d7c"
+          },
+          "PE-CRSL-13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-13-DECIDED-001",
+            "Content Digest": "sha256:a15beb2b0d0f71b7010c16ba0b62a4b7dad8be28f731f76addf30ed68f8c60dc"
+          },
+          "PE-CRSL-14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSL-14-DECIDED-001",
+            "Content Digest": "sha256:cd98201ee1e9dc4856a562ec9b3a61187e4a34132cdbec4c836b4a779f0280b0"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-03-001",
+            "Content Digest": "sha256:2d43342d4185960b599e634715494accc2259fa97c285cfdaa1e73d12bb76e61"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-04-001",
+            "Content Digest": "sha256:80eaa272d75c0f8eeff3f8b9b72a6ac95ff6d6fce200da238a0bfa396847bfb7"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-05-001",
+            "Content Digest": "sha256:b1e31b4a61671f1dec0a3763045af7f6f36eea8b23edac8df082080e55d09259"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-06-001",
+            "Content Digest": "sha256:914f510cb8369ca37a7dd8ace429e3e08669084769420780e1928bd85c3a68b9"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-07-001",
+            "Content Digest": "sha256:290c1a669818ec1bf4bc93f1c9edff7ad8d1dfbd569c58ff96007997eba97e9e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-08-001",
+            "Content Digest": "sha256:6865d3eb0db0b44ca53ac028cff5e7ed2899c51a323da6a8690fd12a42cd98d2"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-09-001",
+            "Content Digest": "sha256:728f9fe7a9ccfdf9f3e7b533f2b9ff931c66e308cbdac1c504118b2f0d8dbd7d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-10-001",
+            "Content Digest": "sha256:d26a67a20464aadab8e34eed23aa3fb0310d1fa3128229f1dcb3612749f7273e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-11-001",
+            "Content Digest": "sha256:ab9b7358ed590eef427da2290279e59b34697298b1e12b1902013001f9f3704a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-13-001",
+            "Content Digest": "sha256:325c40135768e15da91d33e4afab6978549fdf71a9cbbd08594021d6059b1fd8"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-14-001",
+            "Content Digest": "sha256:14a3fb2b22abee2ebc2570d4e197b8979707d9ba1132383acf5f5a965b4d0e24"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-01-002",
+            "Content Digest": "sha256:3384acfefbe8ce27a22ae3ed430f6f9a3e71be39e9c8a792b3c25348c826ea43"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-02-002",
+            "Content Digest": "sha256:4e97530b93f80bb00c9cc20da55638baa44e0f8501835cdc3755240b0ac3e577"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSL-12-002",
+            "Content Digest": "sha256:e9fbf7fd7deb22f6b2d9ebeb185d06d575ad16806aab3926ab349d86d47f2566"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

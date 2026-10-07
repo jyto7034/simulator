@@ -17,8 +17,8 @@
 - `Legacy Grade`는 placeholder data 작성 당시의 과거 분류이며 최종 encounter tier가 아니다.
 - `E.G.O Rarity`와 장비 ID는 현재 `equipments/base.ron`의 값이다. 각 Weapon은 schema validation을 위한 최소 `weapon_profile`을 가진다. 그중 필수 `block_capacity`는 승인된 현재 gameplay authoring 값이며, 나머지 placeholder profile 수치를 최종 밸런스 의도로 해석하지 않는다.
 - `Fragment Rarity`와 `Current Effect`는 현재 `skill_fragments/base.ron`의 값이다.
-- `ActiveSkill` 파편은 독립 스킬을 가리킨다. trace 파편은 dedicated skill 설계 전까지 작은 기본 공격 보정만 제공한다.
-- Formal fragment 정책은 active-skill-centered다. 표의 직접 `BasicAttackModifier` 29개는 정확한
+- `ActiveSkill` 파편은 독립 스킬을 가리킨다. 미전환 trace 파편은 작은 기본 공격 보정을 제공한다. 래티씨아 trace는 Staff 전용 배치·진화 active로 전환했다.
+- Formal fragment 정책은 active-skill-centered다. 환상체 파편 중 직접 `BasicAttackModifier` 27개는 정확한
   현재 placeholder 관측값일 뿐 정식 fragment 설계의 예시가 아니다.
 - WhiteNight 행은 현재 one-step/research-acquisition placeholder만 기록한다. 12표식, 사도,
   제3세력과 boss-clear fragment는 미래·미정이며 이 색인이 구현을 약속하지 않는다.
@@ -31,8 +31,8 @@
 | 환상체 범위 | 현재 live abnormality-derived fragment 30개; full placeholder E.G.O set 연결 22개 |
 | 환상체 수 | 30 (E.G.O 3-slot set 동반 22) |
 | E.G.O 장비 수 | 66 (Weapon/Armor/Accessory 각 22) |
-| 스킬 파편 수 | abnormality-derived 30 (concept starter 포함 전체 live 31) |
-| 파편 효과 구성 | abnormality-derived: ActiveSkill 2, BasicAttackModifier 28; concept starter: BasicAttackModifier 1 |
+| 스킬 파편 수 | 생산용 37 (환상체 30 + 훈련·개념 7); 비생산 CWBS 참조 1 별도 |
+| 파편 효과 구성 | 환상체: ActiveSkill 3, BasicAttackModifier 27; 훈련·개념: ActiveSkill 6, BasicAttackModifier 1 |
 | 색인 상태 | Derived placeholder index |
 
 ## Live Content Index
@@ -53,7 +53,7 @@
 | A | The Funeral of the Dead Butterflies | HE | `placeholder_funeral_butterfly_weapon`<br>`placeholder_funeral_butterfly_armor`<br>`placeholder_funeral_butterfly_accessory` | `fragment_funeral_butterfly_eulogy` | Rare | ActiveSkill (independent skill) |
 | A | Little Red Riding Hooded Mercenary | WAW | `placeholder_little_red_weapon`<br>`placeholder_little_red_armor`<br>`placeholder_little_red_accessory` | `fragment_little_red_trace` | Rare | BasicAttackModifier (+4 ATK / -40 ms) |
 | A | Big and Will be Bad Wolf | WAW | `placeholder_big_bad_wolf_weapon`<br>`placeholder_big_bad_wolf_armor`<br>`placeholder_big_bad_wolf_accessory` | `fragment_big_bad_wolf_trace` | Rare | BasicAttackModifier (+4 ATK / -40 ms) |
-| A | Laetitia | WAW | `placeholder_laetitia_weapon`<br>`placeholder_laetitia_armor`<br>`placeholder_laetitia_accessory` | `fragment_laetitia_trace` | Rare | BasicAttackModifier (+4 ATK / -40 ms) |
+| A | Laetitia | WAW | `placeholder_laetitia_weapon`<br>`placeholder_laetitia_armor`<br>`placeholder_laetitia_accessory` | `fragment_laetitia_trace` | Rare | ActiveSkill (Staff; base `laetitia_place_friend`, awakened `laetitia_place_great_friend`) |
 | A | The Burrowing Heaven | WAW | `placeholder_burrowing_heaven_weapon`<br>`placeholder_burrowing_heaven_armor`<br>`placeholder_burrowing_heaven_accessory` | `fragment_burrowing_heaven_trace` | Rare | BasicAttackModifier (+4 ATK / -40 ms) |
 | B | Warm-hearted Woodsman | HE | `placeholder_warm_hearted_woodsman_weapon`<br>`placeholder_warm_hearted_woodsman_armor`<br>`placeholder_warm_hearted_woodsman_accessory` | `fragment_warm_hearted_woodsman_trace` | Common | BasicAttackModifier (+3 ATK / -20 ms) |
 | B | Queen Bee | WAW | `placeholder_queen_bee_weapon`<br>`placeholder_queen_bee_armor`<br>`placeholder_queen_bee_accessory` | `fragment_queen_bee_trace` | Common | BasicAttackModifier (+3 ATK / -20 ms) |
@@ -77,3 +77,5 @@
 - 색인은 live RON의 일부 field를 탐색용으로 투영할 뿐이다. 새 field나 효과 의미를 이 문서에서 먼저 정의하지 않는다.
 - live 파편/장비 membership 변경 시 `docs/audit/live_skill_catalog_evidence_contract.md`의 lifecycle에
   따라 이 파생 색인과 manifest/test evidence를 같은 변경에서 갱신한다.
+
+U07 소비 구현: 작은/큰 친구의 실제 정의는 `summoned_units/base.ron`의 `laetitia_small_friend`/`laetitia_big_friend`다. base의 같은-copy 재시전은 작은 친구를 진화시키고 awakened는 큰 친구를 직접 생성한다. 개화 recipe는 아직 unavailable이다. `common_place_ice_wall`/`melting_love_place_meat_wall`은 공통 공식 consumer skill이며 눈의 여왕·녹아내리는 사랑의 현행 파편/보상표를 변경하지 않는다. 초기 수치·범위·출처 선택은 [U07 위임 결정](../goals/core_independent_objects/WORKING_POLICY.ko.md)에 기록한다.

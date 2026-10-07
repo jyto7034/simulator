@@ -1,0 +1,52 @@
+{
+  "stage": "P2G-50",
+  "status": "complete",
+  "Goal Set Ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CMRP-001",
+    "Content Digest": "sha256:2c7e803d6b4cf52f1dc75bf7454355e259525825e1320c049a403d470e035f64"
+  },
+  "member_ids": [
+    "GOAL-CMRP-01"
+  ],
+  "validator": "P2G_50_VALIDATION_002.json",
+  "raw_exit": 0,
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CMRP-003",
+      "Content Digest": "sha256:fdfab0501d47b85ebb846c59e1041b707af332d0b7a33434bc0144b6ce2ec1d7"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CMRP-001",
+      "Content Digest": "sha256:a694e6a5980ba75bfb4d1777084f11dcb61eecf780ef686d1aa08390349f2932"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CMRP-001",
+      "Content Digest": "sha256:a9dc373cbd1ea21edf5c3ce13f81b0815488451327cad9fae1928476cc4654aa"
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CMRP-001",
+      "Content Digest": "sha256:2c7e803d6b4cf52f1dc75bf7454355e259525825e1320c049a403d470e035f64"
+    },
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "semantic_review": {
+    "all10_frozen_acceptances": true,
+    "five_nodes_one_integrated_phase": true,
+    "all10_seams_owned": true,
+    "all10_dimensions_required": true,
+    "181_predecessors_and31_R06": true,
+    "default_preserved_and_trusted_finite_dev_explicit": true,
+    "separate_measurements_bounded_normal_Core_host_required": true,
+    "current_host_restore_and_profile_replay_gate_distinct": true,
+    "no_implementation_or_independent_completion_claim": true
+  },
+  "P2G-50 Resolution Record Ref Set": [],
+  "next": "P2G-60"
+}

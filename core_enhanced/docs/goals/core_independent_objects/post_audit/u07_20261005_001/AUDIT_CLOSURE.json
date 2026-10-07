@@ -1,0 +1,257 @@
+{
+  "schema": "independent-gex20-audit-closure-v1",
+  "closed_at_utc": "2026-10-05T11:20:03.031393+00:00",
+  "goal_set": "GS-CIOB-001",
+  "goal": "GOAL-CIOB-01",
+  "phase": "PHASE-CIOB-01",
+  "scope": "single_phase whole Goal Set,20acceptances/10dimensions/161predecessor+31R06/6execution nodes and applicable final baseline",
+  "audit_target": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/target/u07_001",
+  "reviewer": {
+    "requested_model": "gpt-6-astra",
+    "requested_reasoning_effort": "high",
+    "implementation_nonparticipant": true,
+    "design_nonparticipant": true,
+    "source_or_target_mutations": false,
+    "delegated": false
+  },
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "complete_high_issued": false,
+  "currentness": "current / unchanged",
+  "beginning": {
+    "captured_at_utc": "2026-10-05T10:58:52.887239+00:00",
+    "target": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/target/u07_001",
+    "manifest_sha256": "44d34de0471d0a9c722da9eb0d6316ce66c75f84f070eefc6c8ae97675240e19",
+    "membership_count": 5275,
+    "source_count": 406,
+    "product_count": 388,
+    "records_count": 4795,
+    "errors": [],
+    "archives": {
+      "SOURCE_BEFORE.tar.gz": 393,
+      "SOURCE_AFTER.tar.gz": 406,
+      "RECORDS.tar.gz": 4795,
+      "REFERENCES.tar.gz": 82,
+      "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/SOURCE_BEFORE.tar.gz": 385,
+      "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/SOURCE_AFTER.tar.gz": 392,
+      "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/RECORDS.tar.gz": 2593,
+      "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_002/REFERENCES.tar.gz": 142
+    },
+    "restoration": [
+      {
+        "reverse": false,
+        "exit": 0,
+        "members": 406
+      },
+      {
+        "reverse": true,
+        "exit": 0,
+        "members": 393
+      }
+    ],
+    "status_sha256": "f1bd247a46075601cdbf879cce9b96f823a3db853cf35023cc7242a928718d2c",
+    "currentness": "current / unchanged"
+  },
+  "ending": {
+    "captured_at_utc": "2026-10-05T11:18:51.655212+00:00",
+    "target": "core_enhanced/docs/goals/core_independent_objects/execution/single_goal/target/u07_001",
+    "manifest_sha256": "44d34de0471d0a9c722da9eb0d6316ce66c75f84f070eefc6c8ae97675240e19",
+    "membership_count": 5275,
+    "source_count": 406,
+    "product_count": 388,
+    "records_count": 4795,
+    "errors": [],
+    "status_sha256": "9bcd18ab5de81644499e084b0c0536acd24f7ab85ebfb834afc7689ec71d753b",
+    "currentness": "current / unchanged"
+  },
+  "product_sha256": "7e60689016cd81398c254e1eb61705a8ea8eaaba9ba44cfd359c89a9a9ec2deb",
+  "dirty_attribution": {
+    "unchanged_outside_audit_directory": true,
+    "entry_sha256": "f1bd247a46075601cdbf879cce9b96f823a3db853cf35023cc7242a928718d2c",
+    "exit_sha256": "9bcd18ab5de81644499e084b0c0536acd24f7ab85ebfb834afc7689ec71d753b",
+    "excluded_prefix": "core_enhanced/docs/goals/core_independent_objects/post_audit/u07_20261005_001/",
+    "target_attribution": {
+      "tracked/dirty": 189,
+      "tracked/clean": 36,
+      "untracked": 5050
+    },
+    "status_entries_outside_audit": 96435
+  },
+  "open_findings": [
+    {
+      "id": "U07-F01",
+      "status": "Open",
+      "completion_blocking": true,
+      "priority": "High",
+      "title": "Independent HP object lifecycle erases unrelated block/contact relationships",
+      "owner": "GOAL-CIOB-01 / PHASE-CIOB-01 independent lifecycle and spatial integration",
+      "source": [
+        {
+          "path": "core_enhanced/src/game/battle/core/object_evolution.rs",
+          "line": 202,
+          "role": "new direct global reset for every non-trap evolution"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/independent_objects.rs",
+          "line": 333,
+          "role": "new active HP-object retirement caller into withdraw_unit"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/build.rs",
+          "line": 615,
+          "role": "pre-existing global reset; baseline old line614 independently verified"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+          "line": 139,
+          "role": "existing engagement preservation precedes new candidates"
+        },
+        {
+          "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+          "line": 383,
+          "role": "walls excluded from proximity reconstruction"
+        }
+      ],
+      "authority": "core_enhanced/docs/game_rules/combat.md:89; inherited PE-CBST-13",
+      "evidence_kind": "Direct source and contract proof; no new auditor product execution",
+      "failure": "Unrelated valid employee pairs and distinct wall contacts are removed by HP form evolution or active HP retirement; generic refresh lacks incumbent information and cannot restore wall contact by proximity.",
+      "pre_existing_boundary": "withdraw_unit reset predates U07; new U07 evolution reset and retirement caller broaden it. Historical U06 verdict is not rewritten. Shared-helper correction must assess prior caller impact.",
+      "affected_u07": [
+        "V07",
+        "V09",
+        "V12",
+        "V16",
+        "V19",
+        "V20"
+      ],
+      "affected_predecessor": [
+        "PE-CBST-13",
+        "PE-CBST-14",
+        "PE-CBST-15"
+      ],
+      "required_action": "Implementation-owned correction preserving unrelated valid relations and removing invalid own relations; meaningful normal lifecycle/contact reproduction and regression, applicable rollback/clone/time checks, affected full/current validation and baseline impact review; new frozen target and independent re-audit. No particular implementation is prescribed.",
+      "runtime_reproduction_in_this_audit": false
+    }
+  ],
+  "new_auditor_product_test_executions": 0,
+  "selected_receipts_verified": 50,
+  "public_input_hash_checks": 1509,
+  "condition_counts": {
+    "u07": 20,
+    "dimensions": 10,
+    "predecessor": 161,
+    "r06": 31,
+    "nodes": 6
+  },
+  "dependent_implementation_eligible": false,
+  "next_boundary": "Return U07 to implementation-owned GEX-10 correction/current validation, then new target and independent GEX-20. U07-M precedes U08 only after Complete/High and open0. No GEX-30 for single phase.",
+  "limitations": [
+    "F01 is source-confirmed; implementation-owned runtime reproduction/correction remains required.",
+    "No exhaustive historical source reread or all Cartesian runtime combinations claimed.",
+    "Local Linux CoreApplication/real actor/stock WebSocket/process/file scope; no Unity/deployed-service claim.",
+    "Only inherited R05 concurrent peak warning and20-minute stress exclusion retained; raw101 remains visible.",
+    "Skill authoring supplement is reconstructed preimage, not contemporaneous intake."
+  ],
+  "audit_artifacts": [
+    {
+      "path": "COMPLETION_AUDIT.md",
+      "bytes": 20387,
+      "sha256": "1e020bd7c2e66d1079b605dbd08d5f859ac1a7ab62cb145904bf15f74d1c2471"
+    },
+    {
+      "path": "CONDITION_JUDGMENTS.json",
+      "bytes": 982941,
+      "sha256": "79d2df38c27af8d0ee7b0efb53846b0f3b58733a7f2de9e03df93e9457b15c04"
+    },
+    {
+      "path": "CURRENTNESS_entry.json",
+      "bytes": 1291,
+      "sha256": "576eca3943f789754917231564993c674d4c2650496ee1442627bb5d5a6ce699"
+    },
+    {
+      "path": "CURRENTNESS_exit.json",
+      "bytes": 494,
+      "sha256": "bb54e10b6f9f0395610c0e55cc8bd00edf9ddea56572a4ca3e03e7478b5ec792"
+    },
+    {
+      "path": "DIRTY_ATTRIBUTION.json",
+      "bytes": 467,
+      "sha256": "83ee95353056efbfde6a0f75bd5963fd394173d044c7c0b01d4819228a8d4cba"
+    },
+    {
+      "path": "EVIDENCE_VERIFICATION.json",
+      "bytes": 140744,
+      "sha256": "db47c058fe5e088461506cfe1e253927b751f3af9b433a73bfbd6f26294256de"
+    },
+    {
+      "path": "FINDINGS.json",
+      "bytes": 2631,
+      "sha256": "cc8d9bb307c8f7ca831e9c2e82cd85115255adb9734a041657baf7da1098060e"
+    },
+    {
+      "path": "GIT_STATUS_entry.txt",
+      "bytes": 13328457,
+      "sha256": "f1bd247a46075601cdbf879cce9b96f823a3db853cf35023cc7242a928718d2c"
+    },
+    {
+      "path": "GIT_STATUS_exit.txt",
+      "bytes": 13329789,
+      "sha256": "9bcd18ab5de81644499e084b0c0536acd24f7ab85ebfb834afc7689ec71d753b"
+    },
+    {
+      "path": "PERFORMANCE_VERIFICATION.json",
+      "bytes": 1033,
+      "sha256": "430a036aed72a4d870d208eb93df280938ec171442a91e1abb5706937f5efeaa"
+    },
+    {
+      "path": "PUBLIC_VERIFICATION.json",
+      "bytes": 7449,
+      "sha256": "1a13a67c4ce3c02f2dd6c3381ebe408ab5b2f8f0354011543dd7308ce09147bd"
+    },
+    {
+      "path": "RESTORE_FORWARD.log",
+      "bytes": 5340,
+      "sha256": "aae66ed1192574bacd69a3e0960b4e2932298193ed40254feb85eb71ea59125f"
+    },
+    {
+      "path": "RESTORE_REVERSE.log",
+      "bytes": 5340,
+      "sha256": "aae66ed1192574bacd69a3e0960b4e2932298193ed40254feb85eb71ea59125f"
+    },
+    {
+      "path": "SOURCE_REVIEW.json",
+      "bytes": 12623,
+      "sha256": "64fa146a0a32309c878daacac984a4e2e425fdf2c571c77f6f5f80d811e518b1"
+    },
+    {
+      "path": "check_evidence.py",
+      "bytes": 4181,
+      "sha256": "24c836254e6a77715525391d0dc9ece2f2bc3687127a08f5cada6d0e9ca3c46e"
+    },
+    {
+      "path": "check_performance.py",
+      "bytes": 3436,
+      "sha256": "c1d34ab38acbb83c5d0a6e60c5d78ad43469a217ca3ba33320abd564bb465a0e"
+    },
+    {
+      "path": "check_public.py",
+      "bytes": 5306,
+      "sha256": "dddc949c82470b51cca02284966e4bc3da6e8176915d60dd2120e08c942e1601"
+    },
+    {
+      "path": "check_target.py",
+      "bytes": 4211,
+      "sha256": "72046b8dd477c148a04359b04f384584cdb61b2eb0bbebb8fc689f622ac9bcbf"
+    },
+    {
+      "path": "close_audit.py",
+      "bytes": 5775,
+      "sha256": "232a0e2449f79974b09902229ef22549c7237cd8c8e75827fb924838b63ff5c2"
+    },
+    {
+      "path": "write_judgments.py",
+      "bytes": 17634,
+      "sha256": "21e3c759fd70d371a068d37dc3be1fa18318a0eb36dbe2b09df761a4a8edc745"
+    }
+  ]
+}

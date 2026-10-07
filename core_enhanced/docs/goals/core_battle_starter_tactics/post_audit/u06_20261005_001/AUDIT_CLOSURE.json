@@ -1,0 +1,395 @@
+{
+  "schema": "independent-gex20-audit-closure-v1",
+  "closed_at_utc": "2026-10-04T18:48:26.442547+00:00",
+  "goal_set": "GS-CBST-001",
+  "goal": "GOAL-CBST-01",
+  "phase": "PHASE-CBST-01",
+  "scope": "single_phase whole Goal Set and applicable final baseline",
+  "audit_target": "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/target/u06_001",
+  "reviewer": {
+    "requested_model": "gpt-6-astra",
+    "requested_reasoning_effort": "high",
+    "implementation_nonparticipant": true,
+    "source_or_target_mutations": false
+  },
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "complete_high_issued": false,
+  "currentness": "current / unchanged",
+  "beginning": {
+    "at_utc": "2026-10-04T18:30:02.754805+00:00",
+    "manifest_sha256": "ce3789acbe476671b2791f59df99346e1660190089d71efe0776f20265ccd1a2",
+    "product_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+    "membership_count": 2671,
+    "source_count": 392,
+    "record_count": 2215,
+    "reference_count": 72,
+    "archive_counts": {
+      "SOURCE_BEFORE": 385,
+      "SOURCE_AFTER": 392,
+      "RECORDS": 2215,
+      "REFERENCES": 72,
+      "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_BEFORE.tar.gz": 375,
+      "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_AFTER.tar.gz": 377,
+      "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/RECORDS.tar.gz": 2992,
+      "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/REFERENCES.tar.gz": 166
+    },
+    "attribution": {
+      "tracked/clean": 37,
+      "tracked/dirty": 188,
+      "untracked": 2446
+    },
+    "errors": []
+  },
+  "ending": {
+    "at_utc": "2026-10-04T18:47:48.485365+00:00",
+    "manifest_sha256": "ce3789acbe476671b2791f59df99346e1660190089d71efe0776f20265ccd1a2",
+    "product_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+    "membership_count": 2671,
+    "source_count": 392,
+    "record_count": 2215,
+    "reference_count": 72,
+    "archive_counts": {},
+    "attribution": {
+      "tracked/clean": 37,
+      "tracked/dirty": 188,
+      "untracked": 2446
+    },
+    "errors": []
+  },
+  "findings": [
+    {
+      "id": "U06-F01",
+      "severity": "completion-blocking",
+      "owner": "GOAL-CBST-01 / PHASE-CBST-01",
+      "required_return": "correction GEX-10",
+      "summary": "Zero-effective basic Heal remains eligible and starts repeatedly; public eligible-target query uses the same predicate.",
+      "policy": "PE-CBST-05 / WORKING_POLICY.ko.md:51",
+      "failed_validation_refs": [
+        "V05",
+        "V15",
+        "V20"
+      ],
+      "partial_validation_refs": [
+        "V19"
+      ],
+      "evidence": [
+        "ZERO_HEAL_PUBLIC_REPRO.json",
+        "ZERO_HEAL_RUNTIME_RECEIPT.json",
+        "ZERO_HEAL_RAW.json",
+        "probe/src/main.rs"
+      ],
+      "scope_limit": "Not a claim that positive official starters fail or that zero coefficients must necessarily be rejected by schema."
+    }
+  ],
+  "dependent_u07_eligible": false,
+  "next_required_boundary": "Owner correction GEX-10, affected regression/evidence and new frozen target, fresh independent GEX-20. No GEX-30 for this single_phase Goal Set.",
+  "evidence_counts": {
+    "u06_conditions": 20,
+    "inherited_conditions": 141,
+    "r06_acceptances": 31,
+    "required_dimensions": 10
+  },
+  "audit_artifacts": [
+    {
+      "path": "COMPLETION_AUDIT.md",
+      "bytes": 18846,
+      "sha256": "692b675cdbb61a303da10000854ba0788ad690dc35554b5bfec40d0e56c03ba4"
+    },
+    {
+      "path": "CONDITION_JUDGMENTS.json",
+      "bytes": 673156,
+      "sha256": "5087fb0f4a66a11a13b3c546176d15b25fe6a6db7890e86938046d857c7008f6"
+    },
+    {
+      "path": "CURRENTNESS_BEGIN.json",
+      "bytes": 1032,
+      "sha256": "ddd26ecfed8344ff1c01037cc4265335892612a74ffc111ce37c6d035524057a"
+    },
+    {
+      "path": "CURRENTNESS_BEGIN_SORTING_PROBE.json",
+      "bytes": 1135,
+      "sha256": "5df6a2e3fb59f6bdd9b17b663219791b4bc422556a15dac8e1db894eb8c90568"
+    },
+    {
+      "path": "CURRENTNESS_END.json",
+      "bytes": 465,
+      "sha256": "7bad77c5fe4bbe95aa4e91c4eb55e63ed8de5061ac54f0cb19d107143e52b8be"
+    },
+    {
+      "path": "EVIDENCE_VERIFICATION.json",
+      "bytes": 37973,
+      "sha256": "84bbb4220337e5b5e282a8d5afb1c5115eeecdad63146973a9d0cb8e0839f701"
+    },
+    {
+      "path": "PREDECESSOR_MEANING_CHECK.json",
+      "bytes": 1401,
+      "sha256": "353531f2ff4f1904df387b3211bb8eb97922f46ef6af2405cff3543788f0768f"
+    },
+    {
+      "path": "PROBE_BEFORE_SPAWN.rs",
+      "bytes": 3210,
+      "sha256": "fe56d75d58980805ed2e7ba1a28a8996416980bc65cdb610cf4f0c4ae27f5715"
+    },
+    {
+      "path": "PROBE_INITIAL.rs",
+      "bytes": 3064,
+      "sha256": "1294e854f6a86e6839df804e7b9faaf6683233493b54aa60c49a2b5746088fad"
+    },
+    {
+      "path": "PROBE_INITIAL_UNPINNED.lock",
+      "bytes": 32251,
+      "sha256": "6783c5cc29182e98683d474679a43b85c8380a2d27b8fab18a310b54da3a19f6"
+    },
+    {
+      "path": "PROBE_MISSING_OUTCOME.rs",
+      "bytes": 3067,
+      "sha256": "ea76ca3247110d4931a453692d693810650e9cf474546f05002a6930aeee5d95"
+    },
+    {
+      "path": "ZERO_HEAL_BEFORE_SPAWN_FAILURE.log",
+      "bytes": 4988,
+      "sha256": "38d7a8cc983f0ce3ef156d3b351d549df8958ccd8312a0f0ae0a639294af70bd"
+    },
+    {
+      "path": "ZERO_HEAL_BEFORE_SPAWN_RAW.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ZERO_HEAL_BUILD.log",
+      "bytes": 4810,
+      "sha256": "bcb1efa1ae738ce184da2f4aead4f7e584a632a90acf749e71d917b49a2565d9"
+    },
+    {
+      "path": "ZERO_HEAL_INITIAL_BUILD_FAILURE.log",
+      "bytes": 7331,
+      "sha256": "30b0a6ce674cd4859fc3020d223906db091b677d0d5fca291702f6a9ce5c1988"
+    },
+    {
+      "path": "ZERO_HEAL_INITIAL_RAW.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ZERO_HEAL_MISSING_OUTCOME_FAILURE.log",
+      "bytes": 5147,
+      "sha256": "1aae6d14554f29204a2d20d8b9759bebcb88058a78ab5f78b8f172de08134c36"
+    },
+    {
+      "path": "ZERO_HEAL_MISSING_OUTCOME_RAW.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ZERO_HEAL_PUBLIC_REPRO.json",
+      "bytes": 6293,
+      "sha256": "ca3e5a78badae2ac73911f4e707f6e3e8bc1f70e3b1cb0675220b3321dc0f097"
+    },
+    {
+      "path": "ZERO_HEAL_PUBLIC_REPRO.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ZERO_HEAL_PUBLIC_REPRO.stdout",
+      "bytes": 4836,
+      "sha256": "9e260920aaae1b72f0eba7651b4767eb522fb5a4709224ea865d59f10a6aebc5"
+    },
+    {
+      "path": "ZERO_HEAL_PUBLIC_VALIDATE.json",
+      "bytes": 655,
+      "sha256": "7efeb4215d946042f669fa060e3c90129b4ee2bac56aa751c2ee69f4ed80dfcf"
+    },
+    {
+      "path": "ZERO_HEAL_PUBLIC_VALIDATE.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ZERO_HEAL_PUBLIC_VALIDATE.stdout",
+      "bytes": 4836,
+      "sha256": "9e260920aaae1b72f0eba7651b4767eb522fb5a4709224ea865d59f10a6aebc5"
+    },
+    {
+      "path": "ZERO_HEAL_RAW.json",
+      "bytes": 9906,
+      "sha256": "2c373639bcfe147afe4a0adeb73b54b1107435d8ea33c9a93b573e007710a743"
+    },
+    {
+      "path": "ZERO_HEAL_RUNTIME_RECEIPT.json",
+      "bytes": 3129,
+      "sha256": "7d45b1388927c07991c553931fae06ecd5907a8d4e6e919ca143e5ad65a7ed4e"
+    },
+    {
+      "path": "forward.log",
+      "bytes": 4600,
+      "sha256": "68ac142865f34db1c6c6ecf216fe6149b947c20cb4b998d77897056d36b19adb"
+    },
+    {
+      "path": "probe/Cargo.lock",
+      "bytes": 31993,
+      "sha256": "cdb3ce3acaa37ff72fc5a7551e2a64ac0f654f16e81d2d1340a4b429138e7fcb"
+    },
+    {
+      "path": "probe/Cargo.toml",
+      "bytes": 270,
+      "sha256": "b727453259f4d26aa3beb42809cc853aaa895a651e02b7ea1eb9ce71a9fc77b2"
+    },
+    {
+      "path": "probe/src/main.rs",
+      "bytes": 3272,
+      "sha256": "4f2865169c5b2efe873c9d97796eeb69373ac3aec20caaaf35167c4bd65263b3"
+    },
+    {
+      "path": "reverse.log",
+      "bytes": 4600,
+      "sha256": "68ac142865f34db1c6c6ecf216fe6149b947c20cb4b998d77897056d36b19adb"
+    },
+    {
+      "path": "verify_evidence.py",
+      "bytes": 2156,
+      "sha256": "613431d98cb71b598f9ab914b4bdc1ab26f05512da45c86bf01901ec6d5c4c17"
+    },
+    {
+      "path": "verify_target.py",
+      "bytes": 4866,
+      "sha256": "6145dfb06eed8aff374951d1173005554364b2d6f79e5cde479d246e0d4c4fe0"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/employees/definitions.ron",
+      "bytes": 9675,
+      "sha256": "ec80a91cf21bd101d257270fe81a136e5a87b70aa0025a180e5357bac71bdc70"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/equipments/base.ron",
+      "bytes": 75479,
+      "sha256": "6f5f01d0df62fe42609e3be85995433aef603bab3af6c4a5d06187dfd536f9a7"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/events/shops/base.ron",
+      "bytes": 5446,
+      "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/events/story/base.ron",
+      "bytes": 5693,
+      "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/map/facility_templates.ron",
+      "bytes": 13884,
+      "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/map/node_assignment_profiles.ron",
+      "bytes": 9857,
+      "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/map/node_definitions.ron",
+      "bytes": 1990,
+      "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/pve/encounters.ron",
+      "bytes": 114717,
+      "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/run/policy.ron",
+      "bytes": 12392,
+      "sha256": "96227e7cbc9af67b6ab28192910e732cfd881a4650d20b4cbfe4996f2eb16726"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/skill_fragments/base.ron",
+      "bytes": 33613,
+      "sha256": "a5d6d02ad31a924c9b2cb22b462add268db96a9465dc638dcefa70e5b235cfc5"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/skills/base.ron",
+      "bytes": 51218,
+      "sha256": "c6e6629fdc0a901ac02603fa60a2d90d3f05fadca503b06ee20c5d0740b950e7"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/summoned_units/base.ron",
+      "bytes": 1132,
+      "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/visual_novel_triggers/base.ron",
+      "bytes": 722,
+      "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/data/visual_novels/base.ron",
+      "bytes": 4357,
+      "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+    },
+    {
+      "path": "zero_heal_public_input/content/official/pack.ron",
+      "bytes": 1808,
+      "sha256": "db767b1c319ba12b44bef5a5e044b6d5a6e86fe09a513d1db2bb0250b0e9b9e4"
+    },
+    {
+      "path": "zero_heal_public_input/selection.json",
+      "bytes": 35,
+      "sha256": "5c52cf4e5d25ade35520944616a2377ccb776c42aed5d19b2e7dfc37182b9894"
+    }
+  ]
+}

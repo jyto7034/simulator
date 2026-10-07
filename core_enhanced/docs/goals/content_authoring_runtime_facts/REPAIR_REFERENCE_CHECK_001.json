@@ -1,0 +1,18 @@
+{
+  "result": "passed",
+  "checked_selected_graph_artifacts": 106,
+  "duplicate_identity": 0,
+  "unresolved_ref": 0,
+  "selected_cycle": 0,
+  "policy_changes": 0,
+  "acceptance_count": 20,
+  "source_hash_mismatch": [],
+  "declaration_leaf": "COD-CARF-002",
+  "checked_complete_stage_resolution_records": [
+    "RR-CARF-O20-002",
+    "RR-CARF-O30-002",
+    "RR-CARF-O40-002"
+  ],
+  "receipt_adapter_limitation": "internal resolution count0 represents no canonical own-result reference; complete-result O40 resolution separately checked and applicable obligation count1 retained",
+  "actual_new_runtime_tests": 0
+}

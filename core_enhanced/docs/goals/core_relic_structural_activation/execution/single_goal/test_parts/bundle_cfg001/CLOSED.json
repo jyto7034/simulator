@@ -1,0 +1,287 @@
+{
+  "schema": "u09_cfg001_closed_v1",
+  "closed_at_utc": "2026-10-07T13:06:00.575847+00:00",
+  "status": "Root accepted successor AST verification plus two explicit macro reviews and normal-span successor comparison",
+  "root_acceptance": "Root read parser/verifier/manual scripts; accepted verify002 + manual001 + manual002 after comparing26+4 controls,17/15 AST spans,2 exact macro containers and492 bound references including current456.",
+  "baseline_count": 449,
+  "baseline_source_sha256": "38269ec3b79e446eb7bbfcb9831d540e86f65f6c432d301c426503469d64d8e4",
+  "frozen_source_count": 456,
+  "frozen_source_sha256": "da23e705d36addd97ba208db7a94c726919cc6e509bba34df2cf454a527aeb46",
+  "freeze_receipt": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/u09_product_bundle_b_check012.json",
+    "bytes": 179695,
+    "sha256": "6dc32e22cfa558855ee77c8e652607bb36231f38f23fc6e43f6169da182ddd07"
+  },
+  "source_comparison": {
+    "exact_whole_file": 416,
+    "changed_existing_rust_AST_comparisons": 33,
+    "new_rust_files_without_test_attributes": 7,
+    "ordinary_AST_compared_files": 31,
+    "reviewed_files_normal_AST_successor_counts": [
+      17,
+      15
+    ],
+    "external_test_fixture_files_exact": 125,
+    "authored_test_byte_changes": 0
+  },
+  "metadata_controls": {
+    "boundary_and_historical_controls": 26,
+    "review_plus_normal_AST_mutation_controls": 4,
+    "total": 30,
+    "all_passed": true,
+    "meaning": "Positive controls detect real test-body changes; negative controls exclude unrelated production edits; unsupported syntax remains explicit review."
+  },
+  "generic_checker": {
+    "receipt": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_verify002/RECEIPT.json",
+      "bytes": 183594,
+      "sha256": "b94fd6af8678d0fc6fedc4187d183a882a3e681f249dc4c992d10999caaf3b57"
+    },
+    "exit_code": 2,
+    "status_retained": "changes_or_manual_review_required",
+    "opaque_cases": 2,
+    "blanket_allowlist_added": false,
+    "manual_resolution": "Exact ItemMacro containers preserve all authored child bytes without inferring an expanded child boundary; normal AST spans in those same files separately compared by manual002."
+  },
+  "runs": [
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_build001/RECEIPT.json",
+        "bytes": 181238,
+        "sha256": "6cdb7a4051f4089a7246e1931997e83993d4fdadade8231fe6d6a426bcf3aa04"
+      },
+      "stage": "build",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "tool_unchanged": false
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_verify001/RECEIPT.json",
+        "bytes": 183594,
+        "sha256": "068d2285a28ad5272246a4cb6dc76323a8f002353eb4f142b6141ec9e745dff8"
+      },
+      "stage": "verify",
+      "exit_code": 2,
+      "source_unchanged": true,
+      "tool_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_build002/RECEIPT.json",
+        "bytes": 184169,
+        "sha256": "5c8d0f0661aa09dbf0115630d25213fd9e6d156d41a1cce647b10057ae41b15a"
+      },
+      "stage": "build",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "tool_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_verify002/RECEIPT.json",
+        "bytes": 183594,
+        "sha256": "b94fd6af8678d0fc6fedc4187d183a882a3e681f249dc4c992d10999caaf3b57"
+      },
+      "stage": "verify",
+      "exit_code": 2,
+      "source_unchanged": true,
+      "tool_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_manual001/RECEIPT.json",
+        "bytes": 183939,
+        "sha256": "b6eabed7191463f01919f6eb5f7dbf3fe3e95fe49484e9ebbb6995f732ba70f3"
+      },
+      "stage": "manual",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "tool_unchanged": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_manual002/RECEIPT.json",
+        "bytes": 185224,
+        "sha256": "997b5a2b51e98d44450b1cf39f2755a4e0770be57cc7f736e4e6373fcef7b1cb"
+      },
+      "stage": "manual2",
+      "exit_code": 0,
+      "source_unchanged": true,
+      "tool_unchanged": true
+    }
+  ],
+  "failure_and_correction_history": [
+    {
+      "label": "u09_cfg001_verify001",
+      "classification": "independent verifier module-graph overclassification",
+      "details": "Two conditional visibility registrations of the same production core module incorrectly propagated full-file test ownership; integration-test crate-root module paths also needed explicit handling. Corrected with3 additional independent graph controls. Original result retained."
+    },
+    {
+      "label": "u09_cfg001_verify002",
+      "classification": "intentional fail-closed opaque-macro review",
+      "details": "Parser returned2 opaque macro cases. manual001 bound exact915/1076byte macro containers."
+    },
+    {
+      "label": "u09_cfg001_manual002",
+      "classification": "coverage gap found by Root and closed",
+      "details": "verify compare() returned review before comparing normal AST spans. Successor independently compared every recognized span/order/context and bytes in both files, then detected static and actual derived normal-test mutations despite opaque reviews."
+    }
+  ],
+  "macro_containers": [
+    {
+      "path": "core_enhanced/src/application.rs",
+      "bytes": 915,
+      "sha256": "6a9f64444e527ee3b1d2236e75e279d4145dd4ff9a4a6ba31d3ee86472da1916"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "bytes": 1076,
+      "sha256": "f74b037a958a785cb7b2d68386dcfc460f680faace018c88058433318ed41e47"
+    }
+  ],
+  "scope_limits": [
+    "Read-only authored source/registration preservation; no macro expansion semantics or runtime support claim.",
+    "General scanner still requires manual review for unknown cfg/opaque tokens/cfg_attr and never guesses a next-brace boundary.",
+    "AST owner text includes internal whitespace/comments; punctuation and trivia owned by enclosing syntax are not falsely assigned to a following function.",
+    "Uncertain cases require explicit reviewed exact-container evidence, not an automatic success fallback.",
+    "Existing TA00112 functional results remain historical evidence; no gameplay tests were run or their oracles edited."
+  ],
+  "preserved_failed_product_artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/execute_format.py",
+      "bytes": 5189,
+      "sha256": "f1ca0cd076204b91830a0ae24b08398bc2ebcf51cca1059e1edfa72037f144f7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/collect_cfg_preservation.py",
+      "bytes": 3915,
+      "sha256": "991c9d036258f9dbc2e0f5e0456e99580ada15f51f487fd625502eddcfe5a3fe"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_COLLECTION_FAILURE_001.txt",
+      "bytes": 351,
+      "sha256": "e133e98218960a4e866538d21afbfddef466bdbbe52c21c34bb16a6b7daf2e76"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_RESTORATION_001.json",
+      "bytes": 1835,
+      "sha256": "1951a4d399ad3a5395193397bfca9ef264d19ce147b8040a10853c5bfa4024d5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_b001/CFG_TEST_PRESERVATION.json",
+      "bytes": 263181,
+      "sha256": "0df5f5ed1b027b4882f5e5e4e43e5ec256fdc9d47697c2c5b9aa170e71421b7f"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/parser/Cargo.toml",
+      "bytes": 318,
+      "sha256": "82ab70a9021b8650fb697f4aa1e2c7674eee33eb35284ac19650db8049cf26f8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/parser/Cargo.lock",
+      "bytes": 2935,
+      "sha256": "c9593343b0330ed322c3c3326efe75742dc6a5f3c1ebbcdcb40caf52314d95a8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/parser/src/main.rs",
+      "bytes": 16866,
+      "sha256": "47e669fca312c049702d5b36fa7cbaebb3cc74d4022519be5e7904fa4c0bb358"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/PARSER_API_REFERENCES.json",
+      "bytes": 3207,
+      "sha256": "baa69a64094709b53db650fcbbadcea75f27a1cbe8f51496619d0c5eb86b7b7c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/verify_cfg.py",
+      "bytes": 16509,
+      "sha256": "11096feae7fe484eb3ffa05ab4aecfe821a3da69119cc433b4e4a788986b51b0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/collect_manual_evidence.py",
+      "bytes": 4737,
+      "sha256": "a017bf17685097cde9ae683490075098fff253b1d04a4317fdbafea5c83b418e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/compare_reviewed_ast.py",
+      "bytes": 7875,
+      "sha256": "2fc1ab1fd4db8f829d5bf840864f2c225e12a57716e49c57360e98a5702c3355"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/run_stage.py",
+      "bytes": 5093,
+      "sha256": "cc2b6da9d593a3b0e5de8b6c79fc7635ba6f31a225f562ba0ae621f37d552f41"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/cases.json",
+      "bytes": 9581,
+      "sha256": "e042ec8153559afcebd800a7d286db58d875e9a58fc4d888a99004e3047210b1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/mixed_opaque_and_normal.json",
+      "bytes": 471,
+      "sha256": "aa69ff5ab47aeff2f9c305d56817cd7d35dcb2202143320818c7d666aea324a2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/HISTORICAL_SNAPSHOT_REFS.json",
+      "bytes": 1467,
+      "sha256": "6a0c8fb87df90ef0e16c2439121db361ac039a5874dac0ce7b176139c7ed60e7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/check011_application.rs",
+      "bytes": 23089,
+      "sha256": "4ce0506b3af4f895e5b252ea6c59e41353148328a3abd8f4d23ff39f42ebbdc4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/fixtures/check012_application.rs",
+      "bytes": 23137,
+      "sha256": "6231ba3c66462ac44158d4d71cbc150645a35bf2d94db5a730627fd0976438ec"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_verify002/verification.json",
+      "bytes": 479096,
+      "sha256": "ea8adbe03591cf4461d81243b6d9b90bab541996a7099d6058726eb406f664fc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_manual001/manual_evidence.json",
+      "bytes": 7319,
+      "sha256": "a69d2f2e52e5816dfb1e2019b48eaf82a29eee8b98e0fb4a6283b2e88cdb55c7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_manual002/manual_ast_comparison.json",
+      "bytes": 56569,
+      "sha256": "f0d47670858a2c6ade63a3bafbee079e8c4c1b5f973f881be7c84ba581d7e2fc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_verify002/parser.stdout.json",
+      "bytes": 1835625,
+      "sha256": "4b50284d1c75a5257b0e68ff5e74ecc8d36af6867c36d1950fb8c8eb5bce5120"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_verify002/parser.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_manual002/controls_parser.stdout.json",
+      "bytes": 13438,
+      "sha256": "cbf36de61fa3dc1c30d865f959305abd05a14919f8c6f5057644575add91392c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/bundle_cfg001/runs/u09_cfg001_manual002/controls_parser.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "tool_build_note": "build001 created only the isolated metadata crate Cargo.lock; build002 tool inputs unchanged. Both used offline dependencies and a private target directory. No root Cargo.lock or gameplay input changed.",
+  "gameplay_source_writes": 0,
+  "functional_cargo_runs": 0,
+  "source_restorations": 0,
+  "source_writer_count": 0,
+  "tool_writer_count": 0,
+  "runner_count": 0,
+  "next_boundary": "HOLD pending Root; no B gameplay/testsource execution authorized by this metadata closure."
+}

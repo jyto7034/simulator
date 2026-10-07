@@ -124,6 +124,15 @@ pub struct ConsumableDatabase {
 }
 
 impl ConsumableDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(items: Vec<ConsumableMetadata>) -> Self {
+        Self {
+            items,
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
+        }
+    }
+
     pub fn new(items: Vec<ConsumableMetadata>) -> Self {
         let by_id = once_lock_with(build_string_index(&items, "consumable id", |item| &item.id));
         let by_uuid = once_lock_with(build_uuid_index(&items, "consumable uuid", |item| {

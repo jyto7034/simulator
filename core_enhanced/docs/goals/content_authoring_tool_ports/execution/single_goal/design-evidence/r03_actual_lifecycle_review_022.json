@@ -1,0 +1,323 @@
+{
+  "report_id": "R03-ACTUAL-LIFECYCLE-SOURCE-REVIEW-022",
+  "role": "bounded read-only source review/design assistance; not completion audit",
+  "root_sole_writer": true,
+  "scope": "actual fixed lifecycle producer/consumer, reconciliation, commit/rollback, clock cap and new tests",
+  "production_observation": "No concrete reachable production defect identified within inspected source slice; not a completion verdict",
+  "findings": [
+    {
+      "id": "F01",
+      "category": "test fixture defect",
+      "status": "historical; corrected in separately inspected second version",
+      "source": "core_enhanced/src/game/world/tests/combat.rs:12761-12780",
+      "initial_sha256": "4f39dc572e7975ff7a4aa93b92e563b11e164efa894cfab3508adaa68d03d5d9",
+      "description": "TimeReached{0} conflicts with actual scenario validation and cannot be valid timezero-terminal coverage.",
+      "producer": "core_enhanced/src/game/battle/scenario.rs:688-694",
+      "correction_sha256": "a1e30f9fd0997b0f21e28636aae8af8af4249f799308662001c552b8f396204e",
+      "correction_source": "tests/combat.rs:12777-12786 uses AllRequiredEnemyGroupsDefeated at zero"
+    },
+    {
+      "id": "N01",
+      "category": "test oracle limitation",
+      "status": "present at second read; close test version unreviewed",
+      "source": "core_enhanced/src/game/world/tests/combat.rs:12800-12808",
+      "description": "TimeReached threshold10 plus advance50 does not alone establish actual finish10; actual kernel evaluates on bucket/target times. No specific fixture bucket10 was established in bounded read.",
+      "producer": "core_enhanced/src/game/battle/core/sim.rs:1251,1518-1544,1952-1954,1980-1992",
+      "recommendation": "Use exact target or a verified actual evaluation event/returned execution time; do not backdate witness or change gameplay to fit threshold oracle."
+    }
+  ],
+  "coverage_limits": [
+    "No tests/builds executed by helper",
+    "Only two new world lifecycle tests inspected; source review not aggregate session acceptance",
+    "Actual cumulative cap/error phases/final-poll/receipt failure and checkpoint/reset owner oracles require root validation",
+    "No full optional source capsule/occurrence design or generalized imported core coverage"
+  ],
+  "reads": [
+    {
+      "path": "core_enhanced/src/game/world/authoring_lifecycle.rs",
+      "bytes": 7541,
+      "sha256": "69e06f862a961fe0ff1d9b1b35fbdb869d1db4e0cb4db69e7f71efdda552aa8c",
+      "observed_at_utc": "2026-09-10T11:27:45.694304+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 227
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34696,
+      "sha256": "57d47fb5fdb7a728d9b7e1ba08b6efb0a7b56de0c28380f59b413999a662bd7f",
+      "observed_at_utc": "2026-09-10T11:27:45.718009+00:00",
+      "spans": [
+        {
+          "start": 15,
+          "end": 125
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "bytes": 45629,
+      "sha256": "c37e28bfccbed675dc268a59b477ddc3041759d02ba9e6e94019c8a9506a84e8",
+      "observed_at_utc": "2026-09-10T11:27:45.756329+00:00",
+      "spans": [
+        {
+          "start": 780,
+          "end": 824
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 9931,
+      "sha256": "5b1a67a4550f31f03e7baeb1db45d8293147978e90d0b4b53df99f934481b2f0",
+      "observed_at_utc": "2026-09-10T11:27:45.778208+00:00",
+      "spans": [
+        {
+          "start": 128,
+          "end": 229
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "bytes": 62941,
+      "sha256": "949e4d04f2b8d64d6e591c0a9fea1ee23da0d43d452a97f6b5344e1b97d0bdcc",
+      "observed_at_utc": "2026-09-10T11:27:45.809987+00:00",
+      "spans": [
+        {
+          "start": 784,
+          "end": 810
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "bytes": 10938,
+      "sha256": "1f37b9d6e08f767e9bc439571da4b9ae0628176f5e6cb40f3356f18a01f88d12",
+      "observed_at_utc": "2026-09-10T11:27:45.850258+00:00",
+      "spans": [
+        {
+          "start": 18,
+          "end": 30
+        },
+        {
+          "start": 169,
+          "end": 225
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 130116,
+      "sha256": "b78e0de0ab027b3f99ffbd8c078df6ea8fff5fd1559992ed600a4a3579ce0062",
+      "observed_at_utc": "2026-09-10T11:27:45.891291+00:00",
+      "spans": [
+        {
+          "start": 633,
+          "end": 695
+        },
+        {
+          "start": 1393,
+          "end": 1413
+        },
+        {
+          "start": 1454,
+          "end": 1580
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "bytes": 23328,
+      "sha256": "a636a0269b568beed306542d77d19ac5d23ab3bf2578ba1731e494e8a40db4d5",
+      "observed_at_utc": "2026-09-10T11:27:45.916804+00:00",
+      "spans": [
+        {
+          "start": 95,
+          "end": 173
+        },
+        {
+          "start": 173,
+          "end": 222
+        },
+        {
+          "start": 284,
+          "end": 389
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "bytes": 454962,
+      "sha256": "4f39dc572e7975ff7a4aa93b92e563b11e164efa894cfab3508adaa68d03d5d9",
+      "observed_at_utc": "2026-09-10T11:27:45.940569+00:00",
+      "spans": [
+        {
+          "start": 12660,
+          "end": 12820
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "bytes": 30321,
+      "sha256": "376db1336ecfc11788f7f468f88310ee37896c219dcb5679fbfdfa6f681eca4d",
+      "observed_at_utc": "2026-09-10T11:29:41.384350+00:00",
+      "spans": [
+        {
+          "start": 664,
+          "end": 704
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 131437,
+      "sha256": "9e3a3ef70179d302be10b8d6f0ca7873885cd448ac629e893505f6856b35f5b4",
+      "observed_at_utc": "2026-09-10T11:29:41.412293+00:00",
+      "spans": [
+        {
+          "start": 1230,
+          "end": 1278
+        },
+        {
+          "start": 1945,
+          "end": 2005
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "bytes": 455111,
+      "sha256": "a1e30f9fd0997b0f21e28636aae8af8af4249f799308662001c552b8f396204e",
+      "observed_at_utc": "2026-09-10T11:30:05.907854+00:00",
+      "spans": [
+        {
+          "start": 12758,
+          "end": 12823
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34696,
+      "sha256": "57d47fb5fdb7a728d9b7e1ba08b6efb0a7b56de0c28380f59b413999a662bd7f",
+      "observed_at_utc": "2026-09-10T11:30:05.937680+00:00",
+      "spans": [
+        {
+          "start": 248,
+          "end": 278
+        },
+        {
+          "start": 728,
+          "end": 784
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "bytes": 62941,
+      "sha256": "949e4d04f2b8d64d6e591c0a9fea1ee23da0d43d452a97f6b5344e1b97d0bdcc",
+      "observed_at_utc": "2026-09-10T11:30:05.963538+00:00",
+      "spans": [
+        {
+          "start": 1252,
+          "end": 1295
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 131437,
+      "sha256": "9e3a3ef70179d302be10b8d6f0ca7873885cd448ac629e893505f6856b35f5b4",
+      "observed_at_utc": "2026-09-10T11:30:30.181573+00:00",
+      "spans": [
+        {
+          "start": 1518,
+          "end": 1572
+        }
+      ]
+    }
+  ],
+  "close_rehash": {
+    "observed_at_utc": "2026-09-10T11:31:19.666127+00:00",
+    "sources": [
+      {
+        "path": "core_enhanced/src/game/world/authoring_lifecycle.rs",
+        "bytes": 7541,
+        "sha256": "69e06f862a961fe0ff1d9b1b35fbdb869d1db4e0cb4db69e7f71efdda552aa8c"
+      },
+      {
+        "path": "core_enhanced/src/game/world.rs",
+        "bytes": 34696,
+        "sha256": "57d47fb5fdb7a728d9b7e1ba08b6efb0a7b56de0c28380f59b413999a662bd7f"
+      },
+      {
+        "path": "core_enhanced/src/application.rs",
+        "bytes": 45629,
+        "sha256": "c37e28bfccbed675dc268a59b477ddc3041759d02ba9e6e94019c8a9506a84e8"
+      },
+      {
+        "path": "core_enhanced/src/game/world/application.rs",
+        "bytes": 9931,
+        "sha256": "5b1a67a4550f31f03e7baeb1db45d8293147978e90d0b4b53df99f934481b2f0"
+      },
+      {
+        "path": "core_enhanced/src/game/world/node_flow.rs",
+        "bytes": 62941,
+        "sha256": "949e4d04f2b8d64d6e591c0a9fea1ee23da0d43d452a97f6b5344e1b97d0bdcc"
+      },
+      {
+        "path": "core_enhanced/src/game/world/active_run.rs",
+        "bytes": 10938,
+        "sha256": "1f37b9d6e08f767e9bc439571da4b9ae0628176f5e6cb40f3356f18a01f88d12"
+      },
+      {
+        "path": "core_enhanced/src/game/world/combat.rs",
+        "bytes": 130116,
+        "sha256": "b78e0de0ab027b3f99ffbd8c078df6ea8fff5fd1559992ed600a4a3579ce0062"
+      },
+      {
+        "path": "core_enhanced/src/authoring/trial.rs",
+        "bytes": 23328,
+        "sha256": "a636a0269b568beed306542d77d19ac5d23ab3bf2578ba1731e494e8a40db4d5"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/combat.rs",
+        "bytes": 455432,
+        "sha256": "9558b81321209cb436ff93e037df09cdbe87eeee6260dfe3379905380ca27cf9"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/scenario.rs",
+        "bytes": 30321,
+        "sha256": "376db1336ecfc11788f7f468f88310ee37896c219dcb5679fbfdfa6f681eca4d"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "bytes": 131437,
+        "sha256": "9e3a3ef70179d302be10b8d6f0ca7873885cd448ac629e893505f6856b35f5b4"
+      }
+    ]
+  },
+  "drift": [
+    {
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "bytes": 455432,
+      "sha256": "9558b81321209cb436ff93e037df09cdbe87eeee6260dfe3379905380ca27cf9",
+      "reviewed_close_version": false,
+      "inspected_versions": [
+        "4f39dc572e7975ff7a4aa93b92e563b11e164efa894cfab3508adaa68d03d5d9",
+        "a1e30f9fd0997b0f21e28636aae8af8af4249f799308662001c552b8f396204e"
+      ]
+    }
+  ],
+  "tests_executed": [],
+  "production_mutations": [],
+  "report_files": [
+    "/tmp/r03_actual_lifecycle_review_022.md",
+    "/tmp/r03_actual_lifecycle_review_022.json"
+  ]
+}

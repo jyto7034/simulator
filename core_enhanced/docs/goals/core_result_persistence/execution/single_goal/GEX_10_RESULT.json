@@ -1,0 +1,64 @@
+{
+  "stage": "GEX-10",
+  "goal": "GOAL-CRRP-01",
+  "goal_set": "GS-CRRP-001",
+  "phase": "PHASE-CRRP-01",
+  "status": "implementation and self-verification complete; independent GEX-20 pending",
+  "recorded_at_utc": "2026-10-04T09:05:33.391959+00:00",
+  "source_sha256": "cb033469ed897c2bb38cdd5cd2bc4561b8b820acd0b680d45c5381abf4b3c629",
+  "frozen_policy": "../../P2G_30_FREEZE_001.json",
+  "phase_plan": "../../P2G_40_PHASE_PLAN_001.json",
+  "handoff": "../../P2G_60_HANDOFF_001.json",
+  "coverage": "COVERAGE.json",
+  "predecessor_impact": "PREDECESSOR_IMPACT.json",
+  "state_inventory": "STATE_INVENTORY.md",
+  "canonical_contract": "../../../../core_runtime_contract.md",
+  "canonical_rulebook": "../../../../game_rulebook.md",
+  "suite_counts": {
+    "integrated_core_default004": {
+      "passed": 1734,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_fixtures004": {
+      "passed": 1734,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_observation004": {
+      "passed": 1743,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_default004": {
+      "passed": 89,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_observation004": {
+      "passed": 97,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "frozen_acceptance_count": 15,
+  "validation_seams": 15,
+  "dimensions": 10,
+  "inherited_conditions": 112,
+  "r06_acceptances": 31,
+  "raw_r05_exit": 101,
+  "r05_classification": "warning_concurrent_peak_only",
+  "r05_concurrent_peak_excess_bytes": 269128,
+  "r05_other_hard_guard_failures": [],
+  "public_fault_modes": [
+    "none",
+    "detached",
+    "queue_full",
+    "on",
+    "off"
+  ],
+  "public_continuation": "../../evidence/public_continuation_004/SUMMARY.json",
+  "public_rewind": "../../evidence/public_rewind_004/SUMMARY.json",
+  "next": "Freeze target/u04_001 exact bytes and reversible restoration; fresh implementation-nonparticipant GPT-6 Astra / High GEX-20. U05 remains ineligible until Complete / High.",
+  "self_awarded_independent_verdict": false
+}

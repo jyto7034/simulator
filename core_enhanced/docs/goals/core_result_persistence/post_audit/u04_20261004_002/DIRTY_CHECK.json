@@ -1,0 +1,25 @@
+{
+  "entry_exit_declared_bytes_and_target_artifacts_identical": true,
+  "git_head_unchanged": true,
+  "removed_status_rows": [],
+  "added_status_rows": [
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/ADDITIONAL_BINDINGS.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/COMPLETION_AUDIT.md",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/CONDITION_REVIEW.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/CORRECTION_INTEGRITY_AND_ERRATUM.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/EXIT_CURRENTNESS.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/FINDINGS.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/GIT_STATUS_ENTRY.txt",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/NUMERIC_REVIEW.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/PREDECESSOR_REVIEW.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/REUSE_MAP.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/SCOPE_AND_UPSTREAM.json",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/SOURCE_DOCUMENT_REVIEW.md",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/verify_additional.py",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/verify_correction.py",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/verify_scope.py",
+    "?? core_enhanced/docs/goals/core_result_persistence/post_audit/u04_20261004_002/write_review.py"
+  ],
+  "all_status_delta_is_audit002_only": true,
+  "attribution": "Existing dirty tree is not attributed wholesale to U04; correction delta separately verified from exact original archive bytes. Audit002 output is outside frozen target."
+}

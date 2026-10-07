@@ -1,0 +1,59 @@
+{
+  "recorded_at_utc": "2026-10-07T07:31:11.474202+00:00",
+  "owner": "Root planner; audit complete intake only",
+  "audit": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/post_audit/u08_current_013_pass002/AUDIT_CLOSURE.json",
+    "bytes": 7599,
+    "sha256": "5da3bef66e3e823e45e86073238e542dd70f30546a4d8feeca9ac91c4a3cc1f6"
+  },
+  "target": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/target/u08_current_013/MANIFEST.json",
+    "bytes": 336578,
+    "sha256": "f4a1db5be99b390def61fd76224c073430416b2445479753a48458f5233b69a2"
+  },
+  "auditor_exit": "2026-10-07T07:26:50.614066+00:00",
+  "membership_rows": 7168,
+  "unique_current_paths": 7168,
+  "unchanged_paths": 7166,
+  "changed_members": [
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+    "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+  ],
+  "missing_members": [],
+  "documents": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "034930da64f16bbdec7a3e8db91c266e60f79bade1a66cf6d4359a7ee6beb196",
+      "after_sha256": "b4c8698b499954fb351e26141604a18065cb57d4d5dabc9bb8efc0a9a4f75216",
+      "before_bytes": 61873,
+      "after_bytes": 62347
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "before_sha256": "1f6d18249681e76fa68fc6cafe132aecfb08d704a88bf6bc0e87d6d5892e436f",
+      "after_sha256": "03233a437c59f7ba9657bcbb42430dc087ea1f9ae8297b25cedb5a9240471d02",
+      "before_bytes": 332900,
+      "after_bytes": 333389
+    }
+  ],
+  "archive": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_closure_20261007_001/DOCUMENTS_BEFORE.tar.gz",
+    "bytes": 129750,
+    "sha256": "32582f0d8b32a7c7d5cffef78a7fdb5e3df21ce1c16ef0f2110ca3951a946a84"
+  },
+  "diff": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_closure_20261007_001/DOCUMENTS.diff",
+    "bytes": 3902,
+    "sha256": "d7020ebd2d7f484c92455989bafa155ba2c2494e15e970d940c1f9e11a8d28ea"
+  },
+  "result": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_closure_20261007_001/RESULT.ko.md",
+    "bytes": 4252,
+    "sha256": "b53cd8fb5f62111c58b44510acac3b7249142b1565fda9ad9f942ed6dd0c4e98"
+  },
+  "currentness": "current / proven non-impacting publication delta",
+  "impact_path": "Only two current-status summaries and version label changed. No policy/card/acceptance/tool/oracle/evidence/product delta. Frozen originals remain in target013; full current membership comparison found only these two exact documentation deltas. Reuse independent Complete/High/open0; this is not another independent verdict.",
+  "product_source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "product_or_test_code_by_root": false,
+  "next": "U09 scoped current-code P2G; product/test actors remain idle until concrete approved GEX work package"
+}

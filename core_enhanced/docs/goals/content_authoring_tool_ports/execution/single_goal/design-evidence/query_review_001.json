@@ -1,0 +1,198 @@
+{
+  "report_id": "r03_query_review_001",
+  "kind": "narrow_read_only_source_review_not_completion_audit",
+  "created_utc": "2026-09-10T07:11:55.720762+00:00",
+  "report_sha256": "ebac49e70c06d6b190e1f1f3dafa9669a558c7d64a6e0965bd07b59038459ed3",
+  "mutations": "only this new report pair",
+  "tests_builds_run": false,
+  "findings": [
+    {
+      "id": "QR02",
+      "severity": "medium",
+      "status": "open_at_last_explicit_read",
+      "title": "Effect ID repeated comparison work underpriced"
+    },
+    {
+      "id": "QR03",
+      "severity": "low",
+      "status": "open_at_last_explicit_read",
+      "title": "Invalid query limits mislabeled Acquisition"
+    },
+    {
+      "id": "QR01",
+      "severity": "medium",
+      "status": "source_fix_verified_in_named_successor; tests_not_run",
+      "title": "Removed compiled graph returned successful removed document"
+    }
+  ],
+  "source_capture_limit": "Initial hashes for primary target files; selective successor review only; close-only supporting hashes do not establish no drift",
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/query.rs",
+      "inspected_spans": [
+        "initial 1-273",
+        "successor ba0cdc267762b3b3da94d0834816e195ced35508d4f4442db93f36e1f405d3a3:124-179,183-219"
+      ],
+      "initial_sha256": "1de308ee9f97326419110ba484bf6393084f561eeedfda9f560fc946966ef2a6",
+      "close_sha256": "c77981195623d173986bd95b5fa904078a1f61fbfb9450a55087179f73b6c82a",
+      "close_bytes": 11105,
+      "drift": "changed_since_initial_capture"
+    },
+    {
+      "path": "core_enhanced/src/authoring/definition.rs",
+      "inspected_spans": [
+        "1-190"
+      ],
+      "initial_sha256": "4bc42035f377358f9a7a40173c1192634291aa9261e6ff9711db8a44ddfecc29",
+      "close_sha256": "4bc42035f377358f9a7a40173c1192634291aa9261e6ff9711db8a44ddfecc29",
+      "close_bytes": 7129,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/authoring/compiled.rs",
+      "inspected_spans": [
+        "1-155"
+      ],
+      "initial_sha256": "c72e2bc6f9fe59319270a929d3f2f41dd50f2416b26e8c2ed44afc9df89734d3",
+      "close_sha256": "c72e2bc6f9fe59319270a929d3f2f41dd50f2416b26e8c2ed44afc9df89734d3",
+      "close_bytes": 4564,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/authoring/output.rs",
+      "inspected_spans": [
+        "1-39"
+      ],
+      "initial_sha256": "cc12ba475d6d68a84e620f7ec1b3300288f55fa208463a135c1036173db3fdf8",
+      "close_sha256": "cc12ba475d6d68a84e620f7ec1b3300288f55fa208463a135c1036173db3fdf8",
+      "close_bytes": 1425,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "inspected_spans": [
+        "1-425",
+        "successor check 135-152,177-186"
+      ],
+      "initial_sha256": "e7c368be1367e56de2d56211476ce46b6fb7563e6ca6a387236d657f58cc3b06",
+      "close_sha256": "39d5aa1869a16c2d62d4e74b64c6cac5fbd39553ecceca36b72f9cba1832d6c9",
+      "close_bytes": 16254,
+      "drift": "changed_since_initial_capture"
+    },
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "inspected_spans": [
+        "1-138"
+      ],
+      "initial_sha256": "8f6c95a935adcac03b9516df0040f014703ce6d8584898540017490348fd8ed7",
+      "close_sha256": "8f6c95a935adcac03b9516df0040f014703ce6d8584898540017490348fd8ed7",
+      "close_bytes": 4168,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/authoring/tests.rs",
+      "inspected_spans": [
+        "initial 163-487",
+        "successor d4daf4e7fe1503f32bf36b8960c5e6cddd8b93a6323324bc3b4ee0351b245548:290-325,418-550"
+      ],
+      "initial_sha256": "79bffc15a483397df20c8f7ccd1ef497af9c4b4d8410299259e06bc4a6e6a94e",
+      "close_sha256": "e2a625bb2a5ac7614fa36c110bf63ec7d5837d420e840fbee016337c281e73ab",
+      "close_bytes": 21439,
+      "drift": "changed_since_initial_capture"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "inspected_spans": [
+        "140-168",
+        "675-825"
+      ],
+      "initial_sha256": "72c6fa4917831d76c87c0f9a0cd58c8be3c8e5342235c8ef01a80a94c94852e7",
+      "close_sha256": "72c6fa4917831d76c87c0f9a0cd58c8be3c8e5342235c8ef01a80a94c94852e7",
+      "close_bytes": 49105,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "inspected_spans": [
+        "510-755"
+      ],
+      "initial_sha256": "05b2fa00aa7aed65becf8dbc20da866b35d2dfe4dca4318f4b8cc8fc1013d4d3",
+      "close_sha256": "05b2fa00aa7aed65becf8dbc20da866b35d2dfe4dca4318f4b8cc8fc1013d4d3",
+      "close_bytes": 159917,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+      "inspected_spans": [
+        "1-205"
+      ],
+      "initial_sha256": "a944d1dd4f5f562049900f35c07fc94a32b64ee97a05986fc77a7a7423bf61f1",
+      "close_sha256": "a944d1dd4f5f562049900f35c07fc94a32b64ee97a05986fc77a7a7423bf61f1",
+      "close_bytes": 12475,
+      "drift": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "inspected_spans": [
+        "613-735; indexed lookup/ID constraints targeted searches"
+      ],
+      "initial_sha256": null,
+      "close_sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5",
+      "close_bytes": 65786,
+      "drift": "single_close_hash; no initial atomic snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/data/equipment_data.rs",
+      "inspected_spans": [
+        "45-98",
+        "177-202"
+      ],
+      "initial_sha256": null,
+      "close_sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+      "close_bytes": 37726,
+      "drift": "single_close_hash; no initial atomic snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/stats.rs",
+      "inspected_spans": [
+        "157-170"
+      ],
+      "initial_sha256": null,
+      "close_sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+      "close_bytes": 18446,
+      "drift": "single_close_hash; no initial atomic snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "inspected_spans": [
+        "1-155",
+        "390-421"
+      ],
+      "initial_sha256": null,
+      "close_sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f",
+      "close_bytes": 36600,
+      "drift": "single_close_hash; no initial atomic snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "inspected_spans": [
+        "840-875",
+        "925-967"
+      ],
+      "initial_sha256": null,
+      "close_sha256": "84d12f3cd0a9d3bbe7df5910ce4e83964fd3152a7409b1f0bbcb23b46cae4644",
+      "close_bytes": 53138,
+      "drift": "single_close_hash; no initial atomic snapshot"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+      "inspected_spans": [
+        "208-229"
+      ],
+      "initial_sha256": null,
+      "close_sha256": "fa19e70c6ab98ce741235e106308569eb3a0698763ef19f5b673acb1250871e2",
+      "close_bytes": 23491,
+      "drift": "single_close_hash; no initial atomic snapshot"
+    }
+  ]
+}

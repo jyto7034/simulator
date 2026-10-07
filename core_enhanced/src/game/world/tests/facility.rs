@@ -6,7 +6,7 @@ use crate::game::data::Item;
 
 fn maintenance_action_kinds() -> [ActionKind; 5] {
     [
-        ActionKind::UpgradeSkillFragment,
+        ActionKind::SelectSkillFragmentForm,
         ActionKind::AwakenSkillFragment,
         ActionKind::DismantleSkillFragment,
         ActionKind::DismantleEquipment,
@@ -19,12 +19,6 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let fragment_id = starter_basic_attack_fragment_id();
-    let starting_fragment_count = core.state.skill_fragments.count(&fragment_id);
-    core.state
-        .skill_fragments
-        .add_research_progress(&fragment_id, 100)
-        .expect("research completion should queue delivery");
     {
         let mut ids = core.roster().unwrap().combat_eligible_employee_ids();
         ids.sort();
@@ -71,11 +65,6 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
         save_point_state,
         BehaviorResult::SavePointState { .. }
     ));
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count,
-        "SavePoint entry must not deliver research"
-    );
     let selected_event = core.get_selected_event_snapshot_json().unwrap().unwrap();
     assert_eq!(selected_event["type"], "save_point");
     assert_eq!(selected_event["node_id"], node_id.0.to_string());
@@ -86,16 +75,9 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
     let completion = core
         .execute(player_id, PlayerBehavior::CompleteNode)
         .unwrap();
-    let BehaviorResult::NodeCompleted {
-        research_deliveries,
-        ..
-    } = completion
-    else {
+    let BehaviorResult::NodeCompleted { .. } = completion else {
         panic!("SavePoint should return to planning");
     };
-    assert_eq!(research_deliveries.len(), 1);
-    assert_eq!(research_deliveries[0].fragment_id, fragment_id);
-    assert_eq!(research_deliveries[0].count, 1);
 
     let mut ids = core
         .roster()
@@ -127,16 +109,6 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
     assert_eq!(snapshot["run_checkpoint"]["max_loads"], 3);
     assert_eq!(snapshot["run_checkpoint"]["remaining_loads"], 3);
     assert!(snapshot["run_checkpoint"].get("can_load").is_none());
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count + 1
-    );
-    assert!(core
-        .state
-        .skill_fragments
-        .pending_research_deliveries()
-        .next()
-        .is_none());
 
     let trauma_after_completion = core
         .roster()
@@ -155,17 +127,6 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
     }
 
     core.handle_load_run_checkpoint().unwrap();
-    assert_eq!(
-        core.state.skill_fragments.count(&fragment_id),
-        starting_fragment_count + 1,
-        "SavePoint checkpoint must include the delivered inventory"
-    );
-    assert!(core
-        .state
-        .skill_fragments
-        .pending_research_deliveries()
-        .next()
-        .is_none());
 }
 
 #[test]
@@ -197,9 +158,9 @@ fn checkpoint_restores_inventory_reserve_high_water_and_consumable_quantity() {
         .inventory
         .add_consumable(Arc::new(consumable.clone()), 7)
         .unwrap();
-    assert_eq!(core.state.inventory.occupied_slot_count(), 62);
+    assert_eq!(core.state.inventory.occupied_slot_count(), 65);
     assert_eq!(core.state.inventory.reserved_slot_count(), 70);
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
 
     for index in 1..=20_u128 {
         core.state
@@ -212,11 +173,11 @@ fn checkpoint_restores_inventory_reserve_high_water_and_consumable_quantity() {
         .consumables
         .remove_quantity("checkpoint_tonic", 6)
         .unwrap();
-    assert_eq!(core.state.inventory.occupied_slot_count(), 42);
+    assert_eq!(core.state.inventory.occupied_slot_count(), 45);
     assert_eq!(core.state.inventory.reserved_slot_count(), 70);
 
     core.handle_load_run_checkpoint().unwrap();
-    assert_eq!(core.state.inventory.occupied_slot_count(), 62);
+    assert_eq!(core.state.inventory.occupied_slot_count(), 65);
     assert_eq!(core.state.inventory.reserved_slot_count(), 70);
     assert_eq!(
         core.state
@@ -373,7 +334,7 @@ fn checkpoint_load_does_not_reuse_preserved_visual_novel_session_identity() {
         "save_point",
         MapNodePayload::SavePoint,
     );
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
 
     let event =
         crate::game::world::visual_novel_triggers::VisualNovelTriggerEvent::MapNodeEntered {
@@ -590,6 +551,9 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
         .execute(player_id, PlayerBehavior::CompleteNode)
         .unwrap();
     source
+        .validate_run_checkpoint_payload(source.state.run_checkpoint.payload.as_ref().unwrap())
+        .unwrap();
+    source
         .execute(player_id, PlayerBehavior::LoadRunCheckpoint)
         .unwrap();
 
@@ -618,18 +582,18 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
     assert!(!String::from_utf8_lossy(&exported.core_payload_json).contains("encounter_compendium"));
     let exported_document: serde_json::Value =
         serde_json::from_slice(&exported.core_payload_json).unwrap();
-    assert_eq!(exported_document["version"], 2);
+    assert_eq!(exported_document["version"], 11);
     assert_eq!(
-        exported_document["checkpoint"]["power_model_version"],
+        exported_document["continuation"]["current"]["power_model_version"],
         power_model_version
     );
     assert_eq!(
-        exported_document["checkpoint"]["current_floor_power_anchor"],
+        exported_document["continuation"]["current"]["current_floor_power_anchor"],
         checkpoint_anchor
     );
 
     let mut old_core_document = exported_document.clone();
-    old_core_document["version"] = serde_json::json!(1);
+    old_core_document["version"] = serde_json::json!(3);
     let old_core_payload = serde_json::to_vec(&old_core_document).unwrap();
     let mut old_core = GameCore::new(game_data.clone(), 997);
     assert!(matches!(
@@ -641,6 +605,45 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
         ),
         Err(GameError::InvalidStaticData(_))
     ));
+
+    let mut v2_core_document = exported_document.clone();
+    v2_core_document["version"] = serde_json::json!(2);
+    let mut v2_core = GameCore::new(game_data.clone(), 996);
+    assert!(matches!(
+        v2_core.continue_from_active_run_checkpoint(
+            Uuid::from_u128(4),
+            &serde_json::to_vec(&v2_core_document).unwrap(),
+            exported.loads_used,
+            exported.run_peak_certified_power,
+        ),
+        Err(GameError::InvalidStaticData(_))
+    ));
+
+    let mut missing_tactical_profile_document = exported_document.clone();
+    let equipment_items = missing_tactical_profile_document["continuation"]["current"]["inventory"]
+        ["equipments"]["items"]
+        .as_object_mut()
+        .expect("active-run checkpoint equipment map");
+    let training_weapon = equipment_items
+        .values_mut()
+        .find(|item| item["meta"]["id"] == "standard_training_sword")
+        .expect("checkpoint must persist a starter training weapon");
+    training_weapon["meta"]["weapon_profile"]
+        .as_object_mut()
+        .unwrap()
+        .remove("deployment_affinity");
+    let missing_tactical_profile_payload =
+        serde_json::to_vec(&missing_tactical_profile_document).unwrap();
+    let mut missing_tactical_profile = GameCore::new(game_data.clone(), 994);
+    let error = missing_tactical_profile
+        .continue_from_active_run_checkpoint(
+            Uuid::from_u128(7),
+            &missing_tactical_profile_payload,
+            exported.loads_used,
+            exported.run_peak_certified_power,
+        )
+        .expect_err("current-version payload missing weapon tactical data must reject");
+    assert!(matches!(error, GameError::InvalidStaticData(_)));
 
     let mut legacy_core_document = old_core_document;
     legacy_core_document
@@ -660,8 +663,9 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
     ));
 
     let mut stale_model_document = exported_document;
-    stale_model_document["checkpoint"]["power_model_version"] =
+    stale_model_document["continuation"]["current"]["power_model_version"] =
         serde_json::json!(power_model_version - 1);
+    refresh_active_run_checksum(&mut stale_model_document);
     let stale_model_payload = serde_json::to_vec(&stale_model_document).unwrap();
     let mut stale_model = GameCore::new(game_data.clone(), 998);
     assert!(matches!(
@@ -676,8 +680,9 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
 
     let mut mismatched_anchor_document: serde_json::Value =
         serde_json::from_slice(&exported.core_payload_json).unwrap();
-    mismatched_anchor_document["checkpoint"]["current_floor_power_anchor"] =
+    mismatched_anchor_document["continuation"]["current"]["current_floor_power_anchor"] =
         serde_json::json!(checkpoint_anchor + 1);
+    refresh_active_run_checksum(&mut mismatched_anchor_document);
     let mismatched_anchor_payload = serde_json::to_vec(&mismatched_anchor_document).unwrap();
     let mut mismatched_anchor = GameCore::new(game_data.clone(), 995);
     assert!(matches!(
@@ -739,6 +744,51 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
 }
 
 #[test]
+fn checkpoint_load_rewinds_run_streak_state_but_never_rolls_back_permanent_records() {
+    let mut core = GameCore::new(empty_game_data(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_first_available_node(
+        &mut core,
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::CompleteNode)
+        .unwrap();
+
+    core.state
+        .run
+        .as_mut()
+        .unwrap()
+        .record_progress
+        .current_deathless_floor_streak = 9;
+    core.state.player_profile.highest_floor_reached = 12;
+    core.state.player_profile.longest_deathless_floor_streak = 7;
+    core.state.player_profile.standard_tutorial_completed = true;
+    core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
+        .unwrap();
+
+    assert_eq!(
+        core.state
+            .run
+            .as_ref()
+            .unwrap()
+            .record_progress
+            .current_deathless_floor_streak,
+        0,
+        "run-local streak progress follows the checkpoint"
+    );
+    assert_eq!(core.state.player_profile.highest_floor_reached, 12);
+    assert_eq!(core.state.player_profile.longest_deathless_floor_streak, 7);
+    assert!(core.state.player_profile.standard_tutorial_completed);
+}
+
+#[test]
 fn checkpoint_load_restores_floor_anchor_and_gate_replay_is_deterministic() {
     let mut core = GameCore::new(empty_game_data(), 321);
     let player_id = Uuid::from_u128(1);
@@ -751,7 +801,7 @@ fn checkpoint_load_restores_floor_anchor_and_gate_replay_is_deterministic() {
     );
     let checkpoint_anchor = core.state.run_power_authority.current_floor_power_anchor;
     let checkpoint_map = core.state.run.as_ref().unwrap().map.clone();
-    core.save_run_checkpoint().unwrap();
+    core.save_run_checkpoint_for_test().unwrap();
 
     core.execute(
         player_id,
@@ -925,8 +975,8 @@ fn independent_maintenance_node_exposes_maintenance_actions() {
 
 #[test]
 fn live_maintenance_capabilities_follow_executable_operation_projection() {
-    let game_data =
-        GameDataBase::load_live_embedded().expect("embedded live gameplay RON must be valid");
+    let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid");
     let equipment = game_data
         .equipment_data
         .get_by_id("standard_armor")
@@ -940,9 +990,8 @@ fn live_maintenance_capabilities_follow_executable_operation_projection() {
             matches!(
                 &fragment.effect,
                 SkillFragmentEffectDef::ActiveSkill {
-                    awakened_skill_id: Some(_),
-                    ..
-                }
+                    forms, ..
+                } if forms.contains_key("awakened")
             )
         })
         .expect("live awakenable skill fragment")
@@ -965,7 +1014,15 @@ fn live_maintenance_capabilities_follow_executable_operation_projection() {
         .equipment_materials
         .add("equipment_dust", 2)
         .unwrap();
-    core.state.skill_fragments.add(&fragment).unwrap();
+    let copy_uuid = core
+        .state
+        .skill_fragments
+        .grant(
+            &fragment,
+            &mut core.state.uuid_manager,
+            &core.state.skill_fragment_policy,
+        )
+        .unwrap();
     core.state.skill_fragments.add_fragment_dust(100).unwrap();
 
     let node_id = force_first_available_node(
@@ -998,21 +1055,28 @@ fn live_maintenance_capabilities_follow_executable_operation_projection() {
     let fragment_preview = maintenance_options
         .items
         .iter()
-        .find(|item| item.target_id == fragment.id.to_string())
+        .find(|item| item.target_id == copy_uuid.to_string())
         .expect("live skill fragment preview");
     assert_eq!(
         fragment_preview.target_kind,
         MaintenanceTargetKind::SkillFragment
     );
-    assert!(fragment_preview.operations.dismantle.can_execute);
-    assert!(fragment_preview.operations.enhance.can_execute);
-    assert!(fragment_preview.operations.awaken.can_execute);
+    assert!(!fragment_preview.operations.dismantle.can_execute);
+    assert!(!fragment_preview.operations.enhance.can_execute);
+    assert!(!fragment_preview.operations.awaken.can_execute);
+    assert!(fragment_preview
+        .fragment_forms
+        .iter()
+        .any(|f| f.form_id == "base" && f.can_select));
 
-    for action in maintenance_action_kinds() {
+    for action in [
+        ActionKind::SelectSkillFragmentForm,
+        ActionKind::DismantleEquipment,
+        ActionKind::EnhanceEquipment,
+    ] {
         assert_eq!(
             action_capability(&core, action),
-            Some(ActionCapabilityDto::enabled(action, ActionScope::Gameplay)),
-            "executable Maintenance operation must enable its mapped action: {action:?}"
+            Some(ActionCapabilityDto::enabled(action, ActionScope::Gameplay))
         );
     }
 

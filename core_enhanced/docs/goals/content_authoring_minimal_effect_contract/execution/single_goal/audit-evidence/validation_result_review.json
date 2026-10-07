@@ -1,0 +1,132 @@
+{
+  "log_integrity": [
+    {
+      "log": "camec-r01-authoring-001.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-check-001.log",
+      "hash_match": true,
+      "reported_exit": 101
+    },
+    {
+      "log": "camec-r01-check-002.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-check-003.log",
+      "hash_match": true,
+      "reported_exit": 101
+    },
+    {
+      "log": "camec-r01-check-004.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-check-005.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-core-full-001.log",
+      "hash_match": true,
+      "reported_exit": 101
+    },
+    {
+      "log": "camec-r01-core-full-002.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-core-full-003.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-live-001.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-proc-001.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-release-001.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-runtime-001.log",
+      "hash_match": true,
+      "reported_exit": 101
+    },
+    {
+      "log": "camec-r01-runtime-002.log",
+      "hash_match": true,
+      "reported_exit": 0
+    },
+    {
+      "log": "camec-r01-skill-data-001.log",
+      "hash_match": true,
+      "reported_exit": 101
+    },
+    {
+      "log": "camec-r01-withdraw-001.log",
+      "hash_match": true,
+      "reported_exit": 0
+    }
+  ],
+  "final_full_suite_counts": [
+    [
+      1114,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      25,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      15,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "total_passed": 1166,
+  "failures_ignored_filtered": 0,
+  "new_runtime_test_present": true,
+  "no_full_tests_rerun_by_auditor": true
+}

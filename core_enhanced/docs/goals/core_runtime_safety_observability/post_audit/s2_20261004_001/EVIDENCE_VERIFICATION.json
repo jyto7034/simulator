@@ -1,0 +1,4717 @@
+{
+  "receipt_count": 34,
+  "receipts": {
+    "s2_final_core_default001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "1d3b3872d2d63b3c0d0c7bb48485580fd53a5e38f4ee930c066764614a56886c",
+      "input_archives_checked": 0
+    },
+    "s2_final_core_fixtures001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "test-fixtures",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "2d9ab9ff0dc6feacfdab04aef5bde10a050a3a8aa48a38ca9f9dcf5a84104dec",
+      "input_archives_checked": 0
+    },
+    "s2_final_core_observation001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "6e27ae52933704d6c24f909e91d4da357a211a0872e8f6a168c6b27f3f5aa687",
+      "input_archives_checked": 0
+    },
+    "s2_final_host_default001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "64c9783e3c893f7ee06c8e2411942214972cf3e6a87728eac37e822044c9560f",
+      "input_archives_checked": 0
+    },
+    "s2_final_host_observation001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "263a5dd0e959048f3d61b9abf6d125e066a4c3ea207d45d4db12ddf59d9f9e2f",
+      "input_archives_checked": 0
+    },
+    "s2_final_fmt001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_archives_checked": 0
+    },
+    "s2_final_check001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "03123c02d2a237cdbc352010e3f3fe7d04dd075e668418fcc0179e1599850d62",
+      "input_archives_checked": 0
+    },
+    "s2_final_event_log001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "check",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "event_log_checks,runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "a2a8f8ed5249c00bec6d00c24523cab0f680687c99a4621e5b1e6f89b197c76d",
+      "input_archives_checked": 0
+    },
+    "s2_final_clippy_core001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_core",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "log_sha256": "0416b89acbb6d43abcdfeedd74da279623ee4736170b2b9b22ed1e07e2ebe6a6",
+      "input_archives_checked": 0
+    },
+    "s2_final_clippy_host001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "game_server",
+        "--all-targets",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "--",
+        "-A",
+        "clippy::never_loop",
+        "-A",
+        "clippy::eq_op"
+      ],
+      "log_sha256": "f32bb301cfae0af58c4b7b806fe0645e77a03abd51970a8ffc5d3408cb97b065",
+      "input_archives_checked": 0
+    },
+    "s2_final_release001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "ac06e89b6f006bed4e1aa02c35f3b12c4df9bd3f283b81862c9a4f529b6f11b4",
+      "input_archives_checked": 0
+    },
+    "s2_final_heap001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "game_server",
+        "--lib",
+        "--features",
+        "runtime-observation",
+        "--offline",
+        "--locked",
+        "exporter_heap_is_bounded_without_scrapes_and_retires_on_idle",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "log_sha256": "2ec58246f734a46be0a4637d2b61e298b7a35d324f51c6e51f392431f5d24c65",
+      "input_archives_checked": 0
+    },
+    "s2compat_prepared_public_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/probe.py"
+      ],
+      "log_sha256": "b35e0ee593e7517b4842e670ef61b519051510a7fdf59b5f61d4e49a24018bc3",
+      "input_archives_checked": 1
+    },
+    "s2compat_prepared_boundary_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/boundary.py"
+      ],
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "input_archives_checked": 1
+    },
+    "s2compat_observed_release_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "game_core",
+        "-p",
+        "game_server",
+        "--release",
+        "--bins",
+        "--features",
+        "game_server/runtime-observation",
+        "--offline",
+        "--locked"
+      ],
+      "log_sha256": "c6a8d9f98c163297c3a30be55ddfbbe9602cedb10d7a296651640ea92f6b92d0",
+      "input_archives_checked": 0
+    },
+    "s2compat_default_parity_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/default_parity.py"
+      ],
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "input_archives_checked": 1
+    },
+    "s2compat_public_oracle_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_probe.py",
+        "after"
+      ],
+      "log_sha256": "71b457f0091b4f63a8a0511116aa7d07a3586147d276f8b9bbae6df5f30be0fb",
+      "input_archives_checked": 1
+    },
+    "s2compat_public_trace_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_trace_probe.py"
+      ],
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "input_archives_checked": 1
+    },
+    "s2compat_public_cli_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_cli.py"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_archives_checked": 1
+    },
+    "s2compat_public_profile_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_profile_probe.py"
+      ],
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "input_archives_checked": 1
+    },
+    "s2compat_public_boundary_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/public_boundary_probe.py"
+      ],
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "input_archives_checked": 1
+    },
+    "s2compat_public_api_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/tools/public_api_cli_probe.py",
+        "--repository",
+        "/mnt/f/work/simulator",
+        "--output-dir",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/public_api"
+      ],
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "input_archives_checked": 1
+    },
+    "s2compat_pc_prepare_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/prepare_pc.py",
+        "001"
+      ],
+      "log_sha256": "e804b76fe80255b2ef0514ab99c65a57fbb2aa0446704bd45d892a9141d49713",
+      "input_archives_checked": 1
+    },
+    "s2compat_pc_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-pc-target",
+        "R06_BASELINE_OUTPUT=/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json",
+        "R06_BASELINE_SAMPLES=11",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "/tmp/r06-completion-pc-r0xg8z5d/Cargo.toml",
+        "-p",
+        "game_core",
+        "--lib",
+        "--release",
+        "--offline",
+        "--locked",
+        "pc_load_baseline",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "log_sha256": "ab12860224690eee880a74d1ca1b8e63f2ecc43413a67194d707c134386d9a7d",
+      "input_archives_checked": 1
+    },
+    "s2compat_pc_compare_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/compare_pc_v32.py",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/PC_SUMMARY_CURRENT_002.json"
+      ],
+      "log_sha256": "475c83d0cc6c56fbcaa7a8cb729fb5dc4831892b9fe58b73feb56d6b1f8f389d",
+      "input_archives_checked": 2
+    },
+    "s2compat_pc_immediate_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/compare_pc.py"
+      ],
+      "log_sha256": "653203f7af9c49362d6762b30c0ad8466e7e993ddffe156bb039901c329aff32",
+      "input_archives_checked": 1
+    },
+    "s2compat_r05_compare_001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/summarize_r05.py"
+      ],
+      "log_sha256": "67efbcfbd00eb4919e0e55ee60191bcefd40ced72c7e0074c7e24bdfa0da4186",
+      "input_archives_checked": 1
+    },
+    "s2compat_r05_001": {
+      "raw_exit": 101,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/tmp/wp02-d07-b-r05-target",
+        "cargo",
+        "run",
+        "--manifest-path",
+        "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+        "--bin",
+        "final_performance",
+        "--release",
+        "--features",
+        "allocation-observer",
+        "--offline",
+        "--locked",
+        "--",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/r05_raw_current_002.json"
+      ],
+      "log_sha256": "bf25051c16ae3ee451d0e81c6a118b074be73709da9b9f21543b58803f290cba",
+      "input_archives_checked": 2
+    },
+    "s2_services_live006": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/services_probe.py"
+      ],
+      "log_sha256": "e6579d57642f24e2ccb42244fdf1a3eaeac753d3993f34c5131aed450b096ad8",
+      "input_archives_checked": 1
+    },
+    "s2_services_render007": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "node",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/browser_fixed.cjs",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/evidence/services/render007"
+      ],
+      "log_sha256": "bbed67fd7681b556c530393c2f71cc1cb9fe485603bb025b80ae389e21a6c456",
+      "input_archives_checked": 0
+    },
+    "s2_services_verify001": {
+      "raw_exit": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "current_delta": [],
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/verify_services.py"
+      ],
+      "log_sha256": "46c14fd5a62a90a32f48ed57d5f04c287b2babe82544410e9cb5dcb180f41299",
+      "input_archives_checked": 1
+    },
+    "s2_parity_cost002": {
+      "raw_exit": 0,
+      "source_sha256": "0234460ffe970e71a49c660e6856bd2d586ced9e53af8f036a04eee549fe3ab3",
+      "current_delta": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+      ],
+      "command": [
+        "python3",
+        "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/tools/parity_cost.py"
+      ],
+      "log_sha256": "d575bdee8ee6b12ef73c5a08ca8d066eb0047a429e80e5819c71cf07eae2ba6a",
+      "input_archives_checked": 1
+    },
+    "s2_driver_release_on002": {
+      "raw_exit": 0,
+      "source_sha256": "0234460ffe970e71a49c660e6856bd2d586ced9e53af8f036a04eee549fe3ab3",
+      "current_delta": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "game_server",
+        "--example",
+        "observe_runtime",
+        "--features",
+        "runtime-observation"
+      ],
+      "log_sha256": "08fb33eea78dee326c18a3d4986f7c27babc952750145bcff590a1ef847d7fef",
+      "input_archives_checked": 0
+    },
+    "s2_driver_release_off002": {
+      "raw_exit": 0,
+      "source_sha256": "0234460ffe970e71a49c660e6856bd2d586ced9e53af8f036a04eee549fe3ab3",
+      "current_delta": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--offline",
+        "--locked",
+        "-p",
+        "game_server",
+        "--example",
+        "observe_runtime"
+      ],
+      "log_sha256": "412eeb9680c10f3b2bad0f85be3690ef918b22f05b7af7f8a5b249e8eb857358",
+      "input_archives_checked": 0
+    }
+  },
+  "suites": {
+    "core_default": {
+      "passed": 1701,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          1644,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "core_fixtures": {
+      "passed": 1701,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          1644,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "core_observation": {
+      "passed": 1707,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          1650,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          25,
+          0,
+          0
+        ],
+        [
+          15,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ]
+      ]
+    },
+    "host_default": {
+      "passed": 77,
+      "failed": 0,
+      "ignored": 0,
+      "log_totals": [
+        [
+          77,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "host_observation": {
+      "passed": 84,
+      "failed": 0,
+      "ignored": 1,
+      "log_totals": [
+        [
+          84,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "validations": [
+    {
+      "id": "V01",
+      "verified_selectors": [
+        {
+          "selector": "runtime_safety::tests::original_defaults_and_no_file_profile_have_one_effective_identity",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "bootstrap::tests::runtime_safety_host_file_is_explicit_bounded_and_never_falls_back",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V02",
+      "verified_selectors": [
+        {
+          "selector": "runtime_safety::tests::parser_is_bounded_before_deserialization_including_nested_comments",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::settings_reject_schema_unknown_duplicate_negative_overflow_zero_and_ceilings",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::structural_errors_identify_the_offending_field_at_each_level",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "bootstrap::tests::real_pack_bootstrap_keeps_concurrent_profiles_separate_and_rejects_settings_first",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "bootstrap::tests::runtime_safety_host_file_is_explicit_bounded_and_never_falls_back",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V03",
+      "verified_selectors": [
+        {
+          "selector": "runtime_safety::tests::external_generation_keeps_semantics_and_separates_profile_admission",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::public_content_parser_compiler_and_immutable_plan_consume_selected_profile",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::raw_and_effective_identity_are_distinct_and_profiles_are_immutable",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "bootstrap::tests::real_pack_bootstrap_keeps_concurrent_profiles_separate_and_rejects_settings_first",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V04",
+      "verified_selectors": [
+        {
+          "selector": "application::persistence_rollback_tests::persistence_rollback_preserves_monotonic_profile_and_exhaustion_never_wraps",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "application::persistence_rollback_tests::persistence_rollback_restores_one_attempt_and_rejects_foreign_stale_and_double_tokens",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "application::tests::prepared_command_preserves_first_authoring_fault_and_original_root",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V05",
+      "verified_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::data::content_pack::tests::authoring_generation_lifetime::real_trial_replacement_failures_and_last_pin_reclaim_generations",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::explicit_authoring_admission_and_trial_limits_consume_the_profile",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V06",
+      "verified_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_authored_member_edges_before_member_allocation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_depth_and_node_edges_before_unbounded_ast_creation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::expression_input_span_accepts_limit_minus_one_and_limit_then_rejects_overlong_payload",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::expression_struct_variants_reject_unknown_fields",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::read_reference_payloads_reject_unknown_fields",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::resolved_predicates_use_the_shared_node_budget_before_element_allocation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::scanner_treats_strings_and_comments_as_opaque_and_bounds_its_own_nesting",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::parse::tests::strict_expression_fields_preserve_valid_forms_and_nested_member_contracts",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::bounded_frame_keeps_sorted_logarithmic_reads_duplicates_and_capacity",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::capability_checks_prevent_unavailable_snapshot_context",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::compile_and_runtime_budgets_reject_before_partial_results",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_002_authored_work_is_a_static_executable_bound",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_002_grouped_and_nested_authored_work_stays_bounded",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_002_runtime_payload_work_is_explicitly_dynamic",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_002_shape_is_iterative_at_default_and_extended_depth",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_compile_work_and_storage_boundaries_are_exact",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_group_boundaries_and_cumulative_resource_capabilities_hold",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_long_payloads_are_rejected_before_kernel_owned_clones",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_nested_stack_nodes_depth_and_task_frames_are_enforced",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_raw_and_canonical_member_budgets_are_distinct_and_exact",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_streaming_fingerprint_is_byte_compatible_with_pre_fix_plan",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::correction_wide_add_rejects_before_child_traversal_and_keeps_left_order",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::dynamic_reads_use_typed_frames_and_report_missing_context_and_overflow",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::legacy_literal_lowering_and_final_narrowing_preserve_signed_contracts",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::nested_aggregate_cross_product_and_static_group_keys_are_admitted_up_front",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::resolved_predicates_are_bounded_normalized_and_fingerprinted_with_slot_meaning",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::resolved_relation_requires_its_exact_node_view_and_distinguishes_empty",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::compiler_limits_preserve_existing_typed_range_and_parser_ceiling",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::public_content_parser_compiler_and_immutable_plan_consume_selected_profile",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V07",
+      "verified_selectors": [
+        {
+          "selector": "game::battle::event_log::tests::allocation_free_encoded_length_matches_compact_json_bytes",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::authoring_cow_admission_precedes_copy_and_preserves_retry_and_continuation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::authoring_cow_cancellation_keeps_original_and_rejects_prepared_candidate",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::authoring_cow_prices_nested_storage_strings_and_shared_source_handles",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::battle_time_cap_is_a_moving_window_not_a_timeout",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::clone_shares_entries_until_mutation_then_preserves_isolation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::count_cap_keeps_exact_window_and_requires_resync_before_floor",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::encoded_byte_cap_allows_exact_limit_and_drops_oversized_diagnostics",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::hp_changed_serializes_feedback_tags_as_snake_case_array",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::movement_stopped_serializes_explicit_stopped_at_ms",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::same_length_public_edit_invalidates_size_and_time_before_next_append",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::event_log::tests::standard_serde_round_trip_matches_compact_event_log_json",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::a_short_history_span_does_not_end_battle_or_change_final_statistics",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::history_import_and_deserialize_apply_the_host_window_and_keep_cursor_gaps",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V08",
+      "verified_selectors": [
+        {
+          "selector": "application::tests::prepared_command_preserves_first_authoring_fault_and_original_root",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "bootstrap::tests::real_pack_bootstrap_keeps_concurrent_profiles_separate_and_rejects_settings_first",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "bootstrap::tests::runtime_safety_host_file_is_explicit_bounded_and_never_falls_back",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::active_run_write_failure_does_not_rollback_or_skip_compendium_publish",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::attach_replaces_previous_session_immediately",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::attach_session_merges_durable_compendium_before_building_snapshot",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::backup_recovery_notification_is_emitted_once_across_reconnects",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::clean_title_exposes_confirmable_full_compendium_reset_without_retry",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::compendium_write_failure_does_not_rollback_active_run_commit",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::detached_actor_stops_after_ttl_and_deregisters",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::execute_behavior_returns_updated_state_snapshot",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::fatal_compendium_bootstrap_gates_title_to_retry_and_confirmed_reset",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::pending_standard_completion_blocks_continue_and_retries_in_process",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::player_state_snapshot_preserves_core_snapshot_root_fields",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::admin_command_is_not_a_player_behavior_request",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::deserializes_admin_command_as_separate_top_level_message",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::deserializes_live_battle_requests",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::deserializes_pending_deployment_range_preview_request",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::deserializes_snake_case_node_flow_requests",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::serializes_battle_resync_with_nested_battle_update",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::serializes_battle_setup_snapshot_as_top_level_transport_message",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::serializes_battle_update_as_top_level_transport_message",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::messages::tests::serializes_control_status_checkpoint_contract_with_typed_reason",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::backup_recovery_never_rolls_back_monotonic_load_count",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::backup_recovery_preserves_checkpoint_payload_and_monotonic_power_peak",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::checksum_mismatch_is_rejected",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::old_envelope_version_and_removed_monotonic_anchor_are_rejected",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::publish_failure_keeps_previous_current_readable",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::publish_load_backup_recovery_and_invalidation_use_real_files",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_load_count_into_incoming_generation",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_loads_and_peak_into_incoming_generation",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_power_peak_into_incoming_generation",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::publishing_after_terminal_invalidation_never_reuses_an_old_run_backup",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::unsupported_envelope_version_is_not_silently_migrated",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::active_run_store::tests::unsupported_version_both_corrupt_and_single_writer_are_explicit",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::checksum_unsupported_dual_corrupt_and_single_writer_are_explicit",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::explicit_reset_clears_the_entire_successor_profile_and_all_recovery_artifacts",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::missing_publish_load_backup_recovery_and_reset_use_real_files",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::publish_failure_keeps_previous_current_and_does_not_rotate_corruption",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::retired_legacy_compendium_file_is_not_read_or_migrated",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::retired_version_two_profile_is_rejected_without_union_migration",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::runtime_keeps_latest_registered_set_dirty_and_retries_full_profile",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::standard_completion_journal_closes_profile_and_active_run_after_restart",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::standard_completion_publish_failure_exposes_neither_side",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::standard_completion_retries_failed_active_run_invalidation_from_journal",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "persistence::player_profile_store::tests::successor_profile_rejects_unknown_fields_and_ignores_interrupted_temp",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+          "receipts": [
+            "s2_final_host_default001",
+            "s2_final_host_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V09",
+      "verified_selectors": [
+        {
+          "selector": "application::runtime_observation_tests::finite_labels_have_unique_names_and_dense_operation_indices",
+          "receipts": [
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once",
+          "receipts": [
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "application::runtime_observation_tests::a_nested_draft_commit_is_not_a_live_application_commit",
+          "receipts": [
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "application::runtime_observation_tests::actual_commit_and_full_or_absent_collector_preserve_command_results_and_queries",
+          "receipts": [
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "application::runtime_observation_tests::discarded_preparation_detaches_tls_and_cannot_advance_commit_gauges",
+          "receipts": [
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::amount_order::runtime_observation_captures_real_projectile_peak_after_same_attempt_cleanup",
+          "receipts": [
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "observability::tests::config_is_opt_in_separate_and_loopback_only",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "observability::tests::a_contended_atomic_read_keeps_the_last_commit_and_selection_until_a_real_end",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "observability::tests::selection_switch_ring_rollover_end_and_aggregate_subtraction_are_exact",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "observability::tests::churn_registry_storage_tracks_live_sessions_and_registration_never_waits",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "observability::tests::actual_queue_batch_dedup_and_dead_lease_cleanup_do_not_depend_on_end_messages",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "observability::tests::stopped_scrapes_and_pinned_retirement_cannot_accumulate_histogram_batches",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        },
+        {
+          "selector": "game::player_game_actor::handlers::tests::runtime_observation_real_battle_preparation_failure_commit_and_end_are_distinct",
+          "receipts": [
+            "s2_final_host_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "V10",
+      "verified_selectors": []
+    },
+    {
+      "id": "V11",
+      "verified_selectors": []
+    },
+    {
+      "id": "V12",
+      "verified_selectors": []
+    }
+  ],
+  "inherited_conditions": [
+    {
+      "group": "U01",
+      "id": "A08-01",
+      "requirement": "외부 RON 보스의 stationary actor가 명시 방향으로 지원 스킬을 실행. 실제 피격 대상·출처 일치, Player-only 우회 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A08-02",
+      "requirement": "시험 시각 t0 접수/t100 release/t300 impact: Released waiter는100, EffectsSettled waiter는300에 진행. 타격 전 요청 접수를 완료로 취급하지 않음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A08-03",
+      "requirement": "t50 state 이탈은 미방출 취소; t150 이탈은 독립 projectile 보존. 기존 보스 이동·RouteCombat 작업과 중복 발사 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A08-04",
+      "requirement": "target 소실·잘못된 skill·자격 실패·timeout을 각각 실제 result route로 처리. 실패 시 방향/자원/상태/순번의 허용된 변화가 계약과 일치",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A08-05",
+      "requirement": "이전 activation의 늦은 wake/완료·중복 완료는 새 state에 영향 없음. 반복 진입 후 handle/lease 보관량 회수",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A08-06",
+      "requirement": "raw/compiled 참조 오류·빠진 실패 route·capability 충돌·미지원 milestone 조합은 정확한 진단, candidate generation 미게시",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A08-07",
+      "requirement": "clone/fault 주입 뒤 boss state와 action 등록이 함께 rollback. 기존 wave·summon·결과 authority 회귀",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-01",
+      "requirement": "임계 아래/경계/위, 공명 부족/만충, 일반/최종 보스 파편, 잘못된 사본·자격의 조합. 일반 시전 또는 침식 또는 typed 거부가 명시 정책과 일치",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-02",
+      "requirement": "Pause 중 manual 입력→query→resume와 auto 준비: 접수만으로 침식 없음, 실제 start gate에서 한 번 판정. 준비 중 자격 변화·취소·stale event 포함",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-03",
+      "requirement": "침식 대체는 일반 피해를 추가 실행하지 않고 공명 비용을 한 번만 처리. 현재 적만 사망, 미출현 required wave는 유지",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-04",
+      "requirement": "OnKill/OnDeath/OnAllyDeath에 관찰 가능한 효과를 달아 미발동 확인. wave death epoch/승리 검사/필수 정리는 정상. HP1·shield 도입 뒤도 재검증",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-05",
+      "requirement": "마지막 적 처치로 즉시 terminal인 경우도 직원 Withdrawn·attempt trauma100·결과 확정 한 번. 신체 부상 증가 없음, 같은 전투 재배치 거부",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-06",
+      "requirement": "0.5×/1×/2×·Pause·disconnect/resync의 fake host elapsed: 동일 연출 길이, battle time 정지, 강제 Resume 거부. 만료 후 사용자 Pause는 별도 유지",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-07",
+      "requirement": "모든 공개 mutation route를 분류한 행렬. 거부 시 state/resource/event/revision/RNG 불변. query/preview 반복은 무변경, 직접 step으로 우회 불가",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-08",
+      "requirement": "Breakdown 진입→완료 node→회복/재진입/만료. 치료와 만료 동시, retreat·실패 재시도·중복 완료·checkpoint 잔여 수 복원",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-09",
+      "requirement": "만료 사망의 장비·R07 사본 회수 exactly once, 소비 효과 제거·사망 방지 경계. 저장 decode 오류는 원본/현재 state 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A09-10",
+      "requirement": "적 capture/fact/직원 대가/연출 출력 각 단계 fault 주입: 부분 kill·부분 대가 없음. retry가 처음 성공과 같은 결과",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-01",
+      "requirement": "광역 피해로 적3명 피격 후 self-heal1회. 대상 수만큼 자기 회복하지 않음. 0 실제 피해/빗나감의 결과 조건은 기존 HP-loss 의미 유지",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-02",
+      "requirement": "나무꾼형3타: strike/segment/step/occurrence 주소와 누적 결과 분리. 병행 branch의 완료 순서가 달라도 authored result order 유지",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-03",
+      "requirement": "루돌타형 유한 n회·중간 무대상: 기회 소모·고정 종료, 나중 적에게 적립 없음. interval-only 변경 시 n 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-04",
+      "requirement": "Branch의 미선택 경로 미실행, Sequence wait, Parallel join·실패·부분 취소·중복/stale wake의 실제 결과 검증",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-05",
+      "requirement": "self/unit/tile·고정 anchor/추적·step retarget·명시 facing을 Instant/Projectile/Area에서 검증. 대상 소실과 empty set 후속 완료 포함",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-06",
+      "requirement": "release 전 취소와 후 취소, R08 waiter, R09 시작 gate·강제정지가 새 Flow에서도 동일 의미",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-07",
+      "requirement": "잘못된 result slot/type/unit/forward reference, 미지원 조합·무한 구조·반복 상한·시간 overflow를 publication 전에 거부",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-08",
+      "requirement": "큰 유한 반복/깊이/분기에서 allocation 전 admission·work fault·rollback, 순번/RNG/queue/최근 관측 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A10-09",
+      "requirement": "공개 RON→compiled→CLI/실제 전투와 R06 Snapshot/Live·집계·trace·D04-F01/관통 만료 회귀",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-01",
+      "requirement": "source A/B의 additive/scale modifier를 겹치고 각각 제거. base·남은 B 보존, 반복 입출입에 수치 drift 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-02",
+      "requirement": "태아 aura 입장/이탈·새 배치·재배치·종료와 겹침: exact 수혜자, 비중첩, 기본 공격만 강화, 기존 released snapshot 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-03",
+      "requirement": "channel 중 공격·시전·태세·전술 이동/교대·작업 시작 거부, 명시 중지 허용. 다른 source lock은 종료 후에도 유지",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-04",
+      "requirement": "일반 피해/Silence는 유지, Hard CC/interrupt/철수/사망/terminal/retreat는 자기 channel·aura 정리. Pause 중 duration 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-05",
+      "requirement": "Hello 자연 만료는 Goodbye 없이 복귀, 재입력은 남은 시간 기반 Goodbye 한 번·추가 공명 소비 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-06",
+      "requirement": "timeout과 재입력 동시·중복 입력·stale activation·후속 실행 오류의 정책/rollback. 효과가 반쯤 제거된 상태 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-07",
+      "requirement": "overlay 기본 공격의 관통·범위·방향과 무기 기본 출처/흡혈, Goodbye skill 출처 구분. 다른 호환 무기도 특례 없이 실행",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-08",
+      "requirement": "다음 공격1회·windup 중 overlay 종료·발사 후 종료에서 정확 적용/소비. 기본 공격 주기 reset·이중 발사 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A11-09",
+      "requirement": "ledger/member/lease의 admission·clone·반복 생성/종료·retreat rollback 및 공개 RON/조회/fingerprint 연결",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-01",
+      "requirement": "shared pool600, 감쇄 후 A400/B350: A HP 손실0, B150, 잔량0. 신규 수혜자·이탈/재진입은 새 잔량을 만들지 않음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-02",
+      "requirement": "개인+공유·복수 source·광역 같은 시각 피격의 결정적 순서. 대상별 실제 감쇄는 한 번, 피해가 다른 직원 HP로 이전되지 않음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-03",
+      "requirement": "source 초기량 증폭 한 번·재시전·expiry/소진 동시·stale expiry·source 철수. 종료/발동 기록 exactly once",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-04",
+      "requirement": "일반 Heal/Platform Rest는 shield 불변, recharge만 잔량 변경. HP 비용은 shield를 우회하고 별도 CostFact, 부족/사망 허용 경계",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-05",
+      "requirement": "비치명/치명·HP1·death-prevent·cost·특수 kill 조합: 정책 우선순위, 실제 HP loss/죽음 fact/trigger/결과가 모두 일치",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-06",
+      "requirement": "parry 성공 첫 eligible 타격의 damage와 부착 효과 억제, counter 한 번; 후속 무적은 추가 counter/반사 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-07",
+      "requirement": "parry miss는 자기 감면만 잠시 해제, 장비 방어/다른 source 유지. 반사·자해·cost 재귀 없음, 공격자 소실·다단 경계",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-08",
+      "requirement": "slow/root/taunt/pull 및 기존 Stun/Freeze/Silence의 capability별 표를 실제 이동·저지·시전·target 변화로 검증. 만료 뒤 자기 source만 해제",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-09",
+      "requirement": "shield로 HP loss0인 타격의 R06 gate·공명·흡혈·조회 oracle. absorbed와 actual HP loss 구분, R09 suppression 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "A12-10",
+      "requirement": "pool/member/receipt admission 실패·중간 fault에서 HP/잔량/사망/queue/관측 모두 rollback, 정상 retry 동일",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X01",
+      "requirement": "공개 외부 팩의 보스가 Flow 스킬 요청→projectile/area 실제 피해→Released/Settled 전이. direction/target/오류 route·wave 진행을 함께 관찰",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X02",
+      "requirement": "정상 직원 지급·R07 exact 파편 장착→Hello 또는 channel→실제 기본 공격·명시 재입력/중지→종료. copy/form/source와 R06 amount/trace 일치",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X03",
+      "requirement": "2명 이상 배치·개인/공유 shield·적 공격·HP/cost/parry·잔량/종료를 GameCore 정상 명령/시간 진행으로 검증",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X04",
+      "requirement": "침식이 기존 보스·새 Flow·channel/pool 존재 중 발생: 필수 death/wave 유지·선택 효과 억제·대가·host freeze·결과 확정",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X05",
+      "requirement": "결과 확정→node 완료/회복/Breakdown→SavePoint→새 Core restore. R07 identity·개화·장착/역결속·typed resource와 새 durable 상태 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X06",
+      "requirement": "실제 Retreat는 진입 전 상태·RNG·자원/카운터를 복원. 재시도/같은 요청 중복/오류 후 retry에 자산/효과 복제 없음",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X07",
+      "requirement": "trace/관측 on/off, preview/explain 반복이 gameplay·amount·revision·RNG·완료 순서를 바꾸지 않음. 보관되지 않은 과거 평가를 재구성해 진짜 기록처럼 반환하지 않음",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X08",
+      "requirement": "allocation/retained/work/output/event 한도의 exact/1-short/overflow, parser 깊이/중복/잘못된 ref, 임의 순회 순서 변화·stale capability·clone 격리",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "U01",
+      "id": "X09",
+      "requirement": "최종 기본/feature 전체 시험·check·release CLI·clippy·fmt와 PC36/R05 원자료. warning과 hard failure 구분, 20분 시험 제외",
+      "verified_current_selectors": []
+    },
+    {
+      "group": "U01",
+      "id": "X10",
+      "requirement": "실제 before/after와 added/deleted membership·정역 복원·currentness. 모든 필수 A08~A12 조건 완료, 미정/미구현을 별도 명시",
+      "verified_current_selectors": []
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-01",
+      "requirement": "Magnitude/Ratio/Points/ms 불일치 거부, typed operator",
+      "verified_current_selectors": [
+        {
+          "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-02",
+      "requirement": "signed four rounding oracle 일치",
+      "verified_current_selectors": [
+        {
+          "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-03",
+      "requirement": "checked i128 overflow/0 divide/clamp/narrowing exact fault site",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-04",
+      "requirement": "i32 MIN/MIN+1/-1/0/MAX legacy unsigned_abs와 signed Heal; public negative Damage semantic 거부",
+      "verified_current_selectors": [
+        {
+          "selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-05",
+      "requirement": "release Snapshot / consume Live; current/max/missing HP와 elapsed/remaining",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-06",
+      "requirement": "source withdrawal와 delivery 권한; missing target/time typed refusal",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-07",
+      "requirement": "finite Sum/Max/Count와 empty, canonical permutation",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-08",
+      "requirement": "WholeSet/tile/Side/ActualEmployee/EquippedSlot, explicit filter와 실패 보존",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-09",
+      "requirement": "Attack 100/60/90 및 SP20; weapon/growth/ordered Permanent/copy once, overflow",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-10",
+      "requirement": "same definition A/B의 exact copy +15/+30 독립, invalid join 거부",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-11",
+      "requirement": "(base_ms,points) (1500,200)→750ms, (1001,150)→668ms, (1,200)→1ms; 0/overflow 거부; 다른 weapon timer 불변",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-12",
+      "requirement": "정확 owner/scope resource 읽기; lookup만으로 store 무변경",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-13",
+      "requirement": "completed effect prefix/actual HP damage, stale/future/unsettled refusal",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-14",
+      "requirement": "실패 B 미노출; prior A/ordinal+accepted state 보존, retry once",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-15",
+      "requirement": "raw V7 checksum 원본 불변; child process SP35/growth10/enhance1 fingerprint 동일, tamper 거부",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-16",
+      "requirement": "canonical roster ordering; SP/copy 변경 input hash 변동, Certified weight 그대로",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-17",
+      "requirement": "runtime 기록과 preview/explain 동일; real 2^100+1 decimal/order; wrong identity 거부",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-18",
+      "requirement": "default RON→3 deliveries×literal/Snapshot/Live→actual damage prefix; CLI independently 실행",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-19",
+      "requirement": "limit/exact/short/overflow/cancel preallocation; query accepted state/index/receipt 무변경",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-20",
+      "requirement": "finite PC36/R05 + 새 observation workload; cost/retained/clone separately, raw failures preserved",
+      "verified_current_selectors": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R06_integration",
+      "id": "IVA-CAVER-21",
+      "requirement": "default 전체/feature 전체/check/release/clippy/fmt와 official package/consume; 독립 감사 pending",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F01",
+      "requirement": "Actual fragment-copy grant, owned identity and forms",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F02",
+      "requirement": "Independent same-definition copies, transfer, occupied/missing rollback",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F03",
+      "requirement": "Form compatibility, transfer, fingerprint and retained exact source",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F04",
+      "requirement": "Public forms/recipes, costs/locked/insufficient/no-op and queries",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F05",
+      "requirement": "Confirmed selected-copy dismantle and atomic failed yield",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F06",
+      "requirement": "Death releases exact copy, preserves forms and is idempotent",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F07",
+      "requirement": "Public RON recipes/forms/source/resources in a fresh process",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F08",
+      "requirement": "Run ownership follows exact copy through transfer/dismantle and retained source",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F09",
+      "requirement": "Current V9 exact envelope/checksum/graph/content validation before mutation",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::current_v9_checkpoint_document_has_exact_envelope_and_checksum",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::current_v9_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::current_v9_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::current_v9_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F10",
+      "requirement": "Original V7 bytes explicit conversion without overwrite; multiple awakened copies",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F11",
+      "requirement": "Form query/cost/locked/insufficient/no-op consistency",
+      "verified_current_selectors": [
+        {
+          "selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "R07_F01_F12",
+      "id": "F12",
+      "requirement": "Cardinality/duplicate keys/UUID exhaustion/owned/native budgets/cancellation/retry",
+      "verified_current_selectors": [
+        {
+          "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        },
+        {
+          "selector": "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+          "receipts": [
+            "s2_final_core_default001",
+            "s2_final_core_fixtures001",
+            "s2_final_core_observation001"
+          ]
+        }
+      ]
+    }
+  ],
+  "f01_selectors": [
+    "game::battle::core::boss_runtime::tests::f01_cancellation_faults_restore_boundary_and_retry_exactly",
+    "game::battle::core::boss_runtime::tests::f01_detach_preserves_future_flow_and_delivery",
+    "game::battle::core::boss_runtime::tests::f01_exact_handle_isolation_preserves_other_cast_and_actor_work",
+    "game::battle::core::boss_runtime::tests::f01_legacy_delayed_leaf_and_extracted_stale_step_cannot_release_after_cancel",
+    "game::battle::core::boss_runtime::tests::f01_released_area_keeps_ticks_and_settles_after_control_cancellation",
+    "game::battle::core::boss_runtime::tests::f01_same_timestamp_timeout_matches_partitioned_execution",
+    "game::battle::core::boss_runtime::tests::f01_timeout_and_state_exit_cancel_future_flow_but_preserve_released_delivery"
+  ],
+  "heap": {
+    "baseline_live": 735164,
+    "held_start": 754060,
+    "held_end": 754060,
+    "samples": 1024512,
+    "plateaus": [
+      741380,
+      739308,
+      739308,
+      741380
+    ],
+    "idle_live": 739308,
+    "deferred_bound": 3429376
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "checked_at_utc": "2026-09-26T03:26:04.312967+00:00",
+  "command": [
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_f02_r01_001/verification/verify_target.py"
+  ],
+  "exit_code": 0,
+  "result": {
+    "result": "FROZEN_F02_R01_TARGET_AND_RESTORATION_VERIFIED",
+    "manifest_sha256": "ae2c540157c9caa769febb56e2664da7be8b5807b917e4ecfcb685103aa5f0f7",
+    "source_files": 333,
+    "evidence_files": 20,
+    "modified": [
+      "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "core_enhanced/src/game/battle/core/sim.rs"
+    ]
+  },
+  "verifier_sha256": "c4e0c68bf84bd56864d656311af8386e4a777a748c26a9801af66c9eb79d02b1"
+}

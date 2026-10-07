@@ -1,12 +1,25 @@
-use super::GameCore;
+use super::{runtime_presentation_mode, GameCore};
 use crate::game::{
     behavior::{BehaviorResult, GameError, LiveBattleUpdateDto},
     data::visual_novel_data::{
-        VisualNovelChoiceId, VisualNovelChoiceNext, VisualNovelSceneId, VisualNovelSceneNext,
+        VisualNovelChoiceId, VisualNovelChoiceNext, VisualNovelId, VisualNovelSceneId,
+        VisualNovelSceneNext,
     },
     resources::GameState,
-    visual_novel::{VisualNovelSession, VisualNovelSource},
+    visual_novel::{VisualNovelSession, VisualNovelSessionPresentationMode, VisualNovelSource},
 };
+
+pub(super) struct ResolvedVisualNovelSessionDefinition {
+    vn_id: VisualNovelId,
+    current_scene_id: VisualNovelSceneId,
+    presentation_mode: VisualNovelSessionPresentationMode,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum VisualNovelQueuePlacement {
+    Tail,
+    FrontOfQueue,
+}
 
 #[derive(Debug, Clone)]
 pub(super) enum VisualNovelProgressionOutcome {
@@ -17,6 +30,61 @@ pub(super) enum VisualNovelProgressionOutcome {
 }
 
 impl GameCore {
+    pub(super) fn resolve_visual_novel_session_definition(
+        &self,
+        vn_id: VisualNovelId,
+        missing_definition: impl FnOnce() -> GameError,
+    ) -> Result<ResolvedVisualNovelSessionDefinition, GameError> {
+        let definition = self
+            .game_data
+            .visual_novel_data
+            .get_by_id(vn_id.as_str())
+            .ok_or_else(missing_definition)?;
+        Ok(ResolvedVisualNovelSessionDefinition {
+            vn_id,
+            current_scene_id: VisualNovelSceneId::new(definition.entry_scene_id.as_str()),
+            presentation_mode: runtime_presentation_mode(definition.default_presentation_mode),
+        })
+    }
+
+    pub(super) fn assemble_visual_novel_session(
+        &mut self,
+        definition: ResolvedVisualNovelSessionDefinition,
+        source: VisualNovelSource,
+        blocking: bool,
+    ) -> VisualNovelSession {
+        VisualNovelSession {
+            session_id: self
+                .state
+                .uuid_manager
+                .next_visual_novel_session()
+                .to_string(),
+            source,
+            vn_id: definition.vn_id,
+            current_scene_id: definition.current_scene_id,
+            committed_choice_id: None,
+            blocking,
+            presentation_mode: definition.presentation_mode,
+        }
+    }
+
+    pub(super) fn activate_or_queue_visual_novel_session(
+        &mut self,
+        session: VisualNovelSession,
+        placement: VisualNovelQueuePlacement,
+    ) {
+        if self.state.visual_novel.active.is_none() {
+            self.state.visual_novel.active = Some(session);
+            return;
+        }
+        match placement {
+            VisualNovelQueuePlacement::Tail => self.state.visual_novel.queue.push(session),
+            VisualNovelQueuePlacement::FrontOfQueue => {
+                self.state.visual_novel.queue.insert(0, session);
+            }
+        }
+    }
+
     pub(super) fn handle_advance_visual_novel(
         &mut self,
         session_id: String,
@@ -172,8 +240,8 @@ impl GameCore {
             VisualNovelProgressionOutcome::SceneChanged => Ok(()),
             VisualNovelProgressionOutcome::Completed { completed_session } => {
                 if matches!(completed_session.source, VisualNovelSource::HqBriefing) {
-                    let game_mode = match self.state.game_state {
-                        GameState::PreRunBriefing { game_mode } => game_mode,
+                    let game_mode = match self.state.lifecycle.phase() {
+                        GameState::PreRunBriefing { game_mode } => *game_mode,
                         _ => return Ok(()),
                     };
                     self.prepare_starter_employee_candidates()?;
@@ -199,7 +267,7 @@ impl GameCore {
             .as_mut()
             .ok_or(GameError::InvalidAction)?;
         active.commit_battle_projection()?;
-        let battle_update = active.battle_update_dto_after(after_seq, &roster)?;
+        let battle_update = active.battle_update_dto_after_or_resync(after_seq, &roster)?;
         Ok(BehaviorResult::BattleState {
             battle_uuid: active.battle_uuid,
             node_type: active.node_type,
@@ -222,6 +290,10 @@ impl GameCore {
             | BehaviorResult::BattlePlaybackChanged { battle_update, .. }
             | BehaviorResult::BattleUnitDeployed { battle_update, .. }
             | BehaviorResult::BattleUnitWithdrawn { battle_update, .. }
+            | BehaviorResult::BattleEngagementStanceChanged { battle_update, .. }
+            | BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. }
+            | BehaviorResult::BattleUnitsTacticallySwapped { battle_update, .. }
+            | BehaviorResult::BattleSkillTargetingFocusChanged { battle_update, .. }
             | BehaviorResult::BattleSkillActivated { battle_update, .. } => {
                 let action_capabilities =
                     self.project_battle_action_capabilities(visual_novel.as_ref())?;

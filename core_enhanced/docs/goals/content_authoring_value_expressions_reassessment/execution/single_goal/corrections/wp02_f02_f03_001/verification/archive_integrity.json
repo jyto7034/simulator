@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "checked": {
+    "predecessor_manifest": {
+      "bytes": 73147,
+      "sha256": "ba25a8fbedfeb4b43c13d8f3bce88340e3ffafc4eb6dba2424169028bad7be98"
+    },
+    "predecessor_source_archive": {
+      "bytes": 1639232,
+      "sha256": "2bb9a6890be052ba7a26cdca18dd377266d05751d5a6927127c8a6dfb793945c"
+    },
+    "predecessor_evidence_archive": {
+      "bytes": 84620,
+      "sha256": "a453d63bcd41baa70fcda0f6c63489d4c41b31a998040b5547a08a5485e7ebdf"
+    },
+    "new_baseline_archive": {
+      "bytes": 1664228,
+      "sha256": "84c5109fb99b1da94910ebc3e79b443d9e4ca9bd80d4019e2f396d179bfb329a"
+    }
+  },
+  "baseline_files": 333,
+  "note": "Prior target archives remain intact; prior currentness no longer applies after this correction."
+}

@@ -1,0 +1,251 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CAVER-P2G20-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CAVER-P2G10-001",
+          "Content Digest": null
+        },
+        "Repository/source axis": {
+          "repository": "/mnt/f/work/simulator",
+          "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+          "axis": "dirty Workspace Actual fixed by per-file SHA-256"
+        },
+        "Common validation requirement": "Inspect actual function bodies plus producer/consumer and persistence paths; distinguish current behavior, approved target, delta, proposal, unknown, technical findings and acceptance seams. Existence/search alone is insufficient. Do not mutate production code or run implementation in P2G-20.",
+        "Requirements": [
+          {
+            "Requirement ID": "SR-CAVER-01",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E01-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Finite typed AST/compiler, unit/arithmetic/rounding/fault boundary and actual effect amount consumer",
+            "Source type/role": "Workspace Actual authored schema, validation, execution and arithmetic",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/{ability.rs,ability/authoring.rs,data/skill_data.rs,stats.rs}",
+              "core_enhanced/src/game/battle/core/{sim,target_usefulness}.rs",
+              "core_enhanced/src/authoring/control.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-02",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E02-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Release/delivery Snapshot versus effect-consumption Live context across instant/projectile/area",
+            "Source type/role": "Workspace Actual carrier/source snapshot and skill delivery paths",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/battle/{damage,runtime_facts}.rs",
+              "core_enhanced/src/game/battle/core/{sim,damage_runtime}.rs",
+              "core_enhanced/src/game/battle/core/skill_runtime/{projectile,area}.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-03",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E03-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Finite aggregate producers, grouping/member identity, stable traversal and empty/error semantics",
+            "Source type/role": "Workspace Actual target resolution, effect loops and finite-control contracts",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/battle/core/{sim,target_usefulness}.rs",
+              "core_enhanced/src/game/ability.rs",
+              "core_enhanced/src/authoring/control.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-04",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E04-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Attack/SpellPower, weapon contribution, growth/modifier order, actual-copy enhancement and double-count risk",
+            "Source type/role": "Workspace Actual stat/profile/inventory/spawn composition",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/{stats,growth}.rs",
+              "core_enhanced/src/game/battle/{stat_pipeline,types}.rs",
+              "core_enhanced/src/game/{combat_setup/player_spawns,data/equipment_data,resources/inventory}.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-05",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E05-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Typed HP/time/resource/result owner/context reads and R04/R05 authority reuse",
+            "Source type/role": "Workspace Actual runtime unit, ResourceLease/context and ActionHandle/fact query",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/resource/{mod,runtime,store}.rs",
+              "core_enhanced/src/game/battle/core/resource_runtime.rs",
+              "core_enhanced/src/game/battle/{runtime_facts,core/runtime_facts}.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-06",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E06-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Positive AttackSpeedPoints input, canonical ceil conversion, final interval runtime consumer and unrelated timer isolation",
+            "Source type/role": "Workspace Actual profile/stat/scheduler/timer contracts",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/battle/types.rs",
+              "core_enhanced/src/game/stats.rs",
+              "core_enhanced/src/game/battle/core/{basic_attack,sim}.rs",
+              "core_enhanced/src/game/skill_fragment.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-07",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E07-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Immutable content generation/fingerprint, shared runtime-preview-explain plan, save projection and Certified input/cache seam",
+            "Source type/role": "Workspace Actual publication, projection, checkpoint and consumers",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/data/{mod,content_pack/mod,content_pack/resolver}.rs",
+              "core_enhanced/src/authoring/query.rs",
+              "core_enhanced/src/game/{range_preview,combat_power}.rs",
+              "core_enhanced/src/game/world/{state,active_run}.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-08",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E08-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Public pack parser→validation→compiler→executor→describe/explain/simulate and finite typed failure",
+            "Source type/role": "Workspace Actual public authoring and manifest capability route",
+            "Required identity/location constraint": [
+              "core_enhanced/src/bin/author_content.rs",
+              "core_enhanced/src/authoring/{mod,query,control}.rs",
+              "core_enhanced/src/game/data/content_pack/{schema,raw,resolver,mod}.rs",
+              "core_enhanced/src/game/data/mod.rs"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-09",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E09-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Literal/stat/growth/enhancement/save compatibility, T06/applicable T18/T27 tests, build selection and fresh-audit boundary",
+            "Source type/role": "Workspace Actual official data, tests, crate targets and roadmap acceptance",
+            "Required identity/location constraint": [
+              "game_resources/data/{skills,equipments}/base.ron",
+              "core_enhanced/tests/",
+              "core_enhanced/src/game/world/tests/",
+              "core_enhanced/Cargo.toml",
+              "core_enhanced/docs/roadmaps/content_authoring/roadmap/ACCEPTANCE.ko.md"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-10",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E07-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Released Actual",
+            "Source type/role": "Released Actual",
+            "Required identity/location constraint": "Released Actual",
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": "R06 is a workspace/core implementation request; no released build compatibility certification was authorized.",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-11",
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CAVER-E07-DECIDED-001",
+              "Content Digest": null
+            },
+            "Required claim/boundary": "Deployed Actual / server / Unity / external service",
+            "Source type/role": "Deployed Actual / excluded external consumers",
+            "Required identity/location constraint": "Deployed/server/Unity/external service",
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": "O01 excludes these consumers. Core public ports, external RON, headless authoring and checkpoint bytes remain required.",
+            "Policy/Scope Basis": [
+              "WR-CAVER-P2G10-001 / S01–S03 / REQUEST_ORIGINAL.txt"
+            ]
+          },
+          {
+            "Requirement ID": "SR-CAVER-12",
+            "Policy Element Revision Ref": null,
+            "Required claim/boundary": "Direct R01/R04/R05 producer output currentness, exact settlement counters vs terminal receipts, resource resolution nonmutation, native and controlled rollback/cancel/clone, existing tile-position group producer; actual public invocation and persistence reader",
+            "Source type/role": "Workspace Actual plus preserved predecessor execution evidence",
+            "Required identity/location constraint": [
+              "core_enhanced/src/game/battle/core/{runtime_facts,resource_runtime,sim,types}.rs",
+              "core_enhanced/src/game/battle/{runtime_facts,tile_range}.rs",
+              "core_enhanced/src/authoring/{control,clone_shape}.rs",
+              "core_enhanced/docs/goals/content_authoring_{minimal_effect_contract,runtime_facts,resource_lifetimes}/execution/single_goal/COMPLETION_AUDIT_RESUME_001.md"
+            ],
+            "Applicability/Necessity": "required",
+            "Policy/Scope Basis": [
+              "S01; R06 §§2,5,6; CA05 §§1,7; T27"
+            ]
+          }
+        ],
+        "Policy/Scope comparison": "Existing source plan reconsidered against fresh WR-CAVER-P2G10-001; old observations not current. Fresh requirements add exact action settlement, tile grouping feasibility, clone/cancel and predecessor audit output currentness."
+      }
+    }
+  ]
+}

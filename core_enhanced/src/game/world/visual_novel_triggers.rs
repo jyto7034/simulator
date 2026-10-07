@@ -1,15 +1,12 @@
 use uuid::Uuid;
 
-use super::{runtime_presentation_mode, GameCore};
+use super::{visual_novel_flow::VisualNovelQueuePlacement, GameCore};
 use crate::game::{
     behavior::GameError,
     combat_preview::{CombatMissionVariant, CombatNodeType},
-    data::{
-        visual_novel_data::{VisualNovelId, VisualNovelSceneId},
-        visual_novel_trigger_data::{
-            VisualNovelTrigger, VisualNovelTriggerCheckpointPolicy, VisualNovelTriggerRepeat,
-            VisualNovelTriggerSource,
-        },
+    data::visual_novel_trigger_data::{
+        VisualNovelTrigger, VisualNovelTriggerCheckpointPolicy, VisualNovelTriggerRepeat,
+        VisualNovelTriggerSource,
     },
     map::{GameMode, MapNodeCategory, MapNodeId, MapNodeKindId},
     visual_novel::{
@@ -65,7 +62,10 @@ impl GameCore {
         for trigger in matches {
             let Some(consumed_key) = self.consumed_key_for_trigger(&trigger, &event)? else {
                 let session = self.visual_novel_session_for_trigger(&trigger, &event)?;
-                self.activate_or_queue_visual_novel_session(session);
+                self.activate_or_queue_visual_novel_session(
+                    session,
+                    VisualNovelQueuePlacement::Tail,
+                );
                 activated += 1;
                 continue;
             };
@@ -73,7 +73,7 @@ impl GameCore {
                 continue;
             }
             let session = self.visual_novel_session_for_trigger(&trigger, &event)?;
-            self.activate_or_queue_visual_novel_session(session);
+            self.activate_or_queue_visual_novel_session(session, VisualNovelQueuePlacement::Tail);
             self.mark_visual_novel_trigger_consumed(trigger.checkpoint_policy, consumed_key);
             activated += 1;
         }
@@ -225,38 +225,19 @@ impl GameCore {
         trigger: &VisualNovelTrigger,
         event: &VisualNovelTriggerEvent,
     ) -> Result<VisualNovelSession, GameError> {
-        let visual_novel = self
-            .game_data
-            .visual_novel_data
-            .get_by_id(trigger.vn_id.as_str())
-            .ok_or_else(|| {
+        let definition =
+            self.resolve_visual_novel_session_definition(trigger.vn_id.clone(), || {
                 GameError::InvalidStaticData(format!(
                     "visual novel trigger '{}' references missing visual novel '{}'",
                     trigger.id.as_str(),
                     trigger.vn_id.as_str()
                 ))
             })?;
-        Ok(VisualNovelSession {
-            session_id: self
-                .state
-                .uuid_manager
-                .next_visual_novel_session()
-                .to_string(),
-            source: source_for_trigger_event(event),
-            vn_id: VisualNovelId::new(trigger.vn_id.as_str()),
-            current_scene_id: VisualNovelSceneId::new(visual_novel.entry_scene_id.as_str()),
-            committed_choice_id: None,
-            blocking: trigger.blocking,
-            presentation_mode: runtime_presentation_mode(visual_novel.default_presentation_mode),
-        })
-    }
-
-    fn activate_or_queue_visual_novel_session(&mut self, session: VisualNovelSession) {
-        if self.state.visual_novel.active.is_none() {
-            self.state.visual_novel.active = Some(session);
-        } else {
-            self.state.visual_novel.queue.push(session);
-        }
+        Ok(self.assemble_visual_novel_session(
+            definition,
+            source_for_trigger_event(event),
+            trigger.blocking,
+        ))
     }
 }
 

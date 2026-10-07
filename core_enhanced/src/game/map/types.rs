@@ -79,6 +79,33 @@ pub enum MapNodePayload {
     },
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuthoredEncounterActorStatOverride {
+    pub abnormality_id: String,
+    pub max_health: u32,
+    pub attack: u32,
+    pub defense: i32,
+    pub magic_resistance: i32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuthoredCombatNodePolicy {
+    pub outcome_policies: Vec<AuthoredCombatOutcomePolicy>,
+    #[serde(default)]
+    pub actor_stat_overrides: Vec<AuthoredEncounterActorStatOverride>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AuthoredCombatOutcomePolicy {
+    pub outcome_id: String,
+    pub reward_ids: Vec<String>,
+    pub grant_node_bonus: bool,
+    pub advance_encounter_progression: bool,
+}
+
 impl Default for MapNodePayload {
     fn default() -> Self {
         Self::None

@@ -96,30 +96,8 @@ impl GameCore {
             items.push(self.maintenance_equipment_preview(equipment));
         }
 
-        for fragment_id in self.state.skill_fragments.owned_ids() {
-            items.push(self.maintenance_skill_fragment_preview(
-                fragment_id,
-                MaintenanceSourceDto {
-                    source_type: MaintenanceSourceKind::Bag,
-                    employee_uuid: None,
-                    slot_kind: None,
-                },
-                false,
-            ));
-        }
-
-        for employee in self.state.roster.iter() {
-            if let Some(fragment_id) = employee.skill_fragments.active_fragment_id() {
-                items.push(self.maintenance_skill_fragment_preview(
-                    fragment_id,
-                    MaintenanceSourceDto {
-                        source_type: MaintenanceSourceKind::Equipped,
-                        employee_uuid: Some(employee.uuid),
-                        slot_kind: Some(MaintenanceSlotKind::SkillFragment),
-                    },
-                    true,
-                ));
-            }
+        for copy in self.state.skill_fragments.copies() {
+            items.push(self.maintenance_skill_fragment_preview(copy));
         }
 
         items.sort_by(|left, right| {
@@ -143,11 +121,11 @@ impl GameCore {
             .items
             .iter()
             .any(|item| match (action, item.target_kind) {
-                (ActionKind::UpgradeSkillFragment, MaintenanceTargetKind::SkillFragment) => {
-                    item.operations.enhance.can_execute
+                (ActionKind::SelectSkillFragmentForm, MaintenanceTargetKind::SkillFragment) => {
+                    item.fragment_forms.iter().any(|form| form.can_select)
                 }
                 (ActionKind::AwakenSkillFragment, MaintenanceTargetKind::SkillFragment) => {
-                    item.operations.awaken.can_execute
+                    item.fragment_forms.iter().any(|form| form.can_unlock)
                 }
                 (ActionKind::DismantleSkillFragment, MaintenanceTargetKind::SkillFragment) => {
                     item.operations.dismantle.can_execute
@@ -212,6 +190,7 @@ impl GameCore {
         MaintenanceItemPreviewDto {
             target_id: equipment.instance_uuid.to_string(),
             target_kind: MaintenanceTargetKind::Equipment,
+            fragment_forms: vec![],
             equipment_type: Some(equipment.meta.equipment_type),
             display_name: equipment.meta.name.clone(),
             source,
@@ -294,29 +273,26 @@ impl GameCore {
         equipment: &crate::game::resources::OwnedEquipment,
         before: MaintenanceTargetStatePreviewDto,
     ) -> MaintenanceOperationPreviewDto {
-        let costs = self
+        let recipe = self
             .game_data
             .equipment_data
-            .get_enhancement_recipe_by_equipment_id(&equipment.meta.id)
-            .map(|recipe| {
-                recipe
-                    .costs_per_level
-                    .iter()
-                    .map(|material| MaintenanceMaterialAmountDto {
-                        material_id: material.material_id.clone(),
-                        amount: material.amount,
-                    })
-                    .collect::<Vec<_>>()
+            .get_enhancement_recipe_by_equipment_id(&equipment.meta.id);
+        let aggregated_costs = recipe.and_then(|recipe| recipe.aggregated_costs());
+        let costs = aggregated_costs
+            .as_deref()
+            .unwrap_or_default()
+            .iter()
+            .map(|material| MaintenanceMaterialAmountDto {
+                material_id: material.material_id.clone(),
+                amount: material.amount,
             })
-            .unwrap_or_default();
+            .collect::<Vec<_>>();
         let can_execute = !equipment.meta.bound
-            && self
-                .game_data
-                .equipment_data
-                .get_enhancement_recipe_by_equipment_id(&equipment.meta.id)
-                .is_some_and(|recipe| {
+            && recipe
+                .zip(aggregated_costs.as_ref())
+                .is_some_and(|(recipe, costs)| {
                     equipment.enhancement_level < recipe.max_level
-                        && recipe.costs_per_level.iter().all(|cost| {
+                        && costs.iter().all(|cost| {
                             self.state
                                 .inventory
                                 .equipment_materials
@@ -342,189 +318,90 @@ impl GameCore {
 
     fn maintenance_skill_fragment_preview(
         &self,
-        fragment_id: &crate::game::data::skill_fragment_data::SkillFragmentId,
-        source: MaintenanceSourceDto,
-        will_unequip: bool,
+        copy: &crate::game::skill_fragment::OwnedFragment,
     ) -> MaintenanceItemPreviewDto {
-        let metadata = self.game_data.skill_fragment_data.get_by_id(fragment_id);
-        let before = self.skill_fragment_state_preview(fragment_id);
+        let metadata = self
+            .game_data
+            .skill_fragment_data
+            .get_by_id(&copy.definition_id);
+        let before = MaintenanceTargetStatePreviewDto {
+            stack_count: Some(self.state.skill_fragments.count(&copy.definition_id)),
+            enhancement_level: None,
+            fragment_copy_uuid: Some(copy.copy_uuid),
+            selected_form: Some(copy.selected_form.clone()),
+            unlocked_forms: copy.unlocked_forms.iter().cloned().collect(),
+            owner: copy.equipped_to,
+        };
+        let unavailable = |reason: &str| MaintenanceOperationPreviewDto {
+            can_execute: false,
+            disabled_reason: Some(reason.into()),
+            costs: vec![],
+            gains: vec![],
+            before: before.clone(),
+            after: None,
+            requires_confirm: false,
+            will_unequip: false,
+            warnings: vec![],
+        };
+        let effects = self
+            .fragment_dismantle_effects(copy.copy_uuid, true)
+            .and_then(|(_, effects)| {
+                self.preview_grant_effects(&effects)?;
+                Ok(effects)
+            });
+        let mut dismantle = unavailable("fragment_recipe_or_grant_unavailable");
+        if let Ok(effects) = effects {
+            dismantle.can_execute = true;
+            dismantle.disabled_reason = None;
+            dismantle.gains = effects
+                .iter()
+                .filter_map(|effect| match effect {
+                    crate::game::reward::RewardEffect::GrantEquipmentMaterial {
+                        material_id,
+                        amount,
+                    } => Some(MaintenanceMaterialAmountDto {
+                        material_id: material_id.clone(),
+                        amount: *amount,
+                    }),
+                    crate::game::reward::RewardEffect::GrantEnkephalin { amount } => {
+                        Some(MaintenanceMaterialAmountDto {
+                            material_id: "enkephalin".into(),
+                            amount: *amount,
+                        })
+                    }
+                    _ => None,
+                })
+                .collect();
+            dismantle.requires_confirm = copy.equipped_to.is_some();
+            dismantle.will_unequip = copy.equipped_to.is_some();
+            dismantle.warnings = copy
+                .equipped_to
+                .map(|_| MaintenanceWarning::EquippedItemWillBeUnequipped)
+                .into_iter()
+                .collect();
+        }
         MaintenanceItemPreviewDto {
-            target_id: fragment_id.to_string(),
+            target_id: copy.copy_uuid.to_string(),
             target_kind: MaintenanceTargetKind::SkillFragment,
             equipment_type: None,
             display_name: metadata
-                .map(|fragment| fragment.name.clone())
-                .unwrap_or_else(|| fragment_id.to_string()),
-            source,
-            operations: MaintenanceOperationsDto {
-                dismantle: self.skill_fragment_dismantle_preview(
-                    fragment_id,
-                    before.clone(),
-                    will_unequip,
-                ),
-                enhance: self.skill_fragment_enhance_preview(fragment_id, before.clone()),
-                awaken: self.skill_fragment_awaken_preview(fragment_id, before),
+                .map(|m| m.name.clone())
+                .unwrap_or_else(|| copy.definition_id.to_string()),
+            source: MaintenanceSourceDto {
+                source_type: if copy.equipped_to.is_some() {
+                    MaintenanceSourceKind::Equipped
+                } else {
+                    MaintenanceSourceKind::Bag
+                },
+                employee_uuid: copy.equipped_to,
+                slot_kind: copy.equipped_to.map(|_| MaintenanceSlotKind::SkillFragment),
             },
-        }
-    }
-
-    fn skill_fragment_state_preview(
-        &self,
-        fragment_id: &crate::game::data::skill_fragment_data::SkillFragmentId,
-    ) -> MaintenanceTargetStatePreviewDto {
-        let progress = self.state.skill_fragments.progress(fragment_id);
-        MaintenanceTargetStatePreviewDto {
-            stack_count: Some(self.state.skill_fragments.count(fragment_id)),
-            enhancement_level: None,
-            upgrade_level: Some(progress.upgrade_level),
-            awakening_progress: Some(progress.awakening_progress),
-            awakening_available: Some(progress.awakening_available),
-            awakened: Some(progress.awakened),
-        }
-    }
-
-    fn skill_fragment_dismantle_preview(
-        &self,
-        fragment_id: &crate::game::data::skill_fragment_data::SkillFragmentId,
-        before: MaintenanceTargetStatePreviewDto,
-        will_unequip: bool,
-    ) -> MaintenanceOperationPreviewDto {
-        let gains = self
-            .state
-            .skill_fragment_policy
-            .dismantle
-            .validate_dismantle(
-                &self.state.skill_fragments,
-                fragment_id,
-                &self.game_data.skill_fragment_data,
-            )
-            .map(|amount| {
-                vec![MaintenanceMaterialAmountDto {
-                    material_id: "fragment_dust".to_string(),
-                    amount,
-                }]
-            })
-            .unwrap_or_default();
-        let can_execute = !gains.is_empty();
-        let after_count = self
-            .state
-            .skill_fragments
-            .count(fragment_id)
-            .saturating_sub(1);
-        MaintenanceOperationPreviewDto {
-            can_execute,
-            disabled_reason: (!can_execute).then(|| "cannot_dismantle_skill_fragment".to_string()),
-            costs: vec![],
-            gains,
-            before: before.clone(),
-            after: Some(MaintenanceTargetStatePreviewDto {
-                stack_count: Some(after_count),
-                ..before
-            }),
-            requires_confirm: true,
-            will_unequip,
-            warnings: will_unequip
-                .then(|| MaintenanceWarning::EquippedItemWillBeUnequipped)
-                .into_iter()
-                .collect(),
-        }
-    }
-
-    fn skill_fragment_enhance_preview(
-        &self,
-        fragment_id: &crate::game::data::skill_fragment_data::SkillFragmentId,
-        before: MaintenanceTargetStatePreviewDto,
-    ) -> MaintenanceOperationPreviewDto {
-        let cost = self
-            .state
-            .skill_fragment_policy
-            .composition
-            .dust_upgrade_cost(
-                &self.state.skill_fragments,
-                fragment_id,
-                &self.game_data.skill_fragment_data,
-            )
-            .ok();
-        let can_execute =
-            cost.is_some_and(|amount| self.state.skill_fragments.fragment_dust() >= amount);
-        let progress = self.state.skill_fragments.progress(fragment_id);
-        let next_awakening_progress = progress.awakening_progress.saturating_add(
-            self.state
-                .skill_fragment_policy
-                .composition
-                .awakening_progress_per_upgrade,
-        );
-        MaintenanceOperationPreviewDto {
-            can_execute,
-            disabled_reason: (!can_execute).then(|| "not_enough_fragment_dust".to_string()),
-            costs: cost
-                .map(|amount| {
-                    vec![MaintenanceMaterialAmountDto {
-                        material_id: "fragment_dust".to_string(),
-                        amount,
-                    }]
-                })
-                .unwrap_or_default(),
-            gains: vec![],
-            before: before.clone(),
-            after: Some(MaintenanceTargetStatePreviewDto {
-                upgrade_level: Some(progress.upgrade_level.saturating_add(1)),
-                awakening_progress: Some(next_awakening_progress),
-                awakening_available: Some(
-                    progress.awakening_available
-                        || next_awakening_progress
-                            >= self
-                                .state
-                                .skill_fragment_policy
-                                .composition
-                                .awakening_threshold,
-                ),
-                ..before
-            }),
-            requires_confirm: true,
-            will_unequip: false,
-            warnings: vec![],
-        }
-    }
-
-    fn skill_fragment_awaken_preview(
-        &self,
-        fragment_id: &crate::game::data::skill_fragment_data::SkillFragmentId,
-        before: MaintenanceTargetStatePreviewDto,
-    ) -> MaintenanceOperationPreviewDto {
-        let cost = self
-            .state
-            .skill_fragment_policy
-            .composition
-            .dust_awakening_cost(
-                &self.state.skill_fragments,
-                fragment_id,
-                &self.game_data.skill_fragment_data,
-            )
-            .ok();
-        let can_execute =
-            cost.is_some_and(|amount| self.state.skill_fragments.fragment_dust() >= amount);
-        MaintenanceOperationPreviewDto {
-            can_execute,
-            disabled_reason: (!can_execute).then(|| "cannot_awaken_skill_fragment".to_string()),
-            costs: cost
-                .map(|amount| {
-                    vec![MaintenanceMaterialAmountDto {
-                        material_id: "fragment_dust".to_string(),
-                        amount,
-                    }]
-                })
-                .unwrap_or_default(),
-            gains: vec![],
-            before: before.clone(),
-            after: Some(MaintenanceTargetStatePreviewDto {
-                awakening_available: Some(true),
-                awakened: Some(true),
-                ..before
-            }),
-            requires_confirm: true,
-            will_unequip: false,
-            warnings: vec![],
+            operations: MaintenanceOperationsDto {
+                dismantle,
+                enhance: unavailable("fragment_upgrade_removed"),
+                awaken: unavailable("select_explicit_fragment_form"),
+            },
+            fragment_forms: self.fragment_forms_snapshot(copy),
         }
     }
 

@@ -1,0 +1,60 @@
+{
+  "captured_at": "2026-09-09T18:24:15.021670+00:00",
+  "verdict": "Complete / High",
+  "target_record": "ATR-CAMEC-R01-002",
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_002.json",
+      "sha256": "09ccc72d1b8b94fdac8024c65247a72a184228cb6e1eb30172f7889457352c62"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_002.md",
+      "sha256": "40bb07c34bd63bb5e081c127fa73e9ce38878c7e771071959d75551b608fecac"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/currentness_begin.json",
+      "sha256": "95c1cdcf4ca8ddc05b5405576d2e8b49fa68a86e2327d50349cdcd3ac61cb360"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/currentness_end.json",
+      "sha256": "ac98e57c1e354d74473d7a106c022aac83b758323f6c7728c4a9905000681d86"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe.log",
+      "sha256": "8cd07436be0c68f2f5f02fcb0334a3070a64d4b4283102a9949ca180f7d66406"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe.rs",
+      "sha256": "af5ab88065571524e3a005dea01134f164edb26d2b156ba57f058cb94b2ef1b8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe_compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe_result.json",
+      "sha256": "fda31c75d7ef1671b35d7998f41d968ec749c70c45bcce19f959e86e17deb268"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/git_status_begin.txt",
+      "sha256": "4bf0c022c500287aef7acdf936410e9e35f12bba0de00f0ea890d2e9e7bc9ae7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/git_status_end.txt",
+      "sha256": "e59f60cd2d2d066e323d499f2586d54b33ba7c1057424c10ae756c92c8ccc518"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/git_status_review.json",
+      "sha256": "9d99fdccec0b3aa577ca4e2587b0d9d1a034d4c816acae5e5b706b710552ef99"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/independent_preservation.json",
+      "sha256": "56d70764ed987ff421a5d9c17a64add18a39afdf14bd72f96f73bb296755adca"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/validation_review.json",
+      "sha256": "d5c9b18bc08af98646229b43795da632da764d8028e7ee32f4ec370433888e5d"
+    }
+  ],
+  "exclusion": "This output index itself; audit-local /tmp build/copy files identified in probe receipt. All listed new files are audit outputs, not implementation mutation."
+}

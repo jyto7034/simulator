@@ -1,0 +1,46 @@
+{
+  "stage": "GEX-00",
+  "result": "completed",
+  "request_mode": "execute / goal-run",
+  "root_target": {
+    "goal_set_ref": "GS-CARF-P2G50-001",
+    "goal_id": "GOAL-CARF-01"
+  },
+  "selected_target": {
+    "goal_set_ref": "GS-CARF-P2G50-001",
+    "goal_id": "GOAL-CARF-01",
+    "kind": "single",
+    "phase_id": "PHASE-CARF-01",
+    "assigned_final_execution_nodes": [
+      "AG-CARF-01",
+      "WP-CARF-03"
+    ]
+  },
+  "accepted_handoff": "HOF-CARF-P2G60-001",
+  "accepted_freeze": "FPF-CARF-P2G30-001",
+  "accepted_plan": "PP-CARF-P2G40-002",
+  "accepted_receipt": "PVR-CARF-P2G40-002",
+  "authority": "Current user-adopted AUTORUN §§3/5/6/8 separately selects eligible exact child. Immutable P2G statuses preserved. No new permission request required.",
+  "execution_directory": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal",
+  "roles": {
+    "PLAN": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/PLAN.md",
+    "EXPERIMENTS": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/EXPERIMENTS.md",
+    "EXPERIMENT_NOTES": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/EXPERIMENT_NOTES.md",
+    "future_completion_audit": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/COMPLETION_AUDIT.md"
+  },
+  "baseline": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/baseline/BASELINE_001.json",
+    "sha256": "8f47865faf5032c87e47657c7fb3619968138248e703039b18cb684ca49bf885"
+  },
+  "resume_disposition": "new selected Goal; normal prerequisites satisfied; no previous exact execution history",
+  "next_pass": "GEX-10",
+  "next_action": "Detailed actual source design/readiness then implementation and validation under existing goal-run",
+  "required_dimensions": 10,
+  "acceptance_members": 20,
+  "assigned_integration_seams": 10,
+  "user_visible_conditions": 8,
+  "blockers": [],
+  "production_mutation": false,
+  "new_gameplay_execution_count": 0,
+  "recorded_at_utc": "2026-09-10T19:42:29.204616+00:00"
+}

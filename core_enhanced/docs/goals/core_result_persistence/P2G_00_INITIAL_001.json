@@ -1,0 +1,344 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CRRP-001",
+        "Content Digest": "sha256:f7d5da3f0056045f9d8cfa20066669bbd84ada2adaed4961b497b23ddb3a8bab"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CRRP-20261004",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "user request",
+            "Exact Content or Content Reference": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md의 활성 범위를\nP2G와 GEX에 따라 순차적으로 구현해줘.\n\nU00 인수와 U01 F01 교정부터 시작하고, 내가 중단을 요청하거나\n로드맵의 승인 범위를 완료할 때까지 다음 작업으로 계속 진행해줘.\n\n이번 요청은 각 작업에 필요한 다음 과정을 모두 포함해:\n- P2G 정책 정리·코드 검토·계획·Goal·인계\n- GEX 구현·자체 검증·독립 감사\n- 감사 finding 교정·재감사\n- 선행 조건 충족 후 다음 작업 선택과 실행\n\n단계 전환이나 감사 인계마다 재승인을 요청하지 마.\n필요한 독립 감사에는 구현에 참여하지 않은 별도 에이전트(GPT-6 Astra / High)를 활용하고,\n감사 통과 전에는 그 결과에 의존하는 후속 구현을 시작하지 마.\n\n구현 중 필요한 정책은 기존 명시적 합의와 승인 범위 안에서\n재량으로 판단해줘. 결정·이유·영향·위임 근거를 해당 정책 문서에\n남기고, 필요한 P2G 갱신·재검증 후 구현을 이어가줘.\n\n기존 계획과 유효한 증거를 재사용하고, 로드맵 전체를 미리\n상세 설계하거나 완료된 단계를 불필요하게 반복하지 마.\n\n작업별 결과·검증·남은 문제와 다음 위치를 계속 기록하고,\n의미 있는 진척은 간결하게 보고하되 보고만 하고 멈추지는 마.\n기존 사용자 변경과 과거 감사 원본은 보존해줘.\n\n내 중단 요청, 승인 범위 완료, 또는 현재 권한과 환경으로\n해결할 수 없는 실제 장애에서만 멈춰줘.\n중단 시 완료·미완료 상태와 정확한 재개 위치를 남겨줘.",
+            "User-Provided Locator": "2026-10-04 continuous Core-first implementation request, preserved verbatim in preceding intake",
+            "User-Stated Constraint": "순차 P2G/GEX·독립 Astra High 감사와 교정, 승인 범위 내 정책 재량, 선행 통과 전 종속 구현 금지, 원본 보존, 중간 재승인 없이 계속",
+            "Capture Limitation": "None; original request copied unchanged, not a new user decision"
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "sha256": "d80511241a82175a7564aec94836b85e72eb0567b82a511152da4aef3de08a7a"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+              "sha256": "b3da8b823eee0cf7b96e607a1da6d1e92810ef029744a3ad52fd2ceb03706b2c"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/DECISIONS_20261004.ko.md",
+              "sha256": "f82730653f4cf2ac14b1a9fb0b4247236fc14e5b47cc0da21d9deabb89f1cdff"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rulebook_next.md",
+              "sha256": "1d73ff1f2da6c234884d3515750fd4fde13e78d72082f85be7f9ea9c1b3bb9f9"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules_next/results-and-save.md",
+              "sha256": "b113f6928c3f9c5edc7ce86afa9df9e161303bed6374604e7b7015a95902b9eb"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules_next/open-decisions.md",
+              "sha256": "dea7199184f7b8191293cbfe42946b5d6cca1d66daefbb360e439b3b402acb2b"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/post_audit/u03_20261004_003/COMPLETION_AUDIT.md",
+              "sha256": "57d3b7ff15885ec871b1f5e66b2322c8401b2a0acab1d36ed91a5261d9c0f672"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/post_audit/u03_20261004_003/END_CURRENTNESS.json",
+              "sha256": "ee6eded53c2ccb6465a03cc97582712d54a6b353835fe7ed9ec998473f44c69c"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/post_audit/u03_20261004_003/AUDIT_CLOSE.json",
+              "sha256": "af98a67e3bd048cb66a310c797985e6caa9b7233a9fe0810036c7296ce410b2e"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_runtime_fault_isolation/execution/single_goal/corrections/f02_origin_001/target/u03_003/MANIFEST.json",
+              "sha256": "76fd812b8ab094050302e36c72abd19ab629091bfce8cd4330be3bc8ab1c552b"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-012",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u03_closure_20261004_001/RESULT.ko.md",
+              "sha256": "893c7811e9cc088eceafaf0ecf772fbb238bef45e93441af06a38dc7f2dbf5a0"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          },
+          {
+            "Intake Item ID": "IN-013",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u03_closure_20261004_001/PUBLICATION_RECORD.json",
+              "sha256": "11219501249e987aa0f3d63d38b8fba3f26a86ae7661a6fc854229b9d199df3c"
+            },
+            "User-Provided Locator": "ROADMAP U04/S01-S08, results-and-save, CF-D01/02/03/06/07 and closed U03 prerequisite",
+            "User-Stated Constraint": "현재 결과·선택·후퇴·종료복구·이어하기·SavePoint와 실제 reader/writer를 함께 전환; 미래 상태 선추가·구저장 삭제 금지",
+            "Capture Limitation": "Exact local bytes captured; intake does not certify policy meaning or current runtime behavior"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRRP-001",
+        "Content Digest": "sha256:d734d78410aa5ac737b7324fe709e412ac35dcc22e809fa0abf779876130a242"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRRP-20261004",
+          "Policy Topic": "U04 결과 확정·선택 권리·후퇴·이어하기·SavePoint 수명 전환",
+          "Requested Result": "bounded_pipeline P2G-00→60, then authorized GEX implementation/verification/independent audit/correction",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "Policy Intake Snapshot.IN-001",
+            "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+            "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+            "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction"
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "승패 성립 즉시 현재 직원·손실·자원·XP·보상 권리·노드 소비를 확정·저장하고 결과 확인은 표시만 닫는다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S01,S08"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "선택형 보상의 권리·실제 후보·선택 대기를 보존하고 중복 지급·재추첨을 막는다; 후보 부족/0개의 기존 확정 정책을 따른다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S02; CF-D02/03"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "성공한 수동후퇴를 노드당2회로 제한하고 세 번째 도전·이미 소비한 횟수·미확정 노드 종료복구를 구분한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S03,S04"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "현재 확정 진행의 stable Continue와 단일 최신 SavePoint의 명시적 load3회·누적 횟수·동일 프로세스 재접속을 분리한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04/S05,S06,S07"
+              }
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "Core 결과·실제 정산·영속 확인/재처리·query/ack·tick/명령·active/profile 저장·V9 후속 reader/writer와 crash/concurrent choice 검증을 함께 전환한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04 together-boundaries and completion; ROADMAP §6.1/6.2"
+              }
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "구 개발/테스트 저장의 legacy 의미 호환은 요구하지 않으며 원본 보존·명시적 미지원 처리를 적용한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "CF-D01; results-and-save 구저장 지원 범위"
+              }
+            },
+            {
+              "Scope Item ID": "I07",
+              "Approved Disposition": "in",
+              "Statement": "선행 U01/U02/U03의 실제 완료 증거와 오류 격리·원본 보호를 인수하고 영향 조건 재검증·독립 감사·교정을 수행한다",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "continuous request; U04 prerequisites"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "최신 지도·억제력·창고·전조 등 아직 도입하지 않은 미래 schema 선추가 및 그 owner의 gameplay 구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04 explicit exclusions; ROADMAP §6.1/6.2"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "과거 저장 자동 삭제·덮어쓰기·필드 무시로 새 형식 취급, 최초 실제 저장 구현을 U28로 미루기",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "U04 explicit exclusions; CF-D01"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "공개/숨겨진 최종보스의 미합의 고유 구현과 Unity 후속 화면 구현",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "ROADMAP USER-01/02 and U04 Core scope"
+              }
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "후속 U05 이후 전투·유물·모드 정책의 일괄 상세 설계 또는 무관한 제품 정리",
+              "Exact User Approval Reference": {
+                "user_request": "Policy Intake Snapshot.IN-001",
+                "adopted_scope": "IN-002 ROADMAP §5 U04/S01-S08 and §6 current-state restoration boundary; IN-006 results-and-save",
+                "delegation": "IN-004 DECISIONS_20261004 CF-D06; original continuous request",
+                "boundary": "U03 independent Complete/High consumed; scoped P2G00-60 then separately authorized GEX implementation/audit/correction",
+                "specific_locator": "continuous request scope-local sequencing; ROADMAP §5 owners"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRRP-001",
+          "Content Digest": "sha256:f7d5da3f0056045f9d8cfa20066669bbd84ada2adaed4961b497b23ddb3a8bab"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

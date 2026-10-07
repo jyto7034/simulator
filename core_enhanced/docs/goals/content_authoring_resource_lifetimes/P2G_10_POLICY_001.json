@@ -1,0 +1,1739 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E01-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "자원 종류·정의/effect 위치·실제 소유자·수명 인스턴스를 분리한다. 현재 존재하는 장비 사본과 직원의 영구 identity를 전투 바인딩에 보존하고, 공급자·실행자·보유자·수혜자를 자동으로 동일시하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E01",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "자원 종류·정의/effect 위치·실제 소유자·수명 인스턴스를 분리한다. 현재 존재하는 장비 사본과 직원의 영구 identity를 전투 바인딩에 보존하고, 공급자·실행자·보유자·수혜자를 자동으로 동일시하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E01": [
+            "같은 정의의 장비 두 사본과 서로 다른 직원의 값·사용기록이 분리된다. 같은 사본의 서로 다른 배치도 같은 영구 owner로 추적된다.",
+            "자원 변경·비용 결과가 실제 source owner로 귀속되고 definition ID 또는 transient unit ID로 다른 사본과 합쳐지지 않는다.",
+            "실재하지 않거나 서로 맞지 않는 owner/binding은 명시적으로 거부되며 다른 소유자의 상태를 변경하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+              "selector": "§§1,3–6"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/03_RUNTIME.ko.md",
+              "sha256": "8fbd1950c265bef1353a27573fbb7efd7f84490604f847b69eb76f75a91674ad",
+              "selector": "§§1–2"
+            }
+          ],
+          "decision_actor": "user-adopted scope",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E01-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E01-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "자원 종류·정의/effect 위치·실제 소유자·수명 인스턴스를 분리한다. 현재 존재하는 장비 사본과 직원의 영구 identity를 전투 바인딩에 보존하고, 공급자·실행자·보유자·수혜자를 자동으로 동일시하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E01-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 정의의 장비 두 사본과 서로 다른 직원의 값·사용기록이 분리된다. 같은 사본의 서로 다른 배치도 같은 영구 owner로 추적된다.",
+          "자원 변경·비용 결과가 실제 source owner로 귀속되고 definition ID 또는 transient unit ID로 다른 사본과 합쳐지지 않는다.",
+          "실재하지 않거나 서로 맞지 않는 owner/binding은 명시적으로 거부되며 다른 소유자의 상태를 변경하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-01-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-01",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§§1,3–6"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/03_RUNTIME.ko.md",
+            "sha256": "8fbd1950c265bef1353a27573fbb7efd7f84490604f847b69eb76f75a91674ad",
+            "selector": "§§1–2"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E01-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E01",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E01-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E02-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "Run/Attempt/Deployment/Activation/Delivery/Chain을 서로 구별되는 종료 경계로 지원한다. owner와 수명을 별도로 선언하고, 자기 수명 인스턴스 종료만 해당 상태·예약·lease를 무효화한다. 종료되거나 재사용된 인스턴스의 지연 작업은 새 상태에 재진입하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E02",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "Run/Attempt/Deployment/Activation/Delivery/Chain을 서로 구별되는 종료 경계로 지원한다. owner와 수명을 별도로 선언하고, 자기 수명 인스턴스 종료만 해당 상태·예약·lease를 무효화한다. 종료되거나 재사용된 인스턴스의 지연 작업은 새 상태에 재진입하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E02": [
+            "같은 사본의 Deployment 상태는 철수·재배치로 종료/초기화되고 Attempt 기록은 같은 전투 도전 안에서 유지된다. Run 상태는 Attempt·Deployment 종료만으로 초기화되지 않는다.",
+            "Activation/Delivery/Chain 각각의 실제 시작·종료·취소 경계에서 상태와 예약/lease가 누출되지 않으며 stale handle/timer와 중복 종료는 새 인스턴스에 영향을 주지 않는다.",
+            "이미 방출한 전달체는 현재 승인된 독립 수명을 지킨다. controller 취소가 모든 released payload의 무조건 취소나 미생성 후속 효과의 존속으로 바뀌지 않는다.",
+            "여섯 수명 중 실제 consumer와 종료 검증이 없는 수명을 구현 완료로 표시하지 않는다. 후속 full Flow·branch/join 기능을 R05 완료의 대용으로 만들지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+              "selector": "§§1,3,5–7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/03_RUNTIME.ko.md",
+              "sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718",
+              "selector": "§§1–2"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA04.md",
+              "sha256": "87eb06b098b317e4ee63530f5e19a26090f862e66366734cdae109b4026ce953",
+              "selector": "§§1,4,7"
+            }
+          ],
+          "decision_actor": "user-adopted scope",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E02-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E02-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "Run/Attempt/Deployment/Activation/Delivery/Chain을 서로 구별되는 종료 경계로 지원한다. owner와 수명을 별도로 선언하고, 자기 수명 인스턴스 종료만 해당 상태·예약·lease를 무효화한다. 종료되거나 재사용된 인스턴스의 지연 작업은 새 상태에 재진입하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E02-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 사본의 Deployment 상태는 철수·재배치로 종료/초기화되고 Attempt 기록은 같은 전투 도전 안에서 유지된다. Run 상태는 Attempt·Deployment 종료만으로 초기화되지 않는다.",
+          "Activation/Delivery/Chain 각각의 실제 시작·종료·취소 경계에서 상태와 예약/lease가 누출되지 않으며 stale handle/timer와 중복 종료는 새 인스턴스에 영향을 주지 않는다.",
+          "이미 방출한 전달체는 현재 승인된 독립 수명을 지킨다. controller 취소가 모든 released payload의 무조건 취소나 미생성 후속 효과의 존속으로 바뀌지 않는다.",
+          "여섯 수명 중 실제 consumer와 종료 검증이 없는 수명을 구현 완료로 표시하지 않는다. 후속 full Flow·branch/join 기능을 R05 완료의 대용으로 만들지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-02-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-02",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§§1,3,5–7"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/03_RUNTIME.ko.md",
+            "sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718",
+            "selector": "§§1–2"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA04.md",
+            "sha256": "87eb06b098b317e4ee63530f5e19a26090f862e66366734cdae109b4026ce953",
+            "selector": "§§1,4,7"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E02-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E02",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E02-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E03-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "자원 정의는 owner/lifetime과 초기값·유한 상한을 명시한다. grant/decay/consume은 명시한 양으로 같은 typed 자원을 조작한다. grant는 상한까지, decay는 잔량까지 반영하며 부족한 consume은 전체 거부한다. 기존 공식 자원 수치·회복·비용·성장 규칙을 바꾸지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E03",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "자원 정의는 owner/lifetime과 초기값·유한 상한을 명시한다. grant/decay/consume은 명시한 양으로 같은 typed 자원을 조작한다. grant는 상한까지, decay는 잔량까지 반영하며 부족한 consume은 전체 거부한다. 기존 공식 자원 수치·회복·비용·성장 규칙을 바꾸지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E03": [
+            "유효 초기값은 0 이상 상한 이하이며 잘못된 타입·범위·누락·비유한 값·미지원 수명/owner 조합은 설명 가능한 거부다. 누락을 0 또는 무제한으로 메우지 않는다.",
+            "grant/decay 결과는 요청량과 실제 변화량을 구별한다. 상한 초과분이나 없는 잔량을 환불·부채·다른 자원으로 변환하지 않는다.",
+            "상한보다 큰 잔량, 산술 overflow 또는 잘못된 비용 입력이 성공으로 게시되지 않는다. 실행 안전 예산과 authored gameplay cap을 구별한다.",
+            "기존 공명/전술 자원 동작은 보존한다. 시험 입력의 초기량·상한·소비량은 공식 밸런스 결정이 아니다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+              "selector": "§§1,3,6"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA04.md",
+              "sha256": "87eb06b098b317e4ee63530f5e19a26090f862e66366734cdae109b4026ce953",
+              "selector": "§§1,7"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/03_RUNTIME.ko.md",
+              "sha256": "8fbd1950c265bef1353a27573fbb7efd7f84490604f847b69eb76f75a91674ad",
+              "selector": "§4 ResourceStore"
+            }
+          ],
+          "decision_actor": "delegated ordinary policy",
+          "ordinary_policy_evidence": [
+            "명시된 cap/grant/decay/consume 기능 및 기존 수치를 유지한다.",
+            "상한은 저장 가능한 최대량, decay는 해당 잔량의 감소라는 자원 경계에서 초과분을 보유하지 않는 동작을 도출한다. consume은 카드의 부족 비용 전체 거부를 따른다.",
+            "새 수치·보상·비용·환불·상속을 추가하지 않고 입력된 값과 선언 경계만 집행한다. 상한 자체를 runtime에서 낮춰 잔량을 삭제하는 새 operation은 승인하지 않는다.",
+            "해당 owner의 새 선언 자원만 변경하며 다른 객체의 자원/진행에 쓰지 않는다.",
+            "기존 저장을 재해석하지 않고 신규 자원 선언에서만 적용한다. 기존 사용자 파일·획득 권리는 바꾸지 않는다."
+          ],
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E03-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E03-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "자원 정의는 owner/lifetime과 초기값·유한 상한을 명시한다. grant/decay/consume은 명시한 양으로 같은 typed 자원을 조작한다. grant는 상한까지, decay는 잔량까지 반영하며 부족한 consume은 전체 거부한다. 기존 공식 자원 수치·회복·비용·성장 규칙을 바꾸지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E03-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "유효 초기값은 0 이상 상한 이하이며 잘못된 타입·범위·누락·비유한 값·미지원 수명/owner 조합은 설명 가능한 거부다. 누락을 0 또는 무제한으로 메우지 않는다.",
+          "grant/decay 결과는 요청량과 실제 변화량을 구별한다. 상한 초과분이나 없는 잔량을 환불·부채·다른 자원으로 변환하지 않는다.",
+          "상한보다 큰 잔량, 산술 overflow 또는 잘못된 비용 입력이 성공으로 게시되지 않는다. 실행 안전 예산과 authored gameplay cap을 구별한다.",
+          "기존 공명/전술 자원 동작은 보존한다. 시험 입력의 초기량·상한·소비량은 공식 밸런스 결정이 아니다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-03-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-03",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§§1,3,6"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA04.md",
+            "sha256": "87eb06b098b317e4ee63530f5e19a26090f862e66366734cdae109b4026ce953",
+            "selector": "§§1,7"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/03_RUNTIME.ko.md",
+            "sha256": "8fbd1950c265bef1353a27573fbb7efd7f84490604f847b69eb76f75a91674ad",
+            "selector": "§4 ResourceStore"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E03-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E03",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E03-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E04-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "reserve/commit/abort는 같은 자원·owner·수명·revision에 결속된다. 예약은 지출 완료가 아니며 확정은 한 번만 적용된다. 취소·실패는 예약을 해제하고 거부된 공개 operation은 그 operation 이전의 자원·ID·RNG·queue·revision·관찰 상태를 보존한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E04",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "reserve/commit/abort는 같은 자원·owner·수명·revision에 결속된다. 예약은 지출 완료가 아니며 확정은 한 번만 적용된다. 취소·실패는 예약을 해제하고 거부된 공개 operation은 그 operation 이전의 자원·ID·RNG·queue·revision·관찰 상태를 보존한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E04": [
+            "여러 비용 중 하나가 부족하거나 중간 처리가 실패하면 부분 지출·다른 사본 지출·성공 receipt·ID/RNG/queue 누출이 없다.",
+            "동일 reservation의 중복 commit/abort 또는 stale revision/epoch는 추가 지출·환불·재생성을 일으키지 않는다. 예약된 잔량을 다른 소비가 다시 지출할 수 없다.",
+            "Cost/ResourceChange 결과는 실제 before/after와 소유자·자원을 나타내며 로그 보존 여부가 원자성/권한/상태의 authority가 되지 않는다.",
+            "이미 완료된 이전 timestamp 전체를 rollback하는 것으로 과장하지 않고 현재 공개 transaction의 실패 경계를 검증한다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+              "selector": "§§3,6"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T05/T29"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/03_RUNTIME.ko.md",
+              "sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718",
+              "selector": "§5"
+            }
+          ],
+          "decision_actor": "user-adopted scope",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E04-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E04-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "reserve/commit/abort는 같은 자원·owner·수명·revision에 결속된다. 예약은 지출 완료가 아니며 확정은 한 번만 적용된다. 취소·실패는 예약을 해제하고 거부된 공개 operation은 그 operation 이전의 자원·ID·RNG·queue·revision·관찰 상태를 보존한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E04-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "여러 비용 중 하나가 부족하거나 중간 처리가 실패하면 부분 지출·다른 사본 지출·성공 receipt·ID/RNG/queue 누출이 없다.",
+          "동일 reservation의 중복 commit/abort 또는 stale revision/epoch는 추가 지출·환불·재생성을 일으키지 않는다. 예약된 잔량을 다른 소비가 다시 지출할 수 없다.",
+          "Cost/ResourceChange 결과는 실제 before/after와 소유자·자원을 나타내며 로그 보존 여부가 원자성/권한/상태의 authority가 되지 않는다.",
+          "이미 완료된 이전 timestamp 전체를 rollback하는 것으로 과장하지 않고 현재 공개 transaction의 실패 경계를 검증한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-04-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-04",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§§3,6"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+            "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+            "selector": "T05/T29"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/03_RUNTIME.ko.md",
+            "sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718",
+            "selector": "§5"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E04-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E04",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E04-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E05-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "같은 장비 사본의 장착 해제·직원 이전·강화에서는 그 사본의 Run 자원을 유지한다. 판매·분해로 사본이 실제 소멸하면 해당 자원도 폐기하며 환불 또는 다른 사본으로의 상속을 하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E05",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "같은 장비 사본의 장착 해제·직원 이전·강화에서는 그 사본의 Run 자원을 유지한다. 판매·분해로 사본이 실제 소멸하면 해당 자원도 폐기하며 환불 또는 다른 사본으로의 상속을 하지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E05": [
+            "동일 item UUID의 해제·다른 직원 장착·강화 전후에 Run 자원 잔량이 같다. 다른 직원/장비의 자원과 섞이지 않는다.",
+            "정상 판매·분해가 성공할 때 그 사본 전용 자원과 binding이 정리된다. 거부된 판매·분해에서는 사본과 자원이 모두 보존된다.",
+            "자원 잔량 때문에 판매/분해 보상량이 늘거나 다른 사본에 자원이 지급되지 않는다. 기존 판매/분해 정책의 보상·비용은 그대로다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+              "sha256": "5fbd4c344604d6356b353933c6405ea7ac5e499d989cced25d0154e5935ae111",
+              "selector": "기록0066 / NEXT-0013 정책 답변"
+            },
+            {
+              "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+              "sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e",
+              "selector": "동일 item_uuid 유지와 remove_for_dismantle"
+            },
+            {
+              "path": "core_enhanced/src/game/world/shop.rs",
+              "sha256": "50648b00e8ae3f7be61d525140334470b14747df526f9fa037f8a862af6a4982",
+              "selector": "sell_item_quantity"
+            }
+          ],
+          "decision_actor": "recorded direct user approval",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Existing direct answer for E05 is consumed from recorded user approval in IN-019; no fabricated chat answer."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E05-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E05-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "같은 장비 사본의 장착 해제·직원 이전·강화에서는 그 사본의 Run 자원을 유지한다. 판매·분해로 사본이 실제 소멸하면 해당 자원도 폐기하며 환불 또는 다른 사본으로의 상속을 하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E05-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "동일 item UUID의 해제·다른 직원 장착·강화 전후에 Run 자원 잔량이 같다. 다른 직원/장비의 자원과 섞이지 않는다.",
+          "정상 판매·분해가 성공할 때 그 사본 전용 자원과 binding이 정리된다. 거부된 판매·분해에서는 사본과 자원이 모두 보존된다.",
+          "자원 잔량 때문에 판매/분해 보상량이 늘거나 다른 사본에 자원이 지급되지 않는다. 기존 판매/분해 정책의 보상·비용은 그대로다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-05-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-05",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+            "sha256": "5fbd4c344604d6356b353933c6405ea7ac5e499d989cced25d0154e5935ae111",
+            "selector": "기록0066 / NEXT-0013 정책 답변"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+            "sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e",
+            "selector": "동일 item_uuid 유지와 remove_for_dismantle"
+          },
+          {
+            "path": "core_enhanced/src/game/world/shop.rs",
+            "sha256": "50648b00e8ae3f7be61d525140334470b14747df526f9fa037f8a862af6a4982",
+            "selector": "sell_item_quantity"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E05-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E05",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E05-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E06-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "새 Run 자원은 기존 Run timeline의 일부다. 전투에 영구 owner별 값을 전달하고 확정된 결과를 해당 owner에 정확히 한 번 반영한다. 전체 전투 후퇴는 진입 snapshot으로 자원을 복원하고 체크포인트는 저장한 timeline을 복원한다. 배치 철수는 전투 전체 후퇴와 구별한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E06",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "새 Run 자원은 기존 Run timeline의 일부다. 전투에 영구 owner별 값을 전달하고 확정된 결과를 해당 owner에 정확히 한 번 반영한다. 전체 전투 후퇴는 진입 snapshot으로 자원을 복원하고 체크포인트는 저장한 timeline을 복원한다. 배치 철수는 전투 전체 후퇴와 구별한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E06": [
+            "자원이 도입되는 시점에 save writer/reader/validator, entry capture/restore, result delta와 rollback이 함께 작동한다. 별도 후속 R을 기다려야 하는 저장 공백이 없다.",
+            "동일 owner의 전투 중 변화가 정상 승리·패배 결과 확정에서 한 번만 적용되고 같은 결과의 재적용은 자원 증감 중복을 만들지 않는다.",
+            "retreat/retry 시 자원·attempt·RNG/UUID 등 기존 rollback 범위를 복원한다. RuntimeUnit 철수·재배치는 Run 자원을 되감지 않는다.",
+            "체크포인트 round-trip은 owner identity/잔량/세대 결속을 보존한다. 기존 loads_used·run peak·개인 profile 등 rollback 예외를 새 자원 복원에 섞어 되감지 않는다.",
+            "직원 상태 변화가 직원 identity를 제거하지 않는 한 해당 직원 Run 상태를 임의 소멸시키지 않는다. 다른 사본·독립 진행·보상 기록을 함께 삭제하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+              "sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b",
+              "selector": "AT05"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T20/T29"
+            },
+            {
+              "path": "core_enhanced/docs/game_rulebook.md",
+              "sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+              "selector": "후퇴 1107–1115"
+            },
+            {
+              "path": "core_enhanced/src/game/world/state.rs",
+              "sha256": "60793d2dcfac5832aa28ddf9a940efc65823749462dc983204d62dd8ece6de5f",
+              "selector": "RunCheckpointPayload / BattleEntrySnapshot"
+            },
+            {
+              "path": "core_enhanced/src/game/world/combat.rs",
+              "sha256": "5452ebf3c98b40f67b24df4f5e3afaf1046e86dbc623689472c440eb55ec32ea",
+              "selector": "handle_retreat_battle"
+            }
+          ],
+          "decision_actor": "delegated ordinary policy",
+          "ordinary_policy_evidence": [
+            "기존 후퇴 inventory/resource rollback과 result/체크포인트 정책을 유지한다.",
+            "이미 승인된 Run 귀속 상태에 동일 Run timeline의 entry/result/checkpoint 수명을 적용한다. 직원 identity가 남으면 owner도 남는다.",
+            "새 후퇴 손실·회복·환불·사망 예외·보상량을 만들지 않는다.",
+            "새 자원만 자기 source owner로 반영하며 기존 독립 자산/monotonic 진행은 각 기존 owner가 유지한다.",
+            "기존 저장 파일의 삭제/변환 없이 기존 복원 규칙에 새 상태를 결속한다."
+          ],
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E06-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E06-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "새 Run 자원은 기존 Run timeline의 일부다. 전투에 영구 owner별 값을 전달하고 확정된 결과를 해당 owner에 정확히 한 번 반영한다. 전체 전투 후퇴는 진입 snapshot으로 자원을 복원하고 체크포인트는 저장한 timeline을 복원한다. 배치 철수는 전투 전체 후퇴와 구별한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E06-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "자원이 도입되는 시점에 save writer/reader/validator, entry capture/restore, result delta와 rollback이 함께 작동한다. 별도 후속 R을 기다려야 하는 저장 공백이 없다.",
+          "동일 owner의 전투 중 변화가 정상 승리·패배 결과 확정에서 한 번만 적용되고 같은 결과의 재적용은 자원 증감 중복을 만들지 않는다.",
+          "retreat/retry 시 자원·attempt·RNG/UUID 등 기존 rollback 범위를 복원한다. RuntimeUnit 철수·재배치는 Run 자원을 되감지 않는다.",
+          "체크포인트 round-trip은 owner identity/잔량/세대 결속을 보존한다. 기존 loads_used·run peak·개인 profile 등 rollback 예외를 새 자원 복원에 섞어 되감지 않는다.",
+          "직원 상태 변화가 직원 identity를 제거하지 않는 한 해당 직원 Run 상태를 임의 소멸시키지 않는다. 다른 사본·독립 진행·보상 기록을 함께 삭제하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-06-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-06",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+            "sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b",
+            "selector": "AT05"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+            "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+            "selector": "T20/T29"
+          },
+          {
+            "path": "core_enhanced/docs/game_rulebook.md",
+            "sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+            "selector": "후퇴 1107–1115"
+          },
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "sha256": "60793d2dcfac5832aa28ddf9a940efc65823749462dc983204d62dd8ece6de5f",
+            "selector": "RunCheckpointPayload / BattleEntrySnapshot"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "sha256": "5452ebf3c98b40f67b24df4f5e3afaf1046e86dbc623689472c440eb55ec32ea",
+            "selector": "handle_retreat_battle"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E06-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E06",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E06-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E07-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E07",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "R02의 최신 저장 계약을 보존한다. 새 저장에는 실제 콘텐츠·작성/실행 계약 및 영구 owner와 값이 결속되고, 같은 계약에서 복원된다. 지원하지 않는 형식·세대·owner 불일치는 명시적으로 거부하며 개인 파일 삭제·자동변환·추정값/호환 shim으로 메우지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E07",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "R02의 최신 저장 계약을 보존한다. 새 저장에는 실제 콘텐츠·작성/실행 계약 및 영구 owner와 값이 결속되고, 같은 계약에서 복원된다. 지원하지 않는 형식·세대·owner 불일치는 명시적으로 거부하며 개인 파일 삭제·자동변환·추정값/호환 shim으로 메우지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E07": [
+            "새 application에서 같은 유효 콘텐츠·계약의 새 Run 저장을 읽어 동일한 자원 owner/값/진행을 얻는다. compiled index/pointer가 영구 identity가 되지 않는다.",
+            "동일 정의 ID라도 fingerprint/자원 계약이 다르거나 저장 owner가 실재하지 않으면 기존 런·profile·입력 파일을 바꾸지 않고 실패한다.",
+            "기존 R02 latest-only 정책의 미지원 버전 거부를 유지하고 이전 저장을 암묵적으로 0 자원으로 변환하지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_10_POLICY_001.json",
+              "sha256": "ecca36c5ba809c858131c63b7097ccc9396fb171c03d209df44f1cb443b02507",
+              "selector": "DR-CAPG-E04-001"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T20/T29"
+            }
+          ],
+          "decision_actor": "existing approved policy applied",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E07-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E07",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E07-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "R02의 최신 저장 계약을 보존한다. 새 저장에는 실제 콘텐츠·작성/실행 계약 및 영구 owner와 값이 결속되고, 같은 계약에서 복원된다. 지원하지 않는 형식·세대·owner 불일치는 명시적으로 거부하며 개인 파일 삭제·자동변환·추정값/호환 shim으로 메우지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E07-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "새 application에서 같은 유효 콘텐츠·계약의 새 Run 저장을 읽어 동일한 자원 owner/값/진행을 얻는다. compiled index/pointer가 영구 identity가 되지 않는다.",
+          "동일 정의 ID라도 fingerprint/자원 계약이 다르거나 저장 owner가 실재하지 않으면 기존 런·profile·입력 파일을 바꾸지 않고 실패한다.",
+          "기존 R02 latest-only 정책의 미지원 버전 거부를 유지하고 이전 저장을 암묵적으로 0 자원으로 변환하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-07-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-07",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_pack_generation/P2G_10_POLICY_001.json",
+            "sha256": "ecca36c5ba809c858131c63b7097ccc9396fb171c03d209df44f1cb443b02507",
+            "selector": "DR-CAPG-E04-001"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+            "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+            "selector": "T20/T29"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E07-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E07",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E07-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E08-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E08",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "자원 선언과 조작은 외부 RON에서 공통 typed 작성 경로를 통해 실제 생산자/소비자에 연결한다. 새 schema/operation을 도입하면 parser·validation·compiler·executor·descriptor·설명·정상/거부 fixture를 함께 전환한다. 콘텐츠 이름별 실행 분기나 fixture 전용 builder를 지원 증거로 삼지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E08",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "자원 선언과 조작은 외부 RON에서 공통 typed 작성 경로를 통해 실제 생산자/소비자에 연결한다. 새 schema/operation을 도입하면 parser·validation·compiler·executor·descriptor·설명·정상/거부 fixture를 함께 전환한다. 콘텐츠 이름별 실행 분기나 fixture 전용 builder를 지원 증거로 삼지 않는다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E08": [
+            "같은 엔진에서 새 ID/같은 정의 두 사본의 외부 팩을 읽고 실제 authoring trial과 게임 실행으로 값·비용·수명 결과를 관찰한다.",
+            "지원하지 않는 자원 kind/owner/lifetime/operation 또는 잘못된 참조는 public validator에서 사실대로 거부되며 빈 executor/성공 fallback이 없다.",
+            "새 자원 결과는 직접 소비자·설명 포트에 일관되게 전달된다. 기존 공식 RON·schema 소비자와 같은 최신 경로를 사용한다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+              "selector": "§6"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "§§1,6,9"
+            }
+          ],
+          "decision_actor": "user-adopted scope",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E08-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E08-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "자원 선언과 조작은 외부 RON에서 공통 typed 작성 경로를 통해 실제 생산자/소비자에 연결한다. 새 schema/operation을 도입하면 parser·validation·compiler·executor·descriptor·설명·정상/거부 fixture를 함께 전환한다. 콘텐츠 이름별 실행 분기나 fixture 전용 builder를 지원 증거로 삼지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E08-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "같은 엔진에서 새 ID/같은 정의 두 사본의 외부 팩을 읽고 실제 authoring trial과 게임 실행으로 값·비용·수명 결과를 관찰한다.",
+          "지원하지 않는 자원 kind/owner/lifetime/operation 또는 잘못된 참조는 public validator에서 사실대로 거부되며 빈 executor/성공 fallback이 없다.",
+          "새 자원 결과는 직접 소비자·설명 포트에 일관되게 전달된다. 기존 공식 RON·schema 소비자와 같은 최신 경로를 사용한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-08-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-08",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§6"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+            "selector": "§§1,6,9"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E08-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E08",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E08-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E09-OPEN-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E09",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "새 상태/예약/lease/지연 작업의 시간·메모리·clone·출력 비용을 유한하게 통제하고 같은 seed/input에서 결정론을 유지한다. R05의 모든 applicable 요구와 직접 의존 소비자 회귀를 검증한 뒤 안정된 구현을 fresh 감사한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E09-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Decision ID": "D-CARL-E09",
+        "Predecessor Decision Revision Ref": null,
+        "Approved decision": "새 상태/예약/lease/지연 작업의 시간·메모리·clone·출력 비용을 유한하게 통제하고 같은 seed/input에서 결정론을 유지한다. R05의 모든 applicable 요구와 직접 의존 소비자 회귀를 검증한 뒤 안정된 구현을 fresh 감사한다.",
+        "Approved Observable Policy Acceptance by Element ID": {
+          "CARL-E09": [
+            "owner/container/pack 순회 순서와 진단 on/off가 승인된 게임 의미·RNG 권한을 바꾸지 않는다. stale/중복/부족 비용·취소·실패/restore를 실제 nonzero 시험으로 검증한다.",
+            "새 state/clone/receipt/queue 경계의 현실 입력과 adversarial 입력을 측정하고 경계 초과 시 typed fault와 transaction 무변경을 검증한다. 0 tests/skip/검증기 통과를 게임 성공으로 세지 않는다.",
+            "T05/T20/T23/T29 및 R05 카드의 여섯 수명·실제 owner/저장 전환을 요구별 근거로 대조한다. 기존 단위 PASS나 작은 내부 store test만으로 전체 완료를 주장하지 않는다.",
+            "구현을 멈춘 별도 fresh 감사 pass와 적용 reviewer 조건을 충족한다. 구현에 참여하지 않은 reviewer의 감사 기록을 남기고 필수 미완료를 complete로 쓰지 않는다."
+          ]
+        },
+        "Exact user approval ref": {
+          "current_adoption": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "policy_sources": [
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+              "selector": "§6"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+              "selector": "T05/T20/T23/T29"
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "§§6,8–10"
+            }
+          ],
+          "decision_actor": "user-adopted scope",
+          "ordinary_policy_evidence": null,
+          "capture_limitation": "Research recommendation supplies scope, not execution evidence; delegated decisions identified separately."
+        },
+        "Resolves Open Policy Question Ref Set": []
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CARL-E09-DECIDED-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Stable Element ID": "CARL-E09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E09-OPEN-001",
+          "Content Digest": null
+        },
+        "Policy statement": "새 상태/예약/lease/지연 작업의 시간·메모리·clone·출력 비용을 유한하게 통제하고 같은 seed/input에서 결정론을 유지한다. R05의 모든 applicable 요구와 직접 의존 소비자 회귀를 검증한 뒤 안정된 구현을 fresh 감사한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CARL-E09-001",
+          "Content Digest": null
+        },
+        "Observable Policy Acceptance": [
+          "owner/container/pack 순회 순서와 진단 on/off가 승인된 게임 의미·RNG 권한을 바꾸지 않는다. stale/중복/부족 비용·취소·실패/restore를 실제 nonzero 시험으로 검증한다.",
+          "새 state/clone/receipt/queue 경계의 현실 입력과 adversarial 입력을 측정하고 경계 초과 시 typed fault와 transaction 무변경을 검증한다. 0 tests/skip/검증기 통과를 게임 성공으로 세지 않는다.",
+          "T05/T20/T23/T29 및 R05 카드의 여섯 수명·실제 owner/저장 전환을 요구별 근거로 대조한다. 기존 단위 PASS나 작은 내부 store test만으로 전체 완료를 주장하지 않는다.",
+          "구현을 멈춘 별도 fresh 감사 pass와 적용 reviewer 조건을 충족한다. 구현에 참여하지 않은 reviewer의 감사 기록을 남기고 필수 미완료를 complete로 쓰지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-09-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-09",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§6"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+            "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+            "selector": "T05/T20/T23/T29"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+            "selector": "§§6,8–10"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E09-001",
+            "Content Digest": null
+          }
+        ],
+        "Promoted Element ID": "CARL-E09",
+        "Initial open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CARL-E09-OPEN-001",
+          "Content Digest": null
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Candidate ID": "C-CARL-10",
+        "Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+            "Content Digest": null
+          },
+          "Exact user-approved target scope/change request": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CARL-P2G10-001",
+            "Content Digest": null
+          }
+        },
+        "Exact intake/source reference": [
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+            "selector": "§7 R07 later binding"
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+            "selector": "§§3–5 fixed R"
+          }
+        ],
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "out_of_scope",
+        "Evidence/decision ref": {
+          "scope_item": "O03",
+          "meaning": "R07 fragment-copy aggregate, later relic/form/shield/Flow/join gameplay. R05 common owner/lifetime/resource APIs and all six lifetime tests remain mandatory."
+        },
+        "Promoted Element ID": null,
+        "Initial open Policy Element Revision Ref": null
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CARL-P2G10-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+          "Content Digest": null
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CARL-20260911",
+          "Policy Topic": "R05 타입화 자원·owner×lifetime·원자적 소비",
+          "Requested Result": "R05 bounded_pipeline through P2G-60; eligible exact GEX separately authorized by same fixed-R request",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "active thread goal user request, 2026-09-12",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라\n다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를\ncomplete로 표시하지 마",
+            "adopted_request": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "c49ada305f63cf79ec4a7cffda0de865eaa0c3b112c3ad2e590a5840a678c1a9",
+              "selector": "single-r-v2 §§1–10"
+            },
+            "selected_R": "R05",
+            "boundary": "R05 전체 완료 또는 실제 중단 조건. 다음 R은 새 요청 필요. P2G와 적격 GEX 권한은 사용자 요청에서 각각 온다."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "R05 typed resource store with separate owner and Run/Attempt/Deployment/Activation/Delivery/Chain lifetime; reserve/commit/abort, cap/grant/decay and epoch/lease boundaries.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Actual persistent employee/equipment ownership and battle binding, including same-definition distinct copies and deployment-versus-attempt state; no definition-ID substitute for actual copy identity.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Introduced Run state writer/restore/checkpoint/entry/result-delta/source-owner exactly-once application and required failure/retreat/retry/redeployment/stale work tests; AT05 remains indivisible for each implemented family.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Actual directly connected producer/consumer and authoring surface for resource operations; any new RON/schema/opcode requires production parser-validation-compiler-executor and negative fixtures, truthful publication and finite budgets.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "R05 applicable T05/T20/T23/T29, actual current R04 and affected direct/predecessor consumers, state/clone/determinism/cost validation and eventual fresh independent audit. Unresolved families remain incomplete.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "R05에 필요한 P2G-60까지의 bounded_pipeline. 통상적 정책은 위임 조건으로 결정하며 사용자 선택이 필요한 정책만 질문 후 대기한다. P2G 성공 자체는 GEX 권한이 아니다.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Server/Unity/client, external service deployment, RON editor UI, remote publication and global installation/configuration.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unapproved new gameplay/balance/UX/owner-lifetime/data-loss/compatibility choices. Pending family behavior is not decided by defaults, implementation convenience or elapsed time.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "R06-R24 full content implementations outside R05 required producer/consumer/state boundary, including R07 fragment-copy binding and later revival/transform/Flow/relic features; their parent requirements remain outstanding.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "Personal store deletion/automatic conversion, content-name executors, unused kernel or fixture-only false completion, silent success/fallback and fabricated future identities.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "Changes to AUTORUN/P2G/GEX/validators/AGENTS/runner/global settings or authority created by artifacts.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted single-r-v2 §§1–10 and R05 card/AT05"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CARL-P2G10-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {
+          "CARL-E01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E01-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E02-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E03-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E04-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E05-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E06-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E07-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E08-DECIDED-001",
+            "Content Digest": null
+          },
+          "CARL-E09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CARL-E09-DECIDED-001",
+            "Content Digest": null
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E01-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E02-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E03-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E04-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E05-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E06-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E07-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E08-001",
+            "Content Digest": null
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CARL-E09-001",
+            "Content Digest": null
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

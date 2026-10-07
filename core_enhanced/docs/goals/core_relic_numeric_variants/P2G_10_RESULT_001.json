@@ -1,0 +1,237 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRNV-001",
+    "Content Digest": "sha256:9ae45ff1ae3ecb8d1531da8bd6f73ecc1654645e9ce665f08dbb8f3bd2601737"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRNV-002",
+    "Content Digest": "sha256:795a75007d841cfa64fb609ef3b37dabe0cf25ec64febf7b554956950be5f524"
+  },
+  "Produced Candidate Disposition Ref Set": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-01-001",
+      "Content Digest": "sha256:7eed8cdfbddc750fe39ddabb6d5598cfc1e6c1afcf138bc3607b67bb848dc42b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-02-001",
+      "Content Digest": "sha256:0d9eea2dc123a5b833d32747af861bd6b6a30833ef690556aacab5914a858b03"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-03-001",
+      "Content Digest": "sha256:84706d829e892952888dbae1c80f28de0212e8bede758922b7302b41f02216fa"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-04-001",
+      "Content Digest": "sha256:48f0756ab1fd4bb2c9cb9c787f247aa96d5bc8d266e2aab33571a905c5a87302"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-05-001",
+      "Content Digest": "sha256:37bd3b7ccba54aba01ce6261d55d00dcef7e993e70c0568c49b9192244810cb4"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-06-001",
+      "Content Digest": "sha256:4c4d335ede56e4341fe3233aaacb82bc815651a90b99d5790828ff3dad05b1a0"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-07-001",
+      "Content Digest": "sha256:12c3dabc9517e0a1ea7dfea79d0010f8d55e4f4cb0e93d444f29dda1d3b1ba4b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-08-001",
+      "Content Digest": "sha256:aefc96abd36617a21f959e18a04b3696c4b9bc717a71322caabdc5a7ba5fb83f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-09-001",
+      "Content Digest": "sha256:6c540e9dc75aacca194adb05ac35e5d0cdede39a087691fd3d7f707dc660213f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-10-001",
+      "Content Digest": "sha256:e4f2baf482f31882a4a98ccb5ab6ec08ad22267b2bfaa900853a1b39c4ab5e32"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-11-001",
+      "Content Digest": "sha256:61db65e56729991fa9541c12fe4cf0f4f0d77e368ed7b2c8938c60582c56d278"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-12-001",
+      "Content Digest": "sha256:91502d55ddca0b65737c91300c8e8bcef152e6d94ee678192baf91088c64e8ea"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-13-001",
+      "Content Digest": "sha256:52d01c05b5d5a3d9ed9699824c7370a4242b66dea77bcdc8a11232689c4cc146"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-14-001",
+      "Content Digest": "sha256:c6d64ef5a34b1d2473d2d40329e156515da6c92e765fae8a83ff485304b93906"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-15-001",
+      "Content Digest": "sha256:12758fd9f106a9c2f70470127b8b1b405818e80c3a866eabd44c0baf0c5691d6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-16-001",
+      "Content Digest": "sha256:ee8b1eb17c0857f2f2259c8cfe2b38d68dfed6b29310cac0cb576d48a845441c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-OUT-01-001",
+      "Content Digest": "sha256:501885fdee555b4d44a3e45b353af23be4f6fb1cae9d2375ffdbf086a8189ca6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-OUT-02-001",
+      "Content Digest": "sha256:590c1b90cdfcf449fff9e55cc8c3777b834b4c3c1be17983dae478dd6d0a9eec"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-OUT-03-001",
+      "Content Digest": "sha256:26debbb1903853165ef389d4a499bfbbd0755f5a55f8c7fa2b2f61de5fd98ee8"
+    }
+  ],
+  "Result Current Candidate Policy Element Disposition Effective View": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-01-001",
+      "Content Digest": "sha256:7eed8cdfbddc750fe39ddabb6d5598cfc1e6c1afcf138bc3607b67bb848dc42b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-02-001",
+      "Content Digest": "sha256:0d9eea2dc123a5b833d32747af861bd6b6a30833ef690556aacab5914a858b03"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-03-001",
+      "Content Digest": "sha256:84706d829e892952888dbae1c80f28de0212e8bede758922b7302b41f02216fa"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-04-001",
+      "Content Digest": "sha256:48f0756ab1fd4bb2c9cb9c787f247aa96d5bc8d266e2aab33571a905c5a87302"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-05-001",
+      "Content Digest": "sha256:37bd3b7ccba54aba01ce6261d55d00dcef7e993e70c0568c49b9192244810cb4"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-06-001",
+      "Content Digest": "sha256:4c4d335ede56e4341fe3233aaacb82bc815651a90b99d5790828ff3dad05b1a0"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-07-001",
+      "Content Digest": "sha256:12c3dabc9517e0a1ea7dfea79d0010f8d55e4f4cb0e93d444f29dda1d3b1ba4b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-08-001",
+      "Content Digest": "sha256:aefc96abd36617a21f959e18a04b3696c4b9bc717a71322caabdc5a7ba5fb83f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-09-001",
+      "Content Digest": "sha256:6c540e9dc75aacca194adb05ac35e5d0cdede39a087691fd3d7f707dc660213f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-10-001",
+      "Content Digest": "sha256:e4f2baf482f31882a4a98ccb5ab6ec08ad22267b2bfaa900853a1b39c4ab5e32"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-11-001",
+      "Content Digest": "sha256:61db65e56729991fa9541c12fe4cf0f4f0d77e368ed7b2c8938c60582c56d278"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-12-001",
+      "Content Digest": "sha256:91502d55ddca0b65737c91300c8e8bcef152e6d94ee678192baf91088c64e8ea"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-13-001",
+      "Content Digest": "sha256:52d01c05b5d5a3d9ed9699824c7370a4242b66dea77bcdc8a11232689c4cc146"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-14-001",
+      "Content Digest": "sha256:c6d64ef5a34b1d2473d2d40329e156515da6c92e765fae8a83ff485304b93906"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-15-001",
+      "Content Digest": "sha256:12758fd9f106a9c2f70470127b8b1b405818e80c3a866eabd44c0baf0c5691d6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-16-001",
+      "Content Digest": "sha256:ee8b1eb17c0857f2f2259c8cfe2b38d68dfed6b29310cac0cb576d48a845441c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-OUT-01-001",
+      "Content Digest": "sha256:501885fdee555b4d44a3e45b353af23be4f6fb1cae9d2375ffdbf086a8189ca6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-OUT-02-001",
+      "Content Digest": "sha256:590c1b90cdfcf449fff9e55cc8c3777b834b4c3c1be17983dae478dd6d0a9eec"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRNV-OUT-03-001",
+      "Content Digest": "sha256:26debbb1903853165ef389d4a499bfbbd0755f5a55f8c7fa2b2f61de5fd98ee8"
+    }
+  ],
+  "is_p2g10_complete": true,
+  "checks": {
+    "all19_candidates_dispositioned": true,
+    "all16_elements_decided": true,
+    "observable_acceptances_consistent": true,
+    "authority_per_decision": true,
+    "open_questions_empty": true,
+    "raw_intake_unchanged": true,
+    "digest_refs_checked": true
+  },
+  "Finding Triage": [
+    {
+      "classification": "material_policy",
+      "disposition": "16 adopted/application leaf concerns cover C02–C04 and adopted R14 minimal handling;unagreed official content/frequency values excluded."
+    },
+    {
+      "classification": "implementation_finding",
+      "disposition": "Read-only orientation finds missing relic owners,legacy dust distinct from current target equipment dust,catalog exact-plan authority,copy transition and normal staged grant/save reuse. P2G20 owns formal currentness/design."
+    },
+    {
+      "classification": "out_of_scope",
+      "disposition": "3 candidates retain named future/exclusion owners;whole store/economy/closure/causal machinery is not silently included."
+    }
+  ],
+  "Open Policy Question Log": [],
+  "Evidence Gap Log": [],
+  "production_mutation": false,
+  "new_user_request_required": false,
+  "next": "P2G-20"
+}

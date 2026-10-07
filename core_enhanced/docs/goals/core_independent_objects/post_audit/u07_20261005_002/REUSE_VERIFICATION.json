@@ -1,0 +1,32 @@
+{
+  "at_utc": "2026-10-05T13:29:02.824038+00:00",
+  "exact_condition_meanings": {
+    "u07": 20,
+    "dimensions": 10,
+    "predecessor": 161,
+    "r06": 31
+  },
+  "prior_review_paths": 55,
+  "rereviewed_changed_paths": [
+    "core_enhanced/src/game/battle/core/object_creation.rs",
+    "core_enhanced/src/game/battle/core/object_evolution.rs",
+    "core_enhanced/src/game/battle/core/movement/blocking.rs",
+    "core_enhanced/src/game/battle/core/build.rs"
+  ],
+  "additional_source_delta": "SOURCE_DELTA.json",
+  "first_closure_preserved": true,
+  "f01_red_normal_failures": 6,
+  "f01_red_original_production_hashes": {
+    "core_enhanced/src/game/battle/core/build.rs": "02963eaaea1f9c294751fe53ce7ca8574e9e3e44d7bf46e67b8125faa97afa3d",
+    "core_enhanced/src/game/battle/core/object_evolution.rs": "4c426b007dad5a1913d39ac1e955adb57cfb3ea05b1fa6e8dc774982975b9606",
+    "core_enhanced/src/game/battle/core/independent_objects.rs": "a8e3ac95f78d633ea837d7b1cc935192ad0f1e12e39e054b612051c0d956d5ae",
+    "core_enhanced/src/game/battle/core/movement/blocking.rs": "b037f4949c437d52d4081cf40b41d06ea8a4e25cc41a4d402d9c5413af059b22"
+  },
+  "f01_correction_after_exact_current": true,
+  "withdrawn_investigation_exact_full_restore": true,
+  "withdrawn_failures_not_pass": 5,
+  "predecessor_adaptation_source_hashes": 462,
+  "label_equivalence_verified": 2,
+  "errors": [],
+  "reuse_rule": "Reuse prior condition-level semantic review only for byte-identical owners; current affected-consumer receipts verified for every linked condition. New production callers, accounting, cleanup, tests and shared withdrawal influence directly re-reviewed."
+}

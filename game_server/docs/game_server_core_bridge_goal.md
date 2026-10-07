@@ -17,6 +17,31 @@ The server must not own game rules. It should translate WebSocket JSON requests 
 
 ## Success Criteria
 
+### Current Relic boundary
+
+Relic support follows Core's published RON catalog and generic application command/result boundary.
+`CatalogKind::Relics` is one of the 26 catalogs under schema5; its strict definitions provide Normal effects
+and optional replacement Corrupt effects/penalties. The official catalog currently contains no balance
+definitions. Host/Unity code does not invent a second catalog, capability, ownership table or modifier
+registry. See [data loading](../../core_enhanced/docs/data_loading_contract.md#relics-catalog-and-immutable-variants).
+
+The bridge passes the Relic equip/unequip, state/numeric-plan queries, corruption/dismantle previews
+and mutations, and free Event selection through Core's current action/context checks. It preserves
+owned copy UUIDs, three-slot employee loadouts, typed catalyst/equipment-dust counters, exact result
+kinds and explicit unresolved/rejected numeric projections. Ordinary corruption spends one typed
+catalyst; the authored Event path spends none and retains an idempotent source-scene/copy receipt.
+Relics are not Shop sale items. These are dedicated Core projections, not new host-owned inventory
+snapshot fields. The [Unity protocol](unity_bridge_protocol.md#relic-commands-and-projections) lists
+the actual wire command fields and response boundaries.
+
+Durable publication preserves the current and independent SavePoint Relic graphs, including copy
+variant/placement, materials, UUID stream and Event history. ActiveRun envelope V5, outer continuation
+V11 and standalone Core checkpoint payload V12 are distinct formats. Content generation and original
+damage-source bindings remain Core-owned; reconnect/Continue cannot manufacture them from a UI numeric
+plan. Existing basic aura precedes one Relic composition. Strong retained owners and test-only Weak
+lifetime checks do not establish host RSS or deployment capacity. No new live battle disk codec is
+introduced by this boundary.
+
 The goal is complete only when all required checks below pass.
 
 - `cargo check -p game_server` passes.
@@ -37,10 +62,11 @@ The goal is complete only when all required checks below pass.
   - equipment restore, dismantle, enhance
   - combat replay finish
 - The active state snapshot is based on `GameCore::get_run_snapshot_json()`.
-- The local active-run store uses strict envelope version 3 around Core payload version 2. The opaque Core
-  checkpoint owns its power-model/Floor-anchor generation; the server envelope owns only monotonic load count and
-  run peak. Rolling backup publication raises those two high-water values without rewriting the backup payload's
-  anchor generation.
+- The local active-run store uses strict envelope version 5 around external Core continuation document version 11.
+  The standalone Core checkpoint payload encoder uses version 12; its document is not a normal Continue input.
+  The opaque Core graph owns its power-model/Floor-anchor generation; the server envelope preserves monotonic load
+  count and run peak. Completed publication writes current and backup for the same latest confirmed generation.
+  Backup recovery and explicit SavePoint rewind do not decrease those high-water values.
 - The server snapshot wrapper preserves Core's typed `encounter_compendium` root field without a
   second field list or metadata mapper. A local-install singleton persistence runtime restores and publishes
   the monotonic discovered/defeated sets independently of transport player UUID and active-run/checkpoint

@@ -1,0 +1,1871 @@
+{
+  "predecessor_manifest_sha256": "d6a2b4d18e377862323f934a23fe9ec50871de8af824743c1188fa99ec17c5b3",
+  "current_manifest_sha256": "76fd812b8ab094050302e36c72abd19ab629091bfce8cd4330be3bc8ab1c552b",
+  "selectors": [
+    {
+      "selector": "application::persistence_rollback_tests::persistence_rollback_preserves_monotonic_profile_and_exhaustion_never_wraps",
+      "path": "core_enhanced/src/application.rs",
+      "body_sha256": "7180fff9d581b3ee23fabe43a119dcef162fce7a2066beb60996e96a944eb79f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::persistence_rollback_tests::persistence_rollback_restores_one_attempt_and_rejects_foreign_stale_and_double_tokens",
+      "path": "core_enhanced/src/application.rs",
+      "body_sha256": "3bbc2eef0b2155b2cd12b4571f0521af5328ab556d31ca5e53be6cdd3c2fa4bc",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::runtime_observation_tests::a_nested_draft_commit_is_not_a_live_application_commit",
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "body_sha256": "8c49c0e1156cb5c3b711f14bde96673253c5d038b5a57cff85a8d677775edba0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::runtime_observation_tests::actual_commit_and_full_or_absent_collector_preserve_command_results_and_queries",
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "body_sha256": "69c7b616fbfc6a019ee81a69d6e769f90bdef37e23210f8e1d8d5cd17f30d7f2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::runtime_observation_tests::discarded_preparation_detaches_tls_and_cannot_advance_commit_gauges",
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "body_sha256": "9f5273e4304f6ecb37239e5513c4a889664aa492c89964720e754441cc1d6f58",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::runtime_observation_tests::finite_labels_have_unique_names_and_dense_operation_indices",
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "body_sha256": "6981d114b76e357131b644d2a639844a21fe35d5cd54e01fd5602cd69f023688",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once",
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "body_sha256": "8c6fae8498e89dfa99254158187ded4765f99fa680093146c69e4366779246d4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "application::tests::prepared_command_preserves_first_authoring_fault_and_original_root",
+      "path": "core_enhanced/src/application.rs",
+      "body_sha256": "55fcd0006e8ff499d7a2abb071de66a31150ea20cf7b10cfc248330cc982f836",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "body_sha256": "6530237b51f664cf405d611c4620fa51a16fb39ec9c0c1f2cd29aa311aafbc99",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "body_sha256": "65efbb4c4759fc73c0cf695fd1cb42810745120ddefeee688d858e1dd81887d2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "body_sha256": "b49a638c974e1dac1b351459c620c83f757783fb0ee1d622124a426e81ccd747",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "body_sha256": "f97c1eb3994ae8825325e38e5bbdce3a5c12da24f67041e389b952410ded7919",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+      "body_sha256": "8bd159c11ee7943707d10169d0893278246a03bdef3a397685d783c3b6cf4fd1",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+      "path": "core_enhanced/src/authoring/trial/tests/amount_order.rs",
+      "body_sha256": "793bb4e448e1fc2550d1e1ffb0b465ad6524d6aaee76f252258459793ba60772",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "9d6145226252107e6c55dc475357c4b132679b1adeb867ce71d4402879e29367",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "6d4433262f92ffc3406aba80f7fc5bc388bc1904b8979ca21dd7837533f25177",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "885a7f477611c059108ac01758a1aa380a9005e56f0c0731f01ce4344e63fb64",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "20bd1f3db98e7ea77fbc4cab183d3a3f3fc5e85ede587eebc6140faf1538c6f7",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "a3b4b8c58dc3b48f074568d8733e47dbda04e85a3713b690bd47fee0276a42a1",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "9c7fe5fe666659d53d5c2c71fc447f1c63dd703d8a225dfb4f440013dc4afe71",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "b357db5c863c59504f833a8b6f3efc18dab01a30a3ecb609fdf36fb190a9ce9f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "57579eb9089660f702c98a8e87da044efe54b425de853f21921c6236cebaea2f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "84ab90fe561b6e06a49d6f35d04fc9abab2a741dd6475d50a38c42b819dba54c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion",
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "body_sha256": "486b2159f74668ba0b0a8d0bd67397b5b348444066cf6acb9b146dd3969bc74d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+      "path": "core_enhanced/src/authoring/trial/tests/r07_copies.rs",
+      "body_sha256": "db6e496fdc9e1a952eba8b412ec260efdec9940977244cb0594c7a149cb1d0ae",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+      "path": "core_enhanced/src/authoring/trial/tests/r07_copies.rs",
+      "body_sha256": "b197cde569d8c2af183fbc1a33c66c54370eec4a023c321b9b1af5e42ab7d942",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "bootstrap::tests::real_pack_bootstrap_keeps_concurrent_profiles_separate_and_rejects_settings_first",
+      "path": "game_server/src/bootstrap.rs",
+      "body_sha256": "1e9b08e044843c3548fcfe4433f8c99f06a453309a5d8a986d00a0ad0a62cefd",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "bootstrap::tests::runtime_safety_host_file_is_explicit_bounded_and_never_falls_back",
+      "path": "game_server/src/bootstrap.rs",
+      "body_sha256": "149fdf634acb0343ba1e18e3988edc33311867434fb250db43155304c5de27b8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+      "path": "core_enhanced/src/game/ability.rs",
+      "body_sha256": "bdbd047ba3c001a124dea6a3588c77ecbe729c0c5552971435001b6f8d746a48",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "42ba24ff345678c8577b04445220e4f11171e089904ad04d7f8c0e0a06d031e7",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "f4a576daacfc52563521332bf64c4b212500b9f09f085fd6b186124a44765003",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "b3db277da6ae78113652660d8486556b8ab790fd3d2576417ee144ac77b92d2d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "10bbf851c9fe5b3aa7da6adf525d604152ddaff3d5e0589d198de1aa3e2a0ab9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "8ad4e05a6b7c2acb149e65c4cbe4fd1fd8ee99c8374fe5edb41b3f9c03867ac7",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "96ca87fd6f88ac02dc9007e3f2f205c5bf18672f28c4f69af76748bc2ae01c94",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "7b61ecb6580d0e5739684ed6307d018f1f791946242cbb94b3ae2c7b0d7c60b4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "416fc16d7c8eb1464abd6fb70aaf76fedebfab797951c64a5d28d4939204d46c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "b5c81d7e58d2f3cc37d52da30a5b2af6217c781b6b09f5a2c5b38c9c0fd8a177",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "d50e0ffb3eb195d1dd581a9f3b3763833a3e9494e5884cdc08046311038e6eb6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "0064a8f9220141cd63ce8d4b400328851ddaaa82a872b8e8b955358528f10075",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "ecc42b96878a3280d97be18ba43063e7471234777bd38d0b46ff30ff3644d73b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "404e71cffa5c1455d65d2a8b1ba17a434aa0ab6dde4cfa755f1c922ae9383fc5",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "ae531d35bea3c923b47a961d79c47b17548f35621d130fa42b7d08f3b8a51334",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "fa10f79fce16fa9e2806debbec83d0946d36aa54f7ea659525834e1fb3cdf314",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "087b688212696a2ac61cfea6f8508a6625850ae2e4004f15def5770c5c906534",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "89f215e20d1d981fc49e32253b28339841bac5028afd916ed47f6f0e93be5a70",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "55bc2d552e7a221e96cab8e4a31f074d83b7b34169fa5f63aec38e78adfffb3b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "ba1a68e781ed1b5b70c9ebfc7ef6ebe31f710883293f09678997844b2c96fb3a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "ddf0e9c7985f2ea1da2bb3a1dd0e2d5dbe34eb963b9f58e8e59e2749df930803",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "cce1c2bdc6fdc9801c795d78631f8eefb584ddb4b665975ed6cd966bfee639aa",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "38abf285cffecbc8617ce258a1465d89dcc6354c61091d7dfd5d8a1cdc6c9328",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "0fca72bf1a630555ef9d5347d3a81e3cb034025d95407d1696e3efe5704ceff0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "f4a7cc516319dd5f536fca0530dd7aeb077d2280b03a17284adeb12d6cfaa495",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "540b1aa1c5e47c069ad75083fce1b39b97f124e9d964eba500c1e44c8bb43a64",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "c0fcb68bd33ddb95ff4cb51445d0a510933cf50a0beca5c7ae797d26f30db592",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "1829fb0fb34fc47a3a7e3e5c3f695b0b6dc24b0c55f73b352f16bf0d1bec2e33",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "a56a5eaaa0093950cc7a039e2ba0ee9ae9d26580546dbed2855b92c55ae3e8d4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "31adf090af62293d302e046cfb2f7cec2713747a22f6790026e6cf60b1235918",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "88115ceeae87f84ffa425695d89a8b3d7b821cae5eeba863dbe6167ac502eabf",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "11d25f77b898498c92c7df1270fa11c4d819d035094e9063843324b5c8c38baa",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "e0ca88a4234567f98fad333a4ff1ccddb254cc93a1df523985073ed4571dcc7d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "5f1115639a3e1b6d0515f5ecf7ecbac51c3c915a5703e73b11a4214a7a941caa",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "f9923848a647d29b366f8458b0d79b9e7eb681ef7244833843734c3588707ade",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "41f170b2dc0b477a804ff6f425f7f9fdd91482a88173be6addfcc90fed324f71",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "383ce307e656404d01393f92c7a43d1489da2aab2dfe26230b883dfd171df6ad",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "f67e686cc0a9c2dadbb626ced837317cf87b5e2576dbe5cbfa065e92883e3956",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "db19d7eee25a724ac65a833e5a7485d5212d97422a9f510838525302f63a7c19",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "2ed345df24cb381dd1153c02a9b1acd3766d451664dee398c3b910f35963c17a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "2953ad996af28b785ab922994d80a05f6dbf9dcb5f8093578c9e08eb9b59b3b8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "9ce1b61281fed7ee96dbd24e2ec3f346a2bdf1733d9e7a77a18a973ff26970da",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "2be709b8bd191211613fee449c007a8ef252f338241f291a9b7d9e83ffb1c4e9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "93cfb8a544d560d4c5606038c5b598ee836a0069b8e6f55f08319c5f026505a9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "7842ee759efb2ef23c7a7bdd3a0b44f4a40d02daf75c97d0838d3e3ac5877a17",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "cd4a4e0b3ed22ec756c094d94eeccfbea2347a2e5bfe5fad9de23b636c6d108a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "80ebf3515dee6419b32db27a280f587cfa8645181d0e8019e6b66713bc2faa44",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "b299ba7022cebfb2473e2d22721863717c0f80c047f6f723b88d0f367bb5c6f5",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "46989db8838a1387f39b49fcddea22e6b5be9b407b3a2fea4fad34dcac06b8fc",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "4afb4733a630ebff48cecae48544187906489acde7bce260525d96ff5d0e9c67",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "e9d3d5eded0f01f7224a74acef7a6442b7916023918fd11f14fd98638ded7d3a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "1c1ff77d020efc2fc343f20d0fa9fdb42130f3aa77a88411e785b6148e268613",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "3f9c323eb2df0c589cae15ff73754b0bfff5b240414130b4d58f45ae71e50550",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "5670a41b2dde61db8755f924583489abd276c5895015abfe0c6ff79ac0cca36f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "20a4ff8df24020bb57e3418bd8ebdcf182d022ec287f5e9c6a2895614cea71f8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "30fc454e8fd8554f82406b3027daa04d0ce038990256367f14073b84390072ee",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "7a418bd603764afdddb67fd15a2be34428d1e3fe006d3fe8e17869fe8c0e2bf3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "ab8ccd9bfc0f51d4ae2e2d2b14724eefbac7eb908292dd8c6734a2278d122454",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "8f212a8c51295b0ab5d0b3d22b922fd2d5b3daa40e3a0f65512fc611f93d64d9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "a114a7a36560fbbf6ddbb17288c8c4a77f65c8ff43d75fcc627662806deb4ada",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "33704f32021e3b476d8b04eb747ca13ff65787a0f3449f07ef2c01f79d9af245",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "162a50d7293a04af58e80c70398c2f79fcbc26a5366b250012b2db01cbdb2926",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "54a0407330387a801edc1dafd9b880ca53f3c208ca62c910d2d2411cc0cf470c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "b5a9f831b6db33a1948ffa0046a82a2a1cde31f7b5217bc4954f0a64ca8466de",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "102c981acb9b6da73ec12dfc33faefde5e5abef9afb6d1a47fbb2233c1658441",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "cca44c096ddfa68502df65c6b44d32a15af0adff00064c91c0289fcc0ffeae39",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "476c8f6ea9beebdc5ba6fbe559bce489977840119b7a67a4509bc5ba92c36b92",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "77770a016fdb3f4a6cf831357846d7c0b5c55ecb765166b9669ecc507b1f2889",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "bdf93ed960b3905aa83931c289e85a34c2c5352b0e2b0f1ec7c7ad72dab0c8f3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "e24555e1be6684adfb8fd96bf02dc9cd334cd3c6f5b8048942b409c006aed38c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "body_sha256": "e8d3f4609867f4097150ad8cac8c64a31825c7c268b1d39af8fc0b084b2db5de",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate",
+      "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+      "body_sha256": "78de218f818b6ef1d94fcfdfb468cfffe45a18d65eadc63524d9894e6a28a58e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+      "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+      "body_sha256": "0d7d0a5a07addfb7f64ba0f372ff08ed822b4338e3b923c00f81b7db9b2123d5",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+      "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+      "body_sha256": "91d46e1694d8809572626b87befe9a2d4ce24f3e1ff47b958cdcf0f43886908e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+      "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+      "body_sha256": "c3c5b0cec290b43a181c88ee32a89a35706568a09bacfe13a90546bafe036690",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events",
+      "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+      "body_sha256": "f3a24e3a9c2eb11d4497072c8776ccbfe86e70d277547c81515f9326dcbc4386",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+      "path": "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+      "body_sha256": "7d950474034351590a9014412f7e64477d39b85c188b0af83a80a1d148160d19",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it",
+      "path": "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+      "body_sha256": "15210decca8fee5487482c99894bfec6b2744458c1379a1a938bd434767760ff",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::amount_order::runtime_observation_captures_real_projectile_peak_after_same_attempt_cleanup",
+      "path": "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+      "body_sha256": "4d34c01b99654b236fbb82f11d5d1c9e1ea1ce49178ea2608738447487f019a5",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "body_sha256": "1326d0f37b9fbe45473a90386b72b0d1d32c03fc01dee7e9f435d86bbf949d23",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "body_sha256": "6ee21c01f3f86e228b6c7bfc2ee351f8630bbdbd9e5ff95dc84df9d2aa3ab6cb",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "body_sha256": "3732a1fc5eb48265a37b4ae8b0cbbc1746a01ebc0986bfb0634bad3e4a9713c6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "body_sha256": "dc7818a77e4446055219b5b8c4d4a5b974c803440c57dc8d9f078d8334797033",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "body_sha256": "917fdcbf2c5c51ae2763a2a165d8e683949bd3350e6a4ef54281fa63fda49b12",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "body_sha256": "2b4f38f47a7182cff5789a405e6043bd469dc8570a26e5487294494ec109b754",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "ee5f59a9867e49eb00c157f453236c7cc84bfed84a36e92de528a42140aaedc7",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "646e0815da13c768d89a4400855f4cdf9107135fc9c4054dba76ae18d90060c8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/aggregate_replay.rs",
+      "body_sha256": "be35610b7faf2ff38a437759bf4987b2d6e791de0e40a86be3e973d3ec1fc59b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/aggregate_replay.rs",
+      "body_sha256": "26fe267954a32033ee8f91da843c77210b4630b7a43f6790e4a897f9facb478f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs",
+      "body_sha256": "e113313a2456d9fa19b081da3f78cf3fbaab445faa19187ca9789394c476f1ef",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs",
+      "body_sha256": "4d25180f2a13c346cf076ff7b55e2d2e96c1721d15e60b9037a2188c6b6cf6f0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs",
+      "body_sha256": "d35d43df239931d8c3464ca0d2af73cb2cc2d3ffdcc8f93a504c51f85e6f1e1a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs",
+      "body_sha256": "4b7169e735de99328b9625605b21b7125402541730f05271c5dc0818454154a8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs",
+      "body_sha256": "86118a3656a3ceed36c1d8cd0a9e95e0ec7a4d64c01179bc30a1178b67ac7141",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "df62d32761f926826c81afca054f64ed3ae4de695f1c02f11629c61d6094c89b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+      "body_sha256": "58678c61f09323dbac7ecc0d32fa4c9f3e97d00abd1847140e86906721ad0a67",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+      "body_sha256": "3cce8faae04fb15675cdcab96fbd3d46f83a461860c937746b9ac595e43afa15",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+      "body_sha256": "01a2657b4e4e58c78169deb7c4e2893cf8b70751620227b2c6887ee3a6dca965",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+      "body_sha256": "a5c96c20273802313bce285dbf18711e7d79d617e964ba5513ba10ac9e9183a3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+      "body_sha256": "7c027772d8468369ca109711721813d4a159f5b3c9bc667e5a263d20f100857e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+      "body_sha256": "b373d31591fa8d3f0e7574ef8b27dcd56d92ef13710f79d470aa120d18dbd7e3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "cb8ec204a64ea93776de2711b231441e18e772a567a20292bdd9fa9aefe6033d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "313d0d841191629d1f64ccc60b73ea89f7545626da8a600e85f0634d75c816fe",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "d7c900f5fd2f75c9d84a982c475022b19e4ae09111f1adb9a9a02b3dce8dd4d6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "c57ddda5dcefea539be178e2327b01b7ec887675170e309cd7066ea803070a84",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "0bcf715e4af9f3fe07730a4fbb7fd88f8504698903ec2df7c7699aab8fe8caaf",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/legacy_amount.rs",
+      "body_sha256": "719edc6f68edd99cd7e7846cabf6d4f2c6fbc971d0932bd70aea355b2a9a27ba",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/tests/legacy_amount.rs",
+      "body_sha256": "e6c975e4002fb409b85c0dc9569d785607a406b0398358e1ff62348d8f73df11",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "e80d245fe8a4529025f0aa83d8a637484c94ac859b942cd2082c0250d2597f26",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "437c76b5b0e6cc093461d9cef268fc7e724942f4e495c10ff065ba69fb7f5fe1",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "754d26ad52aac142de0c5281c51c9eb3e5498d017af5ba86c04ca73665754c75",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "d51ab5ef97a5660d9f9723354d0f21cf53382f0d9d0129b89ef4b0f92af82b99",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "27ae4ef4fa3a7a6a22098a961acee50c7ba8b3802034752b6a491ff8d9c46df4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "fba4cd52d1df2793fe66f6d249b1baaca3d14535cc3bff3130e6ed7d68b38a14",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "43c29bc6930b0e29f5f54175edc7f15616bd679397e7ff436353890d6d8e99b0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "caff71edee0bdc657159f6432a04d385c19a97fb2035ec6e103d41fe92a27739",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "body_sha256": "a03e0bf4faea4f460c2354ddedd73c54aff3e7b7df71f5e85c5116d5986c7dda",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::allocation_free_encoded_length_matches_compact_json_bytes",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "e4f1f4bb6f2aa5674c54d3f56bfb9d898bb4feb4960a465f4324b0e5ab7308a5",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::authoring_cow_admission_precedes_copy_and_preserves_retry_and_continuation",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "ec2d39ecafe06a9a83e1351b90c1a6242971431e5f3b40ea35a3bba43f3c96ac",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::authoring_cow_cancellation_keeps_original_and_rejects_prepared_candidate",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "e33f2f0b46e0636bc25969cde9c24b02d104fa89119244670537cfcad00bd0dc",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::authoring_cow_prices_nested_storage_strings_and_shared_source_handles",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "0e733623777452c24876999868a2674eb039c7ce146e676a0a5790f297858c1c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::battle_time_cap_is_a_moving_window_not_a_timeout",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "9ee5e1fbb227d73f312c8a935781a3fa234eba1ef82b81e4c3e10225c9a5afcd",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::clone_shares_entries_until_mutation_then_preserves_isolation",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "f8de230a4b21616403dd3920d58189ad75685fc6590cbb99dde67862a59e54ac",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::count_cap_keeps_exact_window_and_requires_resync_before_floor",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "988885b1fdd510f4d9347805cd86d63151c394e49d1bf75aa78bb5e1f0071025",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::encoded_byte_cap_allows_exact_limit_and_drops_oversized_diagnostics",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "a01aeda89c6e676f4e476468ee2c279d8de9f427235a8074a6e4c63ae31beb02",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::hp_changed_serializes_feedback_tags_as_snake_case_array",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "727ef8200653effd95caf6b05a2206f9df41953db9f1037882542db25bac0634",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::movement_stopped_serializes_explicit_stopped_at_ms",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "c70cb704864a6a8eef99282edd6576214560b9dcd7f200518e5525c97558083e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "3900bb08545d63dcebaa9c1c2c101aa75fc715200f3b97abcda06c00e9865f97",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::same_length_public_edit_invalidates_size_and_time_before_next_append",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "e003215a449eae35975cb6b6fc2f1b197120cee5b9088ad76dc43dfe6604d7c8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::event_log::tests::standard_serde_round_trip_matches_compact_event_log_json",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "body_sha256": "c4d1f264157ceb6c518fb5f7c0ca0421662aadd24cb4bf8f27a9ace7b04ac4f3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation",
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "body_sha256": "8191dac3d4660088ea85b06b98754270a23a0d90f570d0efb842ca9073d6ef6d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault",
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "body_sha256": "d2ffd218e515ea5d1dd31437dd0dc815551094ebd3eda6aaaca6bcbebb268d71",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard",
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "body_sha256": "92087470c13ffbe7853bc373efefb4fb9e76d8b8b09d725fe4c28cec6233892a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid",
+      "path": "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs",
+      "body_sha256": "c2f0df30d63cf2cd5506a568303109da2affc4882e687e71cedb2c217870c4ca",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow",
+      "path": "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs",
+      "body_sha256": "b97a230f6075eacd6d297becabecd1a3dd70a91371847ad1b57299edae548410",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected",
+      "path": "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs",
+      "body_sha256": "91962bada4a696c5451390cc0f16db8d8118f182a0125926d5b589caa4114381",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy",
+      "path": "core_enhanced/src/game/combat_power.rs",
+      "body_sha256": "d73c4ff1271e406a4da063586b7d7d947aefb2421ca24e33a70bc06349f64f25",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::data::content_pack::tests::authoring_generation_lifetime::real_trial_replacement_failures_and_last_pin_reclaim_generations",
+      "path": "core_enhanced/src/game/data/content_pack/tests.rs",
+      "body_sha256": "3db85c51e7b785f9d94c800c2585c609f6b37f7463aa9dfef87d3aac60f94466",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::active_run_write_failure_does_not_rollback_or_skip_compendium_publish",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "2bb5a0925121341e763979350055f7c96fdb06d5d23fafbb915f6301c40bc145",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::attach_replaces_previous_session_immediately",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "e3925aed3f9db8b3eddde2ebbc13ceb3d06a3a567ec8ed1efa6ce6523d884b4a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::attach_session_merges_durable_compendium_before_building_snapshot",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "6dfa86907a5272502de082639d2b2cf216ad580e12b5f7dd3f6e3bfcbfce4336",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "61894191bb0e3ac47eef7b25e354e852a9554c56f3933c4b4d51d54f45417361",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::backup_recovery_notification_is_emitted_once_across_reconnects",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "22d5c586a9219ecc4759453b101aa89a02af84793cacdce7e0884edf62227ebb",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::clean_title_exposes_confirmable_full_compendium_reset_without_retry",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "96c389dbc69b66fd84fae1ae2dd6490ce67302c45ae553ac28895acaef795715",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::compendium_write_failure_does_not_rollback_active_run_commit",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "0d7b5b83f11508e1bac4a7502bae90d1e40f5573f2e395a21d30e5de6fa27a71",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "5c41b699239d1ad23c3b5f70b9b2d8c65c30c907d94671da412a1deb3e2b5995",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::detached_actor_stops_after_ttl_and_deregisters",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "90abe1d83500e3eac9b26141b0e1538bafe6987eb595d0c2d6550a33a7f5acba",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "07ecf8309193a0797aedffa991f5815af6260d852a1a21f4217c4bdc67d39f39",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::execute_behavior_returns_updated_state_snapshot",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "d2b7c4e5bc2b3efcf4754353dbaf18a6803a266643092744cbed02dcc35b629a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::fatal_compendium_bootstrap_gates_title_to_retry_and_confirmed_reset",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "e8c7db9aeec69ea8ede4007c25e17609c3689cde8414e6032b9dc85c0b29d1b4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "3e98ebe385ae72eb1a4881fbc044c1775e0bfaf68026f4f6bd767bc944cac9b0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "9693a8e875c9f0730a405693a183773607b3f66da5d2c13921015e3338f22540",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "542459eeea66fe90d6e1c10ea185fd4c3aea6f083ba849fc446f3cba6f0dd783",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "568bd702ecbd57fd983e4271a0c20394368b2ebaab493f9ec951717706ed4c1c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "576294e47bb2c3a1ac054319d0bed0a4f0909b926ea4f419c75068c5d45ff9e6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "4804cf19bdc57fb3878e3e7f7cd75261fc0a218d185724d977f771a63ae439d0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "15c88601574c2ea5545d09ff0982c8582b18bd4b18e5ade13b681babedc01963",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::pending_standard_completion_blocks_continue_and_retries_in_process",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "75149f42a0933e54e2458eafed7926f83c30e0b1f194b70790f7cc9d446275b5",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::player_state_snapshot_preserves_core_snapshot_root_fields",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "7ce2fa1b7d5dfe1d8d93f9ece0d158bf6f835c325431b0ead09ccfa7856898c3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "e33b4108a825ebb2bb6d7830c9d3f570ec3341834cd6c9b73ba2aacf0ec38bb9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::runtime_observation_real_battle_preparation_failure_commit_and_end_are_distinct",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "23d2c8eb2dd56f335d25a8cfc4872f7522ea076ba53ba4998a6524d23fecb5cb",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "3a8edb487196dc6e900431b07c8fe1b18ca78ff1ac9ca8aeb45101c34db66919",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "body_sha256": "dd4a5cfc3651746c350389422a42fbb0c53eeebf9e5e34abc828ded33aaac4b0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::admin_command_is_not_a_player_behavior_request",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "8227c18c0be8543524d4f502b27e6e14cdbaca434ff4cf680c21be9ad8a60823",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_admin_command_as_separate_top_level_message",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "23d636e663f820e2465c5dd7e673afa55dadd1e5600bd3c567928786570d39f0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_live_battle_requests",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "e1cfa66ba8b3d316854ff20839a7b7dda56b811a255da075d1b689c49dc17e8b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_pending_deployment_range_preview_request",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "5c3c0620ccb2eba0f12fed7962c908903057cdf7fad02bbbb75d471bd2060a3e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::deserializes_snake_case_node_flow_requests",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "9e3c82afc3dd4b88c29116f0308416e3d3dd2180ec8e9ad991ce6de3b95ceeb6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_battle_resync_with_nested_battle_update",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "0a2b6ff402b82a432af5f506ea8d9815aedd70ca807cdc9e96c9840f0fb39e7b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_battle_setup_snapshot_as_top_level_transport_message",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "dc4f3356cc3c5d06104485e3017148db1de5aa5fc1fd0021a499b6a2657dfb95",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_battle_update_as_top_level_transport_message",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "921d26f351201845e3458b83be060646f9a9a494c1a0fcc2ffa13842bf491727",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::player_game_actor::messages::tests::serializes_control_status_checkpoint_contract_with_typed_reason",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "body_sha256": "8fdcef827284f0334558c0591751ba652443b9d50345f9b9db43b4928d543cf4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_authored_member_edges_before_member_allocation",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "6a8ebcf0a4e0b9719511d27ea2c2233b7c4d6173f3030017a6207fded8079529",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::actual_skill_ron_enforces_depth_and_node_edges_before_unbounded_ast_creation",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "f42fc8697d48cc539caa50cb9191c2aade2dba8c0d2fec44292356a187e7abe3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::expression_input_span_accepts_limit_minus_one_and_limit_then_rejects_overlong_payload",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "c2be4ebacadec574190cbd5d13a755966914a65fd880600c30336f9483f221e0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::expression_struct_variants_reject_unknown_fields",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "e49c5f5b8e3de5e2fa4f0d9b5ec501fcb94176803294c120c393f9e58c9ba4bb",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::read_reference_payloads_reject_unknown_fields",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "ad5d13a9441e819272a6deabf2dc3fa01b17d254e2b4d7b13cf0366e24fba579",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::resolved_predicates_use_the_shared_node_budget_before_element_allocation",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "3c5704f4d1b668dab8d677abb2b3899c8dfe7f375a78d17c1ce644dd10e89b8f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::scanner_treats_strings_and_comments_as_opaque_and_bounds_its_own_nesting",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "080539e3bd11cb3b85c2c67d775864319d6f3a408dfb7c8b3aaf4e6ba679187e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::parse::tests::strict_expression_fields_preserve_valid_forms_and_nested_member_contracts",
+      "path": "core_enhanced/src/game/value_expr/parse.rs",
+      "body_sha256": "5cb67821ed1e4afcd8042124d8c62c0895be76f90779fa4188dd008287c86ce9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::bounded_frame_keeps_sorted_logarithmic_reads_duplicates_and_capacity",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "36254788667c1e6da901314dea65f5583eb550769a1fe5cb94db2d2e4fffc838",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::capability_checks_prevent_unavailable_snapshot_context",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "6972fd525f37e383b330cecdb7dbde0feac4b06fc291ef85e59553d3d8d99723",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "d21fc2a82822b3d1255c8bcc81d131299c0414fe00f7f0a23d8eca5d88e2a487",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::compile_and_runtime_budgets_reject_before_partial_results",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "fbefacfb7b1ca214b47a484d7f6717f360d8acf19cc61220527218d90e1e835a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "bf3612bfa1070371aabe719be480a91c536e5713f33fad3c1c75a763b08bd0d0",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_authored_work_is_a_static_executable_bound",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "671f71218e1317046094dbbacd1dd15ed5961e54ea625361d23407dbdbb8387c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_grouped_and_nested_authored_work_stays_bounded",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "60abc364b90901dbcb8c80149d7e817a16cfe19bedf2dd2b0ef275c1c0cf6dbd",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_runtime_payload_work_is_explicitly_dynamic",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "3963fbd57ae059adb27064205c9b1524dc80e97ddee93a56e2d81446c5964631",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_002_shape_is_iterative_at_default_and_extended_depth",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "129122c9898b5ae33bac72d8bcea67a8957a6230028ee70148ed3c19f087af94",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_compile_work_and_storage_boundaries_are_exact",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "c7f17d8f3a4bea02758b2875c0b6399d364683ad2af6b35983528d05bd7984ab",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_group_boundaries_and_cumulative_resource_capabilities_hold",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "feeda1849889325b0e9cf072bf15945c99be43f5db9037fabf20d0ae882c8fd3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_long_payloads_are_rejected_before_kernel_owned_clones",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "283b4561ea8fed77edebc224444748e6ecb60e0a606388fad41ff19c84607e0f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_nested_stack_nodes_depth_and_task_frames_are_enforced",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "5378b25fabbac1e7fe6bb91842fde50a59e3dbd0bddd54ff9f3babc45b8af1bf",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_raw_and_canonical_member_budgets_are_distinct_and_exact",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "ce932d452585307e039e4db3c7364cb5803a9f7d26730cf72c10c9a1f828ed8c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_streaming_fingerprint_is_byte_compatible_with_pre_fix_plan",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "b516850c9a03159e628986fb6e26b83945751e3aca14ff00425d97a0866eb44a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::correction_wide_add_rejects_before_child_traversal_and_keeps_left_order",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "1146a0385548b122ba03efe5ed75bf787b96a0102ef7030c89b4e691620c36da",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::dynamic_reads_use_typed_frames_and_report_missing_context_and_overflow",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "9a606dfe2deff1c0aa8d11c936147222790f018d38bafb8a4d064a38cf51b210",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "fdd3d63862de9bc6e77b6e7923e975870dd490996eff1489329181a8076d3146",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "178e57774af5227d002dbda4f0e83a39a57735b44b6cb4ef297ea488dc770719",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::legacy_literal_lowering_and_final_narrowing_preserve_signed_contracts",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "11562a52b176efe1115e0982dc0ecf57114870edb1fa3af250cef0d878306ce8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "a734b2aa3fe1ad6d5e6210e69e24a608c923437161f85b6eff500eb038710c3e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::nested_aggregate_cross_product_and_static_group_keys_are_admitted_up_front",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "4ff183fb53211cf26960e2385381715186412833fc3a4c45bc419e725ab40500",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::resolved_predicates_are_bounded_normalized_and_fingerprinted_with_slot_meaning",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "5367f5631922ff65f43b522c60130975200244607e825976b6053a332e804378",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::resolved_relation_requires_its_exact_node_view_and_distinguishes_empty",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "1492e896b2b6489794e9c84d9c242f85c5aef56beb353f7dfeac9b86afca6f53",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+      "path": "core_enhanced/src/game/value_expr/tests.rs",
+      "body_sha256": "b562b71c8f7330c1f4ba69a325f9aeb18d9885203dd3dc6c23198d71c6013df2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_checkpoint_document_has_exact_envelope_and_checksum",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "0fccad87a51603b220e157cb2b180cb04dbd2ef1e4dc12fb095e9fe4850f7629",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "b0fcfb479c9c45623d43a831d380109edab0e7423c14a75096ce4b53d97fab2e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "7f45f4b53682eb4b8cb1ede6775351a8c3f76fe2f43b3b54bb6d51e5215230c6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::current_v9_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "eefd199ad927600c590cd69a16e9bec560cd32ff19a56f299f9c7c192f4d969a",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "159a720196afafb1ff1baeee15f4aafca425cc12cd0956cfebb83c4a1f9555a6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "3682060496a64486b043affac73edeb052c5e86cd7fc600e1578a2fdec37569f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "00d2a8a0f1f113f340bddbde275d27c34412aafd5059b782360b499513a5bf1e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "905023098f6bacdcaeec176a5f02b5f74ace6453a574031228ab8aa11aaa9599",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "body_sha256": "a31ded4c28d4a7f3dce5df1dea5ab79b7fb17d25bcbcbbf57059ada70f68a180",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot",
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "body_sha256": "a7bd74d285f045312d47f784f25c7e563480d8b28e2acc6b5f4a304158f9ad38",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "75fa75499553a475c56d7bffbd45829346fdd954d35ea88d02308c83b36029a4",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "900bf0d70eb23b3116fdc23f823e0184388cec1016ff4b12ac9c8cbde042de6c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "b3cf40981b4c3200b62fa57d92691dbb61592966c0c38fb738f0f865fe94c2c2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "cfdbac5df5a847e4b6110dbd7a85cca9763e501aef7db67a6f59a4e3f1170f80",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "eb7a2e4911e217f74548cf63591390705d949751d7c78c0cf317f92f993fac53",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "bd1d8c62730a1fdaafbd77dcdafa5468416a7f7673dbfdc8c2b226c6debd3d8c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "b1aa7840614a954795441cd2a488a81123293132874dc382034e7a61fb8c19e8",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "f76c4887a8231e2b8488ea1819a5f220786c8054bc3aa571da3207b3175e5b0d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "f744e4d510add41d23b38aad02b1e341c9b4bfc8076241ed0b200ec4946f9f44",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "body_sha256": "8a877e36a4226ee55c81e311e32c574dd58f257b05a0310261448e30c395dfec",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+      "path": "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+      "body_sha256": "7ce7f10ea821dae5d64dfd70967b2322c985ed5c63dda2a65aee1e98394fc93d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "42b87f6c468a7ebedb69ab17591ce07357cc8e53015db0bfb99d899ec816ff05",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "ba7239adb27583c6a498210be93935944999a03f88e23ac70affc0584452e49d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "e06188342d8441dea741df5a106f8f4c4d66d9615a6fecd4787203fb3fe3c74c",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "b291106bd3410db3bf20ea5885467a34745c1699f85502c4fdfb344c1c33d2b2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "672ab3efcbfaeacf79647a2e2544a8baeaab9744355f1c96a2a9bd1664c0a1a2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "cd1110282ce9584a82ca0183931582625b6116f7274f157341753fe1cbc5c7d1",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "44da7ec8c630a931490b6f01a88003dfae12a77d746eb24a37d4829f0321ce78",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "0a6284394287032106f8b768922408453dc2a0b689d7de04221d6a05fea8ff99",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "adf037633d685330b7cf6aebccf608562b746893a856fab868d834f8148810b2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "c3bf707ccdcf2275bd4f2126ef85a89061226586eb0bd4563d83faa798e8d553",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "ff8b77da553d66b23ee6d42216137c15d840403cc5973a334816ae2dbb20018d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "body_sha256": "cb8a0d68c148f39e90b62e4ea5a65dc7197ac43622741fc60b09253592b7dc71",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "observability::tests::a_contended_atomic_read_keeps_the_last_commit_and_selection_until_a_real_end",
+      "path": "game_server/src/observability/tests.rs",
+      "body_sha256": "a48b1a80213f20437253a4180ffaff961d7278aef452e4d7b273b06ef4469817",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "observability::tests::actual_queue_batch_dedup_and_dead_lease_cleanup_do_not_depend_on_end_messages",
+      "path": "game_server/src/observability/tests.rs",
+      "body_sha256": "1ac0408057637143662e2a226bb24d07c0f3ba3e6a1131d829ecdb80a300229b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "observability::tests::churn_registry_storage_tracks_live_sessions_and_registration_never_waits",
+      "path": "game_server/src/observability/tests.rs",
+      "body_sha256": "e0ec69b4b64c79917266e97d615b8906aa71a4e35f2bc6402d122381d8d39cb3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "observability::tests::config_is_opt_in_separate_and_loopback_only",
+      "path": "game_server/src/observability/tests.rs",
+      "body_sha256": "5c1067b4c7b958a8c9387af05e8fa7e1048dc3eb6ccff255db99230326d97fbf",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "observability::tests::selection_switch_ring_rollover_end_and_aggregate_subtraction_are_exact",
+      "path": "game_server/src/observability/tests.rs",
+      "body_sha256": "1bc4b48c1c00cf50da59692be20fe525869db5614b0ded0b958c991c61da37a9",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "observability::tests::stopped_scrapes_and_pinned_retirement_cannot_accumulate_histogram_batches",
+      "path": "game_server/src/observability/tests.rs",
+      "body_sha256": "2abdfe5951d3a2cbbeb3bb5033da2f1991d96a4f156428aada6f572b3b990f36",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::backup_recovery_never_rolls_back_monotonic_load_count",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "b969fe2204722091f5643643acfe4f69f2b81b4de9c71c7c539aa8d0c219468f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::backup_recovery_preserves_checkpoint_payload_and_monotonic_power_peak",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "2682435338c9d1cf15fc1ebc3dedec67f5b651c5e46f3472649b925a83fcff50",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::checksum_mismatch_is_rejected",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "00decbdec3d939c6b0f07b7c80f1f3df1d0c9407a40bbe9667db6e41484f3c5b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::old_envelope_version_and_removed_monotonic_anchor_are_rejected",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "065051b5b7d227bad00289b5645ef3cce0b595911522ed9be76821872fe92df6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_failure_keeps_previous_current_readable",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "7cc2c7dbb13e57568b7966a681f60bd7a0d96f3f36205f31ed301cc77ec1135b",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_load_backup_recovery_and_invalidation_use_real_files",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "797672157ccc148857fb31322684279022c52be4b5334b7922674df374a91fa1",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_load_count_into_incoming_generation",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "06102f0edb833a43a17af309110b64bbc035dfdd4a46142f4860b845bb97ff37",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_loads_and_peak_into_incoming_generation",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "d80588e4ef8094134f49f01911f95dee96d16f26215ddd9affe649d43ce449c2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publish_merges_current_monotonic_power_peak_into_incoming_generation",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "5f382ad62041bc891262dd025fce1e9979ad65f1c8cfb0c944ebd74fa59598b3",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::publishing_after_terminal_invalidation_never_reuses_an_old_run_backup",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "b1c2b2c3b0c3dcf6b1bda1f9f4d8bdb919714095db7093e3c25b7d19ea0b303e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::unsupported_envelope_version_is_not_silently_migrated",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "3a06f545d544728786576e8de9b4d32960356614ac3045761f4c3a5175dd98ed",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::active_run_store::tests::unsupported_version_both_corrupt_and_single_writer_are_explicit",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "body_sha256": "9599be423c21d24633b088387c3688af6cf5d18b483473ff46396cad5c27f274",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::checksum_unsupported_dual_corrupt_and_single_writer_are_explicit",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "19f1a4e6b2c82b1b9acbb62216ec427b5925ded11c852feaac157e8adf0e49c2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::explicit_reset_clears_the_entire_successor_profile_and_all_recovery_artifacts",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "a4277ab2649a15bbb5e2a84ab87392e9a509a3cfe4529965d293840e9c3d5dd6",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::missing_publish_load_backup_recovery_and_reset_use_real_files",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "55340586b09115a5b5e19f83fad9bf67b66144bb1f79a91739d017e735caa413",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::publish_failure_keeps_previous_current_and_does_not_rotate_corruption",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "cf986836ce227eed055f042d790ed0e192da259cb75ba4a8d102cec4ea014a13",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::retired_legacy_compendium_file_is_not_read_or_migrated",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "4cd343765bd3ecac80af7d1be5fd080867484f6a5d6ad82abce8e17148554fcb",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::retired_version_two_profile_is_rejected_without_union_migration",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "abe3b3452754d51aa73c548d9a705c55bca0915e239397155be3df74e0fba685",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::runtime_keeps_latest_registered_set_dirty_and_retries_full_profile",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "1ca43105dcb6cf18cdd908cff89e7bc56562d7aa1c5cc1f903928b7a60d29397",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::standard_completion_journal_closes_profile_and_active_run_after_restart",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "d8197f459645d4cd859e5b1126977aa8ffdccaf50112dae9fb12159a77752065",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::standard_completion_publish_failure_exposes_neither_side",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "2369eb1a9eb8dcafb642a1fec636157ceb2d21a5598e88481b764801a59d109d",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::standard_completion_retries_failed_active_run_invalidation_from_journal",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "fa52ac1b068d1e7255e24acd98d22b1324a7cb0edfd7928be38b699f415d8d48",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "persistence::player_profile_store::tests::successor_profile_rejects_unknown_fields_and_ignores_interrupted_temp",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "body_sha256": "0fb9d53d29a2efa58d72d22397fb9c29faa2d706e57d696a586eeef2bb041902",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::a_short_history_span_does_not_end_battle_or_change_final_statistics",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "5723e78bc361b20911f3447e74e0206a72e58fa5af80fa2340b5397d9a0b45ce",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::compiler_limits_preserve_existing_typed_range_and_parser_ceiling",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "ec11e608b8d02031ac462c9e281977e27e86fc2c7668aa1ea584fd9861b99292",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::explicit_authoring_admission_and_trial_limits_consume_the_profile",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "fb0154d3c311cdd17602901ad16e53e297585093f020d0f7dd002cd92e8dbf2e",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::external_generation_keeps_semantics_and_separates_profile_admission",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "9a9cc7348d41e7f648bef88a8c05fb651b5cb1bbccb3e083a82a7ae4634d7130",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::history_import_and_deserialize_apply_the_host_window_and_keep_cursor_gaps",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "a87fd190cee895e9721c942d68207de0e931d0ef0d61915e44bb702f2511c531",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::original_defaults_and_no_file_profile_have_one_effective_identity",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "ee384851471582bf03a8609083cfbf6d4ca958c150ecfb6ca4e141b5728a8544",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::parser_is_bounded_before_deserialization_including_nested_comments",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "e4db5e752cdb2a4d06a74de9983875deae3d5c1eb5b1c73e4dc1b314c74c2b78",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::public_content_parser_compiler_and_immutable_plan_consume_selected_profile",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "e3f9de9d63058198247f46ee2cc18499631a689d738212b6d8edb4faa11a3a7f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::raw_and_effective_identity_are_distinct_and_profiles_are_immutable",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "3d4235743bc27b29efac5ae7fee1ec40245635999b407cc64095638b5b7d2cb2",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "cc7e33e29fe9e2784bf42fc41e89e2f38ce9b63b73238446c3e10c74123fef4f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::settings_reject_schema_unknown_duplicate_negative_overflow_zero_and_ceilings",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "bf49252798fb3ce086593021a27905819c4213946a71dbee60ac74f327bdd46f",
+      "unchanged_from_u02": true
+    },
+    {
+      "selector": "runtime_safety::tests::structural_errors_identify_the_offending_field_at_each_level",
+      "path": "core_enhanced/src/runtime_safety/tests.rs",
+      "body_sha256": "49bf9f57debe1e96095d51e6b5d3fb6dc6337de506dac9e0ab0ddd9bf813ebd2",
+      "unchanged_from_u02": true
+    }
+  ],
+  "cumulative_product_delta": [
+    "core_enhanced/src/application/fault.rs",
+    "core_enhanced/src/application/fault_tests.rs",
+    "core_enhanced/src/application.rs",
+    "core_enhanced/src/game/battle/core/boss_runtime.rs",
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/sustained.rs",
+    "core_enhanced/src/game/battle/runtime_control.rs",
+    "core_enhanced/src/game/behavior.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/combat.rs",
+    "core_enhanced/src/game/world/snapshot.rs",
+    "core_enhanced/src/game/world/state.rs",
+    "core_enhanced/src/game/world/tests/combat.rs",
+    "core_enhanced/src/game/world.rs",
+    "core_enhanced/src/runtime_observation.rs",
+    "game_server/config/observability/README.md",
+    "game_server/examples/fault_runtime.rs",
+    "game_server/src/game/player_game_actor/handlers/tests/fault.rs",
+    "game_server/src/game/player_game_actor/handlers.rs",
+    "game_server/src/game/player_game_actor/mod.rs"
+  ],
+  "assessment": "Unchanged assertion bodies support reuse of original test meanings. Their current executions and changed production-owner applicability are independently assessed in PREDECESSOR_REVIEW.json; this file alone is not a semantic verdict."
+}

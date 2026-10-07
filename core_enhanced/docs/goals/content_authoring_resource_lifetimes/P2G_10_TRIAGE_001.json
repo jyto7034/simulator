@@ -1,0 +1,238 @@
+{
+  "kind": "derived Finding Triage/Decision/Disposition view, no independent Exact Ref",
+  "input": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARL-P2G10-ENTRY-001",
+    "Content Digest": null
+  },
+  "result_checkpoint": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARL-P2G10-001",
+    "Content Digest": null
+  },
+  "findings": [
+    {
+      "Finding ID": "F-CARL-01",
+      "Affected elements": [
+        "CARL-E01"
+      ],
+      "Finding": "소유 identity와 실행 binding",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E01-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-02",
+      "Affected elements": [
+        "CARL-E02"
+      ],
+      "Finding": "owner와 독립인 수명·epoch·lease",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E02-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-03",
+      "Affected elements": [
+        "CARL-E03"
+      ],
+      "Finding": "자원 선언·상한·증감",
+      "Primary classification": "material_policy",
+      "Disposition": "delegated ordinary policy",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E03-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": [
+        "명시된 cap/grant/decay/consume 기능 및 기존 수치를 유지한다.",
+        "상한은 저장 가능한 최대량, decay는 해당 잔량의 감소라는 자원 경계에서 초과분을 보유하지 않는 동작을 도출한다. consume은 카드의 부족 비용 전체 거부를 따른다.",
+        "새 수치·보상·비용·환불·상속을 추가하지 않고 입력된 값과 선언 경계만 집행한다. 상한 자체를 runtime에서 낮춰 잔량을 삭제하는 새 operation은 승인하지 않는다.",
+        "해당 owner의 새 선언 자원만 변경하며 다른 객체의 자원/진행에 쓰지 않는다.",
+        "기존 저장을 재해석하지 않고 신규 자원 선언에서만 적용한다. 기존 사용자 파일·획득 권리는 바꾸지 않는다."
+      ]
+    },
+    {
+      "Finding ID": "F-CARL-04",
+      "Affected elements": [
+        "CARL-E04"
+      ],
+      "Finding": "예약·소비·확정 결과의 원자성",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E04-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-05",
+      "Affected elements": [
+        "CARL-E05"
+      ],
+      "Finding": "장비 사본 Run 자원의 유지·소멸",
+      "Primary classification": "material_policy",
+      "Disposition": "recorded direct user approval",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E05-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-06",
+      "Affected elements": [
+        "CARL-E06"
+      ],
+      "Finding": "Run 상태·전투 overlay·결과·후퇴·체크포인트",
+      "Primary classification": "material_policy",
+      "Disposition": "delegated ordinary policy",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E06-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": [
+        "기존 후퇴 inventory/resource rollback과 result/체크포인트 정책을 유지한다.",
+        "이미 승인된 Run 귀속 상태에 동일 Run timeline의 entry/result/checkpoint 수명을 적용한다. 직원 identity가 남으면 owner도 남는다.",
+        "새 후퇴 손실·회복·환불·사망 예외·보상량을 만들지 않는다.",
+        "새 자원만 자기 source owner로 반영하며 기존 독립 자산/monotonic 진행은 각 기존 owner가 유지한다.",
+        "기존 저장 파일의 삭제/변환 없이 기존 복원 규칙에 새 상태를 결속한다."
+      ]
+    },
+    {
+      "Finding ID": "F-CARL-07",
+      "Affected elements": [
+        "CARL-E07"
+      ],
+      "Finding": "저장 계약·세대·불일치 거부",
+      "Primary classification": "material_policy",
+      "Disposition": "existing approved policy applied",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E07-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-08",
+      "Affected elements": [
+        "CARL-E08"
+      ],
+      "Finding": "실제 외부 작성·실행·관찰 연결",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E08-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-09",
+      "Affected elements": [
+        "CARL-E09"
+      ],
+      "Finding": "결정론·예산·검증·감사",
+      "Primary classification": "material_policy",
+      "Disposition": "user-adopted scope",
+      "Evidence/decision ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CARL-E09-001",
+        "Content Digest": null
+      },
+      "ordinary_five_conditions": null
+    },
+    {
+      "Finding ID": "F-CARL-10",
+      "Affected elements": [],
+      "Finding": "후속 사본·형태·전체 Flow/보호막/합류 family",
+      "Primary classification": "out_of_scope",
+      "Disposition": "Only later gameplay bindings excluded by O03; R05 common state/lifecycle completion not narrowed",
+      "Evidence/decision ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CDR-CARL-10-001",
+        "Content Digest": null
+      }
+    }
+  ],
+  "current_disposition_ref_set": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-01-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-02-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-03-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-04-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-05-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-06-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-07-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-08-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-09-001",
+      "Content Digest": null
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CDR-CARL-10-001",
+      "Content Digest": null
+    }
+  ],
+  "open_questions": [],
+  "technical_decisions": [
+    {
+      "id": "TD-CARL-01",
+      "decision": "자료구조·파일·정확한 schema/opcode·예산 수치는 P2G-20/GEX에서 실제 소비자와 함께 검토한다. 이 정책 checkpoint는 구현 완료·구조 검사 결과가 아니다."
+    }
+  ],
+  "evidence_gaps": [],
+  "limitations": [
+    "Implementation feasibility, full consumer coverage and runtime bindings remain P2G-20 work; no code_reviewed status issued.",
+    "P2G-10 completion requires separate exit validation; creation alone is not a pass."
+  ]
+}

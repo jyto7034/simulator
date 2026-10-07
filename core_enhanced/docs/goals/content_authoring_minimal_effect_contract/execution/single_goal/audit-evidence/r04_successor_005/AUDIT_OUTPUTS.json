@@ -1,0 +1,89 @@
+{
+  "at_utc": "2026-09-11T00:57:52.289847+00:00",
+  "goal_set_ref": "GS-CAMEC-P2G50-001",
+  "goal_id": "GOAL-CAMEC-01",
+  "record_id": "ATR-CAMEC-R01-005",
+  "reviewer": "/root/r01_r04_fresh_audit; separate same-model agent, no fork or implementation participation",
+  "verdict": "Complete / High",
+  "currentness": "current / unchanged",
+  "target": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_005.json",
+  "target_sha256": "631c3aa01a8ef7b3303bc9b979e572c81fdb0e11e2d41915112baff98e548af2",
+  "entry_closure_identical": true,
+  "manifest_members": 3785,
+  "required_absences": 2,
+  "external_inventories": 31,
+  "external_files": 2235,
+  "named_default_binaries": 3,
+  "full_owner_tests_reused": 1361,
+  "fresh_gameplay_executions": 0,
+  "retained_output_checks": 203,
+  "registered_output_count": 13,
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_005.md",
+      "sha256": "ffed3caa83498b3064fe53fb9da42d96ebf25cb353bd5d74b90b49184b2491a3",
+      "bytes": 24345
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/audit_observations.md",
+      "sha256": "1d5c5b292e0c57e636a50c6c75bfb8c8c092be3ea5e2b16024e55d44aaf222a7",
+      "bytes": 4873
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/closure_currentness.json",
+      "sha256": "426f9fcd1351a91edd0ee1f4e6a8aab42e1f0d1005b5e23b2f782d20c60a8b98",
+      "bytes": 1781523
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/entry_currentness.json",
+      "sha256": "174ac26269a1455d2f5c6823fe6cd019a6cfe79029210b0b493cb3fcb6b58b01",
+      "bytes": 1781521
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/evidence_review.json",
+      "sha256": "024ef5273da1de9895774c5f30d60a5ec7addda47a62825804995a266fa68a6d",
+      "bytes": 52515
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/evidence_review_initial.json",
+      "sha256": "3c83f5c4d92f395f8f5758a441fe12426a7ea6dfe5ad817da2c07c77e5057ea2",
+      "bytes": 52457
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/preclosure_currentness.json",
+      "sha256": "7b068a51d2bf801b8357f486e833bd54425571b0080d556ed97578afff15564d",
+      "bytes": 1781523
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/runtime_outputs.json",
+      "sha256": "6ee2747089897ba24a7049c96821c8b6825852f2e714b9e7b6c1bb82226fdaa0",
+      "bytes": 50703
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/runtime_outputs_initial.json",
+      "sha256": "0b644b603c74d5cd3459833b4b635ca852c769baa17288e68a081284c37cd9d3",
+      "bytes": 49349
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/seal_outputs.py",
+      "sha256": "e94e5d6451ae6bef543db80d8f8b535e0f3e29203fa7b4b19a6f51a6adef01e1",
+      "bytes": 2240
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/verify_currentness.py",
+      "sha256": "4099a13f12f65d9bbafe2b87f57165eb0377ed435de604a71475d489d17b4811",
+      "bytes": 3395
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/verify_evidence.py",
+      "sha256": "7a9b46de03b868c70ffb6e4f27aa1c702ebd902b4fc03800bf8e75f11f616016",
+      "bytes": 6628
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r04_successor_005/verify_runtime_outputs.py",
+      "sha256": "9f9f8d648f304bda176263181205b554854d37290b59fe88ae3949ca8454d1d1",
+      "bytes": 9332
+    }
+  ],
+  "self_exclusion": "This manifest is excluded from its own recursive digest list; all named output identities are verified after writing."
+}

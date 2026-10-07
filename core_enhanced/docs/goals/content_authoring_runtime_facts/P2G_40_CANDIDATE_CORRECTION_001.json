@@ -1,0 +1,22 @@
+{
+  "kind": "external non-current candidate correction record",
+  "at_utc": "2026-09-10T19:30:19.322027+00:00",
+  "attempted_command": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --write-receipt --plan core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_PHASE_PLAN_001.json --freeze core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_30_FREEZE_001.json --receipt core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_40_VALIDATION_RECEIPT_001.json",
+  "actual_exit_code": 2,
+  "actual_output": "p2g40-receipt-validator/1.2.0: EXACT_REF: Phase Plan Validation Receipt",
+  "classification": "technical_decision",
+  "owner": "P2G-40 candidate serialization",
+  "cause": "Receipt ref must be exact typed envelope; candidate001 used string. Tool correctly rejected before receipt generation.",
+  "predecessor_plan": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CARF-P2G40-001",
+    "Content Digest": null
+  },
+  "successor_plan": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CARF-P2G40-002",
+    "Content Digest": null
+  },
+  "disposition": "001 preserved non-current; 002 fixes receipt type and design locator with same 3 WP/AG/phase/validation meaning. No published current plan exists, no Freeze or policy/source change, no tool modification.",
+  "receipt001_exists": false
+}

@@ -1,0 +1,486 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CRSA-002",
+        "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CRSA-20261007",
+        "Snapshot Kind": "successor",
+        "Predecessor Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSA-001",
+          "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+        },
+        "Created By Stage": "P2G-10",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "CH-IN-01",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md",
+              "bytes": 2974,
+              "sha256": "077df65c23e1d7b909e7c9e86fdb1600aeaabb3b1e381775adf5073ccdc44f38",
+              "archive_member": "core_enhanced/docs/roadmaps/core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-02",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+              "bytes": 313278,
+              "sha256": "1f0c8d69046df11cd12d78e4bccb35c5718acc4bbc1d4646022e62a883503b98",
+              "archive_member": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-03",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+              "bytes": 125584,
+              "sha256": "e1e9f48aab7f94159f3b27350b3854d184dac263ecce43994f89d997088f663e",
+              "archive_member": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-04",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/game_rules/relics.md",
+              "bytes": 24464,
+              "sha256": "5cb31b0ea90b1886c018e9c0267895c5f0da0b5d6c960ab20b56976befa770f4",
+              "archive_member": "core_enhanced/docs/game_rules/relics.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-05",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/game_rules/open-decisions.md",
+              "bytes": 40393,
+              "sha256": "9770d922b3efc0141ee1a543ecc151f907f4184f512d20e03c17830dad03fc7b",
+              "archive_member": "core_enhanced/docs/game_rules/open-decisions.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-06",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "bytes": 334339,
+              "sha256": "553c6208a2c1a9040436ef82712e74000e931a99988d86259777beb43f44b0c0",
+              "archive_member": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-07",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+              "bytes": 62906,
+              "sha256": "962b8fdbf906559f233b0d4133e9bd4d7d088759ec24a626d98eb07e21fff1a3",
+              "archive_member": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          },
+          {
+            "Intake Item ID": "CH-IN-08",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R13_R16_CONTINUOUS_IMPLEMENTATION_REQUEST_20261002.ko.md",
+              "bytes": 24883,
+              "sha256": "2574adc5041ac71b3569737fc55d947737e3f2f97513af6bd38544590454a081",
+              "archive_member": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R13_R16_CONTINUOUS_IMPLEMENTATION_REQUEST_20261002.ko.md"
+            },
+            "User-Provided Locator": "Latest roadmap/rules change record and linked policy sources",
+            "Capture Limitation": "Repository record documents user agreement; not a new direct conversation answer."
+          }
+        ],
+        "Preserved Prior Input Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSA-001",
+          "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+        },
+        "Archive": {
+          "path": "core_enhanced/docs/goals/core_relic_structural_activation/POLICY_CHANGE_SOURCE_001.tar.gz",
+          "bytes": 291274,
+          "sha256": "7feefca5a0104adb6be49e8dc3b55316c4ddaa6a9ff7da32f6f3ce246cc7499a"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-OPEN-002",
+        "Content Digest": "sha256:41be1a20073d79332c77e47eb25de4371745ae957077ad1f99ae253a940d3b30"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-04-REVIEWED-001",
+          "Content Digest": "sha256:b8293dc9bc9c3d55b8e2af5f15f7b6993c10a8b3f5857b3fbd4723bac8491602"
+        },
+        "Policy Statement": "공개 typed property를 실제 executor에 결속한다. 포큐버스 보호량은 개인 방어막 생성량으로 변경하며 기존 공용 보호 기능과 구별한다. 변경된 정확 수용 조건은 successor decision에서 확정한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-OPEN-002",
+        "Content Digest": "sha256:fc6f4288b798b71726488712cbb07051e5bd6386311792c4dbc6e33e684add5a"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-08-REVIEWED-001",
+          "Content Digest": "sha256:310f541d39fa65163bb6d315c235d2481f9703142f18ecf782e4e629e6b8edc9"
+        },
+        "Policy Statement": "단일 지원 선택은 원 자격과 시전 거리 안에서 한 명을 선택한다. 포큐버스는 생성 후 범위 이탈 유지로 변경되고 태아의 원 채널/거리 의미는 유지한다. 변경된 정확 수용 조건은 successor decision에서 확정한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-OPEN-002",
+        "Content Digest": "sha256:922272bf977969dee8004c0d90d145c740168a535a5603340c67c76490a4a699"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRSA-09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSA-09-REVIEWED-001",
+          "Content Digest": "sha256:26b8b8e025e1ef1cbbdfd288d899ef6ce4ce898fbd817f8593ae27e97bd7182e"
+        },
+        "Policy Statement": "포큐버스는 시전 순간 자격 있는 각 아군에게 독립 개인 방어막을 한 번 부여하며 늦은 진입/재진입으로 부여·충전하지 않는다. 단일 전환은 한 명의 강화 방어막이며 기존 공용2S/4S를 승계하지 않는다. 사용자 보류 범위와 수명·합성 세부를 구별해 successor decision에서 확정한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRSA-004",
+        "Content Digest": "sha256:56b534d693792557c90fc9c802771705d97a5b807f0fc846886ed683a192b5b4"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSA-003",
+          "Content Digest": "sha256:9f81d4ac1874e7c273f4addaafd87664f5d62de4ab997dfd1ab1b5a6b4a2421e"
+        },
+        "Predecessor Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRSA-001",
+          "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+        },
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRSA-20261007",
+          "Policy Topic": "U09 유한 활성·속성 변형과 구조형 공식 사례",
+          "Requested Result": "bounded_pipeline P2G-00 through P2G-60, followed under existing user authorization by GEX implementation/testing/whole independent audit/correction and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+            "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+            "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Same-effect tag/property/exact ID/form AND, seeded finite activation and property/structural composition with explicit Replace conflicts",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 implementation and C05"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Agreed Porccubus cast-time per-recipient personal-shield and single-recipient strengthening, fetus state transition and monk damage-footprint cases",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09/C06 and completion criteria",
+                "successor_source": {
+                  "path": "core_enhanced/docs/roadmaps/core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md",
+                  "bytes": 2974,
+                  "sha256": "077df65c23e1d7b909e7c9e86fdb1600aeaabb3b1e381775adf5073ccdc44f38",
+                  "archive_member": "core_enhanced/docs/roadmaps/core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md"
+                }
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Effective plan, generated-effect properties/source, dormant explanation, execution/protection/persistent states/query/copy/restore/same-run generation boundaries",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 together-transition and output columns"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Normal external RON and negative fixtures, applicable predecessor regressions, performance/resource lifetime, independent whole-goal completion",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 completion and current continuous request"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "U10 event subscriber/causal chains and other independent future roadmap cards, full shop/activity/UI implementation",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 output consumer U10 and U10/U16/U26 owners"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unseeded-cycle blanket input refusal, arbitrary activation gameplay cap, UUID-order silent Replace winner or automatic exposure of every builtin-only property",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "ROADMAP U09 explicit exclusions and D-03 uncertainty"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Unity-first work, individual final-boss unique implementations, whole-roadmap detailed design and retroactive alteration of prior evidence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 current continuous request; IN-003 stored continuous authorization",
+                "scope": "IN-002 ROADMAP U09/C05/C06 and in/out/acceptance columns; latest rulebook references remain unreviewed bootstrap input here",
+                "boundary": "U08 whole independent Complete/High/open0 consumed via IN-015/016 and IN-017; approved selection and execution of next eligible roadmap work, P2G00–60 before separately authorized GEX.",
+                "specific_locator": "Current user request and ROADMAP global scope"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRSA-002",
+          "Content Digest": "sha256:0f70dc0bda928bdf4297935d341406db6eaed399d122ee8c65ae8dd39915fa13"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRSA-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-01-REVIEWED-001",
+            "Content Digest": "sha256:ca31d4429793a92960a3366e4f156e327d0f4704dab82ad55d306e0de39b382a"
+          },
+          "PE-CRSA-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-02-REVIEWED-001",
+            "Content Digest": "sha256:27b2394009f0e9e7646afdf32054a574fa4399937cf6ede0671188242cf70450"
+          },
+          "PE-CRSA-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-03-REVIEWED-001",
+            "Content Digest": "sha256:661d78eaa539e5741d525a65353443e876c57a8d8b50a91232ea2b2e70e95ac4"
+          },
+          "PE-CRSA-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-04-OPEN-002",
+            "Content Digest": "sha256:41be1a20073d79332c77e47eb25de4371745ae957077ad1f99ae253a940d3b30"
+          },
+          "PE-CRSA-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-05-REVIEWED-001",
+            "Content Digest": "sha256:f3c4dfc859d3bdc2f8a1a137d1fe2a61ecccf241a87f98c396b6f8685537a102"
+          },
+          "PE-CRSA-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-06-REVIEWED-001",
+            "Content Digest": "sha256:99878b0420474d8d06114b4da11a1c570586ad4feb472b85d23a7550318b3324"
+          },
+          "PE-CRSA-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-07-REVIEWED-001",
+            "Content Digest": "sha256:9049041fa35eefef628735d8e30eee40f3849cf2383c451652091db85cf69fdf"
+          },
+          "PE-CRSA-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-08-OPEN-002",
+            "Content Digest": "sha256:fc6f4288b798b71726488712cbb07051e5bd6386311792c4dbc6e33e684add5a"
+          },
+          "PE-CRSA-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-09-OPEN-002",
+            "Content Digest": "sha256:922272bf977969dee8004c0d90d145c740168a535a5603340c67c76490a4a699"
+          },
+          "PE-CRSA-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-10-REVIEWED-001",
+            "Content Digest": "sha256:de279657b97723fede69f18ef6c14a856fa4c0aba105667b91d7afa779748491"
+          },
+          "PE-CRSA-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-11-REVIEWED-001",
+            "Content Digest": "sha256:ffd04b5d1f8cf408b3ba6106906ba4bdeee659af072895d470063793278f0932"
+          },
+          "PE-CRSA-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-12-REVIEWED-001",
+            "Content Digest": "sha256:5c8d112fd3572efb6cb68b45c8f0a465d238ffd76eb90f6574813b65c66b7fb2"
+          },
+          "PE-CRSA-13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-13-REVIEWED-001",
+            "Content Digest": "sha256:a35e05c0e46fe30c411b27b59cbc48bfc48573ae7b63a6b71fd36e61d8a2e57b"
+          },
+          "PE-CRSA-14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-14-REVIEWED-001",
+            "Content Digest": "sha256:8c7b298dccd9fdcfcf8fb512601bc7319050d7275d082496246d4e881b51151f"
+          },
+          "PE-CRSA-15": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-15-REVIEWED-001",
+            "Content Digest": "sha256:00b4991c11bd1059303fd7383b2212576e71489748081571e36120c592b430f3"
+          },
+          "PE-CRSA-16": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-16-REVIEWED-001",
+            "Content Digest": "sha256:bca89f62c1a34e1d6ef1f4f72beef8d352ea2042f46431a49d7bf8b7826c7546"
+          },
+          "PE-CRSA-17": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRSA-17-REVIEWED-001",
+            "Content Digest": "sha256:188ed9d21dec23cb9fb6cd0560ff4e5df81530eba1e079083006ecb1d41e44cc"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-01-001",
+            "Content Digest": "sha256:b1a00188db64fb601f2e67f42bb039959f5d53b5157fdf6804a265bb1953ee2b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-02-001",
+            "Content Digest": "sha256:9723e482e4e207a24f0be4ee319eb5699545daa6c4728935b0ecfda2228a9577"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-03-001",
+            "Content Digest": "sha256:adde7875597b40961e62bd86390c5eb1645ab9fcc09e11eedd7537783b305a31"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-05-001",
+            "Content Digest": "sha256:691cca75c7a3f7afa194b43447171452cbd7e516657693c424e7a82f86aa45bc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-06-001",
+            "Content Digest": "sha256:443580647a8f54f8b740f2fc7b23f5e60afb8630e6f0f88c2077e502d40897c6"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-07-001",
+            "Content Digest": "sha256:60cea43e9a8b1def628da5881408fae3e18b0e487f28bd353c946be2bee9d223"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-10-001",
+            "Content Digest": "sha256:b73630c9cdb3fcf5634439f5b398b0f642821fd416e76cc8cbae290560c50767"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-11-001",
+            "Content Digest": "sha256:0ff86a6a66c5d7be5d8f87b31284fec2f20382023f2117542b3a2a6e2c3cf4ac"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-12-001",
+            "Content Digest": "sha256:806d09c136365fd9efad897e89176ff8f06e8e2ce56304d2e4da912dd758523d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-13-001",
+            "Content Digest": "sha256:65da35fe4799554b18d0c9aaa2c39e62adab6882fd685e035fc971af6165abf1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-14-001",
+            "Content Digest": "sha256:08a6d176ad6a0cb1c0b41143116c2728b6fac1d591087056eebfdd34fb365360"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-15-001",
+            "Content Digest": "sha256:94308d92ad8878d53d888c71ca4714774a49bf911b1ebc877d24b77a31e338e3"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-16-001",
+            "Content Digest": "sha256:5db20e35801c14849bd05dcc32ac6f3e87863a9fd1b57dad901a7075561dbe35"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRSA-17-001",
+            "Content Digest": "sha256:06f27e73cb433d9f538a72b0c1cd5745ff750f6166c251328263de7e2f9d6fa4"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "CHG-CRSA-001",
+              "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRSA-001",
+              "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

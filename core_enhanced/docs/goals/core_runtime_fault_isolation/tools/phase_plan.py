@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+import json
+from initialize import HERE,artifact,write
+f=json.loads((HERE/'P2G_30_FREEZE_002.json').read_text())['artifacts'][0]
+result=json.loads((HERE/'P2G_30_RESULT_002.json').read_text())
+assert result['All Applicable Change Obligations Resolved']
+def ids(*ns):return [f'PE-CRFI-{n:02}' for n in ns]
+allids=ids(*range(1,13))
+wps=[
+ {'id':'WP-CRFI-CORE','selectors':{'implementation':ids(1,2,3,4,5,6),'supporting':ids(8,9,12)},'boundary':'authoritative CoreApplication fault state, raw typed origin classification, mutation/prepare/rollback/export gate, bounded query and public projection boundary','expected_change':'TD01–04: fixed first-fault capsule outside rollback; query/normal-input exceptions; checked reset Result; normal no-fault API preserved','prerequisite':'closed U02 baseline, exact Freeze002 and RQ01/03/04/05 source owners','validation':'V01–04,V11; actual limit/expression/internal fail and normal rejection contrasts; last root and authoring prefix preserved','unknown':'Rust helper/DTO spelling within reviewed contracts; no new policy meaning or runtime fault injection shortcut'},
+ {'id':'WP-CRFI-HOST','selectors':{'implementation':ids(7,8,9,10),'supporting':ids(2,4,5,6,12)},'boundary':'actual PlayerGameActor/session manual/admin/tick/reconnect/late callback and active/profile writer/stop boundaries','expected_change':'TD05–06: consume Core fault; stop timers/gate management and saved payload writers; reconnect fault status; existing explicit Quit/new-owner/Continue recovery','prerequisite':'WP-CRFI-CORE actual fault query/gate/result shape; existing local-install stores and session authority','validation':'V05–09 actual actor and real release websocket; bytes/no actor-caused writes, two-player progress, recovery success/missing/rejected checkpoint','unknown':'negative live content setup chosen from existing legal runtime-expression fixture; must actually execute failure, not stub production source'},
+ {'id':'WP-CRFI-OBSERVE','selectors':{'implementation':ids(11),'supporting':ids(2,3,4,12)},'boundary':'SessionObserver terminal current-state clear plus existing worker active/selected lifecycle','expected_change':'TD07: no fake commit, keep failed attempt summary and bounded lease; current/selected cleanup independent of collector','prerequisite':'WP-CRFI-CORE actual first-fault transition; exact U02 attempt/commit/lifecycle contract','validation':'V10 failed work/first reason retained, commit unchanged, active/selected clears; off/on/collector-failure gameplay/fault parity','unknown':'no exporter dependency/version/config/label changes planned; inherited bounded storage evidence applicability checked against actual delta'},
+ {'id':'WP-CRFI-VERIFY','selectors':{'implementation':ids(12),'validation_only':ids(*range(1,12))},'boundary':'final single-goal integrated source, durable negative public fixtures, source-bound regression/currentness and independent audit target','expected_change':'TD08: own V01–12 fixtures/probes, all100 predecessor decisions/31 R06 mapping, original failure receipts, exact reversible before/after target and independent Astra High audit','prerequisite':'AG-CRFI-RUNTIME completely integrated; no partial Core-only or host-only completion; unchanged U02 preimplementation baseline accepted','validation':'all12 acceptances/all12 seams/10 applicable dimensions and inherited impact; full appropriate Core/host matrix + actual public host; actual fuzz0 restoration and stable target','unknown':'actual test/cost/output values measured in GEX; R05 warning/OBS001/20min exclusion preserved, no arbitrary threshold'}]
+edges=[('CORE','HOST','producer_consumer','host must consume the actual authoritative fault query/gate before re-entry/store handling can be valid'),('CORE','OBSERVE','transaction','observer terminal update must occur at the actual first-fault transition rather than inferred error strings'),('CORE','VERIFY','validation','Core and public origin/gate contracts must be implemented before terminal tests'),('HOST','VERIFY','validation','actual session/store/recovery paths required for end-to-end acceptance'),('OBSERVE','VERIFY','validation','actual terminal observation needed for off/on and inherited lifecycle evidence')]
+phase='PHASE-CRFI-01';ag='AG-CRFI-RUNTIME'
+plan=artifact('Phase Plan','PP-CRFI-001',{'Bound Final Policy Freeze Ref':f['ref'],'Exact Prerequisite Composite Basis':result['current_basis'],'Applicable P2G-40 Obligation Key Set':[],'P2G-40 Resolution Record Ref Set':[],'Applicable Obligation Supersession Record Ref Set':[],'Goal Structure Fact':'single_phase','Parallelization':'none approved','work_packages':wps,'dependencies':[{'from':'WP-CRFI-'+a,'to':'WP-CRFI-'+b,'type':t,'evidence':why,'broken':'Ignoring this edge leaves '+why} for a,b,t,why in edges],'atomic_groups':[{'id':ag,'members':[w['id'] for w in wps[:3]],'evidence':'Minimum complete fault-lifetime cutover: Core owns terminal state, host owns reachable tick/reconnect/store gates, observation owns the required end cleanup. Publishing any alone leaves a resume/write/stale-current path. This is one implementation delivery unit, not a new cross-thread gameplay transaction.'}],'standalone':['WP-CRFI-VERIFY'],'cyclic_sccs':[],'phases':[{'id':phase,'primary':allids,'supporting':[],'nodes':[ag,'WP-CRFI-VERIFY'],'exit':'Core/host/store/observation terminal paths complete together, real public negative/recovery evidence and all predecessor applicability recorded; independent GEX20 Complete/High on exact target'}],'audits':[{'phase':phase,'state':'one authoritative bounded Core fault per live application; actual host consumes it without gameplay resume or actor-caused persistence; explicit new owner consumes existing valid checkpoint','checks':'single authority, root/first-fault rollback separation, typed normal/query/postcommit exclusion, live consumer/writer closure, no save migration/deletion or unapproved fallback, other-player isolation and observer cleanup','evidence':'V01–12, 100 predecessor conditions +31 R06 mappings,10 dimensions and actual public headless host; independent currentness/restoration audit','limitation':'U04 normal result/save policy and visual error UI are later owners; full Run rollback/restart guarantee and whole-process kill excluded'}],'integration':[{'id':f'IVA-CRFI-V{n:02}','source':f'CODE_REVIEW_001.ko.md V{n:02}; exact frozen PE acceptance mapping in review','disposition':'assigned_execution_node','nodes':['WP-CRFI-VERIFY'],'phases':[phase],'locator':f'execution/single_goal/COVERAGE.json V{n:02}','evidence':'actual nonzero Core/public/host execution appropriate to seam; exact source/config/input/seed/toolchain/raw exit/expected-vs-actual; preserved negative receipts','prerequisite':'AG-CRFI-RUNTIME integrated final source'} for n in range(1,13)],'Known Unknown/Limitations':'Actual implementation output measurements and fixture parameters remain WP-owned GEX work. No inaccessible required source, unowned seam, remote/Unity claim, whole Run rollback or new gameplay cap.','Resolved Upstream Correction':{'Change/Declaration basis':f['payload']['Applicable Change/Obligation Basis'],'P2G30 Resolution Ref Set':result['P2G-30 Resolution Record Ref Set'],'all_active_leaves_resolved':True}})
+write('P2G_40_PHASE_PLAN_001.json',{'artifacts':[plan],'validation_receipt_ref':{'Artifact Type':'Phase Plan Validation Receipt','Artifact ID':'PVR-CRFI-001','Content Digest':None},'validator_method_version':'p2g40-receipt-validator/1.2.0'})
+write('P2G_40_DESIGN_001.ko.md','''# U03 단일 완료 단계 설계
+
+Bound Freeze: `FPF-CRFI-002`. Exact basis와 selector는 [Phase Plan](P2G_40_PHASE_PLAN_001.json)이 소유한다.
+Repair Basis: 형식 교정 O10/O20/O30 모두 해소; P2G-40 obligation/resolution/supersession은 explicit empty.
+Parallelization: none approved. 구현 에이전트를 추가하지 않고 주 작업자가 순차 구현한다.
+
+| Work Package | 책임 | 소비/완료 경계 |
+| --- | --- | --- |
+| CORE | 최초 typed fault·root 외부 수명·공개 gate/조회 | HOST와 OBSERVE가 실제 API를 소비 |
+| HOST | tick/명령/재접속·실제 writer·명시적 기존 복구 | 다른 player 진행과 원본 저장을 함께 검증 |
+| OBSERVE | 오류 종료의 current/selected 정리·실패 통계 보존 | fake commit 없이 기존 collector로 관측 |
+| VERIFY | V01–12·100 선행 조건·실제 release host·감사 target | final source의 수락 조건별 증거와 독립 감사 |
+
+CORE/HOST/OBSERVE는 `AG-CRFI-RUNTIME` 한 최소 전환 단위다. Core만 먼저 완료라 하면 host timer/저장 우회가,
+host만 막으면 공개 embedding 우회가, 관측만 남기면 종료 집계 누수가 생긴다. 내부 순서는 CORE→HOST 및
+CORE→OBSERVE이고 verification은 세 구현을 함께 소비한다. 같은 Phase의 부분 Work Package 완료는
+외부에 독립 release로 게시하지 않는다. 이 결합은 동일 transaction을 서버 전체에 확장한다는 뜻이 아니다.
+
+`PHASE-CRFI-01`은12요소의 유일 primary owner며 AG와 VERIFY 두 final node를 포함한다.
+단계 직후 단일 Core authority·정상 거절/조회/commit 경계·live transport·save bytes·기존 Quit/Continue·
+세션 격리·bounded 관측이 모두 유효해야 한다. 새 저장 schema/migration/fallback은 없고 독립 감사 전
+U04 종속 구현을 시작하지 않는다. P2G-50에 전달하는 구조 사실은 `single_phase`다.
+
+12개 validation seam은 모두 VERIFY에 명시적으로 배정했다. 독립 감사자에게 아직 없는 fixture 구현을
+넘기지 않는다. 실제 failure 입력/실행 측정은 GEX 내부 owner가 만들고 nonzero 결과와 한계를 남긴다.
+표준 receipt는 selector/graph/cardinality만 검증하며 이 경계의 의미적 판단을 대체하지 않는다.
+''')
+print('P2G40 candidate:4 WPs, one3-member atomic group,2 final nodes,1 Phase,12 owned seams; standard validation pending')

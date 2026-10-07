@@ -1,5 +1,8 @@
 # Skill Fragment System
 
+> 과거 설계 자료. 아래 Endless·파편 강화 설명을 현재 정책으로 사용하지 않는다.
+> 최신 기준은 [게임 룰북](../game_rulebook.md)과 [장비·파편 규칙](../game_rules/equipment-and-fragments.md)이다.
+
 ## Purpose
 
 이 문서는 스킬 파편의 게임 내 의미, 획득 구조, 장착/발동 방향, 그리고 특수 보스 격리 보상으로서의 정책을 정의한다.
@@ -34,7 +37,7 @@
 
 이때 “보스 클리어”는 단순 처치가 아니라 해당 존재를 격리하는 데 성공했다는 의미로 본다. 스킬 파편은 그 격리된 힘을 안전하지 않은 방식으로 빌려 쓰는 장치다.
 
-보스 연동 파편은 `game_rulebook.md`의 끝없는 탐사 모드 정책 위에서 다음 구조를 권장한다.
+보스 연동 파편은 `archive/game_rulebook_legacy_2026-10-04.md`의 끝없는 탐사 모드 정책 위에서 다음 구조를 권장한다.
 
 1. 끝없는 탐사 모드에서 범용 `BossOmen` 정책에 따라 특정 보스 계열 징조 source가 등장한다.
 2. 징조 source는 새 node로 추가되지 않고, live RON의 `source_kind`에 맞는 기존 Floor node 위에 덧씌워진다.
@@ -217,7 +220,7 @@ Inventory/fragment state:
 
 ## Related Documents
 
-- `docs/game_rulebook.md`
+- `docs/archive/game_rulebook_legacy_2026-10-04.md`
 - `docs/skill_target_contract.md`
 - `docs/skills/lobotomy_content_catalog.md`
 - `docs/skills/abnormality_skill_design_notes.ko.md`

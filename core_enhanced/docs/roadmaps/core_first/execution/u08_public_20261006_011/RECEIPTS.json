@@ -1,0 +1,128 @@
+[
+  {
+    "label": "relic_carrier_numeric_rebind_fmt001",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carrier_numeric_rebind_fmt001.json",
+    "receipt_sha256": "c3f297d3c6ad9b7c40fad5a65849bb98515eb05a3679188f69caaea69bbb66a9",
+    "source": "bc2f0de2e470a64826fb02fbe8a28aab91eeae0086b65016a48c4cd59dda9fa4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 2.1538826409960166,
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "test_results": []
+  },
+  {
+    "label": "relic_rebind_private001",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_private001.json",
+    "receipt_sha256": "d3578ee0350852d122ee1d21631f2df38d91e88702a308a71760bcc9569bd0fd",
+    "source": "8864263873f56605a2316c6a4aaa8482ff3f92e994d886376283b719de4ce0d6",
+    "source_unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 59.40913303400157,
+    "raw_sha256": "e8a6840d6fe610427b00338f0e199e7a259a72eb0f8afe7045ff6899272c9159",
+    "test_results": [
+      "test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1868 filtered out; finished in 1.04s"
+    ]
+  },
+  {
+    "label": "relic_rebind_private002",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_private002.json",
+    "receipt_sha256": "8c32dd57a1fea57e70117454e0d8edd40d75186931c4d2beb046b60f7a98fa50",
+    "source": "f45721d82f6451825d75f26234fbbb663cb04c507e57ab6fd91ace98a0a61412",
+    "source_unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 45.13152773794718,
+    "raw_sha256": "cd6f94a1b8980e1f8e3c89331b024c5be5f0e2800a559aebbe2244ab876aed60",
+    "test_results": [
+      "test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 1868 filtered out; finished in 1.06s"
+    ]
+  },
+  {
+    "label": "relic_rebind_private003",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_private003.json",
+    "receipt_sha256": "784780ad27f56a29cba265d471924e884cfad34de1c6bc94fe41cf7875ff6004",
+    "source": "ceb76f9603fe587b70af5477f931db89a2bb629e2ab7b01558ac5488f8a2c2f0",
+    "source_unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 17.708395528956316,
+    "raw_sha256": "8861e509fdfb2dc3cb64f3d458d2869ddfc28056ff0336f710d6e981821e53e2",
+    "test_results": []
+  },
+  {
+    "label": "relic_rebind_private004",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_private004.json",
+    "receipt_sha256": "62ff3bcb1c09dea937f437bf90cda580b6b601b812b2f6d72f6fe35cbc80793b",
+    "source": "939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 50.689448235032614,
+    "raw_sha256": "b0241377c1832801a88777b5739a2e87a3c7438cf587e879b7532ba2492eea5e",
+    "test_results": [
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1868 filtered out; finished in 1.00s"
+    ]
+  },
+  {
+    "label": "relic_carriers_stage2002",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_stage2002.json",
+    "receipt_sha256": "1f8855832f765ba1010d7eb0cd61d4349b2b92b9441ba2fd47539cb470ab4c01",
+    "source": "939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 9.163527610013261,
+    "raw_sha256": "e307973affecdb12d4abea4d6eb47020e294b3186656f1dbe08add53d7e71f98",
+    "test_results": [
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1865 filtered out; finished in 6.11s"
+    ]
+  },
+  {
+    "label": "relic_rebind_related001",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_related001.json",
+    "receipt_sha256": "29a5025da8b676a3d9139bb875eb155f08170b0875d71b895e2051f5e5acd17d",
+    "source": "939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 10.591569646960124,
+    "raw_sha256": "0876996f438c58a1430cdda111c95d622d9a66b5cac1c1ea99ff9b8673ef6702",
+    "test_results": [
+      "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 1858 filtered out; finished in 7.14s"
+    ]
+  },
+  {
+    "label": "relic_rebind_resource_projectile001",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_resource_projectile001.json",
+    "receipt_sha256": "ae79b9a4d7841be374611bdf8a1504d459f70e118e087a842e7b8991b3e1eb1f",
+    "source": "939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 3.110247220029123,
+    "raw_sha256": "98648f28a6d498aa1b2c11414a054b10d4c68430703de7b935bb97f8b3f087a6",
+    "test_results": [
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1870 filtered out; finished in 0.00s"
+    ]
+  },
+  {
+    "label": "relic_rebind_resource_projectile002",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_resource_projectile002.json",
+    "receipt_sha256": "e45e6b662b721baa63e77ee4ac52413cbdd33d6e390c65066b4c9ec41f10e3ca",
+    "source": "939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 7.3827053109998815,
+    "raw_sha256": "0632a52342ed4fc79423d61ef3e27b3b1a16337a321621b7eac46eb8fc656b30",
+    "test_results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1869 filtered out; finished in 4.33s"
+    ]
+  },
+  {
+    "label": "relic_rebind_resource_fixed001",
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_rebind_resource_fixed001.json",
+    "receipt_sha256": "b759ec789dd8b1514b4a4c4b6ce02dc611ac142917d27030e1a3579efad0d961",
+    "source": "939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 10.25442882697098,
+    "raw_sha256": "519f06932e09e829400583dfb83e77d432529ff4a68d3050556d5c7040e31a6e",
+    "test_results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1869 filtered out; finished in 7.14s"
+    ]
+  }
+]

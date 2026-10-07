@@ -40,6 +40,7 @@ pub(crate) fn employee_combat_profile_for_battle(
     let mut profile = employee.skill_fragments.apply_to_profile(
         skill_fragments,
         fragment_inventory,
+        employee.uuid,
         &employee.combat_profile.battle_profile,
     )?;
     apply_consumable_battle_profile_effects(employee, &mut profile);
@@ -58,6 +59,7 @@ pub(crate) fn employee_combat_profile_for_certified_power(
     employee.skill_fragments.apply_to_profile(
         skill_fragments,
         fragment_inventory,
+        employee.uuid,
         &employee.combat_profile.battle_profile,
     )
 }
@@ -97,7 +99,9 @@ pub(crate) fn effective_stats_for_draft(
     } else if base_current_health == 0 {
         0
     } else {
-        let scaled = base_current_health.saturating_mul(stats.max_health) / base_max_health;
+        let scaled = (u128::from(base_current_health) * u128::from(stats.max_health)
+            / u128::from(base_max_health))
+        .min(u128::from(u32::MAX)) as u32;
         scaled.max(1).min(stats.max_health)
     };
 
@@ -121,6 +125,48 @@ fn persistent_stats_for_draft_profile(
 ) -> Result<crate::game::stats::UnitStats, GameError> {
     let mut stats = base_profile.stats;
 
+    // Only the selected weapon contributes base numbers. Behavioral profile
+    // application does not add these values, so rebuilding cannot accumulate.
+    if let Some(weapon) = &base_profile.weapon_profile {
+        stats.attack = stats.attack.checked_add(weapon.attack).ok_or_else(|| {
+            GameError::InvalidStaticData("weapon Attack contribution overflowed".into())
+        })?;
+        stats.spell_power = stats
+            .spell_power
+            .checked_add(weapon.spell_power)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData("weapon SpellPower contribution overflowed".into())
+            })?;
+    }
+
+    let mut bound_copies = std::collections::BTreeMap::new();
+    for binding in &draft.equipped_items {
+        if let Some(copy) = binding.persistent_copy_uuid {
+            if bound_copies.insert(copy, binding.base_uuid).is_some() {
+                return Err(GameError::InvalidStaticData(
+                    "duplicate equipped copy binding".into(),
+                ));
+            }
+        }
+    }
+    let mut enhancements = std::collections::BTreeMap::new();
+    for enhancement in &draft.equipped_item_enhancements {
+        let Some(copy) = enhancement.persistent_copy_uuid else {
+            return Err(GameError::InvalidStaticData(
+                "enhancement requires an exact copy".into(),
+            ));
+        };
+        if bound_copies.get(&copy) != Some(&enhancement.base_uuid)
+            || enhancements
+                .insert(copy, enhancement.enhancement_level)
+                .is_some()
+        {
+            return Err(GameError::InvalidStaticData(
+                "enhancement copy binding mismatch or duplicate".into(),
+            ));
+        }
+    }
+
     for (stat_id, value) in &draft.growth_stacks.stacks {
         match stat_id {
             GrowthId::KillStack => {
@@ -129,10 +175,10 @@ fn persistent_stats_for_draft_profile(
         }
     }
 
-    for item_uuid in &draft.equipped_items {
+    for binding in &draft.equipped_items {
         let origin_item = game_data
             .equipment_data
-            .get_by_uuid(item_uuid)
+            .get_by_uuid(&binding.base_uuid)
             .ok_or(GameError::MissingResource(""))?;
 
         stats
@@ -145,12 +191,10 @@ fn persistent_stats_for_draft_profile(
                 other => other,
             })?;
 
-        let enhancement_level: u32 = draft
-            .equipped_item_enhancements
-            .iter()
-            .filter(|enhancement| enhancement.base_uuid == *item_uuid)
-            .map(|enhancement| u32::from(enhancement.enhancement_level))
-            .sum();
+        let enhancement_level = binding
+            .persistent_copy_uuid
+            .and_then(|copy| enhancements.get(&copy).copied())
+            .unwrap_or(0);
         if enhancement_level > 0 {
             if let Some(recipe) = game_data
                 .equipment_data
@@ -173,9 +217,18 @@ fn apply_draft_stat_scale(
     stats: &mut crate::game::stats::UnitStats,
     scale: crate::game::battle::types::BattleUnitStatScale,
 ) {
-    stats.max_health = percent_amount_ceil(stats.max_health, scale.max_health_percent);
+    stats.set_max_health(percent_amount_ceil(
+        stats.max_health,
+        scale.max_health_percent,
+    ));
     stats.attack = percent_amount_ceil(stats.attack, scale.attack_percent);
     stats.defense = scale_i32_percent_ceil(stats.defense, scale.defense_percent);
+    if let Some(exact) = scale.exact_override {
+        stats.set_max_health(exact.max_health);
+        stats.attack = exact.attack;
+        stats.defense = exact.defense;
+        stats.magic_resist = exact.magic_resistance;
+    }
 }
 
 fn scale_i32_percent_ceil(value: i32, percent: u32) -> i32 {
@@ -222,6 +275,7 @@ fn apply_consumable_battle_profile_effects(employee: &Employee, profile: &mut Un
 
 #[cfg(test)]
 mod tests {
+    mod r06_stats;
     use std::collections::HashMap;
     use uuid::Uuid;
 
@@ -361,7 +415,12 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks,
-            equipped_items: vec![weapon_uuid],
+            equipment_layout: None,
+            equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+                base_uuid: weapon_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
             equipped_item_enhancements: vec![],
             employee_start_condition: None,
         };
@@ -391,8 +450,10 @@ mod tests {
                 max_health_percent: 150,
                 attack_percent: 125,
                 defense_percent: 150,
+                exact_override: None,
             },
             growth_stacks: GrowthStack::new(),
+            equipment_layout: None,
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
             employee_start_condition: None,
@@ -405,6 +466,40 @@ mod tests {
         assert_eq!(stats.attack, 13);
         assert_eq!(stats.defense, 5);
         assert_eq!(stats.magic_resist, 0);
+    }
+
+    #[test]
+    fn authored_stage_three_scale_saturates_stats_and_preserves_full_health() {
+        let mut profile = UnitCombatProfile::employee_default();
+        profile.stats =
+            crate::game::stats::UnitStats::with_values(u32::MAX, u32::MAX, u32::MAX, -3, 1_000);
+        let draft = BattleUnitDraft {
+            owned_uuid: Uuid::from_u128(0x207),
+            source: BattleUnitSource::TestFixture {
+                base_uuid: Uuid::from_u128(0x208),
+                profile,
+            },
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            level: Tier::I,
+            stat_scale: crate::game::battle::types::BattleUnitStatScale {
+                max_health_percent: 207,
+                attack_percent: 182,
+                defense_percent: 182,
+                exact_override: None,
+            },
+            growth_stacks: GrowthStack::new(),
+            equipment_layout: None,
+            equipped_items: vec![],
+            equipped_item_enhancements: vec![],
+            employee_start_condition: None,
+        };
+
+        let stats = effective_stats_for_draft(&draft, &GameDataBuilder::empty().build()).unwrap();
+
+        assert_eq!(stats.max_health, i32::MAX as u32);
+        assert_eq!(stats.current_health, i32::MAX as u32);
+        assert_eq!(stats.attack, u32::MAX);
+        assert_eq!(stats.defense, -6);
     }
 
     #[test]
@@ -428,7 +523,12 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
-            equipped_items: vec![weapon_uuid],
+            equipment_layout: None,
+            equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+                base_uuid: weapon_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
             equipped_item_enhancements: vec![],
             employee_start_condition: Some(
                 crate::game::battle::types::EmployeeBattleStartCondition {
@@ -484,7 +584,12 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
-            equipped_items: vec![weapon_uuid],
+            equipment_layout: None,
+            equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+                base_uuid: weapon_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
             equipped_item_enhancements: vec![],
             employee_start_condition: Some(
                 crate::game::battle::types::EmployeeBattleStartCondition {

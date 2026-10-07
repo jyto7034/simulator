@@ -1,0 +1,2241 @@
+{
+  "source": "git status --porcelain=v1 --untracked-files=normal; target membership plus exact archived baseline chain",
+  "rows": [
+    {
+      "status": " M",
+      "path": "Cargo.lock",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/.cargo/config.toml",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/Cargo.toml",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/docs/README.md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/docs/engineering_workflow.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/docs/game_design_overview.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/docs/goal_completion_review_guide.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/docs/probe_registry.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/docs/skill_target_contract.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/docs/skills/abnormality_skill_design_notes.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/docs/skills/lobotomy_content_catalog.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/bin/generate_event_contract_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/bin/generate_inventory_contract_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/bin/generate_research_delivery_contract_fixture.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/bin/generate_shop_contract_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/ability.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/abnormality_research.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/battlefield/field.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/battlefield/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/cooldown.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/basic_attack.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/build.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/ids.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/engine.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/planner.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/steering.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/projectile_math.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/spatial.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/target_usefulness.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/targeting.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/triggers.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/death.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/enums.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/result_stats.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/tile_range.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/attacks.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/auto_attack.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/autocast.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/battlefield.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/buffs.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/deaths.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/focus.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/mod.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/parent.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/spawns.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/state.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/types.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/unit_stats.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/battle/validation/validator.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/behavior.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/boss_omen.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_power.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_preview/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_preview/types.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_preview/validation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/defense_object.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/mission_policy.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/combat_setup/scenario_groups.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/abnormality_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/boss_omen_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/consumable_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/corroded_employee_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/corroded_wave_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/employee_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/equipment_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/event_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/pve_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/reward_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/run_policy_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/shop_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/skill_fragment_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/validation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/visual_novel_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/employee.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/growth.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/map/facility.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/map/facility_generator.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/map/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/map/progression.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/map/types.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/monolith.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/game/pve_bonus_objectives.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/range_preview.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/recruitment.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/resources/inventory.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/resources/item_slot.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/resources/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/resources/selection.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/resources/state.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/reward.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/reward_policy.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/skill_fragment.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/stats.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/visual_novel.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/wave_resolution.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/action_capability.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/admin.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/admin/commands.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/admin/fixtures.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/admin/grants.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/admin/tests.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/battle_capability.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/combat_trace.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/event_node.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/facility.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/headquarters.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/helpers.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/maintenance.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/map_content.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/map_encounters.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/reward.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/shop.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/snapshot.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/state.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/equipment.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/facility.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/map_flow.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/node_sessions.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/game/world/visual_novel_triggers.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/src/lib.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/src/main.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/common/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/live_item_skill_activation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/live_skill_catalog_audit.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/ron_loading.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/skill_runtime_contract.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/skill_test/common/query.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/skill_test/common/scenario.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "core_enhanced/tests/skill_test/common/types.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "core_enhanced/tests/test_actor/mod.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/abnormalities/base.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/boss_omen/chains.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/bundle.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/consumables/base.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/employees/definitions.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/enemies/corroded_employees.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/equipments/base.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/events/rewards/base.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/map/facility_templates.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/map/node_assignment_profiles.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/pve/encounters.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/run/policy.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/skill_fragments/base.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_resources/data/skills/base.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/Cargo.toml",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/config/development.toml",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/config/production.toml",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/docs/unity_bridge_protocol.md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/examples/generate_action_capability_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/examples/generate_battle_revision_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/examples/generate_employee_profile_contract_fixture.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/env.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/load_balance_actor/handlers.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/load_balance_actor/messages.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/load_balance_actor/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/player_game_actor/messages.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/player_game_actor/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/player_game_actor/session.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/game/player_game_actor/state.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/lib.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/main.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/persistence/active_run_store.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": " D",
+      "path": "game_server/src/persistence/encounter_compendium_store.rs",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": " M",
+      "path": "game_server/src/persistence/mod.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": ".cache/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "config/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/core_enhanced/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/BATTLE_SHOWCASE.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/architecture/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/archive/game_rulebook_next_2026-09-10.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/archive/goal_execution_pipeline.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/archive/policy_to_goal_pipeline.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/audit/current_runtime_architecture_deep_review_criteria.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/audit/current_runtime_structural_integrity_audit_criteria.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/decisions/defense_route_tactical_command_policy_2026-08-06.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/decisions/game_rulebook_next_expedition_2026-09-27.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/decisions/game_rulebook_next_recovery_2026-09-27.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/decisions/game_rulebook_next_restructure_2026-09-26.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/game_intro_ppt_brief.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/game_rulebook_next.md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/game_rules_next/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_implementation_readiness_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_00_execution_preflight/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_01_battle_lifecycle_correctness/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_02_catalog_and_typed_setup/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_03_runtime_kernel_and_target_movement/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_04_track_and_rejoin_vertical_slice/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_05_live_reference_boss/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/boss_runtime_v1_implementation_master_phase_07_completion_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/conditional_wave_and_boss_summon_contract_alignment_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/conditional_wave_and_boss_summon_policy/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_fragment_copies/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_r13_r16_runtime/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_final_catalog_consolidation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_master/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_00_surface_inventory/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_01_live_data_loading_and_validation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_02_run_map_and_persistence/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_03_roster_inventory_and_economy/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_04_interactive_node_and_visual_novel/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_05_combat_preview_and_setup/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_06_battle_lifecycle_and_result/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_07_battle_spatial_and_tactical/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_08_battle_effects_and_stats/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_09_battle_targeting_and_delivery/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_audit_phase_10_command_projection_and_server_seam/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_final_catalog_consolidation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_master/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_00_current_tree_delta_inventory/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_01_live_data_loading_and_publication/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_02_run_map_and_persistence/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_03_roster_inventory_and_economy/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_04_interactive_node_and_visual_novel/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_05_combat_preview_setup_and_boss_publication/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_06_battle_lifecycle_result_and_boss_scheduling/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_07_battle_spatial_tactical_and_boss_movement/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_08_battle_effects_stats_and_boss_leaf_seams/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_09_battle_targeting_delivery_and_projectiles/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_post_boss_runtime_reaudit_phase_10_command_projection_server_and_boss_boundary/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_master/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_01_p09_c08/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_02_f_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_03_p02_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_04_p03_c02/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_05_p04_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_06_p05_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_07_p06_c05/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_08_p07_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_09_p07_c02/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_10_p08_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_11_p08_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_12_p08_c02/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_13_p08_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_14_p09_c02/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_15_p09_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_16_p09_c06/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_17_p09_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_18_p09_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_19_p01_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_20_p02_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_21_p02_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_22_p03_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_23_p03_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_24_p04_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_25_f_c02/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_26_p04_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_27_p05_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_28_p08_c05/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_29_p09_c05/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_30_p10_c01/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_31_p10_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_32_p10_c05/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_33_p10_c02/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_34_p10_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_35_p10_c07/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_36_p05_c05/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_37_p06_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_38_p08_c06/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_39_p07_c03/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_40_p07_c04/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_41_p06_c06/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_42_p06_c07/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_43_p09_c07/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_enhanced_refactoring_rebaselined_backlog_implementation_phase_44_p10_c06/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/core_runtime_safety_observability/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/current_runtime_architecture_deep_review/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/current_runtime_audit_consolidation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/current_runtime_structural_integrity_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/current_runtime_transaction_kernel_foundation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_master/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_00_policy_baseline/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_01_withdraw_redeploy_lifecycle/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_02_hard_cc_silence_capability/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_03_tactical_resource_authority/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_04_weapon_tactical_contract/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_05_stance_tile_effects/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_06_relocation_occupancy/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_07_atomic_swap/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_08_manual_skill_targeting/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/defense_route_tactical_command_phase_09_field_work_integration/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_full_runtime_alignment_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_master/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_01_monolith_tuning/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_02_encounter_progression_v4/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_03_fixed_standard_and_profile/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_master_phase_04_mastered_elite_sweep/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_preflight/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_readiness_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/game_rulebook_runtime_alignment_audit/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/grant_experience_per_recipient_policy_implementation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/policy_to_implementation_manual_consolidation/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/policy_to_implementation_manual_r4_correction/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/policy_to_implementation_manual_state_machine_correction/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/goals/project_architecture_map/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/plans/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/project_map.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/reviews/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/roadmaps/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/skills/abnormality_design_notes.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "\"core_enhanced/docs/skills/\\353\\247\\210\\355\\203\\204\\353\\240\\210\\355\\215\\274\\353\\237\\260\\354\\212\\244.jpg\"",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/templates/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/tmp/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/tools/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/docs/ui-layout/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/evidence/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/application.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/application/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/authoring/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/bin/author_content.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/bin/consume_content_pack.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/bin/package_official_content.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/ability/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/amount_observation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/authoring_observation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/boss_action_cancellation_tests.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/boss_action_tests.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/field_work.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/resource_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/sustained.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/tactical_relocation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/tactical_swap.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/tests/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/battle/stat_pipeline/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/combat_setup/boss_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/data/content_pack/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/encounter_progression.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/resource/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/skill_fragment/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/value_expr/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/active_run/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/application.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/authoring_lifecycle.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/authoring_observation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/grant_state.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/resource_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/tests/content_generation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/tests/r07_copies.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/owned_collections.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/runtime_observation.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/runtime_safety.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/src/runtime_safety/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/tests/author_content_cli_arguments.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/tests/battle_showcase.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/tests/fixtures/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "core_enhanced/tools/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "exports/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_resources/data/boss_runtime/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_resources/data/resources/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_resources/data/summoned_units/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_server/config/observability.ron",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "game_server/config/observability/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_server/examples/observe_runtime.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "game_server/logs/app.log.2026-08-09",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_server/src/bootstrap.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "game_server/src/observability/",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "game_server/src/test_support.rs",
+      "attribution": "explicit Master member; captured pre-audit dirty/untracked kind"
+    },
+    {
+      "status": "??",
+      "path": "package-lock.json",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    },
+    {
+      "status": "??",
+      "path": "package.json",
+      "attribution": "existing unrelated/outside-target tree or summarized untracked directory; not an audit mutation"
+    }
+  ],
+  "limitations": "Normal untracked output summarizes directories. Exact source/record/reference files are separately freshly enumerated and checked. Preexisting deleted tracked paths stay absent; no checkout/reset/commit/cleanup was performed. Audit output is an explicit exclusion."
+}

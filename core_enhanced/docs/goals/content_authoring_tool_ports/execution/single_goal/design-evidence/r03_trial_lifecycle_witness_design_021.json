@@ -1,0 +1,653 @@
+{
+  "report_id": "R03-TRIAL-LIFECYCLE-WITNESS-DESIGN-021",
+  "role": "bounded read-only source design helper; not completion auditor",
+  "root_sole_production_writer": true,
+  "scope": {
+    "requested": "Actual trial readiness, observed elapsed and terminal-before-active-removal fixed candidate witness",
+    "excluded": [
+      "full optional trace/effect occurrence design",
+      "production/source/docs/Git mutation",
+      "tests/build/runtime execution",
+      "completion verdict"
+    ]
+  },
+  "read_method": "rg bounded discovery then Python Path.read_bytes; numbered UTF-8 slices and SHA256 of same complete bytes; span ends normalized at EOF",
+  "reads": [
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34299,
+      "sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91",
+      "observed_at_utc": "2026-09-10T11:13:32.533305+00:00",
+      "spans": [
+        {
+          "start": 45,
+          "end": 115
+        },
+        {
+          "start": 695,
+          "end": 751
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "bytes": 9657,
+      "sha256": "a13098c116e6db6f2e19f390306b8b8e8915d9b3d03e4d7a425675cef404731b",
+      "observed_at_utc": "2026-09-10T11:13:32.562699+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 220
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129751,
+      "sha256": "c8e2c36f80a7c1f3a407fb661cc42a535b61512a1997e21d0de078a142c8d46b",
+      "observed_at_utc": "2026-09-10T11:13:32.581310+00:00",
+      "spans": [
+        {
+          "start": 400,
+          "end": 432
+        },
+        {
+          "start": 625,
+          "end": 693
+        },
+        {
+          "start": 1210,
+          "end": 1420
+        },
+        {
+          "start": 1421,
+          "end": 1602
+        },
+        {
+          "start": 2780,
+          "end": 2960
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "bytes": 74154,
+      "sha256": "05c7ce0fbd02258e4f34f611e059f0bb8eb6d738947baeced9b425f8f9a11336",
+      "observed_at_utc": "2026-09-10T11:13:32.600885+00:00",
+      "spans": [
+        {
+          "start": 132,
+          "end": 229
+        },
+        {
+          "start": 386,
+          "end": 478
+        },
+        {
+          "start": 521,
+          "end": 615
+        },
+        {
+          "start": 1810,
+          "end": 1940
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "bytes": 22597,
+      "sha256": "2603eb5c2a05b141529f2c570f309b50bfa089771f430a3be959c1c62d474faa",
+      "observed_at_utc": "2026-09-10T11:13:32.635192+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 325
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "bytes": 45262,
+      "sha256": "6e77a86f121fd092c83b68a6021e86a99c2d24d657fd8a7d18247f5c81e54f8e",
+      "observed_at_utc": "2026-09-10T11:13:32.654452+00:00",
+      "spans": [
+        {
+          "start": 775,
+          "end": 803
+        },
+        {
+          "start": 829,
+          "end": 890
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "bytes": 10733,
+      "sha256": "e5ad247acbcf9d4f9939712f426c1305acc87989ad3a11e9c53dc0dc32aeadcc",
+      "observed_at_utc": "2026-09-10T11:14:20.133082+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 44
+        },
+        {
+          "start": 165,
+          "end": 260
+        },
+        {
+          "start": 260,
+          "end": 293
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "bytes": 62823,
+      "sha256": "7857bb8a1363f928b37a8e168274ee724537fef12b69d8265e5d5a5069075445",
+      "observed_at_utc": "2026-09-10T11:14:20.163773+00:00",
+      "spans": [
+        {
+          "start": 775,
+          "end": 812
+        },
+        {
+          "start": 1240,
+          "end": 1310
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/event_node.rs",
+      "bytes": 35513,
+      "sha256": "9ad3df59233e9f30989a14c29ac6a42edc35d1a39024cdd4938475c148f03f7a",
+      "observed_at_utc": "2026-09-10T11:14:20.175564+00:00",
+      "spans": [
+        {
+          "start": 329,
+          "end": 390
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34299,
+      "sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91",
+      "observed_at_utc": "2026-09-10T11:14:20.201343+00:00",
+      "spans": [
+        {
+          "start": 759,
+          "end": 779
+        },
+        {
+          "start": 269,
+          "end": 385
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "bytes": 74154,
+      "sha256": "05c7ce0fbd02258e4f34f611e059f0bb8eb6d738947baeced9b425f8f9a11336",
+      "observed_at_utc": "2026-09-10T11:14:20.239425+00:00",
+      "spans": [
+        {
+          "start": 815,
+          "end": 842
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129751,
+      "sha256": "c8e2c36f80a7c1f3a407fb661cc42a535b61512a1997e21d0de078a142c8d46b",
+      "observed_at_utc": "2026-09-10T11:14:20.265603+00:00",
+      "spans": [
+        {
+          "start": 1598,
+          "end": 1648
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 131437,
+      "sha256": "9e3a3ef70179d302be10b8d6f0ca7873885cd448ac629e893505f6856b35f5b4",
+      "observed_at_utc": "2026-09-10T11:14:20.276079+00:00",
+      "spans": [
+        {
+          "start": 38,
+          "end": 99
+        },
+        {
+          "start": 1660,
+          "end": 1736
+        },
+        {
+          "start": 1815,
+          "end": 1888
+        },
+        {
+          "start": 1958,
+          "end": 2020
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "bytes": 18499,
+      "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252",
+      "observed_at_utc": "2026-09-10T11:16:20.277076+00:00",
+      "spans": [
+        {
+          "start": 110,
+          "end": 140
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_50_GOAL_SET_001.ko.md",
+      "bytes": 33683,
+      "sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "observed_at_utc": "2026-09-10T11:16:20.320145+00:00",
+      "spans": [
+        {
+          "start": 54,
+          "end": 72
+        },
+        {
+          "start": 96,
+          "end": 104
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "bytes": 4285,
+      "sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d",
+      "observed_at_utc": "2026-09-10T11:16:20.336351+00:00",
+      "spans": [
+        {
+          "start": 1,
+          "end": 103
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "bytes": 37802,
+      "sha256": "4e8c235f337de94ad59c10f6927d1769e58d6416e8d8d63b785ffaddf328fbea",
+      "observed_at_utc": "2026-09-10T11:16:20.358508+00:00",
+      "spans": [
+        {
+          "start": 18,
+          "end": 91
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "bytes": 34299,
+      "sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91",
+      "observed_at_utc": "2026-09-10T11:16:20.380206+00:00",
+      "spans": [
+        {
+          "start": 418,
+          "end": 464
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/action_capability.rs",
+      "bytes": 28249,
+      "sha256": "10dab9e64a4e5d93a0a0e7d79b9f5421678bdc1985df812ed3f6f8f6981bf2dd",
+      "observed_at_utc": "2026-09-10T11:16:20.408149+00:00",
+      "spans": [
+        {
+          "start": 136,
+          "end": 169
+        },
+        {
+          "start": 249,
+          "end": 267
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "bytes": 62823,
+      "sha256": "7857bb8a1363f928b37a8e168274ee724537fef12b69d8265e5d5a5069075445",
+      "observed_at_utc": "2026-09-10T11:16:20.433633+00:00",
+      "spans": [
+        {
+          "start": 600,
+          "end": 661
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "bytes": 21661,
+      "sha256": "1a15e8bdd7618572950ddc69ad25b5cda674eebfecd0f544010abb3477b2fed8",
+      "observed_at_utc": "2026-09-10T11:17:02.496389+00:00",
+      "spans": [
+        {
+          "start": 193,
+          "end": 255
+        },
+        {
+          "start": 308,
+          "end": 359
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/scenario.rs",
+      "bytes": 29210,
+      "sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "observed_at_utc": "2026-09-10T11:17:02.535931+00:00",
+      "spans": [
+        {
+          "start": 15,
+          "end": 55
+        },
+        {
+          "start": 437,
+          "end": 455
+        },
+        {
+          "start": 520,
+          "end": 545
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "bytes": 22597,
+      "sha256": "2603eb5c2a05b141529f2c570f309b50bfa089771f430a3be959c1c62d474faa",
+      "observed_at_utc": "2026-09-10T11:17:02.553662+00:00",
+      "spans": [
+        {
+          "start": 317,
+          "end": 382
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "bytes": 131437,
+      "sha256": "9e3a3ef70179d302be10b8d6f0ca7873885cd448ac629e893505f6856b35f5b4",
+      "observed_at_utc": "2026-09-10T11:18:57.958227+00:00",
+      "spans": [
+        {
+          "start": 1295,
+          "end": 1347
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "bytes": 56409,
+      "sha256": "49ddbf7545b8939ab4ae2b3cd42a87e1b42fbe97c7dbdfec67201daf33b63619",
+      "observed_at_utc": "2026-09-10T11:18:57.983040+00:00",
+      "spans": [
+        {
+          "start": 814,
+          "end": 832
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/helpers.rs",
+      "bytes": 24820,
+      "sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22",
+      "observed_at_utc": "2026-09-10T11:19:27.691949+00:00",
+      "spans": [
+        {
+          "start": 544,
+          "end": 580
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "bytes": 18104,
+      "sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6",
+      "observed_at_utc": "2026-09-10T11:19:27.708965+00:00",
+      "spans": [
+        {
+          "start": 285,
+          "end": 332
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "bytes": 129751,
+      "sha256": "c8e2c36f80a7c1f3a407fb661cc42a535b61512a1997e21d0de078a142c8d46b",
+      "observed_at_utc": "2026-09-10T11:19:27.738643+00:00",
+      "spans": [
+        {
+          "start": 1780,
+          "end": 1861
+        }
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "bytes": 18104,
+      "sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6",
+      "observed_at_utc": "2026-09-10T11:19:42.892518+00:00",
+      "spans": [
+        {
+          "start": 211,
+          "end": 285
+        }
+      ]
+    }
+  ],
+  "close_rehash": {
+    "observed_at_utc": "2026-09-10T11:20:22.119655+00:00",
+    "sources": [
+      {
+        "path": "core_enhanced/src/game/world.rs",
+        "bytes": 34299,
+        "sha256": "496b24ed05866ffc88baebaa0f7076ad46569af7b3386b7727d43bc922b72a91"
+      },
+      {
+        "path": "core_enhanced/src/game/world/application.rs",
+        "bytes": 9657,
+        "sha256": "a13098c116e6db6f2e19f390306b8b8e8915d9b3d03e4d7a425675cef404731b"
+      },
+      {
+        "path": "core_enhanced/src/game/world/combat.rs",
+        "bytes": 129751,
+        "sha256": "c8e2c36f80a7c1f3a407fb661cc42a535b61512a1997e21d0de078a142c8d46b"
+      },
+      {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "bytes": 74154,
+        "sha256": "05c7ce0fbd02258e4f34f611e059f0bb8eb6d738947baeced9b425f8f9a11336"
+      },
+      {
+        "path": "core_enhanced/src/authoring/trial.rs",
+        "bytes": 22597,
+        "sha256": "137623967c802c2819ff861722630e18260c0a8e3c62cdfa2db65d01786d35c3"
+      },
+      {
+        "path": "core_enhanced/src/application.rs",
+        "bytes": 45262,
+        "sha256": "6e77a86f121fd092c83b68a6021e86a99c2d24d657fd8a7d18247f5c81e54f8e"
+      },
+      {
+        "path": "core_enhanced/src/game/world/active_run.rs",
+        "bytes": 10733,
+        "sha256": "e5ad247acbcf9d4f9939712f426c1305acc87989ad3a11e9c53dc0dc32aeadcc"
+      },
+      {
+        "path": "core_enhanced/src/game/world/node_flow.rs",
+        "bytes": 62823,
+        "sha256": "7857bb8a1363f928b37a8e168274ee724537fef12b69d8265e5d5a5069075445"
+      },
+      {
+        "path": "core_enhanced/src/game/world/event_node.rs",
+        "bytes": 35513,
+        "sha256": "9ad3df59233e9f30989a14c29ac6a42edc35d1a39024cdd4938475c148f03f7a"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "bytes": 131437,
+        "sha256": "9e3a3ef70179d302be10b8d6f0ca7873885cd448ac629e893505f6856b35f5b4"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+        "bytes": 18499,
+        "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_50_GOAL_SET_001.ko.md",
+        "bytes": 33683,
+        "sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98"
+      },
+      {
+        "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+        "bytes": 4285,
+        "sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/types.rs",
+        "bytes": 37802,
+        "sha256": "4e8c235f337de94ad59c10f6927d1769e58d6416e8d8d63b785ffaddf328fbea"
+      },
+      {
+        "path": "core_enhanced/src/game/world/action_capability.rs",
+        "bytes": 28249,
+        "sha256": "10dab9e64a4e5d93a0a0e7d79b9f5421678bdc1985df812ed3f6f8f6981bf2dd"
+      },
+      {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "bytes": 21661,
+        "sha256": "1a15e8bdd7618572950ddc69ad25b5cda674eebfecd0f544010abb3477b2fed8"
+      },
+      {
+        "path": "core_enhanced/src/authoring/scenario.rs",
+        "bytes": 29210,
+        "sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/event_log.rs",
+        "bytes": 56409,
+        "sha256": "49ddbf7545b8939ab4ae2b3cd42a87e1b42fbe97c7dbdfec67201daf33b63619"
+      },
+      {
+        "path": "core_enhanced/src/game/world/helpers.rs",
+        "bytes": 24820,
+        "sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22"
+      },
+      {
+        "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+        "bytes": 18104,
+        "sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6"
+      }
+    ]
+  },
+  "drift": [
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "bytes": 22597,
+      "sha256": "137623967c802c2819ff861722630e18260c0a8e3c62cdfa2db65d01786d35c3",
+      "reviewed_close_version": false,
+      "read_versions": [
+        "2603eb5c2a05b141529f2c570f309b50bfa089771f430a3be959c1c62d474faa"
+      ]
+    }
+  ],
+  "design": [
+    {
+      "id": "O01",
+      "recommendation": "Fixed optional Copy sidecar on GameCore; ordinary constructor disabled; private fresh authoring constructor and copied private accessor only.",
+      "sources": [
+        "world.rs:50-61,99-109",
+        "application.rs:786-800"
+      ]
+    },
+    {
+      "id": "T01",
+      "recommendation": "Begin actual entry before real zero advance; complete only after actual zero advance returns success; retain terminal across active removal.",
+      "sources": [
+        "world/combat.rs:636-689,1393-1406,1454-1568"
+      ]
+    },
+    {
+      "id": "T02",
+      "recommendation": "Checked producer entry ordinal independent of gameplay UUID rewind and logs; explicit timezero/terminal/exit evidence, no fabricated readiness counter.",
+      "sources": [
+        "world/state.rs:579-594,460-463",
+        "managers/uuid_manager.rs:38-42,90-92"
+      ]
+    },
+    {
+      "id": "A01",
+      "recommendation": "Checked actual pre/post delta and cumulative total; TrialState actual cap check and receipt projection before encode_receipt.",
+      "sources": [
+        "world/combat.rs:1479-1522",
+        "world/state.rs:827-840",
+        "authoring/scenario.rs:520-534",
+        "authoring/trial.rs:317-364"
+      ]
+    },
+    {
+      "id": "R01",
+      "recommendation": "PreparedApplicationCommit explicitly carries sidecar; nonbattle inner transaction restores paired fixed snapshot on Err; gameplay rewind does not rewind tool counters.",
+      "sources": [
+        "world/application.rs:128-134,172-220",
+        "world/node_flow.rs:784-803",
+        "world/state.rs:388-470,541-595"
+      ]
+    }
+  ],
+  "required_exit_seams": [
+    {
+      "symbol": "handle_retreat_battle",
+      "source": "world/combat.rs:2794-2832",
+      "disposition": "Retreated; preserve elapsed; no restored old witness"
+    },
+    {
+      "symbol": "handle_complete_combat_result / return_to_node_confirm_for_combat_retry",
+      "source": "world/combat.rs:2835-2876",
+      "disposition": "Close eligibility after successful result consumption/retry preparation within rollback owner"
+    },
+    {
+      "symbol": "fail_run_with_reasons / commit_run_failure",
+      "source": "world/combat.rs:1259-1295",
+      "disposition": "Explicit run exit; preserve genuine terminal, avoid duplicate exit counters"
+    },
+    {
+      "symbol": "handle_start_new_game / handle_abandon_run",
+      "source": "world.rs:720-749,762-772",
+      "disposition": "Close old entry; preserve session counters"
+    },
+    {
+      "symbol": "restore_run_checkpoint_payload",
+      "source": "world/node_flow.rs:1281-1287",
+      "disposition": "Explicit checkpoint exit outside serialized gameplay payload"
+    },
+    {
+      "symbol": "ActiveRunTransactionRollback",
+      "source": "world/active_run.rs:20-25,170-216",
+      "disposition": "cfg(test) paired witness transaction capture/restore"
+    },
+    {
+      "symbol": "with_staged_tactical_world_mutation / mastered sweep pristine assignment",
+      "source": "world/combat.rs:1822-1854; world/mastered_elite_sweep.rs:211-329",
+      "disposition": "Preserve unchanged sidecar; no lifecycle producer in these surveyed mutations"
+    }
+  ],
+  "future_dependency": "Producer-time bounded source capture and terminal capsule while active survives, after final event production; serde-skipped and release-omitted source cannot be reconstructed from fixed witness; optional trace remains gap-only.",
+  "executed_tests": [],
+  "production_writes": [],
+  "report_files": [
+    "/tmp/r03_trial_lifecycle_witness_design_021.md",
+    "/tmp/r03_trial_lifecycle_witness_design_021.json"
+  ]
+}

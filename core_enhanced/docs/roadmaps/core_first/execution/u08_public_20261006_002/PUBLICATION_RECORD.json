@@ -1,0 +1,24 @@
+{
+  "created_at_utc": "2026-10-06T04:31:42.419459+00:00",
+  "purpose": "A focused evidence and B/C ownership continuation; planner documents only",
+  "verified_boundary_source_sha256": "6076ed935e7e99fe26db51bb2bcbc883bdfe6ee63832ef118473d95d41827af1",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md",
+      "before_sha256": "cef792771d63320ca84b9609c731d93c776af493c9ff58e255715be35c2e5afa",
+      "after_sha256": "20b5dcf5f863e3cbf8ff4c5e156a6b1c95b36b131a4e507d795df4438979688d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before_sha256": "f12bd493a9334a12b50eba7f03f541877419a66268e731f09e8de4ec96bca9e8",
+      "after_sha256": "d85dd4ea5558ea4dcb8676057aabc385e201184d8195b7717f27836024bd7b73"
+    }
+  ],
+  "artifacts": {
+    "DOCUMENTS.diff": "d4e0d78093e6b03cf30794958b53e8a49b04207cb75716d9cd94a3bf6ed535cc",
+    "DOCUMENTS_BEFORE.tar.gz": "c9790275094bfeba9c1aad2a7ce8993d57791f1a75b01bc28fbd4ecc504367b2",
+    "EVIDENCE.json": "1ecb5f52a12813a7d7613960ea709027474c25e253dba99de51d8b1bbd6686dd",
+    "RECORD.ko.md": "56ec16766128880d85d7106c253786f01b4af11ca9e01e01b8236f6fa4279a5f"
+  },
+  "handoff_latest_unchanged_sha256": "6d65752fbbc3384a37d5f17a97b7e2c133a607a45581f42651cef30ae3cc2d22"
+}

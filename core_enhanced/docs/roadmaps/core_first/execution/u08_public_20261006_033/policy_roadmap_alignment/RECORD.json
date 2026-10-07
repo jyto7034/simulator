@@ -1,0 +1,93 @@
+{
+  "schema": "U08_POLICY_INTAKE_ROADMAP_ALIGNMENT",
+  "created_at_utc": "2026-10-06T15:22:47.091689+00:00",
+  "actor": "root planning/docs",
+  "before": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_033/policy_roadmap_alignment/ROADMAP_BEFORE.ko.md",
+    "bytes": 314555,
+    "sha256": "8d33dc1358b2fc0a7324f4dabc189fb1ace68b58ce43ebfc2952c42dd2e60a21"
+  },
+  "after_snapshot": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_033/policy_roadmap_alignment/ROADMAP_AFTER.ko.md",
+    "bytes": 315214,
+    "sha256": "31612d139940aee2cbda651a256d1201ec1bf629ceac6360702ae799d20ef765"
+  },
+  "current_roadmap_at_edit": {
+    "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+    "bytes": 315214,
+    "sha256": "31612d139940aee2cbda651a256d1201ec1bf629ceac6360702ae799d20ef765"
+  },
+  "diff": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_033/policy_roadmap_alignment/change.diff",
+    "bytes": 19507,
+    "sha256": "7837bad9657af62c673efba6fb47d9c23bb23f2d17e25983a0632a6137f7633b"
+  },
+  "policy_basis": [
+    {
+      "path": "core_enhanced/docs/game_rules/relic-reward-nodes.md",
+      "bytes": 30544,
+      "sha256": "5fe756b8dd65b0a35077e29c573ceef4094167a21fe3ca8966184de8efa357ee"
+    },
+    {
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "bytes": 27370,
+      "sha256": "5ec3bd472c6d7c3657c990add0f966818d0e8d68b9c257fa69530c1f27d303ff"
+    }
+  ],
+  "frozen_u08_scope": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/P2G_50_GOAL_SET.ko.md",
+    "bytes": 20813,
+    "sha256": "3c46e1ec17c30e0a8f6289e929d3a97e1f088446c9cb907f15c988636dd95d64"
+  },
+  "changes": [
+    [
+      "도박형 딜러의 포인트 담보·압수·고가 재판매는",
+      "도박형 딜러의 포인트 담보·회수·포기와 상환 불가 시 사본 제거·빚 소멸은"
+    ],
+    [
+      "[2026-10-06 보상 노드]",
+      "[2026-10-07 보상 노드]"
+    ],
+    [
+      "딜러 포인트/담보/재판매",
+      "딜러 포인트/담보 회수·포기/사본 제거·빚 소멸"
+    ],
+    [
+      "담보 대출/상환/포기·압수 사본 고가 재판매",
+      "담보 대출/상환/포기·포기 또는 상환 불가 시 사본 제거·빚 소멸"
+    ],
+    [
+      "라운드 사이 교체/교대/재배치/소비품·다음 보상 공개",
+      "라운드 사이 전투 시간 정지·계속 방어 또는 보상 받고 철수만 선택·다음 보상 공개"
+    ],
+    [
+      "떠나기 전 담보별 회수/포기·다음 조우부터 압수 재판매",
+      "떠나기 전 담보별 회수/포기·포기 또는 상환 불가 시 사본 제거·빚 소멸"
+    ],
+    [
+      "일반 유물 구매와 명시된 딜러 담보/압수 재판매는 허용한다.",
+      "일반 유물 구매와 명시된 딜러 담보 대출·회수·포기는 허용한다."
+    ],
+    [
+      "담보 잠금/상환/포기/압수 재판매와 사본 보존",
+      "담보 잠금/상환 시 원래 사본·변형 보존/포기 또는 상환 불가 시 사본 제거·빚 소멸"
+    ],
+    [
+      "라운드 사이 허용 행동/전투 기록 유지",
+      "라운드 사이 계속 방어·보상 받고 철수만 허용/전투 기록 유지"
+    ],
+    [
+      "같은 만남 압수 재구매 거절/딜러 재조우 비보장 안내/다음 조우 재고 보존",
+      "담보 제거·빚 소멸의 동시 복원/재접속에 의한 무상 반환 거절"
+    ]
+  ],
+  "scope": "Reconcile U16 planning card and its two requirement summaries with current policy; retain U08 boundary and all external/user policy bytes. No product/test/execution changes.",
+  "future_owners": {
+    "activities": "U16",
+    "map_placement": "U13",
+    "screen": "U26-B"
+  },
+  "policy_implemented": false,
+  "independent_completion": false,
+  "canonical_config_rule": "Mutable roadmap remains outside canonical_documents; this immutable snapshot may support policy delta review."
+}

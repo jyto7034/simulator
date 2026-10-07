@@ -1,0 +1,344 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSA-005",
+    "Content Digest": "sha256:2b202bfd70840d4fbc3c60915d8021e6f8b68e06390ba8ecbb5bf9eb9754a6ec"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSA-006",
+    "Content Digest": "sha256:e22c3273e5b20175874521d9fbb211783127976d576be0e6030a809200f60c07"
+  },
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CRSA-002",
+    "Content Digest": "sha256:86a1ff453530fc6d07341af330a135f955145b06f4e83c6d6eeab6d5112df293"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CRSA-003",
+    "Content Digest": "sha256:748cbefa6b4b7124378c7a3d9545e0d47e4e8c7072558e92d76090b444880a02"
+  },
+  "Source Observation Ref Set": [
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CRSA-RQ01-002",
+      "Content Digest": "sha256:0b30155116d6152654b3865f77135a552678d9c1ed1e96878b8bc461deb4984a"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CRSA-RQ02-002",
+      "Content Digest": "sha256:2c8e2f34d54830389f526576bf3180ab398f730ce03443fc17e20bb8bd4cd795"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CRSA-RQ03-002",
+      "Content Digest": "sha256:ba05f65656c1ba9bbce900dc5d56760e99877b041cb5e4059c0c50492ce2914a"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CRSA-RQ04-002",
+      "Content Digest": "sha256:7d487b554ba6a8cd4300e43dafc2c868ca24f58fe3770b662acceb6198eda61f"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CRSA-RQ05-002",
+      "Content Digest": "sha256:518ec57e5f8807a40dccd683865bd4f185f8b8425a4265f540ffbe8a4c3c8b91"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CRSA-RQ06-002",
+      "Content Digest": "sha256:8d41894637f133854e7e5d0ca67c50cc2bae65c8c69d8c5d2de91155921d57f9"
+    }
+  ],
+  "Code Review Artifact Ref Set": [
+    {
+      "Artifact Type": "Code Review Artifact",
+      "Artifact ID": "CRA-CRSA-002",
+      "Content Digest": "sha256:1315cabd0b95c803ab94a3ace3566834c1d4b51959881af06188d22b11ec2e5d"
+    }
+  ],
+  "Review Evidence Ref Set": [
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CRSA-RQ01-002",
+      "Content Digest": "sha256:62f32131b34d117e1fcec1694b8121692b5f00571d70213ea73c8b7afe86b2dd"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CRSA-RQ02-002",
+      "Content Digest": "sha256:6a6ab0e1e96dee79983e7795850caf3be9e99cabc76bf3005cf85cf731fb554b"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CRSA-RQ03-002",
+      "Content Digest": "sha256:5d1a4a2b86548550ba29b3e1f56869faf2c42e0f5ba049cf8f4995a63e2b976c"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CRSA-RQ04-002",
+      "Content Digest": "sha256:f5efc93e93910c150e1ce937266cf37bb83b46e32ac447a7b4d7849f5838a1ff"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CRSA-RQ05-002",
+      "Content Digest": "sha256:6b972da0557d189594e5516a37734ddf7964cf65cd9bf4676d88f4375d979c9b"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CRSA-RQ06-002",
+      "Content Digest": "sha256:ef956f8250a298fbd1745ca4b7314fa63f657230cabb8a491b6ca7628e20897c"
+    }
+  ],
+  "Reviewed Source Basis Ref": {
+    "Artifact Type": "Reviewed Source Basis",
+    "Artifact ID": "RSB-CRSA-002",
+    "Content Digest": "sha256:f84b6e4ec72c0e8b02347a263fa4a8460b477a5bd630002eb76701c19261ce9c"
+  },
+  "Produced code_reviewed Policy Element Revision Ref Set": [
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-04-REVIEWED-002",
+      "Content Digest": "sha256:7268e84571bc6101ed2cc19719164a2b6ed9bc0a8d3a68c75a7bcae9ebbe20d9"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-08-REVIEWED-002",
+      "Content Digest": "sha256:66c37cc0e0ea5f4f81ea8f68c9a5fa687366efe2531797b52fe606d3a5ec903a"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-09-REVIEWED-002",
+      "Content Digest": "sha256:8111eff65c32f6001fc74e16c0dbf87e13043080f63dde48132e95cbd2ed0ee7"
+    }
+  ],
+  "Result Current code_reviewed Policy Element Revision Ref Set": [
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-01-REVIEWED-001",
+      "Content Digest": "sha256:ca31d4429793a92960a3366e4f156e327d0f4704dab82ad55d306e0de39b382a"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-02-REVIEWED-001",
+      "Content Digest": "sha256:27b2394009f0e9e7646afdf32054a574fa4399937cf6ede0671188242cf70450"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-03-REVIEWED-001",
+      "Content Digest": "sha256:661d78eaa539e5741d525a65353443e876c57a8d8b50a91232ea2b2e70e95ac4"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-04-REVIEWED-002",
+      "Content Digest": "sha256:7268e84571bc6101ed2cc19719164a2b6ed9bc0a8d3a68c75a7bcae9ebbe20d9"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-05-REVIEWED-001",
+      "Content Digest": "sha256:f3c4dfc859d3bdc2f8a1a137d1fe2a61ecccf241a87f98c396b6f8685537a102"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-06-REVIEWED-001",
+      "Content Digest": "sha256:99878b0420474d8d06114b4da11a1c570586ad4feb472b85d23a7550318b3324"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-07-REVIEWED-001",
+      "Content Digest": "sha256:9049041fa35eefef628735d8e30eee40f3849cf2383c451652091db85cf69fdf"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-08-REVIEWED-002",
+      "Content Digest": "sha256:66c37cc0e0ea5f4f81ea8f68c9a5fa687366efe2531797b52fe606d3a5ec903a"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-09-REVIEWED-002",
+      "Content Digest": "sha256:8111eff65c32f6001fc74e16c0dbf87e13043080f63dde48132e95cbd2ed0ee7"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-10-REVIEWED-001",
+      "Content Digest": "sha256:de279657b97723fede69f18ef6c14a856fa4c0aba105667b91d7afa779748491"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-11-REVIEWED-001",
+      "Content Digest": "sha256:ffd04b5d1f8cf408b3ba6106906ba4bdeee659af072895d470063793278f0932"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-12-REVIEWED-001",
+      "Content Digest": "sha256:5c8d112fd3572efb6cb68b45c8f0a465d238ffd76eb90f6574813b65c66b7fb2"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-13-REVIEWED-001",
+      "Content Digest": "sha256:a35e05c0e46fe30c411b27b59cbc48bfc48573ae7b63a6b71fd36e61d8a2e57b"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-14-REVIEWED-001",
+      "Content Digest": "sha256:8c7b298dccd9fdcfcf8fb512601bc7319050d7275d082496246d4e881b51151f"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-15-REVIEWED-001",
+      "Content Digest": "sha256:00b4991c11bd1059303fd7383b2212576e71489748081571e36120c592b430f3"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-16-REVIEWED-001",
+      "Content Digest": "sha256:bca89f62c1a34e1d6ef1f4f72beef8d352ea2042f46431a49d7bf8b7826c7546"
+    },
+    {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRSA-17-REVIEWED-001",
+      "Content Digest": "sha256:188ed9d21dec23cb9fb6cd0560ff4e5df81530eba1e079083006ecb1d41e44cc"
+    }
+  ],
+  "Result-basis Code Review Binding Ref Set": [
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-01-002",
+      "Content Digest": "sha256:bd3203cb9cf9f0a3c2835fa5e55a598ddcfce451456fba90e4818058b3dd55c2"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-02-002",
+      "Content Digest": "sha256:bd4eaa0d75f19b13f901714198e9ffe8f164f48b211d1297dfac6e75879c262a"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-03-002",
+      "Content Digest": "sha256:4e322535df9e35673ca44cb87bceb7a9aec3875c8936b571b042565990b830cc"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-04-002",
+      "Content Digest": "sha256:48999e2e5ee778ccccac89df20e185bc5a5e1fab04d16a1ea0e5668fa4f42ed5"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-05-002",
+      "Content Digest": "sha256:16ff140c998d7af8280115677c708d6379fd57058278a13c110f5248d1c2f23f"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-06-002",
+      "Content Digest": "sha256:980177eaa3a2b453929db681b3b035a3c58ae73ba7a2e669e2cec886e8e993ea"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-07-002",
+      "Content Digest": "sha256:393cbb2a980322cee9f1c4988bcf4463d5acef204c44114e5059f041a28ee032"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-08-002",
+      "Content Digest": "sha256:bc502fb171c8d3e84d9edc7a5a6cccb2cb6169ad954b5613bdf69c16dd609c51"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-09-002",
+      "Content Digest": "sha256:0a565bf1693b22c57ed9c7a31cb6f818ba1fba0235796f88d6b75536e11fd5db"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-10-002",
+      "Content Digest": "sha256:d8a562ad769c8fb028a0b354fa491e32b81c11d7d20055b972556e130b921d45"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-11-002",
+      "Content Digest": "sha256:693433de03b195da750e065e7b71949d07ac3404988bccde197c1090918d7e33"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-12-002",
+      "Content Digest": "sha256:63a959779f643de338d4e6679ab7e6909810e1e9b1e33751d0aa0943323d4c9d"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-13-002",
+      "Content Digest": "sha256:58fecbd8c949ac8dd2dda0be18ef61bddcf32e19ab41e934117f0b424685a365"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-14-002",
+      "Content Digest": "sha256:a71a70e092d0d065fb2c75205fba86edbff7d30de399c960740e8b412d29f128"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-15-002",
+      "Content Digest": "sha256:717a37a516edafcabbbdb8404724f515f5c39ea9370efd78063e3ca337f98635"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-16-002",
+      "Content Digest": "sha256:39af18cd7e8fe1999c59c9cbd81ddeb64434536959f58eb71f397e20fe7ecec7"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CRSA-17-002",
+      "Content Digest": "sha256:1a16df887e42300fe01913a5b9ed3e3eb75d7ff9d9ea6dcdfb2afa0edf39689d"
+    }
+  ],
+  "Result Composite Basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRSA-006",
+      "Content Digest": "sha256:e22c3273e5b20175874521d9fbb211783127976d576be0e6030a809200f60c07"
+    },
+    "Final Policy Freeze Ref": null,
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [
+      {
+        "Artifact Type": "Post-Freeze Change Record",
+        "Artifact ID": "CHG-CRSA-001",
+        "Content Digest": "sha256:2c8c13e91b13f7df16413edede903baa590aa09792413963a2aa3c0793cc696e"
+      }
+    ],
+    "Authoritative Change Obligation Declaration Ref Set": [
+      {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRSA-001",
+        "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+      }
+    ]
+  },
+  "Applicable P2G-20 Obligation Key Set": [
+    {
+      "Container Ref": {
+        "Artifact Type": "Change Obligation Declaration",
+        "Artifact ID": "COD-CRSA-001",
+        "Content Digest": "sha256:64689fa44fe3f6602836305f4a62048a22876740acc70717a7797b9566a688aa"
+      },
+      "Obligation ID": "O20"
+    }
+  ],
+  "P2G-20 Resolution Record Ref Set": [
+    {
+      "Artifact Type": "Resolution Record",
+      "Artifact ID": "RES-CRSA-CHG001-O20-001",
+      "Content Digest": "sha256:645a9c8b505798909ce796e015c6688a54e3097033b3d14ee7ccedd50b6d6f8a"
+    }
+  ],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "checks": {
+    "all17current_bindings": true,
+    "3produced14revalidated": true,
+    "all34acceptance_equal_input": true,
+    "6required_sources_confirmed": true,
+    "cross_refs_exact": true,
+    "source_refs_targeted_verified": 31,
+    "no_product_or_test_execution": true
+  },
+  "next": "O30 successor freeze, then O40/O50/O60; old handoff not execution-current."
+}

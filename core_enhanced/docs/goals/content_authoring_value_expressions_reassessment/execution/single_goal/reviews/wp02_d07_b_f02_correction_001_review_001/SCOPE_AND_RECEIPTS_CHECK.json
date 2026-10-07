@@ -1,0 +1,121 @@
+{
+  "target_sha256": "2eb98e729fe0cc73f8cedebb455c73879a078c1d4989d5120f74b1e502dca0ba",
+  "source_digest": "e431c18332d1336ef4f0c0f7ef062ed7569c49875acf3d8a18e21ca32a456730",
+  "source_count": 341,
+  "changed_paths": [
+    "core_enhanced/src/game/battle/core/sim.rs",
+    "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+    "core_enhanced/src/game/battle/runtime_control.rs"
+  ],
+  "frozen_record_count": 327,
+  "receipts": {
+    "f02_final_001": {
+      "exit_code": 0,
+      "test_passed": 3,
+      "log_sha256": "5ca3eab13c001887fb846bba3c63edbbe8c3787f7f9c032ca12e842f36d94955",
+      "source_before_after_match": true
+    },
+    "check_final_002": {
+      "exit_code": 0,
+      "test_passed": 0,
+      "log_sha256": "05fbec9a92eb6c7c69ba8973c31024d12c398de5559961a8cb0836ffb70cecf4",
+      "source_before_after_match": true
+    },
+    "authoring_final_001": {
+      "exit_code": 0,
+      "test_passed": 112,
+      "log_sha256": "07a7e611415a44adef5432e77940d325f19cb60bbbc8b6e1341d8eb33ebe6990",
+      "source_before_after_match": true
+    },
+    "value_expr_final_001": {
+      "exit_code": 0,
+      "test_passed": 94,
+      "log_sha256": "d0c241e8196cd2eff031c1caa70bc527c5c45d26a4d3ab8f9b3d286ccec55ae3",
+      "source_before_after_match": true
+    },
+    "all_targets_final_001": {
+      "exit_code": 0,
+      "test_passed": 1545,
+      "log_sha256": "10e3919186a47d4adccd6211c9fb74186bd1abed6c2d68411564b87a7028bb25",
+      "source_before_after_match": true
+    },
+    "clippy_final_001": {
+      "exit_code": 0,
+      "test_passed": 0,
+      "log_sha256": "4c7b3b8d25a2255a80828f4c82fedf2cc36294ba6158209b28e96dbad7b1c2e7",
+      "source_before_after_match": true
+    },
+    "format_final_001": {
+      "exit_code": 0,
+      "test_passed": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_before_after_match": true
+    },
+    "pc_build_final_001": {
+      "exit_code": 0,
+      "test_passed": 0,
+      "log_sha256": "81b50bee179377b9111d1f68068aa50e2b79284029ca815261cbbdaf120312ed",
+      "source_before_after_match": true
+    },
+    "r05_build_final_001": {
+      "exit_code": 0,
+      "test_passed": 0,
+      "log_sha256": "ec26e7c62e766450a774c222598fda4c357414bf70ef484e5aa33cb002d32617",
+      "source_before_after_match": true
+    },
+    "pc_final_001": {
+      "exit_code": 0,
+      "test_passed": 1,
+      "log_sha256": "f50507174f2383aff2adf708274f26ae2ebd45e1d4ac99622e251594ab118a7b",
+      "source_before_after_match": true
+    },
+    "r05_final_001": {
+      "exit_code": 101,
+      "test_passed": 0,
+      "log_sha256": "966b737aa663be686733e6dbf8a40d7ab5153c39fa0efc619f28b096819e7b8d",
+      "source_before_after_match": true
+    }
+  },
+  "pc_rows_each": 576,
+  "pc_oracle_differences": {},
+  "pc_excluded_measurement_cost_fields": [
+    "last_expr_usage",
+    "measurement",
+    "native_usage",
+    "retained_extent_at_end",
+    "setup",
+    "total_expr_work"
+  ],
+  "r05_raw_classification": "warning_concurrent_peak_only",
+  "r05": {
+    "event_heavy": {
+      "max_peak": 255558,
+      "max_retained": 255558,
+      "max_operations": 43398,
+      "caps": {
+        "operations": 70671,
+        "retained": 276174,
+        "peak": 276174
+      },
+      "repeatable_and_parity": true
+    },
+    "concurrent_sessions": {
+      "max_peak": 9049037,
+      "max_retained": 4196928,
+      "max_operations": 370928,
+      "caps": {
+        "operations": 389240,
+        "retained": 4196928,
+        "peak": 9030188
+      },
+      "repeatable_and_parity": true
+    }
+  },
+  "focused_recheck": {
+    "exit_code": 0,
+    "passed": 3,
+    "failed": 0,
+    "log_sha256": "4640f7326f564b99766809b1b0082084d64d07017984db6905d142217773612d"
+  },
+  "roadmap_not_frozen": true
+}

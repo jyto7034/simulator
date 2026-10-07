@@ -1,0 +1,109 @@
+VisualNovelDatabase(
+    visual_novels: [
+        VisualNovelDefinition(
+            id: "white_night_confession_intro",
+            entry_scene_id: "start",
+            default_presentation_mode: Cinematic,
+            scenes: [
+                VisualNovelSceneDefinition(
+                    id: "start",
+                    text_kind: Narration,
+                    background: Resource(background_id: "white_night_chapel"),
+                    script_id: "white_night_confession_intro_narration",
+                    speakers: [],
+                    next: Scene(scene_id: "white_night_speaks"),
+                ),
+                VisualNovelSceneDefinition(
+                    id: "white_night_speaks",
+                    text_kind: Dialogue,
+                    background: Resource(background_id: "white_night_chapel"),
+                    script_id: "white_night_confession_intro",
+                    speakers: [
+                        VisualNovelSpeakerDefinition(
+                            speaker_id: "white_night",
+                            portrait_id: Some("white_night_veil"),
+                            position: Center,
+                            active: true,
+                        ),
+                    ],
+                    next: End,
+                ),
+            ],
+        ),
+        VisualNovelDefinition(
+            id: "hq_briefing_standard_intro",
+            entry_scene_id: "start",
+            default_presentation_mode: Cinematic,
+            scenes: [
+                VisualNovelSceneDefinition(
+                    id: "start",
+                    text_kind: Narration,
+                    background: CurrentScreenDimmed,
+                    script_id: "hq_briefing_standard_intro",
+                    speakers: [],
+                    next: End,
+                ),
+            ],
+        ),
+        VisualNovelDefinition(
+            id: "hq_briefing_endless_intro",
+            entry_scene_id: "start",
+            default_presentation_mode: Cinematic,
+            scenes: [
+                VisualNovelSceneDefinition(
+                    id: "start",
+                    text_kind: Narration,
+                    background: CurrentScreenDimmed,
+                    script_id: "hq_briefing_endless_intro",
+                    speakers: [],
+                    next: End,
+                ),
+            ],
+        ),
+        VisualNovelDefinition(
+            id: "monolith_residual_exchange",
+            entry_scene_id: "offer",
+            default_presentation_mode: Cinematic,
+            scenes: [
+                VisualNovelSceneDefinition(
+                    id: "offer",
+                    text_kind: Dialogue,
+                    background: CurrentScreenDimmed,
+                    script_id: "monolith_residual_exchange_offer",
+                    speakers: [
+                        VisualNovelSpeakerDefinition(
+                            speaker_id: "wandering_merchant",
+                            portrait_id: None,
+                            position: Center,
+                            active: true,
+                        ),
+                    ],
+                    next: Choices(choices: [
+                        VisualNovelChoiceDefinition(
+                            id: "accept",
+                            label_id: "monolith_residual_exchange_accept",
+                            preview: (
+                                risk: None,
+                                starts_combat: false,
+                                reward_hint_id: Some("corrupted_monolith"),
+                                penalty_hint_id: Some("consume_four_oldest_residuals"),
+                            ),
+                            next: End,
+                        ),
+                        VisualNovelChoiceDefinition(
+                            id: "decline",
+                            label_id: "monolith_residual_exchange_decline",
+                            preview: (
+                                risk: None,
+                                starts_combat: false,
+                                reward_hint_id: None,
+                                penalty_hint_id: Some("irreversible_decline"),
+                            ),
+                            next: End,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+    ],
+)

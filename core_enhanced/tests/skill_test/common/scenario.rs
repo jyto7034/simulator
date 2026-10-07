@@ -7,10 +7,10 @@ use game_core::{
             scenario::{
                 BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
                 ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
-                ScenarioUnitSpawn, WinCondition,
+                ScenarioUnitSpawn, TerminalCondition, TerminalOutcome,
             },
             tile_range::TileRangePattern,
-            types::{BattleUnitDraft, BattleUnitSource},
+            types::{BattleOutcomeId, BattleUnitDraft, BattleUnitSource, BattleVerdict},
         },
         data::{
             abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef},
@@ -93,7 +93,6 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
             radius_units: 350_000,
         },
         basic_attack: BasicAttackDef {
-            range_units: 1.0,
             defense_tile_range: Some(broad_defense_tile_range()),
             interval_ms: 500,
             windup_ms: 0,
@@ -247,6 +246,7 @@ fn build_game_data_with_units(
         .with_reward_data(Arc::clone(&base.reward_data))
         .with_event_data(Arc::clone(&base.event_data))
         .with_pve_data(Arc::clone(&base.pve_data))
+        .with_boss_runtime_data(Arc::clone(&base.boss_runtime_data))
         .with_boss_omen_data(Arc::clone(&base.boss_omen_data))
         .with_buff_data(Arc::clone(&base.buff_data))
         .with_skill_data(Arc::clone(&base.skill_data))
@@ -279,6 +279,7 @@ fn build_spawn_group(
                     level: Tier::I,
                     stat_scale: Default::default(),
                     growth_stacks: GrowthStack::new(),
+                    equipment_layout: None,
                     equipped_items: vec![],
                     equipped_item_enhancements: vec![],
                     employee_start_condition: None,
@@ -323,6 +324,7 @@ fn build_battle_scenario(
 
     BattleScenario {
         battlefield: BattleFieldSpec {
+            object_placement: None,
             width: crate::common::BOARD_SIZE.0,
             height: crate::common::BOARD_SIZE.1,
             valid_tiles: Vec::new(),
@@ -336,7 +338,6 @@ fn build_battle_scenario(
                 action: ScenarioAction::SpawnGroup {
                     group_id: ScenarioGroupId::new(player_group_id),
                 },
-                once: true,
             },
             ScenarioEvent {
                 id: ScenarioEventId::new("spawn_enemy_initial"),
@@ -344,10 +345,23 @@ fn build_battle_scenario(
                 action: ScenarioAction::SpawnGroup {
                     group_id: ScenarioGroupId::new(enemy_group_id),
                 },
-                once: true,
             },
         ],
-        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        terminal_outcomes: vec![
+            TerminalOutcome {
+                id: BattleOutcomeId::new("victory"),
+                verdict: BattleVerdict::Victory,
+                condition: TerminalCondition::AllRequiredEnemyGroupsDefeated,
+                priority: 0,
+            },
+            TerminalOutcome {
+                id: BattleOutcomeId::new("defeat"),
+                verdict: BattleVerdict::Defeat,
+                condition: TerminalCondition::AllPlayerCombatantsDefeated,
+                priority: 0,
+            },
+        ],
+        boss_runtime: None,
         tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }

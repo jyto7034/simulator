@@ -1,0 +1,17 @@
+{
+  "recorded_at_utc": "2026-10-07T05:23:34.252098+00:00",
+  "frozen": {
+    "path": "core_enhanced/docs/README.md",
+    "sha256": "4b9c4baaf3cd61a886d50eea108cb52cd3def521390973649628a322bbe63c36",
+    "bytes": 17979
+  },
+  "current": {
+    "path": "core_enhanced/docs/README.md",
+    "bytes": 18356,
+    "sha256": "d9036609aaa919bec9991e0531b437a3a82df6fe19538bf07543d2ae73f0f407"
+  },
+  "mtime_utc": "2026-10-07T05:11:37.926318+00:00",
+  "diff_path": "core_enhanced/docs/goals/core_relic_numeric_variants/post_audit/u08_current_012_pass001/README_CURRENTNESS.diff",
+  "product_source_unchanged": true,
+  "finding": "F02"
+}

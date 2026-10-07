@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 use uuid::Uuid;
 
 use crate::game::resources::item_slot::EquippedRef;
@@ -16,6 +19,7 @@ use crate::game::{
         },
         Item,
     },
+    employee::EmployeeRoster,
     enums::RiskLevel,
 };
 
@@ -221,6 +225,29 @@ pub struct Inventory {
     reserved_slot_count: usize,
 }
 
+crate::authoring::clone_shape::struct_shape!(Inventory {
+    equipments,
+    equipment_materials,
+    consumables,
+    reserved_slot_count,
+});
+crate::authoring::clone_shape::struct_shape!(EquipmentInventory { items });
+crate::authoring::clone_shape::struct_shape!(EquipmentMaterialInventory { stacks });
+crate::authoring::clone_shape::struct_shape!(ConsumableInventory { items });
+crate::authoring::clone_shape::struct_shape!(OwnedEquipment {
+    instance_uuid,
+    meta,
+    equipped_to,
+    enhancement_level,
+});
+crate::authoring::clone_shape::struct_shape!(ConsumableStack { meta, quantity });
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum InventoryCheckpointValidationError {
+    Ownership,
+    Stack,
+}
+
 pub const INITIAL_RESERVED_SLOT_COUNT: usize = 50;
 pub const RESERVED_SLOT_GROWTH_INCREMENT: usize = 10;
 
@@ -265,6 +292,67 @@ impl Inventory {
 
     pub fn reserved_slot_count(&self) -> usize {
         self.reserved_slot_count
+    }
+
+    pub(crate) fn validate_checkpoint_state(
+        &self,
+        roster: &EmployeeRoster,
+    ) -> Result<(), InventoryCheckpointValidationError> {
+        if self.reserved_slot_count < INITIAL_RESERVED_SLOT_COUNT
+            || (self.reserved_slot_count - INITIAL_RESERVED_SLOT_COUNT)
+                % RESERVED_SLOT_GROWTH_INCREMENT
+                != 0
+            || self.occupied_slot_count() > self.reserved_slot_count
+            || self
+                .equipment_materials
+                .stacks
+                .iter()
+                .any(|(material_id, amount)| material_id.is_empty() || *amount == 0)
+        {
+            return Err(InventoryCheckpointValidationError::Stack);
+        }
+
+        let mut consumable_uuids = HashSet::new();
+        if self.consumables.items.iter().any(|(definition_id, stack)| {
+            definition_id != &stack.meta.id
+                || stack.quantity == 0
+                || !consumable_uuids.insert(stack.meta.uuid)
+        }) {
+            return Err(InventoryCheckpointValidationError::Stack);
+        }
+
+        let mut slot_owners = HashMap::new();
+        for employee in roster.iter() {
+            if !employee.loadout.item_slot.validate_checkpoint_state() {
+                return Err(InventoryCheckpointValidationError::Ownership);
+            }
+            for equipped in employee.loadout.item_slot.iter() {
+                if slot_owners
+                    .insert(equipped.instance_uuid, employee.uuid)
+                    .is_some()
+                {
+                    return Err(InventoryCheckpointValidationError::Ownership);
+                }
+                let Some(owned) = self.equipments.get_item(&equipped.instance_uuid) else {
+                    return Err(InventoryCheckpointValidationError::Ownership);
+                };
+                if owned.instance_uuid != equipped.instance_uuid
+                    || owned.meta.uuid != equipped.base_uuid
+                    || owned.meta.equipment_type != equipped.equipment_type
+                    || owned.equipped_to != Some(employee.uuid)
+                {
+                    return Err(InventoryCheckpointValidationError::Ownership);
+                }
+            }
+        }
+
+        if !self.equipments.items.iter().all(|(instance_uuid, owned)| {
+            *instance_uuid == owned.instance_uuid
+                && owned.equipped_to == slot_owners.get(instance_uuid).copied()
+        }) {
+            return Err(InventoryCheckpointValidationError::Ownership);
+        }
+        Ok(())
     }
 
     fn reserve_after_new_slot(&self) -> Result<usize, GameError> {
@@ -385,13 +473,13 @@ impl Inventory {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EquipmentMaterialInventory {
-    stacks: HashMap<String, u32>,
+    stacks: crate::owned_collections::OwnedHashMap<String, u32>,
 }
 
 impl EquipmentMaterialInventory {
     pub fn new() -> Self {
         Self {
-            stacks: HashMap::new(),
+            stacks: crate::owned_collections::OwnedHashMap::new(),
         }
     }
 
@@ -436,7 +524,7 @@ impl EquipmentMaterialInventory {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentInventory {
-    items: HashMap<Uuid, OwnedEquipment>,
+    items: crate::owned_collections::OwnedHashMap<Uuid, OwnedEquipment>,
 }
 
 impl Default for EquipmentInventory {
@@ -448,7 +536,7 @@ impl Default for EquipmentInventory {
 impl EquipmentInventory {
     pub fn new() -> Self {
         Self {
-            items: HashMap::new(),
+            items: crate::owned_collections::OwnedHashMap::new(),
         }
     }
 
@@ -515,7 +603,7 @@ impl OwnedEquipment {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConsumableInventory {
-    items: HashMap<String, ConsumableStack>,
+    items: crate::owned_collections::OwnedHashMap<String, ConsumableStack>,
 }
 
 impl Default for ConsumableInventory {
@@ -527,7 +615,7 @@ impl Default for ConsumableInventory {
 impl ConsumableInventory {
     pub fn new() -> Self {
         Self {
-            items: HashMap::new(),
+            items: crate::owned_collections::OwnedHashMap::new(),
         }
     }
 
@@ -683,6 +771,84 @@ mod tests {
             effect: ConsumableEffect::TraumaMitigation { percent: 10 },
             live_pool: true,
         })
+    }
+
+    #[test]
+    fn owned_clone_shape_inventory_preserves_metadata_sharing_and_retained_tables() {
+        use crate::authoring::{
+            clone_shape::CloneShape,
+            control::{self, CancellationToken, CloneMeter, ExecutionLimits, ExecutionPhase},
+        };
+        let measure = |inventory: &Inventory| {
+            control::run(
+                &ExecutionLimits::default(),
+                &CancellationToken::default(),
+                ExecutionPhase::TrialPreparation,
+                || {
+                    let mut meter = CloneMeter::default();
+                    inventory.visit_clone_shape(&mut meter).unwrap();
+                    meter.finish("inventory_storage", "inventory_copy").unwrap();
+                },
+            )
+            .unwrap()
+            .1
+        };
+        let id = Uuid::from_u128(100);
+        let mut inventory = Inventory::new();
+        inventory
+            .add_item_owned(
+                id,
+                Item::Equipment(equipment_meta(1, EquipmentType::Weapon)),
+            )
+            .unwrap();
+        inventory
+            .add_consumable(consumable_meta(2, "tonic"), 1)
+            .unwrap();
+        let before = measure(&inventory);
+        let item = inventory.equipments.items.get_mut(&id).unwrap();
+        Arc::make_mut(&mut item.meta).name = "shared definition".repeat(100_000);
+        assert_eq!(measure(&inventory), before);
+        let cloned = inventory.clone();
+        assert!(Arc::ptr_eq(
+            &inventory.equipments.items.get(&id).unwrap().meta,
+            &cloned.equipments.items.get(&id).unwrap().meta
+        ));
+        assert!(Arc::ptr_eq(
+            &inventory.consumables.items.get("tonic").unwrap().meta,
+            &cloned.consumables.items.get("tonic").unwrap().meta
+        ));
+        assert_eq!(measure(&cloned), before);
+        for index in 0..128 {
+            inventory
+                .equipment_materials
+                .add(&format!("material_{index}"), 1)
+                .unwrap();
+        }
+        inventory.equipment_materials.stacks.clear();
+        let retained = measure(&inventory);
+        assert!(retained.clone_slots_peak > before.clone_slots_peak);
+        let mut copied = false;
+        let failure = control::run(
+            &ExecutionLimits {
+                max_clone_slots: before.clone_slots_peak,
+                ..Default::default()
+            },
+            &CancellationToken::default(),
+            ExecutionPhase::TrialPreparation,
+            || {
+                let mut meter = CloneMeter::default();
+                inventory.visit_clone_shape(&mut meter)?;
+                meter.finish("inventory_storage", "inventory_copy")?;
+                let _candidate = inventory.clone();
+                copied = true;
+                Ok::<_, GameError>(())
+            },
+        )
+        .unwrap_err();
+        assert_eq!(failure.code, "authoring_clone_limit");
+        assert!(!copied);
+        assert_eq!(inventory.equipment_materials.stacks.len(), 0);
+        assert!(inventory.find_item(id).is_some());
     }
 
     #[test]

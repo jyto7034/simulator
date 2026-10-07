@@ -1,0 +1,169 @@
+{
+  "identity": {
+    "contract": {
+      "pack_format": 1,
+      "catalog_schema": 3,
+      "authoring": 1,
+      "execution": 2,
+      "fingerprint": 1
+    },
+    "semantic_sha256": "6bf6cc71379b6b8ce346c6f7545f0430b63935a6ce5dff68f22244d277a194d3"
+  },
+  "definition_source": {
+    "pack_id": "official",
+    "source_file": "official/data/skills/base.ron",
+    "field_path": "skills[0]"
+  },
+  "site": {
+    "action": {
+      "definition_id": "unknown_distortion_strike",
+      "action_id": "strike"
+    },
+    "effect_id": "effect_01"
+  },
+  "target": {
+    "EnemySingle": {
+      "rule": "Nearest"
+    }
+  },
+  "targeting": "ReuseCastTarget",
+  "delivery": "Instant",
+  "effect": {
+    "id": "effect_01",
+    "tags": [],
+    "origin": "Original",
+    "op": {
+      "Damage": {
+        "amount": 60,
+        "damage_type": "Magic"
+      }
+    }
+  },
+  "source": {
+    "source_file": "official/data/skills/base.ron",
+    "site": {
+      "action": {
+        "definition_id": "unknown_distortion_strike",
+        "action_id": "strike"
+      },
+      "effect_id": "effect_01"
+    },
+    "field_path": "skills[0].steps[0].effects[0]",
+    "origin_definition_id": "unknown_distortion_strike",
+    "origin": "Original"
+  },
+  "origin_definition_source": {
+    "pack_id": "official",
+    "source_file": "official/data/skills/base.ron",
+    "field_path": "skills[0]"
+  },
+  "editable_support": {
+    "op": "Damage",
+    "consumer": "skill",
+    "delivery": "Instant",
+    "properties": [
+      {
+        "property": "Amount",
+        "value_type": "NonnegativeI32",
+        "unit": "base damage",
+        "editable": true
+      },
+      {
+        "property": "DamageType",
+        "value_type": "DamageType",
+        "unit": "damage type",
+        "editable": false
+      }
+    ]
+  },
+  "runtime_observation": {
+    "authority": "actual battle mutations, independent of optional event logs and trace",
+    "fact_kinds": [
+      "damage",
+      "heal",
+      "cost",
+      "resource_change",
+      "death"
+    ],
+    "source_slots": [
+      "actor",
+      "equipment",
+      "cast",
+      "authored",
+      "action_ordinal"
+    ],
+    "action_milestones": [
+      "accepted",
+      "released",
+      "control_terminal",
+      "effects_settled"
+    ],
+    "retention": "bounded current actions, aggregates and latest witnesses; no full event history",
+    "availability": "active trial runtime_facts and immutable terminal runtime_facts; unknown source slots are null"
+  },
+  "value_expression": {
+    "representation": "compiled_amount_plan",
+    "kind": "damage",
+    "compiler_version": 1,
+    "provenance": "LegacyDamageLiteral",
+    "moment": "Snapshot",
+    "result_unit": "Magnitude",
+    "source": {
+      "source_file": "official/data/skills/base.ron",
+      "site": {
+        "action": {
+          "definition_id": "unknown_distortion_strike",
+          "action_id": "strike"
+        },
+        "effect_id": "effect_01"
+      },
+      "field_path": "skills[0].steps[0].effects[0]",
+      "origin_definition_id": "unknown_distortion_strike",
+      "origin": "Original"
+    },
+    "semantic_fingerprint": "2d43b2f0fe9675a2b0ad5309aeda5d85e29a64390bd0039fb708d1ccc3e8143c",
+    "requirements": {
+      "references": [],
+      "resolved_targets": false,
+      "owner_grouping": false,
+      "projected_tile_grouping": false,
+      "resolved_owner_relations": [],
+      "resolved_target_predicates": []
+    },
+    "cost": {
+      "nodes": 1,
+      "max_depth": 1,
+      "max_stack": 1,
+      "stack_storage_slots": 1,
+      "max_task_frames": 1,
+      "static_work": 1,
+      "runtime_dynamic_work": false,
+      "worst_case_work": 1,
+      "compile_work": 49,
+      "compile_reserved_bytes": 2318,
+      "plan_retained_bytes": 1382,
+      "authored_members": 0
+    },
+    "segments": [
+      {
+        "index": 0,
+        "ops": [
+          {
+            "PushConst": {
+              "value": {
+                "value": 60,
+                "unit": "Magnitude"
+              },
+              "node_index": 0
+            }
+          }
+        ]
+      }
+    ],
+    "evaluation": {
+      "context": "context_free",
+      "performed": false
+    },
+    "publication": "legacy_supported"
+  }
+}

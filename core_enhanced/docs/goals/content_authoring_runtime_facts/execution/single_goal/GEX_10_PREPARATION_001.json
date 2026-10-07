@@ -1,0 +1,33 @@
+{
+  "at_utc": "2026-09-10T20:23:00.003616+00:00",
+  "goal_set_ref": "GS-CARF-P2G50-002",
+  "goal_id": "GOAL-CARF-01",
+  "handoff_ref": "HOF-CARF-P2G60-002",
+  "design": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/execution/single_goal/DESIGN_001.md",
+    "sha256": "27a3ff48a25b86384073953a23169e47abe8f32f438648d1fbff76437b4f8635"
+  },
+  "readiness": "Detailed representation/producer/consumer/transition/identity/retention/cancel/rollback/native bounds/lifecycle/test-oracle design reviewed before first production mutation",
+  "native_scope_review": "Separate read-only source helper confirmed accepted CRA003P06/Goal002E05/C07/IVA09/new-state commandmap do not require total hard clone bound for arbitrary externally mutated legacypublicunits. Preserve ordinaryClone/closed authoring semantics, bound introducedstate/contribution, measure integrated totalcost. No new ownership/rejectionpolicy needed.",
+  "first_mutation_scope": [
+    "core_enhanced/src/game/battle/types.rs",
+    "core_enhanced/src/game/combat_setup/player_spawns.rs",
+    "core_enhanced/src/game/battle/core/types.rs",
+    "core_enhanced/src/game/battle/core/build.rs",
+    "core_enhanced/src/game/battle/stat_pipeline.rs",
+    "core_enhanced/src/game/battle/core/triggers.rs",
+    "core_enhanced/src/game/battle/core/commands.rs",
+    "core_enhanced/tests/live_item_skill_activation.rs"
+  ],
+  "baseline_all_first_scope_files_exact": true,
+  "independence": "Root sole writer. Planning/source helpers read-only; cannot serve as independent completion auditors for implementation they may later assist. Fresh GEX20 remains required.",
+  "remaining_before_GEX10_completion": [
+    "coordinated production/source/action/state/publiccutover",
+    "meaningful focused/newfixture/core/release tests",
+    "actualnewnativebounds/allocation/latency and predecessorcurrentness",
+    "canonicalcontracts",
+    "stable target then separate freshaudit"
+  ],
+  "implementation_completed": false,
+  "new_runtime_tests": 0
+}

@@ -1,0 +1,315 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CARL-P2G00-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CARL-20260911",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "user request",
+            "Exact Content or Content Reference": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "User-Provided Locator": "current thread adopted AUTORUN request",
+            "User-Stated Constraint": "R00-R24 within adopted scope and conditions; no invented material policy",
+            "Capture Limitation": "None"
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+              "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+              "sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA04.md",
+              "sha256": "87eb06b098b317e4ee63530f5e19a26090f862e66366734cdae109b4026ce953"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA19.md",
+              "sha256": "29fbfc7f1d4965828e03b721fcbbbd00fd68bb88468c8d0f3a5477fa0a311019"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA22.md",
+              "sha256": "1379d6ade1c71e19e8f46cb8609fd955c24f8b9a35f2ebe2dcc4ceb6182a8249"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/02_AUTHORING_AND_COMPILER.ko.md",
+              "sha256": "06b0b50a5a0e1f4ea5b84cd1c1c4fbe193f5318b89b3625dfa76985f95f5f281"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/03_RUNTIME.ko.md",
+              "sha256": "8fbd1950c265bef1353a27573fbb7efd7f84490604f847b69eb76f75a91674ad"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/03_RUNTIME.ko.md",
+              "sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/CONTRACTS.ko.md",
+              "sha256": "b23fec04689e915df729460c6b373a25db433996921f4c9cf825a240afc6f0f1"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+              "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-012",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/POLICY_GATES.ko.md",
+              "sha256": "87365ffc07256f5ee0a47506d6a3430580917b749f9446ba6f32e115f7c87c1a"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-013",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+              "sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-014",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+              "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-015",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_REQUIREMENTS.ko.md",
+              "sha256": "d94bd946d55e65864e824b90519ef0db057a888b5f8a3c7f837affb7d4296441"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          },
+          {
+            "Intake Item ID": "IN-016",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+              "sha256": "a0a0a0c12e67b4241caddd8606c2874249bdbf89cc34ab485ea6636f6cc5424b"
+            },
+            "User-Provided Locator": "adopted AUTORUN and R05 linked references",
+            "User-Stated Constraint": "Separate approved meaning, recommendations, current facts and unresolved policy",
+            "Capture Limitation": "Local exact bytes captured; historical original conversations not independently retrieved"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CARL-P2G00-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CARL-20260911",
+          "Policy Topic": "R05 타입화 자원·owner×lifetime·원자적 소비",
+          "Requested Result": "bounded_pipeline: minimum necessary R05 P2G through P2G-60 Handoff with policy hold boundaries",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"
+          },
+          "Approval Reference": {
+            "locator": "current user-adopted AUTORUN request",
+            "exact_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 R00–R24를 끝까지 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 단계 완료마다 멈추지 말고 정책·권한·안전·실제 자원 한계에서만 멈춰. 필수 미완료를 complete로 표시하지 마.",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+            "boundary": "R05 bounded planning through Handoff; parent separately authorizes eligible exact GEX; unresolved material meanings are held."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "R05 typed resource store with separate owner and Run/Attempt/Deployment/Activation/Delivery/Chain lifetime; reserve/commit/abort, cap/grant/decay and epoch/lease boundaries.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Actual persistent employee/equipment ownership and battle binding, including same-definition distinct copies and deployment-versus-attempt state; no definition-ID substitute for actual copy identity.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Introduced Run state writer/restore/checkpoint/entry/result-delta/source-owner exactly-once application and required failure/retreat/retry/redeployment/stale work tests; AT05 remains indivisible for each implemented family.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Actual directly connected producer/consumer and authoring surface for resource operations; any new RON/schema/opcode requires production parser-validation-compiler-executor and negative fixtures, truthful publication and finite budgets.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "R05 applicable T05/T20/T23/T29, actual current R04 and affected direct/predecessor consumers, state/clone/determinism/cost validation and eventual fresh independent audit. Unresolved families remain incomplete.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "Minimum necessary bounded P2G through R05 Handoff, with material policy question registration and affected-branch hold under AUTORUN. P2G success does not supply GEX execution authority.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Server/Unity/client, external service deployment, RON editor UI, remote publication and global installation/configuration.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unapproved new gameplay/balance/UX/owner-lifetime/data-loss/compatibility choices. Pending family behavior is not decided by defaults, implementation convenience or elapsed time.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "R06-R24 full content implementations outside R05 required producer/consumer/state boundary, including R07 fragment-copy binding and later revival/transform/Flow/relic features; their parent requirements remain outstanding.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "O04",
+              "Approved Disposition": "out",
+              "Statement": "Personal store deletion/automatic conversion, content-name executors, unused kernel or fixture-only false completion, silent success/fallback and fabricated future identities.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            },
+            {
+              "Scope Item ID": "O05",
+              "Approved Disposition": "out",
+              "Statement": "Changes to AUTORUN/P2G/GEX/validators/AGENTS/runner/global settings or authority created by artifacts.",
+              "Exact User Approval Reference": "Approved Metadata and Scope.Approval Reference; adopted AUTORUN sections1/3/5-9 and selected R05 sections1-8/AT05"
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CARL-P2G00-001",
+          "Content Digest": null
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

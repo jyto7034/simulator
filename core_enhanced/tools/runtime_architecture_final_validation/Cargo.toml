@@ -1,0 +1,31 @@
+[package]
+name = "runtime_architecture_final_validation"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[features]
+allocation-observer = []
+
+[dependencies]
+game_core = { path = "../..", features = ["test-fixtures"] }
+libc = "0.2"
+log = "=0.4.33"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+uuid = { version = "1.14.0", features = ["serde"] }
+
+[[bin]]
+name = "p01_exact_replay"
+path = "src/p01_exact_replay.rs"
+
+[[bin]]
+name = "final_performance"
+path = "src/final_performance.rs"
+
+[[bin]]
+name = "public_guards"
+path = "src/public_guards.rs"

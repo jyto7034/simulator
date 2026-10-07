@@ -1,0 +1,20 @@
+{
+  "before_source": "8734111ce349bc36de5534aff831f89ccf8c9034b7e802e120d87cee5d0e248b",
+  "after_source": "380e7408c647444127f818afb1fc722a6d3602b660ecc57b38d9df74ddd89171",
+  "modified": [
+    {
+      "before": {
+        "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+        "sha256": "6c3369e210f26d4e115d960227a7908683d03952a41d4da04490983ddbe9acbe",
+        "bytes": 49190
+      },
+      "after": {
+        "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+        "sha256": "03f99b3971b0bc19f467837548acf03c40ad616a3e23ad93e95483818e70857c",
+        "bytes": 58132
+      }
+    }
+  ],
+  "added": [],
+  "deleted": []
+}

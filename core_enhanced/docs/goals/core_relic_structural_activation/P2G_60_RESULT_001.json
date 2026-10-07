@@ -1,0 +1,49 @@
+{
+  "stage": "P2G-60",
+  "status": "complete",
+  "Handoff Artifact Ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HA-CRSA-001",
+    "Content Digest": "sha256:1c9609c24969fe4acf542e71514b4e903895a71207a652f304a2a2321b2f68dc"
+  },
+  "Result Composite Basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRSA-003",
+      "Content Digest": "sha256:9f81d4ac1874e7c273f4addaafd87664f5d62de4ab997dfd1ab1b5a6b4a2421e"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRSA-001",
+      "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRSA-001",
+      "Content Digest": "sha256:2eafa0278ec9eab0dbb7e8a4175eacdea1957d4d53f55355a338fc4d324fe7d0"
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CRSA-001",
+      "Content Digest": "sha256:737ee86dbba08490929b013b6623fbb934ef21ecd48ec0ecd45d17aa5cf60034"
+    },
+    "Handoff Artifact Ref": {
+      "Artifact Type": "Handoff Artifact",
+      "Artifact ID": "HA-CRSA-001",
+      "Content Digest": "sha256:1c9609c24969fe4acf542e71514b4e903895a71207a652f304a2a2321b2f68dc"
+    },
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "P2G-60 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "checks": {
+    "exact_current_prerequisite_chain": true,
+    "17_policy_to_primary_phase_to_one_goal": true,
+    "goal_authored_not_activated_not_authorized": true,
+    "remaining_detail_limits_preserved": true,
+    "no_production_mutation_or_runtime_execution_in_P2G": true,
+    "no_applicable_change_or_obligation": true
+  },
+  "next": "GEX-00 under separate current continuous user authorization"
+}

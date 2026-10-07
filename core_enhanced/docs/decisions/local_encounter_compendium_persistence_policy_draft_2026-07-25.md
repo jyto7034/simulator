@@ -7,7 +7,7 @@
 - 문서 등급: 구현 이력·정책 근거 문서
 - 분리 출처:
   [save_point_trauma_recovery_policy_draft_2026-07-25.md](save_point_trauma_recovery_policy_draft_2026-07-25.md)
-- 주의: 현재 runtime, host persistence와 wire의 source of truth는 `game_rulebook.md`,
+- 주의: 현재 runtime, host persistence와 wire의 source of truth는 `archive/game_rulebook_legacy_2026-10-04.md`,
   `core_runtime_contract.md`, `data_loading_contract.md`, game_server bridge 문서와 외부 Unity canonical이다.
   이 문서는 P02가 구현한 승인 정책의 역사적 입력으로 유지한다.
 
@@ -31,7 +31,7 @@ Standard/Endless와 모든 run이 같은 도감을 공유하며 server transport
 - 저장 실패 후 in-memory 유지, dirty retry와 사용자 알림
 - 명시적 전체 초기화와 cloud/account 비목표
 
-실제 조우 ID의 발견·격파 eligibility는 `game_rulebook.md`와
+실제 조우 ID의 발견·격파 eligibility는 `archive/game_rulebook_legacy_2026-10-04.md`와
 [elite_monolith_remanifestation_compendium_policy_draft_2026-07-26.md](elite_monolith_remanifestation_compendium_policy_draft_2026-07-26.md)가
 소유한다. 이 문서는 두 상태가 commit된 뒤 local profile에 보존하고 복구하는 방법을 소유한다.
 
@@ -150,7 +150,7 @@ busy retry하지 않는다. 정상 종료는 dirty profile의 bounded flush를 �
 
 독립 goal에서 최소 다음 표면을 함께 감사하고 갱신한다.
 
-- `game_rulebook.md`: 영구 환상체·침식 도감의 persistence 의미와 checkpoint 경계
+- `archive/game_rulebook_legacy_2026-10-04.md`: 영구 환상체·침식 도감의 persistence 의미와 checkpoint 경계
 - `core_runtime_contract.md`: 발견/격파 commit, Core injection/projection과 run rollback 경계
 - Core compendium discovered/defeated state, result commit, authored placeholder와 snapshot projection
 - host/game server의 versioned local profile bootstrap, atomic write와 rolling backup
@@ -203,5 +203,5 @@ save는 별도 제품 정책이 필요한 후속 범위다.
 
 정책 검토 결과 이 문서가 소유하는 local persistence·복구 경계에는 추가 사용자 결정이 없다. 실제
 전투에서 어떤 ID를 `discovered`/`defeated`로 commit할지는 이 문서가 임의로 정하지 않고
-`game_rulebook.md`와 모노리스·도감 gameplay 정책의 검토 결과를 따른다. 구현 감사에서 이 문서의
+`archive/game_rulebook_legacy_2026-10-04.md`와 모노리스·도감 gameplay 정책의 검토 결과를 따른다. 구현 감사에서 이 문서의
 persistence 의미를 바꿔야만 해결할 수 있는 충돌이 확인될 때만 사용자 결정을 다시 요청한다.

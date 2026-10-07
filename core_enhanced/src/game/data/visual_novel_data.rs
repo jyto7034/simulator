@@ -172,6 +172,14 @@ pub struct VisualNovelDatabase {
 }
 
 impl VisualNovelDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(visual_novels: Vec<VisualNovelDefinition>) -> Self {
+        Self {
+            visual_novels,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(visual_novels: Vec<VisualNovelDefinition>) -> Self {
         let by_id = once_lock_with(build_string_index(
             &visual_novels,

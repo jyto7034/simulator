@@ -9,6 +9,7 @@ use game_core::game::ability::{
     StepTargetingMode, UnitTargetRule,
 };
 use game_core::game::battle::buffs::BuffId;
+use game_core::game::battle::core::movement::types::WorldVec2;
 use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::enums::BattleEvent;
 use game_core::game::battle::event_log::{
@@ -18,10 +19,12 @@ use game_core::game::battle::event_log::{
 use game_core::game::battle::scenario::{
     BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
     ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
-    WinCondition,
+    TerminalCondition, TerminalOutcome,
 };
 use game_core::game::battle::tile_range::{FacingDirection, TileRangePattern};
-use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
+use game_core::game::battle::types::{
+    BattleOutcomeId, BattleUnitDraft, BattleUnitSource, BattleVerdict,
+};
 use game_core::game::data::{
     abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
     skill_data::SkillDatabase,
@@ -39,6 +42,162 @@ fn debug_event_log_exports_are_quarantined_under_target() {
     assert!(path.ends_with("target/debug_event_log_exports"));
 }
 
+#[test]
+fn authored_literal_ron_executes_recomposed_definitions_with_exact_effect_sources() {
+    use game_core::game::ability::authoring::{
+        ActionSite, EffectOrigin, EffectProperty, EffectSite,
+    };
+    let fixture = include_str!("fixtures/content_authoring/literal_effects.ron");
+    for definition in ["authoring_alpha", "authoring_beta"] {
+        for (damage_amount, heal_amount) in [(17, 9), (21, 9), (0, -5)] {
+            let mut skills =
+                SkillDatabase::from_ron("fixture/literal_effects.ron", fixture).unwrap();
+            skills
+                .set_effect_amount(
+                    &EffectSite {
+                        action: ActionSite {
+                            definition_id: definition.into(),
+                            action_id: "strike".into(),
+                        },
+                        effect_id: "damage".into(),
+                    },
+                    EffectProperty::Amount,
+                    damage_amount,
+                )
+                .unwrap();
+            skills
+                .set_effect_amount(
+                    &EffectSite {
+                        action: ActionSite {
+                            definition_id: definition.into(),
+                            action_id: "recover".into(),
+                        },
+                        effect_id: "heal".into(),
+                    },
+                    EffectProperty::Amount,
+                    heal_amount,
+                )
+                .unwrap();
+            let caster_base = Uuid::from_u128(0xCAE01);
+            let enemy_base = Uuid::from_u128(0xCAE02);
+            let game_data = GameDataBuilder::live_defaults()
+                .with_abnormalities(vec![
+                    make_abnormality(
+                        "author",
+                        caster_base,
+                        Some(definition),
+                        1,
+                        100,
+                        0,
+                        1_000_000,
+                        DeliveryDef::Instant,
+                        10,
+                    ),
+                    make_abnormality(
+                        "target",
+                        enemy_base,
+                        None,
+                        1,
+                        500,
+                        0,
+                        1_000_000,
+                        DeliveryDef::Instant,
+                        100,
+                    ),
+                ])
+                .with_skills(skills)
+                .build_arc();
+            let event_log = run_battle_with_setup_and_cutoff(
+                game_data,
+                vec![(Uuid::from_u128(0xCAE03), caster_base, Position::new(0, 0))],
+                vec![(Uuid::from_u128(0xCAE04), enemy_base, Position::new(0, 1))],
+                10,
+                |core| {
+                    let caster = core
+                        .units
+                        .values_mut()
+                        .find(|unit| unit.base_uuid == caster_base)
+                        .unwrap();
+                    caster.stats.current_health = 40;
+                    let caster_id = caster.instance_id;
+                    core.enqueue_event(BattleEvent::AutoCastStart {
+                        time_ms: 0,
+                        caster_instance_id: caster_id,
+                        cause: BattleEventCause::default(),
+                    });
+                },
+            );
+            let caster_id = spawned_unit_id(&event_log, caster_base, Side::Player);
+            let enemy_id = spawned_unit_id(&event_log, enemy_base, Side::Opponent);
+            let mut observations = Vec::new();
+            for entry in &event_log.entries {
+                let Some(source) = &entry.skill_effect_source else {
+                    continue;
+                };
+                if let BattleLogEvent::HpChanged {
+                    hp_before,
+                    hp_after,
+                    target_instance_id,
+                    ..
+                } = entry.event
+                {
+                    assert_eq!(source.authored.source_file, "fixture/literal_effects.ron");
+                    assert_eq!(
+                        source.authored.site.action.definition_id.as_str(),
+                        definition
+                    );
+                    assert_eq!(source.cast.skill_id.as_str(), definition);
+                    assert_eq!(source.cast.caster_instance_id, caster_id.into());
+                    assert!(source.cast.proc_origin.is_none());
+                    let cast_entry = event_log
+                        .entries
+                        .iter()
+                        .find(|event| event.seq == source.cast.ability_event_seq)
+                        .unwrap();
+                    assert!(matches!(
+                        cast_entry.event,
+                        BattleLogEvent::AbilityCast { .. }
+                    ));
+                    let is_heal = source.authored.site.effect_id == "heal";
+                    assert_eq!(
+                        target_instance_id,
+                        if is_heal {
+                            caster_id.into()
+                        } else {
+                            enemy_id.into()
+                        }
+                    );
+                    if is_heal && definition == "authoring_beta" {
+                        assert_eq!(
+                            source.authored.origin,
+                            EffectOrigin::Added {
+                                source_definition_id: "authoring_alpha".into()
+                            }
+                        );
+                    }
+                    observations.push((
+                        source.authored.site.effect_id.clone(),
+                        i64::from(hp_after) - i64::from(hp_before),
+                    ));
+                }
+            }
+            let mut expected = Vec::new();
+            if damage_amount != 0 {
+                expected.push(("damage".into(), -i64::from(damage_amount)));
+            }
+            expected.extend([
+                ("other_damage".into(), -3),
+                ("heal".into(), i64::from(heal_amount)),
+            ]);
+            assert_eq!(observations, expected);
+            // Headless metadata is deliberately absent from the existing wire shape.
+            let encoded = serde_json::to_string(&event_log).unwrap();
+            assert!(!encoded.contains("skill_effect_source"));
+            assert!(!encoded.contains("fixture/literal_effects.ron"));
+        }
+    }
+}
+
 fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
     BattleUnitDraft {
         owned_uuid,
@@ -47,6 +206,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
         level: Tier::I,
         stat_scale: Default::default(),
         growth_stacks: GrowthStack::new(),
+        equipment_layout: None,
         equipped_items: vec![],
         equipped_item_enhancements: vec![],
         employee_start_condition: None,
@@ -126,6 +286,7 @@ fn battle_scenario(
     let enemy_group_id = "enemy_initial";
     BattleScenario {
         battlefield: BattleFieldSpec {
+            object_placement: None,
             width: common::BOARD_SIZE.0,
             height: common::BOARD_SIZE.1,
             valid_tiles: Vec::new(),
@@ -142,7 +303,6 @@ fn battle_scenario(
                 action: ScenarioAction::SpawnGroup {
                     group_id: ScenarioGroupId::new(player_group_id),
                 },
-                once: true,
             },
             ScenarioEvent {
                 id: ScenarioEventId::new("spawn_enemy_initial"),
@@ -150,10 +310,10 @@ fn battle_scenario(
                 action: ScenarioAction::SpawnGroup {
                     group_id: ScenarioGroupId::new(enemy_group_id),
                 },
-                once: true,
             },
         ],
-        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        terminal_outcomes: common::required_group_terminal_outcomes(),
+        boss_runtime: None,
         tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }
@@ -166,7 +326,6 @@ fn make_abnormality(
     max_health: u32,
     defense: i32,
     attack_interval_ms: u64,
-    attack_range_units: u8,
     attack_delivery: DeliveryDef,
     resonance_max: u32,
 ) -> AbnormalityMetadata {
@@ -188,7 +347,6 @@ fn make_abnormality(
             radius_units: 350_000,
         },
         basic_attack: BasicAttackDef {
-            range_units: f32::from(attack_range_units),
             defense_tile_range: Some(broad_defense_tile_range()),
             interval_ms: attack_interval_ms,
             windup_ms: 0,
@@ -252,6 +410,30 @@ where
     battle
         .run_battle_with_post_spawn_setup(setup)
         .expect("battle runs")
+        .event_log
+}
+
+fn run_battle_with_setup_and_cutoff<F>(
+    game_data: Arc<GameDataBase>,
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+    cutoff_ms: u64,
+    setup: F,
+) -> BattleEventLog
+where
+    F: FnOnce(&mut BattleCore),
+{
+    let mut scenario = battle_scenario(player_units, opponent_units);
+    scenario.terminal_outcomes.push(TerminalOutcome {
+        id: BattleOutcomeId::new("fixture_cutoff"),
+        verdict: BattleVerdict::Victory,
+        condition: TerminalCondition::TimeReached { time_ms: cutoff_ms },
+        priority: i32::MIN,
+    });
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 4242);
+    battle
+        .run_battle_with_post_spawn_setup(setup)
+        .expect("battle runs to the explicit fixture cutoff")
         .event_log
 }
 
@@ -378,6 +560,8 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
     let enemy_base_uuid = Uuid::from_u128(0xAA12);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("enemy_then_self"),
         name: "enemy_then_self".to_string(),
         kind: SkillKind::Targeted,
@@ -398,7 +582,8 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 effects: vec![SkillEffectDef::Damage {
                     amount: 15,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -415,7 +600,8 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                         kind: StatModifierKind::Flat,
                         value: 5,
                     },
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -431,7 +617,6 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -443,7 +628,6 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 500,
                 9999,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -508,6 +692,8 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
     let enemy_base_uuid = Uuid::from_u128(0xBC12);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("self_then_retarget"),
         name: "self_then_retarget".to_string(),
         kind: SkillKind::Targeted,
@@ -529,7 +715,8 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                         kind: StatModifierKind::Flat,
                         value: 4,
                     },
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -545,7 +732,8 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                 effects: vec![SkillEffectDef::Damage {
                     amount: 25,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -561,7 +749,6 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -573,7 +760,6 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                 500,
                 9999,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -640,6 +826,8 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
     let enemy_base_uuid = Uuid::from_u128(0xBC22);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("conditional_projectile_followup"),
         name: "conditional_projectile_followup".to_string(),
         kind: SkillKind::Targeted,
@@ -669,7 +857,8 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                 effects: vec![SkillEffectDef::Damage {
                     amount: 20,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -686,7 +875,8 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                         kind: StatModifierKind::Flat,
                         value: 5,
                     },
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -702,7 +892,6 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -714,7 +903,6 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                 500,
                 0,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -818,10 +1006,13 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
     let enemy_base_uuid = Uuid::from_u128(0xBC22);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("self_charge_then_locked_shot"),
         name: "self_charge_then_locked_shot".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::Explicit {
+            selection: game_core::game::ability::SkillCastSelection::AutomaticUnit,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
@@ -846,7 +1037,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                         kind: StatModifierKind::Flat,
                         value: 6,
                     },
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -862,7 +1054,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                 effects: vec![SkillEffectDef::Damage {
                     amount: 25,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -878,7 +1071,6 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -890,7 +1082,6 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                 500,
                 9999,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -979,6 +1170,8 @@ fn ability_step_event_log_includes_presentation_metadata() {
     let enemy_base_uuid = Uuid::from_u128(0xCA52);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("presentation_skill"),
         name: "presentation_skill".to_string(),
         kind: SkillKind::Targeted,
@@ -1007,7 +1200,8 @@ fn ability_step_event_log_includes_presentation_metadata() {
             effects: vec![SkillEffectDef::Damage {
                 amount: 10,
                 damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
+            }
+            .authored("effect_01")],
             presentation: SkillPresentationDef {
                 cast_state: Some("Cast".to_string()),
                 projectile_vfx_id: Some("white_night_judgement".to_string()),
@@ -1027,7 +1221,6 @@ fn ability_step_event_log_includes_presentation_metadata() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -1039,7 +1232,6 @@ fn ability_step_event_log_includes_presentation_metadata() {
                 500,
                 9999,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1153,6 +1345,8 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
     let enemy_base_uuid = Uuid::from_u128(0xCC22);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("untargeted_miss_then_check"),
         name: "untargeted_miss_then_check".to_string(),
         kind: SkillKind::Untargeted,
@@ -1185,7 +1379,8 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                 effects: vec![SkillEffectDef::Damage {
                     amount: 20,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -1202,7 +1397,8 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                         kind: StatModifierKind::Flat,
                         value: 7,
                     },
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -1218,7 +1414,6 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -1230,7 +1425,6 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                 200,
                 0,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1300,6 +1494,8 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
     let charge_target_base_uuid = Uuid::from_u128(0xCC27);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("untargeted_death_through_shot"),
         name: "untargeted_death_through_shot".to_string(),
         kind: SkillKind::Untargeted,
@@ -1333,7 +1529,8 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
             effects: vec![SkillEffectDef::Damage {
                 amount: 20,
                 damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
+            }
+            .authored("effect_01")],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -1348,7 +1545,6 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 120,
                 0,
                 300,
-                2,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -1360,7 +1556,6 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 120,
                 0,
                 500,
-                3,
                 DeliveryDef::Projectile {
                     speed_units_per_ms: 10_000,
                     hit_policy: ProjectileHitPolicy::TargetLocked,
@@ -1381,7 +1576,6 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 400,
                 0,
                 1_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1393,7 +1587,6 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 100,
                 0,
                 1_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1405,7 +1598,6 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 200,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1413,7 +1605,7 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
         vec![skill],
     );
 
-    let event_log = run_battle_with_setup(
+    let event_log = run_battle_with_setup_and_cutoff(
         game_data,
         vec![
             (Uuid::from_u128(53), caster_base_uuid, Position::new(0, 0)),
@@ -1436,6 +1628,7 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 Position::new(0, 4),
             ),
         ],
+        5_000,
         |core| {
             let finisher_id = core
                 .units
@@ -1548,6 +1741,8 @@ fn untargeted_piercing_projectile_respects_max_hits() {
     let third_base_uuid = Uuid::from_u128(0xCC44);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("piercing_skillshot"),
         name: "piercing_skillshot".to_string(),
         kind: SkillKind::Untargeted,
@@ -1582,7 +1777,8 @@ fn untargeted_piercing_projectile_respects_max_hits() {
             effects: vec![SkillEffectDef::Damage {
                 amount: 15,
                 damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
+            }
+            .authored("effect_01")],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -1597,7 +1793,6 @@ fn untargeted_piercing_projectile_respects_max_hits() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -1609,7 +1804,6 @@ fn untargeted_piercing_projectile_respects_max_hits() {
                 200,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1621,7 +1815,6 @@ fn untargeted_piercing_projectile_respects_max_hits() {
                 200,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1633,7 +1826,6 @@ fn untargeted_piercing_projectile_respects_max_hits() {
                 50,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1704,6 +1896,8 @@ fn targetless_directional_collision_projectile_fires_along_caster_facing() {
         rows: vec![".@.".to_string(), ".X.".to_string()],
     };
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("targetless_line_shot"),
         name: "targetless_line_shot".to_string(),
         kind: SkillKind::Untargeted,
@@ -1742,7 +1936,8 @@ fn targetless_directional_collision_projectile_fires_along_caster_facing() {
             effects: vec![SkillEffectDef::Damage {
                 amount: 15,
                 damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
+            }
+            .authored("effect_01")],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -1757,7 +1952,6 @@ fn targetless_directional_collision_projectile_fires_along_caster_facing() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -1769,7 +1963,6 @@ fn targetless_directional_collision_projectile_fires_along_caster_facing() {
                 100,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1870,6 +2063,8 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
     let second_base_uuid = Uuid::from_u128(0xCC63);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("kill_limited_line_shot"),
         name: "kill_limited_line_shot".to_string(),
         kind: SkillKind::Untargeted,
@@ -1891,7 +2086,7 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
                 allow_targetless_cast: false,
                 max_range_tiles: Some(4),
                 max_lifetime_ms: None,
-                max_kills: Some(1),
+                max_kills: Some(2),
                 max_pierces: None,
                 collision: SkillProjectileCollisionDef {
                     radius_units: 1_000_000,
@@ -1902,7 +2097,8 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
             effects: vec![SkillEffectDef::Damage {
                 amount: 100,
                 damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
+            }
+            .authored("effect_01")],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -1917,7 +2113,6 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -1929,7 +2124,6 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
                 50,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1941,7 +2135,6 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
                 50,
                 0,
                 1_000_000,
-                8,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -1949,7 +2142,7 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
         vec![skill],
     );
 
-    let event_log = run_battle_with_setup(
+    let (event_log, battle) = run_battle_and_capture_core_with_setup(
         game_data,
         vec![(Uuid::from_u128(77), caster_base_uuid, Position::new(0, 0))],
         vec![
@@ -1974,6 +2167,17 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
         .into_iter()
         .next()
         .expect("missing kill-limited line step");
+    let impact_count = event_log
+        .entries
+        .iter()
+        .filter(|entry| {
+            matches!(
+                &entry.event,
+                BattleLogEvent::SkillProjectileImpacted { skill_id, .. }
+                    if skill_id.as_str() == "kill_limited_line_shot"
+            ) && entry_caused_by_seq(&event_log, entry, step.seq)
+        })
+        .count();
 
     let damage_targets: Vec<Uuid> = event_log
         .entries
@@ -1994,11 +2198,200 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
         })
         .collect();
 
-    assert_eq!(damage_targets, vec![first_id]);
-    assert!(
-        !damage_targets.contains(&second_id),
-        "max_kills=1 should stop the piercing projectile after the first kill"
+    assert_eq!(damage_targets, vec![first_id, second_id]);
+    assert_eq!(
+        impact_count, 2,
+        "the first kill must continue and the second kill must terminally resolve"
     );
+    assert_eq!(
+        battle.active_skill_projectile_count(),
+        0,
+        "max_kills=2 should retire the released projectile"
+    );
+    assert!(
+        battle.debug_skill_cast_state(ability_seq).is_none(),
+        "max_kills=2 should terminally resolve the delivery and clean up its active cast"
+    );
+}
+
+#[test]
+fn directional_projectile_combines_same_time_kill_hit_and_expiry_stops_once() {
+    let caster_base_uuid = Uuid::from_u128(0xCC71);
+    let first_base_uuid = Uuid::from_u128(0xCC72);
+    let second_base_uuid = Uuid::from_u128(0xCC73);
+
+    let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
+        id: SkillId::from("combined_stop_line_shot"),
+        name: "combined_stop_line_shot".to_string(),
+        kind: SkillKind::Untargeted,
+        cast_targeting: explicit_nearest_enemy_cast_targeting(),
+        focus_time_ms: 100,
+        focus_permissions: Default::default(),
+        steps: vec![SkillStepDef {
+            id: "combined_stop_line".to_string(),
+            delay_ms: 0,
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            targeting: StepTargetingMode::ReuseCastTarget,
+            when: Default::default(),
+            repeat: Default::default(),
+            delivery: DeliveryDef::Projectile {
+                speed_units_per_ms: 1_000_000,
+                hit_policy: ProjectileHitPolicy::DirectionalCollision,
+                allow_targetless_cast: false,
+                max_range_tiles: Some(4),
+                max_lifetime_ms: Some(1),
+                max_kills: Some(1),
+                max_pierces: None,
+                collision: SkillProjectileCollisionDef {
+                    radius_units: 0,
+                    piercing: true,
+                    max_hits: Some(1),
+                    ..Default::default()
+                },
+            },
+            effects: vec![SkillEffectDef::Damage {
+                amount: 100,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }
+            .authored("effect_01")],
+            presentation: SkillPresentationDef::default(),
+        }],
+    };
+
+    let game_data = minimal_game_data(
+        vec![
+            make_abnormality(
+                "caster",
+                caster_base_uuid,
+                Some("combined_stop_line_shot"),
+                1,
+                120,
+                0,
+                300,
+                DeliveryDef::Instant,
+                10,
+            ),
+            make_abnormality(
+                "first",
+                first_base_uuid,
+                None,
+                1,
+                50,
+                0,
+                1_000_000,
+                DeliveryDef::Instant,
+                100,
+            ),
+            make_abnormality(
+                "second",
+                second_base_uuid,
+                None,
+                1,
+                50,
+                0,
+                1_000_000,
+                DeliveryDef::Instant,
+                100,
+            ),
+        ],
+        vec![skill],
+    );
+
+    let shared_target_position = WorldVec2::from_tile_center(Position::new(0, 1));
+    let (event_log, battle) = run_battle_and_capture_core_with_setup(
+        game_data,
+        vec![(Uuid::from_u128(87), caster_base_uuid, Position::new(0, 0))],
+        vec![
+            (Uuid::from_u128(88), first_base_uuid, Position::new(0, 1)),
+            (Uuid::from_u128(89), second_base_uuid, Position::new(0, 2)),
+        ],
+        |core| {
+            for unit in core.units.values_mut() {
+                if unit.owner == Side::Player && unit.base_uuid == caster_base_uuid {
+                    unit.facing_direction = Some(FacingDirection::Down);
+                } else if unit.owner == Side::Opponent {
+                    unit.set_world_position(shared_target_position);
+                }
+            }
+        },
+    );
+
+    let caster_id = spawned_unit_id(&event_log, caster_base_uuid, Side::Player);
+    let first_id = spawned_unit_id(&event_log, first_base_uuid, Side::Opponent);
+    let second_id = spawned_unit_id(&event_log, second_base_uuid, Side::Opponent);
+    let expected_first_id = if first_id.as_bytes() < second_id.as_bytes() {
+        first_id
+    } else {
+        second_id
+    };
+    let (ability_seq, _) =
+        find_first_ability_cast_seq(&event_log, "combined_stop_line_shot", caster_id);
+    let step = step_entries_for_cast(&event_log, ability_seq)
+        .into_iter()
+        .next()
+        .expect("missing combined-stop line step");
+    let (delivery_id, expected_end_time_ms) = event_log
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            BattleLogEvent::SkillProjectileLaunched {
+                delivery_id,
+                expected_end_time_ms,
+                ..
+            } if entry_caused_by_seq(&event_log, entry, step.seq) => {
+                Some((*delivery_id, *expected_end_time_ms))
+            }
+            _ => None,
+        })
+        .expect("missing combined-stop projectile launch");
+
+    let impacts: Vec<_> = event_log
+        .entries
+        .iter()
+        .filter(|entry| {
+            matches!(
+                &entry.event,
+                BattleLogEvent::SkillProjectileImpacted {
+                    delivery_id: actual_delivery_id,
+                    ..
+                } if *actual_delivery_id == delivery_id
+            )
+        })
+        .collect();
+    assert_eq!(impacts.len(), 1, "one accepted impact must stop once");
+    assert_eq!(
+        impacts[0].time_ms, expected_end_time_ms,
+        "the accepted impact must coincide with projectile expiry"
+    );
+    assert!(matches!(
+        impacts[0].event,
+        BattleLogEvent::SkillProjectileImpacted { terminal: true, .. }
+    ));
+
+    let damage_targets: Vec<Uuid> = event_log
+        .entries
+        .iter()
+        .filter_map(|entry| match &entry.event {
+            BattleLogEvent::HpChanged {
+                source_instance_id: Some(source_instance_id),
+                target_instance_id,
+                reason: HpChangeReason::Command,
+                ..
+            } if *source_instance_id == caster_id.into()
+                && entry_caused_by_seq(&event_log, entry, step.seq) =>
+            {
+                Some((*target_instance_id).into())
+            }
+            _ => None,
+        })
+        .collect();
+    assert_eq!(damage_targets, vec![expected_first_id]);
+    assert_eq!(battle.active_skill_projectile_count(), 0);
+    assert!(battle.debug_skill_cast_state(ability_seq).is_none());
 }
 
 #[test]
@@ -2007,6 +2400,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
     let enemy_base_uuid = Uuid::from_u128(0xBD12);
 
     let skill = SkillDef {
+        use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
+        flow: None,
         id: SkillId::from("predation_cycle"),
         name: "predation_cycle".to_string(),
         kind: SkillKind::Targeted,
@@ -2026,11 +2421,13 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                     SkillEffectDef::ApplyBuff {
                         buff_id: "poison".to_string(),
                         duration_ms: 5_000,
-                    },
+                    }
+                    .authored("effect_01"),
                     SkillEffectDef::Damage {
                         amount: 5,
                         damage_type: game_core::game::battle::damage::DamageType::Magic,
-                    },
+                    }
+                    .authored("effect_02"),
                 ],
                 presentation: SkillPresentationDef::default(),
             },
@@ -2047,7 +2444,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 effects: vec![SkillEffectDef::Damage {
                     amount: 12,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -2058,7 +2456,7 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
                 repeat: SkillStepRepeat::Once,
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Heal { amount: 8 }],
+                effects: vec![SkillEffectDef::Heal { amount: 8 }.authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -2078,7 +2476,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 effects: vec![SkillEffectDef::Damage {
                     amount: 7,
                     damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
+                }
+                .authored("effect_01")],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -2094,7 +2493,6 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 120,
                 0,
                 300,
-                1,
                 DeliveryDef::Instant,
                 10,
             ),
@@ -2106,7 +2504,6 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 500,
                 9999,
                 1_000_000,
-                1,
                 DeliveryDef::Instant,
                 100,
             ),
@@ -2205,7 +2602,6 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         5_000,
         0,
         1_000_000,
-        1,
         DeliveryDef::Instant,
         100,
     );
@@ -2226,6 +2622,7 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         .with_reward_data(Arc::clone(&base_game_data.reward_data))
         .with_event_data(Arc::clone(&base_game_data.event_data))
         .with_pve_data(Arc::clone(&base_game_data.pve_data))
+        .with_boss_runtime_data(Arc::clone(&base_game_data.boss_runtime_data))
         .with_boss_omen_data(Arc::clone(&base_game_data.boss_omen_data))
         .with_skills(SkillDatabase::new(
             base_game_data

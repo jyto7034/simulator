@@ -1,0 +1,20 @@
+{
+  "published_at_utc": "2026-10-06T05:19:24.513669+00:00",
+  "record_sha256": "9736b3189b5f652ece2d714d638c86bfea286a5dca7c6fbf4fdae74a95737ebc",
+  "basis": {
+    "receipt_path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_event_owner001.json",
+    "receipt_sha256": "39de4dc07abe0d70fb0ae29f2832f3497ea55ac9ca85f6b438375bfa8292a217",
+    "raw_sha256": "33e78bf571eb3da04512022f5f2120b598fba41d1b1117be1e5c51cba2b081ab",
+    "source_sha256": "31b4b0150dd181e43e49ae177c6ccfdfed3027f96dbddfde51e3ece2a805667d",
+    "source_unchanged": true,
+    "exit_code": 101,
+    "tests_passed": 0,
+    "tests_failed": 4
+  },
+  "observed_code_members": {
+    "core_enhanced/src/game/world/node_flow.rs": "257241d7482e217204c6b5980b5c1a0f205ed412298fc7b71948bd6103d08f84",
+    "core_enhanced/src/game/world/state.rs": "922121a3671a56403cfe8405f14bf53f606e34b5e5d0a79b3ba07907f11d1102"
+  },
+  "status": "correction authorized; no new execution claim",
+  "source_changes_by_root": false
+}

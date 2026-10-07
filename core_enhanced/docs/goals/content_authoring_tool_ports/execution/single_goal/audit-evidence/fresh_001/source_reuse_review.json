@@ -1,0 +1,21 @@
+{
+  "verified_changes": [
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "restored": "53f3e03b5bd963d4adb84a6b60b737163f1819610e30865775019f783ea3159a",
+      "scope": "single added #[test] in existing cfg(test) module; exact removal restores source101"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/tests.rs",
+      "restored": "5187e1ebc08f6dc7a811dca059465e12deff7eeb014f59fb3b9fea28e649331a",
+      "scope": "appended cfg(test) Weak ownership test module"
+    },
+    {
+      "path": "core_enhanced/tools/authoring_trial_api_probe/Cargo.toml",
+      "restored": "c5a847c1e794733f98ad7c770400fbb9933a3ef931c1cc4e33d4d895b4377db0",
+      "scope": "standalone feature declaration; default feature set and game_core dependency features unchanged"
+    }
+  ],
+  "unchanged_original_inputs": 264,
+  "scope": "Readonly exact removal reconstructs old input hashes; test module boundaries and standalone feature checked in current source. No source was written."
+}

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use crate::owned_collections::OwnedHashMap;
 use uuid::Uuid;
 
 use serde::{Deserialize, Serialize};
@@ -24,6 +24,8 @@ use crate::game::{
 pub struct EmployeeInitialLoadout {
     pub equipment_ids: Vec<String>,
     pub baseline_skill_fragment_ids: Vec<SkillFragmentId>,
+    #[serde(default)]
+    pub active_skill_fragment_id: Option<SkillFragmentId>,
 }
 
 impl Default for EmployeeInitialLoadout {
@@ -31,6 +33,7 @@ impl Default for EmployeeInitialLoadout {
         Self {
             equipment_ids: Vec::new(),
             baseline_skill_fragment_ids: Vec::new(),
+            active_skill_fragment_id: None,
         }
     }
 }
@@ -133,6 +136,7 @@ pub struct EmployeeDefinition {
 }
 
 pub const MAX_PHYSICAL_DAMAGE: u8 = 6;
+pub const MAX_EMPLOYEE_ROSTER_SIZE: usize = 10;
 pub const MAX_TRAUMA: u32 = 100;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -308,9 +312,76 @@ pub struct EmployeeLoadout {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EmployeeCombatProfile {
+    #[serde(with = "employee_profile_authoring")]
     pub battle_profile: UnitCombatProfile,
     pub growth_stacks: GrowthStack,
+}
+
+// The autonomous resonance authoring contract belongs to opponents. Persistent
+// employee profiles contain no resource overrides; the equipped form and entry
+// modifiers produce those values when entering battle.
+mod employee_profile_authoring {
+    use super::*;
+    use crate::game::{
+        ability::{SkillActivationMode, SkillId},
+        battle::{
+            damage::DamageModifiers,
+            types::{DeploymentAffinity, MobilityKind, UnitTargetTrait},
+        },
+        data::{
+            abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
+            equipment_data::WeaponCombatProfile,
+        },
+        skill_fragment::FragmentSourceSnapshot,
+        stats::UnitStats,
+    };
+
+    fn base_resonance() -> ResonanceDef {
+        UnitCombatProfile::employee_base_resonance()
+    }
+
+    #[derive(Serialize, Deserialize)]
+    #[serde(remote = "UnitCombatProfile", deny_unknown_fields)]
+    struct Definition {
+        stats: UnitStats,
+        basic_attack: BasicAttackDef,
+        basic_attack_speed_percent: u32,
+        weapon_profile: Option<WeaponCombatProfile>,
+        movement: MovementDef,
+        #[serde(skip, default = "base_resonance")]
+        resonance: ResonanceDef,
+        skill_id: Option<SkillId>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        fragment_source: Option<FragmentSourceSnapshot>,
+        skill_activation_mode: SkillActivationMode,
+        deployment_affinity: DeploymentAffinity,
+        block_capacity: u32,
+        block_radius_units: f32,
+        blockable: bool,
+        mobility_kind: MobilityKind,
+        target_traits: Vec<UnitTargetTrait>,
+        incoming_damage_modifiers: DamageModifiers,
+    }
+
+    pub fn serialize<S: serde::Serializer>(
+        value: &UnitCombatProfile,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        if !value.has_employee_base_resonance() {
+            return Err(serde::ser::Error::custom(
+                "employee resonance overrides are not authorable",
+            ));
+        }
+        Definition::serialize(value, serializer)
+    }
+
+    pub fn deserialize<'de, D: serde::Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<UnitCombatProfile, D::Error> {
+        Definition::deserialize(deserializer)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -352,6 +423,28 @@ impl Default for EmployeeCombatProfile {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub enum BreakdownCounter {
+    #[default]
+    Inactive,
+    Active {
+        remaining_nodes: u32,
+        entered_node: Option<crate::game::map::MapNodeId>,
+    },
+}
+crate::authoring::clone_shape::copy_shape!(BreakdownCounter);
+impl BreakdownCounter {
+    pub fn remaining_nodes(self) -> Option<u32> {
+        match self {
+            Self::Inactive => None,
+            Self::Active {
+                remaining_nodes, ..
+            } => Some(remaining_nodes),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Employee {
     pub uuid: Uuid,
@@ -361,12 +454,35 @@ pub struct Employee {
     pub level: u32,
     pub experience: u32,
     pub condition: EmployeeCondition,
+    pub breakdown: BreakdownCounter,
     pub loadout: EmployeeLoadout,
     pub skill_fragments: SkillFragmentLoadout,
     pub active_consumable_modifier: Option<ActiveConsumableModifier>,
     pub combat_profile: EmployeeCombatProfile,
     pub psychology: EmployeePsychology,
 }
+
+crate::authoring::clone_shape::struct_shape!(Employee {
+    uuid,
+    employee_definition_id,
+    name,
+    profile,
+    level,
+    experience,
+    condition,
+    breakdown,
+    loadout,
+    skill_fragments,
+    active_consumable_modifier,
+    combat_profile,
+    psychology,
+});
+crate::authoring::clone_shape::struct_shape!(EmployeeLoadout { item_slot });
+crate::authoring::clone_shape::struct_shape!(EmployeeCombatProfile {
+    battle_profile,
+    growth_stacks
+});
+crate::authoring::clone_shape::struct_shape!(EmployeeRoster { employees });
 
 impl Employee {
     pub fn new(
@@ -438,6 +554,7 @@ impl Employee {
             level: 1,
             experience: 0,
             condition: EmployeeCondition::default(),
+            breakdown: BreakdownCounter::Inactive,
             loadout: EmployeeLoadout::default(),
             skill_fragments,
             active_consumable_modifier: None,
@@ -446,8 +563,63 @@ impl Employee {
         }
     }
 
+    pub fn reconcile_breakdown(&mut self, limit: u32, node: Option<crate::game::map::MapNodeId>) {
+        if !self.is_alive() || !self.condition.is_breakdown() {
+            self.breakdown = BreakdownCounter::Inactive;
+        } else if matches!(self.breakdown, BreakdownCounter::Inactive) {
+            self.breakdown = BreakdownCounter::Active {
+                remaining_nodes: limit,
+                entered_node: node,
+            };
+        }
+    }
+    pub fn complete_breakdown_node(
+        &mut self,
+        limit: u32,
+        node: Option<crate::game::map::MapNodeId>,
+    ) {
+        self.reconcile_breakdown(limit, node);
+        if let BreakdownCounter::Active {
+            remaining_nodes,
+            entered_node,
+        } = &mut self.breakdown
+        {
+            if node.is_some() && *entered_node == node {
+                return;
+            }
+            *remaining_nodes = remaining_nodes.saturating_sub(1);
+            if *remaining_nodes == 0 {
+                // Noncombat collapse: no incapacitation trauma, injury roll or DeathPrevent.
+                self.condition.physical_damage = MAX_PHYSICAL_DAMAGE;
+                self.breakdown = BreakdownCounter::Inactive;
+            }
+        }
+    }
+
     pub fn is_combat_eligible(&self) -> bool {
         self.eligibility(EmployeeActivity::Combat).eligible
+    }
+
+    pub fn has_equipped_weapon(&self) -> bool {
+        self.loadout
+            .item_slot
+            .contains_equipment_type(crate::game::data::equipment_data::EquipmentType::Weapon)
+    }
+
+    pub fn battle_deployment_disabled_reason(
+        &self,
+    ) -> Option<crate::game::behavior::ActionDisabledReasonCode> {
+        if let Some(reason) = self.eligibility(EmployeeActivity::Combat).disabled_reason {
+            return Some(reason.action_disabled_reason());
+        }
+        if !self.has_equipped_weapon() {
+            return Some(crate::game::behavior::ActionDisabledReasonCode::WeaponRequired);
+        }
+        None
+    }
+
+    pub fn is_battle_deployable(&self) -> bool {
+        self.battle_deployment_disabled_reason().is_none()
     }
 
     pub fn can_receive_consumable_modifier(&self) -> bool {
@@ -520,35 +692,6 @@ impl Employee {
         }
     }
 
-    pub fn equip_skill_fragment(
-        &mut self,
-        inventory: &SkillFragmentInventory,
-        database: &SkillFragmentDatabase,
-        fragment_id: &SkillFragmentId,
-    ) -> Result<(), GameError> {
-        let mut next_loadout = self.skill_fragments.clone();
-        next_loadout.equip(inventory, database, fragment_id)?;
-        next_loadout.apply_to_profile(database, inventory, &self.combat_profile.battle_profile)?;
-        self.skill_fragments = next_loadout;
-        Ok(())
-    }
-
-    pub fn unequip_skill_fragment(
-        &mut self,
-        database: &SkillFragmentDatabase,
-        fragment_id: &SkillFragmentId,
-    ) -> Result<(), GameError> {
-        let mut next_loadout = self.skill_fragments.clone();
-        next_loadout.unequip(fragment_id)?;
-        next_loadout.apply_to_profile(
-            database,
-            &SkillFragmentInventory::new(),
-            &self.combat_profile.battle_profile,
-        )?;
-        self.skill_fragments = next_loadout;
-        Ok(())
-    }
-
     pub fn add_experience_with_policy(&mut self, amount: u32, policy: &RunPolicyData) {
         self.experience = self.experience.saturating_add(amount);
         while self.experience >= policy.xp_required_for_next_level(self.level) {
@@ -607,19 +750,19 @@ pub(crate) fn percent_amount_ceil(value: u32, percent: u32) -> u32 {
     if value == 0 || percent == 0 {
         return 0;
     }
-    let numerator = u64::from(value) * u64::from(percent);
-    numerator.div_ceil(100) as u32
+    let numerator = u128::from(value) * u128::from(percent);
+    numerator.div_ceil(100).min(u128::from(u32::MAX)) as u32
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EmployeeRoster {
-    employees: HashMap<Uuid, Employee>,
+    employees: OwnedHashMap<Uuid, Employee>,
 }
 
 impl EmployeeRoster {
     pub fn new() -> Self {
         Self {
-            employees: HashMap::new(),
+            employees: OwnedHashMap::new(),
         }
     }
 
@@ -659,6 +802,12 @@ impl EmployeeRoster {
         self.employees.values_mut()
     }
 
+    pub(crate) fn validate_checkpoint_identities(&self) -> bool {
+        self.employees
+            .iter()
+            .all(|(employee_uuid, employee)| *employee_uuid == employee.uuid)
+    }
+
     pub fn combat_eligible_employee_ids(&self) -> Vec<Uuid> {
         let mut ids = self
             .employees
@@ -668,41 +817,6 @@ impl EmployeeRoster {
             .collect::<Vec<_>>();
         ids.sort();
         ids
-    }
-
-    pub fn equip_skill_fragment(
-        &mut self,
-        employee_uuid: Uuid,
-        inventory: &SkillFragmentInventory,
-        database: &SkillFragmentDatabase,
-        fragment_id: &SkillFragmentId,
-    ) -> Result<&Employee, GameError> {
-        let employee = self
-            .employees
-            .get_mut(&employee_uuid)
-            .ok_or(GameError::UnitNotFound)?;
-        if !employee.eligibility(EmployeeActivity::Loadout).eligible {
-            return Err(GameError::InvalidAction);
-        }
-        employee.equip_skill_fragment(inventory, database, fragment_id)?;
-        Ok(employee)
-    }
-
-    pub fn unequip_skill_fragment(
-        &mut self,
-        employee_uuid: Uuid,
-        database: &SkillFragmentDatabase,
-        fragment_id: &SkillFragmentId,
-    ) -> Result<&Employee, GameError> {
-        let employee = self
-            .employees
-            .get_mut(&employee_uuid)
-            .ok_or(GameError::UnitNotFound)?;
-        if !employee.eligibility(EmployeeActivity::Loadout).eligible {
-            return Err(GameError::InvalidAction);
-        }
-        employee.unequip_skill_fragment(database, fragment_id)?;
-        Ok(employee)
     }
 }
 
@@ -717,6 +831,24 @@ mod tests {
         data::skill_fragment_data::SkillFragmentDatabase,
         skill_fragment::SkillFragmentInventory,
     };
+
+    #[test]
+    fn percent_amount_ceil_preserves_the_full_u32_domain() {
+        for (value, percent, expected) in [
+            (0, u32::MAX, 0),
+            (1, 0, 0),
+            (1, 1, 1),
+            (u32::MAX, 1, 42_949_673),
+            (u32::MAX, 100, u32::MAX),
+            (u32::MAX, u32::MAX, u32::MAX),
+        ] {
+            assert_eq!(
+                percent_amount_ceil(value, percent),
+                expected,
+                "value={value} percent={percent}"
+            );
+        }
+    }
 
     fn test_consumable(
         id: &str,
@@ -835,11 +967,51 @@ mod tests {
     }
 
     #[test]
+    fn u05_employee_authoring_rejects_removed_resource_overrides() {
+        let employee = Employee::new(Uuid::from_u128(1), "base", "Base");
+        let original = serde_json::to_value(&employee).unwrap();
+        assert!(original["combat_profile"]["battle_profile"]
+            .get("resonance")
+            .is_none());
+        let restored: Employee = serde_json::from_value(original.clone()).unwrap();
+        assert!(restored
+            .combat_profile
+            .battle_profile
+            .has_employee_base_resonance());
+        for value in [
+            serde_json::json!(null),
+            serde_json::json!({"start":20,"max":100,"gain_lock_ms":0}),
+        ] {
+            let mut invalid = original.clone();
+            invalid["combat_profile"]["battle_profile"]["resonance"] = value;
+            assert!(serde_json::from_value::<Employee>(invalid).is_err());
+        }
+        let mut invalid = employee;
+        invalid.combat_profile.battle_profile.resonance.start = 99;
+        assert!(serde_json::to_value(&invalid).is_err());
+        assert!(invalid
+            .combat_profile_for_battle(
+                &SkillFragmentDatabase::with_builtin_starter(vec![]),
+                &SkillFragmentInventory::new()
+            )
+            .is_err());
+        let rest = "(hp_recovery_per_tick:3)";
+        assert!(
+            ron::de::from_str::<crate::game::data::equipment_data::PlatformRestProfile>(rest)
+                .is_ok()
+        );
+        assert!(
+            ron::de::from_str::<crate::game::data::equipment_data::PlatformRestProfile>(
+                &rest.replace(")", ",resonance_recovery_per_tick:5)")
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
     fn consumable_initial_skill_charge_increases_starting_resonance() {
         let mut employee =
             Employee::new(Uuid::from_u128(1), "skill_charge_buff", "Skill Charge Buff");
-        employee.combat_profile.battle_profile.resonance.start = 10;
-        employee.combat_profile.battle_profile.resonance.max = 100;
         employee.apply_consumable_modifier(
             Uuid::from_u128(2),
             &test_consumable(
@@ -856,15 +1028,13 @@ mod tests {
             )
             .unwrap();
 
-        assert_eq!(profile.resonance.start, 50);
+        assert_eq!(profile.resonance.start, 60);
     }
 
     #[test]
     fn consumable_initial_skill_charge_caps_at_resonance_max() {
         let mut employee =
             Employee::new(Uuid::from_u128(1), "skill_charge_cap", "Skill Charge Cap");
-        employee.combat_profile.battle_profile.resonance.start = 80;
-        employee.combat_profile.battle_profile.resonance.max = 100;
         employee.apply_consumable_modifier(
             Uuid::from_u128(2),
             &test_consumable(
@@ -1091,5 +1261,37 @@ mod tests {
         .expect_err("event_aptitude must be explicitly authored");
 
         assert!(error.to_string().contains("event_aptitude"));
+    }
+}
+
+#[cfg(test)]
+mod breakdown_tests {
+    use super::*;
+    #[test]
+    fn r09_breakdown_completed_nodes_recovery_reentry_and_no_combat_death_prevent() {
+        let mut employee = Employee::new(Uuid::from_u128(9), "counter", "Counter");
+        let n1 = Some(crate::game::map::MapNodeId::new(Uuid::from_u128(91)));
+        let n2 = Some(crate::game::map::MapNodeId::new(Uuid::from_u128(92)));
+        employee.condition.trauma = 100;
+        employee.reconcile_breakdown(2, n1);
+        employee.complete_breakdown_node(2, n1);
+        assert_eq!(employee.breakdown.remaining_nodes(), Some(2));
+        employee.complete_breakdown_node(2, n2);
+        assert_eq!(employee.breakdown.remaining_nodes(), Some(1));
+        employee.condition.reduce_trauma(1);
+        employee.complete_breakdown_node(2, None);
+        assert_eq!(employee.breakdown, BreakdownCounter::Inactive);
+        assert!(employee.is_alive());
+        employee.condition.add_trauma(1);
+        employee.reconcile_breakdown(2, n2);
+        assert_eq!(employee.breakdown.remaining_nodes(), Some(2));
+        employee.complete_breakdown_node(2, n1);
+        let encoded = serde_json::to_vec(&employee).unwrap();
+        let mut restored: Employee = serde_json::from_slice(&encoded).unwrap();
+        assert_eq!(restored.breakdown.remaining_nodes(), Some(1));
+        restored.complete_breakdown_node(2, None);
+        assert!(!restored.is_alive());
+        assert_eq!(restored.condition.trauma, 100);
+        assert_eq!(restored.breakdown, BreakdownCounter::Inactive);
     }
 }

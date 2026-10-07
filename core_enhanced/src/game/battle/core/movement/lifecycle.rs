@@ -23,7 +23,6 @@ impl BattleCore {
 
         if let Some(unit) = self.units.get_mut(&unit_id) {
             unit.move_epoch = unit.move_epoch.wrapping_add(1);
-            unit.body.velocity = Default::default();
             unit.action_state = next_state;
         }
 

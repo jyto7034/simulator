@@ -1,0 +1,45 @@
+{
+  "stage": "P2G-40",
+  "result": "passed",
+  "command": [
+    "node",
+    "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+    "--plan",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_40_PHASE_PLAN_001.json",
+    "--freeze",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_30_FREEZE_001.json",
+    "--receipt",
+    "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_001.json"
+  ],
+  "exit_code": 0,
+  "structural_output": {
+    "validator": "p2g40-receipt-validator/1.2.0",
+    "result": "passed",
+    "counts": {
+      "freeze_members": 9,
+      "work_packages": 4,
+      "dependency_edges": 8,
+      "cyclic_sccs": 1,
+      "atomic_groups": 1,
+      "final_execution_nodes": 2,
+      "phases": 1,
+      "audit_rows": 1,
+      "integration_rows": 21
+    },
+    "failures": []
+  },
+  "semantic_checks": {
+    "dependency_reasons": "D01 compiler unit/capabilities require D02 executor; D05 stat inputs must agree with D07 save/projection. Directed SCC evidence is actual public completion dependency, not task scheduling.",
+    "atomic_boundary": "WP01/02/03 mutually required for supported cutover; AT06 preserved. WP04 validation independent node within same sole Phase.",
+    "intermediate_state": "one final supported Phase, no incomplete parser-only/evaluator-only public completed Phase",
+    "shared_contracts": "SC-CAVER-01/02 explicit producer/consumer, fixed meaning, implementation and validation owners, D10 actual interface preflight",
+    "integration": "21 durable seams allocated to WP-CAVER-04, not deferred to GEX-30",
+    "parallelization": "none approved",
+    "known_unknown": "exact D10 owner/conditions retained; no readiness claim",
+    "comparison": "Old four-step suggestion reclassified as internal implementation order, not four verified Phases"
+  },
+  "current": "PP-CAVER-P2G40-001",
+  "receipt": "PVR-CAVER-P2G40-001",
+  "P2G-40 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": []
+}

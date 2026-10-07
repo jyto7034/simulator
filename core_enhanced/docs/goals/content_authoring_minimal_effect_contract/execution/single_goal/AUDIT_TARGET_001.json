@@ -1,0 +1,1502 @@
+{
+  "record_id": "ATR-CAMEC-R01-001",
+  "captured_at": "2026-09-09T14:28:37.494973+00:00",
+  "cwd": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "goal_set_ref": "GS-CAMEC-P2G50-001",
+  "goal_id": "GOAL-CAMEC-01",
+  "phase_id": "PHASE-CAMEC-01",
+  "handoff_ref": "HOF-CAMEC-P2G60-001",
+  "gex_revision": "2026-09-09-gex-r1",
+  "implementation_pass": "GEX-10 / pass 001 closed",
+  "scoped_diff": "evidence/R01_SCOPED_DIFF.patch",
+  "baseline": "BASELINE_001.json",
+  "preservation": "evidence/PRESERVATION_001.json",
+  "validation_inputs": "VALIDATION_INPUT_002.json",
+  "validation_results": "evidence/RUN_RESULTS_001.json",
+  "manifest": [
+    {
+      "path": "Cargo.lock",
+      "kind": "tracked/dirty",
+      "sha256": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969"
+    },
+    {
+      "path": "Cargo.toml",
+      "kind": "tracked/clean",
+      "sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c"
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "kind": "tracked/dirty",
+      "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "kind": "tracked/dirty",
+      "sha256": "c69cfeb1122043d0327825e24235a9ebb11f2f3ad7568384ba3656f36e4bf76b"
+    },
+    {
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "kind": "tracked/dirty",
+      "sha256": "5a34f1a75d4b01dc4a626b6d98537cc23e226e3b501f8cff5387e20d26438bc6"
+    },
+    {
+      "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+      "kind": "untracked",
+      "sha256": "0ec53e9f68a82790c33a61c3b87d326d0af545c8fdbb47a6e97986c65b6a75c6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "kind": "untracked",
+      "sha256": "d14d661c81eb5a85fc09ced3a71997b5462f79ec86fa0f861f0db6430bcfa352"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0003_VERIFICATION.json",
+      "kind": "untracked",
+      "sha256": "2edd191d3db61e778c75124f6e25b2b447d62442ee6e5566c5ec0b462a2fef02"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0004_VERIFICATION.json",
+      "kind": "untracked",
+      "sha256": "c4e80d2d9f0b897b5a6d56227ff9a3fe4ec220476527951d74a8bfa50bb85346"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0005_VERIFICATION.json",
+      "kind": "untracked",
+      "sha256": "9f2de1a00f6370a84efb70b3a9896ec5f71b50d1295120a41410e7b98f143189"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0006_VERIFICATION.json",
+      "kind": "untracked",
+      "sha256": "14a138bc932eaa37453adbf41e7094f34f0f2df52801126608d232c79ca14d0a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0007_VERIFICATION.json",
+      "kind": "untracked",
+      "sha256": "16e9de7cb30b506e5ebe40239aa143cd431f5b44110c23ad484c4a9fcbae004d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/NEXT_0008_VERIFICATION.json",
+      "kind": "untracked",
+      "sha256": "5a10d9165aabfdcf4f72d61c1c22485cb8f6a2955f6796227a611ceea0aed280"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_00_INITIAL_001.json",
+      "kind": "untracked",
+      "sha256": "4b2ee63a061b1ebc7dcbe1a5dece8bcbad5e80dd88353974b7717740bd6e5e42"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_00_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "e489140bd63db7691c5b0d5fc0486ab30972af3e667f72cf56fcff67ad6b23e2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_10_POLICY_001.json",
+      "kind": "untracked",
+      "sha256": "81cd5fc3c5bc25087da73abb356f85aaf3ad693fa832079722463825a1c61170"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_10_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "f2e6b6bb5df9ba1a628662d0f9e88cffd1242441ba802490f68a3cc3031f366f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "46a4d83ed8bda10ff83c3c8a022fcd75764e11e0f4bef740f44f3076b4784692"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_REVIEW_001.json",
+      "kind": "untracked",
+      "sha256": "cd3e8e41941c7acbbd63cdfff5a1bfdd2520beea7da3cd2b7bb0ebaf56b093b0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_SOURCE_PLAN_001.json",
+      "kind": "untracked",
+      "sha256": "6b24ccab63784c7ccd1c8c2f17ece40d482c52bc3dc5977c6252de1deed06891"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "kind": "untracked",
+      "sha256": "64bbe82d782b7f556c97899a024427d39884554516de5be37c9d427c4f97cfaf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "8bdb46ff5c7318d11d6d4e204fe9f683835eac369832ce42139676626517f6a4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_BLOCKER_001.ko.md",
+      "kind": "untracked",
+      "sha256": "53b1c958623093ef7b924739909ea6fe019abcc50bb5a70f315054f9917d7e7d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json",
+      "kind": "untracked",
+      "sha256": "942af93bdf56832a3252cc89430380026345d788426cd558dccb46a13374f51d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_CANDIDATE_001.ko.md",
+      "kind": "untracked",
+      "sha256": "3754f18ddadb96ef8dcb8919a3cdbbfe396045218d3b9da3627373d053220476"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json",
+      "kind": "untracked",
+      "sha256": "0f13147bc41c7621b0b79b4694113516c07b24a8a2c1bb4e72dd186efec26bf7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "62b382294905d29b021124131388828c95388cf428925df93662fc479f65abb9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_RESULT_002.json",
+      "kind": "untracked",
+      "sha256": "c002b0e303e86815073d646a925cada4e3274bdf54b43a2d444980939edd5a2e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_TOOLING_REVIEW_001.ko.md",
+      "kind": "untracked",
+      "sha256": "7d107fa5a6714dc5cb74cb59053c5917f6edcba7e978ee96d59a94714f7b2c95"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_TOOLING_VALIDATION_001.json",
+      "kind": "untracked",
+      "sha256": "3d97ebcf1f4f1c7d69eb74dd597938e9cfb9be045f1304e44cfdffdae459ddb6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_VALIDATOR_ATTEMPT_001.json",
+      "kind": "untracked",
+      "sha256": "04fc5fbbaae6fbc742da5e6addb793b68697145b0ab0fe8264b3ac591e806004"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_AUTHORING_REVIEW_001.ko.md",
+      "kind": "untracked",
+      "sha256": "92915fbeb80fae747bc234a1609cc9967d5dd38d12b5bd49f08b63ca37a9adc2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_GOAL_SET_001.ko.md",
+      "kind": "untracked",
+      "sha256": "df9d9f0a314101e2af4976274dd1c2735d5abaee1940f0c926b6b5d69ac87223"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "c19e0d7ee8e3a9ba15bebfb394c771f86254ec787c32347fee588b498fbf1dc2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_VALIDATION_001.json",
+      "kind": "untracked",
+      "sha256": "72389b3789a9e160de1e9c24ac7ce74a1994df3ce05d3065e442e990568296c6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_60_HANDOFF_001.json",
+      "kind": "untracked",
+      "sha256": "94152666bb17700a3bfe3620562e1782f85a7e1ed468519549be5de1785a9848"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_60_HANDOFF_REVIEW_001.ko.md",
+      "kind": "untracked",
+      "sha256": "701fcf0d76fc75f3766db4cbd696db074495dab48d53623036cfc3d45fe2ecff"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_60_RESULT_001.json",
+      "kind": "untracked",
+      "sha256": "12b52ead22435bd73cd697acc51de0371b1873a4652d2083b609e2bf16583652"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_60_VALIDATION_001.json",
+      "kind": "untracked",
+      "sha256": "c0a7ab88192d1b80cae27f8127956998e648bdfd1f8bdb2ecc419e4d712b20da"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "kind": "untracked",
+      "sha256": "bc0e800428845fae4149f05973cb6cb15132ed88a6d10d6f1f2de9f8adbf2a2b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKSPACE_BASELINE_001.json",
+      "kind": "untracked",
+      "sha256": "f83d0ed52080601261744d26e08eac7bbc8f22a9f2d48ecb2106400179c189f0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/ACCEPTANCE_EVIDENCE_001.md",
+      "kind": "untracked",
+      "sha256": "f0b29433aede96e885e12eede31bab5ef016f1ec64ce18dfabd97f19d9daf613"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/BASELINE_001.json",
+      "kind": "untracked",
+      "sha256": "bf7a0281d072f79e952b21cf3e249597128308148f40807321f1548c2806fa4b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/BASELINE_GIT_STATUS.txt",
+      "kind": "untracked",
+      "sha256": "16e6df49ba31e8ca1c06c42c7169a6dc57c88630d723c2f876e6c4ced3ab1e97"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/EXPERIMENTS.md",
+      "kind": "untracked",
+      "sha256": "bfb6623ca46eb02eba2eb3dc09e121efd0f100b9bc374dae0f9fb2a487c896c4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/EXPERIMENT_NOTES.md",
+      "kind": "untracked",
+      "sha256": "eb058de7f602b2ca23607426d513184ff5e535fe3f0c9d59aae5e9b0d3b334c9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/PLAN.md",
+      "kind": "untracked",
+      "sha256": "5f1e8da8d745680505c7e52e7c6b800dd182e28f67a05049c534ab19928aee29"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/VALIDATION_INPUT_001.json",
+      "kind": "untracked",
+      "sha256": "507ac195abd3c2093fa58f3bdde747c89233b47d0f30301abf895576d2109801"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/VALIDATION_INPUT_002.json",
+      "kind": "untracked",
+      "sha256": "ef1a826555c4f2dd0ca8bcbf1c9d7ff0579dbf8c390d75d7468c40617482db06"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/FORMAT_CHECK_001.json",
+      "kind": "untracked",
+      "sha256": "c80edd3af9a4d97e0c380bd2817b858b629de729de2cb00a0628e283edbbec9e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/FORMAT_SCOPE.json",
+      "kind": "untracked",
+      "sha256": "ab6dc8f14b012570463a1cf94d55b98145f6785ed14e0527a7b84e45162d8209"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/PRESERVATION_001.json",
+      "kind": "untracked",
+      "sha256": "0ae5deea77d6ab3dda102974f0ba7a065f24d09f59e11b25be8e5b91b509037b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/R01_SCOPED_DIFF.patch",
+      "kind": "untracked",
+      "sha256": "c606b11403ad1494d490a9a194dda36641b6bc813e29220fad53170b3350de3a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/RUN_RESULTS_001.json",
+      "kind": "untracked",
+      "sha256": "96a7972873a47f3c2e30b15416bf2f6dc8464675b2902d5f4701adcf6e506577"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-authoring-001.log",
+      "kind": "untracked",
+      "sha256": "c6572ca0ad93fe4aeac0a8edf8bcbe71e2b687969391ebd9ec8fc7daba46b85e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-check-001.log",
+      "kind": "untracked",
+      "sha256": "5a90a2ff1d78940d0768629f7c98910fab8e7f6d9c45216e6e1e71945594f266"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-check-002.log",
+      "kind": "untracked",
+      "sha256": "a168e9df2e598f87c376943eb72c9ae4bbec779e5e1dadd6167c4c002248ac97"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-check-003.log",
+      "kind": "untracked",
+      "sha256": "039bccdb52f0087f8300a77c48d5daf10de18224a1d407a29dc1bba43bd7d2a5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-check-004.log",
+      "kind": "untracked",
+      "sha256": "c26db6d1c5d8f64ed558591509a403c8a265aa69d4bde571d3bf1f8ecc65dddd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-check-005.log",
+      "kind": "untracked",
+      "sha256": "4b10d4938d06e6330a8424f1cf082d1495f4c1b59e24a93814ad300e76a5c21a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-core-full-001.log",
+      "kind": "untracked",
+      "sha256": "54a5a42d4bbcc0760c50641eca5fb5dbc0682bd0a98dd78cd654b2ced18d7cd1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-core-full-002.log",
+      "kind": "untracked",
+      "sha256": "dee526b35da640c8f8c29c58b4e8becedddd1b372263c14565c68eb1e4677f4e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-core-full-003.log",
+      "kind": "untracked",
+      "sha256": "4328e11d7b73557530bf7b2e082c98f1251d29461f8355e508309710a9c8edd0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-live-001.log",
+      "kind": "untracked",
+      "sha256": "10cef5b59ad57a10a2dec2811a34233b31cef30d62b4a4cb92655b7b2455ed1a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-proc-001.log",
+      "kind": "untracked",
+      "sha256": "f31df6e64a1688bc7b35845f76fdac39811da5744634b86bd52f54361d3eb684"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-release-001.log",
+      "kind": "untracked",
+      "sha256": "d3c113c1733cf5acd2140000fe1855584f1d8d56fd3831925ad33982efc2b672"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-runtime-001.log",
+      "kind": "untracked",
+      "sha256": "1456352755b1425d1360561978a655b4c13a6b173f176a58e3b8d5d8e77deb12"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-runtime-002.log",
+      "kind": "untracked",
+      "sha256": "c6dc2d9395db4217c28fb143c8ee724a0492eb7474beeb980defec06db77bab1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-skill-data-001.log",
+      "kind": "untracked",
+      "sha256": "6eca61fcc2571745152fb6f41aaff4a6fac4aa6ff71325ea3e08a590c611ddd7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/evidence/camec-r01-withdraw-001.log",
+      "kind": "untracked",
+      "sha256": "fb4f45de9bd9424badef5546491927c74f036f651bbdf3b1814a1aa12d13c3af"
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "kind": "untracked",
+      "sha256": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "kind": "untracked",
+      "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252"
+    },
+    {
+      "path": "core_enhanced/docs/skill_target_contract.md",
+      "kind": "tracked/dirty",
+      "sha256": "6cb5a2c6bc1cbd839f776a4ecf06054b7df3b703083d6f277f057a44b723bbec"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "kind": "untracked",
+      "sha256": "18bffb2d6a78f505938b2ead9c3c37d8142b8b3d3a95d6cad3d345dcb230782d"
+    },
+    {
+      "path": "core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs",
+      "kind": "tracked/dirty",
+      "sha256": "a13c6bcaddb6121fa0c7d379744084a156527a1840d4778f054fc0e60164b9d3"
+    },
+    {
+      "path": "core_enhanced/src/bin/generate_event_contract_fixture.rs",
+      "kind": "tracked/dirty",
+      "sha256": "15cbc3c64d5331863c89c815d823f336bfc47816cf80c3432409c471d3355785"
+    },
+    {
+      "path": "core_enhanced/src/bin/generate_inventory_contract_fixture.rs",
+      "kind": "tracked/dirty",
+      "sha256": "62cc9f67f355f71d8146f5149db21d84beb0806331d32aaa62ec32474316deb5"
+    },
+    {
+      "path": "core_enhanced/src/bin/generate_shop_contract_fixture.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ab6021acc08fff20066924b6c305ada5922275f9da12223db4ddda37fdbc911e"
+    },
+    {
+      "path": "core_enhanced/src/game/ability.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c7cec94493e6de6d2ebb005941f3f80a276396e3803afb07f5d5a884d65ab195"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "kind": "untracked",
+      "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring/tests.rs",
+      "kind": "untracked",
+      "sha256": "ea4a0435c75ee8dc529b94c1e5670ae2aa4bac3cd4e199face4f44360620028f"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/battlefield/field.rs",
+      "kind": "tracked/clean",
+      "sha256": "66859782c24b0b2ad65ee5c2b95b344c00c75128e11419224d46422aa1336047"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/battlefield/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "54d0466d93ac176ed131c57ccdd4954966bf2224d1a41ee5e0943f9a9ae77144"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/buffs.rs",
+      "kind": "tracked/dirty",
+      "sha256": "f516ccdca92745cca3f4f99c044bb0e16bc134eb55599e196e3cfc0fcf538688"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/cooldown.rs",
+      "kind": "tracked/clean",
+      "sha256": "fa401d4db5a2c6572a8ef404979303fe4c5b957e1aa3160f62befef12a3d55f4"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/basic_attack.rs",
+      "kind": "tracked/dirty",
+      "sha256": "071b9a4552d5bb2cae7b94cbdf4b55e2f47bcaf60e6488ad180fc50751a86339"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "kind": "tracked/dirty",
+      "sha256": "62ce89f2d0d8200c82531a82a8f271035bfef96c52f2fefba0afc17b619e8ab1"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "kind": "untracked",
+      "sha256": "600fcbad2734539d90dfd55c780a5370d1b8e3109774bc6cc39846baafd29c00"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/build.rs",
+      "kind": "tracked/dirty",
+      "sha256": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "kind": "tracked/dirty",
+      "sha256": "1ccd3ca9b7c87339d32f0c7c047f1532c52a5be2eb7007079e0a90ca654440f6"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c2faa80ae08c04c294defdc2474765128b4d336e0be51d3d57145ae591e43cbf"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+      "kind": "tracked/dirty",
+      "sha256": "abdcb6de0b58487011f28df0652a7531fccabec2fa2e6ac833662d30eaf6ce71"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/field_work.rs",
+      "kind": "untracked",
+      "sha256": "507b0ced1cf6923238bf48d737545aa7bb2beff317bdf6a0b8660462304a9d66"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/ids.rs",
+      "kind": "tracked/clean",
+      "sha256": "90ca5e04a490a29a0278400769e95a41387e8021a3b377f4745df5f3572dd824"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "e7abfa23ab3adba2c34dc6649830d8502614845603cac90399bada6e9b3910a0"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+      "kind": "tracked/dirty",
+      "sha256": "1fbc2ce8bd7f51e5dd2fd6edd2b30f41d3318672c133fc1e7169c026e1de0417"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/engine.rs",
+      "kind": "tracked/dirty",
+      "sha256": "89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+      "kind": "tracked/dirty",
+      "sha256": "9e546c166984517d20956c69f70ef9666297dd6c51b0c29477e00bf1a7c7156e"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "096f70bc180482ae54d3ef142989ca44b7cc677cb1a050c56df19286ff77ce32"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/path.rs",
+      "kind": "tracked/clean",
+      "sha256": "c75566b9973c279715e6135f61ae5ec8d006a0b501f46d8b069ac47c807d9d23"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/planner.rs",
+      "kind": "tracked/dirty",
+      "sha256": "58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "kind": "tracked/dirty",
+      "sha256": "764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/steering.rs",
+      "kind": "tracked/dirty",
+      "sha256": "30d0ffce0f3a15536bd666d6c66631f66cc1630de493631e9be9fe4134a8d9cd"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+      "kind": "tracked/dirty",
+      "sha256": "4ca957c60c97be29f673abda8c73a7e21b0067cad3aba303ca00af84f950913c"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/projectile_math.rs",
+      "kind": "tracked/dirty",
+      "sha256": "94494dc82ccfbade743cd08eeb44ab446175346a921832c99db8eec1edd88c14"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/resonance_runtime.rs",
+      "kind": "tracked/clean",
+      "sha256": "2fb543328ed61d342945a18b44beaeedf147be6797ec56a630ee779e657090fb"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ee52fbcd1f92c5730be3fa4e0d2d4dabca782c41721d66553cb0b60fa2b0c314"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ebfa24d1ddf878b19bac1bce8843d1675d9af6f455bbbdc306e4d3750a9f4c32"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "kind": "tracked/dirty",
+      "sha256": "8c586e5a98252579eb1093c24ac85304d1b27fff7d83cafb1b9e54966081eef5"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+      "kind": "tracked/clean",
+      "sha256": "6bd8faff6ccd9447fdc925ff996b014d322a5a613eba772d7eea74069b6cdbea"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "kind": "tracked/dirty",
+      "sha256": "214699763233c0bda691dbb3f3a46d7b64824b8ab315895cfc62f5d9e040ec77"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/spatial.rs",
+      "kind": "tracked/dirty",
+      "sha256": "5304298d16cecf124ab17259ffd93d7e43a194d5908d4652e96e07e2e5227a62"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "kind": "untracked",
+      "sha256": "3a970eb9bcac440ae61b2a9074fecc4d3654b347b7d9fd43511e6b1386fb884e"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "kind": "untracked",
+      "sha256": "9fc236ce1032422b89ac3b965be6ef25b465dad114c73498d189fa5301ecc095"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/tactical_relocation.rs",
+      "kind": "untracked",
+      "sha256": "0a4d60e734961fd83161621ac1cb72ec2ca04adbbf790adc1456184f50ed54f3"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/tactical_stance.rs",
+      "kind": "untracked",
+      "sha256": "61af123232aba8af42cdc864738cab3e174b787da8f403c824ff7fcca456f570"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/tactical_swap.rs",
+      "kind": "untracked",
+      "sha256": "96658a9fe1d98b5d69dffb9094d8c9ddf5fa40a985dda6a82e63002d9a73a7c0"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/target_usefulness.rs",
+      "kind": "tracked/dirty",
+      "sha256": "66fdac1b86462a06d6a97362fe035740496db89682df4dd664fcce13e4f7be70"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/targeting.rs",
+      "kind": "tracked/dirty",
+      "sha256": "0d9308926ce1fe5bea6c5dd0c2da96b42cb66235b10c967597fb2d5287f5457e"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/triggers.rs",
+      "kind": "tracked/dirty",
+      "sha256": "303313fcaa5e27df6b886f1d03274baa902723e3c899953f23b164c859b0f34d"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "kind": "tracked/dirty",
+      "sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "kind": "untracked",
+      "sha256": "23eadbd1192cfe28e2e94f3d555b1ebf283ec6d319e9cec5e2120a654a1bde93"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "kind": "tracked/dirty",
+      "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/enums.rs",
+      "kind": "tracked/dirty",
+      "sha256": "cac118b9704c9c461d3e8c6146943d097ffc0e531a7fc6e54bf0b81473857b00"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "kind": "tracked/dirty",
+      "sha256": "e20c7ff9ab45a4797c615b744dbfc15848267af40b040f04a192ba6362ad2c5a"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/ids.rs",
+      "kind": "tracked/clean",
+      "sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c740b990aef0013af17d7261f7d06ebf7950a1588338457904902c3a8e09b76e"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "kind": "tracked/dirty",
+      "sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/result_stats.rs",
+      "kind": "tracked/dirty",
+      "sha256": "1b11b716a276ab3bfd0590836f44ec71ffe0f01f800a309f8020d15ff7e8556b"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "kind": "tracked/dirty",
+      "sha256": "1caed730779f276b0e83369d2f3bbd818272c557cf56c7775b37a883561aebc1"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "kind": "untracked",
+      "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+      "kind": "tracked/dirty",
+      "sha256": "3db4f9e21c6bb82e0c0c0d3044c4f5a3b7c7354c3893facac58ff25b0ab1485f"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/tile_range.rs",
+      "kind": "tracked/dirty",
+      "sha256": "73930102fc59b03f028189681934de2859b2dad19e76d3622f4967b5f594e8aa"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/types.rs",
+      "kind": "tracked/dirty",
+      "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f"
+    },
+    {
+      "path": "core_enhanced/src/game/behavior.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c38657dd64aeae18fbb6a4998cfeb65cc45b015a897f379360236b2b4c3e2552"
+    },
+    {
+      "path": "core_enhanced/src/game/boss_omen.rs",
+      "kind": "tracked/dirty",
+      "sha256": "3ca97f8660c0d2c5a9d4a552668f2b1de6db31a24f8a9eec7937f4f30ce4e986"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_power.rs",
+      "kind": "tracked/dirty",
+      "sha256": "4815c9a1b4e1504495b8b334320092c05a13499896de8e94eb0120fb0f20015b"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_preview/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "2ffc0349e15f5becf3b55bdb0a031a049d8f8be38bce780eb1f251c6aedd5ca1"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_preview/template.rs",
+      "kind": "tracked/clean",
+      "sha256": "ec61b9349d93289c3fd5abaebadfcb98b56153e93e3f3f3e7b83fb8346004895"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_preview/threat.rs",
+      "kind": "tracked/clean",
+      "sha256": "50413b8a3bd00bcd9389bac813f44016e1db9fb850dbc3bec19152c82be0c356"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_preview/types.rs",
+      "kind": "tracked/dirty",
+      "sha256": "84c21a423240c5f4a1f2f29130aa4ddaf30713cdceeb3d24846b880a8d4888f8"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_preview/validation.rs",
+      "kind": "tracked/clean",
+      "sha256": "a2d2288a3782566f15fe93c08e19d3fde85f57e6fc17c33b4f3c0c90781257df"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/balance.rs",
+      "kind": "tracked/clean",
+      "sha256": "73ea3359b03b51bec6ee91035780759b7f095db7028a28152146e294d8753799"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ae109e5d93e2f320d1efe4c1e6098504135d0c43eaee91b5539efc843e93c3a6"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/boss_runtime.rs",
+      "kind": "untracked",
+      "sha256": "692b48d0cdf959508b3d9dc0ff17e27346fad4cc5a180383ab9a4d0683aae548"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/defense_object.rs",
+      "kind": "tracked/dirty",
+      "sha256": "44402a83b8899597e056f3431c0f98fcfef79176802e4e8446467825c03332a2"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+      "kind": "tracked/dirty",
+      "sha256": "adf3cc875e2d0dd7a69322db6791741b6a86ec5a8c6aa5fec706101bf0b2cf69"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/mission_policy.rs",
+      "kind": "tracked/dirty",
+      "sha256": "342d6ce5db5793f4d362cbbd66bcf9fb6f4166716f2f0ea9381f74d3e426c8c2"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "1d2471ba782f70fe8ee6810e3f5cf4ed0a0003deffe2fc3ef76da6b50a934346"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+      "kind": "tracked/dirty",
+      "sha256": "96a4c84176dbb11de3eb67a151aa8579d73cf53f88075c723af6e0a90063262c"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+      "kind": "tracked/dirty",
+      "sha256": "29bd34218ca7772d68340cfbd83ad6b5482f802b432dbe93d6e8c4199ed990b6"
+    },
+    {
+      "path": "core_enhanced/src/game/combat_setup/scenario_groups.rs",
+      "kind": "tracked/dirty",
+      "sha256": "2033834050577ba3f20e4fb2d2fb6c5414ccbba96fc7b5ee8552f719f215cfe7"
+    },
+    {
+      "path": "core_enhanced/src/game/data/abnormality_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "149c8ad4d9b7cf5c9f05dd14f11607d104b58ca1a4e0273bc95787b814221a7d"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_omen_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "b4e70dd3c9954d3dfc5236945673e12a5996c62aa2b5216c5f9bf8800f9d1343"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "kind": "untracked",
+      "sha256": "5c259a9892c30c5ab3f818370ac3a8f241ffd2b3562a365d0525da4d13c6701d"
+    },
+    {
+      "path": "core_enhanced/src/game/data/consumable_data.rs",
+      "kind": "tracked/clean",
+      "sha256": "7003f6fe01ac684f504ad395079cab5d458646523f6c3bfb3f61c0b7a76e8ec9"
+    },
+    {
+      "path": "core_enhanced/src/game/data/corroded_employee_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "d9d3c47daad1b91f472794d04e24c93c29264870422634abc0f8edfff6cf5aca"
+    },
+    {
+      "path": "core_enhanced/src/game/data/corroded_wave_data.rs",
+      "kind": "tracked/clean",
+      "sha256": "ca103b8afe59a8e9da3b518cb6f17235dcd8cd3b8eda5d3e642048467594fd74"
+    },
+    {
+      "path": "core_enhanced/src/game/data/employee_data.rs",
+      "kind": "tracked/clean",
+      "sha256": "9b5e3132c13095b251aa23f43e6a261fa052ffc2017745c978a60702719f557d"
+    },
+    {
+      "path": "core_enhanced/src/game/data/equipment_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e"
+    },
+    {
+      "path": "core_enhanced/src/game/data/event_data.rs",
+      "kind": "tracked/clean",
+      "sha256": "ca491e2fc7e5560c5a1af51aa749d5a76df0aa4ccb58cfc80e76c77a86b248fb"
+    },
+    {
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "kind": "tracked/dirty",
+      "sha256": "3b33c7c232752f9f67be5d314b6aa66928592704c5de480452555324fe44b7e4"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "aa619db5274f1bfe267d1888b5c2ddb216e8ef70bd3e62ec2fa7ae05b68a4d5f"
+    },
+    {
+      "path": "core_enhanced/src/game/data/pve_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "9cf14de8b9f23243b0ef8cca44656d5febaae41d095e37ac72532e2b4ef5ba2c"
+    },
+    {
+      "path": "core_enhanced/src/game/data/reward_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "3c89fd94fc377bc8c3eb99d00fcbbd464f129b219fad7ec7578e0e6be15cb152"
+    },
+    {
+      "path": "core_enhanced/src/game/data/run_policy_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c443a4cf199f4095e2762443268afaac8bdc8b080547f2ab2142ec13015b9403"
+    },
+    {
+      "path": "core_enhanced/src/game/data/shop_data.rs",
+      "kind": "tracked/clean",
+      "sha256": "f864e44cc03a303333dfe2c06a48547ff119fc667f92557ee0eb2a618c533780"
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "338e42a21ad0c54c442bbb406a892ba3069e374d3b0c86440563e80fb6e7dbf2"
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_fragment_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c2a7d63c134e19c00b209df5530c68e5df3caac64122e6630f936d9ea03d3504"
+    },
+    {
+      "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+      "kind": "untracked",
+      "sha256": "ba387bf3d492950eb7d0cb65bf886901689a29b3717373d17c4579c1b1df96f8"
+    },
+    {
+      "path": "core_enhanced/src/game/data/validation.rs",
+      "kind": "tracked/dirty",
+      "sha256": "6b636e9ecd48d9084435a930f3201d22d253d93b956e74e823d42469c3942e60"
+    },
+    {
+      "path": "core_enhanced/src/game/data/visual_novel_data.rs",
+      "kind": "tracked/clean",
+      "sha256": "a7a3d58a77eee64eabdca8ce829d7089dfdad2501ea4963bb3ef0d962898fde5"
+    },
+    {
+      "path": "core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+      "kind": "tracked/dirty",
+      "sha256": "fdbb00d4e1066e7591e6d19ecf4bdad42d3095d8f532186fea7265c1bbefd5c9"
+    },
+    {
+      "path": "core_enhanced/src/game/determinism.rs",
+      "kind": "tracked/clean",
+      "sha256": "73fbb8c9c472f8caa741b6678a00decce5e244ed9beaaaeb55b7fa93c8ff1549"
+    },
+    {
+      "path": "core_enhanced/src/game/employee.rs",
+      "kind": "tracked/dirty",
+      "sha256": "8d3940dce94a7e8d8858b39c2c48c22f367d76d3b31d23319e76859cc53eaa54"
+    },
+    {
+      "path": "core_enhanced/src/game/employee_psychology.rs",
+      "kind": "tracked/clean",
+      "sha256": "fc130cf2cb5bb3182962f6feae485078b8d63cd7dbbb4c73971d364a01ef9f69"
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "kind": "tracked/dirty",
+      "sha256": "4b8d897d8c683b4f7ce87ba0a168d1545b495c784928deb0dfaaa2fd041b1083"
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_progression.rs",
+      "kind": "untracked",
+      "sha256": "ce29245f00aee072318dde20c33c0431716d539f8b656ee99ffc82668f74949b"
+    },
+    {
+      "path": "core_enhanced/src/game/enums.rs",
+      "kind": "tracked/clean",
+      "sha256": "85255ba6c40ba34e3d8aa3c546d5d54e187d84146347f0de7db04c0bc0971b58"
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "kind": "tracked/dirty",
+      "sha256": "65677baa2deee83e1dcae974500d0da7ed61c633c8688fd8804ef60600261614"
+    },
+    {
+      "path": "core_enhanced/src/game/events/mod.rs",
+      "kind": "tracked/clean",
+      "sha256": "4acac34f15c46b045f0851f9815e66e702c5204dabc6623958118a5e69248b13"
+    },
+    {
+      "path": "core_enhanced/src/game/growth.rs",
+      "kind": "tracked/clean",
+      "sha256": "9005a4751ab9a7bcf1c12253028a752828495d6166caee4b1cdcc56e30c50bb4"
+    },
+    {
+      "path": "core_enhanced/src/game/managers/mod.rs",
+      "kind": "tracked/clean",
+      "sha256": "d9994fffb6da77a943c83d4e475d4888e4fd3fb631ae519dd28ef9d45ffbec91"
+    },
+    {
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "kind": "tracked/dirty",
+      "sha256": "b78fca9caefe3ebda1203686e3efc6f6dcb1f02e7b9cb2276280aea9532809a9"
+    },
+    {
+      "path": "core_enhanced/src/game/map/executor.rs",
+      "kind": "tracked/clean",
+      "sha256": "1651e86854cc5c8660e14c7553795312043d0a9a03c76b3796529feea7fc9b2c"
+    },
+    {
+      "path": "core_enhanced/src/game/map/facility.rs",
+      "kind": "tracked/dirty",
+      "sha256": "0122d19e7e146ca6b3a8e94bad29416a4c8fd06a1e8f4a6a02076ab16fb2f6cd"
+    },
+    {
+      "path": "core_enhanced/src/game/map/facility_generator.rs",
+      "kind": "tracked/dirty",
+      "sha256": "65045baf30051e3a2bca8861b50907db959192864d973c660f4e3820219db5a4"
+    },
+    {
+      "path": "core_enhanced/src/game/map/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "28f110766f5a2a6d3c3c241e02bde41ea66c86b58a268f1bd6b2bdfb9e673990"
+    },
+    {
+      "path": "core_enhanced/src/game/map/progression.rs",
+      "kind": "tracked/dirty",
+      "sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014"
+    },
+    {
+      "path": "core_enhanced/src/game/map/session.rs",
+      "kind": "tracked/clean",
+      "sha256": "b826a9658993a7e26dc26c576b05b02415491f113bcd529c92d05e3baf654d05"
+    },
+    {
+      "path": "core_enhanced/src/game/map/types.rs",
+      "kind": "tracked/dirty",
+      "sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f"
+    },
+    {
+      "path": "core_enhanced/src/game/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a"
+    },
+    {
+      "path": "core_enhanced/src/game/monolith.rs",
+      "kind": "tracked/dirty",
+      "sha256": "45adf95e78f50216add4084ac60b77ed472f7345548582d38a50ff73c5200ec2"
+    },
+    {
+      "path": "core_enhanced/src/game/range_preview.rs",
+      "kind": "tracked/dirty",
+      "sha256": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338"
+    },
+    {
+      "path": "core_enhanced/src/game/recruitment.rs",
+      "kind": "tracked/clean",
+      "sha256": "71feaeed0f04ee3c2bcb623751021ea66ebd1d00e5196b3673e970d6a069800b"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/board.rs",
+      "kind": "tracked/clean",
+      "sha256": "3318239bfa2142d812f561c7aff2010221767ebb36520b90b62a7e2f48ec213c"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/economy.rs",
+      "kind": "tracked/clean",
+      "sha256": "3b59a3cee8fe87573e709d30f5ab75fe1d9ac8c62e1a966151485c983995724d"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+      "kind": "untracked",
+      "sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/inventory.rs",
+      "kind": "tracked/dirty",
+      "sha256": "2b32a864fdae8958a0d57610d5193b688fe1699c4ae4f46a5cc43bbb50371de3"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/item_slot.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c20b7a68a8f5c88f2f506445a81989b8d27a764fd8890e97e15d45466294a381"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "846a2da2439c31442b60cabba61a8987bb9f151c91e99991e2e34f8287cf7053"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/selection.rs",
+      "kind": "tracked/dirty",
+      "sha256": "8c01853213e60a5773234fa557a6e97174220f755c77df2b98dd15e03caee7a3"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/state.rs",
+      "kind": "tracked/dirty",
+      "sha256": "d9f4733134d5e6fb1e371d08fd39de66bf6a987df80916a12a231f7896c1af8b"
+    },
+    {
+      "path": "core_enhanced/src/game/reward.rs",
+      "kind": "tracked/dirty",
+      "sha256": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f"
+    },
+    {
+      "path": "core_enhanced/src/game/reward_policy.rs",
+      "kind": "tracked/dirty",
+      "sha256": "e16a04368d089f96e7b07b74cb566ba3b825a3126a1d56094f92f37248f8f5f3"
+    },
+    {
+      "path": "core_enhanced/src/game/skill_fragment.rs",
+      "kind": "tracked/dirty",
+      "sha256": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d"
+    },
+    {
+      "path": "core_enhanced/src/game/stats.rs",
+      "kind": "tracked/dirty",
+      "sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269"
+    },
+    {
+      "path": "core_enhanced/src/game/visual_novel.rs",
+      "kind": "tracked/clean",
+      "sha256": "bd9c83551d5547a5ca425859fd40db197d3b64fbfcab27683dc5ce5a89ed29c3"
+    },
+    {
+      "path": "core_enhanced/src/game/wave_resolution.rs",
+      "kind": "tracked/dirty",
+      "sha256": "06c5c9f6cb9a9038be2cc326775c84b4f866d9554783cf3b6b833105be87018a"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "kind": "tracked/dirty",
+      "sha256": "adfa59201b744ad6873cf1b68e9bf3053f6725ec20dae106103bf0ad70f059e1"
+    },
+    {
+      "path": "core_enhanced/src/game/world/action_capability.rs",
+      "kind": "tracked/dirty",
+      "sha256": "10dab9e64a4e5d93a0a0e7d79b9f5421678bdc1985df812ed3f6f8f6981bf2dd"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "kind": "tracked/dirty",
+      "sha256": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8"
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c80a2b14703539d9ca48a2422bc4135a83c94ed3414e98079cb791e17d5f1731"
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/catalog.rs",
+      "kind": "tracked/clean",
+      "sha256": "d5d40a841eafebb551caeab7b6b2a19b87d96921a52b42c7855f40049e0976ad"
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/commands.rs",
+      "kind": "tracked/dirty",
+      "sha256": "567b5b573d33eea7d929930ee7eb5a75ca90004d69aec94f5d077d452dc19a5c"
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/fixtures.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c319893cc907e4982d05f3a8880d269f987061d97e451ddac624e114acf25bfb"
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/grants.rs",
+      "kind": "tracked/dirty",
+      "sha256": "d89359a6b8c77dc902fb5f511adf20adb40863db1d82516f6d5a2f03cc02375b"
+    },
+    {
+      "path": "core_enhanced/src/game/world/admin/tests.rs",
+      "kind": "tracked/dirty",
+      "sha256": "90870149d9f23ecb49a19e5b57eecc0f9877bcc562a1e6d6af76b52c7c1a6594"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "kind": "untracked",
+      "sha256": "7d9c8f707a90ff5c32cf3de2355d4188f2906045248445ccdcac336d56e20df1"
+    },
+    {
+      "path": "core_enhanced/src/game/world/battle_capability.rs",
+      "kind": "tracked/dirty",
+      "sha256": "fb924f16500316703eb2e07ff2c4d59dd5117f169ec0d1d3464d3fc1355af885"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "kind": "tracked/dirty",
+      "sha256": "13813d8b3c8eaaf79d4c22c8c266ffb1de13bd9bd3679539366864bd71f966e8"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat_trace.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092"
+    },
+    {
+      "path": "core_enhanced/src/game/world/event_node.rs",
+      "kind": "tracked/dirty",
+      "sha256": "947ceb5f2c4735846ef9df3ed9982da27884301284a7feb8c236515f73eeb861"
+    },
+    {
+      "path": "core_enhanced/src/game/world/facility.rs",
+      "kind": "tracked/dirty",
+      "sha256": "35ce3dfe8e206ded40dd0ef6614fab0c41716ebafdadbadc808dc5819c14e4c6"
+    },
+    {
+      "path": "core_enhanced/src/game/world/grant_state.rs",
+      "kind": "untracked",
+      "sha256": "248d55a4feca4e4fac376327254c6ff6ce31721c31b7df750f13c9c3420167de"
+    },
+    {
+      "path": "core_enhanced/src/game/world/headquarters.rs",
+      "kind": "tracked/dirty",
+      "sha256": "72306a6451e26ffda6068051e6616ce0576097e3cfdfce2596eeb9c0e0f23fd2"
+    },
+    {
+      "path": "core_enhanced/src/game/world/helpers.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22"
+    },
+    {
+      "path": "core_enhanced/src/game/world/maintenance.rs",
+      "kind": "tracked/dirty",
+      "sha256": "faa07e016b125dc1df2f8f2d2d11a8e048551a44f3a6e128d847cb3c86959744"
+    },
+    {
+      "path": "core_enhanced/src/game/world/map_content.rs",
+      "kind": "tracked/dirty",
+      "sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26"
+    },
+    {
+      "path": "core_enhanced/src/game/world/map_encounters.rs",
+      "kind": "tracked/dirty",
+      "sha256": "86d1a53cc437447538029b18b5af5c5feccb667db0486e94363d8caa80707d2d"
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "kind": "untracked",
+      "sha256": "4edc42a44b2fb8da17ec0717b7a01687bd328c41129f0673cf57491f26ef1ed7"
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "kind": "tracked/dirty",
+      "sha256": "79e61208e0a84a81a2b8571d4a45385d32eb54506cf927518648ac44fc421b08"
+    },
+    {
+      "path": "core_enhanced/src/game/world/reward.rs",
+      "kind": "tracked/dirty",
+      "sha256": "2b5d853e59c55cb809e1925b521a36dfef45703360a88c923391497e699e4ef7"
+    },
+    {
+      "path": "core_enhanced/src/game/world/shop.rs",
+      "kind": "tracked/dirty",
+      "sha256": "22c5403b0de7169d47d62f4372ae65752998c122fc0fd5a0181bce6282a45d81"
+    },
+    {
+      "path": "core_enhanced/src/game/world/snapshot.rs",
+      "kind": "tracked/dirty",
+      "sha256": "35759cd8335ef6565b0dabded301d69a7513be125ddbb0014eda29e37294c10e"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "kind": "tracked/dirty",
+      "sha256": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+      "kind": "untracked",
+      "sha256": "ad394aed58e848b349877d38a798e5868976e1bdff628a1b00c76986d4221404"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/combat.rs",
+      "kind": "tracked/dirty",
+      "sha256": "dd832e37d83358a4f045346b6fbcfea1f1e1dbac219f92307af4af2d19c57507"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/equipment.rs",
+      "kind": "tracked/dirty",
+      "sha256": "550706db6c5f89c81d1df6274d71d5466e3682963bc1d2a43d6b500bfe5b0567"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/facility.rs",
+      "kind": "tracked/dirty",
+      "sha256": "b84804bfcd9a3a5a2ae9ae7812f6b27d52c5e7ca3105d1dd25cdad571748cbe0"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/map_flow.rs",
+      "kind": "tracked/dirty",
+      "sha256": "de71a01b347041b177946cdb55b46e6eefa687b2e7d19adf130e4ecc77e6fe36"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+      "kind": "untracked",
+      "sha256": "ab0f37131a5142647599fac3eaf85bfc694f4b9c6e572e97f743f4c41dd481f3"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "7b49a1e16fc81226a9be6bf756d64a0eb2d0f1769d0b37b85de92db791c757a8"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/node_sessions.rs",
+      "kind": "tracked/dirty",
+      "sha256": "8fdbc74dcef09155b7f79617d04006174b0395e3270d0e65b53c9f5b3dc026d5"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+      "kind": "tracked/dirty",
+      "sha256": "723c5b0342e0aab164d4f8bc0d3f69545c4394d014d6ca31f7fc1e7b518562fa"
+    },
+    {
+      "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c2a44c5a2def17c1a264c8746047c5bd6100735e876a51a318dc44193d7a19ac"
+    },
+    {
+      "path": "core_enhanced/src/game/world/visual_novel_triggers.rs",
+      "kind": "tracked/dirty",
+      "sha256": "ae14bc093afa121cc2e6cfc09164e0f94e6572ace81d388387b1f5ea096a4e87"
+    },
+    {
+      "path": "core_enhanced/src/lib.rs",
+      "kind": "tracked/dirty",
+      "sha256": "c5d2df11bca72fa8f1fb9b3f76d8369aa2b065cd2a9f8fe7d1461efa8807b1f5"
+    },
+    {
+      "path": "core_enhanced/tests/common/mod.rs",
+      "kind": "tracked/dirty",
+      "sha256": "784fd1ec86e604d55d6567a2d540d8f78095fa4319501a11b3199c33587f28c2"
+    },
+    {
+      "path": "core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+      "kind": "untracked",
+      "sha256": "1bd51a81d6b528ea4a80895bf95348c8417fd7113c77a73c6a2543d7821cf8c0"
+    },
+    {
+      "path": "core_enhanced/tests/live_item_skill_activation.rs",
+      "kind": "tracked/dirty",
+      "sha256": "607251fd94ea8819551ef505e3f782be1593121fbef6df6675d446da168bf1f6"
+    },
+    {
+      "path": "core_enhanced/tests/live_skill_catalog_audit.rs",
+      "kind": "tracked/dirty",
+      "sha256": "d07a40f566d9c598a4fecb285b107f923f256b25f2770e8c52b1f90cef278b7f"
+    },
+    {
+      "path": "core_enhanced/tests/ron_loading.rs",
+      "kind": "tracked/dirty",
+      "sha256": "749f9e718a2b85c7d20d770df0f960ac9b02cfff188901841428687d4b4846db"
+    },
+    {
+      "path": "core_enhanced/tests/skill_runtime_contract.rs",
+      "kind": "tracked/dirty",
+      "sha256": "d93e878163e5e4cd0f8f2a2be68c2c914e0c219150c9a73961113bf9124db8e8"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/common/board.rs",
+      "kind": "tracked/clean",
+      "sha256": "c5d1686db77b289f7411f2060ffb1851202213f7ed33bafabf1a3938d65477ab"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/common/mod.rs",
+      "kind": "tracked/clean",
+      "sha256": "d93d55868ba27e6ecc317c3894d8ebe9199f3c582cba4a14ee2b268314524ce5"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/common/query.rs",
+      "kind": "tracked/dirty",
+      "sha256": "872adf364e3a7f2770f091ad70b461a0b605d4d778202655f6a63fbc14e72bdd"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/common/run.rs",
+      "kind": "tracked/clean",
+      "sha256": "b4163b7f1ed38c5b1714676a9db6903b42e02a4fa17fcc764151c254ca9f15b5"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/common/scenario.rs",
+      "kind": "tracked/dirty",
+      "sha256": "b0941bca2363249701d27aa5648ce13ddc73d534fc0027e7ae86336ec0c4057e"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/common/types.rs",
+      "kind": "tracked/dirty",
+      "sha256": "e289a7f1ec4d141252de629826266ab58b12077d5efa212d6eb17a85f1a4131f"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/little_red.rs",
+      "kind": "tracked/clean",
+      "sha256": "7c1d281d55f411bce31f24a0e70462414f755140542b203e8315fe4202da2fa3"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/melting_love.rs",
+      "kind": "tracked/clean",
+      "sha256": "1f9ddd9db7597029cc8013fe14dc4b549da0b01c280765fcd33e2d3d63cfd8cd"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/mod.rs",
+      "kind": "tracked/clean",
+      "sha256": "893cc593da82bfb4235017d0ee02d690d11859a53edd5ad4500e36461b97679b"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/nothing_there.rs",
+      "kind": "tracked/clean",
+      "sha256": "ddcd4c99169d177c280e846f3cfa19d30903d6cc9664594b68ae31d321866405"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test/white_night.rs",
+      "kind": "tracked/clean",
+      "sha256": "70e8446270d84a2453a73d652f606807bef6264a35775599fcf05225097cae33"
+    },
+    {
+      "path": "core_enhanced/tests/skill_test_suite.rs",
+      "kind": "tracked/clean",
+      "sha256": "4f2186b161f61c9192b6021895bbc3638e2444964ded36f9b9972dac82d835b2"
+    },
+    {
+      "path": "game_resources/data/abnormalities/base.ron",
+      "kind": "tracked/dirty",
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "game_resources/data/boss_omen/chains.ron",
+      "kind": "tracked/dirty",
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "game_resources/data/boss_runtime/base.ron",
+      "kind": "untracked",
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "game_resources/data/buffs/base.ron",
+      "kind": "tracked/clean",
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "game_resources/data/bundle.ron",
+      "kind": "tracked/dirty",
+      "sha256": "1a71648c66d5e70ca5450279d8bbe789247ffb9d45fd286f2277b38ccf6d249f"
+    },
+    {
+      "path": "game_resources/data/consumables/base.ron",
+      "kind": "tracked/dirty",
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "game_resources/data/employees/definitions.ron",
+      "kind": "tracked/dirty",
+      "sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01"
+    },
+    {
+      "path": "game_resources/data/enemies/corroded_employees.ron",
+      "kind": "tracked/dirty",
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "game_resources/data/enemies/corroded_wave_presets.ron",
+      "kind": "tracked/clean",
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "game_resources/data/equipments/base.ron",
+      "kind": "tracked/dirty",
+      "sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088"
+    },
+    {
+      "path": "game_resources/data/events/rewards/base.ron",
+      "kind": "tracked/dirty",
+      "sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f"
+    },
+    {
+      "path": "game_resources/data/events/shops/base.ron",
+      "kind": "tracked/clean",
+      "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+    },
+    {
+      "path": "game_resources/data/events/story/base.ron",
+      "kind": "tracked/clean",
+      "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+    },
+    {
+      "path": "game_resources/data/map/battlefield_archetypes.ron",
+      "kind": "tracked/clean",
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "game_resources/data/map/battlefield_templates.ron",
+      "kind": "tracked/clean",
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "game_resources/data/map/facility_templates.ron",
+      "kind": "tracked/dirty",
+      "sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c"
+    },
+    {
+      "path": "game_resources/data/map/node_assignment_profiles.ron",
+      "kind": "tracked/dirty",
+      "sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3"
+    },
+    {
+      "path": "game_resources/data/map/node_definitions.ron",
+      "kind": "tracked/clean",
+      "sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7"
+    },
+    {
+      "path": "game_resources/data/pve/encounters.ron",
+      "kind": "tracked/dirty",
+      "sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde"
+    },
+    {
+      "path": "game_resources/data/run/policy.ron",
+      "kind": "tracked/dirty",
+      "sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31"
+    },
+    {
+      "path": "game_resources/data/skill_fragments/base.ron",
+      "kind": "tracked/dirty",
+      "sha256": "19d781da6675927931344c0bc5272ebd673cf59a3df94f5dbd577c1d667b3e74"
+    },
+    {
+      "path": "game_resources/data/skills/base.ron",
+      "kind": "tracked/dirty",
+      "sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5"
+    },
+    {
+      "path": "game_resources/data/summoned_units/base.ron",
+      "kind": "untracked",
+      "sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0"
+    },
+    {
+      "path": "game_resources/data/visual_novel_triggers/base.ron",
+      "kind": "tracked/clean",
+      "sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875"
+    },
+    {
+      "path": "game_resources/data/visual_novels/base.ron",
+      "kind": "tracked/clean",
+      "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+    }
+  ],
+  "external_actual": {
+    "kind": "none required",
+    "bundle_schema": 2,
+    "data_selector": "embedded game_resources/data; isolated tests only",
+    "store": "existing V4/V5 contract retained; no personal files read or changed",
+    "transport": "core metadata serde-skipped; no server/Unity integration claim",
+    "toolchain": {
+      "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+      "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)",
+      "features": "default",
+      "test_profile": "test",
+      "release_check": "release optimized lib"
+    }
+  },
+  "exclusions": [
+    "This record itself, COMPLETION_AUDIT.md, audit-evidence/ and audit-local /tmp output (review outputs)",
+    "Mutable parent ROADMAP_STATUS, history and operating views; not implementation authorities",
+    "Unrelated dirty files outside captured scope (baseline status retained); no attribution to R01",
+    "Build target cache/generated executables (input and terminal result identities retained)",
+    "External server/Unity, personal stores, deployment, optional feature validation and performance SLAs outside this Goal"
+  ],
+  "known_limitations": [
+    "Core-only source metadata omitted from existing wire DTO/checkpoints",
+    "Existing event entry bounds apply; serialized-byte budget does not measure skipped metadata heap",
+    "Full derived-event source propagation, generation/copy/advanced Flow/relic features deferred by exact Goal scope"
+  ],
+  "mutation_rule": "No source/data/test/contract/evidence/PLAN/NOTES edits while fresh GEX-20 is open; findings return to separate GEX-10."
+}

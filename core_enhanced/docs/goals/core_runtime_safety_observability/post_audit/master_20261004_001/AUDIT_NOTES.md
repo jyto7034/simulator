@@ -1,0 +1,11 @@
+# Master audit execution notes
+
+Reviewer is a new implementation/Phase-audit nonparticipant. Outputs are confined to this directory; temporary restoration copies use a newly created system temporary directory and are removed. No product, frozen record, target or prior audit is modified.
+
+Fresh executions: entire Master target/member/archive/hash/VCS-kind comparison, fresh source/record/reference membership enumeration, all606 transitive inputs; actual extraction of all four archives; GNU patch forward/reverse with fuzz0 and exact membership/bytes; upstream artifact/composite digest checks;12 acceptance/13 IVA/20 Phase-dimension completeness; cumulative S1F02→S2→N01→Master deltas;34 receipt/log/source/command-input bindings, nonzero selectors and suite totals; end-currentness.
+
+Conditional reuse: exact Phase semantic assessments, actual runtime/build/public/CLI/host/service/browser/cost/allocator executions, dependency archive/source analysis,35 release payload/timing comparisons,251 browser frames, PC576 and original R05 classification. Methods and original required meanings were inspected; their hash-bound inputs/results and exact source identities are current. No whole matrix or service relaunch is performed solely for reviewer freshness. Additional direct review concentrates on cross-Phase identity, allowance/first fault, live commit, prepared host persistence, detach/discard, queue-independent lifecycle and bounded standard exporter storage.
+
+Audit-local false starts: first currentness assertion compared lexically sorted path strings to the product manifest's pathlib component order. The sets/bytes did not differ; checker now sorts both row lists by the same path key. A few exploratory source paths and one JSON shape assumption did not exist; searches then located actual files/keys. These discovery/checker errors made no product changes and are not failed product tests. Final checkers pass.
+
+N02 was reported promptly to the root: the canonical Core contract still has a direct hyperlink to the historical metric contract. This is recorded separately, not corrected during the audit. The finding does not invalidate implementation/required behavior or the supplied current definition. Any correction belongs to the owner after this pass closes.

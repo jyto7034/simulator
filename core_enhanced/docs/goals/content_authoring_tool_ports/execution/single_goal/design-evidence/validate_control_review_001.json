@@ -1,0 +1,278 @@
+{
+  "kind": "bounded read-only GEX-10 implementation helper review; not completion audit",
+  "reviewer": "/root/r03_design_review",
+  "scope": "Currently introduced authoring::validate/control, metadata/diagnostics, queue wrapper and generated setup connections only",
+  "authority": "Parent-scoped user-adopted AUTORUN §8 delegation; root sole production writer",
+  "created_at": "2026-09-10T00:54:28.880916+00:00",
+  "verdict": "Two concrete diagnostic source-retention defects; no concrete validate RAII/nesting/arithmetic/A-token/fingerprint defect found in inspected paths. No completion or runtime validation verdict.",
+  "findings": [
+    {
+      "id": "VCR01",
+      "priority": "P2",
+      "kind": "implementation_diagnostic_source_loss",
+      "title": "Final snapshot recheck drops an already known pack identity",
+      "source": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "source_sha256": "b7d729e6cc18d878220f781f7e501f5867baf0ef7c96cf6d756c44f210652229",
+      "lines": "359–373; producer identity assignment288–290",
+      "observed_code": "let (bytes, identity) = root.read(&record.path, limits.max_file_bytes)?; ... return Err(error(&record.path, \"file changed during snapshot acquisition\"));",
+      "failure_condition": "A catalog or manifest is replaced, changed, removed or becomes unreadable after initial acquisition and before Inventory::finish reopens it.",
+      "actual": "The failure has the actual path and Acquisition phase, but pack_id is None. FileRecord.pack_id was already assigned from the successfully decoded/validated manifest. The propagated finish error is returned before SourceReceipt exists and never reaches bind_diagnostic.",
+      "expected": "Preserve the already observed manifest identity as the candidate snapshot owner on recheck failure; do not infer a new identity from changed bytes or directory name.",
+      "minimal_fix": "Bind record.pack_id at both the root.read map_err and changed-file error producer. Preserve catalog kind too where known, by recording that acquisition provenance if necessary. Unknown pre-manifest identity remains None.",
+      "focused_validation_suggestion": "Extend existing acquire_with_hook race tests (snapshot/tests.rs236–277) to assert code/phase/path/actual original pack_id for changed contents, same-byte replacement and reread/no-follow failure. Also keep malformed first manifest pack_id=None.",
+      "validation_status": "Static source path verified; no test or runtime command executed."
+    },
+    {
+      "id": "VCR02",
+      "priority": "P2",
+      "kind": "implementation_diagnostic_related_source_loss",
+      "title": "Aggregate writer-resolution failures discard all known contributing source addresses",
+      "source": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "source_sha256": "6e330f4ed46a6f7ee149902eb925c15351894014c35d9cea1f984a4211aaf400",
+      "lines": "358–359,400–406,426–432; Writer source25–31,278–289,310–318; wrapper content_pack/mod.rs111–112",
+      "observed_code": "return Err(error(\"selection\", Some(&target), \"winners\", \"ambiguous writers require an explicit winner or explicit chain\"));",
+      "failure_condition": "Two maximal writers require a selection, duplicate Add writers exist, or the writer graph is disconnected/cyclic.",
+      "actual": "The new diagnostic preserves target kind/id and Resolution phase but has source_file=\"selection\", pack_id=None and an empty related_sources array. Every participating Writer already owns its actual pack/file/field source. SourceReceipt::bind_diagnostic can only enrich existing exact paths and cannot recover contributors from this aggregate address.",
+      "expected": "Leave aggregate primary pack absent, while attaching bounded actual contributing writer sources so the consumer can locate the conflicting inputs without reopening files or parsing the cause.",
+      "minimal_fix": "At these aggregate producers construct related_sources from the relevant actual Writer.source records (heads for ambiguity; Add writers for duplicate base; relevant graph writers for connectivity). Deduplicate deterministically and preserve target DefinitionKind/CatalogKind. Do not pick an arbitrary primary pack.",
+      "focused_validation_suggestion": "Use two replacement heads and duplicate Add sources with different manifest identities/paths; assert Resolution phase, target, no fabricated primary pack, and exact related pack/file/operation-field rows through authoring::validate and plain load. Existing per-writer error tests do not cover this aggregate path.",
+      "validation_status": "Static producer→wrapper path verified; no test or runtime command executed."
+    }
+  ],
+  "assessed_boundaries": [
+    {
+      "topic": "RAII and nested scopes",
+      "assessment": "No concrete defect found in current synchronous validate path. ScopeGuard is constructed immediately after ACTIVE installation and before entry poll; early Err and unwind drop it. Nested run returns before replacement/guard installation, so ignored nested failure cannot reset the outer budget. Limits are validated before nested detection; this affects error precedence but not scope ownership. Phase guards restore in lexical reverse-drop order. No RefCell borrow is held across operation or serialization callbacks.",
+      "source_spans": [
+        "authoring/control.rs134–240"
+      ]
+    },
+    {
+      "topic": "Cancellation/sticky error precedence",
+      "assessment": "Existing sticky execution failure wins later polls and cancellation; cancellation is checked before each newly attempted charge/admit and at acceptance. An execution fault is recovered as structured AuthoringError::Execution even where intermediate domain code wraps/swallow its GameError. If cancellation first appears at acceptance it can supersede an operation-returned Content error; current code makes that precedence explicit through run ordering, and no contradictory approved rule was established in this limited review. CancellationToken is host-owned and not retained by AuthoringContent.",
+      "source_spans": [
+        "authoring/control.rs147–179,202–240",
+        "authoring/mod.rs103–114"
+      ]
+    },
+    {
+      "topic": "A/B externally retained state",
+      "assessment": "validate does not take an existing content/application mutably; candidate loader state is local, and AuthoringContent owns only its token and usage. Failed validation drops the local candidate and control scope. Source metadata is immutably borrowed through the owning generation Arc; no cycle or global metadata retention found. This only establishes current validate/token ownership, not future trial-session rollback.",
+      "source_spans": [
+        "authoring/mod.rs47–114",
+        "data/mod.rs224–278",
+        "content_pack/mod.rs124–143"
+      ]
+    },
+    {
+      "topic": "Limit arithmetic and metadata units",
+      "assessment": "charge/admit use checked addition and inclusive >limit rejection. Metadata Counter admits each JSON writer chunk before incrementing, so its encoded byte total has no arithmetic bypass found. It counts the serialized (source table,writers) tuple, not heap/capacity/source-receipt bytes. SourceTable and writer records are allocated before this serialization count; the metric must not be presented as preallocation or whole-process heap enforcement. Definitions peak is the maximum admitted selected-raw/final count, not measured allocation count. No encoded-cap arithmetic bug established.",
+      "source_spans": [
+        "authoring/control.rs90–123,255–352",
+        "content_pack/mod.rs84–125",
+        "content_pack/raw.rs238–259,574–580"
+      ]
+    },
+    {
+      "topic": "Queue and generated setup bridge",
+      "assessment": "The wrapper preserves BinaryHeap order and suppresses a rejected push while leaving sticky failure in the attempt. In the inspected generated startup path enqueue_scenario_events polls after each enqueue, startup polls before success, setup polls before return, and run polls before acceptance; suppressed enqueue cannot publish a successful validate result through that path. All helpers are no-ops outside an ACTIVE scope, preserving ordinary push success semantics. Broader runtime leaf coverage was intentionally not audited.",
+      "source_spans": [
+        "battle/core/queue.rs7–34",
+        "battle/core/sim.rs1489–1515,1790–1827",
+        "events/combat.rs142–221",
+        "data/validation.rs1492–1621"
+      ]
+    },
+    {
+      "topic": "Fingerprint and ordinary successful loading",
+      "assessment": "Current canonical resolver input remains ContentContract, pack identities, WriterReceipt semantic fields and final definitions in existing sorted slots. New retained SourceTable is outside that hash and generation metadata has no mutable public accessor. New scope checks are inactive on ordinary calls. No static fingerprint or ordering regression found; authoring/tests.rs24–62 asserts parity but was not executed by this helper. New retained metadata costs remain a measurement obligation for root.",
+      "source_spans": [
+        "content_pack/resolver.rs43–66,435–460",
+        "content_pack/mod.rs120–143",
+        "data/mod.rs259–262"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "first_captured_sha256": "fe4a6d69b11d0fcedc4e49625c760850dd12517cfd8a3eb6ca1da1c03c941ca6",
+      "report_close_sha256": "fe4a6d69b11d0fcedc4e49625c760850dd12517cfd8a3eb6ca1da1c03c941ca6",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–118"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "first_captured_sha256": "4ecfe2d8f5109fc8eefef3be02fcf645b755788011ad093791ea00de044adf38",
+      "report_close_sha256": "4ecfe2d8f5109fc8eefef3be02fcf645b755788011ad093791ea00de044adf38",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–459"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/authoring/tests.rs",
+      "first_captured_sha256": "e5491524dcd16e354cc560c12f8582e35b38c1d3cbd8b7bdaa8850f2ed640ad6",
+      "report_close_sha256": "e5491524dcd16e354cc560c12f8582e35b38c1d3cbd8b7bdaa8850f2ed640ad6",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–161"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "first_captured_sha256": "cdca9db0f33f6590406162db40c8a238fe195f55c5e4754383fb86065fa03fab",
+      "report_close_sha256": "cdca9db0f33f6590406162db40c8a238fe195f55c5e4754383fb86065fa03fab",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–214"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "first_captured_sha256": "6e330f4ed46a6f7ee149902eb925c15351894014c35d9cea1f984a4211aaf400",
+      "report_close_sha256": "6e330f4ed46a6f7ee149902eb925c15351894014c35d9cea1f984a4211aaf400",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–130",
+        "188–464"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "first_captured_sha256": "e6db361ad983b1fcb4f0a33b827b99ec2ecf4f62dfbbd51e578dfa874b71b7d7",
+      "report_close_sha256": "e6db361ad983b1fcb4f0a33b827b99ec2ecf4f62dfbbd51e578dfa874b71b7d7",
+      "drift_observed": false,
+      "inspected_spans": [
+        "210–273",
+        "562–691"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "first_captured_sha256": "b7d729e6cc18d878220f781f7e501f5867baf0ef7c96cf6d756c44f210652229",
+      "report_close_sha256": "b7d729e6cc18d878220f781f7e501f5867baf0ef7c96cf6d756c44f210652229",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–168",
+        "220–431"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+      "first_captured_sha256": "3c44c1cb3fc4df3ef5ebea29cfbdb939a3614735ec77e2391f2ee4b4a1fd0616",
+      "report_close_sha256": "3c44c1cb3fc4df3ef5ebea29cfbdb939a3614735ec77e2391f2ee4b4a1fd0616",
+      "drift_observed": false,
+      "inspected_spans": [
+        "85–178"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "first_captured_sha256": "36a6fdcaa3542f552a6d9746b250c35170a023762e2ce54d2cba619947308529",
+      "report_close_sha256": "36a6fdcaa3542f552a6d9746b250c35170a023762e2ce54d2cba619947308529",
+      "drift_observed": false,
+      "inspected_spans": [
+        "45–227"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "first_captured_sha256": "84d12f3cd0a9d3bbe7df5910ce4e83964fd3152a7409b1f0bbcb23b46cae4644",
+      "report_close_sha256": "84d12f3cd0a9d3bbe7df5910ce4e83964fd3152a7409b1f0bbcb23b46cae4644",
+      "drift_observed": false,
+      "inspected_spans": [
+        "224–310"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/validation.rs",
+      "first_captured_sha256": "656e46763c9f35a5e3201992866a928664c62467a0936439027ea8584517eb80",
+      "report_close_sha256": "656e46763c9f35a5e3201992866a928664c62467a0936439027ea8584517eb80",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1480–1781"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "first_captured_sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66",
+      "report_close_sha256": "d88719417886eea018ae08a66c750884f163051f160d0b9b21ece3c1eddffc66",
+      "drift_observed": false,
+      "inspected_spans": [
+        "126–233"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "first_captured_sha256": "a2b3edc11f43590fc368cf3c9ae7be8919055bdd3d5c2aa448d533a9372714d5",
+      "report_close_sha256": "a2b3edc11f43590fc368cf3c9ae7be8919055bdd3d5c2aa448d533a9372714d5",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–44"
+      ],
+      "capture_basis": "First hash captured after targeted content read; no earlier byte snapshot claim"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/diagnostic_tests.rs",
+      "first_captured_sha256": "44f71a76740ea775834c3101b989c3bb516bd33fd5fc537d51ab3e6999fe15d9",
+      "report_close_sha256": "44f71a76740ea775834c3101b989c3bb516bd33fd5fc537d51ab3e6999fe15d9",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1–240"
+      ],
+      "capture_basis": "First hash captured after targeted content read; no earlier byte snapshot claim"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "first_captured_sha256": "0aee574a7e766b34de84c6be573b801697a19485e49af457fe2fac09ce8863c7",
+      "report_close_sha256": "0aee574a7e766b34de84c6be573b801697a19485e49af457fe2fac09ce8863c7",
+      "drift_observed": false,
+      "inspected_spans": [
+        "1484–1517",
+        "1784–1827",
+        "control call symbol search only elsewhere"
+      ],
+      "capture_basis": "Before main content read"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+      "first_captured_sha256": "8d358e4c0769a391e4f4fdbfdf948082efb6bde320dc401cec6f58de6631548e",
+      "report_close_sha256": "8d358e4c0769a391e4f4fdbfdf948082efb6bde320dc401cec6f58de6631548e",
+      "drift_observed": false,
+      "inspected_spans": [
+        "215–288"
+      ],
+      "capture_basis": "First hash captured after targeted content read; no earlier byte snapshot claim"
+    }
+  ],
+  "drift_summary": [],
+  "limits": {
+    "tests_or_builds_executed": 0,
+    "runtime_executions": 0,
+    "production_or_formal_writes": 0,
+    "subagents_spawned": 0,
+    "not_reviewed": [
+      "in-progress runtime leaf charge coverage",
+      "simulate/trace/CLI absence",
+      "future trial session mutation or rollback",
+      "complete predecessor currentness",
+      "whole-process peak allocation"
+    ],
+    "raw_source_capture": "Hashes before/after main reads except explicitly marked supplemental files. Root was writing runtime source concurrently. Any drift is reported per file; snapshots are not a repository-wide freeze."
+  }
+}

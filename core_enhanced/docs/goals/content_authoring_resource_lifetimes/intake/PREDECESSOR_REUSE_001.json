@@ -1,0 +1,33 @@
+{
+  "kind": "R05 scoped predecessor evidence reuse assessment; not new GEX verdict",
+  "inspected_observation": "PREDECESSOR_CURRENTNESS_001.json",
+  "unique_changed_paths": [
+    "core_enhanced/docs/goal_execution_pipeline(1).md",
+    "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+    "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+    "core_enhanced/src/game/battle/core/movement/rapier_backend.rs"
+  ],
+  "code_delta": {
+    "path": "core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+    "archived_sha256": "450096f5339412dff37663d9c667a4bc92841f4358e55dce753ddb610d31f697",
+    "current_sha256": "34b701fe2c1676cb30fa3a085e9601f9fe3c187d6b692ca3a2b74d7e47c29fe8",
+    "exact_diff": "PREDECESSOR_DELTA_001.patch",
+    "finding": "three line-wrap changes only; no token/order/string/comment change",
+    "whitespace_removed_bytes_equal": true,
+    "disposition": "existing gameplay/clone/determinism/test evidence remains applicable to unchanged token sequence; no new gameplay test claimed"
+  },
+  "instruction_delta": {
+    "paths": [
+      "core_enhanced/docs/goal_execution_pipeline(1).md",
+      "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md"
+    ],
+    "basis": "ROADMAP_STATUS v1.66 records0064–0066; current P2G r5 and GEX r4 revision notes; adopted single-r-v2",
+    "disposition": "current request narrowing and delegated-policy/work-pause execution rules; historical Goal meaning/acceptance and gameplay are unchanged; current rules apply to R05. Old exact manifests stay historically mismatched, not rewritten as green."
+  },
+  "prior_outputs": "all 18 R04 sealed report/registry outputs plus target and all 47 R01–R03 registered outputs unchanged in currentness read",
+  "selection": "R05 remains first incomplete; R00–R04 existing completion evidence reused with this impact assessment",
+  "limits": "No new independent audit; GEX-00 must revalidate then-current prerequisite basis and all R05 qualification conditions."
+}

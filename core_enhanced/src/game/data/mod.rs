@@ -2,6 +2,7 @@ use std::{
     collections::HashMap,
     fmt::Display,
     hash::Hash,
+    ops::Deref,
     sync::{Arc, OnceLock},
 };
 
@@ -10,8 +11,9 @@ use uuid::Uuid;
 use crate::game::{
     battle::buffs::BuffDatabase,
     data::{
-        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
+        abnormality_data::AbnormalityDatabase,
         boss_omen_data::BossOmenChainDatabase,
+        boss_runtime_data::BossRuntimeDatabase,
         consumable_data::{ConsumableDatabase, ConsumableMetadata},
         corroded_employee_data::CorrodedEmployeeProfileDatabase,
         corroded_wave_data::CorrodedWavePresetDatabase,
@@ -19,6 +21,7 @@ use crate::game::{
         equipment_data::{EquipmentDatabase, EquipmentMetadata},
         event_data::EventDatabase,
         pve_data::PveEncounterDatabase,
+        relic_data::RelicDatabase,
         reward_data::RewardDatabase,
         run_policy_data::RunPolicyData,
         shop_data::ShopDatabase,
@@ -29,11 +32,17 @@ use crate::game::{
     },
 };
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+use crate::game::data::abnormality_data::AbnormalityMetadata;
+
 // 환상체 (기물) 정보
 pub mod abnormality_data;
 
 // 끝없는 탐사 보스 전조 체인 데이터
 pub mod boss_omen_data;
+
+// Boss Runtime authoring and immutable compiled definitions.
+pub mod boss_runtime_data;
 
 // 섭취 아이템 정보
 pub mod consumable_data;
@@ -62,6 +71,9 @@ pub mod visual_novel_trigger_data;
 // Production live-RON schema version and source-aware diagnostics.
 pub mod live_ron;
 
+// External authored packs are resolved before any database indexes are built.
+pub mod content_pack;
+
 // PvE 전투 데이터
 pub mod pve_data;
 
@@ -75,7 +87,12 @@ pub mod run_policy_data;
 pub mod skill_data;
 
 // 직원 스킬 파편 정보
+pub mod relic_data;
 pub mod skill_fragment_data;
+
+// Boss-authored hostile summoned-unit definitions.
+pub mod independent_object_data;
+pub mod summoned_unit_data;
 
 // 상점 정보
 pub mod shop_data;
@@ -158,6 +175,7 @@ pub(crate) fn build_string_index<T>(
 }
 
 pub struct GameDataBase {
+    runtime_safety: Arc<crate::runtime_safety::RuntimeSafetySettings>,
     /// Versioned map/battlefield catalogs parsed with the same live source set.
     pub(crate) map_catalogs: live_ron::GameplayMapCatalogs,
 
@@ -188,6 +206,9 @@ pub struct GameDataBase {
     /// 끝없는 탐사 보스 전조 체인 데이터
     pub boss_omen_data: Arc<BossOmenChainDatabase>,
 
+    /// Boss Runtime immutable compiled definition catalog
+    pub boss_runtime_data: Arc<BossRuntimeDatabase>,
+
     /// 런/월드 진행 정책 데이터
     pub run_policy: Arc<RunPolicyData>,
 
@@ -199,12 +220,142 @@ pub struct GameDataBase {
 
     /// 직원 스킬 파편 메타데이터 DB
     pub skill_fragment_data: Arc<SkillFragmentDatabase>,
+    pub relic_data: Arc<RelicDatabase>,
+    pub(crate) resource_data: Arc<crate::game::resource::ResourceCatalog>,
+
+    /// Generation-local immutable amount plans. Authored expressions remain
+    /// publication-blocked until the WP02 battle consumer is connected.
+    value_expr_data: Arc<crate::game::value_expr::ValueExprCatalog>,
 
     /// UUID 기반 아이템 조회 레지스트리
     pub item_registry: ItemRegistry,
 }
 
-pub struct GameDataBaseParts {
+/// An opaque, fully validated game-data publication.
+///
+/// Production Core construction consumes this token rather than accepting a
+/// bare database or a fixture builder. Catalog access is read-only through
+/// `Deref`; the owned database Arc is not exposed to external consumers.
+#[derive(Clone)]
+pub struct ValidatedGameData(Arc<ContentGeneration>);
+
+crate::authoring::clone_shape::newtype_shape!(ValidatedGameData);
+
+struct ContentGeneration {
+    database: Arc<GameDataBase>,
+    identity: Arc<content_pack::ContentIdentity>,
+    source_receipt: content_pack::SourceReceipt,
+    source_metadata: Option<content_pack::ContentSourceMetadata>,
+}
+
+/// Admission keys include the immutable host profile independently of gameplay semantics.
+#[derive(Debug, Clone, Copy, serde::Serialize)]
+pub struct ContentAdmissionIdentity<'a> {
+    pub content: &'a content_pack::ContentIdentity,
+    pub runtime_safety_sha256: &'a str,
+}
+
+impl ValidatedGameData {
+    pub fn runtime_safety(&self) -> &Arc<crate::runtime_safety::RuntimeSafetySettings> {
+        self.0.database.runtime_safety()
+    }
+
+    pub fn admission_identity(&self) -> ContentAdmissionIdentity<'_> {
+        ContentAdmissionIdentity {
+            content: self.identity(),
+            runtime_safety_sha256: self.runtime_safety().effective_sha256(),
+        }
+    }
+
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub fn load_live_embedded_with_runtime_safety(
+        settings: Arc<crate::runtime_safety::RuntimeSafetySettings>,
+    ) -> Result<Self, live_ron::LiveRonError> {
+        let validated =
+            crate::game::value_expr::with_parse_limits(settings.expression_parse(), || {
+                live_ron::parse_gameplay_ron_sources(live_ron::GameplayRonSourceSet::embedded())?
+                    .into_validated()
+            })?;
+        let database = Arc::new(
+            GameDataBase::from_validated_live_catalogs_with_runtime_safety(validated, settings)?,
+        );
+        database.value_expr_catalog().ensure_runtime_publishable()?;
+        database.try_validate_generated_combat_preview_contracts()?;
+        Ok(Self::from(database))
+    }
+    /// Explicit embedded fixture capability. Production release input uses
+    /// `content_pack::load` and never falls back to this source set.
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub fn load_live_embedded() -> Result<Self, live_ron::LiveRonError> {
+        GameDataBase::load_live_sources(live_ron::GameplayRonSourceSet::embedded())
+    }
+
+    pub fn database(&self) -> &GameDataBase {
+        &self.0.database
+    }
+
+    pub fn identity(&self) -> &content_pack::ContentIdentity {
+        &self.0.identity
+    }
+
+    pub(crate) fn identity_arc(&self) -> Arc<content_pack::ContentIdentity> {
+        Arc::clone(&self.0.identity)
+    }
+
+    pub fn source_receipt(&self) -> &content_pack::SourceReceipt {
+        &self.0.source_receipt
+    }
+
+    /// Exact immutable external-resolution metadata, when publication has an
+    /// authored snapshot. A bare fixture database has no such provenance.
+    pub fn source_metadata(&self) -> Option<&content_pack::ContentSourceMetadata> {
+        self.0.source_metadata.as_ref()
+    }
+
+    /// Unwrap the validated publication for explicitly enabled fixture tools.
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub fn into_fixture_database_arc(self) -> Arc<GameDataBase> {
+        self.0.database.clone()
+    }
+
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub(crate) fn into_database_arc(self) -> Arc<GameDataBase> {
+        self.0.database.clone()
+    }
+
+    pub(crate) fn database_arc(&self) -> Arc<GameDataBase> {
+        self.0.database.clone()
+    }
+}
+
+impl Deref for ValidatedGameData {
+    type Target = GameDataBase;
+
+    fn deref(&self) -> &Self::Target {
+        self.database()
+    }
+}
+
+impl AsRef<GameDataBase> for ValidatedGameData {
+    fn as_ref(&self) -> &GameDataBase {
+        self.database()
+    }
+}
+
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+impl From<Arc<GameDataBase>> for ValidatedGameData {
+    fn from(database: Arc<GameDataBase>) -> Self {
+        let identity = content_pack::fixture_identity(&database);
+        Self(Arc::new(ContentGeneration {
+            database,
+            identity: Arc::new(identity),
+            source_receipt: content_pack::SourceReceipt { files: vec![] },
+            source_metadata: None,
+        }))
+    }
+}
+
+struct GameDataBaseParts {
     pub(crate) map_catalogs: live_ron::GameplayMapCatalogs,
     pub abnormality_data: Arc<AbnormalityDatabase>,
     pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
@@ -219,12 +370,16 @@ pub struct GameDataBaseParts {
     pub visual_novel_trigger_data: Arc<VisualNovelTriggerDatabase>,
     pub pve_data: Arc<PveEncounterDatabase>,
     pub boss_omen_data: Arc<BossOmenChainDatabase>,
+    pub boss_runtime_data: Arc<BossRuntimeDatabase>,
     pub run_policy: Arc<RunPolicyData>,
     pub skill_data: Arc<SkillDatabase>,
     pub buff_data: Arc<BuffDatabase>,
     pub skill_fragment_data: Arc<SkillFragmentDatabase>,
+    pub relic_data: Arc<RelicDatabase>,
+    pub(crate) resource_data: Arc<crate::game::resource::ResourceCatalog>,
 }
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 pub struct GameDataBuilder {
     map_catalogs: live_ron::GameplayMapCatalogs,
     abnormality_data: Arc<AbnormalityDatabase>,
@@ -240,12 +395,16 @@ pub struct GameDataBuilder {
     visual_novel_trigger_data: Arc<VisualNovelTriggerDatabase>,
     pve_data: Arc<PveEncounterDatabase>,
     boss_omen_data: Arc<BossOmenChainDatabase>,
+    boss_runtime_data: Arc<BossRuntimeDatabase>,
     run_policy: Arc<RunPolicyData>,
     skill_data: Arc<SkillDatabase>,
     buff_data: Arc<BuffDatabase>,
     skill_fragment_data: Arc<SkillFragmentDatabase>,
+    relic_data: Arc<RelicDatabase>,
+    resource_data: Arc<crate::game::resource::ResourceCatalog>,
 }
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 impl GameDataBuilder {
     pub fn empty() -> Self {
         Self::empty_with_map_catalogs(live_ron::embedded_map_catalogs_for_fixtures())
@@ -267,17 +426,46 @@ impl GameDataBuilder {
             visual_novel_trigger_data: Arc::new(VisualNovelTriggerDatabase::new(vec![])),
             pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
             boss_omen_data: Arc::new(BossOmenChainDatabase::new(vec![])),
+            boss_runtime_data: Arc::new(BossRuntimeDatabase::default()),
             run_policy: Arc::new(RunPolicyData::builtin()),
             skill_data: Arc::new(SkillDatabase::new(vec![])),
             buff_data: Arc::new(BuffDatabase::new(vec![])),
             skill_fragment_data: Arc::new(SkillFragmentDatabase::new(vec![])),
+            relic_data: Arc::new(RelicDatabase::default()),
+            resource_data: Arc::new(crate::game::resource::ResourceCatalog { resources: vec![] }),
+        }
+    }
+
+    pub fn from_validated(data: &ValidatedGameData) -> Self {
+        let data = data.database();
+        Self {
+            map_catalogs: data.map_catalogs.clone(),
+            abnormality_data: Arc::clone(&data.abnormality_data),
+            corroded_employee_data: Arc::clone(&data.corroded_employee_data),
+            corroded_wave_data: Arc::clone(&data.corroded_wave_data),
+            employee_definition_data: Arc::clone(&data.employee_definition_data),
+            consumable_data: Arc::clone(&data.consumable_data),
+            equipment_data: Arc::clone(&data.equipment_data),
+            shop_data: Arc::clone(&data.shop_data),
+            reward_data: Arc::clone(&data.reward_data),
+            event_data: Arc::clone(&data.event_data),
+            visual_novel_data: Arc::clone(&data.visual_novel_data),
+            visual_novel_trigger_data: Arc::clone(&data.visual_novel_trigger_data),
+            pve_data: Arc::clone(&data.pve_data),
+            boss_omen_data: Arc::clone(&data.boss_omen_data),
+            boss_runtime_data: Arc::clone(&data.boss_runtime_data),
+            run_policy: Arc::clone(&data.run_policy),
+            skill_data: Arc::clone(&data.skill_data),
+            buff_data: Arc::clone(&data.buff_data),
+            skill_fragment_data: Arc::clone(&data.skill_fragment_data),
+            relic_data: Arc::clone(&data.relic_data),
+            resource_data: Arc::clone(&data.resource_data),
         }
     }
 
     /// Build a minimal fixture-oriented builder with embedded live buff data.
     ///
-    /// This is not the production live bundle loader. Production/server code
-    /// must use `GameDataBase::load_live_embedded()`. Tests use this helper
+    /// Load production content with [`content_pack::load`]. Tests use this helper
     /// when they need live buff definitions without pulling in the full live
     /// game-data bundle.
     pub fn live_defaults() -> Self {
@@ -420,6 +608,11 @@ impl GameDataBuilder {
         self
     }
 
+    pub fn with_boss_runtime_data(mut self, data: Arc<BossRuntimeDatabase>) -> Self {
+        self.boss_runtime_data = data;
+        self
+    }
+
     pub fn with_run_policy(mut self, policy: RunPolicyData) -> Self {
         self.run_policy = Arc::new(policy);
         self
@@ -440,6 +633,11 @@ impl GameDataBuilder {
         self
     }
 
+    pub fn with_resources(mut self, data: crate::game::resource::ResourceCatalog) -> Self {
+        self.resource_data = Arc::new(data);
+        self
+    }
+
     pub fn with_buffs(mut self, data: BuffDatabase) -> Self {
         self.buff_data = Arc::new(data);
         self
@@ -447,6 +645,11 @@ impl GameDataBuilder {
 
     pub fn with_buff_data(mut self, data: Arc<BuffDatabase>) -> Self {
         self.buff_data = data;
+        self
+    }
+
+    pub fn with_relics(mut self, data: RelicDatabase) -> Self {
+        self.relic_data = Arc::new(data);
         self
     }
 
@@ -461,26 +664,42 @@ impl GameDataBuilder {
     }
 
     pub fn build(self) -> GameDataBase {
-        GameDataBase::new(GameDataBaseParts {
-            map_catalogs: self.map_catalogs,
-            abnormality_data: self.abnormality_data,
-            corroded_employee_data: self.corroded_employee_data,
-            corroded_wave_data: self.corroded_wave_data,
-            employee_definition_data: self.employee_definition_data,
-            consumable_data: self.consumable_data,
-            equipment_data: self.equipment_data,
-            shop_data: self.shop_data,
-            reward_data: self.reward_data,
-            event_data: self.event_data,
-            visual_novel_data: self.visual_novel_data,
-            visual_novel_trigger_data: self.visual_novel_trigger_data,
-            pve_data: self.pve_data,
-            boss_omen_data: self.boss_omen_data,
-            run_policy: self.run_policy,
-            skill_data: self.skill_data,
-            buff_data: self.buff_data,
-            skill_fragment_data: self.skill_fragment_data,
-        })
+        self.build_with_runtime_safety(
+            crate::runtime_safety::RuntimeSafetySettings::embedded_shared(),
+        )
+        .expect("fixture database must satisfy its validation contracts")
+    }
+
+    pub fn build_with_runtime_safety(
+        self,
+        settings: Arc<crate::runtime_safety::RuntimeSafetySettings>,
+    ) -> Result<GameDataBase, live_ron::LiveRonError> {
+        GameDataBase::new_with_runtime_safety(
+            GameDataBaseParts {
+                map_catalogs: self.map_catalogs,
+                abnormality_data: self.abnormality_data,
+                corroded_employee_data: self.corroded_employee_data,
+                corroded_wave_data: self.corroded_wave_data,
+                employee_definition_data: self.employee_definition_data,
+                consumable_data: self.consumable_data,
+                equipment_data: self.equipment_data,
+                shop_data: self.shop_data,
+                reward_data: self.reward_data,
+                event_data: self.event_data,
+                visual_novel_data: self.visual_novel_data,
+                visual_novel_trigger_data: self.visual_novel_trigger_data,
+                pve_data: self.pve_data,
+                boss_omen_data: self.boss_omen_data,
+                boss_runtime_data: self.boss_runtime_data,
+                run_policy: self.run_policy,
+                skill_data: self.skill_data,
+                buff_data: self.buff_data,
+                skill_fragment_data: self.skill_fragment_data,
+                relic_data: self.relic_data,
+                resource_data: self.resource_data,
+            },
+            settings,
+        )
     }
 
     pub fn build_arc(self) -> Arc<GameDataBase> {
@@ -488,6 +707,7 @@ impl GameDataBuilder {
     }
 }
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 impl Default for GameDataBuilder {
     fn default() -> Self {
         Self::empty()
@@ -699,16 +919,36 @@ fn insert_item_index(by_uuid: &mut HashMap<Uuid, ItemIndex>, uuid: Uuid, new_ind
 }
 
 impl GameDataBase {
-    /// Load the production live RON bundle embedded at compile time.
-    ///
-    /// This is the single official live-data loader. It intentionally uses
-    /// `include_str!`; RON edits require recompilation and this is not a hot
-    /// reload or filesystem data-pack path.
-    pub fn load_live_embedded() -> Result<Arc<Self>, live_ron::LiveRonError> {
-        let parsed =
-            live_ron::parse_gameplay_ron_sources(live_ron::GameplayRonSourceSet::embedded())?;
-        parsed.validate_domain_catalogs()?;
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub(crate) fn load_live_sources(
+        sources: live_ron::GameplayRonSourceSet<'_>,
+    ) -> Result<ValidatedGameData, live_ron::LiveRonError> {
+        let validated = live_ron::parse_gameplay_ron_sources(sources)?.into_validated()?;
+        let game_data = Arc::new(Self::from_validated_live_catalogs(validated)?);
+        game_data
+            .value_expr_catalog()
+            .ensure_runtime_publishable()?;
+        game_data.try_validate_generated_combat_preview_contracts()?;
+        Ok(ValidatedGameData::from(game_data))
+    }
 
+    fn from_validated_live_catalogs(
+        validated: live_ron::ValidatedGameplayRon,
+    ) -> Result<Self, live_ron::LiveRonError> {
+        Self::from_validated_live_catalogs_with_runtime_safety(
+            validated,
+            crate::runtime_safety::RuntimeSafetySettings::embedded_shared(),
+        )
+    }
+
+    fn from_validated_live_catalogs_with_runtime_safety(
+        validated: live_ron::ValidatedGameplayRon,
+        runtime_safety: Arc<crate::runtime_safety::RuntimeSafetySettings>,
+    ) -> Result<Self, live_ron::LiveRonError> {
+        let live_ron::ValidatedGameplayRon {
+            parsed,
+            boss_runtime,
+        } = validated;
         let live_ron::ParsedGameplayRon {
             shops: shops_db,
             rewards: rewards_db,
@@ -716,6 +956,9 @@ impl GameDataBase {
             visual_novels: visual_novel_db,
             visual_novel_triggers: visual_novel_trigger_db,
             boss_omen_chains: boss_omen_db,
+            boss_runtime: _,
+            summoned_units: _,
+            resources: resource_catalog,
             abnormalities: abnormalities_db,
             corroded_employees: corroded_employee_db,
             corroded_wave_presets: corroded_wave_db,
@@ -725,46 +968,70 @@ impl GameDataBase {
             buffs: buffs_db,
             skills: skill_db,
             skill_fragments: skill_fragment_db,
+            relics: relic_db,
             pve_encounters: pve_db,
             run_policy,
             map_catalogs,
         } = parsed;
-
-        let game_data = Arc::new(Self::from_validated_parts(GameDataBaseParts {
-            map_catalogs,
-            abnormality_data: Arc::new(abnormalities_db),
-            corroded_employee_data: Arc::new(corroded_employee_db),
-            corroded_wave_data: Arc::new(corroded_wave_db),
-            employee_definition_data: Arc::new(employee_definition_db),
-            consumable_data: Arc::new(consumables_db),
-            equipment_data: Arc::new(equipments_db),
-            shop_data: Arc::new(shops_db),
-            reward_data: Arc::new(rewards_db),
-            event_data: Arc::new(event_db),
-            visual_novel_data: Arc::new(visual_novel_db),
-            visual_novel_trigger_data: Arc::new(visual_novel_trigger_db),
-            pve_data: Arc::new(pve_db),
-            boss_omen_data: Arc::new(boss_omen_db),
-            run_policy: Arc::new(run_policy),
-            skill_data: Arc::new(skill_db),
-            buff_data: Arc::new(buffs_db),
-            skill_fragment_data: Arc::new(skill_fragment_db),
-        }));
-        game_data
-            .try_validate_generated_combat_preview_contracts()
-            .map_err(|error| {
-                live_ron::LiveRonError::validation(
-                    "data/pve/encounters.ron",
-                    "generated_combat_preview",
-                    error.object_id,
-                    error.field_path,
-                    error.cause,
-                )
-            })?;
-        Ok(game_data)
+        let abnormality_data = Arc::new(abnormalities_db);
+        let corroded_employee_data = Arc::new(corroded_employee_db);
+        let corroded_wave_data = Arc::new(corroded_wave_db);
+        let employee_definition_data = Arc::new(employee_definition_db);
+        let consumable_data = Arc::new(consumables_db);
+        let equipment_data = Arc::new(equipments_db);
+        let shop_data = Arc::new(shops_db);
+        let reward_data = Arc::new(rewards_db);
+        let event_data = Arc::new(event_db);
+        let visual_novel_data = Arc::new(visual_novel_db);
+        let visual_novel_trigger_data = Arc::new(visual_novel_trigger_db);
+        let pve_data = Arc::new(pve_db);
+        let boss_omen_data = Arc::new(boss_omen_db);
+        let boss_runtime_data = Arc::new(boss_runtime);
+        let run_policy = Arc::new(run_policy);
+        let skill_data = Arc::new(skill_db);
+        let buff_data = Arc::new(buffs_db);
+        let skill_fragment_data = Arc::new(skill_fragment_db);
+        let relic_data = Arc::new(relic_db);
+        let resource_data = Arc::new(resource_catalog);
+        Self::new_with_runtime_safety(
+            GameDataBaseParts {
+                map_catalogs,
+                abnormality_data,
+                corroded_employee_data,
+                corroded_wave_data,
+                employee_definition_data,
+                consumable_data,
+                equipment_data,
+                shop_data,
+                reward_data,
+                event_data,
+                visual_novel_data,
+                visual_novel_trigger_data,
+                pve_data,
+                boss_omen_data,
+                boss_runtime_data,
+                run_policy,
+                skill_data,
+                buff_data,
+                skill_fragment_data,
+                relic_data,
+                resource_data,
+            },
+            runtime_safety,
+        )
     }
 
-    fn from_validated_parts(parts: GameDataBaseParts) -> Self {
+    fn new(parts: GameDataBaseParts) -> Result<Self, live_ron::LiveRonError> {
+        Self::new_with_runtime_safety(
+            parts,
+            crate::runtime_safety::RuntimeSafetySettings::embedded_shared(),
+        )
+    }
+
+    fn new_with_runtime_safety(
+        parts: GameDataBaseParts,
+        runtime_safety: Arc<crate::runtime_safety::RuntimeSafetySettings>,
+    ) -> Result<Self, live_ron::LiveRonError> {
         let GameDataBaseParts {
             map_catalogs,
             abnormality_data,
@@ -780,55 +1047,13 @@ impl GameDataBase {
             visual_novel_trigger_data,
             pve_data,
             boss_omen_data,
+            boss_runtime_data,
             run_policy,
             skill_data,
             buff_data,
             skill_fragment_data,
-        } = parts;
-        let item_registry = ItemRegistry::new(&consumable_data, &equipment_data);
-        Self {
-            map_catalogs,
-            abnormality_data,
-            corroded_employee_data,
-            corroded_wave_data,
-            employee_definition_data,
-            consumable_data,
-            equipment_data,
-            shop_data,
-            reward_data,
-            event_data,
-            visual_novel_data,
-            visual_novel_trigger_data,
-            pve_data,
-            boss_omen_data,
-            run_policy,
-            skill_data,
-            buff_data,
-            skill_fragment_data,
-            item_registry,
-        }
-    }
-
-    pub fn new(parts: GameDataBaseParts) -> Self {
-        let GameDataBaseParts {
-            map_catalogs,
-            abnormality_data,
-            corroded_employee_data,
-            corroded_wave_data,
-            employee_definition_data,
-            consumable_data,
-            equipment_data,
-            shop_data,
-            reward_data,
-            event_data,
-            visual_novel_data,
-            visual_novel_trigger_data,
-            pve_data,
-            boss_omen_data,
-            run_policy,
-            skill_data,
-            buff_data,
-            skill_fragment_data,
+            relic_data,
+            resource_data,
         } = parts;
 
         abnormality_data.validate_indexes();
@@ -844,12 +1069,51 @@ impl GameDataBase {
         visual_novel_trigger_data.validate_indexes();
         pve_data.validate_indexes();
         boss_omen_data.validate_indexes();
+        pve_data
+            .validate_boss_runtime_references(&boss_runtime_data)
+            .expect("invalid PvE Boss Runtime binding");
         run_policy
             .validate_contract()
             .expect("run policy data must satisfy contract");
         skill_data.validate_indexes();
+        boss_runtime_data
+            .get_summoned_unit_skill_validation(&skill_data)
+            .expect("invalid boss action or summoned skill reference");
         buff_data.validate_indexes();
         skill_fragment_data.validate_indexes();
+        relic_data
+            .validate_contract()
+            .and_then(|()| relic_data.validate_references(&equipment_data, &skill_fragment_data))
+            .map_err(|cause| {
+                live_ron::LiveRonError::validation(
+                    "data/relics/base.ron",
+                    "relics",
+                    None::<String>,
+                    Some("relics"),
+                    cause,
+                )
+                .with_definition(content_pack::DefinitionKind::Relic)
+            })?;
+        // Content validity does not make a repeated charged scan infallible:
+        // work limits or cancellation may refuse database publication here.
+        resource_data.validate().map_err(|error| {
+            live_ron::LiveRonError::validation(
+                "data/resources/base.ron",
+                "resources",
+                None::<String>,
+                Some("resources"),
+                error.to_string(),
+            )
+            .with_definition(content_pack::DefinitionKind::Resource)
+        })?;
+        skill_data
+            .validate_resource_references(&resource_data)
+            .map_err(|error| skill_data.live_error("data/skills/base.ron", error))?;
+        let value_expr_data = Arc::new(crate::game::value_expr::ValueExprCatalog::compile_skills(
+            &skill_data,
+            &resource_data,
+            &runtime_safety.expression(),
+        )?);
         validation::validate_data_references(
             &abnormality_data,
             &corroded_employee_data,
@@ -865,6 +1129,7 @@ impl GameDataBase {
             &skill_data,
             &buff_data,
             &skill_fragment_data,
+            &relic_data,
         );
 
         validation::validate_shop_item_references(&shop_data, &consumable_data, &equipment_data)
@@ -877,7 +1142,8 @@ impl GameDataBase {
         )
         .expect("invalid starter employee loadout reference");
 
-        Self {
+        let data = Self {
+            runtime_safety,
             map_catalogs,
             abnormality_data,
             corroded_employee_data,
@@ -892,12 +1158,18 @@ impl GameDataBase {
             visual_novel_trigger_data,
             pve_data,
             boss_omen_data,
+            boss_runtime_data,
             run_policy,
             skill_data,
             buff_data,
             skill_fragment_data,
+            relic_data,
+            resource_data,
+            value_expr_data,
             item_registry,
-        }
+        };
+        crate::game::relic::structural::validate_publication(&data)?;
+        Ok(data)
     }
 
     /// UUID로 아이템 메타데이터 조회
@@ -935,6 +1207,14 @@ impl GameDataBase {
         &self.map_catalogs.map_node_definitions
     }
 
+    pub fn runtime_safety(&self) -> &Arc<crate::runtime_safety::RuntimeSafetySettings> {
+        &self.runtime_safety
+    }
+
+    pub fn value_expr_catalog(&self) -> &crate::game::value_expr::ValueExprCatalog {
+        &self.value_expr_data
+    }
+
     pub fn facility_templates(&self) -> &crate::game::map::FacilityTemplateDatabase {
         &self.map_catalogs.facility_templates
     }
@@ -944,17 +1224,43 @@ impl GameDataBase {
     }
 
     pub(crate) fn try_validate_generated_combat_preview_contracts(
-        &self,
-    ) -> Result<(), DataValidationError> {
+        self: &Arc<Self>,
+    ) -> Result<(), live_ron::LiveRonError> {
         validation::validate_generated_combat_preview_contracts(self)
     }
 }
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 fn load_embedded_live_buff_data() -> BuffDatabase {
     ron::de::from_str(include_str!(
         "../../../../game_resources/data/buffs/base.ron"
     ))
     .expect("Failed to deserialize buffs/base.ron")
+}
+
+// Test-only staging for legacy runtime compatibility, never a publication path.
+#[cfg(test)]
+impl GameDataBase {
+    pub(crate) fn stage_legacy_negative_damage_for_test(&mut self, amount: i32) {
+        assert!(amount < 0);
+        let mut skills = (*self.skill_data).clone();
+        let effect = &mut skills.skills[0].steps[0].effects[0];
+        let crate::game::ability::SkillEffectDef::Damage { amount: value, .. } = &mut effect.op
+        else {
+            panic!("legacy negative damage staging requires Damage");
+        };
+        *value = amount;
+        assert!(skills.validate_contract().is_err());
+        self.value_expr_data = Arc::new(
+            crate::game::value_expr::ValueExprCatalog::compile_skills(
+                &skills,
+                &self.resource_data,
+                &self.runtime_safety.expression(),
+            )
+            .unwrap(),
+        );
+        self.skill_data = Arc::new(skills);
+    }
 }
 
 #[cfg(test)]
@@ -988,6 +1294,148 @@ mod tests {
     }
 
     #[test]
+    fn controlled_resource_constructor_refusals_are_typed_and_recoverable() {
+        use crate::authoring::{control, CancellationToken, ExecutionLimits, ExecutionPhase};
+        let nonempty = r#"(resources: [
+            (id: "constructor_a", owner: Employee, lifetime: Run, initial: 1, cap: 2),
+            (id: "constructor_b", owner: EquipmentCopy, lifetime: Attempt, initial: 1, cap: 2),
+        ])"#;
+        for (name, resources, cancelled) in [
+            ("catalog", nonempty, false),
+            ("references", "(resources: [])", false),
+            ("cancellation", nonempty, true),
+        ] {
+            let mut sources = live_ron::GameplayRonSourceSet::embedded();
+            sources.resources = resources;
+            let validated = live_ron::parse_gameplay_ron_sources(sources)
+                .unwrap()
+                .into_validated()
+                .unwrap();
+            let token = CancellationToken::default();
+            let limits = ExecutionLimits {
+                max_work: 1,
+                ..Default::default()
+            };
+            let rejected = control::run(&limits, &token, ExecutionPhase::FinalValidation, || {
+                if cancelled {
+                    token.cancel();
+                }
+                GameDataBase::from_validated_live_catalogs(validated)
+            })
+            .err()
+            .expect("constructor must return a typed control refusal");
+            assert_eq!(rejected.phase, ExecutionPhase::FinalValidation, "{name}");
+            assert_eq!(
+                rejected.code,
+                if cancelled {
+                    "authoring_cancelled"
+                } else {
+                    "authoring_work_limit"
+                }
+            );
+            if name == "references" {
+                assert!(
+                    rejected.site.starts_with("resource_reference_"),
+                    "{rejected:?}"
+                );
+            } else {
+                assert_eq!(rejected.site, "resource_catalog_validation");
+            }
+            println!("constructor_refusal {name}: {rejected:?}");
+            assert!(control::poll("after_constructor_refusal").is_ok());
+            assert!(ValidatedGameData::load_live_embedded().is_ok());
+        }
+    }
+
+    #[test]
+    fn public_parts_constructor_preserves_every_catalog_arc_and_registry_identity() {
+        let source = crate::game::data::ValidatedGameData::load_live_embedded()
+            .expect("live data should load");
+        let rebuilt = GameDataBase::new(GameDataBaseParts {
+            map_catalogs: source.map_catalogs.clone(),
+            abnormality_data: Arc::clone(&source.abnormality_data),
+            corroded_employee_data: Arc::clone(&source.corroded_employee_data),
+            corroded_wave_data: Arc::clone(&source.corroded_wave_data),
+            employee_definition_data: Arc::clone(&source.employee_definition_data),
+            consumable_data: Arc::clone(&source.consumable_data),
+            equipment_data: Arc::clone(&source.equipment_data),
+            shop_data: Arc::clone(&source.shop_data),
+            reward_data: Arc::clone(&source.reward_data),
+            event_data: Arc::clone(&source.event_data),
+            visual_novel_data: Arc::clone(&source.visual_novel_data),
+            visual_novel_trigger_data: Arc::clone(&source.visual_novel_trigger_data),
+            pve_data: Arc::clone(&source.pve_data),
+            boss_omen_data: Arc::clone(&source.boss_omen_data),
+            boss_runtime_data: Arc::clone(&source.boss_runtime_data),
+            run_policy: Arc::clone(&source.run_policy),
+            skill_data: Arc::clone(&source.skill_data),
+            buff_data: Arc::clone(&source.buff_data),
+            skill_fragment_data: Arc::clone(&source.skill_fragment_data),
+            relic_data: Arc::clone(&source.relic_data),
+            resource_data: Arc::clone(&source.resource_data),
+        })
+        .expect("validated catalog parts should construct a database");
+
+        macro_rules! assert_arc_identity {
+            ($field:ident) => {
+                assert!(Arc::ptr_eq(&source.$field, &rebuilt.$field));
+            };
+        }
+        assert_arc_identity!(abnormality_data);
+        assert_arc_identity!(corroded_employee_data);
+        assert_arc_identity!(corroded_wave_data);
+        assert_arc_identity!(employee_definition_data);
+        assert_arc_identity!(consumable_data);
+        assert_arc_identity!(equipment_data);
+        assert_arc_identity!(shop_data);
+        assert_arc_identity!(reward_data);
+        assert_arc_identity!(event_data);
+        assert_arc_identity!(visual_novel_data);
+        assert_arc_identity!(visual_novel_trigger_data);
+        assert_arc_identity!(pve_data);
+        assert_arc_identity!(boss_omen_data);
+        assert_arc_identity!(boss_runtime_data);
+        assert_arc_identity!(run_policy);
+        assert_arc_identity!(skill_data);
+        assert_arc_identity!(buff_data);
+        assert_arc_identity!(skill_fragment_data);
+        assert_arc_identity!(resource_data);
+        assert!(Arc::ptr_eq(
+            &source.map_catalogs.map_node_definitions,
+            &rebuilt.map_catalogs.map_node_definitions
+        ));
+        assert!(Arc::ptr_eq(
+            &source.map_catalogs.facility_templates,
+            &rebuilt.map_catalogs.facility_templates
+        ));
+        assert!(Arc::ptr_eq(
+            &source.map_catalogs.node_assignment_profiles,
+            &rebuilt.map_catalogs.node_assignment_profiles
+        ));
+        assert!(Arc::ptr_eq(
+            &source.map_catalogs.battlefield_archetypes,
+            &rebuilt.map_catalogs.battlefield_archetypes
+        ));
+        assert!(Arc::ptr_eq(
+            &source.map_catalogs.battlefield_templates,
+            &rebuilt.map_catalogs.battlefield_templates
+        ));
+
+        for expected in &rebuilt.consumable_data.items {
+            let Some(ItemRef::Consumable(actual)) = rebuilt.item(&expected.uuid) else {
+                panic!("rebuilt registry lost consumable {}", expected.id);
+            };
+            assert!(std::ptr::eq(expected, actual));
+        }
+        for expected in &rebuilt.equipment_data.items {
+            let Some(ItemRef::Equipment(actual)) = rebuilt.item(&expected.uuid) else {
+                panic!("rebuilt registry lost equipment {}", expected.id);
+            };
+            assert!(std::ptr::eq(expected, actual));
+        }
+    }
+
+    #[test]
     fn game_data_builder_empty_does_not_load_live_buffs() {
         let game_data = GameDataBuilder::empty().build();
 
@@ -1009,6 +1457,8 @@ mod tests {
 
     fn minimal_skill(id: &str) -> SkillDef {
         SkillDef {
+            use_lifetime: crate::game::ability::SkillUseLifetime::Action,
+            flow: None,
             id: SkillId::from(id),
             name: id.to_string(),
             kind: SkillKind::Untargeted,
@@ -1063,6 +1513,8 @@ mod tests {
         imitation_skill_id: &str,
     ) -> SkillFragmentMetadata {
         SkillFragmentMetadata {
+            corrosion_class:
+                crate::game::data::skill_fragment_data::FragmentCorrosionClass::Ordinary,
             id: SkillFragmentId::from(id),
             uuid: Uuid::from_u128(0xF000),
             name: id.to_string(),
@@ -1079,9 +1531,17 @@ mod tests {
             dependencies: vec![],
             compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: SkillId::from(imitation_skill_id),
-                upgrade_skill_ids: Default::default(),
-                awakened_skill_id: None,
+                forms: std::collections::BTreeMap::from([(
+                    "base".into(),
+                    crate::game::data::skill_fragment_data::SkillFragmentForm {
+                        resonance_max: 100,
+                        skill_id: SkillId::from(imitation_skill_id),
+                        compatibility: None,
+                        bloom_recipe: None,
+                    },
+                )]),
+                passive_guard: None,
+                dismantle_recipe: None,
             },
         }
     }
@@ -1206,7 +1666,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "references unknown imitation skill")]
+    #[should_panic(expected = "references unknown skill")]
     fn game_data_base_rejects_fragment_unknown_imitation_skill() {
         let mut abno =
             minimal_abnormality("t-02-43_freischutz", 1, Some("freischutz_magic_bullet"));
@@ -1231,10 +1691,13 @@ mod tests {
     #[should_panic(expected = "references unknown buff")]
     fn game_data_base_rejects_skill_references_missing_buff_data() {
         let mut skill = minimal_skill("skill_with_missing_buff");
-        skill.steps[0].effects.push(SkillEffectDef::ApplyBuff {
-            buff_id: "missing_buff".to_string(),
-            duration_ms: 100,
-        });
+        skill.steps[0].effects.push(
+            SkillEffectDef::ApplyBuff {
+                buff_id: "missing_buff".to_string(),
+                duration_ms: 100,
+            }
+            .authored("missing_buff"),
+        );
 
         let _ = GameDataBuilder::empty()
             .with_buff_data(Arc::new(BuffDatabase::new(vec![])))

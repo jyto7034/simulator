@@ -1,0 +1,22 @@
+{
+  "serde_json": {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libserde_json-aaa819519eddb19c.rlib",
+    "sha256": "e8f71326546f62b5bb983e9cd2a87005e24e82cb70e434fa93b485ab0da8f766"
+  },
+  "uuid": {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libuuid-efc3dbf98a3f1005.rlib",
+    "sha256": "c251b87040b86edf8a5c7d17edd4e8aee498d97aac38fbbfbbb728dd8423ed7f"
+  },
+  "actix": {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libactix-0172911f7557b8c0.rlib",
+    "sha256": "507c74de7e64877cd837f2f1f4ba7714b75b72f2fedb0240a04d54dc5df290b8"
+  },
+  "game_core": {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_core-2f31213ad3aeaf43.rlib",
+    "sha256": "3eb22a025b189d0613bffed36a247d8add3cf18b9068390ff34a9bec2ef1fd8d"
+  },
+  "game_server": {
+    "path": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/libgame_server-d1396f4faf960c7e.rlib",
+    "sha256": "c7b5ddd767df88507f5c601e83e47d74583d74c3bff23facd292753fa7ec04a5"
+  }
+}

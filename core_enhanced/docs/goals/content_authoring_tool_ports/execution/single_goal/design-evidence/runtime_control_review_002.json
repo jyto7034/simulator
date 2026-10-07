@@ -1,0 +1,233 @@
+{
+  "kind": "bounded read-only GEX-10 runtime-control helper review; not completion audit",
+  "reviewer": "/root/r03_design_review",
+  "created_at": "2026-09-10T01:32:45.949988+00:00",
+  "scope": "Recent runtime growth/replacement helper, cast child/context/deferred guards, area geometry/target guards, private projectile motion/impact Result paths and minimum direct consumers",
+  "baseline_hint": "INPUTS_014 / focused0196pass were parent-provided hints, not independently rerun or adopted as frozen actual source. Actual read hashes govern this report.",
+  "findings": [
+    {
+      "id": "RCR02-01",
+      "priority": "P2",
+      "title": "A failed retarget/context lookup still creates a normal AbilityStepTriggered event ID",
+      "primary_source": "core_enhanced/src/game/battle/core/sim.rs",
+      "primary_reviewed_sha256": "70c777297c74d7a95aebf8ee7e5cf6024b12c95b6829b3dcfddd9d239c13bd0b",
+      "primary_spans": [
+        "2264–2277",
+        "2310–2343"
+      ],
+      "producer_basis": [
+        "skill_runtime/cast.rs377–397: choose_skill_target_by_rule converts failed charge/geometry admission to None",
+        "sim.rs982–1048: RetargetOnStep forwards that Option",
+        "sim.rs1147–1187: Always/Once do not reject missing target",
+        "recording.rs13–35: normal event append advances event_log_seq"
+      ],
+      "trigger": "A RetargetOnStep skill reaches execute_skill_step with enough fuel for its entry charge but insufficient fuel for skill_target_candidates or the guarded tile-pattern query. Use Always and Once so the absent target does not short-circuit gameplay condition handling.",
+      "actual": "resolve_skill_step_context returns None with a sticky execution failure; execute_skill_step treats it as a normal missing target and appends AbilityStepTriggered before the next charge/poll. A normal source/event sequence is consumed inside the failed draft.",
+      "impact_limit": "Outer control remains sticky and acceptance polling rejects, so this is not evidence of live publication or successful trial completion. It is a concrete failure-result/ID consumption gap at the newly guarded lookup boundary.",
+      "minimal_fix": "Poll immediately after the initial resolve_skill_step_context result and before condition/repeat evaluation or normal event creation. Preserve ordinary no-target behavior when no execution fault exists.",
+      "focused_check_not_run": "Force failure at skill_target_candidates; assert exact failure code/site and unchanged event_log_seq/AbilityStepTriggered count after the lookup failure, in addition to outer rollback.",
+      "root_disposition": "Root acknowledged this exact path and stated it would add the poll. Source changed during review; successor correction was not re-reviewed or certified."
+    },
+    {
+      "id": "RCR02-02",
+      "priority": "P2",
+      "title": "Persistent area registration returns true after its context/queue control failure",
+      "primary_source": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "primary_reviewed_sha256": "475fbd736d8b6435acc64df354a0196833d73d84a7a68373e6cbbb18c31e0c84",
+      "primary_spans": [
+        "626–662"
+      ],
+      "producer_basis": [
+        "cast.rs339–375: update_skill_cast_impact_context may return early on work/replacement failure",
+        "area.rs643–661: subsequent queue operations can also set or observe sticky failure",
+        "sim.rs2584–2599: caller counts true as a spawned area before checking scope"
+      ],
+      "trigger": "Admission allows the area object/reference creation but fuel/entity limit fails while storing impact context, or queue admission fails on SkillAreaTick/SkillAreaExpire enqueue.",
+      "actual": "register_persistent_tile_area continues past the failed context update / enqueue and returns true. execute_skill_step increments spawned_areas from this success value before its final scope poll.",
+      "impact_limit": "The final/next-loop scope check still rejects the outer attempt; no successful external publication was demonstrated. The helper result nevertheless advertises successful registration after a known execution fault.",
+      "minimal_fix": "Poll immediately after impact-context storage and before returning true after both enqueues; ensure caller does not increment its success count for a sticky failure. Retain the existing bool semantics for legitimate non-authoring no-spawn cases.",
+      "focused_check_not_run": "Force impact_context_storage failure and each queue enqueue limit separately; verify the registration result is not successful and no success count is consumed, while the same first failure survives to the outer owner.",
+      "root_disposition": "Sent to root during review. Area source changed during concurrent tick/clone work; report records the observed pre-correction path rather than approving current bytes."
+    }
+  ],
+  "checks_without_additional_findings": [
+    {
+      "topic": "Runtime replacement arithmetic",
+      "assessment": "No concrete arithmetic defect found in inspected implementation. Current shape includes context map entries, the last-context record, and both hit vectors. Replacing prior p hits and last l hits with n hits each uses C-p-l+2n+new-map-entry+new-last-entry, matching actual insert/overwrite storage. checked_sub underflow forces over-limit sentinel; final admit uses checked addition.",
+      "sources": [
+        "core/mod.rs220–271",
+        "cast.rs339–374"
+      ]
+    },
+    {
+      "topic": "HashMap enumeration and usage/failure",
+      "assessment": "No concrete ordering defect found in the aggregate shape scan. Each structural count charges exactly one unit under the same site, while the size sum is admitted only after the whole scan. Different HashMap traversal orders therefore do not expose partial size totals in the entity-limit failure or peak. Number of scan calls depends on shape, not order. Cast deferred/context maps are BTreeMap, and deferred release preserves their ordered keys. This does not certify excluded target-usefulness/backend code.",
+      "sources": [
+        "core/mod.rs220–271",
+        "cast.rs263–316",
+        "types.rs326–346"
+      ]
+    },
+    {
+      "topic": "Detached projectile accounting",
+      "assessment": "advance_skill_projectile removes its runtime before motion. The motion check adds 1+existing hit count back to the scanned retained shape; each accepted hit checks 2+old hit count (runtime record + old hits + new hit). This avoids ignoring the detached record and does not double-count it in self. The private motion/impact Result failures return before normal motion/hit result consumption.",
+      "sources": [
+        "projectile.rs141–178",
+        "195–205",
+        "425–524"
+      ]
+    },
+    {
+      "topic": "Geometry/target guard calculations",
+      "assessment": "Tile rows are ordered; each row is admitted before cells increment, and projection/sort multiplications saturate into finite fuel rejection. Target vector collection is precharged using unit/tile counts, then sorted by UUID. No new unchecked indexing or panic path was identified in these inserted guards. Object-count admission is distinct from heap/geometry memory accounting; this review does not enlarge it into a whole-process bound.",
+      "sources": [
+        "area.rs36–67",
+        "301–348",
+        "cast.rs388–397"
+      ]
+    },
+    {
+      "topic": "Ordinary execution, IDs and order",
+      "assessment": "Control helpers return success outside ACTIVE. The inspected guards do not change ordinary branch choices, UUID formulas or comparison/heap ordering. Projectile spawn admission occurs before next_skill_delivery_id and successful dispatch count is polled before incrementing; instant area target polling occurs before its delivery ID allocation. The two findings identify remaining places where a failed scope still consumes a normal event/success result. No runtime equivalence test was executed.",
+      "sources": [
+        "control.rs218–265",
+        "projectile.rs618–678",
+        "880–887",
+        "sim.rs2478–2498"
+      ]
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "initial_observed_sha256": "65e2025350d2b8f8ffc6c7e5c646e92c894cae3fc6d2375506f8ff10b8169709",
+      "reviewed_snapshot_sha256": "ad20a4e3a75a9bb16b402f50631559ae5028b760411a11b612d8945944461f8d",
+      "report_close_sha256": "ad20a4e3a75a9bb16b402f50631559ae5028b760411a11b612d8945944461f8d",
+      "drift_from_initial": true,
+      "drift_from_reviewed_snapshot": false,
+      "inspected_spans": [
+        "163–195",
+        "218–265",
+        "323–404"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "initial_observed_sha256": "d8e3914ceec1f91597349ad073150ba2ce2b5fb3628d7075625a3a668dec067c",
+      "reviewed_snapshot_sha256": "d8e3914ceec1f91597349ad073150ba2ce2b5fb3628d7075625a3a668dec067c",
+      "report_close_sha256": "026b85b1b7d47cfc3f08d3e88467dfe7de9558926aa1783e76b3cb56bf5bf67e",
+      "drift_from_initial": true,
+      "drift_from_reviewed_snapshot": true,
+      "inspected_spans": [
+        "195–282"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "initial_observed_sha256": "f00e9f6264d8c6ef48ab480c469d1b662b3928a4664e7dcf9d56cc07a13b0a67",
+      "reviewed_snapshot_sha256": "f00e9f6264d8c6ef48ab480c469d1b662b3928a4664e7dcf9d56cc07a13b0a67",
+      "report_close_sha256": "f00e9f6264d8c6ef48ab480c469d1b662b3928a4664e7dcf9d56cc07a13b0a67",
+      "drift_from_initial": false,
+      "drift_from_reviewed_snapshot": false,
+      "inspected_spans": [
+        "1–415",
+        "409–586"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "initial_observed_sha256": "475fbd736d8b6435acc64df354a0196833d73d84a7a68373e6cbbb18c31e0c84",
+      "reviewed_snapshot_sha256": "475fbd736d8b6435acc64df354a0196833d73d84a7a68373e6cbbb18c31e0c84",
+      "report_close_sha256": "b7cad108fd507a19ee7893bffc763bd9be06f6ab2187306a19f21b48042ea89d",
+      "drift_from_initial": true,
+      "drift_from_reviewed_snapshot": true,
+      "inspected_spans": [
+        "1–146",
+        "155–287",
+        "280–383",
+        "485–670"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "initial_observed_sha256": "480106a76bd670514ab6a16d0057b880b18510c0d325dcdf3b1e4834777d3312",
+      "reviewed_snapshot_sha256": "480106a76bd670514ab6a16d0057b880b18510c0d325dcdf3b1e4834777d3312",
+      "report_close_sha256": "8780ed276ff988e6ba8cb1e15e3cdc8d645f73e9207a0b71854286b2130f580c",
+      "drift_from_initial": true,
+      "drift_from_reviewed_snapshot": true,
+      "inspected_spans": [
+        "110–717",
+        "733–900"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "initial_observed_sha256": "70c777297c74d7a95aebf8ee7e5cf6024b12c95b6829b3dcfddd9d239c13bd0b",
+      "reviewed_snapshot_sha256": "70c777297c74d7a95aebf8ee7e5cf6024b12c95b6829b3dcfddd9d239c13bd0b",
+      "report_close_sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207",
+      "drift_from_initial": true,
+      "drift_from_reviewed_snapshot": true,
+      "inspected_spans": [
+        "982–1065",
+        "1147–1200",
+        "2255–2620"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "initial_observed_sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "reviewed_snapshot_sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "report_close_sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "drift_from_initial": false,
+      "drift_from_reviewed_snapshot": false,
+      "inspected_spans": [
+        "75–176",
+        "326–346"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "initial_observed_sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "reviewed_snapshot_sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "report_close_sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "drift_from_initial": false,
+      "drift_from_reviewed_snapshot": false,
+      "inspected_spans": [
+        "6–45"
+      ],
+      "capture_note": "control semantic spans were read from a single in-memory byte capture at the reviewed hash; other files used initial hash then targeted reads. Concurrent root writes preclude whole-repository freeze claims."
+    }
+  ],
+  "source_drift": [
+    "core_enhanced/src/authoring/control.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+    "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+    "core_enhanced/src/game/battle/core/sim.rs"
+  ],
+  "verdict": "Two concrete normal-result/ID consumption gaps in the captured failed-draft paths; outer sticky rejection still holds in inspected control. No additional concrete replacement arithmetic, aggregate HashMap-order, or newly inserted panic defect identified. Current changed successor source is not certified.",
+  "limits": {
+    "production_or_source_writes": 0,
+    "tests_or_builds_executed": 0,
+    "runtime_execution": 0,
+    "subagents_spawned": 0,
+    "new_files_only": [
+      "/tmp/r03_runtime_control_review_002.md",
+      "/tmp/r03_runtime_control_review_002.json"
+    ],
+    "excluded_known_incomplete_work": [
+      "whole clone accounting",
+      "area tick/history completion",
+      "usefulness/backend breadth",
+      "public session/CLI"
+    ],
+    "no_fresh_completion_audit": true
+  }
+}

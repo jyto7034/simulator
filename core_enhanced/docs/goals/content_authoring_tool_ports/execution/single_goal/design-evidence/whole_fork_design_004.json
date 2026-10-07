@@ -1,0 +1,386 @@
+{
+  "report_id": "r03_whole_fork_design_004",
+  "kind": "bounded_read_only_design_not_completion_audit",
+  "created_utc": "2026-09-10T07:43:50.270938+00:00",
+  "report_sha256": "76b1928030f53635c41ec27d01364681c9c217ecf4ab44722a93d6cd6df648a0",
+  "tests_builds_git_run": false,
+  "repository_mutations": false,
+  "proposed_minimum": "private structural preflight at actual clone sites, preserving existing Clone semantics; typed owner visitors distinguish owned copy/Arc share/native backend/COW",
+  "not_proven": [
+    "Rapier private native clone storage upper bound",
+    "all leaf allocator bytes",
+    "hard real-time interruption inside derive Clone",
+    "all clone call sites outside named scope",
+    "runtime or release test success"
+  ],
+  "sources": [
+    {
+      "path": "core_enhanced/src/application.rs",
+      "inspected_spans": [
+        "CoreApplication ownership/Clone search; 781-791 current unchanged from prior explicit read"
+      ],
+      "first_sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "close_sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "close_bytes": 44770,
+      "capture": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "inspected_spans": [
+        "50-70; direct clone/call-site search"
+      ],
+      "first_sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "close_sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "close_bytes": 34199,
+      "capture": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "inspected_spans": [
+        "1-215",
+        "320-648",
+        "1405-1485"
+      ],
+      "first_sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "close_sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "close_bytes": 70625,
+      "capture": "unchanged_between_hashes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "inspected_spans": [
+        "170-192"
+      ],
+      "first_sha256": null,
+      "close_sha256": "eda3e77e4509368aec58228b8070b5d7edfdab6fc6f98ae036cb45e97ea7eafd",
+      "close_bytes": 9474,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "inspected_spans": [
+        "1819-1851",
+        "1858-1887; clone call-site search"
+      ],
+      "first_sha256": null,
+      "close_sha256": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "close_bytes": 129610,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "inspected_spans": [
+        "clone_non_battle_transaction_state call search at158-166"
+      ],
+      "first_sha256": null,
+      "close_sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "close_bytes": 10224,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/world/grant_state.rs",
+      "inspected_spans": [
+        "1-41"
+      ],
+      "first_sha256": null,
+      "close_sha256": "248d55a4feca4e4fac376327254c6ff6ce31721c31b7df750f13c9c3420167de",
+      "close_bytes": 2917,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+      "inspected_spans": [
+        "15-35"
+      ],
+      "first_sha256": null,
+      "close_sha256": "4edc42a44b2fb8da17ec0717b7a01687bd328c41129f0673cf57491f26ef1ed7",
+      "close_bytes": 17884,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "inspected_spans": [
+        "1-290"
+      ],
+      "first_sha256": null,
+      "close_sha256": "026b85b1b7d47cfc3f08d3e88467dfe7de9558926aa1783e76b3cb56bf5bf67e",
+      "close_bytes": 349296,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "inspected_spans": [
+        "60-155",
+        "190-260",
+        "326-535"
+      ],
+      "first_sha256": null,
+      "close_sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "close_bytes": 17929,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "inspected_spans": [
+        "1-100; history/clone/control searches"
+      ],
+      "first_sha256": null,
+      "close_sha256": "e624854ac13e8172b104c54e4626a761c4d017d67b8ffdb4adf3f15e50a31207",
+      "close_bytes": 130316,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "inspected_spans": [
+        "1-46"
+      ],
+      "first_sha256": null,
+      "close_sha256": "a2b3edc11f43590fc368cf3c9ae7be8919055bdd3d5c2aa448d533a9372714d5",
+      "close_bytes": 1265,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+      "inspected_spans": [
+        "1-200",
+        "285-340; insertion/removal/clear search"
+      ],
+      "first_sha256": null,
+      "close_sha256": "764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9",
+      "close_bytes": 30876,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "inspected_spans": [
+        "66-155",
+        "285-308",
+        "1751-1785"
+      ],
+      "first_sha256": null,
+      "close_sha256": "600fcbad2734539d90dfd55c780a5370d1b8e3109774bc6cc39846baafd29c00",
+      "close_bytes": 138433,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+      "inspected_spans": [
+        "190-236; owned-collection search"
+      ],
+      "first_sha256": null,
+      "close_sha256": "3a970eb9bcac440ae61b2a9074fecc4d3654b347b7d9fd43511e6b1386fb884e",
+      "close_bytes": 32269,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+      "inspected_spans": [
+        "40-80; owned-collection search"
+      ],
+      "first_sha256": null,
+      "close_sha256": "9fc236ce1032422b89ac3b965be6ef25b465dad114c73498d189fa5301ecc095",
+      "close_bytes": 65562,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+      "inspected_spans": [
+        "28-59"
+      ],
+      "first_sha256": null,
+      "close_sha256": "23eadbd1192cfe28e2e94f3d555b1ebf283ec6d319e9cec5e2120a654a1bde93",
+      "close_bytes": 43656,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/field_work.rs",
+      "inspected_spans": [
+        "43-60"
+      ],
+      "first_sha256": null,
+      "close_sha256": "507b0ced1cf6923238bf48d737545aa7bb2beff317bdf6a0b8660462304a9d66",
+      "close_bytes": 50664,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "inspected_spans": [
+        "70-107",
+        "375-433; mutation/COW searches"
+      ],
+      "first_sha256": null,
+      "close_sha256": "e20c7ff9ab45a4797c615b744dbfc15848267af40b040f04a192ba6362ad2c5a",
+      "close_bytes": 45597,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/result_stats.rs",
+      "inspected_spans": [
+        "88-129"
+      ],
+      "first_sha256": null,
+      "close_sha256": "1b11b716a276ab3bfd0590836f44ec71ffe0f01f800a309f8020d15ff7e8556b",
+      "close_bytes": 42381,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/scenario.rs",
+      "inspected_spans": [
+        "243-254; owned-collection search 11-248"
+      ],
+      "first_sha256": null,
+      "close_sha256": "1caed730779f276b0e83369d2f3bbd818272c557cf56c7775b37a883561aebc1",
+      "close_bytes": 26986,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/battlefield/mod.rs",
+      "inspected_spans": [
+        "1-18"
+      ],
+      "first_sha256": null,
+      "close_sha256": "54d0466d93ac176ed131c57ccdd4954966bf2224d1a41ee5e0943f9a9ae77144",
+      "close_bytes": 456,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/enums.rs",
+      "inspected_spans": [
+        "17-96; owned strings search"
+      ],
+      "first_sha256": null,
+      "close_sha256": "cac118b9704c9c461d3e8c6146943d097ffc0e531a7fc6e54bf0b81473857b00",
+      "close_bytes": 41909,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "inspected_spans": [
+        "30-59; Vec/Arc search"
+      ],
+      "first_sha256": null,
+      "close_sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a",
+      "close_bytes": 45184,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "inspected_spans": [
+        "748-775"
+      ],
+      "first_sha256": null,
+      "close_sha256": "05b2fa00aa7aed65becf8dbc20da866b35d2dfe4dca4318f4b8cc8fc1013d4d3",
+      "close_bytes": 159917,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "inspected_spans": [
+        "1-78"
+      ],
+      "first_sha256": null,
+      "close_sha256": "b78fca9caefe3ebda1203686e3efc6f6dcb1f02e7b9cb2276280aea9532809a9",
+      "close_bytes": 4202,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/inventory.rs",
+      "inspected_spans": [
+        "210-239",
+        "451-470",
+        "503-520",
+        "558-576",
+        "583-602",
+        "699-720"
+      ],
+      "first_sha256": null,
+      "close_sha256": "2b32a864fdae8958a0d57610d5193b688fe1699c4ae4f46a5cc43bbb50371de3",
+      "close_bytes": 28699,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/selection.rs",
+      "inspected_spans": [
+        "1-75",
+        "175-257"
+      ],
+      "first_sha256": null,
+      "close_sha256": "8c01853213e60a5773234fa557a6e97174220f755c77df2b98dd15e03caee7a3",
+      "close_bytes": 9604,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/employee.rs",
+      "inspected_spans": [
+        "350-383",
+        "633-655"
+      ],
+      "first_sha256": null,
+      "close_sha256": "8d3940dce94a7e8d8858b39c2c48c22f367d76d3b31d23319e76859cc53eaa54",
+      "close_bytes": 37196,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/visual_novel.rs",
+      "inspected_spans": [
+        "1-76"
+      ],
+      "first_sha256": null,
+      "close_sha256": "bd9c83551d5547a5ca425859fd40db197d3b64fbfcab27683dc5ce5a89ed29c3",
+      "close_bytes": 2278,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "inspected_spans": [
+        "1-43"
+      ],
+      "first_sha256": null,
+      "close_sha256": "4b8d897d8c683b4f7ce87ba0a168d1545b495c784928deb0dfaaa2fd041b1083",
+      "close_bytes": 10003,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/skill_fragment.rs",
+      "inspected_spans": [
+        "owned collection/type search at20-34,364-379,577"
+      ],
+      "first_sha256": null,
+      "close_sha256": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d",
+      "close_bytes": 41694,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/map/types.rs",
+      "inspected_spans": [
+        "340-371"
+      ],
+      "first_sha256": null,
+      "close_sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f",
+      "close_bytes": 24289,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/game/map/progression.rs",
+      "inspected_spans": [
+        "1-46"
+      ],
+      "first_sha256": null,
+      "close_sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014",
+      "close_bytes": 32025,
+      "capture": "single_close_hash; no atomic initial snapshot"
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "inspected_spans": [
+        "25-57",
+        "87-103",
+        "166-209; prior run/admit/charge body unchanged by current inspected source context"
+      ],
+      "first_sha256": "39d5aa1869a16c2d62d4e74b64c6cac5fbd39553ecceca36b72f9cba1832d6c9",
+      "close_sha256": "39d5aa1869a16c2d62d4e74b64c6cac5fbd39553ecceca36b72f9cba1832d6c9",
+      "close_bytes": 16254,
+      "capture": "unchanged_between_hashes"
+    }
+  ]
+}

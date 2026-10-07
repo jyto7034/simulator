@@ -1,0 +1,57 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "Phase Plan Ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CRSL-001",
+    "Content Digest": "sha256:ab8bcb830c740578eeef8484892284e03b22f08156cc2028534af7d8a4a23fe1"
+  },
+  "Phase Plan Validation Receipt Ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CRSL-001",
+    "Content Digest": "sha256:ff5abc7d901674e09eac92dc2e2e26ad8bd4c902bc21232ecf1159ae084a9339"
+  },
+  "P2G-40 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRSL-004",
+      "Content Digest": "sha256:214d3c9bd0c92eb5a398b5fa34b0f3ea4bd036d28d76e5e0e6671c53e82b63ae"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRSL-001",
+      "Content Digest": "sha256:57c36bd5f0637d0f23fb78a4c0a4f843e17f6c4f72b07168b58f484ff36e8a36"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRSL-001",
+      "Content Digest": "sha256:ab8bcb830c740578eeef8484892284e03b22f08156cc2028534af7d8a4a23fe1"
+    },
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "All Applicable Change Obligations Resolved": true,
+  "raw_exit": 0,
+  "validation": {
+    "validator": "p2g40-receipt-validator/1.2.0",
+    "result": "passed",
+    "counts": {
+      "freeze_members": 14,
+      "work_packages": 5,
+      "dependency_edges": 9,
+      "cyclic_sccs": 0,
+      "atomic_groups": 1,
+      "final_execution_nodes": 2,
+      "phases": 1,
+      "audit_rows": 1,
+      "integration_rows": 14
+    },
+    "failures": []
+  },
+  "semantic_design": "P2G_40_DESIGN_001.ko.md and CODE_REVIEW_002.ko.md TD01–11; minimum atomic employee resource/use/consumer cutover",
+  "next": "P2G-50"
+}

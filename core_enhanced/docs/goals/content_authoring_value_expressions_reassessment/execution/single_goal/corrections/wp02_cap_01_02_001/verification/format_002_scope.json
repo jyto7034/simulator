@@ -1,0 +1,54 @@
+{
+  "record": "R06_WP02_CAP_FORMAT_SCOPE_001",
+  "predecessor_manifest_sha256": "179bff1593608283c82ed51a2923f183d47312b8df51ad3dcb7556fdca8a4a5f",
+  "source_files_checked": 333,
+  "changed_files": [
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "before_sha256": "137d4b1f547ba61c008c9f0afeacb160f82bd7f3ce62f25b6f07776dd7016e51",
+      "after_sha256": "a70d27e7605e76bb0df59f55802d08c13d226a2c4e3ae74dfebe4e090d58994c"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "before_sha256": "ca9f1cc4157e27b1852b98de643f12b07feb6590b4a484af20f108f2103a671e",
+      "after_sha256": "afa8d63d27bfdb5d0e58ce13caea44189a6de114b27a8d41b923158b3766d2e9"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "before_sha256": "7af9222be997d065f9beb38d1eb417f551e4beb12f9070e459f17c672590edc1",
+      "after_sha256": "81ac3f1329eff2567fac65c4a5508720af51399249754d047d3d81977d217641"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "before_sha256": "9442c631a2400acc77db3860ad470a44a830963d0085886f888c622f1d64827e",
+      "after_sha256": "a13e53def59b01a45ec32352293540b9df1cf25b9ac118cb101f2a1a9b227cdc"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "before_sha256": "394aa52c75878b927056152919cae8c57c7e28d025d0c63a1f6549dcd29a0113",
+      "after_sha256": "bff10dc867cd5e5ca991c35a7eb7a829db4b67f9546cde9b547e78b59dca10f4"
+    }
+  ],
+  "changes_confined_to_cap_and_regression_regions": true,
+  "format_mechanism": "rustfmt output applied only inside the listed successor regions",
+  "rustfmt_hunks": {
+    "entry_baseline": {
+      "control.rs": 4,
+      "queue.rs": 27,
+      "runtime_control.rs": 6
+    },
+    "cap_target_before_format": {
+      "control.rs": 5,
+      "queue.rs": 30,
+      "runtime_control.rs": 11,
+      "runtime_facts.rs": 4,
+      "value_expr_runtime.rs": 7
+    },
+    "format_target_after": {
+      "control.rs": 4,
+      "queue.rs": 25,
+      "runtime_control.rs": 6
+    }
+  },
+  "scope_conclusion": "All five successor deltas are confined to the CAP/regression regions and match rustfmt layout. New CAP/regression rustfmt hunks are gone; only predecessor hunks remain, minus two predecessor queue hunks whose bodies were replaced by the CAP change."
+}

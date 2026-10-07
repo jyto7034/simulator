@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "closed_at_utc": "2026-10-02T15:10:57.843732+00:00",
+  "goal": "GS-CARX-001 / GOAL-CARX-01 / HA-CARX-001",
+  "stage": "GEX-20",
+  "verdict": "Not Complete",
+  "blocking_findings": [
+    "F01"
+  ],
+  "reviewer_participated_in_product_implementation": false,
+  "frozen_source_digest": "bd89f9c42191217a333d648d35f495e802d13e6fb1420caa9c08da3deb731690",
+  "current_source_digest": "9a0b88beb24c1371c3362837e924ccf447832efb9372e0be1b8e1c99a6f72912",
+  "currentness": "current / proven non-impacting ROADMAP_STATUS-only delta",
+  "condition_count": 55,
+  "default_tests_passed": 1677,
+  "feature_tests_passed": 1677,
+  "x09_environment_limitation_resolved": true,
+  "cancellation_oracle_cases": 5,
+  "cancellation_oracle_passed": 2,
+  "cancellation_oracle_failed": 3,
+  "product_modified": false,
+  "required_next_owner": "GOAL-CARX-01 R08/R10 correction GEX-10 and fresh independent GEX-20",
+  "r13_r16_implementation_started": false,
+  "r13_r16_final_target_frozen": false,
+  "r13_r16_independent_audit_performed": false,
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001/AUDIT_MANIFEST.json",
+    "sha256": "3e4adeed1f4d76f0dad999a7b036401cb7ccb520a149e84b6054426c01437c43",
+    "file_count": 311
+  }
+}

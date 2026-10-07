@@ -1,0 +1,6 @@
+{
+  "scope": "roadmap_static_document_subset",
+  "result": "passed",
+  "details": "../DOCUMENT_CHECKS.json",
+  "not_a_project_test_or_dependency_audit": true
+}

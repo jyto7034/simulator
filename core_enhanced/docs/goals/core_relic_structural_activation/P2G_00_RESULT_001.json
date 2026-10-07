@@ -1,0 +1,38 @@
+{
+  "stage": "P2G-00",
+  "status": "complete",
+  "recorded_at_utc": "2026-10-07T07:33:36.104046+00:00",
+  "Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRSA-001",
+    "Content Digest": "sha256:2f4d1cf5ea17e95a1d6040c9107cc56af10d3dbf885d720e98c41f5c92c05486"
+  },
+  "Policy Intake Snapshot Ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CRSA-001",
+    "Content Digest": "sha256:224a17a129d07222d2e3813757c22f12d9259434194f0b1e48696b977fd2f275"
+  },
+  "path": "core_enhanced/docs/goals/core_relic_structural_activation/WORKING_POLICY.ko.md",
+  "entry_identity_search": {
+    "files_checked": 391,
+    "identity_matches": [],
+    "path_was_unoccupied": true
+  },
+  "checks": {
+    "new_conforming_document": true,
+    "scope_approval_per_item": true,
+    "raw_intake_exact_archive": true,
+    "empty_initial_policy_sets": true,
+    "no_later_stage_artifacts": true,
+    "digest_refs_match": true,
+    "U08_whole_independent_Complete_High_open0": true
+  },
+  "archive": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/INTAKE_SOURCE_001.tar.gz",
+    "bytes": 494921,
+    "sha256": "da9ee8753a93cc54b25014e84c1d04a3b8c31bfe19adb5a577141e39f638aeec"
+  },
+  "production_mutation": false,
+  "next": "P2G-10",
+  "new_user_request_required": false
+}

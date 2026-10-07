@@ -1,0 +1,162 @@
+{
+  "errors": [],
+  "reproduction_independently_counted_events": {
+    "coefficient_rounds_to_zero": {
+      "starts": 0,
+      "positive_hp_events": 0,
+      "final_hp": 50
+    },
+    "positive_control": {
+      "starts": 4,
+      "positive_hp_events": 4,
+      "final_hp": 90
+    },
+    "zero": {
+      "starts": 0,
+      "positive_hp_events": 0,
+      "final_hp": 50
+    }
+  },
+  "schema_cases": [
+    {
+      "case": "positive",
+      "exit_code": 0,
+      "expected_diagnostic": null
+    },
+    {
+      "case": "zero_single_heal",
+      "exit_code": 0,
+      "expected_diagnostic": null
+    },
+    {
+      "case": "zero_area_heal",
+      "exit_code": 0,
+      "expected_diagnostic": null
+    },
+    {
+      "case": "stat_dependent_single_heal",
+      "exit_code": 0,
+      "expected_diagnostic": null
+    },
+    {
+      "case": "missing_active",
+      "exit_code": 1,
+      "expected_diagnostic": "ActiveSkill"
+    },
+    {
+      "case": "wrong_kind_active",
+      "exit_code": 1,
+      "expected_diagnostic": "ActiveSkill"
+    },
+    {
+      "case": "incompatible_active",
+      "exit_code": 1,
+      "expected_diagnostic": "compatible"
+    },
+    {
+      "case": "negative_heal",
+      "exit_code": 1,
+      "expected_diagnostic": "Expected integer"
+    },
+    {
+      "case": "unknown_heal_field",
+      "exit_code": 1,
+      "expected_diagnostic": "unknown"
+    },
+    {
+      "case": "spatial_basic_heal",
+      "exit_code": 1,
+      "expected_diagnostic": "Heal requires Instant"
+    },
+    {
+      "case": "invalid_reduction",
+      "exit_code": 1,
+      "expected_diagnostic": "100"
+    }
+  ],
+  "schema_inputs_verified": 297,
+  "release_reader_sha256": "c86f239a7df3900126f2fd9a718068c615c97a0205ab472e5c1dd3d18c700c3b",
+  "public_consumer_eight_observations": [
+    [
+      "field_medic",
+      "0",
+      "0",
+      "0",
+      "false",
+      "50"
+    ],
+    [
+      "field_medic",
+      "0",
+      "100",
+      "0",
+      "false",
+      "50"
+    ],
+    [
+      "field_medic",
+      "0",
+      "1",
+      "99",
+      "false",
+      "50"
+    ],
+    [
+      "field_medic",
+      "0",
+      "50",
+      "40",
+      "true",
+      "90"
+    ],
+    [
+      "maintenance_tech",
+      "0",
+      "0",
+      "0",
+      "false",
+      "50"
+    ],
+    [
+      "maintenance_tech",
+      "0",
+      "100",
+      "0",
+      "false",
+      "50"
+    ],
+    [
+      "maintenance_tech",
+      "0",
+      "1",
+      "99",
+      "false",
+      "50"
+    ],
+    [
+      "maintenance_tech",
+      "0",
+      "50",
+      "40",
+      "true",
+      "90"
+    ]
+  ],
+  "heap_raw_lines": [
+    "test observability::tests::exporter_heap_is_bounded_without_scrapes_and_retires_on_idle ... S2_HEAP {\"baseline_live\":762371,\"held_start\":781267,\"held_end\":781267,\"samples\":1024512,\"plateaus\":[766515, 766515, 768587, 768587],\"idle_live\":766515,\"deferred_bound\":3551232}",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 100 filtered out; finished in 3.99s"
+  ],
+  "fresh_release_build_command": [
+    "cargo",
+    "build",
+    "-p",
+    "game_core",
+    "--release",
+    "--offline",
+    "--locked",
+    "--bin",
+    "author_content",
+    "--bin",
+    "package_official_content"
+  ]
+}

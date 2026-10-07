@@ -11,9 +11,9 @@ pub use facility::{
     FacilityConnection, FacilityManifestationRule, FacilityPoolRunState, FacilityRoomSlot,
     FacilityRunState, FacilityScheduleCycleEntry, FacilitySlotRole, FacilityTemplate,
     FacilityTemplateDatabase, FacilityTemplateKind, FacilityTemplatePool,
-    FacilityTerminalResolution, NodeAssignmentProfile, NodeAssignmentProfileDatabase,
-    ResolvedFacilitySchedule, StandardFacilityScheduleEntry, TaggedSlotAssignment,
-    FACILITY_TEMPLATE_VERSION,
+    FacilityTerminalResolution, FixedSlotAssignment, NodeAssignmentProfile,
+    NodeAssignmentProfileDatabase, ResolvedFacilitySchedule, StandardFacilityScheduleEntry,
+    TaggedSlotAssignment, FACILITY_TEMPLATE_VERSION,
 };
 #[cfg(test)]
 pub(crate) use facility_generator::test_facility_map;
@@ -26,6 +26,7 @@ pub use progression::{
 };
 pub use session::NodeSession;
 pub use types::{
+    AuthoredCombatNodePolicy, AuthoredCombatOutcomePolicy, AuthoredEncounterActorStatOverride,
     CombatReadinessWarningDto, HeadquartersContactOption, MapEdgeDirection, MapNode,
     MapNodeCategory, MapNodeCombatDifficulty, MapNodeCombatDifficultyClass, MapNodeDefinition,
     MapNodeDefinitionDatabase, MapNodeDifficultyBandDto, MapNodeDto, MapNodeId, MapNodeKindId,

@@ -1,0 +1,14 @@
+{
+  "recorded_at_utc": "2026-10-04T03:35:32.349865+00:00",
+  "predecessor_manifest_sha256": "453c015f3bc19cb122356c4a99d1812c84229e3e030105d7456c087126193541",
+  "predecessor_product_sha256": "f062f046ff719b3268361615ce21124b3a03519d2104aa18579de7b27dc77e73",
+  "predecessor_members_verified": 1728,
+  "closed_audit": "core_enhanced/docs/goals/core_runtime_fault_isolation/post_audit/u03_20261004_002/COMPLETION_AUDIT.md",
+  "audit_sha256": "49e16e2fdc1bf9898b3cf1fddd9a7fdc365412a8099094939f6506cef732b890",
+  "audit_end_sha256": "2b58bb90cd3d45b53d66db60866f3769e2641be9b11013a1c8ac35fc2760b6a3",
+  "finding_sha256": "2b1c869a605f24374a067140b876d4677cff46086865b082b1ca12f1625e562c",
+  "source_before_archive_sha256": "2f710ffba5dc671b442d0913be566b032ba0053557fd334945baab18a66df9a8",
+  "policy_change": false,
+  "owner": "GOAL-CRFI-01/TD02",
+  "authorization": "Continuous user request includes finding correction and re-audit; CF-D06. No fresh permission needed."
+}

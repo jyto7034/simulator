@@ -1,0 +1,272 @@
+{
+  "captured_at_utc": "2026-09-10T12:52:19.328006+00:00",
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "sha256": "2c380f98f8c63df2df41b6cc1f8910070febc902293de1ebf5f3bb519969c59b",
+      "bytes": 45836,
+      "read_spans": [
+        "1-585",
+        "rg test names only"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "bbc31faeccccf739afdb16e0d02185efa58c753bdb94f5ade7846693bebb8673",
+      "close_bytes": 49524,
+      "drift": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/scenario.rs",
+      "sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "bytes": 29210,
+      "read_spans": [
+        "1-265",
+        "rg schema validators/symbols"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "close_bytes": 29210,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/query.rs",
+      "sha256": "60521fc51d4953462206bd301e66169f85fc6c157539ccec0781eb4a43e8a8f1",
+      "bytes": 11282,
+      "read_spans": [
+        "1-91",
+        "106-165",
+        "243-296"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "60521fc51d4953462206bd301e66169f85fc6c157539ccec0781eb4a43e8a8f1",
+      "close_bytes": 11282,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/output.rs",
+      "sha256": "2951433ffb08b52568028b70485cc12992c3c172a064e44df4795b1a22c71ddb",
+      "bytes": 12683,
+      "read_spans": [
+        "31-59",
+        "62-126"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "2951433ffb08b52568028b70485cc12992c3c172a064e44df4795b1a22c71ddb",
+      "close_bytes": 12683,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "sha256": "339376e1e7766e349a10c7e2e864ded3ef524d825f7e2962c00b9eecb370ceb3",
+      "bytes": 4687,
+      "read_spans": [
+        "1-153"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "339376e1e7766e349a10c7e2e864ded3ef524d825f7e2962c00b9eecb370ceb3",
+      "close_bytes": 4687,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+      "bytes": 22728,
+      "read_spans": [
+        "215-253"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+      "close_bytes": 22728,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world/authoring_observation.rs",
+      "sha256": "a2781cf3d8d4d2ab1ae7a161aca07c98be2ca9f46cde4fafc37f51eedd97b3e1",
+      "bytes": 5502,
+      "read_spans": [
+        "1-168 (entire file)"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "a2781cf3d8d4d2ab1ae7a161aca07c98be2ca9f46cde4fafc37f51eedd97b3e1",
+      "close_bytes": 5502,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "7c024e9966a145569177670da15ef91303548783c23ed6917612e83f300a230a",
+      "bytes": 56906,
+      "read_spans": [
+        "734-782",
+        "839-910",
+        "938-1025",
+        "rg Preview kinds"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "7c024e9966a145569177670da15ef91303548783c23ed6917612e83f300a230a",
+      "close_bytes": 56906,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_50_GOAL_SET_001.ko.md",
+      "sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "bytes": 33683,
+      "read_spans": [
+        "35-43",
+        "45-72",
+        "74-104"
+      ],
+      "hash_capture_at_utc": "2026-09-10T12:52:19.328006+00:00",
+      "close_sha256": "bb0b69cfebceb17fd13374826e1dbb6ba6e38e711cb574acc29ca61ca2745f98",
+      "close_bytes": 33683,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/trace.rs",
+      "sha256": "814828ba4995efe4899861105adea958cc088ab0abf596c80c4e63d614a9d690",
+      "bytes": 16217,
+      "captured_at_utc": "2026-09-10T12:52:59.073270+00:00",
+      "hash_capture_at_utc": "2026-09-10T12:52:59.073270+00:00",
+      "read_spans": [
+        "1-89",
+        "108-191"
+      ],
+      "capture_note": "Hash captured after bounded read; separate optional trace implementation was not reviewed.",
+      "close_sha256": "24113aba868cd1093da5190097c901759b8e1e09271f20dd8eaeb0daebd01164",
+      "close_bytes": 19092,
+      "drift": true
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "c32d4fb21715166a2f84c0d684cb817a218c23b666990f930887c2b0d9547e54",
+      "bytes": 130335,
+      "hash_capture_at_utc": "2026-09-10T12:54:34.516889+00:00",
+      "read_spans": [
+        "2078-2128",
+        "2666-2717"
+      ],
+      "capture_note": "Supplemental hash captured after bounded read.",
+      "close_sha256": "c32d4fb21715166a2f84c0d684cb817a218c23b666990f930887c2b0d9547e54",
+      "close_bytes": 130335,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "sha256": "cf60b014bebf94d30011756daf69c07d94109ac1caadd98e54069ceff8dbb6b9",
+      "bytes": 35331,
+      "hash_capture_at_utc": "2026-09-10T12:54:34.516889+00:00",
+      "read_spans": [
+        "632-650",
+        "690-704"
+      ],
+      "capture_note": "Supplemental hash captured after bounded read.",
+      "close_sha256": "cf60b014bebf94d30011756daf69c07d94109ac1caadd98e54069ceff8dbb6b9",
+      "close_bytes": 35331,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/game/mod.rs",
+      "sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "bytes": 587,
+      "hash_capture_at_utc": "2026-09-10T12:54:34.516889+00:00",
+      "read_spans": [
+        "1-29 (entire file)"
+      ],
+      "capture_note": "Supplemental hash captured after bounded read.",
+      "close_sha256": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "close_bytes": 587,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/lib.rs",
+      "sha256": "f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7",
+      "bytes": 77,
+      "hash_capture_at_utc": "2026-09-10T12:54:34.516889+00:00",
+      "read_spans": [
+        "1-4 (entire file)"
+      ],
+      "capture_note": "Supplemental hash captured after bounded read.",
+      "close_sha256": "f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7",
+      "close_bytes": 77,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/tools/public_api_external_probe.py",
+      "sha256": "07de52d4581e9fdcda26803fd0d9e78b48137424fa381cd04c24600bce6af7c6",
+      "bytes": 3831,
+      "hash_capture_at_utc": "2026-09-10T12:55:04.238651+00:00",
+      "read_spans": [
+        "1-68 (entire file)"
+      ],
+      "capture_note": "Supplemental hash captured after bounded read.",
+      "close_sha256": "07de52d4581e9fdcda26803fd0d9e78b48137424fa381cd04c24600bce6af7c6",
+      "close_bytes": 3831,
+      "drift": false
+    },
+    {
+      "path": "core_enhanced/src/authoring/resolve.rs",
+      "sha256": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+      "bytes": 40841,
+      "hash_capture_at_utc": "2026-09-10T12:55:04.238651+00:00",
+      "read_spans": [
+        "78-140",
+        "212-240",
+        "rg resolver symbols"
+      ],
+      "capture_note": "Supplemental hash captured after bounded read.",
+      "close_sha256": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+      "close_bytes": 40841,
+      "drift": false
+    }
+  ],
+  "schema_version": 1,
+  "design_id": "R03-TS033",
+  "goal_ref": "GS-CATP-P2G50-001/GOAL-CATP-01",
+  "scope": "Bounded read-only public opaque TrialSession/simulate/failure/readonly transport design over existing private execution boundary; not a completion audit.",
+  "tests_run": false,
+  "repo_mutations": false,
+  "required_refactors": [
+    {
+      "id": "TS033-R01",
+      "path": "core_enhanced/src/authoring/trial.rs:97-127",
+      "detail": "Track a fixed attempt position outside run_with_provenance and update before initialization, every global-index step, and final readiness. Wrap both outer execution and inner domain errors without replacing native diagnostic code/phase."
+    },
+    {
+      "id": "TS033-R02",
+      "path": "core_enhanced/src/authoring/trial.rs:71-88",
+      "detail": "Expose opaque public session and borrowed receipt/step views only; preserve absent slot versus JSON null and chronological initial/preparation-prefix/ready/execution receipt ordering."
+    },
+    {
+      "id": "TS033-R03",
+      "path": "core_enhanced/src/authoring/trial.rs:307-339",
+      "detail": "Implement complete finite simulate by repeated actual one-step advances, moving the last accepted session into failure ownership. Never drop a partial accepted prefix or turn a failed preparation prefix into published state."
+    },
+    {
+      "id": "TS033-R04",
+      "path": "core_enhanced/src/game/world/authoring_observation.rs:50-59",
+      "detail": "Map crate-private mandatory/trace view types to public scalar/borrowed wrappers, with no CoreApplication, GameCore, mutable borrow or native Arc exposure."
+    },
+    {
+      "id": "TS033-R05",
+      "path": "core_enhanced/src/authoring/query.rs:57-87,106-111,258-268",
+      "detail": "Reuse current describe/explain; any new live snapshot/preview query needs its own bounded inspection scope and must not debit accepted trial quotas."
+    },
+    {
+      "id": "TS033-R06",
+      "path": "core_enhanced/src/authoring/mod.rs:47-86",
+      "detail": "Keep the native typed failure authoritative. Diagnostic encoding/I/O failure is a separate transport result; render after the gameplay scope using explicit independent limits, not by recursively constructing a new gameplay error."
+    }
+  ],
+  "not_proposed": [
+    "public Clone/Deref/AsRef<CoreApplication>/inner borrowing",
+    "new gameplay evaluator or auto clock loop",
+    "publicly accepting unprepared initializer",
+    "complete-session serde_json Value or copied accepted-prefix vector",
+    "optional trace as mandatory receipt input or binder source"
+  ],
+  "closed_at_utc": "2026-09-10T12:59:09.274575+00:00",
+  "drift_count": 2,
+  "drift_sources": [
+    "core_enhanced/src/authoring/trial.rs",
+    "core_enhanced/src/authoring/trace.rs"
+  ],
+  "report_sha256": "85e218e50edd61071e94ecfd40b051cc7bef6a5fbccbad2e9ed2a8ed24f754c8"
+}

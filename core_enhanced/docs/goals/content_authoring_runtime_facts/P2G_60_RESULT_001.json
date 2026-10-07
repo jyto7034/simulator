@@ -1,0 +1,60 @@
+{
+  "kind": "external complete stage report",
+  "Selected Stage": "P2G-60",
+  "Execution Status": "completed",
+  "Handoff Artifact Ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HOF-CARF-P2G60-001",
+    "Content Digest": null
+  },
+  "Lifecycle": "current",
+  "Exact Result Composite Basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CARF-P2G20-001",
+      "Content Digest": null
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CARF-P2G30-001",
+      "Content Digest": null
+    },
+    "Current Planning Freeze Selection": "selected",
+    "Final Policy Freeze Lifecycle Disposition": "current",
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CARF-P2G40-002",
+      "Content Digest": null
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CARF-P2G50-001",
+      "Content Digest": null
+    },
+    "Derived Applicable Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": [],
+    "Phase Plan Lifecycle Disposition": "current",
+    "Goal Set Lifecycle Disposition": "current"
+  },
+  "P2G-60 Resolution Record Ref Set": [],
+  "validation": {
+    "result": "passed",
+    "exact_upstream_chain": true,
+    "freeze_members": 5,
+    "mapped_phases": 1,
+    "executable_goal_members": 1,
+    "source_hash_mismatch": [],
+    "upstream_statuses": "current/Authored/Not Activated/Implementation Authorized No",
+    "remaining_summary_owners": 6,
+    "policy_or_upstream_changes": 0,
+    "production_mutation": false,
+    "new_gameplay_execution_count": 0
+  },
+  "handoff_file": {
+    "path": "core_enhanced/docs/goals/content_authoring_runtime_facts/P2G_60_HANDOFF_001.json",
+    "sha256": "9ba590091bd30d5e243472ae0a16ae0b685ebacb5271d74102da076023ed3c8a"
+  },
+  "P2G requested endpoint": "completed bounded R04 planning; no GEX executed by this pass",
+  "parent_next": "User-adopted AUTORUN separately selects eligible exact (GS-CARF-P2G50-001, GOAL-CARF-01) for GEX00; original R00–R24 objective remains incomplete",
+  "recorded_at_utc": "2026-09-10T19:37:28.064417+00:00"
+}

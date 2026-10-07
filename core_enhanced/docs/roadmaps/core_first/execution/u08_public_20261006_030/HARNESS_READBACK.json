@@ -1,0 +1,110 @@
+{
+  "recorded_at_utc": "2026-10-06T13:53:06.982162+00:00",
+  "source": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "source_count": 438,
+  "regular_inputs_verified": 1322,
+  "regular_input_sha256": "64c409ad576c571445de1c3bc277781d26f600ffe0bb7f3fae0c366700d4b2d0",
+  "old004_regular_inputs_exact_unchanged": true,
+  "archives": [
+    {
+      "artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff002/TOOL_INPUTS.tar.gz",
+        "bytes": 188734,
+        "sha256": "c3843dd8835ebfcc20bed6397598bfc7cb615da7bd41ef2130fa05ce3b9a0239"
+      },
+      "actual_members": 78
+    },
+    {
+      "artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff002/STATIC_INPUTS.tar.gz",
+        "bytes": 256596,
+        "sha256": "1c280704ed7f7a2848b54384c5e148713aa939efa6e926c5dfe6a9bef088cc9a"
+      },
+      "actual_members": 44
+    },
+    {
+      "artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff004/SUPPLEMENT_INPUTS.tar.gz",
+        "bytes": 1492400,
+        "sha256": "9e1510cc8b4363f8af44d59fc89bbea6ba29d8ed8567c2ffa6de37fb6af03681"
+      },
+      "actual_members": 1200
+    },
+    {
+      "artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/INPUTS.tar.gz",
+        "bytes": 1940496,
+        "sha256": "7a5fecca4758f22c17d01338056afa040a73ae57e013e1b68e6fe4a5fe33b525"
+      },
+      "actual_members": 1322
+    }
+  ],
+  "external_archives": [
+    {
+      "artifact": {
+        "path": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/baseline/SOURCE_BEFORE.tar.gz",
+        "bytes": 1846029,
+        "sha256": "76dff4a8e8e2afd535f0c6a072d1233c6782e37b573adfee105a9618b349bbc1"
+      },
+      "actual_required_members": 2
+    },
+    {
+      "artifact": {
+        "path": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s1/baseline/SOURCE_BEFORE.tar.gz",
+        "bytes": 1724203,
+        "sha256": "a784857d874bddc55c153e4e9316a929754cc5e80262d8ff16af22c582d6cc6a"
+      },
+      "actual_required_members": 6
+    }
+  ],
+  "future007_paths_absent": 167,
+  "required_roles": 57,
+  "functional_roles": 49,
+  "performance_roles": 8,
+  "new_selectors_present": 9,
+  "source_or_input_mutations": 0,
+  "readback_schema_correction": "Initial docs-only readback expected current_workspace on all external members and stopped with KeyError. Actual historical six members instead use manifest_row; both declared forms verified here. No runner/test execution or artifact rewrite.",
+  "execution_authority": "Only via closed root030 RECORD and real runner before timestamp; this is preparation readback",
+  "refs": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/HANDOFF.json",
+      "bytes": 19923,
+      "sha256": "ade0ee7f92f53a3343769e7da66a8676da429801e64ae8a2dd800661c890ca85"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/MANIFEST.json",
+      "bytes": 518854,
+      "sha256": "89df2bf79575925e2b3a19f4b6d74c5f22e3e7de056d467981df61b89fb6060f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/SELF_CHECKS.json",
+      "bytes": 4278,
+      "sha256": "b802070d08491e5958f1946ff9de4f16d901a637bb5f7aee37b08f6eefd107e4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/SOURCE_REBIND.json",
+      "bytes": 13059,
+      "sha256": "c5ab751cbde541c4f4f7e0efb3ca7a76a9fb876550c862f13e836580196886a4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/SOURCE_IDENTITY.json",
+      "bytes": 79848,
+      "sha256": "93d9e038e7d7f18ecc0f87fe9140717fd490bae6637ed3d4632ddd59d1fbc1b7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/EXECUTION_PLAN.json",
+      "bytes": 51112,
+      "sha256": "8f54889be0ac246769cba11e8f4cb38589dee2bbf64f50284a0372f918faa287"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/INPUT_ARCHIVE_BINDING.json",
+      "bytes": 8600,
+      "sha256": "ca715856b1b35009054050d82ebad39bddccfdb3e6d3707025dad6c2b9876884"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/verify_harness_handoff005/CONFIG_DRAFT_NOT_EXECUTABLE.json",
+      "bytes": 443836,
+      "sha256": "57e7da8d506f91d3b80d0f38d299a97a4baadb6dd3c76bcf1ee7b22e5af5123b"
+    }
+  ]
+}

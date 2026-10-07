@@ -1,0 +1,185 @@
+{
+  "verified": [
+    {
+      "receipt": "f01_final_core_default002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_core_fixtures002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_core_observation002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_host_default002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_host_observation002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_fmt002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_check002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_event_log002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_clippy_core002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_clippy_host002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_heap002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_final_release002",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_prepared_public_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_prepared_boundary_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_observed_release_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_default_parity_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_public_oracle_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_public_trace_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_public_cli_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_public_profile_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_public_boundary_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_public_api_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_pc_prepare_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_pc_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_pc_compare_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_pc_immediate_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "f01_compat_r05_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 101
+    },
+    {
+      "receipt": "f01_compat_r05_compare_001",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_build_on",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_none",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_detached",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_queue_full",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_on",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_websocket",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_build_off",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    },
+    {
+      "receipt": "final_fault_f01_001_off",
+      "source_log_receipt_exact": true,
+      "raw_exit": 0
+    }
+  ],
+  "semantic_scope": "Hashes/exit/source identity only; not aggregate semantic approval."
+}

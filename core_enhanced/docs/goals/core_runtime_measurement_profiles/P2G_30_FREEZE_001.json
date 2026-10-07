@@ -1,0 +1,307 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMRP-001",
+        "Content Digest": "sha256:a694e6a5980ba75bfb4d1777084f11dcb61eecf780ef686d1aa08390349f2932"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMRP-003",
+          "Content Digest": "sha256:fdfab0501d47b85ebb846c59e1041b707af332d0b7a33434bc0144b6ce2ec1d7"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CMRP-001",
+          "Content Digest": "sha256:ac11ac82b89c418ba0a8679d9223017e0e736083dbcd48da867068be5392f957"
+        },
+        "Predecessor Freeze": null,
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-01-REVIEWED-001",
+            "Content Digest": "sha256:dc2decccfa0ea4d4109c9f31e6c0d21490b4340c289681962bdf269a9542d66e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-02-REVIEWED-001",
+            "Content Digest": "sha256:8d374fa38f5a704dc73ba7cebd5e18dc460023aae8fdf9979aa5bb87509a2bde"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-03-REVIEWED-001",
+            "Content Digest": "sha256:a78d17db8e096a2a2db3f0f496736ad455909422d40be75de843561b5cc4404c"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-04-REVIEWED-001",
+            "Content Digest": "sha256:9439e76f6f6987c178e53797420044c85ae7b9380c9d6d3a39a9114ba8a26668"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-05-REVIEWED-001",
+            "Content Digest": "sha256:521cf0a0ea9c3fec93dc4162b1b5d8c94451910b7bd6d7a8b5934e14348d3f32"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-06-REVIEWED-001",
+            "Content Digest": "sha256:0045c5ca37a3c0ddf0f634017f2e80ce580c28accab9c88d1168e5e57cfe256e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-07-REVIEWED-001",
+            "Content Digest": "sha256:c55ad234b30b8f029f7046f92bdbefeb7d643f3370c2bd9c5040c0db3550bfc6"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-08-REVIEWED-001",
+            "Content Digest": "sha256:789bb49458a85dfc090f1c401eb794da25689fe97a1e66767c658a6e917b2384"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-09-REVIEWED-001",
+            "Content Digest": "sha256:cbe7936a6d033034ad4059bcc910dd7825ed45231baabca9def2bca36c6f2830"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMRP-10-REVIEWED-001",
+            "Content Digest": "sha256:a883733589fd900a4ffedef2e55e4102ede1cab6312573019c1749b6a49b8db8"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-01-001",
+            "Content Digest": "sha256:3426911f4a8106890a7f05d261f85fd6d28568c690380edcb01d9d5ccb64e1ca"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-02-001",
+            "Content Digest": "sha256:f1870244def525841690721965bb6d59f38dc4e89474ba0d58aeb9b3d8f04a39"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-03-001",
+            "Content Digest": "sha256:c8e0b117356501a9752ae9677fd925cf64acbcd31a8bafc1b46137399e9a774b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-04-001",
+            "Content Digest": "sha256:ec25f1ce0d97bf5ad74b0a5c1c461e45613dd3856a46ce547f2c980478aa8a85"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-05-001",
+            "Content Digest": "sha256:b2501a25497a5779832e8e07f5a2c7f1b72950b86d49ba3b972a0418be904472"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-06-001",
+            "Content Digest": "sha256:1ae31f92a730fe51865ded9842fff51c6ec13436e395ff5d5f8b69e228d6117b"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-07-001",
+            "Content Digest": "sha256:62b1ac1af761aa3d4c31480c59e214b595178e86475ef47db31d653d439cb3f7"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-08-001",
+            "Content Digest": "sha256:f768970588901048a7650f67ccf73adf9c3e07c1098284281f261d5e364f78ac"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-09-001",
+            "Content Digest": "sha256:2fbed9dfe548f611986698b7da82fba18b936e9eac03fc2e0691a705a69d040e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMRP-10-001",
+            "Content Digest": "sha256:9a5255d64158339c7c834830809245be93346bc8e0f720004e70b5d03245987a"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-01-REVIEWED-001",
+              "Content Digest": "sha256:dc2decccfa0ea4d4109c9f31e6c0d21490b4340c289681962bdf269a9542d66e"
+            },
+            "Observable Policy Acceptance": [
+              "기존 설정과 생략 입력의 기본 hash·성공/거절이 유지되고 명시 개발 설정만 다른 effective identity와 동작을 갖는다.",
+              "잘못된/과대/비신뢰 입력 완화 시도를 정상 공개 로더/host에서 거절하고 원본을 보존한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-02-REVIEWED-001",
+              "Content Digest": "sha256:8d374fa38f5a704dc73ba7cebd5e18dc460023aae8fdf9979aa5bb87509a2bde"
+            },
+            "Observable Policy Acceptance": [
+              "기본/개발 각각 경고선·cap의 exact/one-over와 owner/operation/result 경계에서 의도된 성공·경고·typed 거절 차이를 입증한다.",
+              "다른 제한과 overflow가 개발 모드에서도 거절되며 유한 비상 cap 이상의 요청은 실행되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-03-REVIEWED-001",
+              "Content Digest": "sha256:a78d17db8e096a2a2db3f0f496736ad455909422d40be75de843561b5cc4404c"
+            },
+            "Observable Policy Acceptance": [
+              "동일operation 중첩/실패candidate/재시도 누적값과 exact/부족cap, 다음operation 새 시작을 관찰한다.",
+              "늦은 emergency failure에 상태·queue·facts·RNG·저장 원본이 보호되고 U03 정상 fault/재접속/Continue 정책을 유지한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-04-REVIEWED-001",
+              "Content Digest": "sha256:9439e76f6f6987c178e53797420044c85ae7b9380c9d6d3a39a9114ba8a26668"
+            },
+            "Observable Policy Acceptance": [
+              "정상 샘플에 누적 예산과 실제 allocator peak가 독립 필드·범위로 존재하고 시작/종료·실패 최대 요청도 추적된다.",
+              "지원환경 RSS는 실제 OS 측정이고 미지원/실패는 명시적 missing이며 allocator 수치로 채우지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-05-REVIEWED-001",
+              "Content Digest": "sha256:521cf0a0ea9c3fec93dc4162b1b5d8c94451910b7bd6d7a8b5934e14348d3f32"
+            },
+            "Observable Policy Acceptance": [
+              "normal/off/detached/full 관측 모드에서 같은 profile·seed·입력의 gameplay/저장 결과가 동일하다.",
+              "포화·종료·파일상한에서 bounded 크기와 drop/missing이 확인되며 원시 표본과 요약의 수량/분포가 일치한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-06-REVIEWED-001",
+              "Content Digest": "sha256:0045c5ca37a3c0ddf0f634017f2e80ce580c28accab9c88d1168e5e57cfe256e"
+            },
+            "Observable Policy Acceptance": [
+              "생략/명시기본 canonical identity와 개발 profile mismatch 거절을 실제 승인/trial/replay 소비 경계에서 검증한다.",
+              "clone·같은host reconnect·현재host의 Continue/SavePoint 복원에서 profile 선택 권한과 원본 보호가 유지된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-07-REVIEWED-001",
+              "Content Digest": "sha256:c55ad234b30b8f029f7046f92bdbefeb7d643f3370c2bd9c5040c0db3550bfc6"
+            },
+            "Observable Policy Acceptance": [
+              "정상 전투와 생성물 소비의 실제 CoreApplication/host 표본을 동일 명령/seed/profile로 재현하고 nonzero 측정·정상 결과를 연결한다.",
+              "기본/개발의 경고초과·hard거절 표본과 원래PC 비교를 분리하며 측정창 밖 상태나 작은 표본의 한계를 명시한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-08-REVIEWED-001",
+              "Content Digest": "sha256:789bb49458a85dfc090f1c401eb794da25689fe97a1e66767c658a6e917b2384"
+            },
+            "Observable Policy Acceptance": [
+              "반복 생성/만료/전투종료 뒤 accounted owner와 실제 allocator 종료delta/host session retention을 측정해 회수 근거를 남긴다.",
+              "동시 다른 세션·관측포화·collector 종료·clone에서 예산 또는 profile이 다른 operation으로 새지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-09-REVIEWED-001",
+              "Content Digest": "sha256:cbe7936a6d033034ad4059bcc910dd7825ed45231baabca9def2bca36c6f2830"
+            },
+            "Observable Policy Acceptance": [
+              "각 조건·차원에 nonzero selector 또는 근거 있는 exact 재사용, default/dev 별도 결과·baseline·원래실패가 연결된다.",
+              "정역 복원 가능한 current target과 독립 전체 Complete/High/open0가 존재하며 역할·쓰기가 분리된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMRP-10-REVIEWED-001",
+              "Content Digest": "sha256:a883733589fd900a4ffedef2e55e4102ede1cab6312573019c1749b6a49b8db8"
+            },
+            "Observable Policy Acceptance": [
+              "재현·수치조정 절차에 profile version/원시전후/영향/후속owner와 미확정 플랫폼·부하·최종값이 명시된다.",
+              "U07-M 완료 후 U08이 진행 가능하며 최종 Unity 측정을 현재 순환 선행조건으로 삼지 않는다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-01-001",
+            "Content Digest": "sha256:f9e68b98b0badc42945991470902ea2f1de8312fec6608f8ea9118b9177f7dae"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-02-001",
+            "Content Digest": "sha256:ce4c8814aeb34321ee08af0344fee6c80c0868fa35ee6a6471338d649c3d01f9"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-03-001",
+            "Content Digest": "sha256:558e5277ee7bf0337f612b29ca3b5b8c609701623fabd4e5a361b669f41641c2"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-04-001",
+            "Content Digest": "sha256:cf089454a9846cd101d1274ef092bfc02a1e95f682658bf6654ffc6b7fd50b15"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-05-001",
+            "Content Digest": "sha256:dfb70907bfcb8ee01d3bead0fd8f7e8ee655f772c5603f1bcae4336c5a0db693"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-06-001",
+            "Content Digest": "sha256:4da8f6685d6744e6678323af00f4f814cd57155bc8a81726db6058997ff4ecc3"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-07-001",
+            "Content Digest": "sha256:4c53fe932967bb7388615e318a597a9ee4bc1f6d8b89ec633e4e7807842dcd79"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-08-001",
+            "Content Digest": "sha256:cd764054c9ea81d033b2e66b483ab49223d04ec9405d9a3678fc701e51f2b1da"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-09-001",
+            "Content Digest": "sha256:3ef286525d5a00e78ca21eee9274485e13c437a3f09718d84cd13ee6e6a6c507"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMRP-10-001",
+            "Content Digest": "sha256:8585087517832c162d03604f28290004403664ada4ffe02b88fa7880026cf3bd"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CMRP-001",
+          "Content Digest": "sha256:508ef7fd85a17fde6060a2376b6ed2ab582c2525c13d25723a34fd26da75f304"
+        },
+        "Binding Completeness Evidence": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CMRP-001",
+          "Content Digest": "sha256:51d80a61438b1ce2bf90e3601bbaaf454c1a69602323fe1f10ad08a35811b2f2"
+        },
+        "Applicable Change/Obligation Basis": [],
+        "Resolved Prerequisite Evidence": [],
+        "Known Unknowns": "No required policy/source gap. Exact helper/container/runner-format and measured costs remain GEX TD01–06 work. Temporary32MiB is a bounded experiment ceiling, not final deployment tuning.",
+        "Compatibility/Migration Disposition": "Embedded default RON/canonical hash, RuntimeFactLimits layout and strict8MiB public validation, default numeric oracles and gameplay/save semantics remain. Optional explicit trusted dev profile affects only native retained ceiling; private entry preserves owner overrides and nested budget. Observation metadata is not gameplay state. Outside-native snapshot local allocation uses its trusted owner cap; outside-native rollback capture retains its original scope. New bounded runner enforces expected profile before mutation; ordinary Continue restores under current trusted host. No new live-battle save codec or retroactive failure waiver.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

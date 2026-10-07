@@ -1,0 +1,149 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CAVE-P2G00-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CAVE-20260913",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "user request",
+            "Exact Content or Content Reference": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md를 이번 실행의 사용자 요청으로 채택하고, 그 안의 범위·조건에 따라 다음 단계를 진행해. 필요한 P2G 계획·Goal·Handoff 작성과 자격을 갖춘 Goal의 GEX 구현·검증·감사, 운영 문서의 범위 한정 연속 진행 연결을 승인한다. 필수 미완료를 complete로 표시하지 마",
+            "User-Provided Locator": "current active thread goal",
+            "User-Stated Constraint": "Adopt current AUTORUN; select and complete one R only; do not mark required incomplete work complete",
+            "Capture Limitation": "Whitespace-normalized transcription of the current user objective; the adopted file is separately captured by exact path and digest"
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md", "sha256": "0d4bc87b608e68d0af519381a152dbf8914d48a43c6b99ffbee6add8ceb42ee4"},
+            "User-Provided Locator": "adopted AUTORUN single-r-v3",
+            "User-Stated Constraint": "R06 only after selection; planning and eligible GEX authorized within its boundary",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md", "sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f"},
+            "User-Provided Locator": "selected first incomplete R06 work card",
+            "User-Stated Constraint": "Preserve the immediate valid state, AT06, later-owner exclusions and actual-test requirements",
+            "Capture Limitation": "Exact local bytes captured at bootstrap; card is an input, not a formal Goal"
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md", "sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34"},
+            "User-Provided Locator": "R06 PG01/PG03/PG05/PG08 input",
+            "User-Stated Constraint": "Do not fill unresolved policy with implementation convenience",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md", "sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b"},
+            "User-Provided Locator": "R01/R04/R05 to R06 relations and AT06",
+            "User-Stated Constraint": "Confirm producer outputs and minimum simultaneous transition in P2G-20/40",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md", "sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c"},
+            "User-Provided Locator": "T06/T18/T27 acceptance input",
+            "User-Stated Constraint": "Unexecuted tests remain unexecuted; record nonzero counts and actual results",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA05.md", "sha256": "aa7d0fe5f4ebc34191c9aff42a7fd5044d6fc33415efb336f6f242c4d2debf74"},
+            "User-Provided Locator": "R06 original CA05 source",
+            "User-Stated Constraint": "ValueExpr, aggregate and stat-growth meaning; current source facts require P2G-20",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA10.md", "sha256": "f6b683fadcc328c4651ca8b3eb334c1991cec60a7cb426e26073f2cd98197e63"},
+            "User-Provided Locator": "R06 weapon-growth source and R07 boundary",
+            "User-Stated Constraint": "Implement only R06-owned growth seam; do not begin fragment-copy conversion",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA17.md", "sha256": "ec648d0b7638b9b6d83dfa798db7ae174cad6fd31069e8e42ee3a26ead64dd29"},
+            "User-Provided Locator": "R06 T18/CERTIFIED input seam and later R19 boundary",
+            "User-Stated Constraint": "Do not invent final evaluation weights or official supply rules",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/02_AUTHORING_AND_COMPILER.ko.md", "sha256": "06b0b50a5a0e1f4ea5b84cd1c1c4fbe193f5318b89b3625dfa76985f95f5f281"},
+            "User-Provided Locator": "R06 authoring/compiler design input",
+            "User-Stated Constraint": "Architecture is design input, not proof of current implementation",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {"repository": "/mnt/f/work/simulator", "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/03_RUNTIME.ko.md", "sha256": "8fbd1950c265bef1353a27573fbb7efd7f84490604f847b69eb76f75a91674ad"},
+            "User-Provided Locator": "R06 runtime design input",
+            "User-Stated Constraint": "Actual runtime boundary and consumer set require P2G-20 evidence",
+            "Capture Limitation": "Exact local bytes captured at bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CAVE-P2G00-001",
+        "Content Digest": null
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CAVE-20260913",
+          "Policy Topic": "R06 ValueExpr·집계·Attack/SpellPower와 무기 성장",
+          "Requested Result": "bounded_pipeline: R06 P2G through complete P2G-60 Handoff, then separately authorized eligible exact GEX implementation, validation and fresh audit until R06 complete or a real stop condition",
+          "Target Project/Repository": {"project": "simulator", "workspace": "/mnt/f/work/simulator", "head_at_intake": "f318414fb0156a67e04c5479000c2a2683fc0c09"},
+          "Approval Reference": {
+            "locator": "current active thread goal",
+            "adopted_request": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+            "adopted_revision": "single-r-v3",
+            "selected_work_card": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+            "boundary": "R06 only. P2G may continue through Handoff and the parent request separately authorizes an eligible exact GEX; artifacts do not create authority. R07 requires a new user request."
+          },
+          "Scope Items": [
+            {"Scope Item ID": "I01", "Approved Disposition": "in", "Statement": "Finite typed ValueExpr over constant/stat/HP/time/resource/result inputs; add/multiply/ratio/clamp and finite Count/Sum/Max with unit, range, checked overflow/divide-by-zero, rounding, empty-set and snapshot/live validation.", "Exact User Approval Reference": "Approval Reference; AUTORUN single-r-v3 §§1/3/5–10 and selected R06 card §§1–8"},
+            {"Scope Item ID": "I02", "Approved Disposition": "in", "Statement": "Compose Attack/SpellPower and employee/weapon/modifier growth exactly once, keep SpellPower distinct from Magic damage type, and separate attack-speed points from attack interval while preserving scale_attack_interval_ms meaning.", "Exact User Approval Reference": "Approval Reference; selected R06 card §§3–6 and CA05 §§1–7"},
+            {"Scope Item ID": "I03", "Approved Disposition": "in", "Statement": "AT06 minimum simultaneous transition across profile/stat, inventory/player spawn, range/preview/explain, combat-power input/cache and snapshot/save projections; introduced state owns lifecycle, restore, failure and cancellation.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§6/9 and DEPENDENCIES AT06"},
+            {"Scope Item ID": "I04", "Approved Disposition": "in", "Statement": "Any new RON/schema/opcode has a public parser-validation-compiler-executor path and negative fixture; connect actual resource/result/source-copy inputs, truthful unsupported publication and finite execution budgets.", "Exact User Approval Reference": "Approval Reference; selected R06 card §§3/5/6 and AUTORUN §§1/6/9"},
+            {"Scope Item ID": "I05", "Approved Disposition": "in", "Statement": "T06 and R06-applicable T18/T27, direct consumers and predecessor currentness, deterministic/cost/clone/fault validation and fresh audit; expose a truthful Certified input/cache seam without implementing R19 final weights.", "Exact User Approval Reference": "Approval Reference; selected R06 card §§6–8 and ACCEPTANCE T06/T18/T27"},
+            {"Scope Item ID": "I06", "Approved Disposition": "in", "Statement": "Minimum necessary P2G-00 through P2G-60 and exact Goal/Handoff validation, followed only when eligible by GEX-00/10/20 and applicable GEX-30 under the parent authorization; delegated routine policies are recorded at their owner.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§3/6/7/8/10"},
+            {"Scope Item ID": "O01", "Approved Disposition": "out", "Statement": "Server, Unity/client, external services or remote deployment, RON editor UI and global installation/configuration.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§1/9"},
+            {"Scope Item ID": "O02", "Approved Disposition": "out", "Statement": "New user-choice gameplay/balance/UX/data-loss/compatibility policy, unsupported Replace ordering, official numeric balance/evaluation weights, or treating safety limits as gameplay caps without authority.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§3/7 and R06 card §7"},
+            {"Scope Item ID": "O03", "Approved Disposition": "out", "Statement": "R07-R24 new features, including fragment-copy/rank removal, full Flow/relic/boss/official-content implementation and the R19 final Certified model beyond the minimum truthful R06 seam.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§1/4/5/10 and R06 card §§5/7"},
+            {"Scope Item ID": "O04", "Approved Disposition": "out", "Statement": "Personal store deletion/automatic conversion, content-name executors, external code evaluation, empty executors, fixture-only success, silent fallback and false supported publication.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§1/6/9 and CA05 §8"},
+            {"Scope Item ID": "O05", "Approved Disposition": "out", "Statement": "Changes to AUTORUN, P2G, GEX, validators, AGENTS, runner or global Codex configuration, or authority claimed from an artifact.", "Exact User Approval Reference": "Approval Reference; AUTORUN §§3/4/9"}
+          ]
+        },
+        "Policy Intake Snapshot Ref": {"Artifact Type": "Policy Intake Snapshot", "Artifact ID": "PIS-CAVE-P2G00-001", "Content Digest": null},
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {"Post-Freeze Change Record Ref Set": [], "Authoritative Change Obligation Declaration Ref Set": []}
+      }
+    }
+  ]
+}

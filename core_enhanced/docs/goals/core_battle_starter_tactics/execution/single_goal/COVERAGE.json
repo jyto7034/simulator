@@ -1,0 +1,3360 @@
+{
+  "goal": "GOAL-CBST-01",
+  "goal_set": "GS-CBST-001",
+  "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+  "frozen_policy_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CBST-001",
+    "Content Digest": "sha256:0a12e5a36496383017f184fcb01523d94fffa078a367b5b5962071a1dd5d6885"
+  },
+  "status": "GEX-10 self-verification; GEX-20 independent audit pending",
+  "acceptances": [
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-01-REVIEWED-001",
+        "Content Digest": "sha256:621accb032a41cf0f284cd6694b7a74b67f4115579aba1bb4ba93dad38c994ca"
+      },
+      "Observable Policy Acceptance": [
+        "실제 명령에서 최초/재배치/교대 비용과 부족 TP 실패 무변경을 확인한다.",
+        "Pause/배속/종료 전후의 온전한 전투초 회복과20 재시작을 확인하고 종료 결과는 U04와 일치한다."
+      ],
+      "validation_refs": [
+        "V01"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-02-REVIEWED-001",
+        "Content Digest": "sha256:086d498e57ad3d784f8f94c67e0a5872b908afa7ac1b6b1ad250a31eadc65fa4"
+      },
+      "Observable Policy Acceptance": [
+        "무기없음과 출전불가가 겹치면 condition 사유를 우선 보여주고 무기없는 범위 미리보기도 거절한다.",
+        "8명 동시배치와9번째 거절, 철수 뒤 이전 미참가 직원 배치를 정상 명령으로 검증한다.",
+        "타일/점유/적성/비용/대기 실패 시 상태와 자원은 동일하다."
+      ],
+      "validation_refs": [
+        "V02"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-03-REVIEWED-001",
+        "Content Digest": "sha256:adbd14896f913a0b4a1b513e7b9dedccf19f322b09eb03d11eb824d130113a4d"
+      },
+      "Observable Policy Acceptance": [
+        "CC/작업 중 정상 철수가 성공하고 중복·사망 철수는 거절된다.",
+        "철수 대기 중 추가 회복/최대HP 변동이 고정 재배치HP를 소급 바꾸지 않고 새 개체 공명은 U05 규칙이다.",
+        "발사체/독립 효과·미방출 취소·저지 정리는 U01 수명과 일치한다."
+      ],
+      "validation_refs": [
+        "V03"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-04-REVIEWED-001",
+        "Content Digest": "sha256:8089c1ae63c42d3e16a5da5b687efba04ab64f158354bfbd2eacf198fd898e60"
+      },
+      "Observable Policy Acceptance": [
+        "정상 RON과 누락/부적합 profile 거절을 loader와 공개 작성 경로에서 확인한다.",
+        "무기 이전·공격속도·방어저지 증가 전후에도 profile과 파편 자격이 일치한다.",
+        "치유 Staff도 같은 배치 적성과 행동 주기를 사용하고 기존 특수 총을 피해 기본값으로 덮지 않는다."
+      ],
+      "validation_refs": [
+        "V04"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-05-REVIEWED-001",
+        "Content Digest": "sha256:3e22346cc39a09c68cb612dea9e6e400c7b6828d82c4b860f57f22f340f9c8a7"
+      },
+      "Observable Policy Acceptance": [
+        "정상 RON 단일 치유는 실제 아군 HP만 올리고 범위 치유는 footprint의 아군만 회복한다.",
+        "fullHP만 있을 때 새 기본 행동이 시작하지 않고 유효 부족HP 동률은 결정적으로 선택된다.",
+        "CC/Defense/작업/Pause와 방출 전 대상 상실, Silence 허용을 검증한다.",
+        "동시각 확정 피해가 먼저이며 사망자를 치유로 부활시키거나 damage proc을 발동하지 않는다."
+      ],
+      "validation_refs": [
+        "V05"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-06-REVIEWED-001",
+        "Content Digest": "sha256:7d82f4c6e0aa44d7c083c3d03ad6648d01d602dd0338076f71554aa13c4e1d65"
+      },
+      "Observable Policy Acceptance": [
+        "공개 loader에서6세트가 존재하고 정상 시작/채용 grant·장착 조회에 해당 사본이 연결된다.",
+        "각 active 파편을 정상 사용해 약속된 buff/피해/보호막/회복 결과와 U05 잠금을 확인한다.",
+        "staff 기본은 active가 없어도 순수 치유이며 역할이 장비 이전의 직업 제한이 되지 않는다."
+      ],
+      "validation_refs": [
+        "V06"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-07-REVIEWED-001",
+        "Content Digest": "sha256:2e2129f2088b2e1f813e21f14f5026465ef21eca47e45833bceceb813736ac18"
+      },
+      "Observable Policy Acceptance": [
+        "일반 Defense 진입은 이미 시작한 기본/스킬을 취소하지 않으며 새 행동만 막는다.",
+        "HardCC/대기/중복 거절은 무변경이고 Ground 감소와 Platform 저지0이 조회/실제에서 일치한다."
+      ],
+      "validation_refs": [
+        "V07"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-08-REVIEWED-001",
+        "Content Digest": "sha256:1c9bf11e42c40829de334f3cd556ca5a26b2932e2ca846c0ebe836c7f56d1ac6"
+      },
+      "Observable Policy Acceptance": [
+        "온전한1초/CC 겹침·해제/Pause/동시각 lethal 피해와 Rest 결과를 확인한다.",
+        "타일 종류 전환은 새 Rest 주기이고 제자리 방향 변경은 기존 주기다.",
+        "HardCC 중 저지0/작업기여0/피해감소유지와 Silence의 기본치유/이동 허용을 검증한다."
+      ],
+      "validation_refs": [
+        "V08"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-09-REVIEWED-001",
+        "Content Digest": "sha256:889c450e70ea3ad3c27c8b2441834cc8e6dfa8beb6aebbd30c588eb88e52a2b9"
+      },
+      "Observable Policy Acceptance": [
+        "Attack과Defense에서 성공하고 일반태세대기가 남아도 이동은 독립 자격으로 판정한다.",
+        "제자리 방향만 변경과 완전 동일 요청을 구분하고 모든 실패에서 비용/상태가 같다.",
+        "HP/버프/공명/identity/방출물 수명이 이동 전후 보존되며 저지/범위가 최종 위치를 따른다."
+      ],
+      "validation_refs": [
+        "V09"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-10-REVIEWED-001",
+        "Content Digest": "sha256:dbfe6e235015ce742774799bd2361eccca08a1672c7add4f554cfab98416d6ab"
+      },
+      "Observable Policy Acceptance": [
+        "Attack/Defense 양쪽 출발에서1499ms Defense/1500ms Attack, 조기 수동해제 거절을 검증한다.",
+        "Pause/0.5배속·CC/철수/사망/종료에 타이머가 부활·이중전환을 만들지 않는다.",
+        "작업 도착은1.5초 기다리지 않고 작업하며 완료 뒤 이전태세와 무관하게Attack이다."
+      ],
+      "validation_refs": [
+        "V10"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-11-REVIEWED-001",
+        "Content Digest": "sha256:9ff70e52e336b2b8edbd7feb65b920c689a3985efb530e0191ed7158410b3c6d"
+      },
+      "Observable Policy Acceptance": [
+        "두 방향/두 타일/양쪽 자격 중 하나라도 실패하면 상태 hash·TP·쿨다운이 불변이다.",
+        "성공은 양쪽동시·TP5한번·각10초/1.5초이며 작업타일 도착 예외를 개별 적용한다.",
+        "정상 command/query에서 선택/preview/cancel이 실제 점유를 만들지 않는다."
+      ],
+      "validation_refs": [
+        "V11"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-12-REVIEWED-001",
+        "Content Digest": "sha256:2e8029eb1f0b8d8d88cda854ce6d6aa24751e1b287073b777e69e2262836a41a"
+      },
+      "Observable Policy Acceptance": [
+        "복수작업자·CC·Pause·직원이탈/복귀에 진행이 reset/bank/초과기여하지 않는다.",
+        "fullHP 수리도 완료사실과 소모가한번이고 반복 query/시간/재접속이 완료를 재발행하지 않는다.",
+        "작업→철수/이동/교대와 완료 후Attack·저지/공명 자격을 정상 명령으로 확인한다."
+      ],
+      "validation_refs": [
+        "V12"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-13-REVIEWED-001",
+        "Content Digest": "sha256:1d0842595ec39c4a0c3313d43c6b9a0f8464ca688db73169f6880047d7322a57"
+      },
+      "Observable Policy Acceptance": [
+        "직선 다방향 접근에서 앞타일 근접 끝자락까지 이동한 뒤 정지하고 판정타일을 아군타일로 강제치환하지 않는다.",
+        "한계용량을 통과하는 적과 기존적 사망의 같은시각 재판정에서 현재위치를 보존한다.",
+        "범위이탈·CC·죽음·이동·용량감소·공중과 신규후보가 기존관계를 밀어내지 않는 규칙을 검증한다."
+      ],
+      "validation_refs": [
+        "V13"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-14-REVIEWED-001",
+        "Content Digest": "sha256:107c38042021b39a9626d196380d8d77834a56a71bf42c59344de92ac1761e21"
+      },
+      "Observable Policy Acceptance": [
+        "다른 판정타일·뒤쪽 저지상대도 기본공격만 가능하고 스킬/장판/제3자는 일반사거리다.",
+        "저지해제 뒤 예외가 즉시 사라지고 무효효과/Defense/CC/주기 제한을 우회하지 않는다.",
+        "치유는 적저지 우선순위를 따르거나 적HP에 양수 회복을 주지 않는다."
+      ],
+      "validation_refs": [
+        "V14"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-15-REVIEWED-001",
+        "Content Digest": "sha256:a7fe0aa350e24210fb89a8108211586226f9a695d2c6b698ca708843bc01858f"
+      },
+      "Observable Policy Acceptance": [
+        "실제 공개 command→result→query에서 비용/거절/위치/치유량/작업결과를 설명할 수 있다.",
+        "preview 반복은 revision/TP/HP/점유를 바꾸지 않으며 stale preview 후 최종 실패는 무변경이다.",
+        "타일과 연속위치/저지사거리 예외와 가능한 행위를 query에서 구분한다."
+      ],
+      "validation_refs": [
+        "V15"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-16-REVIEWED-001",
+        "Content Digest": "sha256:6ab7ec4bc2fc56a90022a735e2ac531d280be29226fc884e612ffd6ad6a44233"
+      },
+      "Observable Policy Acceptance": [
+        "2→포커스0.5→다른대상/스킬/이동0.5→전체해제2와 선택중 speed거절을 정상 명령으로 확인한다.",
+        "아군/적/배치 선택중 수동Pause를 유지하고 선택해제로 자동재개하지 않는다.",
+        "대상소멸/전투종료/후퇴에서 stale focus가 전투를 재개하거나배속을 덮지 않는다."
+      ],
+      "validation_refs": [
+        "V16"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-17-REVIEWED-001",
+        "Content Digest": "sha256:cbfe5ef4e4601a47c5ed8c7608cd207c2fbe3899179a960c528a2ecd8baff52e"
+      },
+      "Observable Policy Acceptance": [
+        "Pause중 연속배치/교대/철수/유효스킬접수를 입력순서로 검증하고 timer/work/projectile은 재개전 진행하지 않는다.",
+        "1/2/0.5와Pause 각 조합의 설정열기/중복/닫기 및 설정중금지 명령에서 복원값과시간이 정확하다.",
+        "일반 host tick과 침식 강제정지 host 시계를 구분하고 종료후 설정닫기가 전투를 되살리지 않는다."
+      ],
+      "validation_refs": [
+        "V17"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-18-REVIEWED-001",
+        "Content Digest": "sha256:a7b71323a227fbd9dc9ffd81d68c08a55233de5d37c2db555d6b42098a2b58c6"
+      },
+      "Observable Policy Acceptance": [
+        "선택/설정/강제방어/작업/치유 준비중 clone/지원roundtrip/rollback과같은actor재접속이수명/비용을중복시키지않는다.",
+        "disconnect중설정닫기/선택종료가자동Resume하지않고 명시Resume후원래선택배속이다.",
+        "실제hostContinue/SavePoint와미지원원본보호가U04의결과/자산/횟수계약을유지한다."
+      ],
+      "validation_refs": [
+        "V18"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-19-REVIEWED-001",
+        "Content Digest": "sha256:52f2518c7b050b4f938a5101cc6ff61ee646b4b5e6d7cd732101275964ca652c"
+      },
+      "Observable Policy Acceptance": [
+        "6세트와pureheal schema를실제loader→CoreApplication→host/query로실행하고직접kernel수정만으로성공을대체하지않는다.",
+        "새상태size/clone/queue/관측eventcost를초기집중검사와최종통합에서검증하며상한을통과용으로낮추거나높이지않는다.",
+        "strict오류·실패원본·selector/실행건수·실제비용delta와부수효과를구분해기록한다."
+      ],
+      "validation_refs": [
+        "V19"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    },
+    {
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CBST-20-REVIEWED-001",
+        "Content Digest": "sha256:cec5ef40e213ffe79fb2d78779784d1c3b0f965f2a84692c57de4e210e822ba8"
+      },
+      "Observable Policy Acceptance": [
+        "조건별currentness/의도된변경/증거가추적되고정상6세트조우의배치·치유·스킬·이동·교대·작업·철수·시간을명령으로인수한다.",
+        "전체완료독립감사가Complete/High이며미해결finding이없을때만다음owner로넘긴다."
+      ],
+      "validation_refs": [
+        "V20"
+      ],
+      "status": "self-verification bound; independent audit pending"
+    }
+  ],
+  "validations": [
+    {
+      "id": "V01",
+      "requirement": [
+        "실제 명령에서 최초/재배치/교대 비용과 부족 TP 실패 무변경을 확인한다.",
+        "Pause/배속/종료 전후의 온전한 전투초 회복과20 재시작을 확인하고 종료 결과는 U04와 일치한다."
+      ],
+      "core_selectors": [
+        "game::ability::tests::skill_step_ron_deserialization_reads_tactical_resource_modifier",
+        "game::data::run_policy_data::tests::tactical_resource_policy_rejects_legacy_resource_names_and_deployment_ownership",
+        "game::data::run_policy_data::tests::tactical_resource_policy_validates_fixed_pool_bounds_and_redeploy_price",
+        "game::world::state::tests::tactical_resource_recovery_payment_and_signed_delta_are_clamped_and_atomic",
+        "game::world::state::tests::tactical_resource_recovery_saturates_large_elapsed_products_without_wrapping",
+        "game::world::state::tests::tactical_resource_redeploy_cost_uses_ceiling_for_odd_base_and_saturates",
+        "game::world::tests::combat::authored_skill_negative_tactical_resource_delta_clamps_at_zero",
+        "game::world::tests::combat::live_defense_playback_speed_scales_server_tick_delta",
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic",
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused",
+        "game::world::tests::combat::manual_fragment_can_restore_tactical_resource_and_enable_extra_deployment"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::ability::tests::skill_step_ron_deserialization_reads_tactical_resource_modifier": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::run_policy_data::tests::tactical_resource_policy_rejects_legacy_resource_names_and_deployment_ownership": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::run_policy_data::tests::tactical_resource_policy_validates_fixed_pool_bounds_and_redeploy_price": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::state::tests::tactical_resource_recovery_payment_and_signed_delta_are_clamped_and_atomic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::state::tests::tactical_resource_recovery_saturates_large_elapsed_products_without_wrapping": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::state::tests::tactical_resource_redeploy_cost_uses_ceiling_for_odd_base_and_saturates": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::authored_skill_negative_tactical_resource_delta_clamps_at_zero": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_defense_playback_speed_scales_server_tick_delta": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::manual_fragment_can_restore_tactical_resource_and_enable_extra_deployment": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V02",
+      "requirement": [
+        "무기없음과 출전불가가 겹치면 condition 사유를 우선 보여주고 무기없는 범위 미리보기도 거절한다.",
+        "8명 동시배치와9번째 거절, 철수 뒤 이전 미참가 직원 배치를 정상 명령으로 검증한다.",
+        "타일/점유/적성/비용/대기 실패 시 상태와 자원은 동일하다."
+      ],
+      "core_selectors": [
+        "game::world::tests::combat::all_weaponless_roster_uses_existing_no_deployable_run_rule",
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only",
+        "game::world::tests::combat::weaponless_employee_is_listed_but_battle_actions_reject_with_condition_priority",
+        "game::world::tests::combat::weaponless_headquarters_does_not_defer_failure",
+        "game::world::tests::combat::weaponless_recruitment_is_not_a_no_deployable_recovery_path",
+        "game::world::tests::combat::weaponless_victory_commits_rewards_then_fails_the_run",
+        "game::world::tests::snapshots_and_start::weaponless_employee_remains_safezone_visible_and_rearms_from_authored_profile",
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::world::tests::combat::all_weaponless_roster_uses_existing_no_deployable_run_rule": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::weaponless_employee_is_listed_but_battle_actions_reject_with_condition_priority": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::weaponless_headquarters_does_not_defer_failure": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::weaponless_recruitment_is_not_a_no_deployable_recovery_path": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::weaponless_victory_commits_rewards_then_fails_the_run": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::snapshots_and_start::weaponless_employee_remains_safezone_visible_and_rearms_from_authored_profile": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V03",
+      "requirement": [
+        "CC/작업 중 정상 철수가 성공하고 중복·사망 철수는 거절된다.",
+        "철수 대기 중 추가 회복/최대HP 변동이 고정 재배치HP를 소급 바꾸지 않고 새 개체 공명은 U05 규칙이다.",
+        "발사체/독립 효과·미방출 취소·저지 정리는 U01 수명과 일치한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+        "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+        "game::battle::core::commands::tests::advance_basic_attack_projectile_misses_when_locked_target_withdraws_before_contact",
+        "game::battle::core::commands::tests::skill_projectile_impact_does_not_hit_withdrawn_target",
+        "game::battle::core::field_work::tests::u05_actual_work_relocation_withdrawal_and_redeploy_share_global_employee_pulses",
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_blocker_is_withdrawn",
+        "game::battle::core::resonance_runtime::tests::u05_actor_death_and_withdrawal_clear_pending_use_and_stale_pulse_without_refund",
+        "game::battle::core::resonance_runtime::tests::u05_direct_target_withdrawal_cancels_pending_use_immediately_without_refund",
+        "game::battle::core::tests::apply_live_command_deploys_and_withdraws_player_unit",
+        "game::battle::core::tests::manual_player_unit_tile_area_uses_acceptance_tile_after_target_moves_or_withdraws",
+        "game::battle::core::tests::native_action_withdraw_before_release_and_after_release_have_distinct_progress",
+        "game::battle::core::tests::released_projectile_keeps_snapshot_expression_after_source_withdrawal",
+        "game::battle::core::tests::withdraw_cancels_active_skill_cast_with_cancelled_event",
+        "game::battle::core::tests::withdraw_cancels_pending_skill_cast_with_cancelled_event",
+        "game::battle::core::tests::withdraw_cancels_queued_unreleased_skill_step",
+        "game::battle::core::tests::withdraw_cancels_unreleased_instant_basic_attack",
+        "game::battle::core::tests::withdraw_clears_runtime_buffs_with_withdrawn_reasons",
+        "game::battle::core::tests::withdraw_eligibility_ignores_hard_cc_and_silence",
+        "game::battle::core::tests::withdraw_preserves_ground_fixed_area_and_ends_follow_areas",
+        "game::battle::core::tests::withdraw_preserves_released_basic_attack_projectile",
+        "game::battle::core::tests::withdraw_preserves_released_skill_projectile_with_launch_snapshot",
+        "game::battle::core::tests::withdraw_rejects_dead_and_already_withdrawn_units_without_mutation",
+        "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+        "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+        "game::battle::result_stats::tests::collector_aggregates_redeploy_instances_into_one_chronological_employee_result",
+        "game::data::run_policy_data::tests::tactical_resource_policy_validates_fixed_pool_bounds_and_redeploy_price",
+        "game::world::state::tests::tactical_resource_redeploy_cost_uses_ceiling_for_odd_base_and_saturates",
+        "game::world::tests::combat::live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock",
+        "game::world::tests::combat::paused_live_battle_commits_deploy_and_withdraw_without_advancing_time",
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+        "game::world::tests::combat::resource_lifetimes::actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_identity",
+        "game::world::tests::combat::resource_lifetimes::actual_event_defeat_commits_nonempty_resources_once_before_ack_and_restart",
+        "game::world::tests::combat::resource_lifetimes::actual_retreat_restores_run_resource_entry_timeline_and_attempt_identity",
+        "game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values",
+        "game::world::tests::combat::resource_lifetimes::actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only_that_run_key",
+        "game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners",
+        "game::world::tests::combat::resource_lifetimes::actual_withdraw_redeploy_resets_deployment_but_preserves_attempt_and_run",
+        "game::world::tests::combat::resource_lifetimes::external_resource_reference_and_selector_negatives_keep_exact_authored_source",
+        "game::world::tests::combat::resource_lifetimes::external_ron_executes_each_lifetime_with_actual_employee_and_copy_sources",
+        "game::world::tests::combat::resource_lifetimes::external_ron_second_cost_shortage_preserves_actual_timestamp_candidate",
+        "game::world::tests::combat::resource_lifetimes::extra_attack_child_cast_preserves_its_actual_causal_chain",
+        "game::world::tests::combat::resource_lifetimes::nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run",
+        "game::world::tests::combat::resource_lifetimes::released_fixed_area_keeps_delivery_and_chain_resources_after_controller_withdrawal",
+        "game::world::tests::combat::resource_lifetimes::released_payload_cannot_reuse_closed_activation_and_failure_keeps_committed_withdrawal",
+        "game::world::tests::combat::resource_lifetimes::released_projectile_completion_retains_delivery_after_motion_and_controller_end",
+        "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+        "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit",
+        "game::world::tests::combat::resource_lifetimes::two_real_same_definition_copies_and_target_employee_selector_do_not_alias",
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_withdraw",
+        "game::world::tests::combat::track_and_rejoin_withdrawn_target_invalidates_once_without_reacquisition"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::commands::tests::advance_basic_attack_projectile_misses_when_locked_target_withdraws_before_contact": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::commands::tests::skill_projectile_impact_does_not_hit_withdrawn_target": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::u05_actual_work_relocation_withdrawal_and_redeploy_share_global_employee_pulses": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_blocker_is_withdrawn": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_actor_death_and_withdrawal_clear_pending_use_and_stale_pulse_without_refund": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_direct_target_withdrawal_cancels_pending_use_immediately_without_refund": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::apply_live_command_deploys_and_withdraws_player_unit": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::manual_player_unit_tile_area_uses_acceptance_tile_after_target_moves_or_withdraws": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_withdraw_before_release_and_after_release_have_distinct_progress": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::released_projectile_keeps_snapshot_expression_after_source_withdrawal": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_cancels_active_skill_cast_with_cancelled_event": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_cancels_pending_skill_cast_with_cancelled_event": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_cancels_queued_unreleased_skill_step": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_cancels_unreleased_instant_basic_attack": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_clears_runtime_buffs_with_withdrawn_reasons": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_eligibility_ignores_hard_cc_and_silence": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_preserves_ground_fixed_area_and_ends_follow_areas": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_preserves_released_basic_attack_projectile": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_preserves_released_skill_projectile_with_launch_snapshot": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::withdraw_rejects_dead_and_already_withdrawn_units_without_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::result_stats::tests::collector_aggregates_redeploy_instances_into_one_chronological_employee_result": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::run_policy_data::tests::tactical_resource_policy_validates_fixed_pool_bounds_and_redeploy_price": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::state::tests::tactical_resource_redeploy_cost_uses_ceiling_for_odd_base_and_saturates": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::paused_live_battle_commits_deploy_and_withdraw_without_advancing_time": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_identity": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_event_defeat_commits_nonempty_resources_once_before_ack_and_restart": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_retreat_restores_run_resource_entry_timeline_and_attempt_identity": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only_that_run_key": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::actual_withdraw_redeploy_resets_deployment_but_preserves_attempt_and_run": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::external_resource_reference_and_selector_negatives_keep_exact_authored_source": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::external_ron_executes_each_lifetime_with_actual_employee_and_copy_sources": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::external_ron_second_cost_shortage_preserves_actual_timestamp_candidate": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::extra_attack_child_cast_preserves_its_actual_causal_chain": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::released_fixed_area_keeps_delivery_and_chain_resources_after_controller_withdrawal": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::released_payload_cannot_reuse_closed_activation_and_failure_keeps_committed_withdrawal": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::released_projectile_completion_retains_delivery_after_motion_and_controller_end": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::two_real_same_definition_copies_and_target_employee_selector_do_not_alias": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_withdraw": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::track_and_rejoin_withdrawn_target_invalidates_once_without_reacquisition": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V04",
+      "requirement": [
+        "정상 RON과 누락/부적합 profile 거절을 loader와 공개 작성 경로에서 확인한다.",
+        "무기 이전·공격속도·방어저지 증가 전후에도 profile과 파편 자격이 일치한다.",
+        "치유 Staff도 같은 배치 적성과 행동 주기를 사용하고 기존 특수 총을 피해 기본값으로 덮지 않는다."
+      ],
+      "core_selectors": [
+        "every_live_starter_and_recruit_has_its_active_training_set",
+        "game::battle::core::tests::attack_start_player_weapon_profile_overrides_hinted_target_when_it_can_select",
+        "game::battle::types::tests::equipped_weapon_profile_is_runtime_basic_attack_delivery_authority",
+        "game::data::equipment_data::tests::weapon_profile_schema_rejects_removed_range_units",
+        "game::data::live_ron::tests::source_set_rejects_weapon_profile_missing_block_capacity",
+        "game::data::skill_fragment_data::tests::compatibility_requirements_accept_matching_weapon_profile",
+        "game::range_preview::tests::weapon_profile_range_overrides_fallback_basic_attack_preview",
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative",
+        "game::world::tests::equipment::skill_fragment_equip_accepts_matching_weapon_profile",
+        "game::world::tests::equipment::skill_fragment_equip_rejects_incompatible_weapon_profile",
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility",
+        "live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "every_live_starter_and_recruit_has_its_active_training_set": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::attack_start_player_weapon_profile_overrides_hinted_target_when_it_can_select": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::types::tests::equipped_weapon_profile_is_runtime_basic_attack_delivery_authority": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::equipment_data::tests::weapon_profile_schema_rejects_removed_range_units": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::live_ron::tests::source_set_rejects_weapon_profile_missing_block_capacity": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::skill_fragment_data::tests::compatibility_requirements_accept_matching_weapon_profile": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::range_preview::tests::weapon_profile_range_overrides_fallback_basic_attack_preview": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::equipment::skill_fragment_equip_accepts_matching_weapon_profile": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::equipment::skill_fragment_equip_rejects_incompatible_weapon_profile": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "public_starter_schema_003",
+        "compat_input_validation_001"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V05",
+      "requirement": [
+        "정상 RON 단일 치유는 실제 아군 HP만 올리고 범위 치유는 footprint의 아군만 회복한다.",
+        "fullHP만 있을 때 새 기본 행동이 시작하지 않고 유효 부족HP 동률은 결정적으로 선택된다.",
+        "CC/Defense/작업/Pause와 방출 전 대상 상실, Silence 허용을 검증한다.",
+        "동시각 확정 피해가 먼저이며 사망자를 치유로 부활시키거나 damage proc을 발동하지 않는다."
+      ],
+      "core_selectors": [
+        "game::battle::core::boss_runtime::tests::u06_basic_heal_overlay_public_preflight_preserves_cost_and_state",
+        "game::battle::core::sustained::basic_heal_extent_tests::basic_heal_footprint_is_owned_and_admitted_before_overlay_base_clone",
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_auto_gates_full_hp_defense_cc_and_silence_without_hostile_proc",
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_real_queue_resolves_lethal_damage_first_without_reviving",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_dead_fixed_target_is_not_revived_or_retargeted",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_definition_rejects_damage_delivery_and_unknown_fields",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_overlay_rejects_damage_delivery_and_consumes_instant_once",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_resolve_precedes_rest_but_follows_damage",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_selection_uses_ratio_distance_id_and_allows_self",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query",
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_respects_authored_range_and_air_capability",
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness",
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery",
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::boss_runtime::tests::u06_basic_heal_overlay_public_preflight_preserves_cost_and_state": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::sustained::basic_heal_extent_tests::basic_heal_footprint_is_owned_and_admitted_before_overlay_base_clone": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_auto_gates_full_hp_defense_cc_and_silence_without_hostile_proc": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_real_queue_resolves_lethal_damage_first_without_reviving": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_dead_fixed_target_is_not_revived_or_retargeted": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_definition_rejects_damage_delivery_and_unknown_fields": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_overlay_rejects_damage_delivery_and_consumes_instant_once": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_resolve_precedes_rest_but_follows_damage": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_selection_uses_ratio_distance_id_and_allows_self": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_respects_authored_range_and_air_capability": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "f01_public_consumer_001",
+        "f01_reproduce_001",
+        "public_independent_area_001",
+        "public_starter_schema_003"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V06",
+      "requirement": [
+        "공개 loader에서6세트가 존재하고 정상 시작/채용 grant·장착 조회에 해당 사본이 연결된다.",
+        "각 active 파편을 정상 사용해 약속된 buff/피해/보호막/회복 결과와 U05 잠금을 확인한다.",
+        "staff 기본은 active가 없어도 순수 치유이며 역할이 장비 이전의 직업 제한이 되지 않는다."
+      ],
+      "core_selectors": [
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_lifesteal_keeps_source_and_uses_actual_hp_loss",
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_public_use_reduction_expiry_and_clone",
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_strict_rejection_and_transaction_rollback",
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application",
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility",
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership",
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback",
+        "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_lifesteal_keeps_source_and_uses_actual_hp_loss": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_public_use_reduction_expiry_and_clone": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_strict_rejection_and_transaction_rollback": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "public_starter_schema_003"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V07",
+      "requirement": [
+        "일반 Defense 진입은 이미 시작한 기본/스킬을 취소하지 않으며 새 행동만 막는다.",
+        "HardCC/대기/중복 거절은 무변경이고 Ground 감소와 Platform 저지0이 조회/실제에서 일치한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::tactical_stance::tests::defense_blocks_new_starts_but_preserves_committed_and_triggered_attacks",
+        "game::battle::core::tactical_stance::tests::tactical_swap_preflights_both_units_and_third_occupancy_without_mutation",
+        "game::world::tests::combat::live_defense_stance_command_projects_cooldown_focus_pause_and_atomic_rejections"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::tactical_stance::tests::defense_blocks_new_starts_but_preserves_committed_and_triggered_attacks": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_swap_preflights_both_units_and_third_occupancy_without_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_defense_stance_command_projects_cooldown_focus_pause_and_atomic_rejections": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V08",
+      "requirement": [
+        "온전한1초/CC 겹침·해제/Pause/동시각 lethal 피해와 Rest 결과를 확인한다.",
+        "타일 종류 전환은 새 Rest 주기이고 제자리 방향 변경은 기존 주기다.",
+        "HardCC 중 저지0/작업기여0/피해감소유지와 Silence의 기본치유/이동 허용을 검증한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::boss_runtime::tests::u06_basic_heal_overlay_public_preflight_preserves_cost_and_state",
+        "game::battle::core::field_work::tests::field_work_preserves_progress_suspends_for_hard_cc_and_completes_once",
+        "game::battle::core::sustained::basic_heal_extent_tests::basic_heal_footprint_is_owned_and_admitted_before_overlay_base_clone",
+        "game::battle::core::tactical_stance::tests::platform_rest_uses_full_intervals_clamps_and_skips_without_catch_up",
+        "game::battle::core::tactical_stance::tests::same_tile_facing_only_relocation_keeps_tile_effect_cadence",
+        "game::battle::core::tactical_stance::tests::same_timestamp_damage_precedes_rest_and_death_is_not_revived",
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_auto_gates_full_hp_defense_cc_and_silence_without_hostile_proc",
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_real_queue_resolves_lethal_damage_first_without_reviving",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_dead_fixed_target_is_not_revived_or_retargeted",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_definition_rejects_damage_delivery_and_unknown_fields",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_overlay_rejects_damage_delivery_and_consumes_instant_once",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_resolve_precedes_rest_but_follows_damage",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_selection_uses_ratio_distance_id_and_allows_self",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query",
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_respects_authored_range_and_air_capability",
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness",
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::boss_runtime::tests::u06_basic_heal_overlay_public_preflight_preserves_cost_and_state": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::field_work_preserves_progress_suspends_for_hard_cc_and_completes_once": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::sustained::basic_heal_extent_tests::basic_heal_footprint_is_owned_and_admitted_before_overlay_base_clone": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::platform_rest_uses_full_intervals_clamps_and_skips_without_catch_up": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::same_tile_facing_only_relocation_keeps_tile_effect_cadence": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::same_timestamp_damage_precedes_rest_and_death_is_not_revived": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_auto_gates_full_hp_defense_cc_and_silence_without_hostile_proc": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_real_queue_resolves_lethal_damage_first_without_reviving": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_dead_fixed_target_is_not_revived_or_retargeted": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_definition_rejects_damage_delivery_and_unknown_fields": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_overlay_rejects_damage_delivery_and_consumes_instant_once": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_resolve_precedes_rest_but_follows_damage": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_selection_uses_ratio_distance_id_and_allows_self": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_respects_authored_range_and_air_capability": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V09",
+      "requirement": [
+        "Attack과Defense에서 성공하고 일반태세대기가 남아도 이동은 독립 자격으로 판정한다.",
+        "제자리 방향만 변경과 완전 동일 요청을 구분하고 모든 실패에서 비용/상태가 같다.",
+        "HP/버프/공명/identity/방출물 수명이 이동 전후 보존되며 저지/범위가 최종 위치를 따른다."
+      ],
+      "core_selectors": [
+        "game::battle::core::tactical_stance::tests::same_tile_facing_only_relocation_keeps_tile_effect_cadence",
+        "game::battle::core::tactical_stance::tests::tactical_relocation_gates_action_and_allied_occupancy_without_partial_mutation",
+        "game::battle::core::tactical_stance::tests::tactical_relocation_preserves_runtime_identity_and_migrates_defense_tile_effects",
+        "game::battle::core::tactical_stance::tests::tactical_relocation_releases_and_deterministically_reacquires_engagement",
+        "game::data::run_policy_data::tests::tactical_relocation_policy_is_required_strict_and_bounded",
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::tactical_stance::tests::same_tile_facing_only_relocation_keeps_tile_effect_cadence": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_relocation_gates_action_and_allied_occupancy_without_partial_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_relocation_preserves_runtime_identity_and_migrates_defense_tile_effects": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_relocation_releases_and_deterministically_reacquires_engagement": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::run_policy_data::tests::tactical_relocation_policy_is_required_strict_and_bounded": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V10",
+      "requirement": [
+        "Attack/Defense 양쪽 출발에서1499ms Defense/1500ms Attack, 조기 수동해제 거절을 검증한다.",
+        "Pause/0.5배속·CC/철수/사망/종료에 타이머가 부활·이중전환을 만들지 않는다.",
+        "작업 도착은1.5초 기다리지 않고 작업하며 완료 뒤 이전태세와 무관하게Attack이다."
+      ],
+      "core_selectors": [
+        "game::battle::core::field_work::tests::swap_and_relocation_reconcile_workers_from_final_occupancy",
+        "game::battle::core::field_work::tests::u05_actual_work_relocation_withdrawal_and_redeploy_share_global_employee_pulses",
+        "game::battle::core::tactical_stance::tests::u06_move_from_attack_forces_defense_then_attack_even_under_cc_and_clones_independently",
+        "game::battle::core::tactical_stance::tests::u06_platform_move_restarts_rest_but_manual_defense_has_no_forced_timer",
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::field_work::tests::swap_and_relocation_reconcile_workers_from_final_occupancy": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::u05_actual_work_relocation_withdrawal_and_redeploy_share_global_employee_pulses": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_move_from_attack_forces_defense_then_attack_even_under_cc_and_clones_independently": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_platform_move_restarts_rest_but_manual_defense_has_no_forced_timer": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V11",
+      "requirement": [
+        "두 방향/두 타일/양쪽 자격 중 하나라도 실패하면 상태 hash·TP·쿨다운이 불변이다.",
+        "성공은 양쪽동시·TP5한번·각10초/1.5초이며 작업타일 도착 예외를 개별 적용한다.",
+        "정상 command/query에서 선택/preview/cancel이 실제 점유를 만들지 않는다."
+      ],
+      "core_selectors": [
+        "game::battle::core::field_work::tests::any_workers_cross_kind_swap_preserves_both_working_final_effects",
+        "game::battle::core::tactical_stance::tests::tactical_swap_is_one_batch_and_preserves_each_units_runtime_state",
+        "game::battle::core::tactical_stance::tests::tactical_swap_preflights_both_units_and_third_occupancy_without_mutation",
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused",
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::field_work::tests::any_workers_cross_kind_swap_preserves_both_working_final_effects": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_swap_is_one_batch_and_preserves_each_units_runtime_state": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_swap_preflights_both_units_and_third_occupancy_without_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V12",
+      "requirement": [
+        "복수작업자·CC·Pause·직원이탈/복귀에 진행이 reset/bank/초과기여하지 않는다.",
+        "fullHP 수리도 완료사실과 소모가한번이고 반복 query/시간/재접속이 완료를 재발행하지 않는다.",
+        "작업→철수/이동/교대와 완료 후Attack·저지/공명 자격을 정상 명령으로 확인한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+        "game::battle::core::field_work::tests::any_worker_cross_kind_relocation_applies_focus_once_after_work_exit",
+        "game::battle::core::field_work::tests::any_worker_cross_kind_relocation_preserves_working_final_effects",
+        "game::battle::core::field_work::tests::field_work_preserves_progress_suspends_for_hard_cc_and_completes_once",
+        "game::battle::core::field_work::tests::multiple_workers_sum_and_full_hp_completion_is_consumed_once",
+        "game::battle::core::field_work::tests::swap_and_relocation_reconcile_workers_from_final_occupancy",
+        "game::battle::core::field_work::tests::u05_actual_work_relocation_withdrawal_and_redeploy_share_global_employee_pulses",
+        "game::data::pve_data::tests::field_work_authoring_rejects_zero_duplicate_and_wrong_repair_target",
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::any_worker_cross_kind_relocation_applies_focus_once_after_work_exit": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::any_worker_cross_kind_relocation_preserves_working_final_effects": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::field_work_preserves_progress_suspends_for_hard_cc_and_completes_once": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::multiple_workers_sum_and_full_hp_completion_is_consumed_once": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::swap_and_relocation_reconcile_workers_from_final_occupancy": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::field_work::tests::u05_actual_work_relocation_withdrawal_and_redeploy_share_global_employee_pulses": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::pve_data::tests::field_work_authoring_rejects_zero_duplicate_and_wrong_repair_target": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V13",
+      "requirement": [
+        "직선 다방향 접근에서 앞타일 근접 끝자락까지 이동한 뒤 정지하고 판정타일을 아군타일로 강제치환하지 않는다.",
+        "한계용량을 통과하는 적과 기존적 사망의 같은시각 재판정에서 현재위치를 보존한다.",
+        "범위이탈·CC·죽음·이동·용량감소·공중과 신규후보가 기존관계를 밀어내지 않는 규칙을 검증한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::movement::planner::tests::airborne_enemy_is_not_blocked_even_inside_block_radius",
+        "game::battle::core::movement::planner::tests::fixed_defense_attacks_enemy_in_range_without_approach",
+        "game::battle::core::movement::planner::tests::fixed_defense_block_capacity_prioritizes_route_progress_and_allows_excess_to_pass",
+        "game::battle::core::movement::planner::tests::fixed_defense_block_tie_uses_enemy_spawn_order_before_unit_id",
+        "game::battle::core::movement::planner::tests::fixed_defense_block_tie_uses_lower_blocker_id",
+        "game::battle::core::movement::planner::tests::fixed_defense_blocks_near_blockable_enemy_and_prioritizes_attack",
+        "game::battle::core::movement::planner::tests::fixed_defense_does_not_move_toward_enemy_outside_range",
+        "game::battle::core::movement::planner::tests::fixed_defense_movement_tick_does_not_emit_segment_for_blocked_enemy",
+        "game::battle::core::movement::planner::tests::fixed_defense_player_stop_goal_requires_membership_in_tile_range",
+        "game::battle::core::movement::planner::tests::fixed_defense_preserves_existing_block_before_new_route_priority",
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_blocker_is_withdrawn",
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_dies_and_fills_capacity",
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_position_leaves_radius",
+        "game::battle::core::movement::planner::tests::fixed_defense_route_enemy_before_endpoint_ignores_incidental_targets",
+        "game::battle::core::movement::planner::tests::fixed_defense_route_enemy_targets_defense_object_at_route_end",
+        "game::battle::core::movement::planner::tests::fixed_defense_route_enemy_uses_unit_route_override_for_endpoint_targeting",
+        "game::battle::core::movement::planner::tests::u06_contact_capacity_priority_and_late_acquisition_preserve_current_position",
+        "game::battle::core::movement::planner::tests::u06_swept_contact_stops_fast_enemies_at_first_contact_in_four_directions",
+        "game::battle::core::tactical_stance::tests::tactical_relocation_releases_and_deterministically_reacquires_engagement",
+        "game::battle::core::tests::attack_start_fixed_defense_player_retargets_by_uuid_order",
+        "game::battle::core::tests::choose_attack_target_in_range_fixed_defense_player_uses_uuid_order",
+        "game::battle::core::tests::fixed_defense_player_basic_attack_selects_lowest_uuid_target_in_tile_range",
+        "game::battle::core::tests::fixed_defense_player_basic_attack_uses_default_pattern_but_requires_facing",
+        "game::battle::core::tests::fixed_defense_player_basic_attack_uses_facing_tile_pattern_not_continuous_radius",
+        "game::battle::core::tests::fixed_defense_player_skill_target_uses_facing_tile_pattern"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::movement::planner::tests::airborne_enemy_is_not_blocked_even_inside_block_radius": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_attacks_enemy_in_range_without_approach": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_block_capacity_prioritizes_route_progress_and_allows_excess_to_pass": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_block_tie_uses_enemy_spawn_order_before_unit_id": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_block_tie_uses_lower_blocker_id": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_blocks_near_blockable_enemy_and_prioritizes_attack": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_does_not_move_toward_enemy_outside_range": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_movement_tick_does_not_emit_segment_for_blocked_enemy": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_player_stop_goal_requires_membership_in_tile_range": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_preserves_existing_block_before_new_route_priority": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_blocker_is_withdrawn": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_dies_and_fills_capacity": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_position_leaves_radius": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_route_enemy_before_endpoint_ignores_incidental_targets": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_route_enemy_targets_defense_object_at_route_end": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_route_enemy_uses_unit_route_override_for_endpoint_targeting": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::u06_contact_capacity_priority_and_late_acquisition_preserve_current_position": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::u06_swept_contact_stops_fast_enemies_at_first_contact_in_four_directions": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::tactical_relocation_releases_and_deterministically_reacquires_engagement": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::attack_start_fixed_defense_player_retargets_by_uuid_order": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::choose_attack_target_in_range_fixed_defense_player_uses_uuid_order": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::fixed_defense_player_basic_attack_selects_lowest_uuid_target_in_tile_range": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::fixed_defense_player_basic_attack_uses_default_pattern_but_requires_facing": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::fixed_defense_player_basic_attack_uses_facing_tile_pattern_not_continuous_radius": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::fixed_defense_player_skill_target_uses_facing_tile_pattern": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V14",
+      "requirement": [
+        "다른 판정타일·뒤쪽 저지상대도 기본공격만 가능하고 스킬/장판/제3자는 일반사거리다.",
+        "저지해제 뒤 예외가 즉시 사라지고 무효효과/Defense/CC/주기 제한을 우회하지 않는다.",
+        "치유는 적저지 우선순위를 따르거나 적HP에 양수 회복을 주지 않는다."
+      ],
+      "core_selectors": [
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_blocker_is_withdrawn",
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_dies_and_fills_capacity",
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_position_leaves_radius",
+        "game::battle::core::movement::planner::tests::u06_blocked_pair_bypasses_only_hostile_basic_range",
+        "game::battle::core::tactical_stance::tests::defense_blocks_new_starts_but_preserves_committed_and_triggered_attacks",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_blocker_is_withdrawn": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_dies_and_fills_capacity": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::fixed_defense_releases_block_when_enemy_position_leaves_radius": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::u06_blocked_pair_bypasses_only_hostile_basic_range": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::defense_blocks_new_starts_but_preserves_committed_and_triggered_attacks": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V15",
+      "requirement": [
+        "실제 공개 command→result→query에서 비용/거절/위치/치유량/작업결과를 설명할 수 있다.",
+        "preview 반복은 revision/TP/HP/점유를 바꾸지 않으며 stale preview 후 최종 실패는 무변경이다.",
+        "타일과 연속위치/저지사거리 예외와 가능한 행위를 query에서 구분한다."
+      ],
+      "core_selectors": [
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative",
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic",
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused",
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_deploy",
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_relocation",
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_stance",
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_swap",
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_withdraw",
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only",
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery",
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application"
+      ],
+      "host_selectors": [],
+      "selector_receipts": {
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_deploy": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_relocation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_stance": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_swap": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::tactical_world_future_cursor_is_atomic_for_withdraw": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "f01_public_consumer_001",
+        "f01_reproduce_001",
+        "public_starter_schema_003"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V16",
+      "requirement": [
+        "2→포커스0.5→다른대상/스킬/이동0.5→전체해제2와 선택중 speed거절을 정상 명령으로 확인한다.",
+        "아군/적/배치 선택중 수동Pause를 유지하고 선택해제로 자동재개하지 않는다.",
+        "대상소멸/전투종료/후퇴에서 stale focus가 전투를 재개하거나배속을 덮지 않는다."
+      ],
+      "core_selectors": [
+        "game::world::tests::combat::player_unit_skill_focus_preview_cancel_and_paused_activation_are_atomic",
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock",
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore",
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority"
+      ],
+      "selector_receipts": {
+        "game::world::tests::combat::player_unit_skill_focus_preview_cancel_and_paused_activation_are_atomic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V17",
+      "requirement": [
+        "Pause중 연속배치/교대/철수/유효스킬접수를 입력순서로 검증하고 timer/work/projectile은 재개전 진행하지 않는다.",
+        "1/2/0.5와Pause 각 조합의 설정열기/중복/닫기 및 설정중금지 명령에서 복원값과시간이 정확하다.",
+        "일반 host tick과 침식 강제정지 host 시계를 구분하고 종료후 설정닫기가 전투를 되살리지 않는다."
+      ],
+      "core_selectors": [
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused",
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock",
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore",
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::durable::u05_paused_accepted_use_survives_same_actor_reconnect_and_spends_once",
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority"
+      ],
+      "selector_receipts": {
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::player_game_actor::handlers::tests::durable::u05_paused_accepted_use_survives_same_actor_reconnect_and_spends_once": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ],
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ]
+      },
+      "direct_receipts": [],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V18",
+      "requirement": [
+        "선택/설정/강제방어/작업/치유 준비중 clone/지원roundtrip/rollback과같은actor재접속이수명/비용을중복시키지않는다.",
+        "disconnect중설정닫기/선택종료가자동Resume하지않고 명시Resume후원래선택배속이다.",
+        "실제hostContinue/SavePoint와미지원원본보호가U04의결과/자산/횟수계약을유지한다."
+      ],
+      "core_selectors": [
+        "game::battle::core::tactical_stance::tests::u06_move_from_attack_forces_defense_then_attack_even_under_cc_and_clones_independently",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_continue_then_v11_capture_is_semantically_identical",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_document_has_exact_envelope_and_checksum",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary",
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_round_trips_with_canonical_map_order_independent_checksum",
+        "game::world::tests::checkpoint_validation::current_v11_continue_restores_rng_and_replays_the_same_next_gate",
+        "game::world::tests::checkpoint_validation::current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::current_v11_load_count_and_active_lifecycle_boundaries_reject_without_mutation",
+        "game::world::tests::checkpoint_validation::current_v11_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+        "game::world::tests::checkpoint_validation::current_v11_rejects_v4_and_v5_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::current_v11_strictly_rejects_missing_extra_research_and_pending_shapes",
+        "game::world::tests::checkpoint_validation::u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue",
+        "game::world::tests::combat::u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without_quit_charge",
+        "game::world::tests::combat::u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_profile",
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore",
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore",
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority",
+        "persistence::active_run_store::tests::previous_core_version_protects_current_and_backup_from_all_writes"
+      ],
+      "selector_receipts": {
+        "game::battle::core::tactical_stance::tests::u06_move_from_attack_forces_defense_then_attack_even_under_cc_and_clones_independently": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_continue_then_v11_capture_is_semantically_identical": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_document_has_exact_envelope_and_checksum": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_checkpoint_round_trips_with_canonical_map_order_independent_checksum": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_continue_restores_rng_and_replays_the_same_next_gate": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_load_count_and_active_lifecycle_boundaries_reject_without_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_rejects_each_content_authority_mismatch_even_with_valid_checksum": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_rejects_v4_and_v5_before_mutation_on_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_strictly_rejects_missing_extra_research_and_pending_shapes": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without_quit_charge": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_profile": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ],
+        "persistence::active_run_store::tests::previous_core_version_protects_current_and_backup_from_all_writes": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "public_continuation_001",
+        "public_rewind_001",
+        "final_fault_001_websocket"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V19",
+      "requirement": [
+        "6세트와pureheal schema를실제loader→CoreApplication→host/query로실행하고직접kernel수정만으로성공을대체하지않는다.",
+        "새상태size/clone/queue/관측eventcost를초기집중검사와최종통합에서검증하며상한을통과용으로낮추거나높이지않는다.",
+        "strict오류·실패원본·selector/실행건수·실제비용delta와부수효과를구분해기록한다."
+      ],
+      "core_selectors": [
+        "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+        "application::fault_tests::trusted_swap_deployment_references_fault_for_either_missing_native_unit",
+        "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once",
+        "authoring::clone_shape::tests::owned_clone_shape_monolith_requires_provenance_and_preserves_native_history",
+        "authoring::projection::tests::public_projection_counts_before_first_value_and_preserves_native_numbers",
+        "authoring::resolve::tests::strict_context_decode_runs_after_whole_authority_binding",
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+        "game::battle::core::boss_runtime::tests::u06_basic_heal_overlay_public_preflight_preserves_cost_and_state",
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_lifesteal_keeps_source_and_uses_actual_hp_loss",
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_public_use_reduction_expiry_and_clone",
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_strict_rejection_and_transaction_rollback",
+        "game::battle::core::movement::planner::tests::u06_blocked_pair_bypasses_only_hostile_basic_range",
+        "game::battle::core::movement::planner::tests::u06_contact_capacity_priority_and_late_acquisition_preserve_current_position",
+        "game::battle::core::movement::planner::tests::u06_swept_contact_stops_fast_enemies_at_first_contact_in_four_directions",
+        "game::battle::core::movement::rapier_backend::tests::authoring_clone_admits_retained_history_before_native_copy_and_preserves_continuation",
+        "game::battle::core::movement::rapier_backend::tests::clone_history_includes_removed_population_and_pair_growth_and_resets_only_with_native_owners",
+        "game::battle::core::movement::rapier_backend::tests::native_empty_joint_sets_are_lazy_and_clone_removal_is_independent",
+        "game::battle::core::queue::tests::native_packed_queue_preserves_mixed_priority_and_admits_shared_unpack",
+        "game::battle::core::queue::tests::native_queued_fact_owner_is_lazy_shared_and_admitted_before_allocation",
+        "game::battle::core::resonance_runtime::tests::u05_native_use_scans_refuse_at_their_budget_boundary_without_mutation",
+        "game::battle::core::resonance_runtime::tests::u05_pulse_and_use_counter_overflows_restore_native_boundary_and_retry",
+        "game::battle::core::resonance_runtime::tests::u05_use_state_survives_controlled_clone_and_native_admission_failure",
+        "game::battle::core::runtime_facts::tests::native_active_cow_keeps_nested_steps_and_deliveries_independent_on_failure_and_retry",
+        "game::battle::core::runtime_facts::tests::native_summary_cow_admits_detachment_in_native_and_authoring_scopes",
+        "game::battle::core::sustained::basic_heal_extent_tests::basic_heal_footprint_is_owned_and_admitted_before_overlay_base_clone",
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_auto_gates_full_hp_defense_cc_and_silence_without_hostile_proc",
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_real_queue_resolves_lethal_damage_first_without_reviving",
+        "game::battle::core::tactical_stance::tests::u06_move_from_attack_forces_defense_then_attack_even_under_cc_and_clones_independently",
+        "game::battle::core::tactical_stance::tests::u06_platform_move_restarts_rest_but_manual_defense_has_no_forced_timer",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_dead_fixed_target_is_not_revived_or_retargeted",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_definition_rejects_damage_delivery_and_unknown_fields",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_overlay_rejects_damage_delivery_and_consumes_instant_once",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_resolve_precedes_rest_but_follows_damage",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_selection_uses_ratio_distance_id_and_allows_self",
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query",
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_respects_authored_range_and_air_capability",
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness",
+        "game::battle::core::tests::application_unit_map_history_survives_native_clone_and_runtime_reset",
+        "game::battle::core::tests::native_action_area_observes_accept_release_control_finish_and_actual_settlement",
+        "game::battle::core::tests::native_action_cloned_battle_has_independent_cancel_and_completion",
+        "game::battle::core::tests::native_action_discarded_request_and_result_take_restore_authority",
+        "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover",
+        "game::battle::core::tests::native_action_pending_death_preserves_cast_end_cost_without_release",
+        "game::battle::core::tests::native_action_piercing_empty_final_expiry_closes_carrier_without_releasing_gate",
+        "game::battle::core::tests::native_action_projectile_first_hit_is_at_300_after_accept_0_release_100",
+        "game::battle::core::tests::native_action_result_admission_rejects_before_focus_and_queue_mutation",
+        "game::battle::core::tests::native_action_withdraw_before_release_and_after_release_have_distinct_progress",
+        "game::battle::core::tests::native_clock_only_step_stages_only_execution_and_preserves_failure_prefix",
+        "game::battle::core::tests::native_predeath_limit_rejects_lethal_mutation_and_recovers_after_actual_expiry",
+        "game::battle::core::tests::native_timestamp_buffer_reuses_range_rows_and_preserves_failure_prefix_and_spawn_order",
+        "game::battle::core::tests::owned_clone_shape_complete_battle_admission_precedes_native_copy_and_keeps_continuation",
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+        "game::battle::core::value_expr_runtime::tests::evaluation_respects_remaining_native_work_and_recovers_next_operation",
+        "game::battle::core::value_expr_runtime::tests::resolved_member_preparation_admits_exact_native_extent_before_copy",
+        "game::battle::enums::tests::owned_clone_shape_queue_all_variants_preserve_native_order_and_payloads",
+        "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries",
+        "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation",
+        "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault",
+        "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard",
+        "game::data::boss_runtime_data::tests::summon_catalog_compiles_strict_definition_handle_and_batch_clear_contracts",
+        "game::data::employee_data::tests::employee_definitions_deserialize_from_one_strict_catalog",
+        "game::data::event_data::tests::event_database_accepts_strict_employee_check_shape",
+        "game::data::live_ron::tests::u06_live_loadout_rejects_missing_wrong_kind_and_incompatible_active",
+        "game::data::run_policy_data::tests::tactical_relocation_policy_is_required_strict_and_bounded",
+        "game::data::run_policy_data::tests::tactical_stance_policy_is_required_strict_and_positive",
+        "game::encounter_compendium::tests::successor_profile_defaults_are_strict_and_merge_is_monotonic",
+        "game::resource::store::tests::native_clone_budget_prices_store_before_copying_or_mutating",
+        "game::resource::tests::strict_ron_requires_every_field_and_rejects_unknown_fields",
+        "game::value_expr::parse::tests::strict_expression_fields_preserve_valid_forms_and_nested_member_contracts",
+        "game::world::tests::checkpoint_validation::current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+        "game::world::tests::checkpoint_validation::u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue",
+        "game::world::tests::combat::expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot",
+        "game::world::tests::combat::native_runtime_facts_preserve_actual_same_definition_inventory_copies_through_player_drafts",
+        "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit",
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock",
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore",
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore",
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only",
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery",
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application",
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility",
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership",
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback",
+        "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings",
+        "owned_collections::tests::entry_keeps_native_lookup_and_factory_behavior_and_values_can_mutate",
+        "owned_collections::tests::retained_history_survives_churn_clear_and_native_clone_without_changing_map_semantics",
+        "owned_collections::tests::unused_vacant_entry_keeps_native_reservation_in_clone_history",
+        "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority"
+      ],
+      "selector_receipts": {
+        "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "application::fault_tests::trusted_swap_deployment_references_fault_for_either_missing_native_unit": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "application::runtime_observation_tests::nested_native_work_and_failed_attempt_peak_survive_rollback_exactly_once": [
+          "integrated_core_observation009"
+        ],
+        "authoring::clone_shape::tests::owned_clone_shape_monolith_requires_provenance_and_preserves_native_history": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "authoring::projection::tests::public_projection_counts_before_first_value_and_preserves_native_numbers": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "authoring::resolve::tests::strict_context_decode_runs_after_whole_authority_binding": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::u06_basic_heal_overlay_public_preflight_preserves_cost_and_state": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_lifesteal_keeps_source_and_uses_actual_hp_loss": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_public_use_reduction_expiry_and_clone": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::boss_runtime::tests::u06_combat_modifiers_strict_rejection_and_transaction_rollback": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::u06_blocked_pair_bypasses_only_hostile_basic_range": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::u06_contact_capacity_priority_and_late_acquisition_preserve_current_position": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::planner::tests::u06_swept_contact_stops_fast_enemies_at_first_contact_in_four_directions": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::rapier_backend::tests::authoring_clone_admits_retained_history_before_native_copy_and_preserves_continuation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::rapier_backend::tests::clone_history_includes_removed_population_and_pair_growth_and_resets_only_with_native_owners": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::movement::rapier_backend::tests::native_empty_joint_sets_are_lazy_and_clone_removal_is_independent": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::queue::tests::native_packed_queue_preserves_mixed_priority_and_admits_shared_unpack": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::queue::tests::native_queued_fact_owner_is_lazy_shared_and_admitted_before_allocation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_native_use_scans_refuse_at_their_budget_boundary_without_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_pulse_and_use_counter_overflows_restore_native_boundary_and_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::resonance_runtime::tests::u05_use_state_survives_controlled_clone_and_native_admission_failure": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::runtime_facts::tests::native_active_cow_keeps_nested_steps_and_deliveries_independent_on_failure_and_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::runtime_facts::tests::native_summary_cow_admits_detachment_in_native_and_authoring_scopes": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::sustained::basic_heal_extent_tests::basic_heal_footprint_is_owned_and_admitted_before_overlay_base_clone": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_auto_gates_full_hp_defense_cc_and_silence_without_hostile_proc": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_basic_heal_real_queue_resolves_lethal_damage_first_without_reviving": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_move_from_attack_forces_defense_then_attack_even_under_cc_and_clones_independently": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tactical_stance::tests::u06_platform_move_restarts_rest_but_manual_defense_has_no_forced_timer": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_area_uses_release_target_tile_and_excludes_enemies": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_dead_fixed_target_is_not_revived_or_retargeted": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_definition_rejects_damage_delivery_and_unknown_fields": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_epoch_cancel_and_transaction_failure_preserve_hp": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_overlay_rejects_damage_delivery_and_consumes_instant_once": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_release_rechecks_current_amount_and_closes_failed_action": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_resolve_precedes_rest_but_follows_damage": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_selection_uses_ratio_distance_id_and_allows_self": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_zero_effective_amount_is_idle_and_absent_from_query": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_respects_authored_range_and_air_capability": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::application_unit_map_history_survives_native_clone_and_runtime_reset": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_area_observes_accept_release_control_finish_and_actual_settlement": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_cloned_battle_has_independent_cancel_and_completion": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_discarded_request_and_result_take_restore_authority": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_pending_death_preserves_cast_end_cost_without_release": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_piercing_empty_final_expiry_closes_carrier_without_releasing_gate": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_projectile_first_hit_is_at_300_after_accept_0_release_100": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_result_admission_rejects_before_focus_and_queue_mutation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_action_withdraw_before_release_and_after_release_have_distinct_progress": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_clock_only_step_stages_only_execution_and_preserves_failure_prefix": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_predeath_limit_rejects_lethal_mutation_and_recovers_after_actual_expiry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::native_timestamp_buffer_reuses_range_rows_and_preserves_failure_prefix_and_spawn_order": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::tests::owned_clone_shape_complete_battle_admission_precedes_native_copy_and_keeps_continuation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::value_expr_runtime::tests::evaluation_respects_remaining_native_work_and_recovers_next_operation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::core::value_expr_runtime::tests::resolved_member_preparation_admits_exact_native_extent_before_copy": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::enums::tests::owned_clone_shape_queue_all_variants_preserve_native_order_and_payloads": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::event_log::tests::native_log_cow_preserves_only_bounded_spare_and_original_entries": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::runtime_control::tests::native_clone_limit_is_cumulative_inclusive_and_recovers_next_operation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::runtime_control::tests::native_deferred_world_budget_activates_once_and_keeps_first_fault": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::battle::runtime_control::tests::native_retained_admission_does_not_refund_on_candidate_discard": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::boss_runtime_data::tests::summon_catalog_compiles_strict_definition_handle_and_batch_clear_contracts": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::employee_data::tests::employee_definitions_deserialize_from_one_strict_catalog": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::event_data::tests::event_database_accepts_strict_employee_check_shape": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::live_ron::tests::u06_live_loadout_rejects_missing_wrong_kind_and_incompatible_active": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::run_policy_data::tests::tactical_relocation_policy_is_required_strict_and_bounded": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::data::run_policy_data::tests::tactical_stance_policy_is_required_strict_and_positive": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::encounter_compendium::tests::successor_profile_defaults_are_strict_and_merge_is_monotonic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::resource::store::tests::native_clone_budget_prices_store_before_copying_or_mutating": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::resource::tests::strict_ron_requires_every_field_and_rejects_unknown_fields": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::value_expr::parse::tests::strict_expression_fields_preserve_valid_forms_and_nested_member_contracts": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::checkpoint_validation::u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync_snapshot": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::native_runtime_facts_preserve_actual_same_definition_inventory_copies_through_player_drafts": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_forced_defense_uses_paused_and_selected_host_battle_clock": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_general_and_skill_focus_cancel_success_and_failure_share_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_tactical_swap_preview_and_ineligible_roster_rows_are_read_only": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "owned_collections::tests::entry_keeps_native_lookup_and_factory_behavior_and_values_can_mutate": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "owned_collections::tests::retained_history_survives_churn_clear_and_native_clone_without_changing_map_semantics": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "owned_collections::tests::unused_vacant_entry_keeps_native_reservation_in_clone_history": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "runtime_safety::tests::selected_native_limits_are_installed_before_the_first_battle_operation": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "compat_pc_prepare_003",
+        "compat_pc_001",
+        "compat_pc_gameplay_001",
+        "compat_pc_cost_002",
+        "compat_r05_summary_001",
+        "public_guards001",
+        "public_guards_allocator001",
+        "f01_public_consumer_001",
+        "f01_reproduce_001",
+        "f01_public_release_build_001",
+        "compat_prepared_public_001",
+        "compat_prepared_boundary_001",
+        "compat_input_validation_001",
+        "compat_default_parity_001",
+        "compat_public_oracle_001",
+        "compat_public_trace_001",
+        "compat_public_cli_001",
+        "compat_public_profile_001",
+        "compat_public_boundary_001",
+        "compat_public_api_001",
+        "public_starter_schema_003",
+        "public_schema_001",
+        "public_independent_area_001",
+        "public_continuation_001",
+        "public_rewind_001",
+        "final_fault_001_build_on",
+        "final_fault_001_none",
+        "final_fault_001_detached",
+        "final_fault_001_queue_full",
+        "final_fault_001_on",
+        "final_fault_001_websocket",
+        "final_fault_001_build_off",
+        "final_fault_001_off"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    },
+    {
+      "id": "V20",
+      "requirement": [
+        "조건별currentness/의도된변경/증거가추적되고정상6세트조우의배치·치유·스킬·이동·교대·작업·철수·시간을명령으로인수한다.",
+        "전체완료독립감사가Complete/High이며미해결finding이없을때만다음owner로넘긴다."
+      ],
+      "core_selectors": [
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative",
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic",
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused",
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore",
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery",
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application",
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility",
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership",
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback",
+        "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings"
+      ],
+      "host_selectors": [
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority"
+      ],
+      "selector_receipts": {
+        "game::world::tests::combat::live_freischutz_field_work_setup_progress_and_recovery_are_authoritative": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_relocation_is_revisioned_costed_pause_safe_and_atomic": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::live_tactical_swap_costs_once_updates_once_and_works_while_paused": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::combat::u06_selection_deployment_focus_settings_and_disconnect_share_one_restore": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_basic_heal_public_query_and_clock_agree_on_current_recovery": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_live_six_starter_actives_execute_through_core_application": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_all_six_copies_transfer_by_weapon_compatibility": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings": [
+          "integrated_core_default009",
+          "integrated_core_fixtures009",
+          "integrated_core_observation009"
+        ],
+        "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority": [
+          "integrated_host_default009",
+          "integrated_host_observation009"
+        ]
+      },
+      "direct_receipts": [
+        "f01_public_consumer_001",
+        "f01_reproduce_001",
+        "public_starter_schema_003"
+      ],
+      "status": "F01-corrected self-verification; fresh independent completion judgment pending"
+    }
+  ],
+  "required_dimensions": {
+    "success": [
+      "V01",
+      "V02",
+      "V05",
+      "V06",
+      "V09",
+      "V11",
+      "V12",
+      "V13",
+      "V16"
+    ],
+    "invalid_input": [
+      "V02",
+      "V04",
+      "V05",
+      "V09",
+      "V11",
+      "V15",
+      "V17"
+    ],
+    "failure_rollback": [
+      "V06",
+      "V10",
+      "V11",
+      "V15",
+      "V18",
+      "V19"
+    ],
+    "retry_idempotency": [
+      "V03",
+      "V10",
+      "V12",
+      "V16",
+      "V17"
+    ],
+    "ordering_concurrency": [
+      "V05",
+      "V08",
+      "V10",
+      "V12",
+      "V13",
+      "V17"
+    ],
+    "boundary_empty_max": [
+      "V01",
+      "V02",
+      "V05",
+      "V06",
+      "V13"
+    ],
+    "disconnect_restart_persistence": [
+      "V16",
+      "V17",
+      "V18"
+    ],
+    "live_data": [
+      "V04",
+      "V05",
+      "V06",
+      "V19"
+    ],
+    "producer_consumer": [
+      "V04",
+      "V05",
+      "V06",
+      "V15",
+      "V16",
+      "V19"
+    ],
+    "legacy_fallback_absence": [
+      "V04",
+      "V05",
+      "V06",
+      "V07",
+      "V09",
+      "V12",
+      "V13",
+      "V14",
+      "V16",
+      "V17"
+    ]
+  },
+  "suite_counts": {
+    "integrated_core_default009": {
+      "passed": 1794,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_fixtures009": {
+      "passed": 1794,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_core_observation009": {
+      "passed": 1803,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_default009": {
+      "passed": 92,
+      "failed": 0,
+      "ignored": 0
+    },
+    "integrated_host_observation009": {
+      "passed": 100,
+      "failed": 0,
+      "ignored": 1
+    }
+  },
+  "receipt_bindings": {
+    "integrated_core_default009": {
+      "receipt_sha256": "5a5ff1a9fe0f5963e5022b3e1950be3ac80ac587301f8253ecfd4141a49f593e",
+      "log_sha256": "ff635b495b41fca69f61c2c8a1bc9e62077f6e8513ca91652759d36e34b20160",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_core_fixtures009": {
+      "receipt_sha256": "7ec1afab7a7f6d516851915459b085a73c437b0a67e60e9db4f11eefbeebec76",
+      "log_sha256": "c6d643c90f8ab60a7177288cb57432825114616e8dbb6161514424eb54de5f3f",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_core_observation009": {
+      "receipt_sha256": "790438d91c8062b6c29bbda15f153b1e720bfd5dd02773762a06252a687fe235",
+      "log_sha256": "acf8b363bdad0947581062ff2efa40526abef95dd390b539f719e437f519c1cb",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_host_default009": {
+      "receipt_sha256": "7514890862e18ce5726ead9f653597b4242783c04a824fb8bb11a8f601a91367",
+      "log_sha256": "994c07a4e7939e561a6e2c9de3e4192ed62a6104be459536e2031f151a106260",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_host_observation009": {
+      "receipt_sha256": "51f1ba98635994d309a95e78943ab2a4472143e7daedfc7832b23ccb74132b29",
+      "log_sha256": "0c9821d3543d7bdfb5630e2cc43702fcefa56a8ff74d6ad9d0c3b2e7c96788dc",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_fmt009": {
+      "receipt_sha256": "ced6e13610be3da3d15c7fbf390963cc3efd43b89cbdcb849063186824b4d837",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_check009": {
+      "receipt_sha256": "cfd0d70465e7a0f7eb99cbe9b393545a8c818e516bb5a25ef252804f1672a4db",
+      "log_sha256": "8aa1fd2188dfe46575cc250051becc32e83db522ebfc7c32c8b251ad48338165",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_event_log009": {
+      "receipt_sha256": "aa26b8fb7c1170f48974f30f251ddf4415f832a2a696259e609701704a26ecb9",
+      "log_sha256": "014f800fe62e60e46b0e60020285409b6e7f7c359d38aac2461e0f62118c7add",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_clippy_core009": {
+      "receipt_sha256": "16f49ea3cdd912601051403dab1030fa5eefca1553368d5c3051f76d47813e10",
+      "log_sha256": "42d12e43eef7e8a17ddbe8ab57b68b259ad47f9254f6e8dfdf5acfd3f6722130",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_clippy_host009": {
+      "receipt_sha256": "894331ee19d43b2973bd0a4bd00269acd717f5c2273c98e2ffed10dd063baab2",
+      "log_sha256": "ba1951894cefea129ba9054c079ba3c103d81c41b7cdb3458d2b197596e44604",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "integrated_heap009": {
+      "receipt_sha256": "19431a1dd851191717b0111830029270b42450f384de181e7adf6daa417a91b6",
+      "log_sha256": "d267be41ec07d23828bfb1d9afd25a105fd02862ef7ade39ccf6f3d26e637fec",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "compat_pc_prepare_003": {
+      "receipt_sha256": "78ce8f2a260aae7c2300b198ee2a197e2a821e1b5bcb2b7bc65fe1c62db1e21e",
+      "log_sha256": "416b62003ae3c860d05f0e356de3dd9b994a517f7a6ce4b1c1eba7d8c8ec0d69",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_pc_001": {
+      "receipt_sha256": "c15cefd959d38015c362bc0faebe711d3b894c58119f235557218d697bb1aae7",
+      "log_sha256": "f89d20cf09566550d88657a4985940f6e5275781ab97ab58e18e2d6be80e05a1",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_pc_gameplay_001": {
+      "receipt_sha256": "d378a4e509677794b0af291868cb3d3794d961a08c4fa8ebd1c6e010e92c6c84",
+      "log_sha256": "c9147f25e7aec5a5e05d6036ae6a16969af8e8fa1b1ea0f58002bdbb61572740",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_pc_cost_002": {
+      "receipt_sha256": "fba5f1be8baaf6a684b05a073c6cf5cea8c65cb6f1f52e752eb3226f0c63d0dc",
+      "log_sha256": "0090d167998d41e311e9f6b3c781224f86fd20e423089b2b95ce74a098aef860",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_r05_summary_001": {
+      "receipt_sha256": "ba701b4bf787d55966dc628c09b11841bb564356d319019e7b10f458f202bf6b",
+      "log_sha256": "f79c8366682f5cf3eaa35120465ddd3ec360e2b0c7337f358a2ad0bcb8c25c2c",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "public_guards001": {
+      "receipt_sha256": "fa282a68d06859c8f3bbdbadfd6653b04d80aeb3a75f87d1fbc1b2a65ddba01d",
+      "log_sha256": "fc255c0fbf66adf278bf574e471836d9b85bb081125c837a350b850194c5807b",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "public_guards_allocator001": {
+      "receipt_sha256": "9eaa032c2556821d9fa5c47e7080e947c1eb68022104b21d40949db488d0adcf",
+      "log_sha256": "20ff6a802ba3a12211c5c8bc6cd4d84c7cd3acf3f0312b509944edff2834af7d",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "f01_public_consumer_001": {
+      "receipt_sha256": "c5c7345b64ecd773b5703cb852020a35484133fabda185c45c1beffb21b06901",
+      "log_sha256": "7bd6a23b6fd7ea63c9dcfac3c25c15a6bad84e57a09e1322af4f58fa96df21f8",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "f01_reproduce_001": {
+      "receipt_sha256": "00a946675ca0f675cf75a3c1b730a5f67d6dcd89568af330c13765a98125de10",
+      "log_sha256": "959656a7105963255f6be74b0f0de68a6eff799c5bc2b65e552a808e62bbbeac",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "f01_public_release_build_001": {
+      "receipt_sha256": "ba10f3a185f78c00729d40e8c2206f74a99cf29491cca6b1fffabbe73db3099d",
+      "log_sha256": "d527ab4903d134ca638434a20f46493c3de787a2905cd64ac0765abd63221e62",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "compat_prepared_public_001": {
+      "receipt_sha256": "a9cd31c8eb7b9e5d46e9bcf314600daea905a35eb6d55d9880bc82dca3666f8c",
+      "log_sha256": "539763d5a4818451779f88a63e420c2ebfccc94b082adadf673872835c91ca5e",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_prepared_boundary_001": {
+      "receipt_sha256": "ed83bc99c0d4b6c6e46628d33d99001e5ec792a63b1b7763c364504139ca62d4",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_input_validation_001": {
+      "receipt_sha256": "11e011069bd0cc68bc9af26574dcc71e6bf48a8df12db44666d54ac9a82d21ae",
+      "log_sha256": "1dbd428054495fc7077e34361a2d176669b86b1f1e44f5e86c01fc32be649415",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_default_parity_001": {
+      "receipt_sha256": "3d77fd59d56eba53861935795fe66c26d1f48baec9e95f8916f692336482bb0f",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_public_oracle_001": {
+      "receipt_sha256": "9ab2fc3812d7a48b90da47899f6979d3dcdba077d222b1633b485ddaee83ec4c",
+      "log_sha256": "9b732014d9cfa27f00ffe93e05b25b40afd9dd2ddf63300456e1fd6eb9482af6",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_public_trace_001": {
+      "receipt_sha256": "a9910fd64b2d639506017bee68be623e2443c872816eed2e690d55cf32222289",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_public_cli_001": {
+      "receipt_sha256": "a176b93c2ec3c5a0dd0bbed7acc632cc507ccf98570a15f948d854270ea78b4e",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_public_profile_001": {
+      "receipt_sha256": "38e60f63f9d60005cb0ea3cba863bc9f495efe7b1954b2c1f73c2a5e303573d9",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_public_boundary_001": {
+      "receipt_sha256": "82e47e7116b6cdd1f303caf0e452403286c7ba56f6760a08341f2124e65ad1bd",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_public_api_001": {
+      "receipt_sha256": "7cb95197e94b013e3bacf370e90017ab93a69a305e6ed2700be390d2e115714b",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "public_starter_schema_003": {
+      "receipt_sha256": "8fd2ef2e8c091c45d3b7c82be32073c333a42735ceb5ccbc395e078c765821ab",
+      "log_sha256": "6b7f19ed1601610cbdd952995d657307dc874c068bb1d9122c22739faa81d69d",
+      "source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "fresh current-source execution"
+    },
+    "public_schema_001": {
+      "receipt_sha256": "276f49f7d5a9c48038f1051b7d451b4ac348d279e4ecaf765e85b734b9cb8f95",
+      "log_sha256": "5c0e63af7653d4103ba585a22db370c4fbb5dbc9e96f85c58763d38ea616b33b",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "public_independent_area_001": {
+      "receipt_sha256": "3331a467545a8057278cba5830620688ebd58efc601d61d36d03c97c55dc2026",
+      "log_sha256": "e0378cc2ffdca28f216f2198c9139da3dd77946c54299e0f04486fd09ded6132",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "public_continuation_001": {
+      "receipt_sha256": "08f19d5a44d88932ff8c53c57c0830a1687cecd2c24705a35ccb42ab3b7170a3",
+      "log_sha256": "24c2be42e7d3753a507e0c4c4f6e41e7dea4a7d18545beb0c203b7ff6f9f5bf2",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "public_rewind_001": {
+      "receipt_sha256": "3e2fd90c18a954978331a6ec2c623acfa4cd1e13088fc06218b99aa5335995fb",
+      "log_sha256": "ee4767052d0e4264b8c5d0467d6f98876ca367230dfd47d0d8ffc72cdc0988b7",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_build_on": {
+      "receipt_sha256": "8af808c3409f05a5bb97381def66ea2f49cf972a554c4e8294a756845cf5bdcf",
+      "log_sha256": "7d6c8b7438da02454b8e655983cf0c1f347ebcc36340f91d61046966c70525ae",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_none": {
+      "receipt_sha256": "13bffe5c1d7f806b4ad5bd487915708df49eca249dc19cefc61f78d186913ba7",
+      "log_sha256": "fdace9898c5bb2bc9cacbeecaed41fe8a9b264bcfd71ed693f60fd831e3acfbb",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_detached": {
+      "receipt_sha256": "6a2cb79d370990f94bfff8ac2b551ef78c11d0008bda07959c7d207544a95c84",
+      "log_sha256": "fdace9898c5bb2bc9cacbeecaed41fe8a9b264bcfd71ed693f60fd831e3acfbb",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_queue_full": {
+      "receipt_sha256": "1b05b46b06b301f2fea9e0de7026f0203a45c38be19a7845ab73774e15c06a31",
+      "log_sha256": "865793c855c2cddc8f914b67db586c09f23dc3fbdc1ba75e8f09345dda0b4c0d",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_on": {
+      "receipt_sha256": "e6420a1ae7f0579af8d045e109f3edcc7767b09ab7d92857dfb438a57e3db066",
+      "log_sha256": "2b4f7eaf27e066412a182d3bf7f29a014b2c7cc384f5acad17bb5966342a15a8",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_websocket": {
+      "receipt_sha256": "e3b32510962bc8b878eb9d99ef2d4c29b778cf7ff1e978e6066d829a601f0c4c",
+      "log_sha256": "6c0d57afbdc9fcead089efc902df12784367b0827e104e9ff80e6d507a16d728",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_build_off": {
+      "receipt_sha256": "c69774315e8e9cb698d072176ae86fc7eb487d3dc9a20037baca531c22db375d",
+      "log_sha256": "d5c10166d9d580138458037a8d3d79cbdbf55fe7b45679ba738ba820acc70b4d",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "final_fault_001_off": {
+      "receipt_sha256": "0c9c3618387bdac6b8a3c9703c3d1a074626befa1a426260e8be10d82fb56eba",
+      "log_sha256": "fdace9898c5bb2bc9cacbeecaed41fe8a9b264bcfd71ed693f60fd831e3acfbb",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 0,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    },
+    "compat_r05_002": {
+      "receipt_sha256": "d98466908431a47c07b55729a9d3ff3673ba66cbbfd868df373f716a519dbe19",
+      "log_sha256": "62fb3a8705c3125eb7ea1f4df19e4d52ec4962ae6ac09fd4cdedcea7c720214d",
+      "source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+      "applicable_current_source_sha256": "b33a8a019087f3b6766c8cf611636f46246fa3d895464b5a439f6d176694a401",
+      "raw_exit_code": 101,
+      "evidence_mode": "reused / proven non-impacting F01 delta"
+    }
+  },
+  "state_inventory": "STATE_INVENTORY.md",
+  "predecessor_impact_sha256": "122ee181d6a3f7133035abf432ce952ba511cfca242672b5abd97ce37782b377",
+  "public_summaries": {
+    "prepared_host": "execution/single_goal/compatibility/current_001/public_probe_001/RESULT.json",
+    "prepared_boundary": "execution/single_goal/compatibility/current_001/boundary_001/RESULT.json",
+    "input_validation": "execution/single_goal/compatibility/current_001/input_validation_001/SUMMARY.json",
+    "defaults": "execution/single_goal/compatibility/current_001/evidence/DEFAULT_NUMBERS_001.json",
+    "oracle": "execution/single_goal/compatibility/current_001/evidence/public_after/SUMMARY.json",
+    "trace": "execution/single_goal/compatibility/current_001/evidence/public_after_trace/SUMMARY.json",
+    "cli": "execution/single_goal/compatibility/current_001/evidence/cli_current/CLI_FINAL_SUMMARY_002.json",
+    "profile": "execution/single_goal/compatibility/current_001/evidence/public_profile_001/SUMMARY.json",
+    "boundary": "execution/single_goal/compatibility/current_001/evidence/public_boundary_001/SUMMARY.json",
+    "api": "execution/single_goal/compatibility/current_001/evidence/public_api/RESULT.json",
+    "starter": "evidence/public_starter_schema_003/SUMMARY.json",
+    "schema": "evidence/public_schema_001/SUMMARY.json",
+    "area": "evidence/public_independent_area_001/SUMMARY.json",
+    "continuation": "evidence/public_continuation_001/SUMMARY.json",
+    "rewind": "evidence/public_rewind_001/SUMMARY.json",
+    "fault": "evidence/final_fault_001_SUMMARY.json",
+    "fault_websocket": "evidence/public_fault_final_001/SUMMARY.json",
+    "public_cost_guards": "evidence/public_guards001_raw.json",
+    "public_allocator_guards": "evidence/public_guards_allocator001_raw.json",
+    "f01_reproduction": "evidence/f01_reproduce_001/SUMMARY.json"
+  },
+  "pc_comparison": {
+    "gameplay_sha256": "c9147f25e7aec5a5e05d6036ae6a16969af8e8fa1b1ea0f58002bdbb61572740",
+    "cost_sha256": "8d8aee0781a4cac20446b23cc57d97b0f8e1ede9783b32aa6602bc84be11846e",
+    "raw_sha256": "16f3422c09e16f2ebccf6bfdbedc09b58deff3e6f4b4ca03ecfa8d71a31dc9a3",
+    "claim": "Every non-timing field equals immediate U05 after only declared inline action allocation-byte increases:40 bytes/runtime-unit bucket and80 bytes/initial spawn-vector element. Actual allocated bytes are larger; no unchanged-cost claim.",
+    "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+    "evidence_mode": "reused / proven non-impacting F01 delta",
+    "applicability_record": {
+      "path": "correction/f01_001/EVIDENCE_REUSE.json",
+      "sha256": "e972ad7284d1cbb5bf3fbbf5aafad499900f44e626bbf2b2a29eaf6c4f6f98d6",
+      "receipts": [
+        "compat_default_parity_001",
+        "compat_input_validation_001",
+        "compat_pc_001",
+        "compat_pc_cost_002",
+        "compat_pc_gameplay_001",
+        "compat_pc_prepare_003",
+        "compat_prepared_boundary_001",
+        "compat_prepared_public_001",
+        "compat_public_api_001",
+        "compat_public_boundary_001",
+        "compat_public_cli_001",
+        "compat_public_oracle_001",
+        "compat_public_profile_001",
+        "compat_public_trace_001",
+        "compat_r05_002",
+        "compat_r05_summary_001",
+        "final_fault_001_build_off",
+        "final_fault_001_build_on",
+        "final_fault_001_detached",
+        "final_fault_001_none",
+        "final_fault_001_off",
+        "final_fault_001_on",
+        "final_fault_001_queue_full",
+        "final_fault_001_websocket",
+        "public_continuation_001",
+        "public_guards001",
+        "public_guards_allocator001",
+        "public_independent_area_001",
+        "public_rewind_001",
+        "public_schema_001"
+      ]
+    }
+  },
+  "r05_summary": {
+    "path": "compatibility/current_001/evidence/R05_SUMMARY_CURRENT_003.json",
+    "sha256": "f79c8366682f5cf3eaa35120465ddd3ec360e2b0c7337f358a2ad0bcb8c25c2c",
+    "actual_execution_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a",
+    "evidence_mode": "reused / proven non-impacting F01 delta",
+    "applicability_record": {
+      "path": "correction/f01_001/EVIDENCE_REUSE.json",
+      "sha256": "e972ad7284d1cbb5bf3fbbf5aafad499900f44e626bbf2b2a29eaf6c4f6f98d6",
+      "receipts": [
+        "compat_default_parity_001",
+        "compat_input_validation_001",
+        "compat_pc_001",
+        "compat_pc_cost_002",
+        "compat_pc_gameplay_001",
+        "compat_pc_prepare_003",
+        "compat_prepared_boundary_001",
+        "compat_prepared_public_001",
+        "compat_public_api_001",
+        "compat_public_boundary_001",
+        "compat_public_cli_001",
+        "compat_public_oracle_001",
+        "compat_public_profile_001",
+        "compat_public_trace_001",
+        "compat_r05_002",
+        "compat_r05_summary_001",
+        "final_fault_001_build_off",
+        "final_fault_001_build_on",
+        "final_fault_001_detached",
+        "final_fault_001_none",
+        "final_fault_001_off",
+        "final_fault_001_on",
+        "final_fault_001_queue_full",
+        "final_fault_001_websocket",
+        "public_continuation_001",
+        "public_guards001",
+        "public_guards_allocator001",
+        "public_independent_area_001",
+        "public_rewind_001",
+        "public_schema_001"
+      ]
+    }
+  },
+  "compatibility_adaptation_sha256": "9c097e015e65163eac5989b1cadc13761dbad8ba2bd946da36a0ffeb825b3d68",
+  "limitations": [
+    "Local Linux CoreApplication, real host actor, stock WebSocket and process/file boundaries. No Unity or deployed service claim.",
+    "Only inherited R05 concurrent-peak warning and20minute stress exclusion apply; no numeric cap changed.",
+    "Direct starter tests use normal grants/equipment/copies with explicitly recorded readiness/injury/opponent position fixtures.",
+    "Shared action/CC/work gates retain generic regression evidence; selector links do not claim every Cartesian combination was separately run.",
+    "V20 Complete/High and unresolved-findings gate is reserved for independent audit; no dependent U07 work before it.",
+    "PC elapsed times are shared-host observations; the original R05 allocation-instrumented run has latency_gate_applicable=false. Raw latency results remain visible, and no numeric allocation ceiling or exception was changed.",
+    "F01 reuses30 old executions through exact three-file impact analysis. The old measured source digest is retained; PC/R05 Damage-only workloads and all layout/accounting inputs are unchanged. Original independent audit is Not Complete for F01, not a positive completion basis."
+  ],
+  "performance_environment": {
+    "path": "compatibility/current_001/evidence/PERFORMANCE_ENVIRONMENT_001.json",
+    "sha256": "752fac74196e8c61866749f34647b3a5d783484f292a7866d7e0d37353562845",
+    "other_training_present": true,
+    "timing_claim": "Shared-host raw observations only; allocation observer is process/thread scoped. PC gameplay, typed refusal and full non-timing parity are checked separately; inherited R05 allocation instrumentation disables its latency gate. No numeric ceiling changes.",
+    "evidence_mode": "reused original observation; no new timing measurement",
+    "original_source_sha256": "7db70db30e290a83db502b2fc92ad08b94ef5b6a9f70dec3939dcd89e0bf976a"
+  },
+  "evidence_reuse": {
+    "path": "correction/f01_001/EVIDENCE_REUSE.json",
+    "sha256": "e972ad7284d1cbb5bf3fbbf5aafad499900f44e626bbf2b2a29eaf6c4f6f98d6",
+    "receipts": [
+      "compat_default_parity_001",
+      "compat_input_validation_001",
+      "compat_pc_001",
+      "compat_pc_cost_002",
+      "compat_pc_gameplay_001",
+      "compat_pc_prepare_003",
+      "compat_prepared_boundary_001",
+      "compat_prepared_public_001",
+      "compat_public_api_001",
+      "compat_public_boundary_001",
+      "compat_public_cli_001",
+      "compat_public_oracle_001",
+      "compat_public_profile_001",
+      "compat_public_trace_001",
+      "compat_r05_002",
+      "compat_r05_summary_001",
+      "final_fault_001_build_off",
+      "final_fault_001_build_on",
+      "final_fault_001_detached",
+      "final_fault_001_none",
+      "final_fault_001_off",
+      "final_fault_001_on",
+      "final_fault_001_queue_full",
+      "final_fault_001_websocket",
+      "public_continuation_001",
+      "public_guards001",
+      "public_guards_allocator001",
+      "public_independent_area_001",
+      "public_rewind_001",
+      "public_schema_001"
+    ]
+  },
+  "compatibility_adaptation_mode": "Original source-bound adaptation record retained; all input/harness bytes rechecked by F01 EVIDENCE_REUSE, with no old execution relabelled current."
+}

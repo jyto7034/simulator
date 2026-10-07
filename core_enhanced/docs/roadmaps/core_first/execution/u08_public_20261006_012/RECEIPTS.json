@@ -1,0 +1,100 @@
+[
+  {
+    "label": "relic_carriers_basic001",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_basic001.json",
+    "receipt_sha256": "bd62fcd7d9d0b114a7ca42707d9231865edeb1cba178fedd05994e6adc3b371b",
+    "raw_sha256": "dd151015ef7145e855bcd085453567a4e46c8a4d78348e26b9153aeb686db5c2",
+    "source": "60b701c09e8dda7f326eda66a70edf177961a0727214e030d49a7a617db46576",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 65.88733236800181,
+    "results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1870 filtered out; finished in 3.36s"
+    ]
+  },
+  {
+    "label": "relic_carriers_epoch001",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_epoch001.json",
+    "receipt_sha256": "cc27fbf9de11d24a22a4edd89ba09f04f12d2c2f07dcf9c917b66f6882b5701e",
+    "raw_sha256": "e07b711893b88221fef3eac19d5cd564e22e8a9e2c43949713e564056f86f591",
+    "source": "58affee7de1496e5b0b1a7cca3bf072f5b35505fc2f9111fbb607303620b6eea",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 53.467170874006115,
+    "results": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1871 filtered out; finished in 1.42s"
+    ]
+  },
+  {
+    "label": "relic_carriers_epoch002",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_epoch002.json",
+    "receipt_sha256": "e7d6a4911327f3c1a3cd7d10c1a4bc8282da5ad0e4cdf0c7b4b881e2c81205b0",
+    "raw_sha256": "977fd125239b03a82685b24f54c0c1b6ac4f313b79f432589fc4109bc454a531",
+    "source": "8e9f3a15807fc4ab18fefa13a7520e51fa52bb07b32a94aef71bf78b126e37d2",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 42.246295067016035,
+    "results": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1871 filtered out; finished in 0.31s"
+    ]
+  },
+  {
+    "label": "relic_carriers_epoch003",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_epoch003.json",
+    "receipt_sha256": "dd5875c0ee27e0619db6acbb8f5642b37a6ce701c210cde7289e9241db47ee27",
+    "raw_sha256": "019c9341be58397af0381e9b97476145cf052b5ea946a970b5de4f5548873ab3",
+    "source": "32b6fe497996207514c75e1decc4f5b0eecf62a313088ff8d3c0cc550df619fc",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 32.171910887002014,
+    "results": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1871 filtered out; finished in 1.35s"
+    ]
+  },
+  {
+    "label": "relic_carriers_epoch004",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_epoch004.json",
+    "receipt_sha256": "e112f3f0dd0bedd386d1dfc6d6b5c780c74c818e69747fcac68c83641c5b58d0",
+    "raw_sha256": "fe792c7cb4565365f02c7533ed0ccae4a6db09a37901512868513ae8917464cf",
+    "source": "b17424426dffd346b045d020ff34a81be171ffc84aee59342588b5a810e11826",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 101,
+    "duration_seconds": 46.30667337204795,
+    "results": [
+      "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1871 filtered out; finished in 1.36s"
+    ]
+  },
+  {
+    "label": "relic_carriers_epoch005",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_epoch005.json",
+    "receipt_sha256": "faa14d8e771c8418a8682c601fe952ae104520e8a7a192e226668362423685ea",
+    "raw_sha256": "e2b7a1d820c3835c2bdd3c2886db7b6540ec808b64fdb0fb4addfbb00a1a118c",
+    "source": "0df25480ef7cb5c787f37488f85c9c5d6069b156637132a19c703343d6d15d25",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 54.40238615398994,
+    "results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1871 filtered out; finished in 0.66s"
+    ]
+  },
+  {
+    "label": "relic_carriers_complete001",
+    "receipt": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/relic_carriers_complete001.json",
+    "receipt_sha256": "5120cbee654e97957b4fd66f0247a7871b71c563b5924b61f34d9423da2c4df1",
+    "raw_sha256": "57c74513581f3af3a5f59587899a0c37006d2984af6b44cda965265ae6f674a0",
+    "source": "0df25480ef7cb5c787f37488f85c9c5d6069b156637132a19c703343d6d15d25",
+    "source_count": 438,
+    "unchanged": true,
+    "exit_code": 0,
+    "duration_seconds": 12.95314940897515,
+    "results": [
+      "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 1865 filtered out; finished in 9.74s"
+    ]
+  }
+]

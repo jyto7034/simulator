@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
 use crate::game::player_game_actor::messages::PlayerGameServerMessage;
 use crate::game::player_game_actor::PlayerGameActor;
 use actix::{Addr, Message};
-use game_core::game::data::GameDataBase;
+use game_core::game::data::ValidatedGameData;
 use uuid::Uuid;
 
 #[derive(Message)]
@@ -29,7 +27,7 @@ pub struct FindPlayer {
 #[rtype(result = "Addr<PlayerGameActor>")]
 pub struct GetOrCreatePlayerActor {
     pub player_id: Uuid,
-    pub game_data: Arc<GameDataBase>,
+    pub game_data: ValidatedGameData,
     pub run_seed: u64,
 }
 

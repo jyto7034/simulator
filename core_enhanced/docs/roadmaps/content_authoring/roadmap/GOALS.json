@@ -1,0 +1,946 @@
+[
+  {
+    "id": "CA00",
+    "name": "기준 상태·전체 요구사항·정책 추적표",
+    "stage": "M0",
+    "dependencies": [],
+    "purpose": "현재 작업 트리를 보존하고, 대표 콘텐츠와 전체 설계의 표현력 요구를 구별한 구현 기준선을 만든다.",
+    "tasks": "작업공간·revision·관련 dirty 파일을 기록한다. project_map은 입구로만 쓰고 세 콘텐츠 문서의 합의된 단계·분기·병행과 개별 효과를 원문에서 목록화한다. 기본/개화, 탱/딜, 보스/플레이어 보상을 별개 요구로 등록한다. 각 요구에 15축의 해당 하위 요소, 원문 상태, 담당 CA 작업, 검증 사례를 연결한다. 기존 P2G/GEX 문서 규칙과 이 로드맵의 작업 경계를 대조한다. 테스트 기준선은 실행 권한이 주어진 경우 실제 명령·test 수를 수집하며, 과거 기록은 별도 출처로 남긴다.",
+    "references": "core_enhanced/docs/project_map.ko.md; docs/skills/run_relic_content_design_notes.ko.md; docs/skills/abnormality_skill_fragments_design_notes.md; docs/skills/abnormality_design_notes.ko.md; docs/engineering_workflow.md; docs/policy_to_goal_pipeline.md; docs/goal_execution_pipeline.md; Cargo.toml; tests/",
+    "policy_gates": "PG00 및 모든 PG의 최초 분류. 아직 미정인 수치를 채우는 작업은 하지 않는다.",
+    "acceptance": "T00. 승인된 기계적 요구마다 출처·작업·검증 또는 구체적인 정책 blocker가 있어야 한다. “대표 사례에 없어서 제외”인 행은 없어야 한다. 새 코드 변경 없이 조사 기준선과 현재 실패 목록을 구분한다.",
+    "forbidden": "사용자 dirty 변경의 삭제·덮어쓰기, 서버 문제를 선행 차단으로 지정, 전체 문서를 읽지 않고 전수 확인으로 표시, 기존 평가를 무조건 정답으로 복사.",
+    "deliverable": "기준 상태 기록, COVERAGE의 전체 원문별 행, 정책·선행 작업 목록. 실행된 테스트가 없다면 그 사실을 명시한다.",
+    "architecture": [
+      "01_SYSTEM.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K02"
+    ],
+    "choice": "원문별 COV 추적표와 “현재 사실 / P 정책 / R 권장안 / 미정” 네 열을 기준선으로 만든다. 기존 CA 작업에 실제 요구를 배정하되 목록에 안 맞는 요구를 삭제하지 않는다.",
+    "rationale": "코드 전수 읽기를 로드맵 작성자가 미리 끝낸 것처럼 전제하지 않고, 구현 단계의 조사 범위를 근거로 결정하기 위해서다.",
+    "investigate": "현재 지도·콘텐츠·승인 기록의 날짜와 dirty 상태를 비교한다. 관련 기능의 실제 entry/validation/consumer/test만 먼저 표본 확인하고, 전체 콘텐츠 요구는 원문 전체의 해당 절을 읽어 목록화한다. 주요 공유 경계(loader·작성 정의·행동·상태/사본·보스·저장)에서 순서의 큰 역전·누락·과잉 선행 후보를 1차 확인한다. 최초 다음 범위의 직접 관계는 source로 뒷받침하고, 나머지는 미검토·추가 조사 질문으로 구분한다. 24개 작업 전체의 상세 의존성 검증을 완료한 것으로 표현하지 않는다.",
+    "design": "원문별 요구 목록, 보스 제작 능력 목록, 현재/목표 차이, K 계약 owner와 PG 상태, baseline test 계획. CA01에 넘길 unresolved assumptions를 구체적인 코드 질문으로 작성한다. 의존성 1차 조사 범위·확인한 관계·미확인 관계·다음 후보의 직접 전제와 근거를 기존 조사 기록에 포함한다. 후속 Topic의 P2G-20/40에서 확정할 검토 대상을 제시하며 별도 전역 의존성 장부를 만들지 않는다.",
+    "slices": "기준·권한 확인 → 원문 coverage → 대표 구조와 추가 최소 fixture 배정 → 첫 K 계약 점검 목록.",
+    "extra_acceptance": "“지원할 것”과 “현재 실행 확인” 표기를 분리한다. 이 단계는 모든 runtime 기능의 세부 설계·수정 단계가 아니다. 다음 후보의 계획상 순서와 코드로 확인한 관계를 분리하고, CA00 인수·조사 완료를 정식 Phase Plan 또는 구현 준비 완료로 승격하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "사용자 실행 범위 선택 후 시작",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA01",
+    "name": "작성 단위·타입·실행 지원 계약",
+    "stage": "M0",
+    "dependencies": [
+      "CA00"
+    ],
+    "purpose": "효과 단위 변경과 도구 탐색을 가능하게 하는 공통 데이터 계약을 정한다. 15축을 15개 schema 필드로 옮기지 않는다.",
+    "tasks": "콘텐츠 정의/형태/효과 정의/소유 사본/시전/직접 타격/피해 segment/전달/상태/연쇄 경로 identity를 구분한다. TargetQuery, ValueExpr, Action 또는 Effect, Condition, Sequence/Branch/Parallel, ResourceRef 등의 최소 작성 단위를 설계한다. 효과별 태그와 실제 변경 가능한 property를 분리하고 consumer별 허용 조합·입출력 타입·단위·상태 필요조건을 descriptor로 정의한다. 보스 graph와 스킬 flow는 제어 책임을 분리한다. 지금 실행하는 primitive만 지원 목록에 등록한다.",
+    "references": "core_enhanced/src/game/ability.rs::SkillDef, SkillStepDef, SkillEffectDef; stats.rs::TriggerType, Effect, StatId; data/skill_data.rs; data/boss_runtime_data.rs; docs/skills/run_relic_content_design_notes.ko.md:267–378",
+    "policy_gates": "PG01, PG02의 인터페이스 영향 부분. source 식별과 lifetime key는 내부 설계로 제안하되 gameplay 변화는 분리한다.",
+    "acceptance": "T01. 같은 효과의 태그 AND와 “서로 다른 보유 효과 존재” 조건을 혼동하지 않는다. 소비자에서 실행하지 못하는 연산은 컴파일 단계에서 이유와 위치를 가진 오류가 된다. 피해+자기 회복을 분리한 최소 계획이 작성 가능하다.",
+    "forbidden": "문자열 property path의 임의 실행, 미지원 enum을 성공 처리, 무제한 eval/스크립트, 모든 도메인의 거대 범용 VM 강제.",
+    "deliverable": "작성 계약 초안, 지원 기능 descriptor, 명시적 IR/도메인 경계, 최소 긍정·부정 컴파일 fixture. 제안 타입명과 실제 구현명을 구분한다.",
+    "architecture": [
+      "01_SYSTEM.ko.md",
+      "02_AUTHORING_AND_COMPILER.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K02",
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "K08",
+      "K09",
+      "K10"
+    ],
+    "choice": "구조화된 ActionFlow와 EffectSite를 typed AST로 선언하고, 컴파일된 node index/result slot/source map으로 낮춘다. 보스는 별도 상태·작업 graph를 유지하며 작은 공통 계약만 공유한다.",
+    "rationale": "임의 jump/string eval 대신 도구가 연결 가능한 타입과 종료·취소를 검증하고, 효과와 action carrier의 변경 범위를 분리하기 위해서다.",
+    "investigate": "현재 SkillDef raw/runtime 변환, range preset, Damage/Heal consumer, Boss compiled 정의, error source 위치 보존을 추적한다. 기존 ID·target·result 타입을 재사용할 수 있는지 비교한다. 최소 typed slice와 외부 로딩·시험 포트를 어디에서 분리해 각각 유효하게 검증할 수 있는지 확인한다. 작성·컴파일·기존 kernel 소비가 후속 미구현 기능 전체를 필요로 하는지 따져, 실제 필요한 계약 부분만 선행으로 제안한다.",
+    "design": "최소 AST·compiled shape·EffectSite/ActionSite 주소, ID 범위, descriptor↔opcode 연결, unsupported 오류, K01–K10의 필요한 최소 port sketch. 미래 op의 빈 executor는 작성하지 않는다.",
+    "slices": "계약·source map → 실제 Damage/Heal/Instant slice → 타입/참조 부정 fixture → CA02가 사용할 최신 최소 schema.",
+    "extra_acceptance": "E01의 두 효과가 독립 property를 갖고, carrier 수정이 공유된 다른 effect에 번질 때 진단된다. exact RON 예제를 최신 parser로 검증한 뒤 문서화한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA02",
+    "name": "최신 schema 전환·외부 다중 팩 게시",
+    "stage": "M1",
+    "dependencies": [
+      "CA01"
+    ],
+    "purpose": "배포된 live_data를 읽어 하나의 검증된 데이터 세대를 만들며, 구형 문법·embedded fallback 없이 최신 경로 하나를 사용한다.",
+    "tasks": "먼저 CA01의 최소 피해·회복·단계 계획을 기존 계산·전달 kernel에 연결한다. 팩 manifest, namespace, 의존성, 추가/명시적 교체/삭제 또는 비활성, 최종 선택 규칙을 구현한다. 디렉터리 우연한 탐색 순서는 권한이 아니다. source 확보→raw 구문·타입 검증→override 해석→effective graph 참조 검증→compile→generated setup 검증→immutable publication 순서를 둔다. 읽기 도중 변경은 snapshot 일관성을 확인하며 재시도 또는 실패한다. game_resources/data는 공식 authored pack 원본, live_data는 패키징 결과로 단일 원본을 유지한다. 현행 파일 목록·고정 콘텐츠 수에 묶인 검증은 의미 검증과 공식 콘텐츠 coverage 검사로 분리한다. 새 런은 새 factory/application에서 해당 세대를 잡고 기존 런은 교체하지 않는다. 새 코어 구성 시 플레이어 identity와 영구 profile의 기존 소유를 보존하고 콘텐츠 reload 때문에 초기화하지 않는다.",
+    "references": "core_enhanced/src/game/data/live_ron.rs::GameplayRonSourceSet, ParsedGameplayRon, LiveRonError; data/mod.rs::load_live_sources, ValidatedGameData; data/validation.rs; src/application.rs; game_resources/data/; docs/data_loading_contract.md",
+    "policy_gates": "PG07. 본 로드맵 기본안은 명시적 교체만 허용, 미해결 다중 교체 충돌 거부, 삭제 뒤 dangling reference 거부다.",
+    "acceptance": "T02–T03. 바이너리는 그대로 두고 외부 RON 수정 후 새 런 결과가 바뀐다. 이미 시작한 런은 이전 검증 세대와 결과를 유지한다. 손상·중복·순환 의존성·지원되지 않는 schema·모호한 override에서 부분 게시가 없어야 한다. 최소 정상 런과 전투가 새 schema만으로 성립한다.",
+    "forbidden": "구형 parser/별칭/버전 분기 adapter, production의 include_str fallback, 공격 때마다 디스크 읽기, 요청한 새 런에 실패를 숨기고 구세대를 적용, 기존 파일 임의 삭제.",
+    "deliverable": "외부 loader와 generation receipt, 최신 최소 공식 pack, 패키징 경로, 최신 semantic compiler와 기존 kernel 연결, 재빌드 없는 로딩 검증. 현재 카탈로그 전체 폐기는 허용이나 필요 없는 대량 삭제가 목표는 아니다.",
+    "architecture": [
+      "02_AUTHORING_AND_COMPILER.ko.md",
+      "06_PACKS_AND_TOOLS.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K03",
+      "K10"
+    ],
+    "choice": "팩 합성 후 최종 참조를 검증하고 immutable ValidatedGeneration을 게시한다. 새 런만 새 세대를 bind하고 기존 런은 그대로 유지한다.",
+    "rationale": "raw 참조를 먼저 전부 강제해 정상 override를 막거나, 디스크 상태를 전투 중에 섞는 문제를 피하기 위해서다.",
+    "investigate": "include_str inventory→parse→local/cross→compiled boss→generated setup→Core construction과 공식 파일수 검증을 추적한다. 저장소와 live_data 패키징·root path 소유를 확인한다.",
+    "design": "팩 manifest/selection 타입, namespace/import/replace/remove 알고리즘, raw와 effective 검증 순서, path·동시 변경·예산 정책, fingerprint·generation factory, 최소 RON 전환과 삭제 경로.",
+    "slices": "파일 입력 묶음 → manifest/합성 → compile/게시 → 최소 최신 런 → A/B pin·실패 시험.",
+    "extra_acceptance": "삭제된 loser의 사용하지 않는 참조와 최종 dangling 참조를 구분한다. A/B 세대별 실행과 오류 시 세션 보존을 실제 같은 바이너리에서 검증한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA03",
+    "name": "공통 검증·설명·headless 시험 실행 포트",
+    "stage": "M1",
+    "dependencies": [
+      "CA02"
+    ],
+    "purpose": "RON 조합기 없이도 같은 작성 경로로 검증·시험·결과 확인을 할 수 있게 한다.",
+    "tasks": "엔진 API와 얇은 CLI에 validate, describe, explain, simulate의 동등한 기능을 제공한다. 명칭·명령 문법은 구현에서 확정하고 현재 존재하는 도구처럼 문서화하지 않는다. 파일/pack/정의/효과/필드 위치, 오류 코드, 필요한 capability를 구조화해 반환한다. seed·팩 해시·입력 시퀀스·결과 요약을 기록한다. 일반 공개 코어 포트를 사용하는 시나리오와 low-level kernel fixture를 구분한다. 재로딩 성공 후 새 시험 전투를 생성하며, 실패 시 기존 시험 세션에 섞지 않는다. 새 CLI target은 autobins=false인 Cargo에 명시적으로 등록한다.",
+    "references": "core_enhanced/Cargo.toml; src/application.rs::CoreApplication; src/game/data/mod.rs::ValidatedGameData; data/live_ron.rs::LiveRonError; battle/core/sim.rs; tests/ron_loading.rs; tests/skill_runtime_contract.rs",
+    "policy_gates": "시험용 임의 숫자는 PG00 규칙에 따라 별도 pack과 receipt에 기록한다.",
+    "acceptance": "T04. 독립 디렉터리의 RON으로 validate→simulate→explain 경로가 성공한다. 같은 잘못된 입력에 API와 CLI가 동일 의미의 진단을 제공한다. release 빌드에서 test-fixtures의 bare builder 없이 새 로딩 경로가 작동한다.",
+    "forbidden": "RON 조합기 UI 구현, 전용 캐릭터 ID를 아는 runner, 검증 우회 입력, 서버·Unity 구현을 끌어오기.",
+    "deliverable": "공통 authoring API, 최소 CLI, 실행 receipt 규격, 지원 기능 설명 출력. 이후 CA 작업이 새 primitive를 추가할 때 같은 포트에 즉시 등록한다.",
+    "architecture": [
+      "06_PACKS_AND_TOOLS.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K03",
+      "K10"
+    ],
+    "choice": "library의 작성 포트를 공통 authority로 두고 CLI는 얇은 adapter로 만든다. describe/validate/explain/simulate는 동일 generation·compiler·runtime을 사용한다.",
+    "rationale": "향후 조합기가 별도 검증기를 복제하거나 test builder만 통과하는 제작 경로가 생기지 않게 하기 위해서다.",
+    "investigate": "공개 CoreApplication·ValidatedGameData의 실제 construction 권한, existing fixture 도구 Cargo 등록, 진단 형식과 테스트 입력 경계를 조사한다.",
+    "design": "포트 입력/출력·오류 schema, scenario/seed/input/clock 형식, release 지원, 재로딩 session swap transaction, source-span/trace receipt, 명령의 실제 등록 방법.",
+    "slices": "라이브러리 포트 → CLI → 독립 경로 RON → 같은 입력의 API/CLI 동등 시험.",
+    "extra_acceptance": "잘못된 팩으로 reload할 때 기존 시험 session이 먼저 사라지지 않는다. explain/preview는 state·RNG·revision을 바꾸지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA04",
+    "name": "자원·상태 소유와 수명 kernel",
+    "stage": "M2",
+    "dependencies": [
+      "CA03"
+    ],
+    "purpose": "사본 자원, 전투당 사용 기록, 배치 임시 상태, 효과 공유량을 서로 혼동하지 않게 한다.",
+    "tasks": "RunCopy/Employee/Attempt/Deployment/Activation/Delivery/Chain 의미의 상태 scope를 구현한다. resource kind와 owner reference를 타입화하고 cap·grant·decay·consume·reserve/commit을 지원한다. 상태 공급자·실행자·보유자·수혜자를 별도 참조로 둔다. 살아 있는 버프뿐 아니라 사망 직전 상태 사실을 보존할 경계를 CA06에 제공한다. epoch와 종료 token으로 이전 예약 작업의 재진입을 차단한다. 연쇄 상태는 bounded presentation log에서 역추론하지 않는다.",
+    "references": "core_enhanced/src/game/battle/core/types.rs::RuntimeUnit, RuntimeItem, ActiveBuff, BuffInstanceKey; battle/core/ids.rs; battle/core/build.rs; world/state.rs::ActiveBattleSession, BattleEntrySnapshot, GameCoreState",
+    "policy_gates": "PG05. 파편 사본 identity에 귀속되는 상태와 직원 귀속 상태를 구분한다. 미정인 재배치·형태 전환 보존 규칙은 owner만 보고 추론하지 않는다.",
+    "acceptance": "T05. 같은 정의의 두 사본 자원이 분리된다. 재배치로 deployment 상태만 바뀌고 attempt 기록은 남는다. 거부된 소비는 자원·RNG·이벤트·revision을 바꾸지 않는다. 종료 후 stale event는 no-op이다.",
+    "forbidden": "모든 상태를 RuntimeUnit에 저장, definition ID로 사본을 합치기, 디버그 로그 seq만으로 RNG 또는 연쇄 권한을 결정.",
+    "deliverable": "타입화된 state/resource store와 수명 계약, 다중 owner·중복 소비·취소 검증.",
+    "architecture": [
+      "03_RUNTIME.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K05",
+      "K08"
+    ],
+    "choice": "StateOwner와 Lifetime을 별도 typed key로 저장하고 ResourceTxn·ActionLease·generation handle을 공통 기반으로 둔다.",
+    "rationale": "직원·사본·배치·attempt를 한 ID로 통합하면 개화·재배치 사용 제한·공유 pool이 서로 오염되기 때문이다.",
+    "investigate": "현재 RuntimeUnit/RuntimeItem/BuffInstanceKey, 배치 재생성, proc key, entry/checkpoint와 결과 commit을 추적한다. 어떤 상태가 이미 source별로 보존되는지 확인한다. CA03 전체 완료가 상태 kernel의 실제 필수 조건인지, 현재 시험 seam으로 독립 검증이 가능한 진행상 권장 순서인지 확인한다. 확인 전에는 edge를 확정하거나 삭제하지 않는다.",
+    "design": "owner×lifetime matrix, store key, handle ABA/stale 방지, reserve/commit/abort, copy binding, overlay와 Run commit 경계, 신규 상태의 저장/복원 위치.",
+    "slices": "키·binding → resource transaction → epoch/lease → 재배치·후퇴 최소 시험.",
+    "extra_acceptance": "사본 owner지만 배치 lifetime인 상태와 사본 owner·attempt lifetime인 기록이 같은 재배치에서 다르게 처리된다. 비용 오류에 ID·RNG·queue 누출이 없다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA05",
+    "name": "계산식·집계·스탯 성장",
+    "stage": "M2",
+    "dependencies": [
+      "CA04"
+    ],
+    "purpose": "Attack/SpellPower와 HP·자원·시간을 참조하는 효과량을 데이터로 계산한다.",
+    "tasks": "상수, 승인된 stat/resource/time/result 참조, 합·곱·비율·clamp 및 유한 집합 count/sum/max 등을 타입화한다. 단위, 범위, overflow·0 나눗셈, 반올림과 snapshot/live 평가 시점을 검증한다. 대상 최대 HP·결손 HP·남은 시간·선택한 자원값을 식에 연결한다. 직원/무기 공격력·주문력의 최종 stat 구성을 한 번만 계산한다. 공격 속도 포인트와 attack interval을 별개로 다루고 기존 scale_attack_interval_ms를 재사용한다. max(5,3,2)=5와 타일 단위 집계는 서로 다른 연산으로 표현한다.",
+    "references": "core_enhanced/src/game/stats.rs::StatId, UnitStats; battle/types.rs::UnitCombatProfile, scale_attack_interval_ms; battle/stat_pipeline.rs; battle/damage.rs::DamageModifiers; ability.rs::SkillEffectDef",
+    "policy_gates": "PG01 산술 합성, PG03 평가 시점, PG05 성장·자원. 주문력은 피해 type Magic과 동의어가 아니다.",
+    "acceptance": "T06. 공격형/주문형/혼합형이 각 입력에만 반응하고 무기 stat을 이중 합산하지 않는다. snapshot 이후 stat 변경은 이미 고정된 전달 결과를 바꾸지 않는다. 집계 owner·대상 단위가 달라지면 혼합 입력은 오류다.",
+    "forbidden": "외부 코드 eval, 모든 Percent의 일괄 곱셈/합산, 가장 큰 스택 대신 전체 합, 공격 속도가 모든 시간 효과를 가속하도록 처리.",
+    "deliverable": "ValueExpr·집계 계약 및 interpreter/compiler, 성장 산술 테스트, 수치 변경 explain.",
+    "architecture": [
+      "02_AUTHORING_AND_COMPILER.ko.md",
+      "03_RUNTIME.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K05",
+      "K06"
+    ],
+    "choice": "ValueExpr를 유한 typed AST로 컴파일하고 evaluation moment를 포함한다. stat composition은 직원·무기·modifier를 한 번만 계산한다.",
+    "rationale": "고정 피해 enum 확장만으로 Attack/SpellPower·남은 시간·집계를 연결할 수 없으며 모든 percent를 같은 수학으로 다루면 의미가 달라지기 때문이다.",
+    "investigate": "UnitStats·stat_pipeline·weapon profile 적용 순서, scale_attack_interval_ms, damage/heal 산술과 overflow·반올림을 현재 코드에서 대조한다.",
+    "design": "식/단위 타입, 합법 연산, 참조 scope·snapshot/live, checked arithmetic 실패, 집계 grouping/empty set, stat authority·cache dependency와 설명 형식.",
+    "slices": "상수/stat 식 → resource/result 식 → 집계 → weapon 성장 연결 → 수치·단위 경계 시험.",
+    "extra_acceptance": "Attack 100에 이미 포함된 weapon 40을 다시 더하지 않는다. Max stacks와 Sum stacks가 다른 값이며 attack speed는 폭격 cadence를 바꾸지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA06",
+    "name": "의미 있는 전투 사건·피해 해결 결과",
+    "stage": "M2",
+    "dependencies": [
+      "CA04",
+      "CA05"
+    ],
+    "purpose": "요청·접수·적중·HP 손실·흡수·회복·비용·처치를 분리하고 효과 간 연결에 충분한 결과를 제공한다.",
+    "tasks": "Action/Strike/Segment/Target별 occurrence identity와 source kind·원효과·제공자·modifier 이력·credit을 연결한다. 적중 접수 전후, 피해 계산 전후, 실제 HP 변화, 회복 유효량, 자원 변화, 사망 직전 상태와 사망 확정의 내부 확장 지점을 둔다. 기존 OnAttack/OnHit의 기본 공격 의미를 새 범용 damage event로 재해석하지 않는다. death 전에 관찰할 상태 snapshot과 실제 사망 finalize/부가 트리거를 분리한다. core 결과 receipt와 UI용 로그를 분리한다.",
+    "references": "core_enhanced/src/game/battle/core/damage_runtime.rs::execute_committed_damage; battle/core/commands.rs; battle/core/triggers.rs; battle/core/death_runtime.rs::finalize_unit_death; battle/damage.rs::DamageSourceSnapshot; battle/event_log.rs",
+    "policy_gates": "PG02, PG03, PG04. shield·parry 동작 자체는 CA09, 사건 계약은 이 단계의 책임이다.",
+    "acceptance": "T07. 한 직접 타격의 여러 segment가 타격 횟수를 중복 증가시키지 않는다. HP 비용은 OnHit가 아니다. 냉기 상태가 있었던 적의 사망을 막타 owner와 별개로 관찰한다. lethal hit의 hit/death 이중 발동을 승인 정책에 따라 분리한다.",
+    "forbidden": "parent log 존재를 연쇄 방지 구현으로 간주, 일반 스킬 피해를 기본 공격으로 둔갑, 사망 상태 제거 뒤 없는 정보로 판단.",
+    "deliverable": "typed occurrence/result와 pre-death fact 계약, HP/흡수/회복/비용/처치 분리 검증.",
+    "architecture": [
+      "03_RUNTIME.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K06",
+      "K08",
+      "K09"
+    ],
+    "choice": "명령·계산 전 modifier·확정 후 fact를 분리하고 Action/Strike/Segment를 보존한 Damage/Heal/Cost/DeathReceipt를 제공한다.",
+    "rationale": "이미 가한 피해를 사후 수정하거나 hit와 death를 무조건 둘 다 발동시키는 구현을 방지하기 위해서다.",
+    "investigate": "execute_committed_damage, OnAttack/OnHit 수집 시점, buff cleanup·death finalize, wave death epoch, result 통계·공명 반영을 종단 조사한다.",
+    "design": "event envelope/result schema, 타격 인정 시점·중복 key, pre-death snapshot, 부분 순서표, preformula 제한 연산, suppression과 subscriber dispatch authority.",
+    "slices": "receipt 타입 → 기존 damage/heal 경로 연결 → pre-death facts → reactive queue → 중복·동시 시험.",
+    "extra_acceptance": "깊은 쐐기의 이번 타격 카운터가 계산 전에 정해지며 한 타격의 segments가 중복 count되지 않는다. narration/log 제거가 인과 사실을 제거하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA07",
+    "name": "대상·전달·단계·분기·반복 실행",
+    "stage": "M2",
+    "dependencies": [
+      "CA05",
+      "CA06"
+    ],
+    "purpose": "스킬을 시간 offset 목록을 넘어 조건·결과·반복의 조합으로 표현한다.",
+    "tasks": "Unit/Tile/Object와 자신·아군·적·원천별 상태 대상 query, 수 제한·우선순위·재선정·방향을 제공한다. 시전 사거리·탐색 범위·효과 footprint·발생 원점은 별개다. Sequence/Branch/Parallel와 유한 Repeat, 이전 작업 완료 상대 지연, 반복 인덱스, 마지막 회차, 무대상 기회 소모를 구현한다. Instant/Projectile/Area kernel을 재사용하고 각 결과로 다음 동작을 진행한다. 피해와 자기 회복은 독립 effect로 컴파일한다. 새 동작의 취소·중단과 released delivery의 존속을 분리한다.",
+    "references": "core_enhanced/src/game/ability.rs; data/skill_data.rs; battle/core/sim.rs::execute_skill_step; battle/core/skill_runtime/cast.rs; battle/core/skill_runtime/projectile.rs; battle/core/skill_runtime/area.rs; docs/skill_target_contract.md",
+    "policy_gates": "PG03과 PG04. 새 selection/retarget 조합을 허용하면 현재 rejection 계약 변경도 명시한다.",
+    "acceptance": "T08. 영역 피해 후 자기 회복은 1회다. 반복 간격 변경이 횟수를 바꾸지 않는다. 고정 탐색 구역과 낙하 시 고정한 타일이 섞이지 않는다. 같은 시각 병행 결과가 안정된 순서로 해결된다.",
+    "forbidden": "Times를 시간 반복과 동일시, 자기 회복에 공격 footprint 상속, 무대상 자동 재시도로 수명을 연장, 효과마다 디스크 재조회.",
+    "deliverable": "typed skill flow와 target/delivery 확장, 나무꾼·풍운승려·루돌타 구조의 최소 RON 시험.",
+    "architecture": [
+      "02_AUTHORING_AND_COMPILER.ko.md",
+      "03_RUNTIME.ko.md",
+      "08_WORKED_EXAMPLES.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K04",
+      "K06"
+    ],
+    "choice": "Structured FlowRunner를 result slot/continuation과 명시 completion milestone으로 실행한다. target·anchor·scope·carrier를 별도 바인딩한다.",
+    "rationale": "현재 offset step 목록을 늘리는 것만으로 “피해 완료 뒤 회복”이나 “유한 기회 반복”의 의미를 설명할 수 없기 때문이다.",
+    "investigate": "cast acceptance→step scheduling→projectile/area progress→step finalization와 action lock을 추적한다. 실제 반영 시점·retarget 제약·facing 결손을 조사한다.",
+    "design": "Flow node/result frame, sequence/branch/parallel join, Repeat count·cadence·no-target 소비, timeout/cancel, Delivery handle와 hit summary, typed query 소비자 제약.",
+    "slices": "E01 단순 sequence → result branch → explicit repeat → parallel/join → 취소·stale·방향 시험.",
+    "extra_acceptance": "동시 실행은 무질서한 공유 mutation이 아니다. 무대상 기회는 임의 재시도하지 않으며 자기 회복은 AoE 대상 수만큼 반복되지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA08",
+    "name": "가역 modifier·오라·집중·기본 공격 교체",
+    "stage": "M3",
+    "dependencies": [
+      "CA07"
+    ],
+    "purpose": "지속 효과가 종료될 때 자신의 변경만 제거하며 재입력과 원상 복귀를 표현한다.",
+    "tasks": "modifier handle을 원효과와 source activation에 연결한다. channel은 준비 focus와 별도 activation으로 두고 행동 lock의 소유와 해제 범위를 추적한다. aura는 membership으로 파생되며 진입·이탈·종료 시 제거/적용한다. 기본 공격 profile override와 복귀, 다음 공격 1회 강화, 기본 공격 전용 피해/속도 modifier를 지원한다. 재입력은 현재 activation에서 허용된 분기로 처리하고 원래 source를 보존한다. 일반 기본 공격의 영역·방향성·관통 전달도 동일 hit identity를 유지하며 도입한다.",
+    "references": "core_enhanced/src/game/battle/core/basic_attack.rs; basic_attack_projectile.rs; tactical_stance.rs; types.rs::ActionLocks; sim.rs의 pending cast; battle/stat_pipeline.rs; docs/skill_target_contract.md",
+    "policy_gates": "PG01, PG03, PG04, PG05. 태아의 집중 중 저지 정책 등 미정 항목은 자동 확정하지 않는다.",
+    "acceptance": "T09. Hello 자연 만료는 Goodbye를 만들지 않는다. 재입력 분기는 추가 공명을 소비하지 않고 한 번 종료한다. 태아의 범위 이탈·집중 종료 시 자기 modifier만 제거된다. 다른 source lock과 이미 발사된 공격은 보존된다.",
+    "forbidden": "매 틱 ModifyStats 누적로 오라 흉내, 긴 focus_time으로 channel 흉내, 끝날 때 역수/반대값으로 모든 modifier 제거.",
+    "deliverable": "지속 action·modifier 계약, Hello/Goodbye와 태아의 최소 RON 실행 및 취소·재진입 테스트.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "08_WORKED_EXAMPLES.ko.md"
+    ],
+    "contracts": [
+      "K04",
+      "K05",
+      "K06"
+    ],
+    "choice": "ModifierLedger/ActionLease/ChannelActivation/AuraMembership과 BasicAttackOverlay를 source handle로 소유한다. 종료는 자기 handle 제거다.",
+    "rationale": "반대 수치를 더해 복구하면 다른 modifier와 반올림을 손상시키고, 긴 cast 준비로 channel을 흉내 내면 행동·취소가 달라지기 때문이다.",
+    "investigate": "기본 공격 start/release/recovery, pending cast와 focus lock, modifier 적용, tactical movement·withdraw, area 추종·tick cleanup을 확인한다.",
+    "design": "lease와 override data shape, allowed reinput payload·activation 매칭, natural/reinput/cancel 전이 표, aura 갱신 trigger, snapshot 적용 시점, ordinary attack 전달 확장.",
+    "slices": "가역 modifier → membership → channel → Hello/Goodbye → next-attack override → 함께 종료 시험.",
+    "extra_acceptance": "E04/E05를 trace로 설명한다. basic override는 skill proc로 둔갑하지 않고 공격 속도 적용 경계가 기존 windup을 소급 변경하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA09",
+    "name": "공유 보호막·생존·방어 중재·제어",
+    "stage": "M3",
+    "dependencies": [
+      "CA06",
+      "CA08"
+    ],
+    "purpose": "피해 감소·흡수·차단·HP 바닥·비용을 서로 다른 기제로 지원한다.",
+    "tasks": "개인/공유 shield source를 CA04 자원으로 만들고 최종 감쇄 피해→pool 소비→초과 HP 손실로 연결한다. 참여자와 초기량 변경을 분리한다. timed slow/root/taunt/pull 등 목표에서 요구되는 제어, parry window와 성공/실패 사건, HP 1 보장과 일반적인 death-prevent의 승인 범위를 구현한다. 지급된 HP 회복과 shield 재충전을 분리한다. 액세서리/유물의 초기량 변경은 source 생성에 한 번만 적용한다.",
+    "references": "core_enhanced/src/game/battle/damage.rs; battle/core/damage_runtime.rs; battle/core/death_runtime.rs; battle/buffs.rs; battle/core/movement/blocking.rs; docs/skills/abnormality_skill_fragments_design_notes.md의 포큐버스·흑조·샤덴프로이데·고기방패",
+    "policy_gates": "PG03, PG04. 개인·공유 shield 우선순위, 비용과 HP 1의 관계, parry와 lethal hit의 의미를 승인한 뒤 구현한다.",
+    "acceptance": "T10. shared 잔량 600에 감쇄 후 A 400/B 350이면 잔량 0, A HP 손실 0, B HP 손실 150이다. 참가자 증가는 원천량을 복제하지 않는다. 원천 만료·자원 소진이 한 번만 종료한다. HP 비용은 shield를 우회하되 승인된 생존 규칙을 따른다.",
+    "forbidden": "보호막을 최대 HP 증가로 구현, 모든 제어를 Stun으로 처리, 무적·감쇄·생존 보장을 같은 분류로 합치기.",
+    "deliverable": "피해 중재·제어 primitive, 포큐버스·parry·생존 구조의 시험 fixture와 정책별 경계 검증.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "08_WORKED_EXAMPLES.ko.md"
+    ],
+    "contracts": [
+      "K05",
+      "K06"
+    ],
+    "choice": "공유 shield는 원천 ResourcePool과 membership이고, 피해 해결은 감쇄→흡수→HP·생존 중재의 명시 pipeline을 사용한다.",
+    "rationale": "개인 buff 복제나 MaxHp 증가로 보호막을 대체하면 잔량·피격·회복·비용 의미가 바뀌기 때문이다.",
+    "investigate": "실제 피해 reduction·HP update·death prevent·trigger 순서, control/movement/block 관계를 확인한다. 현재 hook만으로 어느 처리를 재사용할지 판단한다.",
+    "design": "shield source/recipient/reference, initial modifier 적용점, 소비 정렬·overflow, DamageReceipt 분해, control별 capability, parry/survival/cost 중재와 PG 결정.",
+    "slices": "pool 흡수 → 초기량·membership → 종료/중첩 → 생존·제어 primitive → E03 조합.",
+    "extra_acceptance": "600/400/350 fixture, 피해 감소 중복 방지, shield와 HP 비용·회복의 분리, 소진/만료 단일 종료를 검증한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA10",
+    "name": "파편 사본·개화·형태와 무기 성장 연결",
+    "stage": "M3",
+    "dependencies": [
+      "CA05",
+      "CA08"
+    ],
+    "purpose": "개화와 형태·자원이 개별 파편 instance를 따라가고 새 성장 정책과 연결되게 한다.",
+    "tasks": "OwnedFragment ID와 definition ID를 분리하고 보유/장착/개화 해금/선택 형태/자원 owner를 저장한다. 같은 종류의 두 사본을 각각 개화하고 서로 다른 형태로 장착한다. 공식 파편 일반 강화는 제거하고 Maintenance 형태 선택·가루 및 추가 재료 recipe를 연결한다. 무기 성장으로 Attack/SpellPower를 구성하고 해당 식만 영향받게 한다. 파편 intrinsic/passive+active 조합을 지원하는 슬롯·공명 계약을 반영한다. grant/분쇄/사망 회수·표시·checkpoint 코드 변경을 같은 사본 경계 안에서 동반한다.",
+    "references": "core_enhanced/src/game/skill_fragment.rs::SkillFragmentInventory, SkillFragmentProgress, SkillFragmentLoadout; data/skill_fragment_data.rs; world/maintenance.rs; world/helpers.rs; reward.rs; battle/stat_pipeline.rs; world/state.rs",
+    "policy_gates": "PG05. 해금은 인스턴스별이라는 사용자 결정은 재질문하지 않는다. 형태별 자원 보존·run 진행도와 재료 수치의 미정만 남긴다.",
+    "acceptance": "T11. A 사본을 개화해도 B는 미개화다. A의 장착 직원을 바꿔도 A identity를 유지한다. 형태 변경이 전용 유물의 활성 계산을 무효화/재계산한다. 한 사본을 둘이 장착할 수 없다.",
+    "forbidden": "기존 definition→count/progress 장부와 새 사본 장부 이중 유지, 구형 파편 강화 reader, 사본별 자원을 직원별로 옮겨 버리기.",
+    "deliverable": "새 파편 aggregate와 성장 경로, 동일 정의 다중 사본·다중 형태·저장 round-trip 테스트.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "04_COMPOSITION.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K03",
+      "K05",
+      "K07"
+    ],
+    "choice": "OwnedFragment aggregate가 해금·선택형태·장착·자원을 소유한다. 정의·사본·직원 참조는 별개이며 grant/분쇄/저장도 같은 경계에서 바꾼다.",
+    "rationale": "종류별 progress를 남겨 사본 state와 이중 유지하면 독립 개화·이전·저장에서 truth가 갈라지기 때문이다.",
+    "investigate": "fragment inventory/loadout/progress, grant/reward, Maintenance, death recovery, snapshot/checkpoint와 stat 조립 소비자를 확인한다. 사본 보유·개화와 장착 형태 적용이 CA08의 어느 계약에 의존하는지 확인한다. 사본화의 지급·장착·저장 전환은 유효한 중간 상태를 만드는 경계로 묶는다.",
+    "design": "새 사본 schema, equip invariant, unlock/select command transaction, recipe·형태별 resource mapping, passive+active 계약, effective plan invalidation, 구형 삭제 목록.",
+    "slices": "사본·grant → 장착/선택 → recipe·성장 → projection/save → 다중 사본 시험.",
+    "extra_acceptance": "A만 개화하고 B는 미개화인 상태가 정상 공개 포트·저장 왕복에서 유지된다. 형태 변경 미정 정책을 자동 초기화로 메우지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA11",
+    "name": "유물 소유·장착·회수·분쇄",
+    "stage": "M4",
+    "dependencies": [
+      "CA04",
+      "CA10"
+    ],
+    "purpose": "유물 효과와 독립된 소유·관리 aggregate를 완성한다.",
+    "tasks": "RelicCopy와 definition을 분리하고 공식 규칙 profile의 직원당 공용 3슬롯, 동일 사본 독점, 중복 정책, 직원 단위 비호환, Safezone/Maintenance 이전·무료 장착을 구현한다. 요구 효과가 없다는 이유로 장착을 거부하지 않는다. 사망 시 공용 보관함 회수, 판매 금지, Maintenance 확인 후 장착 해제·분쇄→기존 장비 가루를 연결한다. 슬롯 수 등 수정 가능한 공식 정책은 profile에서 공급하고 engine safety invariant와 구분한다. 신규 상태는 snapshot/checkpoint에 즉시 반영한다.",
+    "references": "core_enhanced/src/game/resources/inventory.rs; resources/equipment_loadout.rs; world/maintenance.rs; world/helpers.rs; world/state.rs::GameCoreState; world/snapshot.rs; reward.rs; data/run_policy_data.rs",
+    "policy_gates": "PG01 비호환 효과 정의, PG06 분쇄량·획득 수치. 침식된 유물 상태의 세부 변형은 PG09의 범위만 구현한다.",
+    "acceptance": "T12. 세 슬롯·직원별 중복·순서 독립 비호환·사본 회수·거부 시 무변경을 검증한다. 다른 직원의 유물 조합을 직원 내 비호환으로 막지 않는다. 무기를 해제해도 유물 장착은 유지한다.",
+    "forbidden": "장비 Weapon/Armor/Accessory를 유물 슬롯으로 재사용, 장착 순서 마지막 값 승리, 획득을 레벨업으로 변경, 미정 획득 빈도 창작.",
+    "deliverable": "유물 관리 aggregate와 공식 규칙 profile, 소유/관리/저장 통합 검증.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "04_COMPOSITION.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K03",
+      "K05",
+      "K07"
+    ],
+    "choice": "RelicCopy 관리와 효과 합성은 분리한다. 장착은 사본·슬롯·비호환을 검사하고 효과 요구 미충족은 휴면으로 표현한다.",
+    "rationale": "효과 활성 여부와 소유·슬롯 유효성을 합치면 미리 장착하기와 무기 변경의 승인 정책을 어기기 때문이다.",
+    "investigate": "EquipmentLoadoutTransition·inventory 양방향 장부, 사망 회수·분쇄 confirm·snapshot/save와 rule profile을 추적한다.",
+    "design": "RelicCopy/slot schema, instance exclusivity·duplicate/negative constraints, atomic equip/transfer/dismantle, activation report 포트, rule profile과 공식 3슬롯 분리.",
+    "slices": "관리 aggregate → 장착/이전 → 회수/분쇄 → 저장/휴면 report 연결.",
+    "extra_acceptance": "다른 직원의 유물에 직원내 비호환을 적용하지 않고, 미충족 상태도 슬롯을 점유한다. slot count를 runtime memory safety 제약과 혼동하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA12",
+    "name": "효과 선택·변형·유효 효과 구성",
+    "stage": "M4",
+    "dependencies": [
+      "CA09",
+      "CA10",
+      "CA11"
+    ],
+    "purpose": "장착 조합에서 효과별 변경 결과와 활성/휴면 이유를 결정론적으로 산출한다.",
+    "tasks": "원효과 identity/역할/태그/property capability/전용 콘텐츠·형태 selector를 도입한다. Add·Scale·Replace와 typed 구조 변환의 합성 단계를 분리한다. 원본 catalog는 immutable로 유지하고 loadout별 effective plan을 만든다. 새로 부여된 효과를 활성 판정에 포함하되 의미 없는 자기 부트스트랩을 막는다. 생성/태그 변형/대상 변환/수치 변경의 dependency와 write set을 검사한다. 구조 변환은 입력·출력과 보존해야 할 source/lifetime/property를 선언한다. 공유→단일과 오라→단일은 공통 interface를 쓰되 개별 계약에 맞는 변환 recipe를 RON으로 제공한다.",
+    "references": "core_enhanced/src/game/ability.rs::SkillStepDef, SkillEffectDef; battle/core/sim.rs::build_skill_step_commands; data/skill_fragment_data.rs::compatibility_report; battle/stat_pipeline.rs; world/snapshot.rs; 새 composer/descriptor 모듈(경로는 구현 시 확정)",
+    "policy_gates": "PG01, PG02, PG03. 태아 상태별 교체값과 포큐버스 2S를 공통 무조건 ×2로 합치지 않는다.",
+    "acceptance": "T13. 동일 장착 집합의 입력 순서를 바꿔도 같은 effective plan이다. 피해 범위만 바꾸면 자기 회복·다른 피해의 출처는 그대로다. 새 폭발을 다른 유물이 강화한다. 새 부여 태그로 전용 대상 조건을 우회하지 못한다.",
+    "forbidden": "전역 SkillDatabase 직접 변조, 문자열 JSON patch로 임의 내부 필드 수정, effect 태그의 파편 전체 합집합 매칭, 미정 충돌을 마지막 쓰기 승리로 처리.",
+    "deliverable": "효과 합성 compiler, 활성/휴면·변경 이력 explain, 속성별 합성과 상충 조합 검증.",
+    "architecture": [
+      "04_COMPOSITION.ko.md",
+      "02_AUTHORING_AND_COMPILER.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K07",
+      "K10"
+    ],
+    "choice": "긍정 grant의 최소 closure와 층화된 구조 변환·typed property 합성을 실행하고 최종 graph를 재검증한다. global 정의는 immutable이다.",
+    "rationale": "장착 순서나 last-writer로 결정하면 공용 효과 변경·생성 태그·전용 대상 의미가 불안정해지기 때문이다.",
+    "investigate": "현재 profile merge·ModifyDamage 단계 범위·compatibility tag·snapshot explain 소비자를 읽고 새 composer를 호출할 mutation 경계를 확인한다.",
+    "design": "selector/patch AST, signed dependency·closure termination, effect output ID, apply-key, typed write/preserve set, conflict matrix, cache key, before/after plan.",
+    "slices": "selector → numeric patch → finite grant/activation → 구조 recipe → 최종 검증·explain.",
+    "extra_acceptance": "E01 피해 범위만 변경, E03 단일 pool, E05 교체값·channel 유지, 생성 폭발의 후속 강화·NOT cycle 거부를 검증한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA13",
+    "name": "연쇄 실행·경로별 재방문 차단",
+    "stage": "M4",
+    "dependencies": [
+      "CA06",
+      "CA12"
+    ],
+    "purpose": "생성 효과의 발동은 허용하면서 한 경로에서 같은 유물 사본의 같은 효과로 되돌아오는 것만 막는다.",
+    "tasks": "원인 occurrence와 branch-local chain context, visited (copy_id,effect_id)를 상태로 전달한다. projectile·timer·area·후속 생성 등 비동기 자식도 정해진 인과 맥락을 보존한다. 기본 공격 등의 진짜 독립 사건과 유물 자신이 만든 지연 사건의 root 정책을 구분한다. sibling path를 전투 전체 visited set으로 합치지 않는다. 사망·피해 해결 중 직접 재귀 호출 대신 정해진 큐/단계로 확장을 수행한다. 연쇄 fan-out은 CA22 예산 계측에 포함한다.",
+    "references": "core_enhanced/src/game/battle/core/triggers.rs::TriggerOccurrenceContext; sim.rs::should_fire_triggered_ability; battle/core/commands.rs; battle/core/types.rs::AbilityProcKey; battle/event_log.rs::BattleEventCause; skill_runtime/",
+    "policy_gates": "PG02. 합류·전파·반복 발생의 root/branch 정책이 미정이면 해당 family만 gate한다.",
+    "acceptance": "T14. A1.e→B1.e→A1.e는 차단, 다음 독립 공격에서는 재허용, A2 사본·A1의 다른 효과는 구별한다. 지연시키거나 새 투사체를 만들어 순환 제한을 우회할 수 없다. 출처 태그는 기본 공격에서 새 proc로 무조건 상속되지 않는다.",
+    "forbidden": "쿨다운을 순환 방지로 대체, 유물당 전투 1회 전역 visited, 시간 이벤트마다 무조건 새 root, 로그 history eviction으로 보호 정보 소실.",
+    "deliverable": "연쇄 dispatcher와 진단, 사본·분기·지연 전파의 양성/음성 시험.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "04_COMPOSITION.ko.md"
+    ],
+    "contracts": [
+      "K06",
+      "K08",
+      "K10"
+    ],
+    "choice": "root와 ancestor frame을 갖는 branch-local ChainContext를 queue request/delayed child에 전달한다. reactive 실행은 직접 재귀 호출하지 않는다.",
+    "rationale": "전역 visited나 cooldown은 승인된 경로별 제한을 표현하지 못하고 timer마다 새 root를 만들면 순환을 우회하기 때문이다.",
+    "investigate": "trigger occurrence→proc→skill→projectile/area→death→후속 event 경로에서 source·cause가 유지/유실되는 지점을 찾는다.",
+    "design": "frame/handle 구조, 방문 전 검사·추가 위치, delayed propagation, producer root 권한, 실제 join ancestry 합성, budget과 context 회수.",
+    "slices": "즉시 A/B chain → forks → delayed delivery → join/주기 정책 → trace/예산.",
+    "extra_acceptance": "A1.e→B1.e→A1.e만 차단하며 A2·다른 effect·별도 독립 공격은 구별한다. log eviction과 timer delay가 제한을 초기화하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA14",
+    "name": "설치물·장애물·소환의 구분된 실행",
+    "stage": "M5",
+    "dependencies": [
+      "CA04",
+      "CA07",
+      "CA09",
+      "CA10"
+    ],
+    "purpose": "소환물 태그 아래 서로 다른 매개체를 공통 생성 기반 위에서 올바르게 표현한다.",
+    "tasks": "공격·이동·HP·피격·저지·명령 가능 여부가 다른 actor/trap/field object를 구분한다. 배치 유효성, 정지 개체, 자기 작은 함정 타일의 진화 예외, 수량 제한, 생성 실패 원자성, source snapshot과 summoner removal을 구현한다. 고기벽은 일반 summon이나 지형 우회가 아니라 해당 타일에서 적이 파괴하는 방어 object로 처리한다. 공용 shield·고정 회복 영역을 HP actor로 강제하지 않는다. spawn kernel의 생성·identity·점유 처리를 공유하면서 reward/wave/compendium authority는 별도 명시한다.",
+    "references": "core_enhanced/src/game/data/summoned_unit_data.rs; battle/core/summon_runtime.rs; battle/core/spawn_kernel.rs; battle/core/build.rs; battle/battlefield/; battle/core/movement/; docs/skills/abnormality_skill_fragments_design_notes.md의 래티씨아·고기벽",
+    "policy_gates": "PG05, PG06의 해당 원본 세부. 근거 없는 HP/저지/이동 default를 만들지 않는다.",
+    "acceptance": "T15. 작은 친구→큰 친구가 사본 2개 생성으로 처리되지 않는다. HP 비용과 벽 생성 중 하나만 commit되지 않는다. 철수 뒤 유지하는 object는 snapshot대로 남고, 유지하지 않는 효과는 종료한다. actor summon과 wave 승리 권한은 독립이다.",
+    "forbidden": "소환물 태그=동일 Unit 구조, zero movement validation 우회, 소환으로 reward/wave 권한 암묵 획득, 고기벽에 일반 회복 적용.",
+    "deliverable": "구분된 object/actor 정의와 생성 경로, 함정 진화·벽 배치·일반 소환의 RON fixture.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "05_BOSS_AUTHORING.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K04",
+      "K05",
+      "K06",
+      "K09"
+    ],
+    "choice": "공통 생성 request는 사용하되 Actor/Trap/FieldObject/Area/Shield를 각 capability·state shape로 표현한다. 진화는 명시 transaction이다.",
+    "rationale": "소환물 태그로 동일 Unit model을 강제하면 정지 함정·고기벽·공유량에 잘못된 이동/보상 권한이 붙기 때문이다.",
+    "investigate": "SpawnKernel·summon compile·occupancy·pathing·static defense object·wave authority·removal과 source profile snapshot을 추적한다.",
+    "design": "매개체별 schema, placement/occupied exception, form transition identity·edge invalidation, resource split/create atomicity, provenance·lifetime·reward 권한.",
+    "slices": "actor 재사용 → stationary trap → evolve → field barrier·HP fallback → lifecycle 시험.",
+    "extra_acceptance": "기본 생성·진화는 유물 합성·연쇄 전체 완성을 기다리지 않는다. 그 통합은 CA15/CA20이 소유한다. 비용·생성 실패와 stale node를 검증한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA15",
+    "name": "연결망·상태 전파·공간 집계",
+    "stage": "M5",
+    "dependencies": [
+      "CA13",
+      "CA14"
+    ],
+    "purpose": "설치물 연결, 원천별 감염망, 타일별 축적을 캐릭터 전용 코드 없이 구성한다.",
+    "tasks": "근접 relation, 연결 node 집합, 선 통과/접근 사건, 결정론 순서·유한 전개·node 소비를 지원한다. 원천별 status membership과 살아 있는 대상 집계·시간 축적을 resource에 연결한다. 전파 transaction 내 신규 member의 즉시 재전파를 막고 lethal hit의 전파 우선순위를 적용한다. 타입화된 group-by tile, sum/max, source 제한과 일제 소비/발동을 지원한다. 래티씨아 전용성은 definition/형태 selector이고 연결 알고리즘은 일반 기능이어야 한다.",
+    "references": "core_enhanced/src/game/battle/core/spatial.rs; battle/core/skill_runtime/area.rs; battle/core/death_runtime.rs; CA04 resource store; CA06 events; CA13 chains; docs/skills/abnormality_skill_fragments_design_notes.md의 래티씨아·포자 감염·죽을 나비",
+    "policy_gates": "PG02–PG06. 연결망 소비 범위·공간 tie-break·여러 원천 시체 소유권은 미정 상태를 보존한다.",
+    "acceptance": "T16. 같은 source의 감염만 기폭·소비한다. 기폭 자체는 새 감염·사망 전파를 만들지 않는다. 타일과 유닛 스택은 타일 단위로 집계한다. 연결 node가 삭제·진화해도 stale 링크가 재발동하지 않는다.",
+    "forbidden": "전역 감염망 합치기, 콘텐츠 이름별 분기, 연결 전체 소비를 미정인데 확정, node당 효과를 무제한 재귀.",
+    "deliverable": "relation/membership/aggregate primitive와 세 구조의 최소 재조합 fixture. 공식 전체 데이터 이식은 CA20 범위와 구분한다.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "04_COMPOSITION.ko.md",
+      "08_WORKED_EXAMPLES.ko.md"
+    ],
+    "contracts": [
+      "K05",
+      "K06",
+      "K08",
+      "K09"
+    ],
+    "choice": "RelationStore의 node/edge와 StatusMembership/ResourceAggregator를 구분해 사용한다. 전파·기폭은 source-scoped 집합 snapshot과 transaction이다.",
+    "rationale": "모든 감염을 global network로 합치거나 트리거마다 재귀 확장하면 원천·사망 우선순위·소비 의미가 깨지기 때문이다.",
+    "investigate": "공간 조회·line crossing·movement event, status cleanup/death receipt, object evolution과 delayed child 상태를 조사한다.",
+    "design": "edge/node key·invalidation, propagation transaction set, source-scoped aggregate, consumption order·fan-out bound, join/root와 suppression matrix.",
+    "slices": "node relation → 접근/선 사건 → ordered consume → infection membership → tile aggregate·detonation.",
+    "extra_acceptance": "E06과 포자/나비 최소 fixture로 노드 제거·원천 분리·같은 transaction 재전파 차단을 검증한다. 미정 전체 소비를 암묵 확정하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA16",
+    "name": "보스 공통 행동·패턴·전장 사건 연결",
+    "stage": "M5",
+    "dependencies": [
+      "CA07",
+      "CA08",
+      "CA09",
+      "CA14"
+    ],
+    "purpose": "보스별 전용 코드 없이 단계·패턴·스킬·형태·작업 반응을 데이터로 구성한다.",
+    "tasks": "기존 compiled phase/behavior/pattern/state/task 구조를 유지·확장한다. 명시 스킬 호출과 완료/실패/중단 결과, 조준 방향, 상태 소유 modifier/profile 교체, targetability·피해 허용 조건, field-work 완료 신호, 카운터/시간 조건을 도입한다. FixedSequence를 유지하고 필요한 Priority/Weighted selection은 구현·검증 후 공개한다. 상태 capability 충돌·결과 mapping·zero-time loop·recursive summon 검증을 재사용한다. 스킬·피해 kernel, 웨이브 진행, 전투 결과 권한을 보스 interpreter가 침범하지 않게 한다.",
+    "references": "core_enhanced/src/game/data/boss_runtime_data.rs; battle/core/boss_runtime.rs::admit_state_tasks, boss_runtime_allows_combat_action, run_boss_runtime_boundary; combat_setup/boss_runtime.rs; data/pve_data.rs::PveFieldWorkCompletionEffectData; battle/core/field_work.rs; wave_runtime.rs",
+    "policy_gates": "PG03, PG04, PG06. 여러 HP 임계치 통과 시 피해 보존, 변신 완료 시 단계 skip, 작업 결과 우선순위.",
+    "acceptance": "T17. 아무 것도 없는에서 임계치 초과 피해가 사라지지 않고 죽기 전에 다음 형태를 강제로 유지하지 않는다. 정지 보스도 명시 방향으로 스킬을 사용한다. 포큐버스 작업 사건이 상태·강화 행동에 연결된다. 잘못된 graph는 게시 전에 거부된다.",
+    "forbidden": "보스 이름별 행동 분기, 모든 것을 단일 스킬 VM으로 이동, 미구현 selector를 enum 존재로 지원 처리, 단순 profile 교체에서 유닛 HP/처치 identity 재생성.",
+    "deliverable": "보스 작업 확장과 원문 구조 기반 RON prototype, graph·cancel·wave 통합 검증.",
+    "architecture": [
+      "05_BOSS_AUTHORING.ko.md",
+      "03_RUNTIME.ko.md",
+      "08_WORKED_EXAMPLES.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K04",
+      "K05",
+      "K06",
+      "K09",
+      "K10"
+    ],
+    "choice": "Encounter→Phase→Behavior→Pattern→State→Task 구조를 확장하고 Task는 typed ActionService와 handle로 연결한다. boss blackboard는 scope·writer·type이 있는 상태다.",
+    "rationale": "보스마다 스킬 실행 의미를 따로 만들거나 스킬과 wave authority를 모두 boss에 넣지 않으면서 커뮤니티 패턴 재사용을 지원하기 위해서다.",
+    "investigate": "현재 compiler·task admission·RouteCombat gate·microstep/cancel·phase timing·query·summon/wave·field-work와 trace를 종단 조사한다. 새 CastSkill을 어느 공개/내부 포트로 요청할지 확인한다. CA16.1–CA16.4 각각이 CA07/08/09/14의 어느 결과를 소비하는지 검토한다. 기본 스킬 요청·결과·취소에 설치물·공유 보호 전체를 불필요하게 선행시키지 않고, 반대로 소환·전장 기믹의 필수 소비자를 누락하지 않는다. 분할 가능성은 코드와 중간 상태 근거로 판단한다.",
+    "design": "보스 authoring/compiled/runtime shape, TaskRequest/Result closed schema, milestone/cancel/failure 표, blackboard scope·typed parameters, state/phase arbitration, selector·signal/wave 매핑.",
+    "slices": "CA16.1 graph/descriptor → CA16.2 ActionHandle/cancel/방향 → CA16.3 forms/conditions/selection → CA16.4 signals/multi-actor/wave/trace.",
+    "extra_acceptance": "E02의 release vs settled, t50/t150 cancel, stale completion, C03 HP skip, C07 작업 억제, failed task route와 보스 data-only holdout을 필수로 둔다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA17",
+    "name": "등록·획득·공식 규칙 교체·전투력 연결",
+    "stage": "M6",
+    "dependencies": [
+      "CA10",
+      "CA11",
+      "CA12",
+      "CA16"
+    ],
+    "purpose": "새 콘텐츠가 카탈로그에만 존재하지 않고 테스트·런의 등장/획득 경로까지 연결되게 한다.",
+    "tasks": "새 조우·장비·파편·유물의 명시적인 등록/제거/교체와 reward/shop/encounter 참조를 지원한다. 하나의 환상체가 복수 fragment identity를 제공하는 경로와 ClaimAll/선택 결과가 결정된 경우의 지원을 검토한다. 공식 policy profile과 custom profile을 구분하고 공식이라는 이유의 교체 금지는 두지 않는다. 활성 effective plan을 Certified 전투력의 입력으로 연결하되 가중·정확한 산식은 승인 규칙을 사용한다. 프로필이 바뀌면 관련 캐시·전투력 fingerprint도 갱신한다.",
+    "references": "core_enhanced/src/game/reward.rs::GrantExecutor; world/grant_state.rs; encounter_progression.rs; data/pve_data.rs; data/run_policy_data.rs; world/node_flow.rs; world/shop.rs; combat_power.rs::certified_combat_power_for_roster; world/snapshot.rs",
+    "policy_gates": "PG06 획득·선택, PG08 전투력. 공식 드롭 빈도 미정은 test-only 획득 recipe와 분리하며 임의 출시 수치로 확정하지 않는다.",
+    "acceptance": "T18. 새 pack의 보스 등장→전투→일반 grant→보유/장착 경로가 콘텐츠 ID hardcode 없이 작동한다. 삭제한 콘텐츠의 dangling reward 참조는 진단된다. 비활성 유물은 활성 효과로 평가되지 않는다.",
+    "forbidden": "신규 ID allowlist, 특정 공식 카탈로그 개수를 범용 loader 필수조건으로 유지, 모든 유물 획득안을 이번 요청의 승인으로 간주, 무관한 경제 전면 재작성.",
+    "deliverable": "등록·획득 확장과 core 단위 E2E, 공식/custom rule 구분, 승인 모델의 전투력 입력 검증.",
+    "architecture": [
+      "01_SYSTEM.ko.md",
+      "06_PACKS_AND_TOOLS.ko.md",
+      "04_COMPOSITION.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K03",
+      "K07",
+      "K09"
+    ],
+    "choice": "콘텐츠 등록·보상 연결은 최종 catalog의 typed 참조로 관리하고 effective plan을 전투력 평가 입력으로 제공한다. 공식 정책은 rule profile이다.",
+    "rationale": "정의는 만들 수 있지만 플레이에서 등장/획득하지 못하거나 공식 ID whitelist가 창작을 막는 것을 방지하기 위해서다.",
+    "investigate": "reward source uniqueness·복수 파편 관계, grant transaction, node/shop/encounter 등록, certified 계산과 캐시·저장 버전을 조사한다.",
+    "design": "등록/replace/remove 의미, reward 선택·commit payload, 소유/형태 전달, effective plan→평가 요약 포트, 모델 version과 미정 weight 처리.",
+    "slices": "등록 참조 → 정상 grant/loadout → replacement → 전투력 입력·승인 모델 → E2E.",
+    "extra_acceptance": "미정 공식 공급정책과 test-only grant를 분리한다. 신규 보스를 정상 포트로 플레이해 얻은 사본이 장착·저장에 연결된다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA18",
+    "name": "파편 침식과 직원 대가의 특수 경계",
+    "stage": "M6",
+    "dependencies": [
+      "CA06",
+      "CA09",
+      "CA10",
+      "CA13",
+      "CA16"
+    ],
+    "purpose": "일반 효과와 구분되는 침식 처형을 도입하면서 wave·결과·직원 상태의 정확성을 보존한다.",
+    "tasks": "일반 시전 자격과 실제 실행 시점을 연결해 trauma 임계·공명·대상 파편 조건을 평가한다. 공식 최종 보스 파편 제외·세트 무관을 유지한다. 직원 Withdrawn, 현재 전장 적의 집합 캡처·kill finalize, 부가 trigger 억제, attempt trauma100 반영을 결과 확정 전에 처리한다. 미출현 wave를 제거하지 않는다. 코어의 강제 연출 정지와 host elapsed 입력을 battle-time/배속과 분리하고 읽기만 허용한다. Breakdown node countdown·회복·사망을 최신 승인 정책에 연결한다. 침식된 유물 variant와 별도 기능으로 유지한다.",
+    "references": "core_enhanced/docs/tmp/ego_corrosion_system_design_notes_2026-08-19.ko.md; src/game/world/combat.rs; battle/core/sim.rs의 시전 경계; battle/core/death_runtime.rs; wave_runtime.rs; world/state.rs::BattleEmployeeAttemptState; employee.rs; world/node_flow.rs; src/application.rs",
+    "policy_gates": "PG04, PG06, PG09. 임계치·연출 길이·동시 노드 회복/사망 순서는 미정 숫자/의미를 분리한다.",
+    "acceptance": "T19. Pause 입력만으로 침식하지 않는다. 일반 damage amplifier·OnKill·적 OnDeath 없이 현재 적 처치가 wave에 반영된다. 전투가 즉시 끝나도 직원 대가가 한 번 반영된다. 강제 정지 중 mutation 실패는 무변경이며 release된 기존 projectile 수명은 기존 정책을 따른다.",
+    "forbidden": "거대 damage나 Despawn을 처형으로 대체, 무조건 승리, 시각용 소환에 wave authority 부여, game_server/Unity 구현 및 네트워크 통합 PASS 주장.",
+    "deliverable": "코어 침식 처리와 forced-clock 계약, fake host clock·terminal·직원 상태 검증. 실제 영상·클라이언트 재생은 제외.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "05_BOSS_AUTHORING.ko.md"
+    ],
+    "contracts": [
+      "K04",
+      "K06",
+      "K09"
+    ],
+    "choice": "침식은 일반 damage flow가 아닌 특수 cast replacement transaction이며 DeathReceipt의 bookkeeping과 부가 effect dispatch를 분리한다.",
+    "rationale": "거대한 Damage/Despawn으로 표현하면 증폭·OnKill·wave 진행·직원 대가 중 일부가 잘못 처리되기 때문이다.",
+    "investigate": "pause 중 cast 접수/실행, resonance commit, withdraw cleanup, death/wave/terminal ordering, attempt trauma/Breakdown/result와 clock 포트를 읽는다.",
+    "design": "실제 대체 지점, target set snapshot, cost·withdraw·trauma·kill transaction, effect suppression 종류별 matrix, forced host-clock 입력, terminal guard와 node collapse.",
+    "slices": "cast gate → special kill path → attempt 대가 → clock → wave/result/Breakdown 조합.",
+    "extra_acceptance": "죽음을 관찰하는 모든 subscriber를 무작정 끄지 않는다. wave·필수 bookkeeping은 유지하고 금지된 전투 부가 효과만 억제한다. kill과 전체 승리를 구분한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA19",
+    "name": "결과·후퇴·저장·재접속의 통합 정합성",
+    "stage": "M6",
+    "dependencies": [
+      "CA15",
+      "CA17",
+      "CA18"
+    ],
+    "purpose": "각 단계에서 추가한 상태의 내구·복원 경로를 종단 간 검증하고 동일 데이터 세대만 소비하게 한다.",
+    "tasks": "Run 사본 상태·선택 형태·장착·자원을 최신 checkpoint에 포함하고 compiled 정의는 저장하지 않는다. 콘텐츠 세대 fingerprint와 실행 계약 버전, id 참조·소유 양방향을 검증한다. 신규 포맷만 읽고 mismatch는 명시적으로 거부한다. 메모리 내 이전 런 세대 보존과 legacy schema 지원을 혼동하지 않는다. battle result의 run-local delta를 source copy에 정확히 한 번 commit하며 defeat/retry/retreat를 구분한다. bounded 로그를 지워도 필요한 인과·자원 상태는 유지한다. 같은 프로세스 재접속은 현재 active battle의 조회·pause/resume이지 저장 지점 load가 아니다.",
+    "references": "core_enhanced/src/game/world/state.rs::RunCheckpointPayload, BattleEntrySnapshot, ActiveBattleSession; world/active_run.rs; world/combat.rs; world/application.rs; world/snapshot.rs; src/application.rs::ApplicationCheckpoint",
+    "policy_gates": "PG05, PG07. 다른 최신 팩으로 바뀐 저장을 자동 재바인딩하지 않는 것이 기본안이다. 임의의 기존 파일 삭제는 금지.",
+    "acceptance": "T20. 저장/로드 round-trip에서 사본 구분과 형태·재료·Run 자원이 보존된다. 동일 ID의 내용이 바뀌어 fingerprint가 다르면 불러오기 실패가 무변경이다. retreat는 진입 전 자원·UUID·이력을 복원하고 retry는 새 attempt다.",
+    "forbidden": "여러 구세대 reader, 자동 데이터 복구, 진행 전투 전체 durable save 확대, 저장 버전만 맞으면 다른 pack을 허용, 모든 저장 작업을 이 단계까지 미루기.",
+    "deliverable": "최신 저장 계약 및 수명 경계 시험. CA04 이후 각 작업은 이미 자기 상태의 저장/복원을 함께 갱신해야 하며 이 작업은 최종 합성 검증이다.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "06_PACKS_AND_TOOLS.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K03",
+      "K05",
+      "K06"
+    ],
+    "choice": "런 사본 state와 attempt overlay를 분리하고 result delta는 source copy에 정확히 한 번 commit한다. 저장은 content fingerprint를 검증해 재바인딩한다.",
+    "rationale": "compiled index를 저장하거나 ID만 같은 다른 정의를 복원하면 효과 구성·자원·진행이 달라지기 때문이다.",
+    "investigate": "RunCheckpointPayload·BattleEntrySnapshot·active_run·ApplicationCheckpoint와 result/retreat/retry/reconnect 실제 경로를 확인한다.",
+    "design": "current save schema, stable refs·content 계약, result idempotency key, restore validation plan, lifetime matrix와 commit 원자성, mismatch 오류.",
+    "slices": "각 CA 상태 receipt 대조 → source delta → save roundtrip → rollback/reconnect → mismatch.",
+    "extra_acceptance": "새 저장 포맷은 각 상태 도입 때 동반하며 이 작업까지 미루지 않는다. 기존 파일 삭제 없이 mismatch를 거부한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA20",
+    "name": "대표 공식 콘텐츠의 실제 RON 이식",
+    "stage": "M7",
+    "dependencies": [
+      "CA15",
+      "CA16",
+      "CA19"
+    ],
+    "purpose": "합의된 공식 구조를 최신 데이터로 작성하고 실제 실행 증거를 확보한다.",
+    "tasks": "C01–C07을 대상으로 작성·로딩·시전/패턴·결과·추적을 연결한다. 초기 prototype을 각 선행 CA 단계에서 이미 실행하고 이 단계는 최신 경로로 통합한다. 원문 근거와 합의/제안/미정 상태, 시험 수치·policy profile을 각 파일에 연결한다. 공식 이름으로 구형 placeholder를 유지하거나 테스트 전용 값을 공식 밸런스로 승격하지 않는다. 원문의 기본/개화·서로 다른 파편·보스와 보상을 분리한다. 세부 미정이 남은 prototype은 완성 콘텐츠로 표시하지 않는다.",
+    "references": "core_enhanced/docs/skills/*.md의 선정한 원문; game_resources/data의 새 공식 pack; live_data 배포 경로; CA03 runner; tests/ron_loading.rs; tests/skill_runtime_contract.rs; tests/live_item_skill_activation.rs; tests/live_skill_catalog_audit.rs",
+    "policy_gates": "각 C 사례의 PG blocker. 동작을 바꾸는 미정 정책이 남은 사례는 실제 통과한 하위 계약까지만 기록한다.",
+    "acceptance": "T21. 최소 두 구조가 다른 보스와 장비·파편·유물이 외부 RON→공통 compile→runtime→결과로 실행된다. C 목록의 각 기대 결과와 로그/상태 receipt가 연결된다. 코어에 해당 콘텐츠 이름을 분기하는 코드가 없어야 한다.",
+    "forbidden": "RON 없이 코드 builder fixture만 성공, placeholder 결과를 정식 구조로 간주, 모든 공식 콘텐츠 전량 이식을 강제, 구조 구현 대신 과도한 특별 enum 추가.",
+    "deliverable": "실제 C01–C07 RON과 실행 receipt, 원문 대조표, 전체 요구 표현력 갭의 재검토.",
+    "architecture": [
+      "08_WORKED_EXAMPLES.ko.md",
+      "05_BOSS_AUTHORING.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K03",
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "K08",
+      "K09",
+      "K10"
+    ],
+    "choice": "C01–C07을 최신 팩에 실제 저작하고 source→compiled→runtime→result의 의미 대응표를 남긴다. 각 선행 단계의 prototype을 종단 통합한다.",
+    "rationale": "이름만 같은 placeholder나 private builder 시험으로 공식 설계 이식을 대신하지 않기 위해서다.",
+    "investigate": "선정 원문 최신 절·승인/미정 기록과 해당 새 schema/compiled consumers·fixture를 대조한다. 콘텐츠 이름별 우회 코드를 검색한다.",
+    "design": "콘텐츠별 authoring graph·참조 목록·기대 trace·원문 대조표, prototype 수치 라벨, 하위 미정과 통과 범위, domain E2E 설정.",
+    "slices": "C01/02 → C03/04/05 → C06/07 → 교차 조합 → 모든 원문 coverage 재검토.",
+    "extra_acceptance": "두 구조가 다른 보스가 실제 pattern/task에서 실행되어야 한다. 전체 장비세트·연출 완성으로 확대하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA21",
+    "name": "제3자 관점의 재조합 인수",
+    "stage": "M7",
+    "dependencies": [
+      "CA20"
+    ],
+    "purpose": "공식 사례에 맞춘 엔진이 아니라 지원 어휘를 재사용할 수 있는 제작 기반임을 입증한다.",
+    "tasks": "CA20 이후 엔진 revision을 고정한다. 다른 작성 AI/작성자는 descriptor·작성 문서·검증기만 보고 새로운 ID와 별도 팩으로 보스/장비/파편/유물을 만든다. 임의의 새 공식 유물 lore가 아니라 시험용 조합으로, 기존 두 기능군을 교차 연결한다. source·namespace를 바꾸고 다른 팩의 효과도 참조한다. 기존 팩 전체 제거/공식 교체와 진단 경로도 검증한다. 엔진 patch가 필요하면 누락 capability를 일반 기능 작업으로 되돌리고, 고정 revision부터 인수 시험을 다시 수행한다.",
+    "references": "CA03 describe/validate/explain/simulate; CA12 composition; CA13 chains; CA17 registration; 별도 authoring acceptance packs(제안 경로)",
+    "policy_gates": "새 gameplay 발명은 하지 않는다. 기존에 승인된 기능 조합과 테스트 입력만 사용한다.",
+    "acceptance": "T22. 네 도메인별 신규 콘텐츠와 교차 조합이 엔진 소스 무변경으로 동작한다. 비확률 시험에서 source 이름 변경으로 특정 콘텐츠 실행 분기가 생기지 않는다. 동일 ID·seed·환경의 결정론은 별도 검증한다. 작성자는 private 내부 타입 생성이나 core compile 우회 없이 오류를 수정할 수 있다.",
+    "forbidden": "공식 RON 이름만 바꾼 복제를 재조합 전부로 간주, acceptance 작성자가 engine code에 특례 추가, wrapper 전용 코드가 RON을 대행.",
+    "deliverable": "동결 revision, 작성자가 실제 수정한 data-only diff, 재조합 팩·실행 결과·불편/진단 실패 목록.",
+    "architecture": [
+      "05_BOSS_AUTHORING.ko.md",
+      "06_PACKS_AND_TOOLS.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K03",
+      "K07",
+      "K09",
+      "K10"
+    ],
+    "choice": "engine revision을 고정하고 별도 작성자는 public authoring 계약과 RON만 사용한다. 보스의 신규 상태/패턴+기믹+실패 route를 별도 필수 항목으로 둔다.",
+    "rationale": "공식 사례 전용의 숨은 이름 분기나 wrapper code를 찾아내려면 제작 과정을 엔진 개발과 분리해야 하기 때문이다.",
+    "investigate": "동결 revision·source hash·도구 사용법·기능 목록·데이터 diff를 확인한다. 첫 작성자와 검토자가 같은 경우 독립성 한계를 표시한다.",
+    "design": "네 도메인 holdout 입력·allowed data-only paths, cross-pack 참조/교체, boss trace 기대값, 실패 진단 사용 기록, engine patch 시 재동결 절차.",
+    "slices": "동결 → 독립 authoring → 검증/진단 수정 → 실행 → data-only diff 감사.",
+    "extra_acceptance": "ID 변경 RNG는 비확률 fixture로 비교하고 동일 seed/ID/환경 결정론을 별도로 시험한다. 새 스킬 두 개·기믹 사건을 조합한 보스를 이름 복사로 대신하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA22",
+    "name": "실행량·결정론·회귀·성능 검증",
+    "stage": "M8",
+    "dependencies": [
+      "CA21"
+    ],
+    "purpose": "자유로운 조합이 잘못된 데이터·과도한 발생량·비결정론으로 코어를 망가뜨리지 않게 한다.",
+    "tasks": "parser depth/파일 수·크기/정의 수, compiled graph 크기, 동시 effect/area/projectile/object, branch fan-out, same-time microstep, retained state/history 등 예산을 계측한다. 숫자는 목표 환경·baseline으로 정하고 피해 증폭 상한과 구분한다. 검증기에서 가능한 위험은 사전 거부하고 runtime 초과는 typed failure와 원래 상태 보존을 제공한다. 정렬·pack 탐색·hash map·진단 on/off로 RNG/결과가 달라지는지 확인한다. 기존 clone/lookup/전체 검색 비용을 측정하고 필요한 지점만 인덱스·캐시로 개선한다. schema 추가마다 descriptor·validator·executor·diagnostic 일치 검사와 property/metamorphic 시험을 둔다.",
+    "references": "core_enhanced/src/game/battle/core/boss_runtime.rs::run_boss_runtime_boundary; triggers.rs::collect_item_trigger_payload; battle/core/sim.rs; battle/event_log.rs; data/live_ron.rs; determinism.rs; Cargo.toml; tests/",
+    "policy_gates": "PG08. 측정 환경·workload·허용치가 없으면 성능 합격을 주장하지 않는다.",
+    "acceptance": "T23. 분기/소환/틱 폭증이 조용한 효과 누락이 아니라 제어된 실패로 종료되고 rollback이 성립한다. 동일 seed·입력·resolved pack은 동일 trace/state다. 기능별·통합·release 로딩·회귀 테스트와 계측값을 기록한다.",
+    "forbidden": "숫자 없는 “성능 충분” 판정, 오류를 성공으로 숨김, 전체 워크스페이스 서버 통합 성공 주장, 밸런스 상한으로 안전 예산 대체.",
+    "deliverable": "부하 모델·결정론/예산/회귀 결과, 실제 profile 기반 수정, 남은 범위·실패·환경 제약.",
+    "architecture": [
+      "03_RUNTIME.ko.md",
+      "06_PACKS_AND_TOOLS.ko.md"
+    ],
+    "contracts": [
+      "K02",
+      "K03",
+      "K05",
+      "K06",
+      "K08",
+      "K10"
+    ],
+    "choice": "입력/정의/instance/event/microstep 예산을 초기 기능부터 구현하고, 이 작업은 통합 부하·결정론·회귀와 측정 후 최적화를 소유한다.",
+    "rationale": "피해 상한이나 silent drop으로 런타임 폭증을 가리는 것은 자유도와 정확성을 함께 손상시키기 때문이다.",
+    "investigate": "핫 경로·clone·lookup·histories·generation refs·RNG·queue order·오류 boundary를 profile로 확인한다. 기존 baseline 실패를 분리한다.",
+    "design": "현실/적대 workload, 측정 하드웨어·build·time step, 수치 기준, semantic trace 비교·fault/rollback 기대값, 최적화 전후 receipts.",
+    "slices": "회귀/결정론 → peak 부하/예산 → profile → 필요한 최적화 → 재검증·holdout 유효성 확인.",
+    "extra_acceptance": "최적화가 실행 의미나 계약을 바꾸면 CA21 evidence도 다시 획득한다. 전체 연쇄 과거를 되감는다고 주장하지 않고 공개 atomic boundary에서 fault를 처리한다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  },
+  {
+    "id": "CA23",
+    "name": "독립 완료 감사와 제작 기반 인계",
+    "stage": "M8",
+    "dependencies": [
+      "CA22"
+    ],
+    "purpose": "목표·원문·데이터·실행 증거를 대조해 제작 기반의 완료 여부를 판단한다.",
+    "tasks": "COVERAGE의 모든 고정 baseline 요구를 재검토한다. supported에는 compiler/consumer/fixture/evidence가 있어야 하고 blocked/policy-pending은 완료로 바꾸지 않는다. dependency/정책 gate/forbidden diff/legacy 경로/문서·코드 일치/외부 비범위를 독립 검토한다. 각 CA의 실제 revision·test 수·명령·artifact를 확인한다. capability를 추가할 때 필요한 descriptor/schema/validation/runtime/test/diagnostic 작성 순서를 문서화한다. 신규 작성자가 SDK 포트를 사용하는 최소 예제를 최종 인계한다.",
+    "references": "ROADMAP, POLICY_GATES, COVERAGE, ACCEPTANCE, 각 CA 실행 기록; core_enhanced/docs의 최신 canonical; 최신 code/data; CA21 data-only diff와 CA22 receipts",
+    "policy_gates": "필수 완료 조건에 필요한 미해결 PG는 complete를 막는다. 공식 획득 빈도·미승인 개별 콘텐츠 밸런스 등 범위 밖 항목은 미정으로 명시해 둘 수 있다.",
+    "acceptance": "T24. 외부 최신 RON 다중 팩, 네 도메인 제작·교체·등록, 효과 변형·연쇄, 사본·상태 수명, 침식 예외, 공통 도구, 재조합 data-only 검증이 모두 증거를 가진다. 미해결 공통 기능이 남으면 부분 완료로 보고한다.",
+    "forbidden": "코드 존재=완료, 일부 대표 사례 성공=전체 표현력 증명, 실행하지 않은 결과·감사 복사, 자동 구버전 지원 부활.",
+    "deliverable": "COMPLETION_REVIEW 기반 최종 verdict와 인계 문서. “엔진 제작 기반 완료”, “공식 전체 콘텐츠 이식 완료”, “조합기/클라이언트 출시 완료”를 서로 다른 주장으로 분리한다.",
+    "architecture": [
+      "01_SYSTEM.ko.md"
+    ],
+    "contracts": [
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "K08",
+      "K09",
+      "K10"
+    ],
+    "choice": "요구 COV와 P/R/L 결정, 현재 K revision·실행 receipt를 연결해 최종 verdict를 낸다. 문서 존재와 구현 완료를 구분한다.",
+    "rationale": "부분 예제 성공만으로 전체 제작 기반을 완료 처리하거나 architecture와 code의 drift를 숨기지 않기 위해서다.",
+    "investigate": "모든 실제 작업의 design review/delta·code/data/test receipt·남은 PG·변경 범위를 현재 revision에서 확인한다.",
+    "design": "조건별 evidence matrix, 구현 아키텍처 요약, 실제 public 작성 계약·extension 절차, 미지원·미정·비범위 구분, 독립 감사 주체.",
+    "slices": "coverage → K 정합성 → 실제 인수/회귀 → leftover legacy/특례 → 최종 문서·verdict.",
+    "extra_acceptance": "미해결 필수 기능·gate가 있으면 부분 완료다. 프로젝트·클라이언트 전체 완료, 실행하지 않은 feature/performance 통과를 주장하지 않는다.",
+    "planning_version": "2.1",
+    "execution_state": "not_executed",
+    "design_entry": "CA00 이후 전체 R 설계 참조 가능. DG 전 관련 실제 K 계약 revision·생산자·소비자를 확인한다.",
+    "dependency_semantics": "planning_candidates_only_not_execution_gate",
+    "dependency_evidence_ref": null,
+    "dependency_note": "이 배열은 후보다. 선택 범위 P2G-20/40의 근거·current Phase Plan과 GEX 선행 결과로 실제 인수 순서를 판정한다. 이번 문서 개정은 코드 의존성 전수 검토가 아니다.",
+    "execution_state_scope": "roadmap_authoring_only_not_repository_status"
+  }
+]

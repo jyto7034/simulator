@@ -1,12 +1,14 @@
 //! Certified combat power derived only from persistent roster and loadout state.
 
+use serde::Serialize;
+use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 use crate::game::{
     battle::types::{effective_basic_attack_tile_range, UnitCombatProfile},
     behavior::GameError,
     combat_setup::player_spawns::certified_combat_profile_for_employee,
-    data::{run_policy_data::CertifiedCombatPowerWeights, GameDataBase},
+    data::{run_policy_data::CertifiedCombatPowerWeights, GameDataBase, ValidatedGameData},
     employee::EmployeeRoster,
     resources::Inventory,
     skill_fragment::SkillFragmentInventory,
@@ -17,6 +19,15 @@ pub struct CertifiedCombatPower {
     pub power_model_version: u32,
     pub total: u64,
     pub members: Vec<CertifiedEmployeePower>,
+}
+
+/// Input identity is distinct from the existing power formula. SpellPower is
+/// recorded but has no certified weight until a later model is approved.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct CertifiedInputFingerprint {
+    pub schema_version: u32,
+    pub sha256: String,
+    pub spell_power_evaluation_model_pending: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -36,7 +47,7 @@ pub fn certified_combat_power_for_roster(
         .iter()
         // Certification represents the whole roster that can enter combat now.
         // Magnitudes inside the eligible boundary remain readiness-only inputs.
-        .filter(|employee| employee.is_combat_eligible())
+        .filter(|employee| employee.is_battle_deployable())
         .collect::<Vec<_>>();
     employees.sort_by_key(|employee| *employee.uuid.as_bytes());
 
@@ -57,6 +68,70 @@ pub fn certified_combat_power_for_roster(
         power_model_version: policy.power_model_version,
         total,
         members,
+    })
+}
+
+/// Read-only input projection using the same persistent profile authority as power.
+pub fn certified_input_fingerprint_for_roster(
+    roster: &EmployeeRoster,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &ValidatedGameData,
+) -> Result<CertifiedInputFingerprint, GameError> {
+    let mut employees = roster
+        .iter()
+        .filter(|employee| employee.is_battle_deployable())
+        .collect::<Vec<_>>();
+    employees.sort_by_key(|employee| *employee.uuid.as_bytes());
+    let mut inputs = Vec::with_capacity(employees.len());
+    for employee in employees {
+        let profile =
+            certified_combat_profile_for_employee(employee, inventory, skill_fragments, game_data)?;
+        let copies = employee
+            .loadout
+            .item_slot
+            .iter_with_address()
+            .map(|(slot, binding)| {
+                let owned = inventory
+                    .equipments
+                    .get_item(&binding.instance_uuid)
+                    .ok_or(GameError::InventoryItemNotFound)?;
+                Ok((
+                    slot,
+                    binding.instance_uuid,
+                    binding.base_uuid,
+                    owned.enhancement_level,
+                ))
+            })
+            .collect::<Result<Vec<_>, GameError>>()?;
+        let fragment_copy = employee
+            .skill_fragments
+            .active_copy_uuid()
+            .map(|id| skill_fragments.get(&id).ok_or(GameError::InvalidAction))
+            .transpose()?;
+        inputs.push(
+            crate::game::data::content_pack::canonical::bytes(&(
+                employee.uuid,
+                employee.level,
+                &profile,
+                &employee.combat_profile.growth_stacks,
+                copies,
+                &employee.skill_fragments,
+                fragment_copy,
+            ))
+            .map_err(|e| GameError::InvalidStaticData(format!("certified input encoding: {e}")))?,
+        );
+    }
+    let bytes = crate::game::data::content_pack::canonical::bytes(&(
+        "certified_input_v1",
+        game_data.identity(),
+        inputs,
+    ))
+    .map_err(|e| GameError::InvalidStaticData(format!("certified input encoding: {e}")))?;
+    Ok(CertifiedInputFingerprint {
+        schema_version: 1,
+        sha256: format!("{:x}", Sha256::digest(bytes)),
+        spell_power_evaluation_model_pending: true,
     })
 }
 
@@ -90,7 +165,13 @@ fn certified_power_for_profile(
         .saturating_add(i128::from(health))
         .saturating_add(i128::from(attack))
         .saturating_add(
-            i128::from(profile.block_capacity) * i128::from(weights.block_capacity_per_unit),
+            i128::from(
+                profile
+                    .weapon_profile
+                    .as_ref()
+                    .map(|weapon| weapon.block_capacity)
+                    .unwrap_or(0),
+            ) * i128::from(weights.block_capacity_per_unit),
         )
         .saturating_add(
             i128::try_from(range_cells).unwrap_or(i128::MAX)
@@ -126,6 +207,8 @@ fn saturating_u128_to_u64(value: u128) -> u64 {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use super::*;
     use crate::game::{
         ability::SkillId,
@@ -135,11 +218,56 @@ mod tests {
                 ConsumableDurationPolicy, ConsumableEffect, ConsumableMetadata,
                 ConsumableTargetPolicy, ConsumableTier,
             },
+            equipment_data::{EquipmentMetadata, EquipmentType, WeaponCombatProfile},
             GameDataBuilder,
         },
         employee::{Employee, EmployeeCondition, MAX_PHYSICAL_DAMAGE, MAX_TRAUMA},
         enums::RiskLevel,
+        resources::{item_slot::EquippedRef, OwnedEquipment},
+        stats::TriggeredEffects,
     };
+
+    fn certification_weapon() -> EquipmentMetadata {
+        EquipmentMetadata {
+            id: "certification_weapon".to_string(),
+            uuid: Uuid::from_u128(0xCE47_1F1C_A710_0001),
+            name: "Certification Weapon".to_string(),
+            equipment_type: EquipmentType::Weapon,
+            rarity: RiskLevel::ZAYIN,
+            price: 0,
+            allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
+            triggered_effects: TriggeredEffects::default(),
+            ability_activations: vec![],
+            weapon_profile: Some(WeaponCombatProfile::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
+        }
+    }
+
+    fn arm_employee(
+        employee: &mut Employee,
+        inventory: &mut Inventory,
+        weapon: &EquipmentMetadata,
+    ) {
+        let instance_uuid = employee.uuid;
+        let mut owned = OwnedEquipment::new(instance_uuid, Arc::new(weapon.clone()));
+        owned.equipped_to = Some(employee.uuid);
+        inventory.equipments.add_item(owned).unwrap();
+        employee
+            .loadout
+            .item_slot
+            .equip(
+                EquippedRef {
+                    instance_uuid,
+                    base_uuid: weapon.uuid,
+                    equipment_type: EquipmentType::Weapon,
+                },
+                weapon.allow_duplicate_equip,
+            )
+            .unwrap();
+    }
 
     #[test]
     fn provisional_formula_is_sensitive_to_every_authored_quantitative_input() {
@@ -172,7 +300,12 @@ mod tests {
         assert!(certified_power_for_profile(&profile, 1, weights) > baseline_power);
 
         let mut profile = baseline.clone();
-        profile.block_capacity += 1;
+        profile
+            .apply_weapon_profile(&WeaponCombatProfile {
+                block_capacity: 1,
+                ..WeaponCombatProfile::default()
+            })
+            .unwrap();
         assert!(certified_power_for_profile(&profile, 1, weights) > baseline_power);
 
         let mut profile = baseline.clone();
@@ -189,12 +322,16 @@ mod tests {
 
     #[test]
     fn certification_is_deterministic_and_ignores_eligible_condition_magnitudes_and_current_hp() {
-        let game_data = GameDataBuilder::empty().build();
-        let inventory = Inventory::new();
+        let weapon = certification_weapon();
+        let game_data = GameDataBuilder::empty()
+            .with_equipment(vec![weapon.clone()])
+            .build();
+        let mut inventory = Inventory::new();
         let fragments = SkillFragmentInventory::new();
         let employee_uuid = Uuid::from_u128(7);
         let mut employee = Employee::new(employee_uuid, "certified", "Certified");
         employee.combat_profile.battle_profile.stats.current_health = 1;
+        arm_employee(&mut employee, &mut inventory, &weapon);
         let mut roster = EmployeeRoster::new();
         roster.add(employee.clone());
 
@@ -236,8 +373,10 @@ mod tests {
 
     #[test]
     fn certification_membership_matches_combat_eligibility_boundaries() {
-        let game_data = GameDataBuilder::empty().build();
-        let inventory = Inventory::new();
+        let weapon = certification_weapon();
+        let game_data = GameDataBuilder::empty()
+            .with_equipment(vec![weapon.clone()])
+            .build();
         let fragments = SkillFragmentInventory::new();
 
         for (physical_damage, trauma, expected_eligible) in [
@@ -253,6 +392,8 @@ mod tests {
             );
             let mut employee = Employee::new(employee_uuid, "eligibility", "Eligibility");
             employee.condition = EmployeeCondition::new(physical_damage, trauma);
+            let mut inventory = Inventory::new();
+            arm_employee(&mut employee, &mut inventory, &weapon);
             let mut roster = EmployeeRoster::new();
             roster.add(employee);
 
@@ -290,5 +431,78 @@ mod tests {
 
         assert_eq!(certified.total, 0);
         assert!(certified.members.is_empty());
+    }
+    #[test]
+    fn r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy() {
+        let mut weapon = certification_weapon();
+        weapon.weapon_profile.as_mut().unwrap().attack = 40;
+        weapon.weapon_profile.as_mut().unwrap().spell_power = 20;
+        let game_data: ValidatedGameData = Arc::new(
+            GameDataBuilder::empty()
+                .with_equipment(vec![weapon.clone()])
+                .build(),
+        )
+        .into();
+        let mut inventory = Inventory::new();
+        let fragments = SkillFragmentInventory::new();
+        let mut a = Employee::new(Uuid::from_u128(1), "a", "A");
+        let mut b = Employee::new(Uuid::from_u128(2), "b", "B");
+        arm_employee(&mut a, &mut inventory, &weapon);
+        arm_employee(&mut b, &mut inventory, &weapon);
+        let mut roster = EmployeeRoster::new();
+        roster.add(a.clone());
+        roster.add(b.clone());
+        let fingerprint = |r: &EmployeeRoster, i: &Inventory| {
+            certified_input_fingerprint_for_roster(r, i, &fragments, &game_data).unwrap()
+        };
+        let original = fingerprint(&roster, &inventory);
+        assert!(original.spell_power_evaluation_model_pending);
+        let power =
+            certified_combat_power_for_roster(&roster, &inventory, &fragments, &game_data).unwrap();
+        let mut reordered = EmployeeRoster::new();
+        reordered.add(b);
+        reordered.add(a.clone());
+        assert_eq!(original, fingerprint(&reordered, &inventory));
+        a.combat_profile.battle_profile.stats.current_health = 1;
+        a.condition = EmployeeCondition::new(3, 4);
+        reordered.add(a.clone());
+        assert_eq!(original, fingerprint(&reordered, &inventory));
+        a.combat_profile.battle_profile.stats.spell_power = 1;
+        reordered.add(a.clone());
+        assert_ne!(original, fingerprint(&reordered, &inventory));
+        assert_eq!(
+            power,
+            certified_combat_power_for_roster(&reordered, &inventory, &fragments, &game_data)
+                .unwrap()
+        );
+        a.combat_profile.battle_profile.stats.spell_power = 0;
+        let old_binding = a.loadout.item_slot.iter().next().unwrap().clone();
+        let new_uuid = Uuid::from_u128(77);
+        let mut owned = OwnedEquipment::new(new_uuid, Arc::new(weapon.clone()));
+        owned.equipped_to = Some(a.uuid);
+        inventory.equipments.add_item(owned).unwrap();
+        // Recreate the slot with the same definition and different persistent copy.
+        a.loadout
+            .item_slot
+            .remove_by_instance(old_binding.instance_uuid)
+            .unwrap();
+        a.loadout
+            .item_slot
+            .equip(
+                EquippedRef {
+                    instance_uuid: new_uuid,
+                    base_uuid: weapon.uuid,
+                    equipment_type: EquipmentType::Weapon,
+                },
+                true,
+            )
+            .unwrap();
+        reordered.add(a);
+        assert_ne!(original, fingerprint(&reordered, &inventory));
+        assert_eq!(
+            power,
+            certified_combat_power_for_roster(&reordered, &inventory, &fragments, &game_data)
+                .unwrap()
+        );
     }
 }

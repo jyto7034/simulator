@@ -1,0 +1,38 @@
+{
+  "kind": "Root semantic review before complete publication; not independent implementation audit",
+  "at": "2026-09-12T07:03:14.127167+00:00",
+  "reviewer": "/root",
+  "reviewed_body": {
+    "path": "core_enhanced/docs/goals/content_authoring_resource_lifetimes/CODE_REVIEW_001.ko.md",
+    "sha256": "eb695e0531ded6ea4dff1a3c3cee5cd549fde8dcf2564a8eb9b32784e6793fc1"
+  },
+  "reviewed_input": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CARL-P2G10-001",
+    "Content Digest": null
+  },
+  "findings": [
+    {
+      "id": "F01",
+      "classification": "technical_decision",
+      "finding": "Causal source currently reset in trigger/cast; action ordinal is not Chain authority.",
+      "disposition": "C02 requires separate registry/context through actual roots/finite children and source replacement; full R16 gameplay excluded."
+    },
+    {
+      "id": "F02",
+      "classification": "technical_decision",
+      "finding": "Result core removed before completion; floor reconstruction copies only named persistent fields.",
+      "disposition": "C06/C07 require terminal payload, staged result exactly once, floor-preserving root transfer and AT05."
+    },
+    {
+      "id": "F03",
+      "classification": "technical_decision",
+      "finding": "Starter grant precedes final roster; eager reconciliation inside grant could remove pending owners.",
+      "disposition": "C05 final application owner-graph reconciliation; sparse representation only with observable initial-value equivalence."
+    }
+  ],
+  "policy_semantics_changed": false,
+  "acceptance_mapping_complete": true,
+  "blocking_findings": [],
+  "no_new_runtime_pass": true
+}

@@ -1,0 +1,283 @@
+{
+  "stage": "P2G-30",
+  "status": "complete",
+  "Final Policy Freeze Ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CIOB-001",
+    "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+  },
+  "Freeze Membership Set": [
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-01-REVIEWED-001",
+        "Content Digest": "sha256:2f7a91d9afbe6c7bc10195a98df7b3d708ab34cc8c82b80269e1e95b66fcf38d"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-02-REVIEWED-001",
+        "Content Digest": "sha256:5bd40920431daf5d86760ff4c6c27334d8f0697767c341a6bc78ea15f8e900d5"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-03-REVIEWED-001",
+        "Content Digest": "sha256:195156f7b62f05aa42bc587dafcdbdd97690f1db7c9de9e8233564cfff58ca81"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-04-REVIEWED-001",
+        "Content Digest": "sha256:05e2bde5229bd493e98f9484bb3ae53a2606883a446cbe0c6f6bc8d573c2c66d"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-05-REVIEWED-001",
+        "Content Digest": "sha256:4137404f9a183ae0a81efe0b2ec6d772020d37787a41b338aa03e50effaa0547"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-06-REVIEWED-001",
+        "Content Digest": "sha256:63fc6f5da98e0b0e2f8dae818afea69a01f5fa2c23a3c3f93f8e420eb54acb13"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-07-REVIEWED-001",
+        "Content Digest": "sha256:154e637211c4c674cde21c7ae6c2661730f25d1a7d56d097b1ec698c73e53fc5"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-08-REVIEWED-001",
+        "Content Digest": "sha256:82e3c4a652caa5c5b4bc2cd6f05e0f2c01e49aaf0fbba7caf0faf59ce2417d85"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-09-REVIEWED-001",
+        "Content Digest": "sha256:da0455e8922dcd48428e76738f92abe3d2a21ff80704218481ad3142d29e6179"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-10-REVIEWED-001",
+        "Content Digest": "sha256:606913978ba139dc13b4cc5ef723b33f63b7e5d30d0acf620019712b2268e268"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-11-REVIEWED-001",
+        "Content Digest": "sha256:986fb1dc5cd7e5953f6887b5cea556d616b746e9c6571c285263d12f5f1b1642"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-12-REVIEWED-001",
+        "Content Digest": "sha256:232cda78f25ee003702459b0d8b71191673b0cacd4b61a3c14af3620fbca0a13"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-13-REVIEWED-001",
+        "Content Digest": "sha256:2e29f155bee3b49ee8b951375a3d169c6bb7a1081dab5cb2027ba1701e549af8"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-14-REVIEWED-001",
+        "Content Digest": "sha256:82cc503a0d081908cce1caacc39f84652b03ef652a7eb8264872c1e5ee5aa31e"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-15-REVIEWED-001",
+        "Content Digest": "sha256:5dd1037a4be0e36eaa393b00de0bcfad773e3d0b6e7d65224ad0d2ecf770137a"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-16-REVIEWED-001",
+        "Content Digest": "sha256:b3545dc2bf7eb0c3d5205721abc59aa82511cf058df31413d35807cb7e146679"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-17-REVIEWED-001",
+        "Content Digest": "sha256:96a013806c600a0a53810128b34dc77bb8760bedaae27c5dd0e652407f50a4d3"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-18-REVIEWED-001",
+        "Content Digest": "sha256:c8ce70db7c094ba3ab9464e276f04d12ed2a3e1583e428465efcb7f2e379f343"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-19-REVIEWED-001",
+        "Content Digest": "sha256:74e460307af1188d5314c7afb5a9f41a7ebf4a08c48c9fadaa1b9d976ca97362"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CIOB-001",
+        "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CIOB-20-REVIEWED-001",
+        "Content Digest": "sha256:2c506fc816b6293159ffe76766905576773521df44a5cac402d45c159edc8958"
+      }
+    }
+  ],
+  "P2G-30 Resolution Record Ref Set": [],
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CIOB-003",
+      "Content Digest": "sha256:b9f65c193e4cb512a5d6c41224896a65f3e4a0b12f8b66c2f6acafc457976f60"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CIOB-001",
+      "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+    },
+    "Phase Plan Ref": null,
+    "Goal Set Ref": null,
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "All Applicable Change Obligations Resolved": true,
+  "checks": {
+    "exact20_members": true,
+    "acceptance_projection_exact": true,
+    "binding_coverage_complete": true,
+    "146_sources_current": true,
+    "no_open_question": true
+  },
+  "Current Planning Freeze Selection": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CIOB-001",
+    "Content Digest": "sha256:9e113e8dc19ddd7e811cbad1769dcbffc8c6730df4f6a80753c87804935c9e61"
+  },
+  "next": "P2G-40"
+}

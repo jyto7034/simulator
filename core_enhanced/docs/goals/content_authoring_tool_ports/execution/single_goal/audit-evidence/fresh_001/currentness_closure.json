@@ -1,0 +1,240 @@
+{
+  "at": "2026-09-10T17:46:52.679836+00:00",
+  "pass": "closure",
+  "targets": [
+    {
+      "target": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/AUDIT_TARGET_001.json",
+      "target_sha256": "030f634b050c9bf6a292d4a61ac6308e80cd73c093fca5593cb7d575c61dc4b1",
+      "manifest_members": 3277,
+      "required_absences": 2,
+      "binaries": 3,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5
+        }
+      ],
+      "environment": {
+        "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+        "branch": "cleanup/simulator-dirty-worktree-20260803",
+        "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+        "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)",
+        "environment": "Linux Acr0tic 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux"
+      },
+      "errors": []
+    },
+    {
+      "target": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_004.json",
+      "target_sha256": "965e2accba9aeaca67d9aedae39a94f15438b865aa05d4e6f01575a1cfab4f13",
+      "manifest_members": 3278,
+      "required_absences": 2,
+      "binaries": 3,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5
+        }
+      ],
+      "environment": {
+        "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+        "branch": "cleanup/simulator-dirty-worktree-20260803",
+        "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+        "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)",
+        "environment": "Linux Acr0tic 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux"
+      },
+      "errors": []
+    },
+    {
+      "target": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_004.json",
+      "target_sha256": "ccfbd726948fb4ceb2a7de99016b4526fa2972fe481ac5c3d95c25ee77724cae",
+      "manifest_members": 3279,
+      "required_absences": 2,
+      "binaries": 3,
+      "external_inventories": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "files": 25
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "files": 28
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "files": 30
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "files": 25
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "files": 54
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "files": 14
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "files": 105
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "files": 448
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "files": 68
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "files": 65
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "files": 102
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "files": 5
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "files": 9
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "files": 5
+        }
+      ],
+      "environment": {
+        "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+        "branch": "cleanup/simulator-dirty-worktree-20260803",
+        "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+        "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)",
+        "environment": "Linux Acr0tic 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux"
+      },
+      "errors": []
+    }
+  ],
+  "predecessor_output_registries": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/r03_successor_004/AUDIT_OUTPUTS.json",
+      "sha256": "24943fc9fda4b663e1c5811047f4a148c6312fb59b898f8c55ca33b7969f7ed6",
+      "outputs": 9,
+      "errors": []
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/audit-evidence/r03_successor_003/AUDIT_OUTPUTS.json",
+      "sha256": "08f4e68e7f2271ea718474a95c3b33dcaabb5c24e2f704edfbe8ecb612f2178a",
+      "outputs": 9,
+      "errors": []
+    }
+  ],
+  "currentness": "current / unchanged"
+}

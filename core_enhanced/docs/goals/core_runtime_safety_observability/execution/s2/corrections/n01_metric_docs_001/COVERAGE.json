@@ -1,0 +1,465 @@
+{
+  "goal": "GOAL-CRSO-S2",
+  "phase": "PHASE-CRSO-S2",
+  "finding": "N01",
+  "status": "documentation corrected and self-verified; independent GEX-20 pending",
+  "source_sha256": "32a04b7e28631de2387a056e80a6116ca7e22b65d780c91c8cf365804eb101f2",
+  "previous_source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+  "changed_product_inputs": [
+    "game_server/config/observability/README.md"
+  ],
+  "unchanged_other_input_count": 358,
+  "unchanged_other_input_sha256": "45a59e40dcf35548302c614859cafffa64dbce319343d067acdd0e771f3d9538",
+  "runtime_reexecution": false,
+  "reuse_reason": "The sole product-input delta is one Markdown hyperlink. Every executable, test, fixture, config, Cargo and other input byte is exact. Previous release-only cfg(test) delta remains separately justified by the prior independent audit.",
+  "acceptance": [
+    {
+      "policy_ref": {
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSO-08-REVIEWED-002",
+          "Content Digest": "sha256:dad44216fc4d13818ad7689b3364d72029780f89f4e6958e3079a57df4ee67e6"
+        },
+        "Observable Policy Acceptance": [
+          "\uc9e7\uc740 \uc0ac\uc6a9\ub7c9 peak\uc640 \uc2e4\uc81c \ubc18\ud658 fault\uac00 \uad00\uce21\ub418\uace0 \ub0b4\ubd80 poll \uc911\ubcf5\uc73c\ub85c rejection\uc774 \uc99d\uac00\ud558\uc9c0 \uc54a\ub294\ub2e4. exporter \uac12\uc774 safety \ud310\uc815\uc73c\ub85c \uc5ed\ub958\ud558\uc9c0 \uc54a\uc73c\uba70 scrape\uac00 \ube44\uc6a9 \uccad\uad6c\u00b7owner \uc804\uccb4 \uc21c\ud68c\u00b7\uac8c\uc784 \uc624\ub958\ub97c \uc720\ubc1c\ud558\uc9c0 \uc54a\ub294\ub2e4."
+        ],
+        "validation_refs": [
+          "V09",
+          "V10"
+        ]
+      },
+      "disposition": "exact prior semantic and execution evidence reused; no runtime or policy delta"
+    },
+    {
+      "policy_ref": {
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSO-09-REVIEWED-002",
+          "Content Digest": "sha256:e84c118589651c7103fa6d8d502c040b601db997110f31c4aefa4370bbd51967"
+        },
+        "Observable Policy Acceptance": [
+          "\uc800\uc7a5\uc18c \uad6c\uc131\uc73c\ub85c \uc2e4\uc81c Grafana\uc5d0\uc11c \uc0ac\uc6a9\ub7c9\u00b7\uac70\ubd80 \uc6d0\uc778\uc744 \ubcfc \uc218 \uc788\ub2e4. \uacc4\uce21 disabled/enabled\u00b7collector \ubbf8\uc811\uc18d\u00b7scrape \uc911\ub2e8\uc5d0\uc11c \uac8c\uc784 \uacb0\uacfc/\uc624\ub958/RNG/event \uc21c\uc11c\uac00 \uac19\uace0 \uc720\ud55c exporter storage\uac00 \uc720\ud734\uc5d0\ub3c4 \ud68c\uc218\ub41c\ub2e4."
+        ],
+        "validation_refs": [
+          "V10",
+          "V11"
+        ]
+      },
+      "disposition": "exact prior semantic and execution evidence reused; no runtime or policy delta"
+    },
+    {
+      "policy_ref": {
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSO-10-REVIEWED-002",
+          "Content Digest": "sha256:6c7435f84bd6f71152b79dd17c4ea3ac17a4c1ec747066040790c5b5e23eff8a"
+        },
+        "Observable Policy Acceptance": [
+          "\uc804\uccb4 sum/max/\ubd84\ud3ec\uc640 \uc120\ud0dd\ud55c \uc804\ud22c \uc0c1\uc138\uac00 \uc788\uace0 \uc120\ud0dd identity/\uc2dc\uac01\uc740 \uc81c\ud55c\ub41c \uc0c1\uc138 \uae30\ub85d\uc5d0 \ud45c\uc2dc\ub41c\ub2e4. \ud3ec\ud654 \uc2dc \uad00\uce21 \uc190\uc2e4\ub9cc \uae30\ub85d\ub418\uace0 \uac8c\uc784 \uc774\ubca4\ud2b8\ub294 \uc720\uc9c0\ub41c\ub2e4. profile \ubcc0\uacbd\uc774 gameplay hash\ub97c \ubc14\uafb8\uc9c0 \uc54a\uc73c\uba70 registry/ring/histogram storage \uc0c1\ud55c\uc744 \ud655\uc778\ud560 \uc218 \uc788\ub2e4."
+        ],
+        "validation_refs": [
+          "V09",
+          "V10",
+          "V11"
+        ]
+      },
+      "disposition": "exact prior semantic and execution evidence reused; no runtime or policy delta"
+    },
+    {
+      "policy_ref": {
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSO-11-REVIEWED-002",
+          "Content Digest": "sha256:b699c1860411c4139b0b87cfd594908aefbcdcbf6796922a442842d2de20219b"
+        },
+        "Observable Policy Acceptance": [
+          "\uc2e4\ud328/rollback\u00b7\uc911\ubcf5 \uc18c\ube44\u00b7\uc885\ub8cc\u00b7\uc120\ud0dd \ubcc0\uacbd\uc5d0\uc11c counter \uc911\ubcf5\uacfc stale gauge\uac00 \uc5c6\uace0 \uad00\uce21 \ubcf4\uad00\ub7c9\uc774 bounded\ud558\ub2e4. \uc885\ub8cc\uc640 exporter \ubd80\uc7ac/\ud3ec\ud654\uac00 gameplay \uc0c1\ud0dc\u00b7\ud55c\ub3c4 \uc758\ubbf8\uc5d0 \uc601\ud5a5\uc744 \uc8fc\uc9c0 \uc54a\ub294\ub2e4."
+        ],
+        "validation_refs": [
+          "V09",
+          "V10",
+          "V11"
+        ]
+      },
+      "disposition": "exact prior semantic and execution evidence reused; no runtime or policy delta"
+    },
+    {
+      "policy_ref": {
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRSO-12-REVIEWED-002",
+          "Content Digest": "sha256:553c84eaea75eb1f2bae7ee2f76ce4289da0f695dbaebadf4f2474e7fc658a77"
+        },
+        "Observable Policy Acceptance": [
+          "\ud604\uc7ac source\uc758 \ud544\uc694\ud55c \uc804\uccb4 Core/host \uac80\uc0ac\uc640 \uace0\uc815\uc785\ub825 off/on parity, \uc815\uc0c1/\uc9d1\uc911/\uae30\ub2a5\ubcc4/\ud55c\ub3c4\uac70\uc808 \ud45c\ubcf8\uc774 \ub0a8\ub294\ub2e4. \uae30\uc874 \uacbd\uace0\ub97c \uc228\uae30\uac70\ub098 \uc0c8 source \uc2e4\ud589\uc73c\ub85c \uacfc\uac70 \uacb0\uacfc\ub97c \uac00\uc7a5\ud558\uc9c0 \uc54a\uc73c\uba70 U01 \ucde8\uc18c \uacc4\uc57d\uc774 \uc720\uc9c0\ub41c\ub2e4."
+        ],
+        "validation_refs": [
+          "V10",
+          "V12"
+        ]
+      },
+      "disposition": "exact prior semantic and execution evidence reused; no runtime or policy delta"
+    }
+  ],
+  "validations": [
+    {
+      "id": "V01",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V02",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V03",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V04",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V05",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V06",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V07",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V08",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V09",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V10",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V11",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    },
+    {
+      "id": "V12",
+      "disposition": "exact prior source/selector/input/raw evidence reused; documentation-only delta"
+    }
+  ],
+  "required_dimensions": {
+    "success": [
+      "V09",
+      "V11"
+    ],
+    "invalid_input": [
+      "V10"
+    ],
+    "failure_rollback": [
+      "V09",
+      "V10"
+    ],
+    "retry_idempotency": [
+      "V09"
+    ],
+    "ordering_concurrency": [
+      "V09",
+      "V10"
+    ],
+    "boundary_empty_max": [
+      "V10"
+    ],
+    "disconnect_restart_persistence": [
+      "V10",
+      "V11"
+    ],
+    "live_data": [
+      "V10",
+      "V12"
+    ],
+    "producer_consumer": [
+      "V11"
+    ],
+    "legacy_fallback_absence": [
+      "V10"
+    ]
+  },
+  "runtime_receipts": {
+    "s2_final_core_default001": {
+      "receipt_sha256": "828bac0c704f0177ecb0a3448c2aa52aa6054533351d6dfdd3058cadc4f14617",
+      "log_sha256": "1d3b3872d2d63b3c0d0c7bb48485580fd53a5e38f4ee930c066764614a56886c",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_core_fixtures001": {
+      "receipt_sha256": "2ca2bce8fab2da5e0c9bbd65d3254596d3118f5f32adb24fa016a9120befe1c1",
+      "log_sha256": "2d9ab9ff0dc6feacfdab04aef5bde10a050a3a8aa48a38ca9f9dcf5a84104dec",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_core_observation001": {
+      "receipt_sha256": "a583bee618401aa7563ac4400e5dd015f487c2243568fa480fe06299c2ee57f4",
+      "log_sha256": "6e27ae52933704d6c24f909e91d4da357a211a0872e8f6a168c6b27f3f5aa687",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_host_default001": {
+      "receipt_sha256": "0a6ad612d6d6fcd01b37436f4b91a968d10ae5c35c68656afb9e07af1e741de0",
+      "log_sha256": "64c9783e3c893f7ee06c8e2411942214972cf3e6a87728eac37e822044c9560f",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_host_observation001": {
+      "receipt_sha256": "a1b2a98ec9e9f3e88b3aef81294465247b918e4f9998a70a7728aa54681f5fc2",
+      "log_sha256": "263a5dd0e959048f3d61b9abf6d125e066a4c3ea207d45d4db12ddf59d9f9e2f",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_fmt001": {
+      "receipt_sha256": "3afcc0a527b0f1fd34242ad23bb69c9c71059b6bc7682098e3dfb5e056089018",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_check001": {
+      "receipt_sha256": "73b3cff348bf74380c3fecf7511463db6bba4ef62f5d8567e7cd435a4ae67a49",
+      "log_sha256": "03123c02d2a237cdbc352010e3f3fe7d04dd075e668418fcc0179e1599850d62",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_event_log001": {
+      "receipt_sha256": "0efa165760846a1414291096059d734a9d50a5b150150cf3c887b35f443d5cd8",
+      "log_sha256": "a2a8f8ed5249c00bec6d00c24523cab0f680687c99a4621e5b1e6f89b197c76d",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_clippy_core001": {
+      "receipt_sha256": "75d59a06ead6aebbb545f93a49124a89b289544ff0860dbb67e737e3daa57c29",
+      "log_sha256": "0416b89acbb6d43abcdfeedd74da279623ee4736170b2b9b22ed1e07e2ebe6a6",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_clippy_host001": {
+      "receipt_sha256": "28fd2236d29157c3c8b15eaaebda99f8fba6b938561b707a45b5a14ed6caf253",
+      "log_sha256": "f32bb301cfae0af58c4b7b806fe0645e77a03abd51970a8ffc5d3408cb97b065",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_release001": {
+      "receipt_sha256": "0e527f0ff7538678832aec2cb6878b2c2b3b680e91adff9589c74253619036a3",
+      "log_sha256": "ac06e89b6f006bed4e1aa02c35f3b12c4df9bd3f283b81862c9a4f529b6f11b4",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_final_heap001": {
+      "receipt_sha256": "7242829546f893c32c1274dacc0a0bb39d7a7b325fd79e099b4b77c028cca9ab",
+      "log_sha256": "2ec58246f734a46be0a4637d2b61e298b7a35d324f51c6e51f392431f5d24c65",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_prepared_public_001": {
+      "receipt_sha256": "c4613077649759899778cf67aab7e9691fd0e7211a3d9d8c523df4e6d3795a39",
+      "log_sha256": "b35e0ee593e7517b4842e670ef61b519051510a7fdf59b5f61d4e49a24018bc3",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_prepared_boundary_001": {
+      "receipt_sha256": "32be1fc659172de1d5d86bb02fec7955c4eef663936cd35510eae4a9e920d54a",
+      "log_sha256": "7779db5d2f631adb11b45f35806834ba7d069ff16e6f053816e600b869b1ae4b",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_observed_release_001": {
+      "receipt_sha256": "9368c00bda48388f836a4332bfa5c79490cd754abb111b85402b718fcf0bfcb5",
+      "log_sha256": "c6a8d9f98c163297c3a30be55ddfbbe9602cedb10d7a296651640ea92f6b92d0",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_default_parity_001": {
+      "receipt_sha256": "4c0ceae0b16e5c57de7405455309ca1d8757b2b2b3fa53d1ba1bc89252b45e4b",
+      "log_sha256": "050f51f9286b5757f159d4af77311f69d193b0b59a59698a7855b601beb0f1b2",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_public_oracle_001": {
+      "receipt_sha256": "819bcc4c7d60cf2faac496ff529b605afa5b7286328582214feef2260a065b96",
+      "log_sha256": "71b457f0091b4f63a8a0511116aa7d07a3586147d276f8b9bbae6df5f30be0fb",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_public_trace_001": {
+      "receipt_sha256": "9d207a1f459c2f69c6d9fc17fc7b0c4822213be077fe7b98808fb1d1513568c3",
+      "log_sha256": "c344306de027fb5ba7b53e27d36191507c1ff38a36b51fe37e747c63491f45a8",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_public_cli_001": {
+      "receipt_sha256": "b300048a14a676ea8375459db6d370646ffe0021a26804d3fe40537349adaef8",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_public_profile_001": {
+      "receipt_sha256": "ec0bf2ab1fb125c0c1690c67dc8a5887f3a1d21c28bcf23c7f12e13420558b4e",
+      "log_sha256": "1bec10651c2a04d3a16b4682c3fcaaba069b3368d99a81c65171926deae23445",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_public_boundary_001": {
+      "receipt_sha256": "0a0f8905c5390855ea6d66fd4663fd6234ab2e47c84b0bafdd425bde56f7cc5f",
+      "log_sha256": "38539e2cd2f62f0c13cfb847b05b10def46cbd1cda8d4b4a43e465c0e6df1742",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_public_api_001": {
+      "receipt_sha256": "3efa1beb3c8e97bee1a29f8441ffeb2398ebce277ed9df6fe1c537a69ed303c7",
+      "log_sha256": "81da4935c1d6a67f5e8d2aaa532b6e6eb5a60300bff9640c34d1c46809d487cd",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_pc_prepare_001": {
+      "receipt_sha256": "fb61d5985abc88e4e2f9b671d52edda56a51a48a86a75363367250f239e3f9c9",
+      "log_sha256": "e804b76fe80255b2ef0514ab99c65a57fbb2aa0446704bd45d892a9141d49713",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_pc_001": {
+      "receipt_sha256": "fa28380f1904a266e820d552cec66ea2d266286a8408b3a3b3b130aedb18ac55",
+      "log_sha256": "ab12860224690eee880a74d1ca1b8e63f2ecc43413a67194d707c134386d9a7d",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_pc_compare_001": {
+      "receipt_sha256": "a4326364855012c67537d1d7a1359ba869747788256c52ca5ee940d969aa5f8e",
+      "log_sha256": "475c83d0cc6c56fbcaa7a8cb729fb5dc4831892b9fe58b73feb56d6b1f8f389d",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_pc_immediate_001": {
+      "receipt_sha256": "cd69a4d036f2799af9524a0ed0acb66dc5642c1e66d3dd406875c8a14afd256d",
+      "log_sha256": "653203f7af9c49362d6762b30c0ad8466e7e993ddffe156bb039901c329aff32",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_r05_compare_001": {
+      "receipt_sha256": "7d92ccf20daab3ba249305be42f56765422ca409be0cf97709acbff6e694d2c5",
+      "log_sha256": "67efbcfbd00eb4919e0e55ee60191bcefd40ced72c7e0074c7e24bdfa0da4186",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2compat_r05_001": {
+      "receipt_sha256": "4b4ea94196438e40c4491d367a71d4afeefa8215f464da610c8eb06f7c643678",
+      "log_sha256": "bf25051c16ae3ee451d0e81c6a118b074be73709da9b9f21543b58803f290cba",
+      "raw_exit_code": 101,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_services_live006": {
+      "receipt_sha256": "94ba592bd19b6e79e4a5ab6ca847549163e1d8eec48c6b1c129bf6bbfb57a175",
+      "log_sha256": "e6579d57642f24e2ccb42244fdf1a3eaeac753d3993f34c5131aed450b096ad8",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_services_render007": {
+      "receipt_sha256": "3920e1584c6c1dd32cd79996650282fa9769b95ee606b9c5c077f211cb2754c6",
+      "log_sha256": "bbed67fd7681b556c530393c2f71cc1cb9fe485603bb025b80ae389e21a6c456",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_services_verify001": {
+      "receipt_sha256": "ecd741a8ba9aad5e0e8b33ecab8e9b12669a0f5f056ef90cc6227c70e9e765cb",
+      "log_sha256": "46c14fd5a62a90a32f48ed57d5f04c287b2babe82544410e9cb5dcb180f41299",
+      "raw_exit_code": 0,
+      "source_sha256": "20b55cd76701c15e9b93d7a9e580ad797427fcea4c2dbdf0db2e6ca1af390aad",
+      "reuse_test_only_delta": []
+    },
+    "s2_parity_cost002": {
+      "receipt_sha256": "6e506b62dc69d8c80c55c9da092dc730056e3dad9d695c181c086ebd3bd72652",
+      "log_sha256": "d575bdee8ee6b12ef73c5a08ca8d066eb0047a429e80e5819c71cf07eae2ba6a",
+      "raw_exit_code": 0,
+      "source_sha256": "0234460ffe970e71a49c660e6856bd2d586ced9e53af8f036a04eee549fe3ab3",
+      "reuse_test_only_delta": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+      ]
+    },
+    "s2_driver_release_on002": {
+      "receipt_sha256": "2a690911d001c02078e49c1799ed47d0e972a5b7e6dabf6b6594fa532663911e",
+      "log_sha256": "08fb33eea78dee326c18a3d4986f7c27babc952750145bcff590a1ef847d7fef",
+      "raw_exit_code": 0,
+      "source_sha256": "0234460ffe970e71a49c660e6856bd2d586ced9e53af8f036a04eee549fe3ab3",
+      "reuse_test_only_delta": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+      ]
+    },
+    "s2_driver_release_off002": {
+      "receipt_sha256": "88ba78dd9e9cf74351897e4ae16dea77b29f3fa0f49cf32a63ae091a0621b87b",
+      "log_sha256": "412eeb9680c10f3b2bad0f85be3690ef918b22f05b7af7f8a5b249e8eb857358",
+      "raw_exit_code": 0,
+      "source_sha256": "0234460ffe970e71a49c660e6856bd2d586ced9e53af8f036a04eee549fe3ab3",
+      "reuse_test_only_delta": [
+        "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+      ]
+    }
+  },
+  "prior_evidence_refs": {
+    "execution/s2/COVERAGE.json": "3e2e0fa0af3c34f45843fd2dc3a8cf85543bce7dee4de3689b24eda9dbc0805b",
+    "execution/s2/PREDECESSOR_IMPACT.json": "ec8f8c6fcf822768306deff2a123d26c90395969286562eb0724f63ee3feb1ad",
+    "execution/s2/target/s2_001/MANIFEST.json": "42bd3deab7c16aae1feddd7e8b02687f9ec5a29a2fba783d151776f6431611fd",
+    "post_audit/s2_20261004_001/COMPLETION_AUDIT.md": "acea5e4b8081b537fcf48b26f30d28d4b69f17dd0bf69e60d620073bc58dbefd",
+    "post_audit/s2_20261004_001/CONDITION_REVIEW.json": "536effae51e76c63a5d8466f3db601c7f5ed2f8cb7798b6b1c2999a90e502310",
+    "post_audit/s2_20261004_001/PREDECESSOR_REVIEW.json": "5007b7326f1eec33e2e597579f78b40ed3c6da4509e5587d4642b38cd05f7ed6",
+    "post_audit/s2_20261004_001/SOURCE_REVIEW.json": "e246295cefeaa033109da4c57c68e5598a54084f936e44a401ca947d62515e73",
+    "post_audit/s2_20261004_001/END_CURRENTNESS.json": "5cc9b3bcb5b7efb0ecb10b7412cd05e93bd06046846cfa5ed40bba214922f874",
+    "post_audit/s2_20261004_001/EXTRA_INPUTS.json": "4e2343c34e617e7749105a70a93ff161643480b9c86d22f8fb7424046bf0a58e"
+  },
+  "documentation_links": [
+    {
+      "from": "game_server/config/observability/README.md",
+      "target": "../../../core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/corrections/n01_metric_docs_001/METRICS_AND_STORAGE.md",
+      "resolved": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/corrections/n01_metric_docs_001/METRICS_AND_STORAGE.md",
+      "sha256": "c75bf02b17876f4178da980f700dc22d044d8a16abf17ad49692372cc71a87f5"
+    },
+    {
+      "from": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/corrections/n01_metric_docs_001/METRICS_AND_STORAGE.md",
+      "target": "../../METRICS_AND_STORAGE.md",
+      "resolved": "core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/METRICS_AND_STORAGE.md",
+      "sha256": "42235c121f1a16ef03f4e2480478a8ac5f5eb4fa83ac3f83cb3e91c590dad121"
+    }
+  ],
+  "original_finding": "post_audit/s2_20261004_001/COMPLETION_AUDIT.md",
+  "actual_branch": "game_server/src/observability/mod.rs Worker::consume: absent owner increments expired; duplicate/out-of-order returns without histogram or counter update",
+  "source_branch_sha256": "2457f8064f26253f7dd364fd8048d5ccf4d0d88d7d6c7dc665fff9e2f88d6f5e"
+}

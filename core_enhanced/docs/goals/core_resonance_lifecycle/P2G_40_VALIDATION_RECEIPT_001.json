@@ -1,0 +1,279 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CRSL-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CRSL-001",
+    "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "8bba2a1aa1944557c62497942782fc302e392f8e9b9b790954a3b22915565def"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CRSL-001",
+    "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_30_FREEZE_001.json",
+    "sha256": "824ced9a1bc4f5bff1f4b857e981b1ecfcd89cf333b6e54b1e1296fb0bd7f8a4"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CRSL-004",
+    "review_batch_ref": "RB-CRSL-002",
+    "reviewed_source_basis_ref": "RSB-CRSL-002",
+    "code_review_binding_count": 14,
+    "bound_final_policy_freeze_ref": "FPF-CRSL-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 14,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CRSL-01",
+        "policy_element_revision_ref": "PER-CRSL-01-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-02",
+        "policy_element_revision_ref": "PER-CRSL-02-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-03",
+        "policy_element_revision_ref": "PER-CRSL-03-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-04",
+        "policy_element_revision_ref": "PER-CRSL-04-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-05",
+        "policy_element_revision_ref": "PER-CRSL-05-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-06",
+        "policy_element_revision_ref": "PER-CRSL-06-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-07",
+        "policy_element_revision_ref": "PER-CRSL-07-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-08",
+        "policy_element_revision_ref": "PER-CRSL-08-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-09",
+        "policy_element_revision_ref": "PER-CRSL-09-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-10",
+        "policy_element_revision_ref": "PER-CRSL-10-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-11",
+        "policy_element_revision_ref": "PER-CRSL-11-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-12",
+        "policy_element_revision_ref": "PER-CRSL-12-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-13",
+        "policy_element_revision_ref": "PER-CRSL-13-REVIEWED-002"
+      },
+      {
+        "element_id": "PE-CRSL-14",
+        "policy_element_revision_ref": "PER-CRSL-14-REVIEWED-002"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 14,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CRSL-01",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-02",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-03",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-04",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-05",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-06",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-07",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-08",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-09",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-10",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-11",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-12",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-13",
+        "phase_id": "PHASE-CRSL-01"
+      },
+      {
+        "element_id": "PE-CRSL-14",
+        "phase_id": "PHASE-CRSL-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 5,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 4,
+    "standalone_work_package_count": 1,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CRSL-RESONANCE": [
+        "WP-CRSL-DEFINITION",
+        "WP-CRSL-ADMISSION",
+        "WP-CRSL-LIFETIME",
+        "WP-CRSL-PROJECTION"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CRSL-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 5,
+    "edge_count": 9,
+    "cyclic_scc_count": 0,
+    "cyclic_scc_disposition_count": 0,
+    "cyclic_sccs": [],
+    "final_execution_node_count": 2,
+    "condensation_edge_count": 1,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 2,
+    "assigned_once_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CRSL-RESONANCE": "PHASE-CRSL-01",
+      "WP-CRSL-VERIFY": "PHASE-CRSL-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 14,
+    "mapped_count": 14,
+    "assigned_execution_node_count": 14,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRSL-001",
+      "Content Digest": "sha256:57c36bd5f0637d0f23fb78a4c0a4f843e17f6c4f72b07168b58f484ff36e8a36"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRSL-001",
+      "Content Digest": "sha256:ab8bcb830c740578eeef8484892284e03b22f08156cc2028534af7d8a4a23fe1"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_00_INITIAL_001.json",
+        "sha256": "d8f5e037c68a5aed62a836a37d85a28b9d4f5341cc642cf945ab61b2790a7cb5"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_10_POLICY_001.json",
+        "sha256": "9748c907b9e3645f4accca781f765374a296aafe2daced63275cb830d60862b7"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_10_POLICY_002.json",
+        "sha256": "983d80a34b062661e9f17691c8dc0fa34670a77e080b9d8a56c7c52880e0be48"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_20_REVIEW_002.json",
+        "sha256": "86a75e7166664a16bf197c7112b6c4c0ea06e80fb64176f91ac01b555cedaa4b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "f2f4e0407917ed6dca8b303a8f00c51a4e2609aa216dab6fb32c88115702e96a"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_resonance_lifecycle/P2G_30_FREEZE_001.json",
+        "sha256": "824ced9a1bc4f5bff1f4b857e981b1ecfcd89cf333b6e54b1e1296fb0bd7f8a4"
+      }
+    ]
+  }
+}

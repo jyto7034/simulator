@@ -1,0 +1,131 @@
+{
+  "schema": "U08_ROOT_R06_PRODUCT_TO_TEST_HANDOFF_029",
+  "recorded_at_utc": "2026-10-06T13:25:38.225330+00:00",
+  "status": "PRODUCT_SMALL_CHECK_CLOSED_TEST_AUTHORING_AUTHORIZED_NOT_FULL_VALIDATION",
+  "accepted_product_source": "f00624330af66c37eda9239b2470f091785063b59acf25ad566d8d11ec9f6c67",
+  "source_file_count": 438,
+  "changed_product_files": [
+    "core_enhanced/src/game/value_expr/compile.rs"
+  ],
+  "root_actual_archive_members_verified": 438,
+  "root_actual_receipt_raw_verification": [
+    {
+      "label": "r06_product_fmt001",
+      "exit_code": 1,
+      "source_sha256": "5882bd1b9d41ea7e5cab189e1d4227526a9ec278ce83f934577eaddc802d886a",
+      "classification": "Import line wrapping only; preserved original failure, corrected within same authorized file."
+    },
+    {
+      "label": "r06_product_fmt002",
+      "exit_code": 0,
+      "source_sha256": "f00624330af66c37eda9239b2470f091785063b59acf25ad566d8d11ec9f6c67",
+      "classification": "PASS"
+    },
+    {
+      "label": "r06_product_check001",
+      "exit_code": 0,
+      "source_sha256": "f00624330af66c37eda9239b2470f091785063b59acf25ad566d8d11ec9f6c67",
+      "classification": "PASS"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_correction001/AFTER.json",
+      "bytes": 91317,
+      "sha256": "b33bcb18037166cb0cf67b90895aa8924587c9534febf5d8d57a2744543884e2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_correction001/BEFORE.json",
+      "bytes": 86780,
+      "sha256": "89b66093ce64b6139f1faac980c865a75f9749d09d2863ca583534b64983a4e2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_correction001/after.rs",
+      "bytes": 96781,
+      "sha256": "7072ebea03e675470d4055cc450bc726abd617487925232ebdc4b3f3e24d2a17"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_correction001/change.diff",
+      "bytes": 7163,
+      "sha256": "6725c338795b30cc82932610ab974150a9593a4b77319f6cfaccf5652bf05ad3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_correction001/COMPILE_WORK_CONTRACT.json",
+      "bytes": 2946,
+      "sha256": "ed7189e0adaecff264e6cefd1439807bad2bab7d34bd18817228489d808be533"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_test_design001/TEST_DESIGN.json",
+      "bytes": 23694,
+      "sha256": "8e95f8b11727d313a6e78c2e553c2a3d9c7bd5cc3f2d65e4b38455834b24a4ef"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_test_design001/API_EVIDENCE.json",
+      "bytes": 54895,
+      "sha256": "32f0c20f461e539ea91ae278cee94966f932002c4c655d34a2281b9e33937f74"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_test_design001/READINESS_SUPPLEMENT.json",
+      "bytes": 6189,
+      "sha256": "35a13544d9d90c6e83d37e440975804fa4806c7bbac213a7b7aa63733851c8ec"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_test_design001/HANDOFF.json",
+      "bytes": 1381,
+      "sha256": "5730ba5189d0a6c8df8aaca64fbd717298c48f4b82601139a9f8d8b3acd69321"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_fmt001.json",
+      "bytes": 170050,
+      "sha256": "3397fe3294b6f478eec1ef0d77ecf79a67b41b086a35b230af7c841caba4c087"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_fmt001.log",
+      "bytes": 1474,
+      "sha256": "24c671d303b1848002d39f1b4ee67f35716045a79813c34dfcff7c1bd0f57245"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_fmt002.json",
+      "bytes": 170049,
+      "sha256": "5cee5d57f6311112b28d14cb3f6d90cc3bc94cd4290f58fc4345ace86b24ae07"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_fmt002.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_check001.json",
+      "bytes": 169702,
+      "sha256": "32e084cf6d69df112719be8d5e13e923727d9ae0dcfe33db29aea6bc5827a61b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_product_check001.log",
+      "bytes": 4422,
+      "sha256": "d3d8f6fca413572b3bf42f57bb13c12b505fca78af119ff952e244dd4a24530f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/source_versions/f00624330af66c37eda9239b2470f091785063b59acf25ad566d8d11ec9f6c67.tar.gz",
+      "bytes": 1920811,
+      "sha256": "0e8c7948718b4fd7a4d1951884c0f31c3c1df1888fc9589b21d1cda9273d021a"
+    }
+  ],
+  "test_scope": [
+    "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+    "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs",
+    "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs",
+    "core_enhanced/src/game/battle/core/mod.rs",
+    "core_enhanced/src/game/value_expr/tests.rs"
+  ],
+  "new_selector_count": 9,
+  "active_owner": "/root/u08_test_author_resume gpt-6-astra/high: approved five test files and sole focused runner; ordinary test-side correction authorized",
+  "product_owner": "/root/u08_product_runner_resume gpt-6.1-sol/xhigh: source writer0/runner0; HOLD pending product finding or final integration",
+  "supplementary_owner": "/root/u08_harness_author_resume gpt-6-astra/high: new harness005 preparation only outside existing1322 inputs; no source edits/build/tests/execution",
+  "root_role": "gpt-6-astra/high planning/read/docs only; not final independent auditor",
+  "extra_authorization": "Fresh author_content build and copied original seven public cases under new unique labels/outputs; original red evidence retained",
+  "execution_rule": "Only main focused runner; no input edits during execution; all integration/performance/finalizers pending",
+  "compile_cost_rule": "Existing max_compile_work precharged; no cap/workload/oracle changes; tests derive fixed boundary independently",
+  "final_selection_rule": "Mandatory49 functional+8 performance unchanged. New9 selectors bind actual final source full-suite rows. Earlier focus receipts retained with their own source, not automatically added to selected cfg roles. If optional selected roles added later, quiescence must include all selected functional roles.",
+  "next": "Complete focused bundle and source closure; root readback; finalize harness005 with actual final source/input delta; integration007; selection→191+31 impact→adaptation→coverage→self-review→PLAN/NOTES→freeze/isolated restore→independent whole U08 audit.",
+  "complete": false
+}

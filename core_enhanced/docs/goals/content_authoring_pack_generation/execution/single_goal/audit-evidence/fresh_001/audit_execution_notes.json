@@ -1,0 +1,10 @@
+{
+  "audit_helper_failures": [
+    "Initial currentness helper assumed VI input dictionary but actual format is list; helper-only corrections preceded successful capture. No target was changed.",
+    "Initial diagnostic helper expected the authored missing zone ID in stderr; engine omits it. It had completed valid and invalid subprocesses; output retained. Corrected helper used a new isolated directory and cause text to capture four complete executions.",
+    "A source-read sed invocation and tool-lock helper syntax failed before observation; corrected read-only retries succeeded."
+  ],
+  "diagnostic_retry_equal": true,
+  "valid_restore_complete_output_equal": true,
+  "probe_002_fixture_originals_restored": true
+}

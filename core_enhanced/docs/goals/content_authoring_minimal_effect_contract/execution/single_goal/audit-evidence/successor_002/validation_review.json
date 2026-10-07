@@ -1,0 +1,377 @@
+{
+  "captured_at": "2026-09-09T18:19:48.963560+00:00",
+  "records": [
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/full_core_002.json",
+      "command": "cargo test -p game_core --lib --tests -- --quiet",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/full_core_002.log",
+          "sha256": "018e517f9c609d39e356dbd7134c79a1b57088a109aba1785fb20f4729869169",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/all_targets_001.json",
+      "command": "cargo check -p game_core --all-targets",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/all_targets_001.log",
+          "sha256": "77132060bc23de06e7a308679ea684ae204977f036521c9e591afc679093aad9",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_check_001.json",
+      "command": "cargo check -p game_core --release --lib",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_check_001.log",
+          "sha256": "135892c884f5c25929c27a0078bbfec452cca4b4535fea1102f6be30eabc3630",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_build_005.json",
+      "command": "cargo build -p game_core --release --no-default-features --bin package_official_content --bin consume_content_pack",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_build_005.log",
+          "sha256": "53e7b541578304d5850e6b35a31ac5dc2d5480dceae7728b6791b965e1654713",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_ab_003.json",
+      "command": "python3 core_enhanced/tools/content_pack_release_probe.py --repository . --output-dir /tmp/capg-r02-release-ab-003",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_ab_003.log",
+          "sha256": "2b3d30c0e30b2a994262c858b2be60add0baf06b64a1fadd2b943f784a2d3bd0",
+          "matches": true
+        },
+        "receipt": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/release_ab_003/receipt.json",
+          "sha256": "b2733771dea16609138cf7f83290b364e2b478e32ae1c20ab551057dd9384201",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/api_batch_001.json",
+      "command": "python3 core_enhanced/tools/public_api_external_probe.py --repository . --pack-root /tmp/capg-r02-release-ab-002/live_data --pack official --output-dir /tmp/capg-r02-api-batch-001",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_020.json",
+          "sha256": "6a16d15e5973fe9d95dfbc5466a7a4e67bbe6fabd2793027229dbe4435bd9efc",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/api_batch_001.log",
+          "sha256": "7d4e3cb85ca58aefa7b88689b119d861b837939a147da4fc5f72bf51ce648263",
+          "matches": true
+        },
+        "receipt": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/api_batch_001/receipt.json",
+          "sha256": "dcbb7f0f1a928b02e7d117f81290df1b11ea582e423e23cd581cd2fafcf47a9b",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_002.json",
+      "command": "target/capg-api/release/public_guards /tmp/capg-r02-public-guards-002.json",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_002.log",
+          "sha256": "13497cea36a37436cbd746a67bd490248d526faa8b324aca1c1658bc5824ac9f",
+          "matches": true
+        },
+        "receipt": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_002_receipt.json",
+          "sha256": "30765eb7db43ee5ea60b9f391e356098f4ba9a5a917737a2835f7e01449435ad",
+          "matches": true
+        }
+      }
+    },
+    {
+      "record": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_allocation_001.json",
+      "command": "cargo run --release --offline --locked --manifest-path core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml --target-dir target/capg-api --features allocation-observer --bin public_guards -- /tmp/capg-r02-public-guards-allocation-001.json",
+      "exit": 0,
+      "checks": {
+        "input": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/VALIDATION_INPUT_022.json",
+          "sha256": "09d74dc953cb9a1e9bc04d38038673ff309077eee79d967291c05a8a923bd8ce",
+          "matches": true
+        },
+        "log": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_allocation_001.log",
+          "sha256": "dcb945be7098236aa8f4503b2bfc504f65888ecd2a9c6019d763a41d3f686ef4",
+          "matches": true
+        },
+        "receipt": {
+          "path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/evidence/public_guards_allocation_001_receipt.json",
+          "sha256": "e94498094038b4d2317b41721192c5c1290f3ab56c54ae034502bec0bc16ab8b",
+          "matches": true
+        }
+      }
+    }
+  ],
+  "full_core_counts": [
+    [
+      1162,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      25,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      15,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "total_passed": 1214,
+  "zero_failed_ignored_filtered": true,
+  "api_consumer_checks": [
+    {
+      "name": "validated_data_api_audit",
+      "kind": "valid",
+      "exit": 0,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": []
+    },
+    {
+      "name": "application_authority_api_audit",
+      "kind": "valid",
+      "exit": 0,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": []
+    },
+    {
+      "name": "battle_kernel_api_audit",
+      "kind": "valid",
+      "exit": 0,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": []
+    },
+    {
+      "name": "core_public_projection_api_audit",
+      "kind": "valid",
+      "exit": 0,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": []
+    },
+    {
+      "name": "history_result_api_audit",
+      "kind": "valid",
+      "exit": 0,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": []
+    },
+    {
+      "name": "validated_data_api_audit",
+      "kind": "invalid",
+      "exit": 101,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": [
+        "GameDataBuilder",
+        "GameDataBaseParts"
+      ]
+    },
+    {
+      "name": "application_authority_api_audit",
+      "kind": "invalid",
+      "exit": 101,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": [
+        "GameCore",
+        "state",
+        "private"
+      ]
+    },
+    {
+      "name": "battle_kernel_api_audit",
+      "kind": "invalid",
+      "exit": 101,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": [
+        "core",
+        "private"
+      ]
+    },
+    {
+      "name": "core_public_projection_api_audit",
+      "kind": "invalid",
+      "exit": 101,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": [
+        "PlayerBehavior",
+        "BehaviorResult",
+        "private"
+      ]
+    },
+    {
+      "name": "history_result_api_audit",
+      "kind": "invalid",
+      "exit": 101,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": [
+        "CombatResultEventLogAttachmentDto",
+        "GameCore"
+      ]
+    },
+    {
+      "name": "runtime_architecture_final_validation",
+      "kind": "default_fixture_api_audit",
+      "exit": 101,
+      "log_hash_matches": true,
+      "all_required_diagnostics_present": true,
+      "diagnostics": [
+        "load_live_embedded",
+        "replace_active_battle_event_log_fixture"
+      ]
+    }
+  ],
+  "api_input_delta": [
+    "core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+    "core_enhanced/src/game/data/content_pack/tests.rs",
+    "core_enhanced/src/game/world.rs",
+    "core_enhanced/src/game/world/tests/content_generation.rs"
+  ],
+  "api_new_inputs": [
+    "core_enhanced/tools/EXTERNAL_PACK_PROBES.md",
+    "core_enhanced/tools/runtime_architecture_final_validation/Cargo.lock",
+    "core_enhanced/tools/runtime_architecture_final_validation/Cargo.toml",
+    "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+    "core_enhanced/tools/runtime_architecture_final_validation/src/p01_exact_replay.rs",
+    "core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs"
+  ],
+  "api_world_pre_cfg_hash": "af895613ecd394a409239e02ee7ff5a8c0ed1444192c69ca49b888f98c30e442",
+  "api_world_pre_cfg_matches_VI020": true,
+  "api_default_release_nonimpact": "Only execute_with_transport_context wrapper cfg changed from any(test, debug_assertions, feature=test-fixtures) to test. Both false in default release with no features; actual production transport/application port bodies unchanged. Exact prior full file matches VI020 SHA. Three other changed files are test modules. API main/adapter/locks unchanged.",
+  "handoff_source_context_checks": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_REVIEW_001.json",
+      "sha256": "cd3e8e41941c7acbbd63cdfff5a1bfdd2520beea7da3cd2b7bb0ebaf56b093b0",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_30_FREEZE_001.json",
+      "sha256": "64bbe82d782b7f556c97899a024427d39884554516de5be37c9d427c4f97cfaf",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_40_PHASE_PLAN_002.json",
+      "sha256": "942af93bdf56832a3252cc89430380026345d788426cd558dccb46a13374f51d",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_GOAL_SET_001.ko.md",
+      "sha256": "df9d9f0a314101e2af4976274dd1c2735d5abaee1940f0c926b6b5d69ac87223",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_RESULT_001.json",
+      "sha256": "c19e0d7ee8e3a9ba15bebfb394c771f86254ec787c32347fee588b498fbf1dc2",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_50_AUTHORING_REVIEW_001.ko.md",
+      "sha256": "92915fbeb80fae747bc234a1609cc9967d5dd38d12b5bd49f08b63ca37a9adc2",
+      "matches": true
+    }
+  ],
+  "original_checkpoint_graph_19_mutators_and_case_oracles_byte_identical": true,
+  "toolchain": {
+    "rustc": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+    "cargo": "cargo 1.91.1 (ea2d97820 2025-10-10)"
+  },
+  "limits": [
+    "Reused final owner executions are not audit reruns. Full-core002 concise output complete; first verbose run not needed as completion evidence.",
+    "Public guard console truncated but complete receipt identities match. Fixture capability workload distinct from actual default-release external A/B.",
+    "Five positive API bodies are supplemental current consumers, not a pre-edit-byte preservation claim for eight uncaptured API main inputs."
+  ],
+  "audit_reconstruction_correction": "Initial audit-local attempt removed cfg from execute, which was the wrong wrapper and did not match VI020. No source was changed. Located actual one-line execute_with_transport_context cfg replacement; reconstructed exact prior bytes below."
+}

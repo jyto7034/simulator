@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/author_content",
+    "simulate",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/public_cli_003/content",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/public_cli_003/selection.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/public_cli_003/scenario.json",
+    "--amount-observation"
+  ],
+  "cwd": "/mnt/f/work/simulator",
+  "exit_code": 0,
+  "elapsed_seconds": 0.9727306365966797,
+  "source_before": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
+  "source_after": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
+  "env": {
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target",
+    "RUST_TEST_THREADS": null
+  },
+  "log_sha256": "2831e619d8539021cbe8e249b21dc4b7ce857d12c2b4303948c869b00d8cd3e3"
+}

@@ -1,0 +1,35 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CIOB-002",
+    "Content Digest": "sha256:5cdec588aa6993c1f95b5ee27186ac751c88dc946cc64857bd02fb75e63c4c9f"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CIOB-003",
+    "Content Digest": "sha256:b9f65c193e4cb512a5d6c41224896a65f3e4a0b12f8b66c2f6acafc457976f60"
+  },
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CIOB-001",
+    "Content Digest": "sha256:9d337ce47259475bedf512d9321cc92e0055c1e531bd3f608b8ea5bafcf72771"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CIOB-003",
+    "Content Digest": "sha256:df4d142d4df1dc99b0cb1ca5c84007e9cad4556ce764e8cfd6919ff5d12b2fd5"
+  },
+  "checks": {
+    "exact_refs_digests": true,
+    "146_source_files_unchanged": true,
+    "all20_acceptance_preserved_bound": true,
+    "required8_confirmed": true,
+    "N_A2_supported": true,
+    "new_material_findings": 0,
+    "required_source_gaps": 0
+  },
+  "production_mutation": false,
+  "next": "P2G-30"
+}

@@ -1,0 +1,38 @@
+{
+  "scope": "document linkage, explicit acceptance IDs, current selected evidence hashes; not P2G validation or product tests",
+  "documents": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R08_R12_CONTINUOUS_IMPLEMENTATION_REQUEST_20260930.ko.md",
+      "bytes": 19131,
+      "sha256": "c75e262b6dc2ab32b60420244928dd0168da1e87567cb38400175449f596c025"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R08_R12_DESIGN_AND_ACCEPTANCE_20260930.ko.md",
+      "bytes": 39158,
+      "sha256": "be6718a95db8dcb208b036a598d55de901fe50d53c8e6f4d342a213849e40f7e"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R08_R12_START_PROMPT_20260930.ko.md",
+      "bytes": 5904,
+      "sha256": "7863b280793256e5b5733cb2adf92fcc490fcd70b45a83abd5aa9e3bbe1ae7b9"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R08_R12_CODE_EVIDENCE_20260930.json",
+      "bytes": 18302,
+      "sha256": "2dfbd2ebcfc59f16c911a9939c5259bd1d621b56366a9f1d78b7d3835c5db341"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "bytes": 36173,
+      "sha256": "cd9b00a2fac4eb0901fb956f917a2c603bbb47895322aaf6667042fd39638a10"
+    }
+  ],
+  "local_links_checked": 27,
+  "acceptance_conditions": 55,
+  "policy_recommendations": 14,
+  "code_evidence_files": 23,
+  "errors": [],
+  "passed": true,
+  "product_tests_run": false,
+  "independent_audit_performed": false
+}

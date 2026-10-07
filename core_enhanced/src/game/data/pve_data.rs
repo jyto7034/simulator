@@ -10,14 +10,24 @@ use crate::{
     game::resources::Position,
     game::{
         battle::scenario::{
-            BattleObjective, TacticalPlan, TacticalPoint, TacticalPointId, WinCondition,
+            BattleObjective, FieldWorkCellDef, FieldWorkCellId, FieldWorkCompletionEffect,
+            FieldWorkObjectDef, FieldWorkObjectId, FieldWorkPresentationKind, ScenarioUnitRef,
+            TacticalPlan, TacticalPoint, TacticalPointId, TerminalCondition, TerminalOutcome,
         },
+        battle::types::{BattleOutcomeId, BattleVerdict, TacticalTileKind},
         combat_preview::{
             BattlefieldArchetype, BattlefieldSizeClass, CombatMissionVariant, CombatNodeType,
             EnemyKind,
         },
-        data::{build_string_index, once_lock_with},
+        data::{
+            boss_runtime_data::{
+                BossActorSlotId, BossEncounterRuntimeId, BossRuntimeDatabase, BossSignalId,
+            },
+            build_string_index, once_lock_with,
+            skill_fragment_data::SkillFragmentId,
+        },
         enums::{RewardMode, RiskLevel, Tier},
+        reward::RewardEffect,
     },
 };
 
@@ -27,6 +37,10 @@ pub enum PveEncounterClass {
     Elite,
     NormalBoss,
     FinalBoss,
+    /// Nonproduction, opt-in reference content. It may exercise the FinalBoss
+    /// runtime shape, but production selectors, rewards and progression must
+    /// never treat it as a live FinalBoss.
+    ReferenceFinalBoss,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -64,14 +78,64 @@ pub enum PveWaveSource {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
+pub struct PveWaveActivationData {
+    pub trigger_id: String,
+    pub priority: i32,
+    pub primary: PveWavePrimaryTriggerData,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deadline_ms: Option<u64>,
+}
+
+impl PveWaveActivationData {
+    pub fn at_time(trigger_id: impl Into<String>, time_ms: u64) -> Self {
+        Self {
+            trigger_id: trigger_id.into(),
+            priority: 0,
+            primary: PveWavePrimaryTriggerData::AtTimeMs { time_ms },
+            deadline_ms: None,
+        }
+    }
+
+    pub fn at_time_ms(&self) -> Option<u64> {
+        match self.primary {
+            PveWavePrimaryTriggerData::AtTimeMs { time_ms } => Some(time_ms),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub enum PveWavePrimaryTriggerData {
+    AtTimeMs {
+        time_ms: u64,
+    },
+    GroupCleared {
+        wave_id: String,
+    },
+    ActorHealthAtOrBelowPercent {
+        actor_slot_id: BossActorSlotId,
+        percent: u8,
+    },
+    ActorDefeated {
+        actor_slot_id: BossActorSlotId,
+    },
+    ActorReachedPoint {
+        actor_slot_id: BossActorSlotId,
+        point_id: String,
+        radius_cells: u32,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct PveWaveData {
     pub id: String,
-    pub time_ms: u32,
+    pub activation: PveWaveActivationData,
     #[serde(default)]
     pub spawn_zone_ids: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub route_id: Option<String>,
-    #[serde(default = "default_required_for_victory")]
     pub required_for_victory: bool,
     pub source: PveWaveSource,
 }
@@ -105,40 +169,33 @@ pub enum PveBattleObjectiveData {
     ProtectUnit { unit_ref: String },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
-pub enum PveWinConditionData {
+pub enum PveTerminalConditionData {
     AllRequiredEnemyGroupsDefeated,
-    DefeatUnit { unit_ref: String },
-    ProtectUnit { unit_ref: String },
+    UnitDefeated { unit_ref: String },
+    AllPlayerCombatantsDefeated,
+    TimeReached { time_ms: u64 },
+    BossSignalLatched { signal_id: BossSignalId },
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
-pub struct PveSuppressionResearchData {
-    #[serde(default)]
-    pub bonus_objectives: Vec<PveBonusObjectiveData>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct PveBonusObjectiveData {
+pub struct PveTerminalOutcomeData {
     pub id: String,
-    pub condition: PveBonusObjectiveConditionData,
-    pub research_bonus: u32,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub presentation: Option<String>,
+    pub verdict: BattleVerdict,
+    pub condition: PveTerminalConditionData,
+    pub priority: i32,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
-pub enum PveBonusObjectiveConditionData {
-    ClearWithin {
-        time_ms: u64,
-    },
-    DecisiveDamage {
-        minimum_damage_percent_of_max_hp: u32,
-    },
+pub struct PveOutcomePolicyData {
+    pub outcome_id: String,
+    pub reward_mode: RewardMode,
+    pub reward_uuids: Vec<Uuid>,
+    pub grant_node_bonus: bool,
+    pub advance_encounter_progression: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -148,17 +205,41 @@ pub struct PveTacticalPlanData {
     pub points: Vec<PveTacticalPointData>,
     #[serde(default)]
     pub objective: Option<PveBattleObjectiveData>,
+    #[serde(default)]
+    pub field_work_objects: Vec<PveFieldWorkObjectData>,
 }
 
-fn default_reward_mode() -> RewardMode {
-    RewardMode::ClaimAll
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct PveFieldWorkObjectData {
+    pub id: String,
+    pub presentation_kind: PveFieldWorkPresentationKind,
+    pub position: PvePosition,
+    pub work_cells: Vec<PveFieldWorkCellData>,
+    pub required_work_ms: u64,
+    pub completion_effect: PveFieldWorkCompletionEffectData,
 }
 
-fn default_required_for_victory() -> bool {
-    true
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct PveFieldWorkCellData {
+    pub id: String,
+    pub position: PvePosition,
+    pub tile_kind: TacticalTileKind,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum PveFieldWorkPresentationKind {
+    EmergencyRepairTerminal,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub enum PveFieldWorkCompletionEffectData {
+    RepairProtectedUnit { unit_ref: String, flat_hp: u32 },
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(deny_unknown_fields)]
 pub struct PvePosition {
     pub x: i32,
@@ -178,32 +259,101 @@ pub struct PveEncounter {
     pub encounter_class: PveEncounterClass,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub primary_abnormality_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub boss_runtime: Option<PveBossRuntimeBindingData>,
     pub risk_level: RiskLevel,
     #[serde(default)]
     pub node_type: Option<CombatNodeType>,
     #[serde(default)]
     pub mission_variant: Option<CombatMissionVariant>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub survive_timer_ms: Option<u64>,
-    #[serde(default = "default_reward_mode")]
-    pub reward_mode: RewardMode,
     #[serde(default)]
-    pub reward_uuids: Vec<Uuid>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppression_research: Option<PveSuppressionResearchData>,
+    pub terminal_outcomes: Vec<PveTerminalOutcomeData>,
+    #[serde(default)]
+    pub outcome_policies: Vec<PveOutcomePolicyData>,
     #[serde(default)]
     pub battlefield: Option<PveBattlefieldOverrideData>,
     #[serde(default)]
     pub tactical_plan: Option<PveTacticalPlanData>,
-    #[serde(default)]
-    pub win_condition: Option<PveWinConditionData>,
     #[serde(default)]
     pub waves: Vec<PveWaveData>,
     #[serde(default)]
     pub static_obstacles: Vec<PveStaticObstacleData>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct PveBossRuntimeBindingData {
+    pub encounter_id: BossEncounterRuntimeId,
+    pub actors: Vec<PveBossActorBindingData>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct PveBossActorBindingData {
+    pub actor_slot_id: BossActorSlotId,
+    pub wave_id: String,
+    pub spawn_index: u32,
+}
+
 impl PveEncounter {
+    #[cfg(test)]
+    pub(crate) fn fixture_terminal_outcomes(
+        survive_timer_ms: Option<u64>,
+    ) -> Vec<PveTerminalOutcomeData> {
+        vec![
+            PveTerminalOutcomeData {
+                id: "victory".to_string(),
+                verdict: BattleVerdict::Victory,
+                condition: survive_timer_ms.map_or(
+                    PveTerminalConditionData::AllRequiredEnemyGroupsDefeated,
+                    |time_ms| PveTerminalConditionData::TimeReached { time_ms },
+                ),
+                priority: 0,
+            },
+            PveTerminalOutcomeData {
+                id: "defeat".to_string(),
+                verdict: BattleVerdict::Defeat,
+                condition: PveTerminalConditionData::AllPlayerCombatantsDefeated,
+                priority: 0,
+            },
+        ]
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_protected_terminal_outcomes(
+        protected_unit_ref: &str,
+        survive_timer_ms: Option<u64>,
+    ) -> Vec<PveTerminalOutcomeData> {
+        let mut outcomes = Self::fixture_terminal_outcomes(survive_timer_ms);
+        outcomes[1].condition = PveTerminalConditionData::UnitDefeated {
+            unit_ref: protected_unit_ref.to_string(),
+        };
+        outcomes
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_outcome_policies(
+        reward_mode: RewardMode,
+        reward_uuids: Vec<Uuid>,
+    ) -> Vec<PveOutcomePolicyData> {
+        vec![
+            PveOutcomePolicyData {
+                outcome_id: "victory".to_string(),
+                reward_mode,
+                reward_uuids,
+                grant_node_bonus: true,
+                advance_encounter_progression: true,
+            },
+            PveOutcomePolicyData {
+                outcome_id: "defeat".to_string(),
+                reward_mode: RewardMode::ClaimAll,
+                reward_uuids: Vec::new(),
+                grant_node_bonus: false,
+                advance_encounter_progression: false,
+            },
+        ]
+    }
+
     pub fn primary_abnormality_id(&self) -> Option<&str> {
         self.primary_abnormality_id.as_deref()
     }
@@ -211,19 +361,15 @@ impl PveEncounter {
     pub fn requires_primary_abnormality(&self) -> bool {
         matches!(
             self.encounter_class,
-            PveEncounterClass::Elite | PveEncounterClass::NormalBoss | PveEncounterClass::FinalBoss
+            PveEncounterClass::Elite
+                | PveEncounterClass::NormalBoss
+                | PveEncounterClass::FinalBoss
+                | PveEncounterClass::ReferenceFinalBoss
         )
     }
 
-    pub fn bonus_objectives(&self) -> &[PveBonusObjectiveData] {
-        self.suppression_research
-            .as_ref()
-            .map(|research| research.bonus_objectives.as_slice())
-            .unwrap_or(&[])
-    }
-
-    pub fn has_bonus_objectives(&self) -> bool {
-        !self.bonus_objectives().is_empty()
+    pub fn is_reference_only(&self) -> bool {
+        self.encounter_class == PveEncounterClass::ReferenceFinalBoss
     }
 
     pub fn wave_definitions(&self) -> Vec<PveWaveData> {
@@ -247,12 +393,67 @@ impl PveEncounter {
         if let Some(objective) = &authored.objective {
             plan.objective = objective.to_battle_objective();
         }
+        plan.field_work_objects = authored
+            .field_work_objects
+            .iter()
+            .map(PveFieldWorkObjectData::to_scenario_def)
+            .collect();
     }
 
-    pub fn authored_win_condition(&self) -> Option<WinCondition> {
-        self.win_condition
-            .as_ref()
-            .map(PveWinConditionData::to_win_condition)
+    pub fn authored_terminal_outcomes(&self) -> Vec<TerminalOutcome> {
+        self.terminal_outcomes
+            .iter()
+            .map(PveTerminalOutcomeData::to_terminal_outcome)
+            .collect()
+    }
+
+    pub fn survive_timer_ms(&self) -> Option<u64> {
+        self.terminal_outcomes.iter().find_map(|outcome| {
+            (outcome.verdict == BattleVerdict::Victory)
+                .then_some(&outcome.condition)
+                .and_then(|condition| match condition {
+                    PveTerminalConditionData::TimeReached { time_ms } => Some(*time_ms),
+                    _ => None,
+                })
+        })
+    }
+
+    pub fn outcome_policy(&self, outcome_id: &BattleOutcomeId) -> Option<&PveOutcomePolicyData> {
+        self.outcome_policies
+            .iter()
+            .find(|policy| policy.outcome_id == outcome_id.as_str())
+    }
+}
+
+impl PveFieldWorkObjectData {
+    fn to_scenario_def(&self) -> FieldWorkObjectDef {
+        FieldWorkObjectDef {
+            id: FieldWorkObjectId::new(self.id.clone()),
+            presentation_kind: match self.presentation_kind {
+                PveFieldWorkPresentationKind::EmergencyRepairTerminal => {
+                    FieldWorkPresentationKind::EmergencyRepairTerminal
+                }
+            },
+            position: self.position.into(),
+            work_cells: self
+                .work_cells
+                .iter()
+                .map(|cell| FieldWorkCellDef {
+                    id: FieldWorkCellId::new(cell.id.clone()),
+                    position: cell.position.into(),
+                    tile_kind: cell.tile_kind,
+                })
+                .collect(),
+            required_work_ms: self.required_work_ms,
+            completion_effect: match &self.completion_effect {
+                PveFieldWorkCompletionEffectData::RepairProtectedUnit { unit_ref, flat_hp } => {
+                    FieldWorkCompletionEffect::RepairProtectedUnit {
+                        unit_ref: ScenarioUnitRef::new(unit_ref.clone()),
+                        flat_hp: *flat_hp,
+                    }
+                }
+            },
+        }
     }
 }
 
@@ -262,6 +463,10 @@ impl PveWaveData {
             PveWaveSource::Manual(enemies) => enemies,
             PveWaveSource::GeneratedCorroded { .. } => &[],
         }
+    }
+
+    pub fn authored_time_ms(&self) -> Option<u64> {
+        self.activation.at_time_ms()
     }
 }
 
@@ -320,36 +525,88 @@ impl PveBattleObjectiveData {
     }
 }
 
-impl PveWinConditionData {
-    fn to_win_condition(&self) -> WinCondition {
-        match self {
-            Self::AllRequiredEnemyGroupsDefeated => WinCondition::AllRequiredEnemyGroupsDefeated,
-            Self::DefeatUnit { unit_ref } => WinCondition::DefeatUnit {
-                unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
+impl PveTerminalOutcomeData {
+    fn to_terminal_outcome(&self) -> TerminalOutcome {
+        TerminalOutcome {
+            id: BattleOutcomeId::new(self.id.clone()),
+            verdict: self.verdict,
+            condition: match &self.condition {
+                PveTerminalConditionData::AllRequiredEnemyGroupsDefeated => {
+                    TerminalCondition::AllRequiredEnemyGroupsDefeated
+                }
+                PveTerminalConditionData::UnitDefeated { unit_ref } => {
+                    TerminalCondition::UnitDefeated {
+                        unit_ref: ScenarioUnitRef::new(unit_ref.clone()),
+                    }
+                }
+                PveTerminalConditionData::AllPlayerCombatantsDefeated => {
+                    TerminalCondition::AllPlayerCombatantsDefeated
+                }
+                PveTerminalConditionData::TimeReached { time_ms } => {
+                    TerminalCondition::TimeReached { time_ms: *time_ms }
+                }
+                PveTerminalConditionData::BossSignalLatched { signal_id } => {
+                    TerminalCondition::BossSignalLatched {
+                        signal_id: signal_id.clone(),
+                    }
+                }
             },
-            Self::ProtectUnit { unit_ref } => WinCondition::ProtectUnit {
-                unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
-            },
+            priority: self.priority,
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct PveEncounterRewardSource {
+    pub reward_source_id: String,
+    pub encounter_id: String,
+    pub fragment_id: SkillFragmentId,
+    pub repeat_reward: RewardEffect,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveEncounterDatabase {
     pub encounters: Vec<PveEncounter>,
+    pub reward_sources: Vec<PveEncounterRewardSource>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
 }
 
 impl PveEncounterDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(
+        encounters: Vec<PveEncounter>,
+        reward_sources: Vec<PveEncounterRewardSource>,
+    ) -> Self {
+        Self {
+            encounters,
+            reward_sources,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(encounters: Vec<PveEncounter>) -> Self {
         let by_id = once_lock_with(build_string_index(
             &encounters,
             "pve encounter id",
             |encounter| &encounter.id,
         ));
-        Self { encounters, by_id }
+        Self {
+            encounters,
+            reward_sources: Vec::new(),
+            by_id,
+        }
+    }
+
+    pub fn new_with_reward_sources(
+        encounters: Vec<PveEncounter>,
+        reward_sources: Vec<PveEncounterRewardSource>,
+    ) -> Self {
+        let mut database = Self::new(encounters);
+        database.reward_sources = reward_sources;
+        database
     }
 
     fn by_id(&self) -> &HashMap<String, usize> {
@@ -373,6 +630,99 @@ impl PveEncounterDatabase {
                 &format!("encounters[{encounter_index}]"),
             )?;
         }
+        self.validate_reward_source_contract()?;
+        Ok(())
+    }
+
+    fn validate_reward_source_contract(
+        &self,
+    ) -> Result<(), crate::game::data::DataValidationError> {
+        let mut reward_source_ids = HashSet::new();
+        let mut encounter_ids = HashSet::new();
+        let mut fragment_ids = HashSet::new();
+
+        for (source_index, source) in self.reward_sources.iter().enumerate() {
+            let source_path = format!("reward_sources[{source_index}]");
+            if source.reward_source_id.trim().is_empty() {
+                return Err(crate::game::data::DataValidationError::at(
+                    "pve_reward_source",
+                    format!("{source_path}.reward_source_id"),
+                    "reward source id must not be empty",
+                ));
+            }
+            if !reward_source_ids.insert(source.reward_source_id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &source.reward_source_id,
+                    format!("{source_path}.reward_source_id"),
+                    "duplicate reward source id",
+                ));
+            }
+            if !encounter_ids.insert(source.encounter_id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &source.reward_source_id,
+                    format!("{source_path}.encounter_id"),
+                    "an encounter may author exactly one reward source",
+                ));
+            }
+            if !fragment_ids.insert(source.fragment_id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &source.reward_source_id,
+                    format!("{source_path}.fragment_id"),
+                    "a fragment may belong to exactly one reward source",
+                ));
+            }
+
+            let encounter = self
+                .encounters
+                .iter()
+                .find(|encounter| encounter.id == source.encounter_id)
+                .ok_or_else(|| {
+                    crate::game::data::DataValidationError::at(
+                        &source.reward_source_id,
+                        format!("{source_path}.encounter_id"),
+                        format!("references missing PVE encounter '{}'", source.encounter_id),
+                    )
+                })?;
+            let expected_dust = match encounter.encounter_class {
+                PveEncounterClass::Elite => 5,
+                PveEncounterClass::NormalBoss => 10,
+                PveEncounterClass::FinalBoss => 20,
+                PveEncounterClass::ReferenceFinalBoss => {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &source.reward_source_id,
+                        format!("{source_path}.encounter_id"),
+                        "reference-only encounters cannot author abnormality reward sources",
+                    ));
+                }
+                PveEncounterClass::Normal => {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &source.reward_source_id,
+                        format!("{source_path}.encounter_id"),
+                        "Normal encounters cannot author abnormality reward sources",
+                    ));
+                }
+            };
+            if encounter.primary_abnormality_id().is_none() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &source.reward_source_id,
+                    format!("{source_path}.encounter_id"),
+                    "reward source encounter must author a primary abnormality",
+                ));
+            }
+            match source.repeat_reward {
+                RewardEffect::GrantFragmentDust { amount } if amount == expected_dust => {}
+                _ => {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &source.reward_source_id,
+                        format!("{source_path}.repeat_reward"),
+                        format!(
+                            "repeat reward must be explicit GrantFragmentDust({expected_dust}) for {:?}",
+                            encounter.encounter_class
+                        ),
+                    ));
+                }
+            }
+        }
         Ok(())
     }
 
@@ -382,11 +732,144 @@ impl PveEncounterDatabase {
             .and_then(|&index| self.encounters.get(index))
     }
 
+    pub fn get_reward_source_by_encounter_id(
+        &self,
+        encounter_id: &str,
+    ) -> Option<&PveEncounterRewardSource> {
+        self.reward_sources
+            .iter()
+            .find(|source| source.encounter_id == encounter_id)
+    }
+
     pub fn get_by_risk_level(&self, level: RiskLevel) -> Vec<&PveEncounter> {
         self.encounters
             .iter()
             .filter(|e| e.risk_level == level)
             .collect()
+    }
+
+    pub(crate) fn validate_boss_runtime_references(
+        &self,
+        boss_runtime: &BossRuntimeDatabase,
+    ) -> Result<(), crate::game::data::DataValidationError> {
+        for (encounter_index, encounter) in self.encounters.iter().enumerate() {
+            let Some(binding) = &encounter.boss_runtime else {
+                continue;
+            };
+            let binding_path = format!("encounters[{encounter_index}].boss_runtime");
+            let definition = boss_runtime
+                .get_encounter(&binding.encounter_id)
+                .ok_or_else(|| {
+                    pve_error(
+                        encounter,
+                        format!("{binding_path}.encounter_id"),
+                        format!(
+                            "references missing Boss encounter definition '{}'",
+                            binding.encounter_id.as_str()
+                        ),
+                    )
+                })?;
+            for (outcome_index, outcome) in encounter.terminal_outcomes.iter().enumerate() {
+                let PveTerminalConditionData::BossSignalLatched { signal_id } = &outcome.condition
+                else {
+                    continue;
+                };
+                if !boss_runtime.declares_signal(signal_id) {
+                    return Err(pve_error(
+                        encounter,
+                        format!(
+                            "encounters[{encounter_index}].terminal_outcomes[{outcome_index}].condition.signal_id"
+                        ),
+                        format!("references undeclared Boss signal '{}'", signal_id.as_str()),
+                    ));
+                }
+            }
+            if binding.actors.is_empty() {
+                return Err(pve_error(
+                    encounter,
+                    format!("{binding_path}.actors"),
+                    "Boss runtime binding must bind every actor slot",
+                ));
+            }
+            let expected_slots = definition
+                .actor_slots
+                .iter()
+                .cloned()
+                .collect::<HashSet<_>>();
+            let mut actual_slots = HashSet::new();
+            let mut spawn_bindings = HashSet::new();
+            for (actor_index, actor) in binding.actors.iter().enumerate() {
+                let actor_path = format!("{binding_path}.actors[{actor_index}]");
+                if !actual_slots.insert(actor.actor_slot_id.clone()) {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{actor_path}.actor_slot_id"),
+                        format!(
+                            "duplicate Boss actor slot binding '{}'",
+                            actor.actor_slot_id.as_str()
+                        ),
+                    ));
+                }
+                if !expected_slots.contains(&actor.actor_slot_id) {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{actor_path}.actor_slot_id"),
+                        format!(
+                            "references undeclared Boss actor slot '{}'",
+                            actor.actor_slot_id.as_str()
+                        ),
+                    ));
+                }
+                if actor.wave_id.trim().is_empty() {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{actor_path}.wave_id"),
+                        "Boss actor wave_id must not be empty",
+                    ));
+                }
+                let wave = encounter
+                    .waves
+                    .iter()
+                    .find(|wave| wave.id == actor.wave_id)
+                    .ok_or_else(|| {
+                        pve_error(
+                            encounter,
+                            format!("{actor_path}.wave_id"),
+                            format!("references missing wave '{}'", actor.wave_id),
+                        )
+                    })?;
+                if !spawn_bindings.insert((actor.wave_id.as_str(), actor.spawn_index)) {
+                    return Err(pve_error(
+                        encounter,
+                        actor_path,
+                        "multiple Boss actor slots bind the same wave spawn",
+                    ));
+                }
+                if let PveWaveSource::Manual(enemies) = &wave.source {
+                    let authored_count = enemies.iter().fold(0_u64, |total, enemy| {
+                        total.saturating_add(enemy.count() as u64)
+                    });
+                    if u64::from(actor.spawn_index) >= authored_count {
+                        return Err(pve_error(
+                            encounter,
+                            format!("{actor_path}.spawn_index"),
+                            format!(
+                                "spawn_index {} is outside manual wave '{}' count {}",
+                                actor.spawn_index, actor.wave_id, authored_count
+                            ),
+                        ));
+                    }
+                }
+            }
+            if actual_slots != expected_slots {
+                return Err(pve_error(
+                    encounter,
+                    format!("{binding_path}.actors"),
+                    "Boss runtime binding must bind every actor slot exactly once",
+                ));
+            }
+        }
+        Ok(())
     }
 }
 
@@ -419,15 +902,11 @@ fn validate_encounter_authoring_contract(
                     "normal encounter must not define primary_abnormality_id",
                 ));
             }
-            if encounter.suppression_research.is_some() {
-                return Err(pve_error(
-                    encounter,
-                    format!("{encounter_path}.suppression_research"),
-                    "normal encounter must not define suppression_research",
-                ));
-            }
         }
-        PveEncounterClass::Elite | PveEncounterClass::NormalBoss | PveEncounterClass::FinalBoss => {
+        PveEncounterClass::Elite
+        | PveEncounterClass::NormalBoss
+        | PveEncounterClass::FinalBoss
+        | PveEncounterClass::ReferenceFinalBoss => {
             if !encounter
                 .primary_abnormality_id
                 .as_deref()
@@ -445,65 +924,21 @@ fn validate_encounter_authoring_contract(
         }
     }
 
-    let mut bonus_objective_ids = HashSet::new();
-    for (objective_index, objective) in encounter.bonus_objectives().iter().enumerate() {
-        let objective_path =
-            format!("{encounter_path}.suppression_research.bonus_objectives[{objective_index}]");
-        if objective.id.trim().is_empty() {
-            return Err(pve_error(
-                encounter,
-                format!("{objective_path}.id"),
-                "bonus objective id must not be empty",
-            ));
-        }
-        if !bonus_objective_ids.insert(objective.id.as_str()) {
-            return Err(pve_error(
-                encounter,
-                format!("{objective_path}.id"),
-                format!("duplicate bonus objective id '{}'", objective.id),
-            ));
-        }
-        if objective.research_bonus == 0 {
-            return Err(pve_error(
-                encounter,
-                format!("{objective_path}.research_bonus"),
-                "research_bonus must be greater than zero",
-            ));
-        }
-        if let Some(presentation) = &objective.presentation {
-            if presentation.trim().is_empty() {
+    if encounter.is_reference_only() {
+        for (policy_index, policy) in encounter.outcome_policies.iter().enumerate() {
+            if !policy.reward_uuids.is_empty()
+                || policy.grant_node_bonus
+                || policy.advance_encounter_progression
+            {
                 return Err(pve_error(
                     encounter,
-                    format!("{objective_path}.presentation"),
-                    "presentation must not be empty",
+                    format!("{encounter_path}.outcome_policies[{policy_index}]"),
+                    "reference-only outcomes cannot grant rewards, node bonuses, or encounter progression",
                 ));
             }
         }
-        match objective.condition {
-            PveBonusObjectiveConditionData::ClearWithin { time_ms } => {
-                if time_ms == 0 {
-                    return Err(pve_error(
-                        encounter,
-                        format!("{objective_path}.condition.ClearWithin.time_ms"),
-                        "time_ms must be greater than zero",
-                    ));
-                }
-            }
-            PveBonusObjectiveConditionData::DecisiveDamage {
-                minimum_damage_percent_of_max_hp,
-            } => {
-                if minimum_damage_percent_of_max_hp == 0 {
-                    return Err(pve_error(
-                        encounter,
-                        format!(
-                            "{objective_path}.condition.DecisiveDamage.minimum_damage_percent_of_max_hp"
-                        ),
-                        "minimum_damage_percent_of_max_hp must be greater than zero",
-                    ));
-                }
-            }
-        }
     }
+
     let mut primary_target_count = 0_u32;
     let mut non_primary_abnormalities = Vec::new();
     let primary_abnormality_id = encounter.primary_abnormality_id();
@@ -564,25 +999,6 @@ fn validate_encounter_authoring_contract(
         }
     }
 
-    if encounter.has_bonus_objectives() {
-        let primary = encounter.primary_abnormality_id().ok_or_else(|| {
-            pve_error(
-                encounter,
-                format!("{encounter_path}.primary_abnormality_id"),
-                "bonus objective encounter must have a primary abnormality",
-            )
-        })?;
-        if primary_target_count == 0 {
-            return Err(pve_error(
-                encounter,
-                format!("{encounter_path}.waves"),
-                format!(
-                    "encounter defines bonus objectives but does not spawn its primary abnormality target '{primary}'"
-                ),
-            ));
-        }
-    }
-
     let mut wave_ids = HashSet::new();
     for (wave_index, wave) in encounter.waves.iter().enumerate() {
         let wave_path = format!("{encounter_path}.waves[{wave_index}]");
@@ -599,10 +1015,14 @@ fn validate_encounter_authoring_contract(
         )
         .map_err(|cause| pve_error(encounter, wave_path, cause))?;
     }
+    validate_wave_activation_graph(encounter, encounter_path)?;
+    validate_terminal_outcome_contract(encounter, encounter_path)?;
 
     let Some(tactical_plan) = &encounter.tactical_plan else {
         return Ok(());
     };
+
+    validate_field_work_authoring(encounter, tactical_plan, encounter_path)?;
 
     let mut point_ids = HashSet::new();
     for (point_index, point) in tactical_plan.points.iter().enumerate() {
@@ -615,15 +1035,459 @@ fn validate_encounter_authoring_contract(
         }
     }
 
-    if let (Some(objective), Some(win_condition)) =
-        (&tactical_plan.objective, &encounter.win_condition)
-    {
-        validate_objective_win_condition_consistency(
+    if let Some(PveBattleObjectiveData::ProtectUnit { unit_ref }) = &tactical_plan.objective {
+        let has_matching_defeat = encounter.terminal_outcomes.iter().any(|outcome| {
+            outcome.verdict == BattleVerdict::Defeat
+                && matches!(
+                    &outcome.condition,
+                    PveTerminalConditionData::UnitDefeated { unit_ref: terminal_ref }
+                        if terminal_ref == unit_ref
+                )
+        });
+        if !has_matching_defeat {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.tactical_plan.objective"),
+                "protect objective requires a matching UnitDefeated Defeat outcome",
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn validate_terminal_outcome_contract(
+    encounter: &PveEncounter,
+    encounter_path: &str,
+) -> Result<(), crate::game::data::DataValidationError> {
+    if encounter.terminal_outcomes.is_empty() {
+        return Err(pve_error(
             encounter,
-            objective,
-            win_condition,
-            encounter_path,
-        )?;
+            format!("{encounter_path}.terminal_outcomes"),
+            "encounter must declare at least one terminal outcome",
+        ));
+    }
+
+    let mut outcome_ids = HashSet::new();
+    let mut has_victory = false;
+    let mut has_time_victory = false;
+    for (index, outcome) in encounter.terminal_outcomes.iter().enumerate() {
+        let outcome_path = format!("{encounter_path}.terminal_outcomes[{index}]");
+        if outcome.id.trim().is_empty() || !outcome_ids.insert(outcome.id.as_str()) {
+            return Err(pve_error(
+                encounter,
+                format!("{outcome_path}.id"),
+                "terminal outcome id must be nonempty and unique",
+            ));
+        }
+        has_victory |= outcome.verdict == BattleVerdict::Victory;
+        match &outcome.condition {
+            PveTerminalConditionData::AllRequiredEnemyGroupsDefeated
+            | PveTerminalConditionData::AllPlayerCombatantsDefeated => {}
+            PveTerminalConditionData::UnitDefeated { unit_ref } => {
+                if unit_ref.trim().is_empty() {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{outcome_path}.condition.unit_ref"),
+                        "terminal unit_ref must not be empty",
+                    ));
+                }
+            }
+            PveTerminalConditionData::TimeReached { time_ms } => {
+                if *time_ms == 0 || *time_ms > u32::MAX as u64 {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{outcome_path}.condition.time_ms"),
+                        format!("terminal time_ms must be within 1..={}", u32::MAX),
+                    ));
+                }
+                has_time_victory |= outcome.verdict == BattleVerdict::Victory;
+            }
+            PveTerminalConditionData::BossSignalLatched { signal_id } => {
+                if signal_id.as_str().trim().is_empty() || encounter.boss_runtime.is_none() {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{outcome_path}.condition.signal_id"),
+                        "BossSignalLatched requires a nonempty signal and Boss Runtime binding",
+                    ));
+                }
+            }
+        }
+    }
+    if !has_victory {
+        return Err(pve_error(
+            encounter,
+            format!("{encounter_path}.terminal_outcomes"),
+            "encounter must declare at least one reachable Victory outcome",
+        ));
+    }
+    if has_time_victory && encounter.waves.iter().any(|wave| wave.required_for_victory) {
+        return Err(pve_error(
+            encounter,
+            format!("{encounter_path}.waves"),
+            "time-Victory encounter waves must all set required_for_victory to false",
+        ));
+    }
+
+    let mut policy_ids = HashSet::new();
+    for (index, policy) in encounter.outcome_policies.iter().enumerate() {
+        let policy_path = format!("{encounter_path}.outcome_policies[{index}]");
+        if policy.outcome_id.trim().is_empty()
+            || !policy_ids.insert(policy.outcome_id.as_str())
+            || !outcome_ids.contains(policy.outcome_id.as_str())
+        {
+            return Err(pve_error(
+                encounter,
+                format!("{policy_path}.outcome_id"),
+                "outcome policy must reference one unique declared outcome",
+            ));
+        }
+        let mut rewards = HashSet::new();
+        if policy
+            .reward_uuids
+            .iter()
+            .any(|reward| !rewards.insert(*reward))
+        {
+            return Err(pve_error(
+                encounter,
+                format!("{policy_path}.reward_uuids"),
+                "outcome policy contains duplicate reward UUIDs",
+            ));
+        }
+        let verdict = encounter
+            .terminal_outcomes
+            .iter()
+            .find(|outcome| outcome.id == policy.outcome_id)
+            .map(|outcome| outcome.verdict)
+            .expect("declared outcome existence was checked");
+        if verdict == BattleVerdict::Defeat
+            && (!policy.reward_uuids.is_empty()
+                || policy.grant_node_bonus
+                || policy.advance_encounter_progression)
+        {
+            return Err(pve_error(
+                encounter,
+                policy_path,
+                "Defeat outcome policy cannot grant rewards, node bonus, or progression",
+            ));
+        }
+    }
+    if policy_ids != outcome_ids {
+        return Err(pve_error(
+            encounter,
+            format!("{encounter_path}.outcome_policies"),
+            "outcome policies must cover every terminal outcome exactly once",
+        ));
+    }
+    Ok(())
+}
+
+fn validate_wave_activation_graph(
+    encounter: &PveEncounter,
+    encounter_path: &str,
+) -> Result<(), crate::game::data::DataValidationError> {
+    let wave_indices = encounter
+        .waves
+        .iter()
+        .enumerate()
+        .map(|(index, wave)| (wave.id.as_str(), index))
+        .collect::<HashMap<_, _>>();
+    let mut trigger_ids = HashSet::new();
+    let mut dependencies = vec![Vec::<usize>::new(); encounter.waves.len()];
+    let actor_sources = encounter
+        .boss_runtime
+        .as_ref()
+        .map(|binding| {
+            binding
+                .actors
+                .iter()
+                .map(|actor| (actor.actor_slot_id.clone(), actor.wave_id.as_str()))
+                .collect::<HashMap<_, _>>()
+        })
+        .unwrap_or_default();
+    let point_ids = encounter
+        .tactical_plan
+        .as_ref()
+        .map(|plan| {
+            plan.points
+                .iter()
+                .map(|point| point.id.as_str())
+                .collect::<HashSet<_>>()
+        })
+        .unwrap_or_default();
+
+    for (wave_index, wave) in encounter.waves.iter().enumerate() {
+        let activation_path = format!("{encounter_path}.waves[{wave_index}].activation");
+        if !trigger_ids.insert(wave.activation.trigger_id.as_str()) {
+            return Err(pve_error(
+                encounter,
+                format!("{activation_path}.trigger_id"),
+                format!("duplicate wave trigger_id '{}'", wave.activation.trigger_id),
+            ));
+        }
+
+        let dependency_wave_id = match &wave.activation.primary {
+            PveWavePrimaryTriggerData::AtTimeMs { .. } => None,
+            PveWavePrimaryTriggerData::GroupCleared { wave_id } => Some(wave_id.as_str()),
+            PveWavePrimaryTriggerData::ActorHealthAtOrBelowPercent { actor_slot_id, .. }
+            | PveWavePrimaryTriggerData::ActorDefeated { actor_slot_id }
+            | PveWavePrimaryTriggerData::ActorReachedPoint { actor_slot_id, .. } => {
+                let Some(source_wave_id) = actor_sources.get(actor_slot_id) else {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{activation_path}.primary.actor_slot_id"),
+                        format!(
+                            "references unbound Boss actor slot '{}'",
+                            actor_slot_id.as_str()
+                        ),
+                    ));
+                };
+                Some(*source_wave_id)
+            }
+        };
+
+        if let PveWavePrimaryTriggerData::ActorReachedPoint { point_id, .. } =
+            &wave.activation.primary
+        {
+            if !point_ids.contains(point_id.as_str()) {
+                return Err(pve_error(
+                    encounter,
+                    format!("{activation_path}.primary.point_id"),
+                    format!("references unknown tactical point '{point_id}'"),
+                ));
+            }
+        }
+
+        if let Some(source_wave_id) = dependency_wave_id {
+            let Some(&source_index) = wave_indices.get(source_wave_id) else {
+                return Err(pve_error(
+                    encounter,
+                    format!("{activation_path}.primary"),
+                    format!("references missing source wave '{source_wave_id}'"),
+                ));
+            };
+            if source_index == wave_index {
+                return Err(pve_error(
+                    encounter,
+                    format!("{activation_path}.primary"),
+                    "wave activation cannot depend on its own wave",
+                ));
+            }
+            if matches!(
+                wave.activation.primary,
+                PveWavePrimaryTriggerData::ActorHealthAtOrBelowPercent { .. }
+                    | PveWavePrimaryTriggerData::ActorDefeated { .. }
+                    | PveWavePrimaryTriggerData::ActorReachedPoint { .. }
+            ) && matches!(
+                encounter.waves[source_index].source,
+                PveWaveSource::GeneratedCorroded { .. }
+            ) {
+                return Err(pve_error(
+                    encounter,
+                    format!("{activation_path}.primary.actor_slot_id"),
+                    format!(
+                        "actor trigger source wave '{source_wave_id}' is generated; generated waves support group observation only"
+                    ),
+                ));
+            }
+            dependencies[wave_index].push(source_index);
+
+            if let Some(deadline_ms) = wave.activation.deadline_ms {
+                let source_time_ms = encounter.waves[source_index]
+                    .authored_time_ms()
+                    .or(encounter.waves[source_index].activation.deadline_ms);
+                if let Some(source_time_ms) = source_time_ms {
+                    if deadline_ms <= source_time_ms {
+                        return Err(pve_error(
+                            encounter,
+                            format!("{activation_path}.deadline_ms"),
+                            format!(
+                                "deadline_ms {deadline_ms} must be later than source wave '{source_wave_id}' time {source_time_ms}"
+                            ),
+                        ));
+                    }
+                }
+            }
+        }
+    }
+
+    fn visit(index: usize, dependencies: &[Vec<usize>], marks: &mut [u8]) -> Result<(), ()> {
+        if marks[index] == 1 {
+            return Err(());
+        }
+        if marks[index] == 2 {
+            return Ok(());
+        }
+        marks[index] = 1;
+        for dependency in &dependencies[index] {
+            visit(*dependency, dependencies, marks)?;
+        }
+        marks[index] = 2;
+        Ok(())
+    }
+
+    let mut marks = vec![0_u8; encounter.waves.len()];
+    for index in 0..encounter.waves.len() {
+        if visit(index, &dependencies, &mut marks).is_err() {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.waves"),
+                "wave activation dependency graph contains a cycle",
+            ));
+        }
+    }
+
+    fn may_cancel(
+        index: usize,
+        encounter: &PveEncounter,
+        dependencies: &[Vec<usize>],
+        memo: &mut [Option<bool>],
+    ) -> bool {
+        if let Some(value) = memo[index] {
+            return value;
+        }
+        let wave = &encounter.waves[index];
+        let value = if wave.required_for_victory || wave.activation.deadline_ms.is_some() {
+            false
+        } else {
+            match wave.activation.primary {
+                PveWavePrimaryTriggerData::AtTimeMs { .. } => false,
+                PveWavePrimaryTriggerData::GroupCleared { .. } => dependencies[index]
+                    .first()
+                    .is_some_and(|source| may_cancel(*source, encounter, dependencies, memo)),
+                PveWavePrimaryTriggerData::ActorHealthAtOrBelowPercent { .. }
+                | PveWavePrimaryTriggerData::ActorDefeated { .. }
+                | PveWavePrimaryTriggerData::ActorReachedPoint { .. } => true,
+            }
+        };
+        memo[index] = Some(value);
+        value
+    }
+
+    let mut cancellation_memo = vec![None; encounter.waves.len()];
+    for (index, wave) in encounter.waves.iter().enumerate() {
+        if !wave.required_for_victory || wave.activation.deadline_ms.is_some() {
+            continue;
+        }
+        if dependencies[index]
+            .iter()
+            .any(|source| may_cancel(*source, encounter, &dependencies, &mut cancellation_memo))
+        {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.waves[{index}].activation"),
+                "required wave depends on a cancelable source and must define a deadline_ms",
+            ));
+        }
+    }
+
+    Ok(())
+}
+
+fn validate_field_work_authoring(
+    encounter: &PveEncounter,
+    tactical_plan: &PveTacticalPlanData,
+    encounter_path: &str,
+) -> Result<(), crate::game::data::DataValidationError> {
+    let mut object_ids = HashSet::new();
+    let mut work_cell_positions = HashSet::new();
+    for (object_index, object) in tactical_plan.field_work_objects.iter().enumerate() {
+        let object_path =
+            format!("{encounter_path}.tactical_plan.field_work_objects[{object_index}]");
+        if object.id.trim().is_empty() {
+            return Err(pve_error(
+                encounter,
+                format!("{object_path}.id"),
+                "field work object id must not be empty",
+            ));
+        }
+        if !object_ids.insert(object.id.as_str()) {
+            return Err(pve_error(
+                encounter,
+                format!("{object_path}.id"),
+                format!("duplicate field work object id '{}'", object.id),
+            ));
+        }
+        if object.required_work_ms == 0 {
+            return Err(pve_error(
+                encounter,
+                format!("{object_path}.required_work_ms"),
+                "required_work_ms must be greater than zero",
+            ));
+        }
+        if object.work_cells.is_empty() {
+            return Err(pve_error(
+                encounter,
+                format!("{object_path}.work_cells"),
+                "field work object must define at least one work cell",
+            ));
+        }
+
+        let mut cell_ids = HashSet::new();
+        for (cell_index, cell) in object.work_cells.iter().enumerate() {
+            let cell_path = format!("{object_path}.work_cells[{cell_index}]");
+            if cell.id.trim().is_empty() {
+                return Err(pve_error(
+                    encounter,
+                    format!("{cell_path}.id"),
+                    "field work cell id must not be empty",
+                ));
+            }
+            if !cell_ids.insert(cell.id.as_str()) {
+                return Err(pve_error(
+                    encounter,
+                    format!("{cell_path}.id"),
+                    format!("duplicate field work cell id '{}'", cell.id),
+                ));
+            }
+            if !work_cell_positions.insert(cell.position) {
+                return Err(pve_error(
+                    encounter,
+                    format!("{cell_path}.position"),
+                    format!(
+                        "duplicate field work cell position ({}, {})",
+                        cell.position.x, cell.position.y
+                    ),
+                ));
+            }
+        }
+
+        match &object.completion_effect {
+            PveFieldWorkCompletionEffectData::RepairProtectedUnit { unit_ref, flat_hp } => {
+                if unit_ref.trim().is_empty() {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{object_path}.completion_effect.RepairProtectedUnit.unit_ref"),
+                        "repair target unit_ref must not be empty",
+                    ));
+                }
+                if *flat_hp == 0 {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{object_path}.completion_effect.RepairProtectedUnit.flat_hp"),
+                        "repair flat_hp must be greater than zero",
+                    ));
+                }
+                let protects_same_unit = matches!(
+                    &tactical_plan.objective,
+                    Some(PveBattleObjectiveData::ProtectUnit { unit_ref: objective_ref })
+                        if objective_ref == unit_ref
+                ) && encounter.terminal_outcomes.iter().any(|outcome| {
+                    outcome.verdict == BattleVerdict::Defeat
+                        && matches!(
+                            &outcome.condition,
+                            PveTerminalConditionData::UnitDefeated { unit_ref: terminal_ref }
+                                if terminal_ref == unit_ref
+                        )
+                });
+                if !protects_same_unit {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{object_path}.completion_effect.RepairProtectedUnit.unit_ref"),
+                        "repair target must match the authored protect objective and win condition",
+                    ));
+                }
+            }
+        }
     }
     Ok(())
 }
@@ -634,6 +1498,57 @@ pub(super) fn validate_pve_wave_authoring_contract(
 ) -> Result<(), String> {
     if wave.id.trim().is_empty() {
         return Err("wave id must not be empty".to_string());
+    }
+    if wave.activation.trigger_id.trim().is_empty() {
+        return Err("wave activation trigger_id must not be empty".to_string());
+    }
+    const MAX_AUTHORED_TIME_MS: u64 = u32::MAX as u64;
+    if let Some(deadline_ms) = wave.activation.deadline_ms {
+        if deadline_ms == 0 || deadline_ms > MAX_AUTHORED_TIME_MS {
+            return Err(format!(
+                "wave activation deadline_ms must be within 1..={MAX_AUTHORED_TIME_MS}"
+            ));
+        }
+    }
+    match &wave.activation.primary {
+        PveWavePrimaryTriggerData::AtTimeMs { time_ms } => {
+            if *time_ms > MAX_AUTHORED_TIME_MS {
+                return Err(format!(
+                    "AtTimeMs.time_ms must be within 0..={MAX_AUTHORED_TIME_MS}"
+                ));
+            }
+            if wave.activation.deadline_ms.is_some() {
+                return Err("AtTimeMs must not define a separate deadline_ms".to_string());
+            }
+        }
+        PveWavePrimaryTriggerData::GroupCleared { wave_id } => {
+            if wave_id.trim().is_empty() {
+                return Err("GroupCleared.wave_id must not be empty".to_string());
+            }
+        }
+        PveWavePrimaryTriggerData::ActorHealthAtOrBelowPercent { percent, .. } => {
+            if !(1..=100).contains(percent) {
+                return Err(
+                    "ActorHealthAtOrBelowPercent.percent must be within 1..=100".to_string()
+                );
+            }
+        }
+        PveWavePrimaryTriggerData::ActorDefeated { .. } => {}
+        PveWavePrimaryTriggerData::ActorReachedPoint {
+            point_id,
+            radius_cells,
+            ..
+        } => {
+            if point_id.trim().is_empty() {
+                return Err("ActorReachedPoint.point_id must not be empty".to_string());
+            }
+            if *radius_cells == 0 {
+                return Err("ActorReachedPoint.radius_cells must be greater than zero".to_string());
+            }
+            if wave.required_for_victory && wave.activation.deadline_ms.is_none() {
+                return Err("required ActorReachedPoint wave must define deadline_ms".to_string());
+            }
+        }
     }
     match &wave.source {
         PveWaveSource::Manual(enemies) if enemies.is_empty() => {
@@ -695,57 +1610,64 @@ pub(super) fn validate_pve_wave_authoring_contract(
     Ok(())
 }
 
-fn validate_objective_win_condition_consistency(
-    encounter: &PveEncounter,
-    objective: &PveBattleObjectiveData,
-    win_condition: &PveWinConditionData,
-    encounter_path: &str,
-) -> Result<(), crate::game::data::DataValidationError> {
-    let Some(objective_contract) = ObjectiveWinContract::from_objective(objective) else {
-        return Ok(());
-    };
-    let win_contract = ObjectiveWinContract::from_win_condition(win_condition);
-    if objective_contract != win_contract {
-        return Err(pve_error(
-            encounter,
-            format!("{encounter_path}.tactical_plan.objective"),
-            format!(
-                "tactical objective {objective:?} conflicts with win condition {win_condition:?}"
-            ),
-        ));
-    }
-    Ok(())
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-enum ObjectiveWinContract {
-    DefeatAllRequiredEnemies,
-    DefeatUnit(String),
-    ProtectUnit(String),
-}
-
-impl ObjectiveWinContract {
-    fn from_objective(objective: &PveBattleObjectiveData) -> Option<Self> {
-        match objective {
-            PveBattleObjectiveData::DefeatBoss { .. } => None,
-            PveBattleObjectiveData::ProtectUnit { unit_ref } => {
-                Some(Self::ProtectUnit(unit_ref.clone()))
-            }
-        }
-    }
-
-    fn from_win_condition(win_condition: &PveWinConditionData) -> Self {
-        match win_condition {
-            PveWinConditionData::AllRequiredEnemyGroupsDefeated => Self::DefeatAllRequiredEnemies,
-            PveWinConditionData::DefeatUnit { unit_ref } => Self::DefeatUnit(unit_ref.clone()),
-            PveWinConditionData::ProtectUnit { unit_ref } => Self::ProtectUnit(unit_ref.clone()),
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn graph_wave(
+        id: &str,
+        primary: PveWavePrimaryTriggerData,
+        deadline_ms: Option<u64>,
+        required_for_victory: bool,
+    ) -> PveWaveData {
+        PveWaveData {
+            id: id.to_string(),
+            activation: PveWaveActivationData {
+                trigger_id: format!("trigger_{id}"),
+                priority: 0,
+                primary,
+                deadline_ms,
+            },
+            spawn_zone_ids: Vec::new(),
+            route_id: None,
+            required_for_victory,
+            source: PveWaveSource::GeneratedCorroded {
+                preset_id: "fixture".to_string(),
+                budget_override: None,
+                seed_salt: None,
+            },
+        }
+    }
+
+    fn graph_encounter(waves: Vec<PveWaveData>) -> PveEncounter {
+        PveEncounter {
+            id: "wave_graph".to_string(),
+            encounter_class: PveEncounterClass::Normal,
+            primary_abnormality_id: None,
+            boss_runtime: None,
+            risk_level: RiskLevel::ZAYIN,
+            node_type: None,
+            mission_variant: None,
+            terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+            outcome_policies: PveEncounter::fixture_outcome_policies(
+                RewardMode::ClaimAll,
+                Vec::new(),
+            ),
+            battlefield: None,
+            tactical_plan: None,
+            waves,
+            static_obstacles: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn pve_database_requires_explicit_reward_source_collection() {
+        let error =
+            ron::de::from_str::<PveEncounterDatabase>(r#"PveEncounterDatabase(encounters: [])"#)
+                .expect_err("reward_sources must be explicit in authored PVE RON");
+
+        assert!(error.to_string().contains("reward_sources"));
+    }
 
     #[test]
     fn pve_encounter_deserializes_static_obstacles_and_defaults_to_empty() {
@@ -838,6 +1760,205 @@ mod tests {
     }
 
     #[test]
+    fn wave_activation_and_victory_gate_have_no_deserialization_defaults() {
+        let missing_activation = ron::de::from_str::<PveWaveData>(
+            r#"(
+                id: "wave",
+                required_for_victory: true,
+                source: GeneratedCorroded(preset_id: "fixture"),
+            )"#,
+        )
+        .expect_err("activation must be explicit");
+        assert!(missing_activation.to_string().contains("activation"));
+
+        let missing_victory_gate = ron::de::from_str::<PveWaveData>(
+            r#"(
+                id: "wave",
+                activation: (
+                    trigger_id: "wave",
+                    priority: 0,
+                    primary: AtTimeMs(time_ms: 0),
+                ),
+                source: GeneratedCorroded(preset_id: "fixture"),
+            )"#,
+        )
+        .expect_err("required_for_victory must be explicit");
+        assert!(missing_victory_gate
+            .to_string()
+            .contains("required_for_victory"));
+    }
+
+    #[test]
+    fn wave_activation_graph_rejects_missing_sources_cycles_and_reversed_deadlines() {
+        let missing = graph_encounter(vec![graph_wave(
+            "target",
+            PveWavePrimaryTriggerData::GroupCleared {
+                wave_id: "missing".to_string(),
+            },
+            None,
+            true,
+        )]);
+        let error = PveEncounterDatabase::new(vec![missing])
+            .validate_contract()
+            .expect_err("missing source must reject");
+        assert!(error.cause.contains("missing source wave"));
+
+        let cycle = graph_encounter(vec![
+            graph_wave(
+                "a",
+                PveWavePrimaryTriggerData::GroupCleared {
+                    wave_id: "b".to_string(),
+                },
+                None,
+                true,
+            ),
+            graph_wave(
+                "b",
+                PveWavePrimaryTriggerData::GroupCleared {
+                    wave_id: "a".to_string(),
+                },
+                None,
+                true,
+            ),
+        ]);
+        let error = PveEncounterDatabase::new(vec![cycle])
+            .validate_contract()
+            .expect_err("cycle must reject");
+        assert!(error.cause.contains("cycle"));
+
+        let reversed = graph_encounter(vec![
+            graph_wave(
+                "source",
+                PveWavePrimaryTriggerData::AtTimeMs { time_ms: 10 },
+                None,
+                true,
+            ),
+            graph_wave(
+                "target",
+                PveWavePrimaryTriggerData::GroupCleared {
+                    wave_id: "source".to_string(),
+                },
+                Some(10),
+                true,
+            ),
+        ]);
+        let error = PveEncounterDatabase::new(vec![reversed])
+            .validate_contract()
+            .expect_err("deadline at or before its source must reject");
+        assert!(error.cause.contains("must be later"));
+    }
+
+    #[test]
+    fn wave_activation_rejects_invalid_typed_payloads_and_generated_actor_sources() {
+        let at_time_with_deadline = graph_wave(
+            "time",
+            PveWavePrimaryTriggerData::AtTimeMs { time_ms: 10 },
+            Some(20),
+            true,
+        );
+        let error = validate_pve_wave_authoring_contract(&at_time_with_deadline, false)
+            .expect_err("AtTimeMs cannot have a second deadline");
+        assert!(error.contains("must not define"));
+
+        let invalid_hp = graph_wave(
+            "hp",
+            PveWavePrimaryTriggerData::ActorHealthAtOrBelowPercent {
+                actor_slot_id: BossActorSlotId::new("primary"),
+                percent: 0,
+            },
+            None,
+            false,
+        );
+        let error = validate_pve_wave_authoring_contract(&invalid_hp, false)
+            .expect_err("zero percent must reject");
+        assert!(error.contains("1..=100"));
+
+        let generated_actor_source = graph_wave(
+            "generated_actor",
+            PveWavePrimaryTriggerData::AtTimeMs { time_ms: 0 },
+            None,
+            true,
+        );
+        let actor_observer = graph_wave(
+            "observer",
+            PveWavePrimaryTriggerData::ActorDefeated {
+                actor_slot_id: BossActorSlotId::new("primary"),
+            },
+            Some(100),
+            true,
+        );
+        let mut encounter = graph_encounter(vec![generated_actor_source, actor_observer]);
+        encounter.boss_runtime = Some(PveBossRuntimeBindingData {
+            encounter_id: BossEncounterRuntimeId::new("fixture"),
+            actors: vec![PveBossActorBindingData {
+                actor_slot_id: BossActorSlotId::new("primary"),
+                wave_id: "generated_actor".to_string(),
+                spawn_index: 0,
+            }],
+        });
+        let error = validate_wave_activation_graph(&encounter, "encounters[0]")
+            .expect_err("generated Wave actor observation must reject");
+        assert!(error.cause.contains("group observation only"));
+    }
+
+    #[test]
+    fn required_wave_cannot_depend_indefinitely_on_a_cancelable_actor_wave() {
+        let mut actor_source = graph_wave(
+            "actor_source",
+            PveWavePrimaryTriggerData::AtTimeMs { time_ms: 0 },
+            None,
+            true,
+        );
+        actor_source.source = PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
+            abnormality_id: "enemy".to_string(),
+            tier: Tier::I,
+            count: 1,
+        }]);
+        let mut actor_wave = graph_wave(
+            "actor_wave",
+            PveWavePrimaryTriggerData::ActorDefeated {
+                actor_slot_id: BossActorSlotId::new("primary"),
+            },
+            None,
+            false,
+        );
+        actor_wave.source = PveWaveSource::Manual(vec![PveWaveEnemyData::CorrodedEmployee {
+            profile_id: "guard".to_string(),
+            tier: Tier::I,
+            count: 1,
+        }]);
+        let mut required = graph_wave(
+            "required",
+            PveWavePrimaryTriggerData::GroupCleared {
+                wave_id: "actor_wave".to_string(),
+            },
+            None,
+            true,
+        );
+        required.source = PveWaveSource::Manual(vec![PveWaveEnemyData::CorrodedEmployee {
+            profile_id: "guard".to_string(),
+            tier: Tier::I,
+            count: 1,
+        }]);
+        let mut encounter = graph_encounter(vec![actor_source, actor_wave, required]);
+        encounter.encounter_class = PveEncounterClass::Elite;
+        encounter.primary_abnormality_id = Some("enemy".to_string());
+        encounter.boss_runtime = Some(PveBossRuntimeBindingData {
+            encounter_id: BossEncounterRuntimeId::new("fixture"),
+            actors: vec![PveBossActorBindingData {
+                actor_slot_id: BossActorSlotId::new("primary"),
+                wave_id: "actor_source".to_string(),
+                spawn_index: 0,
+            }],
+        });
+
+        let error = PveEncounterDatabase::new(vec![encounter])
+            .validate_contract()
+            .expect_err("required downstream of cancelable actor source must reject");
+        assert!(error.cause.contains("cancelable source"));
+    }
+
+    #[test]
     fn pve_encounter_deserializes_authored_waves() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
@@ -848,7 +1969,11 @@ mod tests {
                 waves: [
                     (
                         id: "wave_0",
-                        time_ms: 0,
+                        activation: (
+                            trigger_id: "wave_0",
+                            priority: 0,
+                            primary: AtTimeMs(time_ms: 0),
+                        ),
                         spawn_zone_ids: ["north_entry"],
                         required_for_victory: true,
                         source: Manual([
@@ -858,7 +1983,12 @@ mod tests {
                     ),
                     (
                         id: "wave_1",
-                        time_ms: 15000,
+                        activation: (
+                            trigger_id: "wave_1",
+                            priority: 0,
+                            primary: AtTimeMs(time_ms: 15000),
+                        ),
+                        required_for_victory: true,
                         source: Manual([
                             Abnormality(abnormality_id: "enemy_b", tier: I, count: 1),
                         ]),
@@ -895,7 +2025,14 @@ mod tests {
                 primary_abnormality_id: Some("enemy"),
                 risk_level: HE,
                 node_type: Some(Defense),
-                survive_timer_ms: Some(45000),
+                terminal_outcomes: [
+                    (id: "victory", verdict: victory, condition: TimeReached(time_ms: 45000), priority: 0),
+                    (id: "defeat", verdict: defeat, condition: UnitDefeated(unit_ref: "black_box"), priority: 0),
+                ],
+                outcome_policies: [
+                    (outcome_id: "victory", reward_mode: ClaimAll, reward_uuids: [], grant_node_bonus: true, advance_encounter_progression: true),
+                    (outcome_id: "defeat", reward_mode: ClaimAll, reward_uuids: [], grant_node_bonus: false, advance_encounter_progression: false),
+                ],
                 battlefield: Some((
                     archetype: Some(ChokePoint),
                     size_class: Some(Small),
@@ -906,11 +2043,14 @@ mod tests {
                     ],
                     objective: Some(ProtectUnit(unit_ref: "black_box")),
                 )),
-                win_condition: Some(ProtectUnit(unit_ref: "black_box")),
                 waves: [
                     (
                         id: "wave_0",
-                        time_ms: 0,
+                        activation: (
+                            trigger_id: "wave_0",
+                            priority: 0,
+                            primary: AtTimeMs(time_ms: 0),
+                        ),
                         spawn_zone_ids: ["north_entry"],
                         required_for_victory: false,
                         source: Manual([
@@ -923,7 +2063,7 @@ mod tests {
         .expect("scenario authoring overrides should deserialize");
 
         assert_eq!(encounter.node_type, Some(CombatNodeType::Defense));
-        assert_eq!(encounter.survive_timer_ms, Some(45_000));
+        assert_eq!(encounter.survive_timer_ms(), Some(45_000));
         assert_eq!(
             encounter
                 .battlefield
@@ -940,10 +2080,10 @@ mod tests {
             plan.objective,
             BattleObjective::ProtectUnit { ref unit_ref } if unit_ref.0 == "black_box"
         ));
-        assert!(matches!(
-            encounter.authored_win_condition(),
-            Some(WinCondition::ProtectUnit { ref unit_ref }) if unit_ref.0 == "black_box"
-        ));
+        assert!(encounter.terminal_outcomes.iter().any(|outcome| matches!(
+            &outcome.condition,
+            PveTerminalConditionData::UnitDefeated { unit_ref } if unit_ref == "black_box"
+        )));
     }
 
     #[test]
@@ -968,21 +2108,33 @@ mod tests {
     }
 
     #[test]
-    fn pve_encounter_validation_rejects_conflicting_objective_and_win_condition() {
+    fn pve_encounter_validation_rejects_protect_objective_without_matching_defeat_outcome() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
                 id: "conflicting_contract",
                 encounter_class: Elite,
                 primary_abnormality_id: Some("enemy"),
                 risk_level: HE,
+                terminal_outcomes: [
+                    (id: "victory", verdict: victory, condition: AllRequiredEnemyGroupsDefeated, priority: 0),
+                    (id: "defeat", verdict: defeat, condition: AllPlayerCombatantsDefeated, priority: 0),
+                ],
+                outcome_policies: [
+                    (outcome_id: "victory", reward_mode: ClaimAll, reward_uuids: [], grant_node_bonus: true, advance_encounter_progression: true),
+                    (outcome_id: "defeat", reward_mode: ClaimAll, reward_uuids: [], grant_node_bonus: false, advance_encounter_progression: false),
+                ],
                 tactical_plan: Some((
                     objective: Some(ProtectUnit(unit_ref: "black_box")),
                 )),
-                win_condition: Some(AllRequiredEnemyGroupsDefeated),
                 waves: [
                     (
                         id: "wave_0",
-                        time_ms: 0,
+                        activation: (
+                            trigger_id: "wave_0",
+                            priority: 0,
+                            primary: AtTimeMs(time_ms: 0),
+                        ),
+                        required_for_victory: true,
                         source: Manual([
                             Abnormality(abnormality_id: "enemy", tier: I, count: 1),
                         ]),
@@ -1000,163 +2152,238 @@ mod tests {
             error.field_path.as_deref(),
             Some("encounters[0].tactical_plan.objective")
         );
-        assert!(error.cause.contains("conflicts with win condition"));
+        assert!(error.cause.contains("matching UnitDefeated Defeat outcome"));
     }
 
     #[test]
-    fn pve_encounter_deserializes_bonus_objectives() {
-        let encounter: PveEncounter = ron::de::from_str(
-            r#"(
-                id: "bonus_objective_contract",
-                encounter_class: Elite,
-                primary_abnormality_id: Some("enemy"),
-                risk_level: HE,
-                suppression_research: Some((
-                    bonus_objectives: [
-                        (
-                            id: "fast_clear",
-                            condition: ClearWithin(time_ms: 90000),
-                            research_bonus: 20,
-                            presentation: Some("abnormality_part_obtained"),
-                        ),
-                        (
-                            id: "decisive_damage",
-                            condition: DecisiveDamage(minimum_damage_percent_of_max_hp: 10),
-                            research_bonus: 30,
-                        ),
-                    ],
-                )),
-                waves: [
-                    (
-                        id: "wave_0",
-                        time_ms: 0,
-                        source: Manual([
-                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
-                        ]),
-                    ),
-                ],
-            )"#,
-        )
-        .expect("bonus objective contract should deserialize");
+    fn named_outcome_contract_rejects_empty_duplicate_unreachable_and_positive_defeat() {
+        let base = graph_encounter(vec![graph_wave(
+            "wave_0",
+            PveWavePrimaryTriggerData::AtTimeMs { time_ms: 0 },
+            None,
+            true,
+        )]);
 
-        assert_eq!(encounter.bonus_objectives().len(), 2);
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
-    }
-
-    #[test]
-    fn pve_encounter_validation_rejects_duplicate_bonus_objective_ids() {
-        let encounter: PveEncounter = ron::de::from_str(
-            r#"(
-                id: "duplicate_bonus_objectives",
-                encounter_class: Elite,
-                primary_abnormality_id: Some("enemy"),
-                risk_level: HE,
-                suppression_research: Some((
-                    bonus_objectives: [
-                        (id: "same", condition: ClearWithin(time_ms: 90000), research_bonus: 20),
-                        (id: "same", condition: DecisiveDamage(minimum_damage_percent_of_max_hp: 10), research_bonus: 20),
-                    ],
-                )),
-                waves: [
-                    (
-                        id: "wave_0",
-                        time_ms: 0,
-                        source: Manual([
-                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
-                        ]),
-                    ),
-                ],
-            )"#,
-        )
-        .expect("duplicate bonus objective contract should deserialize before validation");
-
-        let error = PveEncounterDatabase::new(vec![encounter])
+        let mut empty = base.clone();
+        empty.terminal_outcomes.clear();
+        let error = PveEncounterDatabase::new(vec![empty])
             .validate_contract()
-            .expect_err("duplicate bonus objective id must reject");
-        assert_eq!(
-            error.object_id.as_deref(),
-            Some("duplicate_bonus_objectives")
-        );
+            .expect_err("empty terminal outcome set must reject");
         assert_eq!(
             error.field_path.as_deref(),
-            Some("encounters[0].suppression_research.bonus_objectives[1].id")
+            Some("encounters[0].terminal_outcomes")
         );
-        assert!(error.cause.contains("duplicate bonus objective id"));
+
+        let mut duplicate = base.clone();
+        duplicate.terminal_outcomes[1].id = duplicate.terminal_outcomes[0].id.clone();
+        let error = PveEncounterDatabase::new(vec![duplicate])
+            .validate_contract()
+            .expect_err("duplicate terminal outcome ID must reject");
+        assert!(error.cause.contains("nonempty and unique"));
+
+        let mut no_victory = base.clone();
+        for outcome in &mut no_victory.terminal_outcomes {
+            outcome.verdict = BattleVerdict::Defeat;
+        }
+        let error = PveEncounterDatabase::new(vec![no_victory])
+            .validate_contract()
+            .expect_err("terminal outcome set without Victory must reject");
+        assert!(error.cause.contains("at least one reachable Victory"));
+
+        let mut non_exhaustive = base.clone();
+        non_exhaustive.outcome_policies.pop();
+        let error = PveEncounterDatabase::new(vec![non_exhaustive])
+            .validate_contract()
+            .expect_err("non-exhaustive outcome policy must reject");
+        assert!(error.cause.contains("cover every terminal outcome"));
+
+        let mut positive_defeat = base;
+        positive_defeat
+            .outcome_policies
+            .iter_mut()
+            .find(|policy| policy.outcome_id == "defeat")
+            .expect("Defeat fixture policy")
+            .grant_node_bonus = true;
+        let error = PveEncounterDatabase::new(vec![positive_defeat])
+            .validate_contract()
+            .expect_err("positive Defeat outcome policy must reject");
+        assert!(error.cause.contains("Defeat outcome policy cannot grant"));
     }
 
-    #[test]
-    fn pve_encounter_validation_rejects_zero_bonus_research() {
-        let encounter: PveEncounter = ron::de::from_str(
+    fn valid_field_work_encounter() -> PveEncounter {
+        ron::de::from_str(
             r#"(
-                id: "zero_bonus_research",
+                id: "field_work_contract",
                 encounter_class: Elite,
                 primary_abnormality_id: Some("enemy"),
                 risk_level: HE,
-                suppression_research: Some((
-                    bonus_objectives: [
-                        (id: "fast_clear", condition: ClearWithin(time_ms: 90000), research_bonus: 0),
-                    ],
-                )),
-                waves: [
-                    (
-                        id: "wave_0",
-                        time_ms: 0,
-                        source: Manual([
-                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
-                        ]),
-                    ),
+                terminal_outcomes: [
+                    (id: "victory", verdict: victory, condition: AllRequiredEnemyGroupsDefeated, priority: 0),
+                    (id: "defeat", verdict: defeat, condition: UnitDefeated(unit_ref: "black_box"), priority: 0),
                 ],
+                outcome_policies: [
+                    (outcome_id: "victory", reward_mode: ClaimAll, reward_uuids: [], grant_node_bonus: true, advance_encounter_progression: true),
+                    (outcome_id: "defeat", reward_mode: ClaimAll, reward_uuids: [], grant_node_bonus: false, advance_encounter_progression: false),
+                ],
+                tactical_plan: Some((
+                    objective: Some(ProtectUnit(unit_ref: "black_box")),
+                    field_work_objects: [(
+                        id: "repair",
+                        presentation_kind: EmergencyRepairTerminal,
+                        position: (x: 2, y: 2),
+                        work_cells: [(
+                            id: "cell_a",
+                            position: (x: 2, y: 2),
+                            tile_kind: ground,
+                        )],
+                        required_work_ms: 1000,
+                        completion_effect: RepairProtectedUnit(
+                            unit_ref: "black_box",
+                            flat_hp: 100,
+                        ),
+                    )],
+                )),
+                waves: [(
+                    id: "wave_0",
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 0),
+                    ),
+                    required_for_victory: true,
+                    source: Manual([
+                        Abnormality(abnormality_id: "enemy", tier: I, count: 1),
+                    ]),
+                )],
             )"#,
         )
-        .expect("zero bonus objective contract should deserialize before validation");
+        .expect("valid field work fixture should deserialize")
+    }
 
-        let error = PveEncounterDatabase::new(vec![encounter])
+    #[test]
+    fn field_work_authoring_rejects_zero_duplicate_and_wrong_repair_target() {
+        let mut zero_work = valid_field_work_encounter();
+        zero_work.tactical_plan.as_mut().unwrap().field_work_objects[0].required_work_ms = 0;
+        let error = PveEncounterDatabase::new(vec![zero_work])
             .validate_contract()
-            .expect_err("zero research bonus must reject");
-        assert_eq!(error.object_id.as_deref(), Some("zero_bonus_research"));
-        assert_eq!(
-            error.field_path.as_deref(),
-            Some("encounters[0].suppression_research.bonus_objectives[0].research_bonus")
-        );
+            .expect_err("zero required work must reject");
         assert!(error.cause.contains("greater than zero"));
+
+        let mut duplicate_position = valid_field_work_encounter();
+        let object = &mut duplicate_position
+            .tactical_plan
+            .as_mut()
+            .unwrap()
+            .field_work_objects[0];
+        object.work_cells.push(PveFieldWorkCellData {
+            id: "cell_b".to_string(),
+            position: PvePosition { x: 2, y: 2 },
+            tile_kind: TacticalTileKind::Ground,
+        });
+        let error = PveEncounterDatabase::new(vec![duplicate_position])
+            .validate_contract()
+            .expect_err("duplicate work cell position must reject");
+        assert!(error.cause.contains("duplicate field work cell position"));
+
+        let mut wrong_target = valid_field_work_encounter();
+        wrong_target
+            .tactical_plan
+            .as_mut()
+            .unwrap()
+            .field_work_objects[0]
+            .completion_effect = PveFieldWorkCompletionEffectData::RepairProtectedUnit {
+            unit_ref: "someone_else".to_string(),
+            flat_hp: 100,
+        };
+        let error = PveEncounterDatabase::new(vec![wrong_target])
+            .validate_contract()
+            .expect_err("repair target outside protect contract must reject");
+        assert!(error.cause.contains("must match the authored protect"));
+
+        let missing_required_work = ron::de::from_str::<PveFieldWorkObjectData>(
+            r#"(
+                id: "repair",
+                presentation_kind: EmergencyRepairTerminal,
+                position: (x: 2, y: 2),
+                work_cells: [(
+                    id: "cell",
+                    position: (x: 2, y: 2),
+                    tile_kind: ground,
+                )],
+                completion_effect: RepairProtectedUnit(unit_ref: "black_box", flat_hp: 100),
+            )"#,
+        );
+        assert!(
+            missing_required_work.is_err(),
+            "required_work_ms has no default compatibility path"
+        );
+
+        let reset_presentation = ron::de::from_str::<PveFieldWorkObjectData>(
+            r#"(
+                id: "repair",
+                presentation_kind: Reset,
+                position: (x: 2, y: 2),
+                work_cells: [(
+                    id: "cell",
+                    position: (x: 2, y: 2),
+                    tile_kind: ground,
+                )],
+                required_work_ms: 1000,
+                completion_effect: RepairProtectedUnit(unit_ref: "black_box", flat_hp: 100),
+            )"#,
+        );
+        assert!(
+            reset_presentation.is_err(),
+            "the first slice deliberately has no generic Reset presentation"
+        );
+
+        let unknown_compatibility_field = ron::de::from_str::<PveFieldWorkObjectData>(
+            r#"(
+                id: "repair",
+                presentation_kind: EmergencyRepairTerminal,
+                position: (x: 2, y: 2),
+                work_cells: [(
+                    id: "cell",
+                    position: (x: 2, y: 2),
+                    tile_kind: ground,
+                )],
+                required_work_ms: 1000,
+                completion_effect: RepairProtectedUnit(unit_ref: "black_box", flat_hp: 100),
+                progress_compatibility_mode: "legacy",
+            )"#,
+        );
+        assert!(
+            unknown_compatibility_field.is_err(),
+            "unknown field work compatibility fields must fail closed"
+        );
     }
 
     #[test]
-    fn pve_encounter_validation_rejects_bonus_objective_without_primary_target_spawn() {
-        let encounter: PveEncounter = ron::de::from_str(
+    fn removed_suppression_research_field_is_rejected() {
+        let parsed = ron::de::from_str::<PveEncounter>(
             r#"(
-                id: "missing_primary_bonus_target",
+                id: "removed_research_contract",
                 encounter_class: Elite,
                 primary_abnormality_id: Some("enemy"),
                 risk_level: HE,
-                suppression_research: Some((
-                    bonus_objectives: [
-                        (id: "fast_clear", condition: ClearWithin(time_ms: 90000), research_bonus: 20),
-                    ],
-                )),
-                waves: [
-                    (
-                        id: "wave_0",
-                        time_ms: 0,
-                        source: Manual([
-                            CorrodedEmployee(profile_id: "corroded_guard", tier: I, count: 1),
-                        ]),
+                suppression_research: Some((bonus_objectives: [])),
+                waves: [(
+                    id: "wave_0",
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 0),
                     ),
-                ],
+                    required_for_victory: true,
+                    source: Manual([
+                        Abnormality(abnormality_id: "enemy", tier: I, count: 1),
+                    ]),
+                )],
             )"#,
-        )
-        .expect("missing primary target contract should deserialize before validation");
-
-        let error = PveEncounterDatabase::new(vec![encounter])
-            .validate_contract()
-            .expect_err("missing primary target spawn must reject");
-        assert_eq!(
-            error.object_id.as_deref(),
-            Some("missing_primary_bonus_target")
         );
-        assert_eq!(error.field_path.as_deref(), Some("encounters[0].waves"));
-        assert!(error
-            .cause
-            .contains("must spawn its primary abnormality target"));
+        assert!(
+            parsed.is_err(),
+            "removed research authoring must fail closed"
+        );
     }
 }

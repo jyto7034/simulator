@@ -19,7 +19,7 @@
 
 | 영역 | 현재 canonical 또는 authority |
 | --- | --- |
-| Event의 플레이 규칙, aptitude·DC·장비 보정·key 의미 | [game_rulebook.md](../game_rulebook.md) |
+| Event의 플레이 규칙, aptitude·DC·장비 보정·key 의미 | [archive/game_rulebook_legacy_2026-10-04.md](../archive/game_rulebook_legacy_2026-10-04.md) |
 | 판정, RNG, committed result, duplicate/checkpoint/retreat 경계 | [core_runtime_contract.md](../core_runtime_contract.md) |
 | Employee/Event/Equipment RON schema와 strict validation | [data_loading_contract.md](../data_loading_contract.md) |
 | 실제 구현 | `src/game/world/event_node.rs`, `src/game/employee.rs`, `src/game/data/event_data.rs`, `src/game/data/equipment_data.rs` |

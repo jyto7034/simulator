@@ -1,0 +1,72 @@
+{
+  "schema": "U08_AUDIT_PC_BASELINE_CORRECTION_001",
+  "recorded_at_utc": "2026-10-07T05:28:56.841676+00:00",
+  "original_audit_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/post_audit/u08_current_012_pass001/COMPLETION_AUDIT.md",
+    "bytes": 15798,
+    "sha256": "e726f3eacd0b79632281800569bc6fae01977e047eff91cbae5f3213fe9c48b7"
+  },
+  "original_validator_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/post_audit/u08_current_012_pass001/verify_additional.py",
+    "bytes": 4413,
+    "sha256": "0dd8ab9fca289b3fb7a8f0fb798d2a05d36ad9b2cf7c14d79bc2247134b52750"
+  },
+  "cost_artifact": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/compatibility/current_001/evidence/PC_IMMEDIATE_ACCOUNTED_U07M_007.json",
+    "bytes": 384802,
+    "sha256": "71ce0622df9e62432a73960b955835cbcf2d4c75444c57a31ef1d67f09db794a"
+  },
+  "raw_refs": {
+    "before": {
+      "path": "core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/evidence/pc_raw_current_001.json",
+      "bytes": 1417024,
+      "sha256": "16f3422c09e16f2ebccf6bfdbedc09b58deff3e6f4b4ca03ecfa8d71a31dc9a3"
+    },
+    "after": {
+      "path": "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/compatibility/current_001/evidence/pc_raw_current_007.json",
+      "bytes": 1417011,
+      "sha256": "852815534cd817ff7d1f7e5d50974a65257d408083ed6705a9f3326c690c7f46"
+    },
+    "immediate_u07m": {
+      "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/execution/single_goal/compatibility/current_001/evidence/pc_raw_current_002.json",
+      "bytes": 1417011,
+      "sha256": "095560d605ad4ccc03fe1fa38ae4c692569e5ad9336d02d5b749facbe59c74b8"
+    }
+  },
+  "original_validator_actual_comparison": [
+    "before",
+    "after"
+  ],
+  "original_label_incorrect": "The original validator comment and report called the before path immediate U07M; it is older core_battle_starter_tactics.",
+  "results": {
+    "older_starter_tactics_to_u08": {
+      "rows": 576,
+      "allowed_non_timing_delta": 200,
+      "differences_by_path": {
+        "/measurement/elapsed_ns": 576,
+        "/native_usage/*/*": 624,
+        "/retained_extent_at_end": 192,
+        "/setup/elapsed_ns": 192,
+        "/native_usage/*": 192,
+        "/error": 80
+      },
+      "failures": [],
+      "passed": true
+    },
+    "immediate_u07m_to_u08": {
+      "rows": 576,
+      "allowed_non_timing_delta": 0,
+      "differences_by_path": {
+        "/measurement/elapsed_ns": 576,
+        "/setup/elapsed_ns": 192
+      },
+      "failures": [],
+      "passed": true
+    }
+  },
+  "findings_unchanged": [
+    "F01",
+    "F02"
+  ],
+  "product_or_performance_runs": 0
+}

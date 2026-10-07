@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
+use std::sync::Arc;
+
 use uuid::Uuid;
 
 use crate::game::{
@@ -17,7 +19,7 @@ use crate::game::{
         corroded_employee_data::CorrodedEmployeeProfileDatabase,
         corroded_wave_data::CorrodedWavePresetDatabase,
         employee_data::EmployeeDefinitionDatabase,
-        equipment_data::EquipmentDatabase,
+        equipment_data::{EquipmentDatabase, EquipmentType},
         event_data::{EventDatabase, EventSuccessAction},
         pve_data::{
             PveEncounterClass, PveEncounterDatabase, PveWaveData, PveWaveEnemyData, PveWaveSource,
@@ -35,8 +37,11 @@ use crate::game::{
             VisualNovelTriggerDatabase,
         },
     },
-    enums::RewardMode,
-    map::{MapNodeCategory, MapNodeId},
+    events::combat::CombatExecutor,
+    map::{
+        MapNodeCategory, MapNodeCombatDifficulty, MapNodeCombatDifficultyClass, MapNodeId,
+        MonolithRemanifestationStage,
+    },
     resources::item_slot::{EquippedRef, ItemSlot},
     reward::{RewardEffect, RewardOption},
     reward_policy::CombatRewardPolicy,
@@ -109,6 +114,95 @@ pub(super) fn validate_monolith_references(
     Ok(())
 }
 
+pub(super) fn validate_pve_reward_source_references(
+    pve_data: &PveEncounterDatabase,
+    abnormality_data: &AbnormalityDatabase,
+    skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
+) -> Result<(), crate::game::data::DataValidationError> {
+    for (source_index, source) in pve_data.reward_sources.iter().enumerate() {
+        let source_path = format!("reward_sources[{source_index}]");
+        let encounter = pve_data.get_by_id(&source.encounter_id).ok_or_else(|| {
+            crate::game::data::DataValidationError::at(
+                &source.reward_source_id,
+                format!("{source_path}.encounter_id"),
+                format!("references missing PVE encounter '{}'", source.encounter_id),
+            )
+        })?;
+        let abnormality_id = encounter.primary_abnormality_id().ok_or_else(|| {
+            crate::game::data::DataValidationError::at(
+                &source.reward_source_id,
+                format!("{source_path}.encounter_id"),
+                "reward source encounter must author a primary abnormality",
+            )
+        })?;
+        let abnormality = abnormality_data.get_by_id(abnormality_id).ok_or_else(|| {
+            crate::game::data::DataValidationError::at(
+                &source.reward_source_id,
+                format!("{source_path}.encounter_id"),
+                format!("references missing primary abnormality '{abnormality_id}'"),
+            )
+        })?;
+        let expected_fragment = abnormality
+            .response_complete_skill_fragment_id
+            .as_ref()
+            .ok_or_else(|| {
+                crate::game::data::DataValidationError::at(
+                    &source.reward_source_id,
+                    format!("{source_path}.fragment_id"),
+                    format!(
+                        "primary abnormality '{abnormality_id}' has no authored source fragment"
+                    ),
+                )
+            })?;
+        if expected_fragment != &source.fragment_id {
+            return Err(crate::game::data::DataValidationError::at(
+                &source.reward_source_id,
+                format!("{source_path}.fragment_id"),
+                format!(
+                    "must equal primary abnormality '{}' source fragment '{}'",
+                    abnormality_id, expected_fragment
+                ),
+            ));
+        }
+        if skill_fragment_data.get_by_id(&source.fragment_id).is_none() {
+            return Err(crate::game::data::DataValidationError::at(
+                &source.reward_source_id,
+                format!("{source_path}.fragment_id"),
+                format!("references missing Skill Fragment '{}'", source.fragment_id),
+            ));
+        }
+    }
+    Ok(())
+}
+
+pub(super) fn validate_ordinary_reward_source_exclusion(
+    reward_data: &RewardDatabase,
+    pve_data: &PveEncounterDatabase,
+) -> Result<(), crate::game::data::DataValidationError> {
+    let source_fragment_ids = pve_data
+        .reward_sources
+        .iter()
+        .map(|source| &source.fragment_id)
+        .collect::<HashSet<_>>();
+    for (reward_index, reward) in reward_data.rewards.iter().enumerate() {
+        for (effect_index, effect) in reward.effects.iter().enumerate() {
+            let RewardEffect::GrantSkillFragment { fragment_id } = effect else {
+                continue;
+            };
+            if source_fragment_ids.contains(fragment_id) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &reward.id,
+                    format!("rewards[{reward_index}].effects[{effect_index}].fragment_id"),
+                    format!(
+                        "ordinary Reward must not grant encounter-source fragment '{fragment_id}'"
+                    ),
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn validate_data_references(
     abnormality_data: &AbnormalityDatabase,
     corroded_employee_data: &CorrodedEmployeeProfileDatabase,
@@ -124,12 +218,21 @@ pub(super) fn validate_data_references(
     skill_data: &SkillDatabase,
     buff_data: &BuffDatabase,
     skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
+    relic_data: &super::relic_data::RelicDatabase,
 ) {
     skill_data
         .validate_buff_references(buff_data)
         .expect("invalid Skill buff reference");
-    validate_skill_fragment_skill_references(skill_fragment_data, abnormality_data, skill_data)
-        .expect("invalid Skill Fragment cross-catalog reference");
+    equipment_data
+        .validate_effect_and_activation_contract(skill_data, buff_data)
+        .expect("invalid Equipment effect or activation contract");
+    validate_skill_fragment_skill_references(
+        skill_fragment_data,
+        abnormality_data,
+        skill_data,
+        equipment_data,
+    )
+    .expect("invalid Skill Fragment cross-catalog reference");
     validate_abnormality_unit_skill_references(abnormality_data, skill_data, skill_fragment_data)
         .expect("invalid Abnormality Skill reference");
     validate_corroded_employee_skill_references(corroded_employee_data, skill_data)
@@ -139,6 +242,7 @@ pub(super) fn validate_data_references(
         equipment_data,
         consumable_data,
         skill_fragment_data,
+        relic_data,
     );
     validate_pve_enemy_references(
         pve_data,
@@ -148,6 +252,10 @@ pub(super) fn validate_data_references(
         reward_data,
     )
     .expect("invalid PVE cross-catalog reference");
+    validate_pve_reward_source_references(pve_data, abnormality_data, skill_fragment_data)
+        .expect("invalid PVE reward-source cross-catalog reference");
+    validate_ordinary_reward_source_exclusion(reward_data, pve_data)
+        .expect("ordinary Reward grants an encounter-source fragment");
     validate_event_combat_references(event_data, pve_data).expect("invalid Event combat reference");
     validate_event_choice_key_references(event_data, equipment_data)
         .expect("invalid Event choice-key reference");
@@ -156,8 +264,14 @@ pub(super) fn validate_data_references(
     validate_no_duplicate_run_start_triggers(visual_novel_trigger_data);
     validate_abnormality_omen_references(abnormality_data, boss_omen_data)
         .expect("invalid abnormality BossOmen reference");
-    validate_boss_omen_references(boss_omen_data, abnormality_data, event_data, pve_data)
-        .expect("invalid BossOmen chain reference");
+    validate_boss_omen_references(
+        boss_omen_data,
+        abnormality_data,
+        event_data,
+        pve_data,
+        skill_fragment_data,
+    )
+    .expect("invalid BossOmen chain reference");
 }
 
 pub(super) fn validate_shop_item_references(
@@ -326,11 +440,15 @@ pub(super) fn validate_starter_employee_loadout_references(
                 .initial_loadout
                 .baseline_skill_fragment_ids
                 .is_empty()
+            && definition
+                .initial_loadout
+                .active_skill_fragment_id
+                .is_none()
         {
             return Err(crate::game::data::DataValidationError::at(
                 &definition.employee_definition_id,
                 format!("{loadout_path}.baseline_skill_fragment_ids"),
-                "must declare baseline skill fragments",
+                "must declare an active starting fragment or explicit baseline fragments",
             ));
         }
         for (fragment_index, fragment_id) in definition
@@ -339,11 +457,19 @@ pub(super) fn validate_starter_employee_loadout_references(
             .iter()
             .enumerate()
         {
-            if skill_fragment_data.get_by_id(fragment_id).is_none() {
+            if !skill_fragment_data
+                .get_by_id(fragment_id)
+                .is_some_and(|fragment| {
+                    matches!(
+                        fragment.effect,
+                        SkillFragmentEffectDef::BasicAttackModifier { .. }
+                    )
+                })
+            {
                 return Err(crate::game::data::DataValidationError::at(
                     &definition.employee_definition_id,
                     format!("{loadout_path}.baseline_skill_fragment_ids[{fragment_index}]"),
-                    format!("references missing baseline skill fragment '{fragment_id}'"),
+                    format!("requires an existing baseline BasicAttackModifier fragment '{fragment_id}'"),
                 ));
             }
         }
@@ -356,6 +482,15 @@ pub(super) fn validate_starter_employee_loadout_references(
             ));
         }
         let mut slot = ItemSlot::default();
+        let mut has_weapon = false;
+        let stats = definition.profile.base_combat_stats;
+        let mut profile = crate::game::battle::types::UnitCombatProfile::for_employee(
+            stats.max_hp,
+            stats.attack,
+            stats.defense,
+            stats.magic_resist,
+            definition.profile.basic_attack_speed_percent,
+        );
         for (equipment_index, equipment_id) in
             definition.initial_loadout.equipment_ids.iter().enumerate()
         {
@@ -367,6 +502,18 @@ pub(super) fn validate_starter_employee_loadout_references(
                     format!("references missing equipment '{equipment_id}'"),
                 )
             })?;
+            has_weapon |= equipment.equipment_type == EquipmentType::Weapon;
+            if equipment.equipment_type == EquipmentType::Weapon {
+                if let Some(weapon) = &equipment.weapon_profile {
+                    profile.apply_weapon_profile(weapon).map_err(|error| {
+                        crate::game::data::DataValidationError::at(
+                            &definition.employee_definition_id,
+                            &equipment_path,
+                            format!("{error:?}"),
+                        )
+                    })?;
+                }
+            }
             slot.equip(
                 EquippedRef {
                     instance_uuid: equipment.uuid,
@@ -383,13 +530,33 @@ pub(super) fn validate_starter_employee_loadout_references(
                 )
             })?;
         }
+        if definition.starter_eligible && !has_weapon {
+            return Err(crate::game::data::DataValidationError::at(
+                &definition.employee_definition_id,
+                format!("{loadout_path}.equipment_ids"),
+                "starter employee must declare an initial weapon",
+            ));
+        }
+        if let Some(id) = &definition.initial_loadout.active_skill_fragment_id {
+            let compatible = skill_fragment_data
+                .get_by_id(id)
+                .and_then(|fragment| fragment.form_compatibility_report("base", &profile))
+                .is_some_and(|report| report.is_compatible);
+            if !compatible {
+                return Err(crate::game::data::DataValidationError::at(
+                    &definition.employee_definition_id,
+                    format!("{loadout_path}.active_skill_fragment_id"),
+                    format!("requires an existing ActiveSkill base form compatible with the initial weapon: '{id}'"),
+                ));
+            }
+        }
     }
     Ok(())
 }
 
 pub(super) fn validate_generated_combat_preview_contracts(
-    game_data: &GameDataBase,
-) -> Result<(), crate::game::data::DataValidationError> {
+    game_data: &Arc<GameDataBase>,
+) -> Result<(), super::live_ron::LiveRonError> {
     validate_combat_preview_threat_warning_contract(game_data)
 }
 
@@ -397,6 +564,7 @@ pub(super) fn validate_skill_fragment_skill_references(
     skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
     abnormality_data: &AbnormalityDatabase,
     skill_data: &SkillDatabase,
+    equipment_data: &EquipmentDatabase,
 ) -> Result<(), crate::game::data::DataValidationError> {
     for (fragment_index, fragment) in skill_fragment_data.fragments.iter().enumerate() {
         let fragment_id = fragment.id.as_str();
@@ -439,43 +607,63 @@ pub(super) fn validate_skill_fragment_skill_references(
             }
         }
 
-        let (imitation_skill_id, upgrade_skill_ids, awakened_skill_id) = match &fragment.effect {
-            SkillFragmentEffectDef::BasicAttackModifier { .. } => continue,
-            SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id,
-                upgrade_skill_ids,
-                awakened_skill_id,
-            } => (imitation_skill_id, upgrade_skill_ids, awakened_skill_id),
+        let SkillFragmentEffectDef::ActiveSkill {
+            forms,
+            dismantle_recipe,
+            passive_guard,
+        } = &fragment.effect
+        else {
+            continue;
         };
-
         let effect_path = format!("{fragment_path}.effect.ActiveSkill");
-        let imitation_skill = skill_data.get_by_id(imitation_skill_id).ok_or_else(|| {
-            error(
-                format!("{effect_path}.imitation_skill_id"),
-                format!("references unknown imitation skill '{imitation_skill_id}'"),
-            )
-        })?;
-        validate_defense_route_skill_contract(imitation_skill)
-            .map_err(|cause| error(format!("{effect_path}.imitation_skill_id"), cause))?;
-        for (level, skill_id) in upgrade_skill_ids {
-            let path = format!("{effect_path}.upgrade_skill_ids[{level}]");
-            let upgrade_skill = skill_data.get_by_id(skill_id).ok_or_else(|| {
-                error(
-                    path.clone(),
-                    format!("references unknown upgrade skill '{skill_id}'"),
-                )
-            })?;
-            let _ = (path, upgrade_skill);
+        let mut recipes = Vec::new();
+        if let Some(recipe) = dismantle_recipe {
+            recipes.push((format!("{effect_path}.dismantle_recipe"), recipe));
         }
-        if let Some(awakened_skill_id) = awakened_skill_id {
-            let path = format!("{effect_path}.awakened_skill_id");
-            let awakened_skill = skill_data.get_by_id(awakened_skill_id).ok_or_else(|| {
+        for (form_id, form) in forms {
+            let path = format!("{effect_path}.forms[{form_id}]");
+            let skill = skill_data.get_by_id(&form.skill_id).ok_or_else(|| {
                 error(
-                    path.clone(),
-                    format!("references unknown awakened skill '{awakened_skill_id}'"),
+                    format!("{path}.skill_id"),
+                    format!("references unknown skill '{}'", form.skill_id),
                 )
             })?;
-            let _ = (path, awakened_skill);
+            if skill.steps.iter().any(|step| {
+                step.targeting == crate::game::ability::StepTargetingMode::RetargetOnStep
+            }) {
+                return Err(error(
+                    format!("{path}.skill_id"),
+                    "manual employee fragment cannot retarget after admission".into(),
+                ));
+            }
+            if passive_guard.is_some() {
+                let parry_steps: Vec<_> = skill.steps.iter().filter(|step| step.effects.iter().any(|effect| matches!(&effect.op, crate::game::ability::SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::Parry { .. } }))).collect();
+                if skill.cast_selection() != crate::game::ability::SkillCastSelection::SelfUnit
+                    || !matches!(skill.cast_target_definition(), Some((crate::game::ability::SkillTarget::SelfUnit, ..)))
+                    || parry_steps.is_empty() || parry_steps.iter().any(|step| step.target != crate::game::ability::SkillTarget::SelfUnit || !matches!(step.delivery, crate::game::ability::DeliveryDef::Instant) || step.effects.iter().any(|effect| matches!(&effect.op, crate::game::ability::SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::Parry { reduction_percent, .. } } if *reduction_percent != 0))) {
+                    return Err(error(format!("{path}.skill_id"), "passive guard requires a SelfUnit Instant parry with zero finite reduction in every form".into()));
+                }
+            }
+            if form_id == "base" {
+                validate_defense_route_skill_contract(skill)
+                    .map_err(|cause| error(format!("{path}.skill_id"), cause))?;
+            }
+            if let Some(recipe) = &form.bloom_recipe {
+                recipes.push((format!("{path}.bloom_recipe"), recipe));
+            }
+        }
+        for (path, recipe) in recipes {
+            let costs = recipe
+                .aggregated_materials()
+                .ok_or_else(|| error(path.clone(), "invalid/overflowing fragment recipe".into()))?;
+            for id in costs.keys() {
+                if equipment_data.get_material_by_id(id).is_none() {
+                    return Err(error(
+                        path.clone(),
+                        format!("unknown fragment material '{id}'"),
+                    ));
+                }
+            }
         }
     }
     Ok(())
@@ -584,6 +772,7 @@ fn validate_reward_references(
     equipment_data: &EquipmentDatabase,
     consumable_data: &ConsumableDatabase,
     skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
+    relic_data: &super::relic_data::RelicDatabase,
 ) {
     for reward in &reward_data.rewards {
         for effect in &reward.effects {
@@ -593,6 +782,7 @@ fn validate_reward_references(
                 equipment_data,
                 consumable_data,
                 skill_fragment_data,
+                relic_data,
             )
             .unwrap_or_else(|cause| panic!("reward '{}': {cause}", reward.id));
         }
@@ -608,6 +798,25 @@ pub(super) fn validate_equipment_reward_pool_references(
 ) -> Result<(), crate::game::data::DataValidationError> {
     for (pool_index, pool) in reward_data.equipment_pools.iter().enumerate() {
         let pool_path = format!("equipment_pools[{pool_index}]");
+        let mut excluded_ids = HashSet::new();
+        for (excluded_index, equipment_id) in pool.filter.exclude_equipment_ids.iter().enumerate() {
+            let excluded_path =
+                format!("{pool_path}.filter.exclude_equipment_ids[{excluded_index}]");
+            if !excluded_ids.insert(equipment_id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &pool.id,
+                    excluded_path,
+                    "duplicate excluded equipment id",
+                ));
+            }
+            if equipment_data.get_by_id(equipment_id).is_none() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &pool.id,
+                    excluded_path,
+                    format!("references unknown equipment '{equipment_id}'"),
+                ));
+            }
+        }
         for (entry_index, entry) in pool.entries.iter().enumerate() {
             let entry_path = format!("{pool_path}.entries[{entry_index}]");
             if entry.weight == 0 {
@@ -642,6 +851,7 @@ pub(super) fn validate_reward_effect(
     equipment_data: &EquipmentDatabase,
     consumable_data: &ConsumableDatabase,
     skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
+    relic_data: &super::relic_data::RelicDatabase,
 ) -> Result<(), String> {
     match effect {
         RewardEffect::GrantEquipment { equipment_id } => equipment_data
@@ -687,19 +897,17 @@ pub(super) fn validate_reward_effect(
             .get_by_id(fragment_id)
             .map(|_| ())
             .ok_or_else(|| format!("references unknown skill fragment '{fragment_id}'")),
-        RewardEffect::GrantSkillFragmentResearch {
-            fragment_id,
-            amount,
-        } => {
+        RewardEffect::GrantRelic { relic_id } => relic_data
+            .get_by_id(relic_id)
+            .map(|_| ())
+            .ok_or_else(|| format!("references unknown relic '{relic_id}'")),
+        RewardEffect::GrantRelicCorruptionCatalyst { amount }
+        | RewardEffect::GrantEquipmentDust { amount } => {
             if *amount == 0 {
-                return Err("grants zero skill fragment research progress".to_string());
+                Err("grants zero run crafting resource".into())
+            } else {
+                Ok(())
             }
-            skill_fragment_data
-                .get_by_id(fragment_id)
-                .map(|_| ())
-                .ok_or_else(|| {
-                    format!("references unknown skill fragment research target '{fragment_id}'")
-                })
         }
         RewardEffect::GrantEnkephalin { .. } => Ok(()),
         RewardEffect::GrantExperience { amount, .. } if *amount == 0 => {
@@ -735,7 +943,8 @@ pub(super) fn validate_pve_enemy_references(
             }
             PveEncounterClass::Elite
             | PveEncounterClass::NormalBoss
-            | PveEncounterClass::FinalBoss => {
+            | PveEncounterClass::FinalBoss
+            | PveEncounterClass::ReferenceFinalBoss => {
                 let primary_abnormality_id =
                     encounter.primary_abnormality_id().ok_or_else(|| {
                         error(
@@ -765,7 +974,9 @@ pub(super) fn validate_pve_enemy_references(
                             format!("primary abnormality '{primary_abnormality_id}' must be Elite"),
                         ));
                     }
-                    PveEncounterClass::NormalBoss | PveEncounterClass::FinalBoss
+                    PveEncounterClass::NormalBoss
+                    | PveEncounterClass::FinalBoss
+                    | PveEncounterClass::ReferenceFinalBoss
                         if abnormality.threat_class != BattleUnitThreatClass::Boss =>
                     {
                         return Err(error(
@@ -779,13 +990,6 @@ pub(super) fn validate_pve_enemy_references(
             }
         }
 
-        if encounter.has_bonus_objectives() && encounter.primary_abnormality_id().is_none() {
-            return Err(error(
-                format!("{encounter_path}.primary_abnormality_id"),
-                "encounter defines bonus objectives but has no primary abnormality".to_string(),
-            ));
-        }
-
         for (wave_index, wave) in encounter.waves.iter().enumerate() {
             validate_pve_wave_references(
                 wave,
@@ -795,38 +999,27 @@ pub(super) fn validate_pve_enemy_references(
             )
             .map_err(|cause| error(format!("{encounter_path}.waves[{wave_index}]"), cause))?;
         }
-        for (reward_index, reward_uuid) in encounter.reward_uuids.iter().enumerate() {
-            if reward_data.get_by_uuid(reward_uuid).is_none() {
-                return Err(error(
-                    format!("{encounter_path}.reward_uuids[{reward_index}]"),
-                    format!("references missing reward uuid {reward_uuid}"),
-                ));
+        for (policy_index, policy) in encounter.outcome_policies.iter().enumerate() {
+            for (reward_index, reward_uuid) in policy.reward_uuids.iter().enumerate() {
+                if reward_data.get_by_uuid(reward_uuid).is_none() {
+                    return Err(error(
+                        format!(
+                            "{encounter_path}.outcome_policies[{policy_index}].reward_uuids[{reward_index}]"
+                        ),
+                        format!("references missing reward uuid {reward_uuid}"),
+                    ));
+                }
             }
         }
-        if let Some(survive_timer_ms) = encounter.survive_timer_ms {
-            if survive_timer_ms == 0 {
-                return Err(error(
-                    format!("{encounter_path}.survive_timer_ms"),
-                    "must be greater than zero".to_string(),
-                ));
-            }
+        if encounter.survive_timer_ms().is_some() {
             if encounter.node_type != Some(CombatNodeType::Defense) {
                 return Err(error(
-                    format!("{encounter_path}.survive_timer_ms"),
-                    "survive_timer_ms requires an explicit Defense encounter".to_string(),
+                    format!("{encounter_path}.terminal_outcomes"),
+                    "TimeReached Victory requires an explicit Defense encounter".to_string(),
                 ));
             }
         }
         if let Some(node_type) = encounter.node_type {
-            if encounter.reward_mode != RewardMode::ClaimAll {
-                return Err(error(
-                    format!("{encounter_path}.reward_mode"),
-                    format!(
-                        "live combat result rewards are automatically granted; expected ClaimAll, found {:?}",
-                        encounter.reward_mode
-                    ),
-                ));
-            }
             let mission_variant = encounter
                 .mission_variant
                 .unwrap_or_else(|| CombatMissionVariant::default_for_node_type(node_type));
@@ -842,20 +1035,24 @@ pub(super) fn validate_pve_enemy_references(
                     format!("uses deferred combat node type {node_type:?}"),
                 ));
             }
-            let rewards = encounter
-                .reward_uuids
-                .iter()
-                .filter_map(|reward_uuid| reward_data.get_by_uuid(reward_uuid))
-                .map(RewardOption::from_metadata)
-                .collect::<Vec<_>>();
-            CombatRewardPolicy::for_mission(node_type, mission_variant)
-                .validate_rewards(&rewards)
-                .map_err(|message| {
-                    error(
-                        format!("{encounter_path}.reward_uuids"),
-                        format!("invalid {node_type:?} reward policy: {message}"),
-                    )
-                })?;
+            for (policy_index, policy) in encounter.outcome_policies.iter().enumerate() {
+                let rewards = policy
+                    .reward_uuids
+                    .iter()
+                    .filter_map(|reward_uuid| reward_data.get_by_uuid(reward_uuid))
+                    .map(RewardOption::from_metadata)
+                    .collect::<Vec<_>>();
+                CombatRewardPolicy::for_mission(node_type, mission_variant)
+                    .validate_rewards(&rewards)
+                    .map_err(|message| {
+                        error(
+                            format!(
+                                "{encounter_path}.outcome_policies[{policy_index}].reward_uuids"
+                            ),
+                            format!("invalid {node_type:?} reward policy: {message}"),
+                        )
+                    })?;
+            }
         }
     }
     Ok(())
@@ -936,6 +1133,7 @@ pub(super) fn validate_boss_omen_references(
     abnormality_data: &AbnormalityDatabase,
     event_data: &EventDatabase,
     pve_data: &PveEncounterDatabase,
+    skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
 ) -> Result<(), crate::game::data::DataValidationError> {
     for (chain_index, chain) in boss_omen_data.chains.iter().enumerate() {
         let chain_path = format!("chains[{chain_index}]");
@@ -994,6 +1192,81 @@ pub(super) fn validate_boss_omen_references(
                 format!("{chain_path}.boss_encounter_id"),
                 format!("boss encounter '{}' must be FinalBoss", boss_encounter.id),
             ));
+        }
+
+        if let Some(required) = &chain.required_fragment {
+            let fragment = skill_fragment_data
+                .get_by_id(&required.fragment_id)
+                .ok_or_else(|| {
+                    crate::game::data::DataValidationError::at(
+                        chain.id.as_str(),
+                        format!("{chain_path}.required_fragment.fragment_id"),
+                        format!(
+                            "references missing Skill Fragment '{}'",
+                            required.fragment_id
+                        ),
+                    )
+                })?;
+            if required.awakening_required
+                && !matches!(
+                    &fragment.effect,
+                    SkillFragmentEffectDef::ActiveSkill { forms, .. } if forms.contains_key("awakened")
+                )
+            {
+                return Err(crate::game::data::DataValidationError::at(
+                    chain.id.as_str(),
+                    format!("{chain_path}.required_fragment.awakening_required"),
+                    format!(
+                        "fragment '{}' cannot be awakened under its authored effect",
+                        required.fragment_id
+                    ),
+                ));
+            }
+            let source = pve_data
+                .reward_sources
+                .iter()
+                .find(|source| source.fragment_id == required.fragment_id)
+                .ok_or_else(|| {
+                    crate::game::data::DataValidationError::at(
+                        chain.id.as_str(),
+                        format!("{chain_path}.required_fragment.fragment_id"),
+                        "required fragment has no reachable authored encounter source",
+                    )
+                })?;
+            if source.encounter_id == chain.boss_encounter_id {
+                return Err(crate::game::data::DataValidationError::at(
+                    chain.id.as_str(),
+                    format!("{chain_path}.required_fragment.fragment_id"),
+                    "chain cannot require the fragment granted by its own FinalBoss",
+                ));
+            }
+            if pve_data
+                .get_by_id(&source.encounter_id)
+                .is_some_and(|encounter| encounter.encounter_class == PveEncounterClass::FinalBoss)
+            {
+                let producing_chain = boss_omen_data
+                    .chains
+                    .iter()
+                    .find(|candidate| candidate.boss_encounter_id == source.encounter_id)
+                    .ok_or_else(|| {
+                        crate::game::data::DataValidationError::at(
+                            chain.id.as_str(),
+                            format!("{chain_path}.required_fragment.fragment_id"),
+                            "required FinalBoss fragment source is dormant and unreachable",
+                        )
+                    })?;
+                if !chain.dependencies.contains(&producing_chain.id) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        chain.id.as_str(),
+                        format!("{chain_path}.dependencies"),
+                        format!(
+                            "must depend on FinalBoss chain '{}' that grants required fragment '{}'",
+                            producing_chain.id.as_str(),
+                            required.fragment_id
+                        ),
+                    ));
+                }
+            }
         }
 
         for (step_index, step) in chain.steps.iter().enumerate() {
@@ -1138,36 +1411,207 @@ pub(super) fn validate_event_choice_key_references(
     Ok(())
 }
 
+struct GeneratedValidationContext<'a> {
+    game_data: &'a GameDataBase,
+    encounter_index: usize,
+    tuning_path: String,
+    monolith_stage: Option<MonolithRemanifestationStage>,
+}
+
+impl GeneratedValidationContext<'_> {
+    fn error(
+        &self,
+        cause: String,
+        failure: Option<&crate::game::combat_preview::CombatGenerationFailure>,
+        preview: Option<&CombatPreview>,
+    ) -> super::live_ron::LiveRonError {
+        use super::live_ron::{LiveRonError, LiveRonPhase, LiveRonSource};
+        let encounter = &self.game_data.pve_data.encounters[self.encounter_index];
+        let encounter_source = LiveRonSource {
+            source_file: "data/pve/encounters.ron".into(),
+            object_id: Some(encounter.id.clone()),
+            field_path: Some(format!("encounters[{}]", self.encounter_index)),
+            ..Default::default()
+        };
+        let policy_source = LiveRonSource {
+            source_file: "data/run/policy.ron".into(),
+            object_id: Some("run_policy".into()),
+            field_path: Some(self.tuning_path.clone()),
+            ..Default::default()
+        };
+        let mut primary = encounter_source.clone();
+        if let Some((wave_index, field)) = failure.and_then(|failure| failure.wave_field.as_ref()) {
+            if *wave_index < encounter.waves.len() {
+                primary.field_path = Some(format!(
+                    "encounters[{}].waves[{wave_index}].{field}",
+                    self.encounter_index
+                ));
+            } else {
+                primary = policy_source.clone();
+                primary.field_path = Some(format!(
+                    "{}.extra_waves[{}].{field}",
+                    self.tuning_path,
+                    wave_index - encounter.waves.len()
+                ));
+            }
+        }
+        let mut related_sources = vec![encounter_source, policy_source];
+        if self.monolith_stage.is_some() {
+            related_sources.push(LiveRonSource {
+                source_file: "data/run/policy.ron".into(),
+                object_id: Some("run_policy".into()),
+                field_path: Some("monolith".into()),
+                ..Default::default()
+            });
+        }
+        let template_id = failure
+            .and_then(|failure| failure.template_id.as_deref())
+            .or_else(|| preview.map(|preview| preview.battlefield_template_id.as_str()));
+        if let Some((index, template)) = template_id.and_then(|id| {
+            self.game_data
+                .map_catalogs
+                .battlefield_templates
+                .templates
+                .iter()
+                .enumerate()
+                .find(|(_, template)| template.id == id)
+        }) {
+            related_sources.push(LiveRonSource {
+                source_file: "data/map/battlefield_templates.ron".into(),
+                object_id: Some(template.id.clone()),
+                field_path: Some(format!("[{index}]")),
+                ..Default::default()
+            });
+        }
+        if let Some(binding) = &encounter.boss_runtime {
+            related_sources.push(LiveRonSource {
+                source_file: "data/boss_runtime/base.ron".into(),
+                object_id: Some(binding.encounter_id.as_str().to_owned()),
+                field_path: Some("encounters".into()),
+                ..Default::default()
+            });
+            // Setup feasibility consumes every PatternCall candidate in the
+            // selected encounter. Retain that actual compiled dependency graph,
+            // including definitions replaced in another source file.
+            if let Some(definition) = self
+                .game_data
+                .boss_runtime_data
+                .get_encounter(&binding.encounter_id)
+            {
+                use crate::game::data::boss_runtime_data::CompiledBossControlNode;
+                let mut seen = HashSet::new();
+                for phase in &definition.phases {
+                    for actor in &phase.actor_behaviors {
+                        let behavior_id = actor.behavior.id.as_str();
+                        if seen.insert(("actor_behaviors", behavior_id)) {
+                            related_sources.push(LiveRonSource {
+                                source_file: "data/boss_runtime/base.ron".into(),
+                                object_id: Some(behavior_id.to_owned()),
+                                field_path: Some("actor_behaviors".into()),
+                                ..Default::default()
+                            });
+                        }
+                        for node in &actor.behavior.nodes {
+                            if let CompiledBossControlNode::PatternCall { candidates, .. } = node {
+                                for candidate in candidates {
+                                    let pattern_id = candidate.pattern.id.as_str();
+                                    if seen.insert(("patterns", pattern_id)) {
+                                        related_sources.push(LiveRonSource {
+                                            source_file: "data/boss_runtime/base.ron".into(),
+                                            object_id: Some(pattern_id.to_owned()),
+                                            field_path: Some("patterns".into()),
+                                            ..Default::default()
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        related_sources.retain(|source| source != &primary);
+        let mut error = LiveRonError::validation(
+            primary.source_file,
+            "generated_combat_preview",
+            primary.object_id,
+            primary.field_path,
+            cause,
+        );
+        error.related_sources = related_sources;
+        error.with_phase(LiveRonPhase::GeneratedSetup)
+    }
+}
+
+fn baseline_tuning_path(game_data: &GameDataBase) -> String {
+    use crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand;
+    let (profile_index, profile) = game_data
+        .run_policy
+        .combat_difficulty
+        .profiles
+        .iter()
+        .enumerate()
+        .find(|(_, profile)| profile.id == "default_facility")
+        .expect("validated default combat difficulty profile");
+    let band_index = profile
+        .ordinary_bands
+        .iter()
+        .position(|entry| entry.band == OrdinaryCombatDifficultyBand::Standard)
+        .expect("validated Standard combat tuning");
+    format!("combat_difficulty.profiles[{profile_index}].ordinary_bands[{band_index}].tuning")
+}
+
 fn validate_combat_preview_threat_warning_contract(
-    game_data: &GameDataBase,
-) -> Result<(), crate::game::data::DataValidationError> {
+    game_data: &Arc<GameDataBase>,
+) -> Result<(), super::live_ron::LiveRonError> {
     const PREVIEW_VALIDATION_SEEDS: [u64; 5] = [0, 1, 17, 41, 99];
+    use crate::authoring::control::{self, ExecutionPhase};
+    let _phase = control::phase(ExecutionPhase::GeneratedSetup);
+    let control_error = |error| {
+        super::live_ron::LiveRonError::validation(
+            "generated_setup",
+            "execution_control",
+            None::<String>,
+            None::<String>,
+            format!("{error:?}"),
+        )
+        .with_phase(super::live_ron::LiveRonPhase::GeneratedSetup)
+    };
+    control::charge(1, "generated_validation_entry").map_err(control_error)?;
 
     for (encounter_index, encounter) in game_data.pve_data.encounters.iter().enumerate() {
+        control::charge(1, "generated_encounter").map_err(control_error)?;
+        let baseline_context = GeneratedValidationContext {
+            game_data,
+            encounter_index,
+            tuning_path: baseline_tuning_path(game_data),
+            monolith_stage: None,
+        };
         for seed in PREVIEW_VALIDATION_SEEDS {
+            control::charge(1, "generated_baseline_seed").map_err(control_error)?;
             let node_id = MapNodeId::new(Uuid::from_u128(
                 0xADAD_0000_0000_0000_0000_0000_0000_0000_u128 + u128::from(seed),
             ));
-            let preview = CombatPreview::try_generate_for_node_at_floor(
+            let preview = CombatPreview::try_generate_from_request_with_diagnostic(
                     node_id,
-                    MapNodeCategory::Combat,
-                    Some(encounter.id.as_str()),
-                    game_data,
-                    seed,
-                    0,
+                    crate::game::combat_preview::BattlefieldGenerationRequest {
+                        category: MapNodeCategory::Combat,
+                        encounter_id: Some(encounter.id.as_str()), seed, floor_index: 0,
+                    },
+                    game_data.as_ref(), None,
                 )
                 .map_err(|preview_error| {
-                    crate::game::data::DataValidationError::at(
-                        &encounter.id,
-                        format!("encounters[{encounter_index}]"),
+                    baseline_context.error(
                         format!(
-                            "combat preview generation failed for baseline difficulty seed {}: {preview_error:?}",
-                            seed
-                        ),
+                            "combat preview generation failed for baseline difficulty seed {seed}: {:?}",
+                            preview_error.error
+                        ), Some(&preview_error), None,
                     )
                 })?;
-            let required =
-                required_briefing_warning_tags_for_spawn_waves(&preview.spawn_waves, game_data);
+            let required = required_briefing_warning_tags_for_spawn_waves(
+                &preview.spawn_waves,
+                game_data.as_ref(),
+            );
             let briefing_tags = preview
                 .threat_warnings
                 .iter()
@@ -1177,17 +1621,273 @@ fn validate_combat_preview_threat_warning_contract(
 
             for required_tag in required {
                 if !briefing_tags.contains(&required_tag) {
-                    return Err(crate::game::data::DataValidationError::at(
-                            &encounter.id,
-                            format!("encounters[{encounter_index}]"),
+                    return Err(baseline_context.error(
                             format!(
-                                "combat preview baseline difficulty seed {} omits required briefing warning {required_tag:?}",
-                                seed
-                            ),
+                                "combat preview baseline difficulty seed {seed} omits required briefing warning {required_tag:?}"
+                            ), None, Some(&preview),
                         ));
                 }
             }
         }
+
+        let category = if encounter.node_type == Some(CombatNodeType::Boss) {
+            MapNodeCategory::Boss
+        } else {
+            MapNodeCategory::Combat
+        };
+        for (
+            difficulty_index,
+            (difficulty_label, difficulty, reward_multiplier_percent, tuning_path),
+        ) in manifested_difficulty_cases(game_data.as_ref())
+            .map_err(control_error)?
+            .into_iter()
+            .enumerate()
+        {
+            let context = GeneratedValidationContext {
+                game_data,
+                encounter_index,
+                tuning_path,
+                monolith_stage: difficulty.monolith_stage,
+            };
+            for seed in PREVIEW_VALIDATION_SEEDS {
+                control::charge(1, "generated_manifested_seed").map_err(control_error)?;
+                let node_id = MapNodeId::new(Uuid::from_u128(
+                    0xB055_0500_0000_0000_0000_0000_0000_0000_u128
+                        + ((encounter_index as u128) << 32)
+                        + ((difficulty_index as u128) << 16)
+                        + u128::from(seed),
+                ));
+                let preview = CombatPreview::try_generate_from_request_with_diagnostic(
+                    node_id,
+                    crate::game::combat_preview::BattlefieldGenerationRequest {
+                        category, encounter_id: Some(encounter.id.as_str()), seed, floor_index: 0,
+                    },
+                    game_data.as_ref(), Some(&difficulty),
+                )
+                .map_err(|preview_error| {
+                    context.error(
+                        format!(
+                            "combat preview generation failed for manifested difficulty {difficulty_label} seed {seed}: {:?}", preview_error.error
+                        ), Some(&preview_error), None,
+                    )
+                })?;
+                validate_preview_briefing_warnings(&context, &difficulty_label, seed, &preview)?;
+                CombatExecutor::validate_live_combat_setup_feasibility(
+                    game_data.clone(),
+                    &encounter.id,
+                    seed,
+                    &preview,
+                    reward_multiplier_percent,
+                )
+                .map_err(|setup_error| {
+                    context.error(
+                        format!(
+                            "resolved battle setup failed for manifested difficulty {difficulty_label} seed {seed}: {setup_error:?}"
+                        ), None, Some(&preview),
+                    )
+                })?;
+            }
+        }
+    }
+    control::poll("generated_validation_complete").map_err(control_error)?;
+    Ok(())
+}
+
+fn validate_preview_briefing_warnings(
+    context: &GeneratedValidationContext<'_>,
+    difficulty_label: &str,
+    seed: u64,
+    preview: &CombatPreview,
+) -> Result<(), super::live_ron::LiveRonError> {
+    let required =
+        required_briefing_warning_tags_for_spawn_waves(&preview.spawn_waves, context.game_data);
+    let briefing_tags = preview
+        .threat_warnings
+        .iter()
+        .filter(|warning| warning.source == ThreatWarningSource::Briefing)
+        .map(|warning| warning.tag)
+        .collect::<HashSet<_>>();
+    for required_tag in required {
+        if !briefing_tags.contains(&required_tag) {
+            return Err(context.error(
+                format!(
+                    "combat preview manifested difficulty {difficulty_label} seed {seed} omits required briefing warning {required_tag:?}"
+                ), None, Some(preview),
+            ));
+        }
     }
     Ok(())
+}
+
+fn manifested_difficulty_cases(
+    game_data: &GameDataBase,
+) -> Result<Vec<(String, MapNodeCombatDifficulty, u32, String)>, crate::game::behavior::GameError> {
+    use crate::authoring::control;
+    let power_model_version = game_data.run_policy.combat_difficulty.power_model_version;
+    let mut cases = Vec::new();
+    for (profile_index, profile) in game_data
+        .run_policy
+        .combat_difficulty
+        .profiles
+        .iter()
+        .enumerate()
+    {
+        control::charge(1, "generated_difficulty_profile")?;
+        for (band_index, entry) in profile.ordinary_bands.iter().enumerate() {
+            control::charge(1, "generated_ordinary_case")?;
+            push_manifested_difficulty_case(
+                game_data,
+                &mut cases,
+                profile.id.as_str(),
+                format!("{}::Ordinary({:?})", profile.id, entry.band),
+                power_model_version,
+                MapNodeCombatDifficultyClass::Ordinary(entry.band),
+                None,
+                format!("combat_difficulty.profiles[{profile_index}].ordinary_bands[{band_index}].tuning"),
+            );
+        }
+        for (role_index, entry) in profile.role_tuning.iter().enumerate() {
+            control::charge(1, "generated_role_case")?;
+            if entry.role
+                == crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation
+            {
+                for stage in [
+                    MonolithRemanifestationStage::Stage2,
+                    MonolithRemanifestationStage::Stage3,
+                ] {
+                    control::charge(1, "generated_monolith_case")?;
+                    push_manifested_difficulty_case(
+                        game_data,
+                        &mut cases,
+                        profile.id.as_str(),
+                        format!("{}::Role({:?})::{stage:?}", profile.id, entry.role),
+                        power_model_version,
+                        MapNodeCombatDifficultyClass::Role(entry.role),
+                        Some(stage),
+                        format!("combat_difficulty.profiles[{profile_index}].role_tuning[{role_index}].tuning"),
+                    );
+                }
+            } else {
+                push_manifested_difficulty_case(
+                    game_data,
+                    &mut cases,
+                    profile.id.as_str(),
+                    format!("{}::Role({:?})", profile.id, entry.role),
+                    power_model_version,
+                    MapNodeCombatDifficultyClass::Role(entry.role),
+                    None,
+                    format!("combat_difficulty.profiles[{profile_index}].role_tuning[{role_index}].tuning"),
+                );
+            }
+        }
+    }
+    Ok(cases)
+}
+
+fn push_manifested_difficulty_case(
+    game_data: &GameDataBase,
+    cases: &mut Vec<(String, MapNodeCombatDifficulty, u32, String)>,
+    profile_id: &str,
+    label: String,
+    power_model_version: u32,
+    class: MapNodeCombatDifficultyClass,
+    monolith_stage: Option<MonolithRemanifestationStage>,
+    tuning_path: String,
+) {
+    let mut difficulty = MapNodeCombatDifficulty {
+        power_model_version,
+        difficulty_profile_id: profile_id.to_string(),
+        class,
+        monolith_stage,
+        floor_power_anchor: 100,
+        target_power: 100,
+    };
+    let tuning = game_data
+        .run_policy
+        .resolved_tuning_for_manifested_node(&difficulty)
+        .expect("validated live difficulty case must resolve");
+    difficulty.target_power = u64::from(tuning.target_power_percent);
+    cases.push((
+        label,
+        difficulty,
+        tuning.reward_multiplier_percent,
+        tuning_path,
+    ));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::data::pve_data::PveEncounterRewardSource;
+    use crate::game::data::reward_data::RewardMetadata;
+    use crate::game::data::skill_fragment_data::SkillFragmentId;
+
+    #[test]
+    fn r12_passive_guard_requires_bounded_policy_and_parry_in_every_selected_form() {
+        let authored = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/r12/passive_guard.ron"
+        ));
+        let base = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/r09/fragments.ron"
+        ));
+        let text = base.replace("ActiveSkill(forms:", "ActiveSkill(passive_guard: Some((reduction_percent: 30, reflection_chance_percent: 50, reflection_percent: 25)), forms:");
+        let fragments: skill_fragment_data::SkillFragmentDatabase =
+            ron::de::from_str(&text).unwrap();
+        fragments.validate_contract().unwrap();
+        let skills = SkillDatabase::from_ron("r12/guard.ron", authored).unwrap();
+        validate_skill_fragment_skill_references(
+            &fragments,
+            &AbnormalityDatabase::new(vec![]),
+            &skills,
+            &EquipmentDatabase::new(vec![]),
+        )
+        .unwrap();
+        for field in [
+            "reduction_percent: 30",
+            "reflection_chance_percent: 50",
+            "reflection_percent: 25",
+        ] {
+            let invalid =
+                text.replace(field, &format!("{}: 101", field.split(':').next().unwrap()));
+            let fragments: skill_fragment_data::SkillFragmentDatabase =
+                ron::de::from_str(&invalid).unwrap();
+            let error = fragments.validate_contract().unwrap_err();
+            assert!(format!("{error:?}").contains("passive_guard"));
+        }
+        for authored in [authored.replace("reduction_percent: 0", "reduction_percent: 10"), authored.replace("Sustained(definition: Parry(duration_ms: 200, window_ms: 30, invulnerable_ms: 40, miss_recovery_ms: 20, reduction_percent: 0, counter_skill: \"r12_counter\"))", "Heal(amount: 1)").replace("use_lifetime: ActionAndEffects(effects: [(step: \"guard\", effect: \"parry\")])", "use_lifetime: Action")] {
+            let skills = SkillDatabase::from_ron("r12/invalid_guard.ron", &authored).unwrap();
+            assert!(validate_skill_fragment_skill_references(&fragments, &AbnormalityDatabase::new(vec![]), &skills, &EquipmentDatabase::new(vec![])).is_err());
+        }
+    }
+
+    #[test]
+    fn ordinary_reward_cannot_grant_an_encounter_source_fragment() {
+        let fragment_id = SkillFragmentId::from("source_fragment");
+        let rewards = RewardDatabase::new(vec![RewardMetadata {
+            id: "invalid_ordinary_reward".to_string(),
+            uuid: Uuid::from_u128(1),
+            name: "invalid".to_string(),
+            description: "invalid".to_string(),
+            icon: "invalid".to_string(),
+            effects: vec![RewardEffect::GrantSkillFragment {
+                fragment_id: fragment_id.clone(),
+            }],
+        }]);
+        let encounters = PveEncounterDatabase::new_with_reward_sources(
+            Vec::new(),
+            vec![PveEncounterRewardSource {
+                reward_source_id: "source".to_string(),
+                encounter_id: "encounter".to_string(),
+                fragment_id,
+                repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+            }],
+        );
+
+        let error = validate_ordinary_reward_source_exclusion(&rewards, &encounters)
+            .expect_err("ordinary reward must not bypass the source ledger");
+        assert_eq!(error.object_id.as_deref(), Some("invalid_ordinary_reward"));
+        assert!(error.cause.contains("encounter-source fragment"));
+    }
 }

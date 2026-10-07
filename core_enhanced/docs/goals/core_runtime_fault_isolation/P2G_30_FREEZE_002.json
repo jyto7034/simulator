@@ -1,0 +1,468 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CRFI-002",
+        "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRFI-005",
+          "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CRFI-002",
+          "Content Digest": "sha256:186c35541932173d0e6d6ddcf4955835e20ca1d785ea4c5841e2faa3f267af55"
+        },
+        "Predecessor Freeze": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRFI-001",
+          "Content Digest": "sha256:fad6a98b64cae25af047ba72875ce7bfd4fe905caf3f9a805550240c2f6a58ed"
+        },
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-01-REVIEWED-002",
+            "Content Digest": "sha256:d5676d5eb6b289dbf6c00ade7f7d9578c5349a217d2c4bbbacbf0d6d3f3094a5"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-02-REVIEWED-002",
+            "Content Digest": "sha256:3d83f7fa8d0e75ba60184bd50d0fa435c16a9ed5ecb0f18df92a69e3b01eb05b"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-03-REVIEWED-002",
+            "Content Digest": "sha256:9abff002efab766c46eb84b99c63db389ad0290d51d548f1e04d158ef80a3853"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-04-REVIEWED-002",
+            "Content Digest": "sha256:422a2592cf37e4ed645b55fb191add5c12db20f9980defffb29b73d5d793195d"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-05-REVIEWED-002",
+            "Content Digest": "sha256:970903ce9e78c47125cfa5c96b0d184386476f7b72b890d09bcd722c0971f192"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-06-REVIEWED-002",
+            "Content Digest": "sha256:7e4baef743a578ae06830ddddd4be2372fb662b0c63400443639be7a9e3c6198"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-07-REVIEWED-002",
+            "Content Digest": "sha256:07789a67549d214414359a59d046bb64b662772c79f8e893533b03c5ad7c89fb"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-08-REVIEWED-002",
+            "Content Digest": "sha256:8be7ab0c5a9c559c01065393a9e2e5ed8f3aff5b9b861bcf12ba3b38de975195"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-09-REVIEWED-002",
+            "Content Digest": "sha256:071992ce26073c7f915b5cbe2de452a4f896a6aef46478a617bd5b364e5b0858"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-10-REVIEWED-002",
+            "Content Digest": "sha256:af34541a983a480b4b95b9cc9bbc08fc222c6eb2bf5a8e6122642574fc490ea8"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-11-REVIEWED-002",
+            "Content Digest": "sha256:43a200a6022468d2ce2f44f84b9a8de5b4c6f67b32a30d98e352fb15f6255a8d"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRFI-12-REVIEWED-002",
+            "Content Digest": "sha256:50fe6c550dbd62d9f8c31cc6a2b0d407c20c3c07f41747c1b77e024256f778d0"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-01-r1",
+            "Content Digest": "sha256:6c52676a3b6326977ca8ae2e21d64fec18ce73d8c3301bbed7e5bd362ad5491d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-02-r1",
+            "Content Digest": "sha256:e05860a392b661e1d7840ff5d58be30913c69872859e9b2db11ea9aec6aa1199"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-03-r1",
+            "Content Digest": "sha256:de14eabbe11454ace1ec5c80328d46bba7a281d36d002bd472abc547dbb69797"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-04-r1",
+            "Content Digest": "sha256:43b431ab3d933337f4da4c7eb17c8d6eade76f6c8316b79aa5c4522e224bb765"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-05-r1",
+            "Content Digest": "sha256:b874cae76eca0605a4d7000477fd93b89704def9794dd450012e5522e472a246"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-06-r1",
+            "Content Digest": "sha256:2cbc45729ae614cb9d7fbc304e5799aba6596501385bda59a4e059668c85ca86"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-07-r1",
+            "Content Digest": "sha256:c284ea2942a3cc3b2beb74555f63c99aef67f7832d382cbb4b0599e687f93f53"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-08-r1",
+            "Content Digest": "sha256:a97aa139e3ee1755fa0fe24bebf3ff9f1e0fad5a4bf0fd2720d189365d5f938f"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-09-r1",
+            "Content Digest": "sha256:6eb4d052b801e0592921459a2c67604f8fdeca3de8458b3d59bb325873b74e6c"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-10-r1",
+            "Content Digest": "sha256:5f4559a29a7c3abb46809926109dcb520595ade831700e039c1f2a9e4c923a03"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-11-r1",
+            "Content Digest": "sha256:1a5491c0351fb578e3825745b76c5382237754dbaea161667d0872148bf950b5"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DEC-CRFI-12-r1",
+            "Content Digest": "sha256:932620bd7ad7393c46a787d1eb987193ec88a87a85fd6b57df29fea6753ea15d"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-01-REVIEWED-002",
+              "Content Digest": "sha256:d5676d5eb6b289dbf6c00ade7f7d9578c5349a217d2c4bbbacbf0d6d3f3094a5"
+            },
+            "Observable Policy Acceptance": [
+              "실제 native 한도와 동적 수식/내부 실패가 오류 종료를 만든다. 잘못된 authority·일반 행동/자원 거절·미게시 진입 실패는 기존 거절 의미를 유지하며 정상 전투를 오류 종료하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-02-REVIEWED-002",
+              "Content Digest": "sha256:3d83f7fa8d0e75ba60184bd50d0fa435c16a9ed5ecb0f18df92a69e3b01eb05b"
+            },
+            "Observable Policy Acceptance": [
+              "첫 오류 뒤 gameplay 상태/RNG/event/result가 진전하지 않고 모든 후속 경로에서 같은 전투 identity·최초 원인을 조회할 수 있다. 동일 오류의 반복은 원인 교체·중복 정산을 만들지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-03-REVIEWED-002",
+              "Content Digest": "sha256:9abff002efab766c46eb84b99c63db389ad0290d51d548f1e04d158ef80a3853"
+            },
+            "Observable Policy Acceptance": [
+              "실패 시 마지막 commit의 자원·RNG·event·결과가 유지되고 실패 시도 비용은 사라지지 않는다. 오류 직후 정상 BattleResult/보상 권리/노드 완료가 새로 생기지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-04-REVIEWED-002",
+              "Content Digest": "sha256:422a2592cf37e4ed645b55fb191add5c12db20f9980defffb29b73d5d793195d"
+            },
+            "Observable Policy Acceptance": [
+              "postcommit projection/transport 오류가 성공 commit을 되돌리거나 새 전투 fault를 만들지 않는다. runtime fault와 진단 실패가 겹친 경우에도 후속 실행·저장이 거절되고 최소 오류 원인을 조회할 수 있다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-05-REVIEWED-002",
+              "Content Digest": "sha256:970903ce9e78c47125cfa5c96b0d184386476f7b72b890d09bcd722c0971f192"
+            },
+            "Observable Policy Acceptance": [
+              "공개 API와 실제 headless host에서 같은 최초 오류를 읽고 재접속 시 오류임을 식별한다. 큰 원인/진단 실패·중복 조회에서도 저장량이 유한하고 trace 한도·root 불변을 지킨다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-06-REVIEWED-002",
+              "Content Digest": "sha256:7e4baef743a578ae06830ddddd4be2372fb662b0c63400443639be7a9e3c6198"
+            },
+            "Observable Policy Acceptance": [
+              "공개 mutation 포트와 host 관리 명령을 직접 호출해도 오류 root를 바꾸거나 저장 가능한 정상 성공 결과를 만들 수 없다. 조회·명시적 종료는 가능하고 정상 전투/비전투의 기존 유효 호출은 계속 동작한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-07-REVIEWED-002",
+              "Content Digest": "sha256:07789a67549d214414359a59d046bb64b662772c79f8e893533b03c5ad7c89fb"
+            },
+            "Observable Policy Acceptance": [
+              "실제 actor에서 수동/자동 최초 실패 후 late callback·EnsureTick·재접속·세션 교체에도 gameplay가 진전하지 않는다. 새 접속이 같은 오류 원인을 받고 오래된 접속이 mutation을 수행하지 못한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-08-REVIEWED-002",
+              "Content Digest": "sha256:8be7ab0c5a9c559c01065393a9e2e5ed8f3aff5b9b861bcf12ba3b38de975195"
+            },
+            "Observable Policy Acceptance": [
+              "오류 유발부터 후속 명령·detach/reconnect·actor stop까지 해당 actor에 기인한 쓰기/삭제가 없고 active/profile 원본 파일 bytes가 같다. 정상 다른 세션 저장까지 전역 차단하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-09-REVIEWED-002",
+              "Content Digest": "sha256:071992ce26073c7f915b5cbe2de452a4f896a6aef46478a617bd5b364e5b0858"
+            },
+            "Observable Policy Acceptance": [
+              "실제 Quit→actor 종료→새 actor→기존 Continue 경로를 검증하고 원본 저장이 유효할 때만 이어한다. 오류 전투 identity는 재개되지 않고 파일/loads 규칙을 우회하지 않는다. 저장 부재/거절도 기존 의미를 유지한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-10-REVIEWED-002",
+              "Content Digest": "sha256:af34541a983a480b4b95b9cc9bbc08fc222c6eb2bf5a8e6122642574fc490ea8"
+            },
+            "Observable Policy Acceptance": [
+              "동일 실제 host의 두 player 중 하나가 fault를 일으켜도 다른 player는 명령/tick/정상 저장을 계속한다. fault actor는 공유 store를 오염시키지 않고 다른 player의 성공을 자기 fault 해제로 해석하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-11-REVIEWED-002",
+              "Content Digest": "sha256:43a200a6022468d2ce2f44f84b9a8de5b4c6f67b32a30d98e352fb15f6255a8d"
+            },
+            "Observable Policy Acceptance": [
+              "fault 후 관측의 활성 집계와 선택 상세가 정리되고 실패 횟수/시도 work는 남는다. off/on·포화/부재에서 fault 이유·root·저장 보호가 같고 반복 gate가 최초 실행을 재수행하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CRFI-12-REVIEWED-002",
+              "Content Digest": "sha256:50fe6c550dbd62d9f8c31cc6a2b0d407c20c3c07f41747c1b77e024256f778d0"
+            },
+            "Observable Policy Acceptance": [
+              "100개 선행 조건의 현재 적용성/의도된 차이/새 증거가 추적되고 실제 runtime fault가 실행된 공개 경로 증거가 있다. 기존 경고·raw 실패를 보존하며 내부 fixture만으로 host 완료를 주장하지 않는다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-01-002",
+            "Content Digest": "sha256:3f92fdd3ca639059fc349bcefad57984f08bb2507f1ab40d33b37f29770faa1c"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-02-002",
+            "Content Digest": "sha256:355550a9792a628f5c30c1d6f5a923e7486b20dc9a31fb0a087b5b4160a28492"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-03-002",
+            "Content Digest": "sha256:f14a232dc37c795b32722bb6f6fe3c7836bba71e422d3583b00d5be192e6a2fb"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-04-002",
+            "Content Digest": "sha256:88cbbbed7dc81e6d88db980eaaf03ad51813b8b93c3acc8d8b73f7a45681c627"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-05-002",
+            "Content Digest": "sha256:64f59f3cdc07c8fca06592bbd24cca57fadc6cc03b63c338df959f802d124880"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-06-002",
+            "Content Digest": "sha256:24bf2179a14aa4a82e405974e814a99a092b881eaeccb893cd7f8131b9a6ffb6"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-07-002",
+            "Content Digest": "sha256:32a57da102e632db57c73052e25c49f0d4184df5fa738870b35b157fd129cd5d"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-08-002",
+            "Content Digest": "sha256:b65c9a3793abbb74499ead48418e5e2b0607b413b3ba3e4bad4ddae52eb44d74"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-09-002",
+            "Content Digest": "sha256:c37673b33523507cecc57fbc1abe9127dec20e484c18ca950dc89c0a5dd3d447"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-10-002",
+            "Content Digest": "sha256:c134a34be26beb962f6a94df080932710984fd3aa46771fbe12c1d21dbaad2c4"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-11-002",
+            "Content Digest": "sha256:813c2709f7a40589aac96be1a53dd8d6178a06a0e4b0d4f8b98527a396568fe3"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CRFI-12-002",
+            "Content Digest": "sha256:559beb3b15ff71c437ae910cf35e7c7079f10bdbb283d38d4dbc9f2fea35acff"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CRFI-002",
+          "Content Digest": "sha256:eb91ddf69b6e96e13ff6b75a7f2459484eb20b00db06e6099da2fa942b5415f7"
+        },
+        "Binding Completeness Evidence": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CRFI-002",
+          "Content Digest": "sha256:bdfeb3a36f22e7632e2ab9eb5a84c67615234111b4c2831fed890a5ca6931198"
+        },
+        "Applicable Change/Obligation Basis": [
+          {
+            "Artifact Type": "Post-Freeze Change Record",
+            "Artifact ID": "PFC-CRFI-SCHEMA-001",
+            "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+          },
+          {
+            "Artifact Type": "Change Obligation Declaration",
+            "Artifact ID": "COD-CRFI-SCHEMA-001",
+            "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+          }
+        ],
+        "Resolved Prerequisite Evidence": [
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RR-CRFI-SCHEMA-10-001",
+            "Content Digest": "sha256:853afe41636c7de0c29a79d20308058cecf3ab46431766593b59d5a51231a5b7"
+          },
+          {
+            "Artifact Type": "Resolution Record",
+            "Artifact ID": "RR-CRFI-SCHEMA-20-001",
+            "Content Digest": "sha256:1f59f636b0e38836bae3ba0f2cf076af10bc8925b1e2915d4e4a83e9f536ffc0"
+          }
+        ],
+        "Known Unknowns": "Only implementation evidence pending: actual sticky-fault API/host negative paths, bounded diagnostics and terminal observation parity. CODE_REVIEW F04 and V01–12 own actual nonzero execution; no unknown required policy/source boundary. Exact Rust helper/DTO spelling chosen within TD01–08.",
+        "Compatibility/Migration Disposition": "Existing normal command/result JSON preserved when no fault. New fault is application/session lifetime, absent from save schemas. Existing valid active/profile bytes, Continue versus Load rules, private rollback/authoring candidate retry, public prepared authority preserved. Public reset gains typed Result and actual host caller changes together. No data deletion/conversion, whole Run rollback, auto-cancel or U04 result policy.",
+        "Lifecycle Disposition": "current"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Resolution Record",
+        "Artifact ID": "RR-CRFI-SCHEMA-30-001",
+        "Content Digest": "sha256:a6fb94b794187de7ed8ab41b9d15d3bf43830f38cfaa721257097cdf67582389"
+      },
+      "payload": {
+        "Obligation Key": {
+          "Container Ref": {
+            "Artifact Type": "Change Obligation Declaration",
+            "Artifact ID": "COD-CRFI-SCHEMA-001",
+            "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+          },
+          "Obligation ID": "O30"
+        },
+        "Owner Stage": "P2G-30",
+        "Exact Resolved Prerequisite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRFI-005",
+            "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+          },
+          "Final Policy Freeze Ref": null,
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "PFC-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+            }
+          ]
+        },
+        "Exact Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRFI-005",
+            "Content Digest": "sha256:54580ebb8b1759493fa5b22a784aa8844f411c4d42c181112bd0b739bbd35e7a"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRFI-002",
+            "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [
+            {
+              "Artifact Type": "Post-Freeze Change Record",
+              "Artifact ID": "PFC-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:9073071b11fe067ec6900abe0b93075316d45482f12b552c85c59c1153c58b61"
+            }
+          ],
+          "Authoritative Change Obligation Declaration Ref Set": [
+            {
+              "Artifact Type": "Change Obligation Declaration",
+              "Artifact ID": "COD-CRFI-SCHEMA-001",
+              "Content Digest": "sha256:06502bd57f88925b5dd6030ce92c71ef5d24fb974867a1f9ee252db7138b41b6"
+            }
+          ]
+        },
+        "Resolution Artifact Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRFI-002",
+          "Content Digest": "sha256:6ed1ae22362e78126e457f3a844b9c32d1bc06f28c89cd8a74389969a18b7ff3"
+        },
+        "Resolution Evidence": {
+          "O10_O20_resolution_refs": [
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RR-CRFI-SCHEMA-10-001",
+              "Content Digest": "sha256:853afe41636c7de0c29a79d20308058cecf3ab46431766593b59d5a51231a5b7"
+            },
+            {
+              "Artifact Type": "Resolution Record",
+              "Artifact ID": "RR-CRFI-SCHEMA-20-001",
+              "Content Digest": "sha256:1f59f636b0e38836bae3ba0f2cf076af10bc8925b1e2915d4e4a83e9f536ffc0"
+            }
+          ],
+          "exact12_member_decision_acceptance_projection": true,
+          "all59_source_rows_exact_to_original_review": true,
+          "canonical_member_field_shapes": true,
+          "all_declared_active_leaves_resolved": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "schema": "U08_REMAINDER_EXECUTION_HANDOFF_009",
+  "recorded_at_utc": "2026-10-07T03:05:53.845196+00:00",
+  "status": "AUTHORIZED_PROCEED_AFTER_OWN_ACTUAL_PREFLIGHT_AND_BEFORE_NO_EXTRA_ROOT_ACK_REQUIRED",
+  "root_review": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261007_034/RECORD.json",
+    "bytes": 6127,
+    "sha256": "40d9b050d75a6903180c7081c8e01aadb9417cea49bf1fb2f86c91307df4b1a4"
+  },
+  "selected_role_map": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261007_034/ROLE_MAP_009_PREPARED.json",
+    "bytes": 36972,
+    "sha256": "839dac945627289c1386f7198c6a3ee8cd7b85882e3a005ac4a61edc5018641d"
+  },
+  "fault_preparation": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_resume_successor001/HANDOFF.json",
+    "bytes": 6796,
+    "sha256": "9b5f3d7e1369cccf5df2fa32b34366e90fa8f9f869744ffbd7c3585d21bbfec5"
+  },
+  "probe_preparation": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe003/HANDOFF.json",
+    "bytes": 4211,
+    "sha256": "a3c56e3a5b2ae3d0ce40c23b9c8c2dbd1f215b85b140518f78d834cf905f9580"
+  },
+  "consumer_input_collection": {
+    "path": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_resume_successor001/CONSUMER_INPUT_COLLECTION.json",
+    "bytes": 116522,
+    "sha256": "1d4609421e95478088dc67acbba4c92dc107d6dba6d2457abf1f6d250c5ff371"
+  },
+  "review_summary": "Read complete resume_off002.py and both handoffs, actual check log11 cases and collection contract. Twenty distinct handoff refs match actual bytes. New probe.py equals old with only two output metadata key renames; all four oracle cases identical after path normalization. Original off argv and five-mode/queue/on assertions preserved. Draft small-check failure retained; active002 corrects notice/refusal classification. No product API/limits/acceptance change.",
+  "roles": {
+    "coordinator": "/root gpt-6-astra/high planning/read/docs only",
+    "sole_runner": "/root/u08_product_runner_resume gpt-6.1-sol/xhigh",
+    "test_owner": "/root/u08_harness_author_resume gpt-6-astra/high writer0/runner0 after preparation; may resume only for returned test defects after runner closes affected execution",
+    "focused_test_author": "/root/u08_test_author_resume completed,writer0/runner0",
+    "independent_auditor": "not yet assigned; no author may be final auditor"
+  },
+  "source_sha256": "4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac",
+  "source_files": 438,
+  "execution_root": "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/execution_harness_binding009",
+  "new_interval_recording": "Use actual snapshot_v1 primary for original1322 and identical external2/member8 from first resumed command through last. Actual96 fault and503 probe static auxiliary sets before consumption. Capture generated build_off receipt/raw2 after build close/before outeroff and afteroff. Capture functional49 receipt/raw98 after all49close/before optionalprobe and afterprobe. Same ordered bytes and flat archive across each pair; full source in every manifest. Expand own dependencies for final composite. Do not backdate or replace immutable old007/008/focus005 snapshots.",
+  "execution_order": [
+    {
+      "receipt": "final_fault_007_build_off",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "final_fault_007_build_off",
+        "--",
+        "cargo",
+        "build",
+        "--release",
+        "-p",
+        "game_server",
+        "--example",
+        "fault_runtime",
+        "--offline",
+        "--locked"
+      ]
+    },
+    {
+      "receipt": "final_fault_007_off",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "final_fault_007_off",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_resume_successor001/resume_off002.py",
+        "--input-manifest",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/fault_resume_successor001/PREPARED_MANIFEST_002.json",
+        "--expected-input-sha256",
+        "624372f234950c3486cd477d01527c1db988aae335a5a7fc1f013109f8c1e876"
+      ]
+    },
+    {
+      "receipt": "verify_remaining008",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "verify_remaining008",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/verify_remaining.py",
+        "3",
+        "007"
+      ]
+    },
+    {
+      "receipt": "r06_resource_sum_publication009",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "r06_resource_sum_publication009",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe003/probe.py",
+        "--input-manifest",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/evidence/r06_resource_sum_probe003/INPUT_MANIFEST.json",
+        "--expected-input-sha256",
+        "464a791064abfd8f0bc93156b16941c8e77e9dd34e75b2c3fb20a2be6326c77e"
+      ]
+    },
+    {
+      "receipt": "pc_prepare007",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "pc_prepare007",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/compatibility/current_001/prepare_pc.py",
+        "007"
+      ]
+    },
+    {
+      "receipt": "performance_pc007",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "performance_pc007",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/performance_matrix.py",
+        "--phase",
+        "pc",
+        "--label",
+        "007",
+        "--prepare-label",
+        "007"
+      ]
+    },
+    {
+      "receipt": "compat_pc_cost007",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "compat_pc_cost007",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/compatibility/current_001/compare_pc_cost.py",
+        "--label",
+        "007"
+      ]
+    },
+    {
+      "receipt": "compat_r05_prepare_007",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "compat_r05_prepare_007",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/compatibility/current_001/prepare_r05.py",
+        "007"
+      ]
+    },
+    {
+      "receipt": "performance_r05007",
+      "argv": [
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/run.py",
+        "performance_r05007",
+        "--",
+        "python3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_numeric_variants/tools/performance_matrix.py",
+        "--phase",
+        "r05",
+        "--label",
+        "007",
+        "--prepare-label",
+        "007",
+        "--r05-prepare-label",
+        "007"
+      ]
+    }
+  ],
+  "before_performance": "After functional50 complete, record actual exact50 receipt refs, UTC/current source/inputwriters0/functionalrunners0 separately before PC and R05. Functional and performance runs never overlap. Preserve existing caps, workloads and shared-host observations; fresh R05 target must be unused.",
+  "existing_successes": "Reuse exact25 available successes; native5 complete aggregate only after off passes. Never rerun old failed fault wrapper or rewrite old labels.",
+  "failure_handling": "Preserve new failure/raw and close actual interval/input snapshots. Product defects to existing Sol; test/fixture/oracle defects to Astra with actual evidence. Ordinary runner bookkeeping can be corrected autonomously without changing source, inputs, or oracle. Return contract/source/input conflicts to root.",
+  "allowed_recording": "Sol may collect receipts, snapshots/manifests/archives, quiescence and process visibility metadata for this execution. This does not authorize test/fixture/comparator edits.",
+  "finalizers_authorized": false,
+  "selected_roles": 58,
+  "functional": 50,
+  "performance": 8,
+  "whole_goal_complete": false
+}

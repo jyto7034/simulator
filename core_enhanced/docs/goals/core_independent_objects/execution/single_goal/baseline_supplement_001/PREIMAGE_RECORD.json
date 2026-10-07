@@ -1,0 +1,12 @@
+{
+  "purpose": "Supplement the reversible documentation boundary without rewriting the original intake archive",
+  "path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+  "preimage_sha256": "bf684f7149bd7a05c3c1e995cbfa9bf05bbe64850e320c79abfa0ebc7925f6aa",
+  "after_sha256_at_capture": "a2d625fde6fc8a32d8ccb65ac6351b4751bceea6952b4186cd36ad644cb21c8d",
+  "preimage_bytes": 61412,
+  "derivation": "Exact inverse of the single recorded U07 literal replacement plus appended U07 section; roundtrip reconstruction equals the current bytes. This is a reconstructed preimage, not a contemporaneous intake archive. Initial baseline/GIT_STATUS.txt records this document as pre-existing untracked.",
+  "replacement_before": "시간제 beneficial Sustained/ShieldExpr가 있으면 그 effect를 빠짐없이 다음 형태로 지정한다.",
+  "replacement_after": "시간제 beneficial Sustained/ShieldExpr가 있으면 그 effect를 빠짐없이 다음 형태로 지정한다.\n독립 저장 pool인 `SegmentedShield`는 예외이며 `Action`을 사용한다. 아래 U07 작성 경계를 따른다.",
+  "append_marker": "\n## U07 독립 객체·분절 pool 작성 포트\n",
+  "roundtrip_equal": true
+}

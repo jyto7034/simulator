@@ -14,7 +14,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_queen_of_hatred_trace"),
             movement: (speed_units_per_ms: 1450),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -43,7 +42,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_little_red_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -72,7 +70,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_mountain_smiling_bodies_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -101,7 +98,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_melting_love_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -130,7 +126,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_nothing_there_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -160,7 +155,6 @@ AbnormalityDatabase(
             omen_chain_id: Some("white_night"),
             movement: (speed_units_per_ms: 1450),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -189,7 +183,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_freischutz_black_round"),
             movement: (speed_units_per_ms: 1450),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -218,7 +211,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_funeral_butterfly_eulogy"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -247,7 +239,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_laetitia_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -276,7 +267,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_snow_queen_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -305,7 +295,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_rudolta_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -334,7 +323,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_silent_orchestra_trace"),
             movement: (speed_units_per_ms: 1550),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -363,7 +351,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_censored_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -392,7 +379,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_yin_trace"),
             movement: (speed_units_per_ms: 1550),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -421,7 +407,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_yang_trace"),
             movement: (speed_units_per_ms: 1550),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -450,7 +435,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_burrowing_heaven_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -479,7 +463,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_parasite_tree_trace"),
             movement: (speed_units_per_ms: 1550),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -508,7 +491,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_porcubbus_trace"),
             movement: (speed_units_per_ms: 1650),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -537,7 +519,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_scarecrow_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -566,7 +547,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_warm_hearted_woodsman_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -596,7 +576,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_apocalypse_bird_trace"),
             movement: (speed_units_per_ms: 1450),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -624,7 +603,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_knight_of_despair_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -652,7 +630,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_king_of_greed_trace"),
             movement: (speed_units_per_ms: 1850),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -680,7 +657,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_big_bad_wolf_trace"),
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -708,7 +684,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_moonlit_wail_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -736,7 +711,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_queen_bee_trace"),
             movement: (speed_units_per_ms: 1550),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -764,7 +738,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_nameless_fetus_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -792,7 +765,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_black_swan_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -820,7 +792,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_schadenfreude_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 0.5,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -848,7 +819,6 @@ AbnormalityDatabase(
             response_complete_skill_fragment_id: Some("fragment_clouded_monk_trace"),
             movement: (speed_units_per_ms: 1500),
             basic_attack: (
-                range_units: 7.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -861,6 +831,36 @@ AbnormalityDatabase(
                 delivery: Projectile(speed_units_per_ms: 6000),
             ),
             resonance: (start: 0, max: 100, gain_lock_ms: 1000),
+        ),
+        // NONPRODUCTION REFERENCE ONLY: no omen-chain or PVE reward source.
+        AbnormalityMetadata(
+            id: "x-00-00_cwbs_reference_boss",
+            uuid: "c0de0600-0000-0000-0000-000000000001",
+            name: "[NONPRODUCTION] CWBS Reference Boss",
+            risk_level: ALEPH,
+            price: 0,
+            max_health: 120,
+            attack: 5,
+            defense: 0,
+            magic_resist: 0,
+            threat_class: boss,
+            response_complete_skill_fragment_id: Some("fragment_cwbs_reference_dormant"),
+            omen_chain_id: None,
+            movement: (speed_units_per_ms: 1000),
+            basic_attack: (
+                range_policy: pattern,
+                defense_tile_range: None,
+                damage_type: Physical,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                range_role: Melee,
+                interval_ms: 3000,
+                windup_ms: 200,
+                ranged_reposition_ms: 1000,
+                delivery: Instant,
+            ),
+            resonance: (start: 0, max: 100, gain_lock_ms: 1000),
+            skill_id: None,
         ),
     ]
 )

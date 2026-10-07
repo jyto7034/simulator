@@ -13,15 +13,6 @@
             (min_level: 6, tier: III),
         ],
     ),
-    abnormality_research: (
-        default_research_required: 100,
-        victory_research_gain: 20,
-        repeat_complete_fragment_dust: (
-            elite: 5,
-            boss: 10,
-            final_boss: 20,
-        ),
-    ),
     encounter_repeat_weighting: (
         recent_floor_exclusion_window: 1,
         response_complete_weight_multiplier_percent: 25,
@@ -38,15 +29,23 @@
         residual_exchange_threshold: 4,
         monolith_price: 250,
         monolith_offer_weight: 100,
-        stage_2_stat_multiplier_percent: 100,
-        stage_3_stat_multiplier_percent: 125,
+        stage_2_stat_multiplier_percent: 150,
+        stage_3_stat_multiplier_percent: 200,
         stage_2_reward_multiplier_percent: 100,
         stage_3_reward_multiplier_percent: 125,
         exchange_visual_novel_id: "monolith_residual_exchange",
     ),
+    corrosion: (trauma_threshold: 80, presentation_duration_ms: 1000, breakdown_collapse_node_limit: 2),
     battle_runtime: (
         movement_tick_ms: 50,
-        max_battle_time_ms: 60000,
+    ),
+    tactical_stance: (
+        stance_change_cooldown_ms: 1500,
+        rest_tick_interval_ms: 1000,
+    ),
+    tactical_relocation: (
+        cost: 5,
+        cooldown_ms: 10000,
     ),
     combat_difficulty: (
         power_model_version: 2,
@@ -85,6 +84,59 @@
             ),
         ],
         profiles: [
+            (
+                id: "tutorial_fixed_v1",
+                authored_fixed: true,
+                ordinary_bands: [
+                    (
+                        band: Easy,
+                        quota_percent: 1,
+                        tuning: (
+                            target_power_percent: 100,
+                            max_health_multiplier_percent: 100,
+                            attack_multiplier_percent: 100,
+                            defense_multiplier_percent: 100,
+                            generated_wave_budget_multiplier_percent: 100,
+                            reward_multiplier_percent: 100,
+                            extra_waves: [],
+                        ),
+                    ),
+                    (
+                        band: Standard,
+                        quota_percent: 98,
+                        tuning: (
+                            target_power_percent: 100,
+                            max_health_multiplier_percent: 100,
+                            attack_multiplier_percent: 100,
+                            defense_multiplier_percent: 100,
+                            generated_wave_budget_multiplier_percent: 100,
+                            reward_multiplier_percent: 100,
+                            extra_waves: [],
+                        ),
+                    ),
+                    (
+                        band: Hard,
+                        quota_percent: 1,
+                        tuning: (
+                            target_power_percent: 100,
+                            max_health_multiplier_percent: 100,
+                            attack_multiplier_percent: 100,
+                            defense_multiplier_percent: 100,
+                            generated_wave_budget_multiplier_percent: 100,
+                            reward_multiplier_percent: 100,
+                            extra_waves: [],
+                        ),
+                    ),
+                ],
+                role_tuning: [
+                    (role: Elite, tuning: (target_power_percent: 100, max_health_multiplier_percent: 100, attack_multiplier_percent: 100, defense_multiplier_percent: 100, generated_wave_budget_multiplier_percent: 100, reward_multiplier_percent: 100, extra_waves: [])),
+                    (role: NormalBoss, tuning: (target_power_percent: 100, max_health_multiplier_percent: 100, attack_multiplier_percent: 100, defense_multiplier_percent: 100, generated_wave_budget_multiplier_percent: 100, reward_multiplier_percent: 100, extra_waves: [])),
+                    (role: FinalBoss, tuning: (target_power_percent: 100, max_health_multiplier_percent: 100, attack_multiplier_percent: 100, defense_multiplier_percent: 100, generated_wave_budget_multiplier_percent: 100, reward_multiplier_percent: 100, extra_waves: [])),
+                    (role: BossOmen, tuning: (target_power_percent: 100, max_health_multiplier_percent: 100, attack_multiplier_percent: 100, defense_multiplier_percent: 100, generated_wave_budget_multiplier_percent: 100, reward_multiplier_percent: 100, extra_waves: [])),
+                    (role: MonolithRemanifestation, tuning: (target_power_percent: 100, max_health_multiplier_percent: 100, attack_multiplier_percent: 100, defense_multiplier_percent: 100, generated_wave_budget_multiplier_percent: 100, reward_multiplier_percent: 100, extra_waves: [])),
+                ],
+                quota_rounding: LargestRemainderThenSeededTieBreak,
+            ),
             (
                 id: "default_facility",
                 ordinary_bands: [
@@ -212,14 +264,16 @@
             ],
         ),
     ),
-    live_deployment: (
-        initial_cost: 20,
-        max_cost: 99,
-        cost_per_second: 1,
+    tactical_resource: (
+        initial: 20,
+        maximum: 99,
+        recovery_per_second: 1,
         base_deploy_cost: 10,
+        redeploy_cost_multiplier_pct: 150,
+    ),
+    live_deployment: (
         withdraw_redeploy_cooldown_ms: 30000,
         defeat_redeploy_cooldown_ms: 90000,
-        redeploy_cost_multiplier_pct: 150,
         first_instance_salt: 10000,
     ),
     post_battle: (

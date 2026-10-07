@@ -1,7 +1,10 @@
 use crate::game::{
     battle::{
         cooldown::SourcedEffect,
-        core::{commands::TriggerEffectContext, BattleCore},
+        core::{
+            commands::RuntimeCommandBatch, triggers::TriggerOccurrenceContext,
+            types::CommandExecutionSummary, BattleCore,
+        },
         damage::{
             apply_damage_to_unit, calculate_damage, CombatRollIdentity, CombatRollKind,
             DamageBonusSnapshot, DamageContext, DamageModifiers, DamageResult, DamageSource,
@@ -15,32 +18,49 @@ use crate::game::{
 };
 
 #[derive(Debug, Clone, Copy)]
-pub(in crate::game::battle::core) struct AttackTargetSnapshot {
-    pub(in crate::game::battle::core) instance_id: UnitInstanceId,
-    pub(in crate::game::battle::core) owner: crate::game::enums::Side,
-    pub(in crate::game::battle::core) defense: i32,
-    pub(in crate::game::battle::core) magic_resist: i32,
-    pub(in crate::game::battle::core) incoming_damage_modifiers: DamageModifiers,
-    pub(in crate::game::battle::core) current_hp: u32,
-    pub(in crate::game::battle::core) max_hp: u32,
+pub(in crate::game::battle::core) enum CommittedDamagePolicy {
+    BasicAttack {
+        occurrence_id: uuid::Uuid,
+        occurrence_time_ms: u64,
+    },
+    GeneralCommand,
 }
 
 #[derive(Debug, Clone)]
-pub(in crate::game::battle::core) struct BasicAttackDamageSnapshot {
-    pub(in crate::game::battle::core) source: DamageSourceSnapshot,
-    pub(in crate::game::battle::core) target: AttackTargetSnapshot,
+pub(in crate::game::battle::core) struct CommittedDamageInput {
+    pub(in crate::game::battle::core) target_id: UnitInstanceId,
+    pub(in crate::game::battle::core) source_snapshot: DamageSourceSnapshot,
+    pub(in crate::game::battle::core) committed_at_ms: u64,
+    pub(in crate::game::battle::core) policy: CommittedDamagePolicy,
 }
 
 impl BattleCore {
     fn damage_effect_snapshot_from_triggers(
         effects: Vec<SourcedEffect>,
-    ) -> (DamageModifiers, Vec<DamageBonusSnapshot>) {
+    ) -> Result<
+        (
+            DamageModifiers,
+            Vec<DamageBonusSnapshot>,
+            Vec<crate::game::battle::damage::DamageModifierSourceSnapshot>,
+        ),
+        crate::game::behavior::GameError,
+    > {
+        crate::game::battle::runtime_control::admit_retained_growth(0,
+            effects.len().checked_mul(std::mem::size_of::<DamageBonusSnapshot>() + std::mem::size_of::<crate::game::battle::damage::DamageModifierSourceSnapshot>()),
+            "damage_trigger_source_vectors")?;
         let mut modifiers = DamageModifiers::default();
         let mut bonus_damage = Vec::new();
+        let mut modifier_sources = Vec::new();
         for sourced in effects {
             match sourced.effect {
                 Effect::ModifyDamage(effect_modifiers) => {
                     modifiers = modifiers.merge(effect_modifiers);
+                    modifier_sources.push(
+                        crate::game::battle::damage::DamageModifierSourceSnapshot {
+                            source: sourced.source,
+                            equipment_source: sourced.equipment_source,
+                        },
+                    );
                 }
                 Effect::BonusDamage {
                     flat,
@@ -48,15 +68,20 @@ impl BattleCore {
                     damage_type,
                 } => {
                     bonus_damage.push(DamageBonusSnapshot {
+                        source: sourced.source,
+                        equipment_source: sourced.equipment_source,
                         flat,
                         percent,
                         damage_type,
                     });
                 }
-                Effect::Modifier(_) | Effect::Heal { .. } | Effect::ApplyBuff { .. } => {}
+                Effect::BasicLifesteal { .. }
+                | Effect::Modifier(_)
+                | Effect::Heal { .. }
+                | Effect::ApplyBuff { .. } => {}
             }
         }
-        (modifiers, bonus_damage)
+        Ok((modifiers, bonus_damage, modifier_sources))
     }
 
     pub(in crate::game::battle::core) fn damage_effects_from_source_snapshot(
@@ -65,6 +90,7 @@ impl BattleCore {
         let mut effects = Vec::new();
         if snapshot.on_attack_modifiers != DamageModifiers::default() {
             effects.push(SourcedEffect {
+                equipment_source: None,
                 source: crate::game::battle::cooldown::CooldownSource::Unit {
                     unit_instance_id: snapshot.source_id,
                 },
@@ -77,9 +103,8 @@ impl BattleCore {
                 .on_attack_bonus_damage
                 .iter()
                 .map(|bonus| SourcedEffect {
-                    source: crate::game::battle::cooldown::CooldownSource::Unit {
-                        unit_instance_id: snapshot.source_id,
-                    },
+                    source: bonus.source,
+                    equipment_source: bonus.equipment_source,
                     target: crate::game::stats::TriggerEffectTarget::SelfUnit,
                     effect: Effect::BonusDamage {
                         flat: bonus.flat,
@@ -117,6 +142,33 @@ impl BattleCore {
         Some(snapshot)
     }
 
+    pub(in crate::game::battle::core) fn damage_source_snapshot_for_regular_occurrence(
+        &mut self,
+        source_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        damage_source: DamageSource,
+        damage_type: crate::game::battle::damage::DamageType,
+        base_damage: u32,
+        modifiers: DamageModifiers,
+        minimum_damage: u32,
+        committed_at_ms: u64,
+        include_on_attack_damage_effects: bool,
+        regular: bool,
+    ) -> Option<DamageSourceSnapshot> {
+        let snapshot = self.damage_source_snapshot_template_for_occurrence(
+            source_id,
+            damage_source,
+            damage_type,
+            base_damage,
+            modifiers,
+            minimum_damage,
+            committed_at_ms,
+            include_on_attack_damage_effects,
+            regular,
+        )?;
+        Some(self.materialize_damage_source_snapshot_for_target(snapshot, target_id))
+    }
+
     pub(in crate::game::battle::core) fn damage_source_snapshot_template_for_unit(
         &mut self,
         source_id: UnitInstanceId,
@@ -128,6 +180,55 @@ impl BattleCore {
         committed_at_ms: u64,
         include_on_attack_damage_effects: bool,
     ) -> Option<DamageSourceSnapshot> {
+        self.damage_source_snapshot_template_for_occurrence(
+            source_id,
+            damage_source,
+            damage_type,
+            base_damage,
+            modifiers,
+            minimum_damage,
+            committed_at_ms,
+            include_on_attack_damage_effects,
+            false,
+        )
+    }
+
+    pub(in crate::game::battle::core) fn damage_source_snapshot_template_for_occurrence(
+        &mut self,
+        source_id: UnitInstanceId,
+        damage_source: DamageSource,
+        damage_type: crate::game::battle::damage::DamageType,
+        base_damage: u32,
+        modifiers: DamageModifiers,
+        minimum_damage: u32,
+        committed_at_ms: u64,
+        include_on_attack_damage_effects: bool,
+        regular_basic: bool,
+    ) -> Option<DamageSourceSnapshot> {
+        let base_damage = if damage_source == DamageSource::BasicAttack {
+            let bonus = self
+                .aura_basic_bonus_for_occurrence(source_id, regular_basic)
+                .ok()?
+                .0;
+            let value = u64::from(base_damage) * (100 + u64::from(bonus)) / 100;
+            if self.has_regular_support() {
+                match u32::try_from(value) {
+                    Ok(value) => value,
+                    Err(_) => {
+                        let _ = crate::game::battle::runtime_control::reject(
+                        crate::game::battle::runtime_control::BattleRuntimeFault {
+                            code: crate::game::battle::runtime_control::RuntimeFaultCode::CounterOverflow,
+                            site: "aura_regular_damage_snapshot", limit: Some(u32::MAX as u64), requested: Some(value),
+                        });
+                        return None;
+                    }
+                }
+            } else {
+                value.min(u64::from(u32::MAX)) as u32
+            }
+        } else {
+            base_damage
+        };
         let (source_side, source_attack) = self
             .units
             .get(&source_id)
@@ -137,15 +238,75 @@ impl BattleCore {
                     .get(&source_id)
                     .map(|unit| (unit.owner, unit.stats.attack))
             })?;
-        let (on_attack_modifiers, on_attack_bonus_damage) = if include_on_attack_damage_effects {
-            Self::damage_effect_snapshot_from_triggers(
-                self.collect_all_triggers(source_id, TriggerType::OnAttack),
-            )
-        } else {
-            (DamageModifiers::default(), Vec::new())
-        };
+        let (on_attack_modifiers, on_attack_bonus_damage, on_attack_modifier_sources) =
+            if include_on_attack_damage_effects {
+                Self::damage_effect_snapshot_from_triggers(
+                    self.collect_current_hit_triggers(source_id, TriggerType::OnAttack),
+                )
+                .ok()?
+            } else {
+                (DamageModifiers::default(), Vec::new(), Vec::new())
+            };
 
+        let mut basic_lifesteal = Vec::new();
+        if damage_source == DamageSource::BasicAttack {
+            for effect in self.collect_all_triggers(source_id, TriggerType::OnAttack) {
+                if let Effect::BasicLifesteal { percent, max_heal } = effect.effect {
+                    crate::game::battle::runtime_control::admit_retained_growth(
+                        0,
+                        basic_lifesteal.len().checked_add(1).and_then(|n| {
+                            n.checked_mul(
+                                std::mem::size_of::<
+                                    crate::game::battle::damage::BasicLifestealSnapshot,
+                                >() * 2,
+                            )
+                        }),
+                        "basic_lifesteal_snapshot",
+                    )
+                    .ok()?;
+                    basic_lifesteal.push(crate::game::battle::damage::BasicLifestealSnapshot {
+                        percent,
+                        max_heal,
+                        equipment: effect.equipment_source,
+                        fact_source: None,
+                    });
+                }
+            }
+            self.append_sustained_lifesteal(source_id, committed_at_ms, &mut basic_lifesteal)
+                .ok()?;
+        }
+        self.runtime_fact_source
+            .admit_owner("damage_snapshot_source")
+            .ok()?;
+        let fact_source = crate::game::battle::runtime_facts::RuntimeFactSource {
+            actor: Some(source_id),
+            ..self.runtime_fact_source.clone()
+        };
+        let (base_damage, fact_source) =
+            if damage_source == DamageSource::BasicAttack && self.source_has_relics(&fact_source) {
+                self.bind_basic_relic_source(source_id, damage_type, base_damage, &fact_source)
+                    .map_err(|error| match error {
+                        crate::game::behavior::GameError::BattleRuntimeFault(_) => error,
+                        _ => crate::game::battle::runtime_control::invariant("relic_basic_binding"),
+                    })
+                    .ok()?
+            } else {
+                (base_damage, fact_source)
+            };
+        let fact_source = if damage_source == DamageSource::BasicAttack {
+            fact_source
+                .with_regular_support(
+                    self.capture_regular_support(source_id, regular_basic)
+                        .ok()?,
+                )
+                .ok()?
+        } else {
+            fact_source
+        };
         Some(DamageSourceSnapshot {
+            fact_source,
+            skill_cast_source: None,
+            value_expr_capture: None,
             source_id,
             source_side,
             source_attack,
@@ -167,67 +328,351 @@ impl BattleCore {
             ),
             minimum_damage,
             committed_at_ms,
+            basic_lifesteal,
             on_attack_modifiers,
             on_attack_bonus_damage,
+            on_attack_modifier_sources,
         })
     }
 
-    pub(in crate::game::battle::core) fn calculate_basic_attack_damage_snapshot(
+    pub(in crate::game::battle::core) fn execute_committed_damage(
         &mut self,
-        snapshot: BasicAttackDamageSnapshot,
-    ) -> DamageResult {
-        let on_hit_effects =
-            self.collect_all_triggers(snapshot.target.instance_id, TriggerType::OnHit);
-        let snapshot_on_attack_effects =
-            Self::damage_effects_from_source_snapshot(&snapshot.source);
-        let source_live = self
-            .units
-            .get(&snapshot.source.source_id)
-            .is_some_and(|unit| unit.is_active());
+        input: CommittedDamageInput,
+    ) -> Option<CommandExecutionSummary> {
+        let prior = std::mem::replace(
+            &mut self.runtime_fact_source,
+            input.source_snapshot.fact_source.clone(),
+        );
+        let result = self.execute_committed_damage_inner(input);
+        self.runtime_fact_source = prior;
+        result
+    }
 
-        let mut trigger_effect_commands = Vec::new();
-        if source_live {
-            let on_attack_effects =
-                self.collect_all_triggers(snapshot.source.source_id, TriggerType::OnAttack);
-            trigger_effect_commands.extend(self.trigger_commands_from_effects(
-                on_attack_effects,
-                TriggerEffectContext {
-                    trigger_unit_id: snapshot.source.source_id,
-                    counterpart_unit_id: Some(snapshot.target.instance_id),
-                },
-                Some(snapshot.target.instance_id),
-                false,
-            ));
+    fn execute_committed_damage_inner(
+        &mut self,
+        input: CommittedDamageInput,
+    ) -> Option<CommandExecutionSummary> {
+        let CommittedDamageInput {
+            target_id,
+            source_snapshot,
+            committed_at_ms,
+            policy,
+        } = input;
+        let (
+            target_owner,
+            target_defense,
+            target_magic_resist,
+            mut target_incoming_modifiers,
+            target_current_hp,
+            target_max_hp,
+        ) = self
+            .units
+            .get(&target_id)
+            .filter(|target| target.is_active())
+            .map(|target| {
+                (
+                    target.owner,
+                    target.stats.defense,
+                    target.stats.magic_resist,
+                    target.incoming_damage_modifiers,
+                    target.stats.current_health,
+                    target.stats.max_health,
+                )
+            })?;
+
+        self.reconcile_sustained(committed_at_ms).ok()?;
+        target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers
+            .damage_reduction_percent
+            .saturating_add(
+                self.sustained_damage_reduction(target_id, committed_at_ms)
+                    .ok()?,
+            )
+            .saturating_add(self.parry_reduction(target_id, committed_at_ms).ok()?);
+        let mut passive_guard = self
+            .passive_parry_guard(target_id, &source_snapshot, committed_at_ms)
+            .ok()?;
+        if let Some(guard) = &passive_guard {
+            if !guard.reduction_suppressed {
+                target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers
+                    .damage_reduction_percent
+                    .saturating_add(guard.policy.reduction_percent as i32);
+            }
         }
-        trigger_effect_commands.extend(self.trigger_commands_from_effects(
-            on_hit_effects.clone(),
-            TriggerEffectContext {
-                trigger_unit_id: snapshot.target.instance_id,
-                counterpart_unit_id: Some(snapshot.source.source_id),
-            },
-            Some(snapshot.source.source_id),
-            false,
-        ));
+        let mut strike = match self.admit_damage_strike(target_id) {
+            Ok(value) => value,
+            Err(_) => return None,
+        };
+
+        let mut deflection = self
+            .deflect_direct_strike(target_id, &source_snapshot, committed_at_ms)
+            .ok()?;
+        if let Some(fact) = &mut deflection {
+            use crate::game::battle::runtime_facts::{CounterOutcome, DeflectionKind};
+            self.mark_strike_deflected(&mut strike);
+            if fact.kind == DeflectionKind::Parry {
+                fact.counter = if self
+                    .units
+                    .get(&source_snapshot.source_id)
+                    .is_some_and(|u| u.is_active())
+                {
+                    CounterOutcome::Executed
+                } else {
+                    CounterOutcome::AttackerUnavailable
+                };
+            }
+        }
+        let mut pending_counter = deflection.clone();
+        let snapshot_on_attack_effects =
+            Self::damage_effects_from_source_snapshot(&source_snapshot);
+        let mut command_batches = Vec::new();
+        let mut activation_commands = Vec::new();
+        let mut on_hit_effects = Vec::new();
+        if let CommittedDamagePolicy::BasicAttack {
+            occurrence_id,
+            occurrence_time_ms,
+        } = policy
+        {
+            if deflection.is_some() {
+                on_hit_effects = self.collect_current_hit_triggers(target_id, TriggerType::OnHit);
+            } else {
+                let source_live = self
+                    .units
+                    .get(&source_snapshot.source_id)
+                    .is_some_and(|unit| unit.is_active());
+                let on_attack_plan = source_live.then(|| {
+                    self.dispatch_item_trigger_occurrence(TriggerOccurrenceContext {
+                        trigger_type: TriggerType::OnAttack,
+                        trigger_unit_id: source_snapshot.source_id,
+                        counterpart_unit_id: Some(target_id),
+                        target_id: Some(target_id),
+                        occurrence_id,
+                        occurrence_index: 0,
+                        allow_dead_caster: false,
+                        committed_hit: Some(&source_snapshot),
+                        time_ms: occurrence_time_ms,
+                    })
+                });
+                let mut on_hit_plan =
+                    self.dispatch_item_trigger_occurrence(TriggerOccurrenceContext {
+                        trigger_type: TriggerType::OnHit,
+                        trigger_unit_id: target_id,
+                        counterpart_unit_id: Some(source_snapshot.source_id),
+                        target_id: Some(source_snapshot.source_id),
+                        occurrence_id,
+                        occurrence_index: 0,
+                        allow_dead_caster: false,
+                        committed_hit: Some(&source_snapshot),
+                        time_ms: occurrence_time_ms,
+                    });
+                on_hit_effects = std::mem::take(&mut on_hit_plan.current_hit_effects);
+
+                if let Some(plan) = on_attack_plan {
+                    let (effect_batches, mut activations) =
+                        plan.into_effect_batches_and_activations();
+                    command_batches.extend(effect_batches);
+                    activation_commands.append(&mut activations);
+                }
+                let (effect_batches, mut activations) =
+                    on_hit_plan.into_effect_batches_and_activations();
+                command_batches.extend(effect_batches);
+                activation_commands.append(&mut activations);
+            }
+        }
+
         let ctx = DamageContext {
-            attacker_side: snapshot.source.source_side,
-            target_side: snapshot.target.owner,
-            attacker_attack: snapshot.source.source_attack,
-            target_armor: snapshot.target.defense,
-            target_magic_resist: snapshot.target.magic_resist,
-            target_incoming_modifiers: snapshot.target.incoming_damage_modifiers,
-            target_current_hp: snapshot.target.current_hp,
-            target_max_hp: snapshot.target.max_hp,
+            attacker_side: source_snapshot.source_side,
+            target_side: target_owner,
+            attacker_attack: source_snapshot.source_attack,
+            target_armor: target_defense,
+            target_magic_resist,
+            target_incoming_modifiers,
+            target_current_hp,
+            target_max_hp,
             on_attack_effects: &snapshot_on_attack_effects,
             on_hit_effects: &on_hit_effects,
         };
-
-        let request = snapshot.source.request(snapshot.target.instance_id);
-
+        let request = source_snapshot.request(target_id);
+        let component_bound = snapshot_on_attack_effects
+            .len()
+            .checked_add(on_hit_effects.len())
+            .and_then(|n| n.checked_add(1));
+        if crate::game::battle::runtime_control::limit(
+            crate::game::battle::runtime_control::RuntimeFaultCode::StrikeSegmentLimit,
+            "damage_formula_components",
+            self.runtime_facts.limits.max_strike_segments,
+            component_bound,
+        )
+        .is_err()
+        {
+            return None;
+        }
+        if crate::authoring::control::charge(
+            component_bound.unwrap_or(0) as u64,
+            "damage_formula_components",
+        )
+        .is_err()
+        {
+            return None;
+        }
+        let formula_storage =
+            match self
+                .runtime_facts
+                .reserve_fact_storage(component_bound.and_then(|n| {
+                    n.checked_mul(
+                        2 * std::mem::size_of::<
+                            Option<crate::game::battle::damage::DamageComponentSource>,
+                        >(),
+                    )
+                })) {
+                Ok(bytes) => bytes,
+                Err(_) => return None,
+            };
         let mut result = calculate_damage(&request, &ctx);
-        result
-            .triggered_commands
-            .splice(0..0, trigger_effect_commands);
-        result
+        let mut protection = if let Some(fact) = deflection {
+            result.triggered_commands.clear();
+            let mut receipt = crate::game::battle::runtime_facts::ProtectionReceipt {
+                mitigated_damage: result.final_damage,
+                prevented: result.final_damage,
+                ..Default::default()
+            };
+            receipt.details_mut().ok()?.deflection = Some(Box::new(fact));
+            receipt
+        } else {
+            self.absorb_sustained_shields(target_id, result.final_damage, committed_at_ms)
+                .ok()?
+        };
+        result.final_damage = result
+            .final_damage
+            .saturating_sub(protection.absorbed)
+            .saturating_sub(protection.prevented);
+        result.target_remaining_hp = target_current_hp.saturating_sub(result.final_damage);
+        result.target_killed = target_current_hp > 0 && result.target_remaining_hp == 0;
+        // One roll per target strike, on its first positive HP-loss segment.
+        // Shielded/deflected/zero segments do not roll or create reflection.
+        let mut reflection_snapshot = None;
+        if let Some(guard) = &mut passive_guard {
+            use crate::game::battle::runtime_facts::ReflectionOutcome;
+            if let Some(key) = strike
+                .first_positive_roll_key()
+                .filter(|_| result.target_remaining_hp < target_current_hp)
+            {
+                let roll = (determinism::uuid_v4_from_seed(
+                    self.seed ^ Self::unit_tag(target_id),
+                    0x7061727279677561,
+                    key,
+                )
+                .as_u128()
+                    % 100) as u8;
+                guard.roll_percent = Some(roll);
+                guard.reflected_base = (u64::from(target_current_hp - result.target_remaining_hp)
+                    * u64::from(guard.policy.reflection_percent)
+                    / 100) as u32;
+                guard.reflection = if u32::from(roll) >= guard.policy.reflection_chance_percent {
+                    ReflectionOutcome::Missed
+                } else if guard.reflected_base == 0 {
+                    ReflectionOutcome::RoundedToZero
+                } else if result.target_remaining_hp == 0 {
+                    ReflectionOutcome::OwnerDefeated
+                } else if !self
+                    .units
+                    .get(&source_snapshot.source_id)
+                    .is_some_and(|u| u.is_active())
+                {
+                    ReflectionOutcome::AttackerUnavailable
+                } else {
+                    ReflectionOutcome::Executed
+                };
+                if guard.reflection == ReflectionOutcome::Executed {
+                    let prior =
+                        std::mem::replace(&mut self.runtime_fact_source, (*guard.source).clone());
+                    reflection_snapshot = self.damage_source_snapshot_for_unit(
+                        target_id,
+                        source_snapshot.source_id,
+                        DamageSource::Environment,
+                        source_snapshot.damage_type,
+                        guard.reflected_base,
+                        DamageModifiers::default(),
+                        0,
+                        committed_at_ms,
+                        false,
+                    );
+                    self.runtime_fact_source = prior;
+                }
+            }
+        }
+        if let Some(guard) = passive_guard {
+            protection.details_mut().ok()?.passive_guard = Some(Box::new(guard));
+        }
+        let damage_fact = match self.prepare_damage_fact(
+            &result,
+            protection,
+            strike,
+            &source_snapshot,
+            &on_hit_effects,
+            target_incoming_modifiers,
+            target_current_hp,
+            committed_at_ms,
+        ) {
+            Ok(value) => value,
+            Err(_) => return None,
+        };
+        self.runtime_facts.release_fact_storage(formula_storage);
+        let actual_damage = target_current_hp.saturating_sub(result.target_remaining_hp);
+        let killed_target = target_current_hp > 0 && result.target_remaining_hp == 0;
+
+        if matches!(policy, CommittedDamagePolicy::BasicAttack { .. }) {
+            self.grant_basic_attack_damage_dealt_resonance(
+                source_snapshot.source_id,
+                actual_damage,
+                committed_at_ms,
+            );
+        }
+        self.apply_damage_result_and_record(
+            Some(source_snapshot.source_id),
+            &result,
+            damage_fact,
+            committed_at_ms,
+            match policy {
+                CommittedDamagePolicy::BasicAttack { .. } => HpChangeReason::BasicAttack,
+                CommittedDamagePolicy::GeneralCommand => HpChangeReason::Command,
+            },
+        );
+
+        if let Some(fact) = &mut pending_counter {
+            self.execute_parry_counter(fact, source_snapshot.source_id, committed_at_ms)
+                .ok()?;
+        }
+        if let Some(reflected) = reflection_snapshot {
+            let prior_observation = self.authoring_direct_source.take();
+            let prior_effect = self.recording_skill_effect_source.take();
+            let prior_scope = self.begin_strike_scope();
+            let _ = self.execute_committed_damage(CommittedDamageInput {
+                target_id: source_snapshot.source_id,
+                source_snapshot: reflected,
+                committed_at_ms,
+                policy: CommittedDamagePolicy::GeneralCommand,
+            });
+            self.end_strike_scope(prior_scope);
+            self.recording_skill_effect_source = prior_effect;
+            self.authoring_direct_source = prior_observation;
+            crate::authoring::control::poll("passive_guard_after_reflection").ok()?;
+        }
+        let formula_commands = std::mem::take(&mut result.triggered_commands);
+        if !formula_commands.is_empty() {
+            command_batches.push(RuntimeCommandBatch::unsourced(formula_commands));
+        }
+        if !activation_commands.is_empty() {
+            command_batches.push(RuntimeCommandBatch::unsourced(activation_commands));
+        }
+        if !command_batches.is_empty() {
+            self.process_command_batches(command_batches, committed_at_ms);
+        }
+
+        Some(CommandExecutionSummary {
+            actual_hp_loss: u64::from(actual_damage),
+            actual_damage_target_count: usize::from(actual_damage > 0),
+            killed_target_count: usize::from(killed_target),
+        })
     }
 
     fn unit_tag(unit_id: UnitInstanceId) -> u64 {
@@ -345,6 +790,11 @@ impl BattleCore {
         &mut self,
         source_instance_id: Option<UnitInstanceId>,
         result: &DamageResult,
+        damage_fact: (
+            std::sync::Arc<crate::game::battle::runtime_facts::DamageFact>,
+            bool,
+            bool,
+        ),
         time_ms: u64,
         reason: HpChangeReason,
     ) {
@@ -359,13 +809,56 @@ impl BattleCore {
             (target.owner, target.stats.current_health)
         };
 
+        let prepared_death = if hp_before.saturating_sub(result.final_damage) == 0 {
+            match self.prepare_death_fact(source_instance_id, target_instance_id, time_ms) {
+                Ok(value) => value,
+                Err(_) => return,
+            }
+        } else {
+            None
+        };
+        let reservation = match self.reserve_authoring_observation() {
+            Ok(reservation) => reservation,
+            Err(_) => return,
+        };
         let Some(target) = self.units.get_mut(&target_instance_id) else {
             return;
         };
 
         apply_damage_to_unit(&mut target.stats, result.final_damage);
         let hp_after = target.stats.current_health;
+        let (fact, first, first_positive) = damage_fact;
+        let extent = fact.retained_extent;
+        if self
+            .runtime_facts
+            .record_fact(super::runtime_facts::FactUpdate::Damage(
+                fact.clone(),
+                first,
+                first_positive,
+            ))
+            .is_err()
+        {
+            return;
+        }
+        self.observe_effect_damage_result(
+            fact.source.as_ref(),
+            fact.actual_hp_loss(),
+            first,
+            first_positive,
+        );
+        self.runtime_facts.release_fact_storage(extent);
         let delta = hp_after as i32 - hp_before as i32;
+        self.commit_authoring_observation(
+            reservation,
+            time_ms,
+            source_instance_id,
+            target_instance_id,
+            super::authoring_observation::AppliedChange::Hp {
+                before: hp_before,
+                after: hp_after,
+                reason,
+            },
+        );
 
         self.record_event_log(
             time_ms,
@@ -395,12 +888,29 @@ impl BattleCore {
             );
         }
 
-        if hp_after == 0 {
+        if hp_after == 0
+            && self
+                .independent_objects
+                .objects
+                .contains_key(&target_instance_id)
+        {
             self.finalize_unit_death(
                 source_instance_id,
                 target_instance_id,
                 target_owner,
                 time_ms,
+            );
+            return;
+        }
+
+        if let Some(prepared) = prepared_death {
+            self.finalize_prepared_death(
+                source_instance_id,
+                target_instance_id,
+                target_owner,
+                time_ms,
+                prepared,
+                Some(fact),
             );
         }
     }
@@ -413,14 +923,15 @@ impl BattleCore {
         time_ms: u64,
         reason: HpChangeReason,
     ) {
-        if delta == 0 {
-            return;
-        }
-
         let (target_owner, hp_before, max_health) = {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
+            if delta > 0
+                && target.role == crate::game::battle::types::BattleUnitRole::IndependentWall
+            {
+                return;
+            }
             if !target.is_active() {
                 return;
             }
@@ -431,10 +942,14 @@ impl BattleCore {
             )
         };
 
-        let Some(target) = self.units.get_mut(&target_instance_id) else {
-            return;
+        let reservation = if delta == 0 {
+            None
+        } else {
+            match self.reserve_authoring_observation() {
+                Ok(value) => value,
+                Err(_) => return,
+            }
         };
-
         let hp_after = if delta > 0 {
             hp_before
                 .saturating_add(delta as u32)
@@ -442,9 +957,50 @@ impl BattleCore {
         } else {
             hp_before.saturating_sub(delta.unsigned_abs())
         };
+        let prepared_death = if hp_after == 0 {
+            match self.prepare_death_fact(source_instance_id, target_instance_id, time_ms) {
+                Ok(value) => value,
+                Err(_) => return,
+            }
+        } else {
+            None
+        };
+        if self
+            .record_heal_fact(
+                source_instance_id,
+                target_instance_id,
+                i64::from(delta),
+                hp_before,
+                hp_after,
+                time_ms,
+                reason,
+            )
+            .is_err()
+        {
+            return;
+        }
+        if delta == 0 {
+            return;
+        }
+
+        let Some(target) = self.units.get_mut(&target_instance_id) else {
+            return;
+        };
+
         target.stats.current_health = hp_after;
 
         let applied_delta = hp_after as i32 - hp_before as i32;
+        self.commit_authoring_observation(
+            reservation,
+            time_ms,
+            source_instance_id,
+            target_instance_id,
+            super::authoring_observation::AppliedChange::Hp {
+                before: hp_before,
+                after: hp_after,
+                reason,
+            },
+        );
         self.record_event_log(
             time_ms,
             crate::game::battle::event_log::BattleLogEvent::HpChanged {
@@ -473,13 +1029,267 @@ impl BattleCore {
             );
         }
 
-        if hp_after == 0 {
+        if hp_after == 0
+            && self
+                .independent_objects
+                .objects
+                .contains_key(&target_instance_id)
+        {
             self.finalize_unit_death(
                 source_instance_id,
                 target_instance_id,
                 target_owner,
                 time_ms,
             );
+            return;
         }
+
+        if let Some(prepared) = prepared_death {
+            self.finalize_prepared_death(
+                source_instance_id,
+                target_instance_id,
+                target_owner,
+                time_ms,
+                prepared,
+                None,
+            );
+        }
+    }
+
+    pub(in crate::game::battle::core) fn record_runtime_stat_hp_change_and_finalize(
+        &mut self,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
+        hp_before: u32,
+        hp_after: u32,
+        time_ms: u64,
+        prepared_death: Option<super::runtime_facts::PreparedDeath>,
+    ) -> bool {
+        if hp_before == hp_after {
+            return false;
+        }
+        let Some(target_owner) = self
+            .units
+            .get(&target_instance_id)
+            .filter(|target| target.is_active())
+            .map(|target| target.owner)
+        else {
+            return false;
+        };
+
+        self.record_event_log(
+            time_ms,
+            crate::game::battle::event_log::BattleLogEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                delta: hp_after as i32 - hp_before as i32,
+                hp_before,
+                hp_after,
+                reason: HpChangeReason::Command,
+                damage_source: None,
+                damage_type: None,
+                raw_damage: None,
+                final_damage: None,
+                damage_breakdown: None,
+                critical: None,
+                feedback_tags: Vec::new(),
+            },
+        );
+
+        if hp_after == 0
+            && self
+                .independent_objects
+                .objects
+                .contains_key(&target_instance_id)
+        {
+            self.finalize_unit_death(
+                source_instance_id,
+                target_instance_id,
+                target_owner,
+                time_ms,
+            );
+            return true;
+        }
+
+        if let Some(prepared) = prepared_death {
+            self.finalize_prepared_death(
+                source_instance_id,
+                target_instance_id,
+                target_owner,
+                time_ms,
+                prepared,
+                None,
+            );
+            return true;
+        }
+        false
+    }
+}
+
+impl BattleCore {
+    /// A payment changes HP and emits CostFact directly. It never enters damage,
+    /// healing, shield, parry or HP-floor arbitration.
+    pub(super) fn pay_health_cost(
+        &mut self,
+        caster: UnitInstanceId,
+        amount: u32,
+        allow_lethal: bool,
+        now: u64,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        use crate::game::battle::{
+            runtime_control::{reject, BattleRuntimeFault, RuntimeFaultCode},
+            runtime_facts::{CostReason, FactResource, ResourceOwner},
+        };
+        let (owner, before) = self
+            .units
+            .get(&caster)
+            .filter(|u| u.is_active())
+            .map(|u| (u.owner, u.stats.current_health))
+            .ok_or_else(|| {
+                reject(BattleRuntimeFault {
+                    code: RuntimeFaultCode::HealthCostUnavailable,
+                    site: "health_cost_owner",
+                    limit: None,
+                    requested: Some(u64::from(amount)),
+                })
+            })?;
+        let available = before.saturating_sub(u32::from(!allow_lethal));
+        if amount > available || amount > i32::MAX as u32 {
+            return Err(reject(BattleRuntimeFault {
+                code: RuntimeFaultCode::HealthCostUnavailable,
+                site: "health_cost_balance",
+                limit: Some(u64::from(available)),
+                requested: Some(u64::from(amount)),
+            }));
+        }
+        let after = before - amount;
+        let reservation = self.reserve_authoring_observation()?;
+        let prepared = if after == 0 {
+            self.prepare_death_fact(Some(caster), caster, now)?
+        } else {
+            None
+        };
+        let source = crate::authoring::clone_shape::controlled_clone(&self.runtime_fact_source)?;
+        self.record_resource_fact(
+            ResourceOwner::Unit(caster),
+            FactResource::Health,
+            Some(CostReason::AuthoredHealth),
+            source,
+            -i64::from(amount),
+            before,
+            after,
+            now,
+        )?;
+        self.units.get_mut(&caster).unwrap().stats.current_health = after;
+        self.commit_authoring_observation(
+            reservation,
+            now,
+            Some(caster),
+            caster,
+            super::authoring_observation::AppliedChange::Hp {
+                before,
+                after,
+                reason: HpChangeReason::HealthCost,
+            },
+        );
+        self.record_event_log(
+            now,
+            crate::game::battle::event_log::BattleLogEvent::HpChanged {
+                source_instance_id: Some(caster),
+                target_instance_id: caster,
+                delta: -(amount as i32),
+                hp_before: before,
+                hp_after: after,
+                reason: HpChangeReason::HealthCost,
+                damage_source: None,
+                damage_type: None,
+                raw_damage: None,
+                final_damage: None,
+                damage_breakdown: None,
+                critical: None,
+                feedback_tags: Vec::new(),
+            },
+        );
+        if let Some(prepared) = prepared {
+            self.finalize_prepared_death(Some(caster), caster, owner, now, prepared, None);
+        }
+        crate::authoring::control::poll("health_cost_after_payment")?;
+        crate::game::battle::runtime_control::poll()
+    }
+}
+
+impl BattleCore {
+    pub(super) fn add_basic_hp_loss(
+        total: &mut u64,
+        loss: u64,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        *total = total.checked_add(loss).ok_or_else(|| {
+            crate::game::battle::runtime_control::reject(
+                crate::game::battle::runtime_control::BattleRuntimeFault {
+                    code: crate::game::battle::runtime_control::RuntimeFaultCode::CounterOverflow,
+                    site: "basic_actual_hp_sum",
+                    limit: None,
+                    requested: None,
+                },
+            )
+        })?;
+        Ok(())
+    }
+    pub(super) fn finish_basic_lifesteal(
+        &mut self,
+        snapshot: &DamageSourceSnapshot,
+        actual_hp_loss: u64,
+        now: u64,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        if actual_hp_loss == 0
+            || snapshot.source != DamageSource::BasicAttack
+            || !self
+                .units
+                .get(&snapshot.source_id)
+                .is_some_and(|u| u.is_active())
+        {
+            return Ok(());
+        }
+        crate::authoring::control::charge(
+            snapshot.basic_lifesteal.len() as u64,
+            "basic_lifesteal_settlement",
+        )?;
+        for lifesteal in &snapshot.basic_lifesteal {
+            let heal = ((u128::from(actual_hp_loss) * u128::from(lifesteal.percent) / 100)
+                .min(u128::from(lifesteal.max_heal))) as u32;
+            if heal == 0 {
+                continue;
+            }
+            let mut source = crate::game::battle::runtime_facts::RuntimeFactSource {
+                actor: Some(snapshot.source_id),
+                equipment: lifesteal.equipment,
+                ..Default::default()
+            };
+            if let Some(origin) = &lifesteal.fact_source {
+                origin.admit_owner("sustained_lifesteal_heal_source")?;
+                source = origin.observation();
+            }
+            source.admit_owner("basic_lifesteal_heal_source")?;
+            crate::game::battle::runtime_control::admit_retained_growth(
+                0,
+                Some(std::mem::size_of::<
+                    crate::game::battle::damage::BattleCommand,
+                >()),
+                "basic_lifesteal_command",
+            )?;
+            let prior = std::mem::replace(&mut self.runtime_fact_source, source);
+            self.process_commands(
+                vec![crate::game::battle::damage::BattleCommand::ApplyHeal {
+                    target_id: snapshot.source_id,
+                    flat: heal as i32,
+                    percent: 0,
+                    source_id: Some(snapshot.source_id),
+                }],
+                now,
+            );
+            self.runtime_fact_source = prior;
+            crate::authoring::control::poll("basic_lifesteal_after_heal")?;
+        }
+        Ok(())
     }
 }

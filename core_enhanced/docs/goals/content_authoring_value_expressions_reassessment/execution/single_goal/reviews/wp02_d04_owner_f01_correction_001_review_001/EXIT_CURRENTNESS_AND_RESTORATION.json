@@ -1,0 +1,20 @@
+{
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/corrections/wp02_d04_owner_f01_001/target/d04_owner_f01_correction_001/MANIFEST.json",
+    "bytes": 151212,
+    "sha256": "58505bbcd34089b9c1ec3d70f4d9df4ca32a2397e1115c68386364e44514e549"
+  },
+  "verification": {
+    "state": "CURRENTNESS_AND_BIDIRECTIONAL_RESTORATION_VERIFIED",
+    "source_count": 337,
+    "product_source_count": 333,
+    "changed_paths": [
+      "core_enhanced/src/game/battle/core/build.rs",
+      "core_enhanced/src/game/battle/core/ids.rs",
+      "core_enhanced/src/game/battle/core/types.rs",
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+      "core_enhanced/src/game/world/tests/combat.rs"
+    ],
+    "record_count": 70
+  }
+}

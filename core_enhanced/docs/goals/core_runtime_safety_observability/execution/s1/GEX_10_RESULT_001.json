@@ -1,0 +1,10 @@
+{
+  "goal": "GOAL-CRSO-S1",
+  "stage": "GEX-10",
+  "status": "implementation_and_self_validation_complete; independent audit pending",
+  "source_sha256": "8d5c757c6064856fde003bab3b92fb35b3129d4d4cc618beddebdc6042944017",
+  "coverage": "COVERAGE.json",
+  "result": "RESULT.ko.md",
+  "target": "target/s1_001/MANIFEST.json",
+  "next": "Fresh independent implementation-nonparticipant GPT-6 Astra / High GEX-20; restore predecessor impact and S1 conditions before S2"
+}

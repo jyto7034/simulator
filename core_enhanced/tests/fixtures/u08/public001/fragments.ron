@@ -1,0 +1,20 @@
+(fragments: [
+    (id: "u08_public_fragment", uuid: "a5080000-0000-0000-0000-000000000101",
+     name: "Public selected provider", description: "Normal external active fragment",
+     rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward],
+     effect: ActiveSkill(forms: {
+         "base": (skill_id: "u08_public_literal", resonance_max: 1),
+         "same_skill": (skill_id: "u08_public_literal", resonance_max: 1,
+                        bloom_recipe: Some((enkephalin: 1, materials: []))),
+         "split": (skill_id: "u08_public_split", resonance_max: 1,
+                   bloom_recipe: Some((enkephalin: 1, materials: []))),
+         "live": (skill_id: "u08_public_target", resonance_max: 1,
+                  bloom_recipe: Some((enkephalin: 1, materials: []))),
+         "maximum": (skill_id: "u08_public_max", resonance_max: 1,
+                     bloom_recipe: Some((enkephalin: 1, materials: []))),
+     })),
+    (id: "u08_public_other_fragment", uuid: "a5080000-0000-0000-0000-000000000102",
+     name: "Public different provider", description: "Same SkillId, different exact fragment",
+     rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward],
+     effect: ActiveSkill(forms: {"base": (skill_id: "u08_public_literal", resonance_max: 1)})),
+])

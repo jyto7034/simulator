@@ -1,0 +1,1798 @@
+[
+  {
+    "selector": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/amount_completion.rs"
+    ],
+    "old_sha256": "2ed34bac864f9493d51aa90b97538a594365deb376e94d1bdbccd80e668e5b6a",
+    "current_sha256": "2ed34bac864f9493d51aa90b97538a594365deb376e94d1bdbccd80e668e5b6a"
+  },
+  {
+    "selector": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/amount_completion.rs"
+    ],
+    "old_sha256": "9d58e0c2af168bcae9618e5d2fe664a09487131d6cfaf62c8aeb6808eb3e7f4d",
+    "current_sha256": "9d58e0c2af168bcae9618e5d2fe664a09487131d6cfaf62c8aeb6808eb3e7f4d"
+  },
+  {
+    "selector": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/amount_completion.rs"
+    ],
+    "old_sha256": "ff0b60d034bcdded65cbb2ba14d5606ea3cbe62fdd7f6179d48eb8a1bf1b5e2a",
+    "current_sha256": "ff0b60d034bcdded65cbb2ba14d5606ea3cbe62fdd7f6179d48eb8a1bf1b5e2a"
+  },
+  {
+    "selector": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/amount_completion.rs"
+    ],
+    "old_sha256": "c640c6060531a743fb3231de311de50be1d473e9523c3e43b15b8aa106c5cf34",
+    "current_sha256": "c640c6060531a743fb3231de311de50be1d473e9523c3e43b15b8aa106c5cf34"
+  },
+  {
+    "selector": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/amount_completion.rs"
+    ],
+    "old_sha256": "6a9f64ee9088abdeb495da08f34acfdc5c28b9a5a779d5e376546c2413b6e0eb",
+    "current_sha256": "6a9f64ee9088abdeb495da08f34acfdc5c28b9a5a779d5e376546c2413b6e0eb"
+  },
+  {
+    "selector": "authoring::trial::tests::r07_copies::r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/r07_copies.rs"
+    ],
+    "old_sha256": "1688d147f6b88422d228faedc9b408db7bd99ecc10672a3034916085618ee0ce",
+    "current_sha256": "1688d147f6b88422d228faedc9b408db7bd99ecc10672a3034916085618ee0ce"
+  },
+  {
+    "selector": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/authoring/trial/tests/r07_copies.rs"
+    ],
+    "old_sha256": "b197cde569d8c2af183fbc1a33c66c54370eec4a023c321b9b1af5e42ab7d942",
+    "current_sha256": "b197cde569d8c2af183fbc1a33c66c54370eec4a023c321b9b1af5e42ab7d942"
+  },
+  {
+    "selector": "game::ability::signed_amount_tests::r06_signed_amount_raw_ron_full_i32_domain_and_checked_bounds",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/ability.rs"
+    ],
+    "old_sha256": "3084f09a6f0dbae7e759d322945d1585e3c808cd2a56ca840fedfea5056b3458",
+    "current_sha256": "3084f09a6f0dbae7e759d322945d1585e3c808cd2a56ca840fedfea5056b3458"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_native_fault_rolls_back_boss_action_and_retry_matches_clean_start",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "d20b264c101b7dd208c8d34780e1c29038bd856a5541b8834a890c4207a61820",
+    "current_sha256": "d20b264c101b7dd208c8d34780e1c29038bd856a5541b8834a890c4207a61820"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_public_invalid_catalogs_are_rejected_before_runtime",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "3e4ef49b8971cd5bfbb422dc71b198a47e6655e751374252ebe2d444afc84d7e",
+    "current_sha256": "3e4ef49b8971cd5bfbb422dc71b198a47e6655e751374252ebe2d444afc84d7e"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_public_rejection_and_target_loss_follow_distinct_routes",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "b3db277da6ae78113652660d8486556b8ab790fd3d2576417ee144ac77b92d2d",
+    "current_sha256": "b3db277da6ae78113652660d8486556b8ab790fd3d2576417ee144ac77b92d2d"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_public_ron_release_and_settlement_have_distinct_waiters",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "10bbf851c9fe5b3aa7da6adf525d604152ddaff3d5e0589d198de1aa3e2a0ab9",
+    "current_sha256": "10bbf851c9fe5b3aa7da6adf525d604152ddaff3d5e0589d198de1aa3e2a0ab9"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_public_state_exit_preserves_only_released_projectile",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "8ad4e05a6b7c2acb149e65c4cbe4fd1fd8ee99c8374fe5edb41b3f9c03867ac7",
+    "current_sha256": "8ad4e05a6b7c2acb149e65c4cbe4fd1fd8ee99c8374fe5edb41b3f9c03867ac7"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_public_timeout_cancels_unreleased_or_detaches_explicitly",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "96ca87fd6f88ac02dc9007e3f2f205c5bf18672f28c4f69af76748bc2ae01c94",
+    "current_sha256": "96ca87fd6f88ac02dc9007e3f2f205c5bf18672f28c4f69af76748bc2ae01c94"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_repeated_state_reclaims_handles_and_ignores_old_deadlines",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "7b61ecb6580d0e5739684ed6307d018f1f791946242cbb94b3ae2c7b0d7c60b4",
+    "current_sha256": "7b61ecb6580d0e5739684ed6307d018f1f791946242cbb94b3ae2c7b0d7c60b4"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r08_second_action_admission_fault_rolls_back_entire_boss_boundary",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "416fc16d7c8eb1464abd6fb70aaf76fedebfab797951c64a5d28d4939204d46c",
+    "current_sha256": "416fc16d7c8eb1464abd6fb70aaf76fedebfab797951c64a5d28d4939204d46c"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_large_repeat_and_control_admission_faults_preserve_state",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "cd87d8418f412100f70d498aad3f2c3cbb0eadb67b6271c5463451e8d18d7f63",
+    "current_sha256": "cd87d8418f412100f70d498aad3f2c3cbb0eadb67b6271c5463451e8d18d7f63"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_area_three_targets_then_one_self_heal",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "8b4c583f3536d5242e640a1244328b1cfca2e91b589db79dcc099e26f786a461",
+    "current_sha256": "8b4c583f3536d5242e640a1244328b1cfca2e91b589db79dcc099e26f786a461"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_branch_uses_real_hp_loss_and_never_executes_unselected_leaf",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "0064a8f9220141cd63ce8d4b400328851ddaaa82a872b8e8b955358528f10075",
+    "current_sha256": "0064a8f9220141cd63ce8d4b400328851ddaaa82a872b8e8b955358528f10075"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "fcddb78efce3c06612b44e91ae0b3e76ecb5ca041b0572ff228a1516165dae82",
+    "current_sha256": "fcddb78efce3c06612b44e91ae0b3e76ecb5ca041b0572ff228a1516165dae82"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_rejects_bad_slots_units_bounds_and_overflow",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "9975432c9e99f56b6d46757747343b67d0cb6e713985aa313234a3e913a61e29",
+    "current_sha256": "9975432c9e99f56b6d46757747343b67d0cb6e713985aa313234a3e913a61e29"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_result_branch_and_interval_are_finite",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "ae531d35bea3c923b47a961d79c47b17548f35621d130fa42b7d08f3b8a51334",
+    "current_sha256": "ae531d35bea3c923b47a961d79c47b17548f35621d130fa42b7d08f3b8a51334"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_repeat_spends_empty_opportunity_without_catchup",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "b50104e943a6e418d627b1949e0bf4927631297fd953da9dab9555882564c578",
+    "current_sha256": "b50104e943a6e418d627b1949e0bf4927631297fd953da9dab9555882564c578"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "de7c460a1307f2beac8825cb2fc6bd0b0e2f411d944f2d8f1402cf94149364f3",
+    "current_sha256": "de7c460a1307f2beac8825cb2fc6bd0b0e2f411d944f2d8f1402cf94149364f3"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_aura_expiry_keeps_already_released_projectile_damage_snapshot",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "fef54ce82306df5912b2fe3b0fc4522709009b4e168efd3e4d64ce1ecff2332e",
+    "current_sha256": "fef54ce82306df5912b2fe3b0fc4522709009b4e168efd3e4d64ce1ecff2332e"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_aura_live_deploy_withdraw_redeploy_and_nonemployee_exclusion",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "feb8dc7798100f8d6848d7a0542ec5355d4a7a1890708821e351ca3de7b04f68",
+    "current_sha256": "feb8dc7798100f8d6848d7a0542ec5355d4a7a1890708821e351ca3de7b04f68"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_aura_member_admission_failure_rolls_back_live_deployment_and_retries",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "b1fc450802a423a8539b87208ac32ed9d50ca7bda2545c83e23012ef7dcfc73c",
+    "current_sha256": "b1fc450802a423a8539b87208ac32ed9d50ca7bda2545c83e23012ef7dcfc73c"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_aura_normal_tactical_exit_reentry_and_channel_commands_preserve_state",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "5b8aa9ded937657fa98cee6867d4dc35c5b490be6db773486b3470dfdd6327c2",
+    "current_sha256": "5b8aa9ded937657fa98cee6867d4dc35c5b490be6db773486b3470dfdd6327c2"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_aura_overlap_uses_priority_then_creation_and_removes_only_own_source",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "4a8be5fe5a6730bff2e6eb5503cd49c39cd8a7664d25576d43160d05f6f7f1e0",
+    "current_sha256": "4a8be5fe5a6730bff2e6eb5503cd49c39cd8a7664d25576d43160d05f6f7f1e0"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_aura_scenario_summon_and_defense_object_never_become_members",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "36550b615a1a67d2636e8558dbaebf19e59225fa2f9b50f0146b243830ba9323",
+    "current_sha256": "36550b615a1a67d2636e8558dbaebf19e59225fa2f9b50f0146b243830ba9323"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_channel_actual_enemy_lethal_hit_clears_only_dead_source",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "fad0f6e8899f19994bdc9f3f1b20328715ba09c2d629c91c771eeb7f388ac98b",
+    "current_sha256": "fad0f6e8899f19994bdc9f3f1b20328715ba09c2d629c91c771eeb7f388ac98b"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_channel_blocks_real_periodic_attacks_and_stop_resumes_them",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "a1d27803e0b3b1657a7aa9a0c55759afb0a318741b46dcc52a124cfb10431768",
+    "current_sha256": "a1d27803e0b3b1657a7aa9a0c55759afb0a318741b46dcc52a124cfb10431768"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_channel_excludes_actual_field_work_and_starts_after_stop",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "6a805706d363f7fcf5228eca5ddf1d2dbf2c79e20ec74d3f8e10c7456659f033",
+    "current_sha256": "6a805706d363f7fcf5228eca5ddf1d2dbf2c79e20ec74d3f8e10c7456659f033"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_channel_rejects_empty_start_and_withdraw_reclaims_membership",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "8327d49706fee2402f0649905bc81ebb3f4254dd321712552781c5a67285ae16",
+    "current_sha256": "8327d49706fee2402f0649905bc81ebb3f4254dd321712552781c5a67285ae16"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_channel_silence_damage_preserve_hard_cc_interrupt_end_only_own_lease",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "0c3956860d5f3e9c8419685a1d7322cf8cf78fa9e8df742aac399525a2441e9b",
+    "current_sha256": "0c3956860d5f3e9c8419685a1d7322cf8cf78fa9e8df742aac399525a2441e9b"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_hello_actual_child_expression_error_restores_live_overlay_and_all_facts",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "a56a5eaaa0093950cc7a039e2ba0ee9ae9d26580546dbed2855b92c55ae3e8d4",
+    "current_sha256": "a56a5eaaa0093950cc7a039e2ba0ee9ae9d26580546dbed2855b92c55ae3e8d4"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_hello_expiry_same_time_stale_activation_and_child_fault_are_atomic",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "31adf090af62293d302e046cfb2f7cec2713747a22f6790026e6cf60b1235918",
+    "current_sha256": "31adf090af62293d302e046cfb2f7cec2713747a22f6790026e6cf60b1235918"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_hello_old_activation_cannot_consume_a_new_activation",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "57e8a0467f4c56d7289b90219ff03ba7ddddacd9c20041c4f22cc896ae71d5bc",
+    "current_sha256": "57e8a0467f4c56d7289b90219ff03ba7ddddacd9c20041c4f22cc896ae71d5bc"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_hello_reinput_captures_remaining_time_once_without_resonance_or_basic_source",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "11d25f77b898498c92c7df1270fa11c4d819d035094e9063843324b5c8c38baa",
+    "current_sha256": "11d25f77b898498c92c7df1270fa11c4d819d035094e9063843324b5c8c38baa"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_overlay_compatible_weapons_preserve_type_identity_lifesteal_and_cycle",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "41c1a5d5228d77ee6937d0b453ae776dac9a937bd46486f420407c04b52429ba",
+    "current_sha256": "41c1a5d5228d77ee6937d0b453ae776dac9a937bd46486f420407c04b52429ba"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_overlay_directional_release_survives_expiry_and_pierces_once_per_enemy",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "5f1115639a3e1b6d0515f5ecf7ecbac51c3c915a5703e73b11a4214a7a941caa",
+    "current_sha256": "5f1115639a3e1b6d0515f5ecf7ecbac51c3c915a5703e73b11a4214a7a941caa"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_overlay_expiry_during_windup_uses_restored_weapon_without_consumption",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "f9923848a647d29b366f8458b0d79b9e7eb681ef7244833843734c3588707ade",
+    "current_sha256": "f9923848a647d29b366f8458b0d79b9e7eb681ef7244833843734c3588707ade"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_area_once_uses_weapon_and_restores_without_cycle_reset",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "41f170b2dc0b477a804ff6f425f7f9fdd91482a88173be6addfcc90fed324f71",
+    "current_sha256": "41f170b2dc0b477a804ff6f425f7f9fdd91482a88173be6addfcc90fed324f71"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_overlay_public_contract_rejects_unimplemented_or_unbounded_delivery",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "93195f2e5039d232965caceb68b6c49e60db709d7409c1a7833aba1b4f616684",
+    "current_sha256": "93195f2e5039d232965caceb68b6c49e60db709d7409c1a7833aba1b4f616684"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_public_channel_aura_membership_damage_identity_and_reinput_stop",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "f67e686cc0a9c2dadbb626ced837317cf87b5e2576dbe5cbfa065e92883e3956",
+    "current_sha256": "f67e686cc0a9c2dadbb626ced837317cf87b5e2576dbe5cbfa065e92883e3956"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_faults_restore_source_stats_queue_and_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "f22d795e2aa4a783662cbf91193dfac5fdf6a4c62a9123e1a8b94177b6322baf",
+    "current_sha256": "f22d795e2aa4a783662cbf91193dfac5fdf6a4c62a9123e1a8b94177b6322baf"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_public_modifier_repeated_lifetimes_do_not_drift",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "2ed345df24cb381dd1153c02a9b1acd3766d451664dee398c3b910f35963c17a",
+    "current_sha256": "2ed345df24cb381dd1153c02a9b1acd3766d451664dee398c3b910f35963c17a"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r11_public_modifiers_compose_expire_and_preserve_permanent_base",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "2953ad996af28b785ab922994d80a05f6dbf9dcb5f8093578c9e08eb9b59b3b8",
+    "current_sha256": "2953ad996af28b785ab922994d80a05f6dbf9dcb5f8093578c9e08eb9b59b3b8"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_basic_lifesteal_sums_actual_area_hp_before_rounding_and_one_cap",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "9ce1b61281fed7ee96dbd24e2ec3f346a2bdf1733d9e7a77a18a973ff26970da",
+    "current_sha256": "9ce1b61281fed7ee96dbd24e2ec3f346a2bdf1733d9e7a77a18a973ff26970da"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "3a3854d709048f90c23c77e42602e94feb9436fffcfd4775b75fe3b1364004b3",
+    "current_sha256": "3a3854d709048f90c23c77e42602e94feb9436fffcfd4775b75fe3b1364004b3"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_directional_basic_lifesteal_uses_release_provider_after_overlay_expiry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "93cfb8a544d560d4c5606038c5b598ee836a0069b8e6f55f08319c5f026505a9",
+    "current_sha256": "93cfb8a544d560d4c5606038c5b598ee836a0069b8e6f55f08319c5f026505a9"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_floor_precedes_one_use_death_prevention_then_ordinary_death_is_recorded",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "17212da0ba1c5c7c570756aeaecfd422268c630967458b2916072615367ee471",
+    "current_sha256": "17212da0ba1c5c7c570756aeaecfd422268c630967458b2916072615367ee471"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_goodbye_is_not_basic_lifesteal_and_settlement_fault_rolls_back_the_attack",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "ea49e211a7d8aea0c97d7c8b45f55bfbcbe42703cef5f13ea5204f4e43a9a171",
+    "current_sha256": "ea49e211a7d8aea0c97d7c8b45f55bfbcbe42703cef5f13ea5204f4e43a9a171"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_heal_and_health_cost_leave_shield_unchanged_only_recharge_changes_balance",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "9451ce37d396386cb9ff62719a4ea3017fa409169c32f8c0f651fb13476543c9",
+    "current_sha256": "9451ce37d396386cb9ff62719a4ea3017fa409169c32f8c0f651fb13476543c9"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_health_cost_is_separate_from_damage_heal_shield_and_hp_floor",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "26b0fb9bcbbdd99f41307d3b6157b600dd3db5f08d2c62d3727a6d5157f2ef0f",
+    "current_sha256": "26b0fb9bcbbdd99f41307d3b6157b600dd3db5f08d2c62d3727a6d5157f2ef0f"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_native_protection_limits_are_hard_and_retry_restores_same_result",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "93936f3530d9e8980826da1327e1911fd40c703e9a4d81d7d4a73efcae6cfd91",
+    "current_sha256": "93936f3530d9e8980826da1327e1911fd40c703e9a4d81d7d4a73efcae6cfd91"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_parry_and_atomic_counter_faults_restore_hp_activation_queue_and_observation",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "4afb4733a630ebff48cecae48544187906489acde7bce260525d96ff5d0e9c67",
+    "current_sha256": "4afb4733a630ebff48cecae48544187906489acde7bce260525d96ff5d0e9c67"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_parry_attachment_and_counter_publication_rejects_ambiguous_bindings",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "0f6af18019cffb70d93586a7ef7e91f73d0d0b77cf3b3f9de4ab52c7b8e98c45",
+    "current_sha256": "0f6af18019cffb70d93586a7ef7e91f73d0d0b77cf3b3f9de4ab52c7b8e98c45"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "bf9c594e6dd3377e3d30b5bf8fd9bf12878ed5a28cc830c0663cd2ac8abe342d",
+    "current_sha256": "bf9c594e6dd3377e3d30b5bf8fd9bf12878ed5a28cc830c0663cd2ac8abe342d"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_parry_miss_disables_only_own_reduction_then_recovers_without_rearming",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "3f9c323eb2df0c589cae15ff73754b0bfff5b240414130b4d58f45ae71e50550",
+    "current_sha256": "3f9c323eb2df0c589cae15ff73754b0bfff5b240414130b4d58f45ae71e50550"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_parry_suppresses_bound_attachment_counters_once_and_preserves_unrelated_effect",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "5670a41b2dde61db8755f924583489abd276c5895015abfe0c6ff79ac0cca36f",
+    "current_sha256": "5670a41b2dde61db8755f924583489abd276c5895015abfe0c6ff79ac0cca36f"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "20a4ff8df24020bb57e3418bd8ebdcf182d022ec287f5e9c6a2895614cea71f8",
+    "current_sha256": "20a4ff8df24020bb57e3418bd8ebdcf182d022ec287f5e9c6a2895614cea71f8"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_health_cost_bypasses_protection_and_self_damage_request_rejects",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "2c759ca4e93c0d7ec1430cae30c5a1f19812c96d3e2d16cfe7c611cf075edb96",
+    "current_sha256": "2c759ca4e93c0d7ec1430cae30c5a1f19812c96d3e2d16cfe7c611cf075edb96"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_and_recovery_equal_timestamp_boundaries",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "f15e402d320837a728cccd3fd0e2438e1bf6be5f8108428a2ebb538a0e032372",
+    "current_sha256": "f15e402d320837a728cccd3fd0e2438e1bf6be5f8108428a2ebb538a0e032372"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_miss_half_open_window_removes_only_own_reduction",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "ab8ccd9bfc0f51d4ae2e2d2b14724eefbac7eb908292dd8c6734a2278d122454",
+    "current_sha256": "ab8ccd9bfc0f51d4ae2e2d2b14724eefbac7eb908292dd8c6734a2278d122454"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_original_attacker_gone_never_retargets_counter_or_reflection",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "8f212a8c51295b0ab5d0b3d22b922fd2d5b3daa40e3a0f65512fc611f93d64d9",
+    "current_sha256": "8f212a8c51295b0ab5d0b3d22b922fd2d5b3daa40e3a0f65512fc611f93d64d9"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "6711578f3889b6040d9475fdc9d53e40c90dfc007354b7f7cc436e5bc4f814c8",
+    "current_sha256": "6711578f3889b6040d9475fdc9d53e40c90dfc007354b7f7cc436e5bc4f814c8"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_success_and_invulnerability_never_reflect",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "33704f32021e3b476d8b04eb747ca13ff65787a0f3449f07ef2c01f79d9af245",
+    "current_sha256": "33704f32021e3b476d8b04eb747ca13ff65787a0f3449f07ef2c01f79d9af245"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_personal_then_shared_priority_preserves_single_mitigation_and_target_hp",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "477c2cae897c006fed4231ed5fbe48106183812570b1f132428ac959aae0d54e",
+    "current_sha256": "477c2cae897c006fed4231ed5fbe48106183812570b1f132428ac959aae0d54e"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_public_shared_pool600_absorbs400_then200_and_applies_only150_hp_loss",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "b4a6e60f8e52dc5138f4563f3f5ccc19a2b1704882e6267b01b23301196e141e",
+    "current_sha256": "b4a6e60f8e52dc5138f4563f3f5ccc19a2b1704882e6267b01b23301196e141e"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_pull_uses_valid_unoccupied_cells_and_fault_restores_body_queue_and_ledger",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "5ff28545d9ad2734f66e886049ae78fd926cdf9ea142a08f8fff1ebbc4e56f46",
+    "current_sha256": "5ff28545d9ad2734f66e886049ae78fd926cdf9ea142a08f8fff1ebbc4e56f46"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_root_keeps_basic_attack_capability_and_taunt_changes_actual_attack_target",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "6650e7c624db063f921ef5fd9ebbc40467302ac00d68e82801e3be958afef080",
+    "current_sha256": "6650e7c624db063f921ef5fd9ebbc40467302ac00d68e82801e3be958afef080"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "5e5bb75f7e006c700b7b2d9713b7f612cae6953261f6746cc8001a2f7097cbe9",
+    "current_sha256": "5e5bb75f7e006c700b7b2d9713b7f612cae6953261f6746cc8001a2f7097cbe9"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_shield_consumption_faults_restore_pool_hp_facts_queue_and_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "4a1bbcb9a1d2cf63604540d45bfcfb1b51e8ae7feea3218f01fe29a0bfef2697",
+    "current_sha256": "4a1bbcb9a1d2cf63604540d45bfcfb1b51e8ae7feea3218f01fe29a0bfef2697"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_shield_initial_scale_once_membership_recast_and_old_expiry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "d4dcd0f102fb1bee2d31144b099a929159cce223497f9a463a27f66e097bd905",
+    "current_sha256": "d4dcd0f102fb1bee2d31144b099a929159cce223497f9a463a27f66e097bd905"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "bdf93ed960b3905aa83931c289e85a34c2c5352b0e2b0f1ec7c7ad72dab0c8f3",
+    "current_sha256": "bdf93ed960b3905aa83931c289e85a34c2c5352b0e2b0f1ec7c7ad72dab0c8f3"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_shielded_basic_attack_grants_release_charge_but_no_damage_charge_or_lifesteal",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "74609b9e480b3523911d4d94ca9b88048e014cd225ce1a667d28d25743cb5dac",
+    "current_sha256": "74609b9e480b3523911d4d94ca9b88048e014cd225ce1a667d28d25743cb5dac"
+  },
+  {
+    "selector": "game::battle::core::boss_runtime::tests::r12_slow_and_root_change_real_enemy_movement_without_stat_drift",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/boss_action_tests.rs"
+    ],
+    "old_sha256": "92ec8374f7134860458fcc19ce248dcb43da4b732c90ec1f5f370cca8a02e824",
+    "current_sha256": "92ec8374f7134860458fcc19ce248dcb43da4b732c90ec1f5f370cca8a02e824"
+  },
+  {
+    "selector": "game::battle::core::corrosion::tests::r09_auto_uses_same_actual_start_gate",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/corrosion.rs"
+    ],
+    "old_sha256": "fa793909b3c13095b100032d1a1e78a4f71110d1f9f34facb9373aa539dc4cfd",
+    "current_sha256": "fa793909b3c13095b100032d1a1e78a4f71110d1f9f34facb9373aa539dc4cfd"
+  },
+  {
+    "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/corrosion.rs"
+    ],
+    "old_sha256": "b3b09d1801e13ff7d10b6fd24a7519d27c13bfb34841d27be32f3da645f32e1a",
+    "current_sha256": "b3b09d1801e13ff7d10b6fd24a7519d27c13bfb34841d27be32f3da645f32e1a"
+  },
+  {
+    "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/corrosion.rs"
+    ],
+    "old_sha256": "8f40bef84371163538a872a3822515d6d1ca8f808c8b3d8bce22d86a94b771ba",
+    "current_sha256": "8f40bef84371163538a872a3822515d6d1ca8f808c8b3d8bce22d86a94b771ba"
+  },
+  {
+    "selector": "game::battle::core::corrosion::tests::r09_public_ron_start_replaces_cast_and_host_time_controls_freeze",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/corrosion.rs"
+    ],
+    "old_sha256": "73e270974e86d0b32f60572c69f90d0f820676c8649c8f368cf4ec458f26fc39",
+    "current_sha256": "73e270974e86d0b32f60572c69f90d0f820676c8649c8f368cf4ec458f26fc39"
+  },
+  {
+    "selector": "game::battle::core::corrosion::tests::r09_start_gate_uses_current_eligibility_and_ignores_stale_events",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/corrosion.rs"
+    ],
+    "old_sha256": "ca50877fa74251e6e9af0f4c5e17353976f22c22e366a516624ff07cbfd61aef",
+    "current_sha256": "ca50877fa74251e6e9af0f4c5e17353976f22c22e366a516624ff07cbfd61aef"
+  },
+  {
+    "selector": "game::battle::core::tests::amount_order::d07_f03_c07_d04_f01_empty_dynamic_impact_keeps_record_and_runs_following_resource",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+    ],
+    "old_sha256": "8d805dfaa04c8ecb8d425a7c44793bba3c40ada4ebdd87c4b11c052bb8a4586e",
+    "current_sha256": "8d805dfaa04c8ecb8d425a7c44793bba3c40ada4ebdd87c4b11c052bb8a4586e"
+  },
+  {
+    "selector": "game::battle::core::tests::amount_order::d07_f03_c07_piercing_hits_replace_zero_record_but_empty_expiry_preserves_it",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/tests/amount_order.rs"
+    ],
+    "old_sha256": "e6898a831296e604ee2c0de014ebc29ca59603657d95094fff7511934ebc07b7",
+    "current_sha256": "e6898a831296e604ee2c0de014ebc29ca59603657d95094fff7511934ebc07b7"
+  },
+  {
+    "selector": "game::battle::core::tests::control_status_hard_cc_cancels_basic_windup_while_silence_preserves_it",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/mod.rs"
+    ],
+    "old_sha256": "ffbf90aaf7427fb08c65e0da001089a3cdfd56d6741d87a4368f0efd68697d39",
+    "current_sha256": "ffbf90aaf7427fb08c65e0da001089a3cdfd56d6741d87a4368f0efd68697d39"
+  },
+  {
+    "selector": "game::battle::core::tests::control_status_hard_cc_releases_block_and_silence_preserves_engagement",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/mod.rs"
+    ],
+    "old_sha256": "b9b66a0d82b9d68ab42b7f22f83a0d10ba1800fe4d8dc3c557e9f7b995b14874",
+    "current_sha256": "b9b66a0d82b9d68ab42b7f22f83a0d10ba1800fe4d8dc3c557e9f7b995b14874"
+  },
+  {
+    "selector": "game::battle::core::tests::control_status_overlapping_silence_clears_only_after_last_expiry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/mod.rs"
+    ],
+    "old_sha256": "d2fb2f6bbc55256ddf6704338e7505c354cdfb3db2f9a4945e8d8b25b2b4fa7e",
+    "current_sha256": "d2fb2f6bbc55256ddf6704338e7505c354cdfb3db2f9a4945e8d8b25b2b4fa7e"
+  },
+  {
+    "selector": "game::battle::core::tests::instant_tile_area_origin_anchor_projects_range_from_cast_target_tile",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/mod.rs"
+    ],
+    "old_sha256": "1c5c6e407fa3f06c76b3e8caba2158d37a1751c75c070a7597623c270336374d",
+    "current_sha256": "1c5c6e407fa3f06c76b3e8caba2158d37a1751c75c070a7597623c270336374d"
+  },
+  {
+    "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/mod.rs"
+    ],
+    "old_sha256": "cd79a112e742f511585004386611c0f3b50916f36e6ebb19cc72f56eae1e0138",
+    "current_sha256": "cd79a112e742f511585004386611c0f3b50916f36e6ebb19cc72f56eae1e0138"
+  },
+  {
+    "selector": "game::battle::core::tests::relocation_preserves_ground_fixed_and_reanchors_follow_areas",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/mod.rs"
+    ],
+    "old_sha256": "04e0585c19b2f655631ba14ca481195139c7f2cb88471f38027d6cdcee06845b",
+    "current_sha256": "04e0585c19b2f655631ba14ca481195139c7f2cb88471f38027d6cdcee06845b"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::actual_units_group_by_side_employee_and_equipment_copy_without_view_contamination",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "d8b6fb5737304a10f46fb5193478e8ec1a87d6c0ae347eb3840a45b5109123e5",
+    "current_sha256": "d8b6fb5737304a10f46fb5193478e8ec1a87d6c0ae347eb3840a45b5109123e5"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::aggregate_fault_restores_the_current_candidate_and_allows_clean_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "cc04a982f51bc07a4e64f04e7d1d4c34f1bc548a9ba06af6c508cb8d7092622c",
+    "current_sha256": "cc04a982f51bc07a4e64f04e7d1d4c34f1bc548a9ba06af6c508cb8d7092622c"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_four_owner_views_preserve_snapshot_live_and_recorded_node_member_trace",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/aggregate_replay.rs"
+    ],
+    "old_sha256": "59b43f27595c7cfb1e155c460d8ead1f1109caa361d614f9e329787fb66b213b",
+    "current_sha256": "59b43f27595c7cfb1e155c460d8ead1f1109caa361d614f9e329787fb66b213b"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::aggregate_replay::d07_f03_c06_ineligible_relations_refuse_and_preserve_prior_record_and_gameplay",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/aggregate_replay.rs"
+    ],
+    "old_sha256": "6205e1dc4b45acff394e3231e922ca0a28e45e6b14f77c1d414e82b0aef6d1a8",
+    "current_sha256": "6205e1dc4b45acff394e3231e922ca0a28e45e6b14f77c1d414e82b0aef6d1a8"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_attack_release_consume_and_later_queries_keep_distinct_moments",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs"
+    ],
+    "old_sha256": "59accf4d693d87c60d5a315258ec678314baa348926401545d18c20f604ec4d0",
+    "current_sha256": "59accf4d693d87c60d5a315258ec678314baa348926401545d18c20f604ec4d0"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_completed_action_results_keep_the_release_frontier_or_live_frontier",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs"
+    ],
+    "old_sha256": "5a68aa51fec9d063b24e12eca1580a8cdc54da645ecd8885f7bf26d6242be707",
+    "current_sha256": "5a68aa51fec9d063b24e12eca1580a8cdc54da645ecd8885f7bf26d6242be707"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_resource_mutations_use_release_or_consumption_balance_in_queries",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs"
+    ],
+    "old_sha256": "161a67d1537d500885494ada82c29e2ff993d17677d7e161d8334e3637b9584c",
+    "current_sha256": "161a67d1537d500885494ada82c29e2ff993d17677d7e161d8334e3637b9584c"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c04_c05_target_hp_release_and_consumption_are_frozen_in_record",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs"
+    ],
+    "old_sha256": "2e5110287a66dc981b4b3f7339b0eeeff8557d3460cccec4a40e5042bb6f46ba",
+    "current_sha256": "2e5110287a66dc981b4b3f7339b0eeeff8557d3460cccec4a40e5042bb6f46ba"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::amount_replay::d07_f03_c05_live_reads_prior_effect_hp_resource_and_actual_mitigated_result",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/amount_replay.rs"
+    ],
+    "old_sha256": "f2da828ddd26e66c5e2bbf57a01495f9c230fef06c69314010f57981724b00f9",
+    "current_sha256": "f2da828ddd26e66c5e2bbf57a01495f9c230fef06c69314010f57981724b00f9"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::bound_cast_delivery_survives_control_cleanup_and_departed_source_snapshot",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "7ce65d8b2752c8b0f245fe8390952a2d7ca34738aa4149e84f1661ecb997c835",
+    "current_sha256": "7ce65d8b2752c8b0f245fe8390952a2d7ca34738aa4149e84f1661ecb997c835"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_actual_later_trace_cancel_preserves_record_and_native_transaction_then_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs"
+    ],
+    "old_sha256": "f9a05be18eb6710105633ab6060e7c8786dc9b882943c20f63ccd933dcb830ce",
+    "current_sha256": "f9a05be18eb6710105633ab6060e7c8786dc9b882943c20f63ccd933dcb830ce"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c08_record_replays_after_source_removal_and_rejects_corrupt_bindings",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs"
+    ],
+    "old_sha256": "e7cd68cb903572d97b98927adad346a505b1ed9cc04c0e7e1eadeda2984ddbef",
+    "current_sha256": "e7cd68cb903572d97b98927adad346a505b1ed9cc04c0e7e1eadeda2984ddbef"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c10_previous_record_survives_later_effect_fault_and_clean_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs"
+    ],
+    "old_sha256": "d9be2b13a8f0c796cc8df2fc00f4ae1aaecf540e62784469652d5ae9cbc6d32e",
+    "current_sha256": "d9be2b13a8f0c796cc8df2fc00f4ae1aaecf540e62784469652d5ae9cbc6d32e"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_c14_actual_i128_trace_is_exact_in_both_query_documents",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs"
+    ],
+    "old_sha256": "e6b051954e9055b243a5eba58aa2c4f03ff3615ad140da59553ed8953d705169",
+    "current_sha256": "e6b051954e9055b243a5eba58aa2c4f03ff3615ad140da59553ed8953d705169"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_record_replacement_peak_is_inclusive_and_failure_preserves_previous_owner",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs"
+    ],
+    "old_sha256": "873c317a0eada9be42cd0e78b9d613a3c0b84e402333d45d58ea431380b3d774",
+    "current_sha256": "873c317a0eada9be42cd0e78b9d613a3c0b84e402333d45d58ea431380b3d774"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::completion::r06_spell_power_and_points_snapshot_live_frames_use_original_inputs",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/completion.rs"
+    ],
+    "old_sha256": "d3c1d6dbf129a1e5386e68202d9427ee9ab55d1c493a0faf5a3e07e2df8311e0",
+    "current_sha256": "d3c1d6dbf129a1e5386e68202d9427ee9ab55d1c493a0faf5a3e07e2df8311e0"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::d07_f02_c02_amount_buffer_admits_exact_bytes_and_rejects_short_or_overflow",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "ee0e61511be39cfebc8605941a91eb27e2a3bfac4eca1dd726ebd875188749b9",
+    "current_sha256": "ee0e61511be39cfebc8605941a91eb27e2a3bfac4eca1dd726ebd875188749b9"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::equipment_lookup_count_is_constant_when_unrelated_battle_items_grow",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "07689c0eb2b0c0a60ac3f3f99fa506e93514c92fbe502f72cca5d3f822f20da1",
+    "current_sha256": "07689c0eb2b0c0a60ac3f3f99fa506e93514c92fbe502f72cca5d3f822f20da1"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::equipment_projection_retained_extent_and_arc_reuse_include_runtime_ids",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "80ac086360495c302fcc930a538b019b1dd5387bd090d93d6a2e5dba0a5cc7d4",
+    "current_sha256": "80ac086360495c302fcc930a538b019b1dd5387bd090d93d6a2e5dba0a5cc7d4"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::filtered_empty_reductions_and_snapshot_views_keep_their_exact_observation",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "4de0ae0cf669287dabc0b0ddcf371cafa7bf3563941cfdf73bdcc31118eefb73",
+    "current_sha256": "4de0ae0cf669287dabc0b0ddcf371cafa7bf3563941cfdf73bdcc31118eefb73"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::generation_catalog_entry_drives_capture_and_supported_publication",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "318f1059b6c123a760cfd1ba95bbef59d93ad08b0f83926f9896cf2667802c59",
+    "current_sha256": "318f1059b6c123a760cfd1ba95bbef59d93ad08b0f83926f9896cf2667802c59"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_damage_boundaries_match_observation_off_and_on",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/legacy_amount.rs"
+    ],
+    "old_sha256": "bc5a9c5d81018261772a43d942ef4b40b19dfd073ce421b603ddf152c77e612f",
+    "current_sha256": "bc5a9c5d81018261772a43d942ef4b40b19dfd073ce421b603ddf152c77e612f"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::legacy_amount::d07_f03_c03_legacy_heal_boundaries_preserve_signed_commands_and_clamping",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime/tests/legacy_amount.rs"
+    ],
+    "old_sha256": "b992e2b466570be60a9011160472e8ba2db60ba5e5a5ff6805264df6180a2a79",
+    "current_sha256": "b992e2b466570be60a9011160472e8ba2db60ba5e5a5ff6805264df6180a2a79"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::live_resource_unit_availability_is_separate_from_owner_lease_lifetime",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "cd169632e9fb2aa9d3877e5bc85a064683f76e889f408d0eb9baff51568993e7",
+    "current_sha256": "cd169632e9fb2aa9d3877e5bc85a064683f76e889f408d0eb9baff51568993e7"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::live_target_resource_obeys_availability_across_run_attempt_and_deployment",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "b760ad73b49d92862819c0b8e792c7f9af003cffad4c7634b53dcb10ef07e23c",
+    "current_sha256": "b760ad73b49d92862819c0b8e792c7f9af003cffad4c7634b53dcb10ef07e23c"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::prefix_rejects_missing_unsettled_future_self_and_other_occurrence",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "e17efd1800db861c09a62f35997ee3689d0e871c7f2af836a154d8ba28f3e4a0",
+    "current_sha256": "e17efd1800db861c09a62f35997ee3689d0e871c7f2af836a154d8ba28f3e4a0"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::r07_f08_fragment_lease_rejects_forgery_and_old_snapshot_survives_withdrawal",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "98a3d13fc9449dab06ddefc4df4bad59ec70dda8c05ac981ee7f23cbb0790b7e",
+    "current_sha256": "98a3d13fc9449dab06ddefc4df4bad59ec70dda8c05ac981ee7f23cbb0790b7e"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::released_snapshot_delivery_survives_source_withdrawal",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "e56997dec9e4532452fb6e88bc7970ec29b6eaf727c585e7d8891a71e3733feb",
+    "current_sha256": "e56997dec9e4532452fb6e88bc7970ec29b6eaf727c585e7d8891a71e3733feb"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::resolved_view_total_limit_and_filtered_scan_work_are_enforced",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "800029193d1b55d97d3d285106628bee065861a2dc7947c3b40a73ab79a2b0b0",
+    "current_sha256": "800029193d1b55d97d3d285106628bee065861a2dc7947c3b40a73ab79a2b0b0"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::resource_frame_reuses_exact_owner_scope_and_read_only_store_values",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "c5e7975f54104be6a208faab1977076e45f2467f126fe602a437f4dbf1a2a559",
+    "current_sha256": "c5e7975f54104be6a208faab1977076e45f2467f126fe602a437f4dbf1a2a559"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::runtime_amounts_use_shared_damage_and_heal_narrowing_with_actual_site",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "bc26a475ac23cb39586f166d7953f0b2c8290c5bf71213d6800a1c4304a43044",
+    "current_sha256": "bc26a475ac23cb39586f166d7953f0b2c8290c5bf71213d6800a1c4304a43044"
+  },
+  {
+    "selector": "game::battle::core::value_expr_runtime::tests::target_and_time_context_never_fall_back_to_zero_or_release_time",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/core/value_expr_runtime.rs"
+    ],
+    "old_sha256": "10be8e2dbba46fa224c07ef10ef398ef2bc9b1f58d32cc1422f82ac3cf202261",
+    "current_sha256": "10be8e2dbba46fa224c07ef10ef398ef2bc9b1f58d32cc1422f82ac3cf202261"
+  },
+  {
+    "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_checked_cadence_preserves_other_weapon_timers_and_rejects_invalid",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs"
+    ],
+    "old_sha256": "2f0c3454af28206664e266218faeed9fd56065308bcf8dfbb66324ba2af7cdfb",
+    "current_sha256": "2f0c3454af28206664e266218faeed9fd56065308bcf8dfbb66324ba2af7cdfb"
+  },
+  {
+    "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_numeric_weapon_growth_permanent_copy_compose_once_and_check_overflow",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs"
+    ],
+    "old_sha256": "d79f426484f561c37c8725afa1d5ddf4432215540a6b405dde4746aeedfed434",
+    "current_sha256": "d79f426484f561c37c8725afa1d5ddf4432215540a6b405dde4746aeedfed434"
+  },
+  {
+    "selector": "game::battle::stat_pipeline::tests::r06_stats::r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/battle/stat_pipeline/tests/r06_stats.rs"
+    ],
+    "old_sha256": "98b2919e4be3c566f786eea93abd1dc0b9ccc61a89b130f9e96da559dac89262",
+    "current_sha256": "98b2919e4be3c566f786eea93abd1dc0b9ccc61a89b130f9e96da559dac89262"
+  },
+  {
+    "selector": "game::combat_power::tests::r06_fingerprint_is_order_stable_and_includes_persistent_spell_power_and_copy",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/combat_power.rs"
+    ],
+    "old_sha256": "f002a4cedcceec7db44f1e734e3a7ce7c28280e5242b18e34c54b01402914152",
+    "current_sha256": "f002a4cedcceec7db44f1e734e3a7ce7c28280e5242b18e34c54b01402914152"
+  },
+  {
+    "selector": "game::value_expr::tests::checked_compile_and_evaluation_report_exact_faults",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "old_sha256": "aeddf6cf89ed402d1a93532c1190abb6943b4281360a0cf0e2315dfd8d965bef",
+    "current_sha256": "aeddf6cf89ed402d1a93532c1190abb6943b4281360a0cf0e2315dfd8d965bef"
+  },
+  {
+    "selector": "game::value_expr::tests::compile_limits_accept_the_boundary_and_reject_one_past_it",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "old_sha256": "6b704e14843223b4b32fbd29e6a2afea851630259b4872b4eee3ebc636f8a671",
+    "current_sha256": "6b704e14843223b4b32fbd29e6a2afea851630259b4872b4eee3ebc636f8a671"
+  },
+  {
+    "selector": "game::value_expr::tests::finite_aggregate_has_explicit_empty_and_grouped_semantics",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "old_sha256": "c9ac9a4ed52e1e6322744ef548847844a6b5463012b7c19847e47aabd1d624e8",
+    "current_sha256": "c9ac9a4ed52e1e6322744ef548847844a6b5463012b7c19847e47aabd1d624e8"
+  },
+  {
+    "selector": "game::value_expr::tests::integer_rounding_matches_the_signed_oracle",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "old_sha256": "10b2250a56d81c3ddb8e42e32f06e06cae6118104f49a4ed482f85a1bacc6970",
+    "current_sha256": "10b2250a56d81c3ddb8e42e32f06e06cae6118104f49a4ed482f85a1bacc6970"
+  },
+  {
+    "selector": "game::value_expr::tests::member_identity_order_is_canonical_for_fingerprint_and_trace",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "old_sha256": "344b8a4dbce810010b20cf98f94c5e44b11568671662826672a567a35207df04",
+    "current_sha256": "344b8a4dbce810010b20cf98f94c5e44b11568671662826672a567a35207df04"
+  },
+  {
+    "selector": "game::value_expr::tests::typed_add_and_ratio_reject_cross_unit_inputs",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/value_expr/tests.rs"
+    ],
+    "old_sha256": "ab485e12eb0e256c6bfbe3e1bf3fb82697151e4e8563a8140c4e0c8b62159d51",
+    "current_sha256": "ab485e12eb0e256c6bfbe3e1bf3fb82697151e4e8563a8140c4e0c8b62159d51"
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_document_has_exact_envelope_and_checksum",
+    "old_matches": 0,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ]
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::current_v10_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation",
+    "old_matches": 0,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ]
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::current_v10_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry",
+    "old_matches": 0,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ]
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::current_v10_rejects_each_content_authority_mismatch_even_with_valid_checksum",
+    "old_matches": 0,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ]
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_tampering",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ],
+    "old_sha256": "630be14f19099ccdceb921ebe727084fb6456f46cf4827f0b2804a0c68777468",
+    "current_sha256": "8eca1ed34b4e2fa3757df450e950643f7d99595a2e9d2a6f8a3ebc4aaaf0d524"
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ],
+    "old_sha256": "f2b6df5629e3b98824265c880c7adb351858cff3eb705cbba495aecbf92e4293",
+    "current_sha256": "1308b90703f021ad19fb50d253bcb4b19e4f8a57fd26761d7f0cdea98e27cd66"
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ],
+    "old_sha256": "3a5fc3d927cec3a2a06433418f28ec7644339f643829d2265579552a97167654",
+    "current_sha256": "c5dc8edae7a045f71d2e1f010ac2a530570c3d15a8012a8c7f518e2e462cd05a"
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ],
+    "old_sha256": "40daaab9e3528986cdd1cfde321fbfde2a1c5aaab014414abedf0149abd7b184",
+    "current_sha256": "fa7a109c280c207dd679eda47f7e17e30a62a429d52bea691e08d87ad90b612a"
+  },
+  {
+    "selector": "game::world::tests::checkpoint_validation::r09_v8_explicit_conversion_and_v9_counter_validation_preserve_original",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/checkpoint_validation.rs"
+    ],
+    "old_sha256": "1dd46d68917d11c5cf04a0a314a3d7b2c8638259563ae073a0c1ea116d2cf89a",
+    "current_sha256": "bb4e42377dec8145fa1be00be21c2053d62bb962ed09a6ec89c2197daedee922"
+  },
+  {
+    "selector": "game::world::tests::combat::r09_corrosion_captures_current_enemies_and_preserves_required_future_wave",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "347c743c113db17ddbd62cf4918b0e396be0739c44a1c9f28a03e59f1facd872",
+    "current_sha256": "347c743c113db17ddbd62cf4918b0e396be0739c44a1c9f28a03e59f1facd872"
+  },
+  {
+    "selector": "game::world::tests::combat::r09_forced_pause_all_application_routes_reject_before_mutation",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "b7e2edc4f8bd312b45d88f7f0a85a03302ff678b8005151271939cd5e283c860",
+    "current_sha256": "b7e2edc4f8bd312b45d88f7f0a85a03302ff678b8005151271939cd5e283c860"
+  },
+  {
+    "selector": "game::world::tests::combat::r09_world_pause_start_host_speed_terminal_employee_cost_and_save",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "85dbfd76c949b9badeb1d9093045b27375afbb96073aafebdf2ab5ca0fde0410",
+    "current_sha256": "43b90cb728e7fd160a253f0f8f5bbee67159b90781b123a02b8e373a6142e788"
+  },
+  {
+    "selector": "game::world::tests::combat::r10_structured_flow_preserves_corrosion_start_freeze_results_and_save",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "4466a5551d84f328ed32558147628e0953f0656d11d69ba9cd5229a58d6d4c21",
+    "current_sha256": "8f206821c72606a44779ad095f9fe2b98ef8aa0e2969382cfa6d9177292fc33b"
+  },
+  {
+    "selector": "game::world::tests::combat::r11_world_channel_pause_public_query_terminal_and_save",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "eb7a2e4911e217f74548cf63591390705d949751d7c78c0cf317f92f993fac53",
+    "current_sha256": "12fd5de3b4aef4483b6159d787886250971ff0382eaf3a084b25913ed36e8b65"
+  },
+  {
+    "selector": "game::world::tests::combat::r11_world_exact_fragment_hello_reinput_goodbye_result_and_save",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "819a0548a96b81fefc0d75d199defcc7b55cee122f823f2b06c5b2e36b256170",
+    "current_sha256": "3ab83983bf2a6b1a309f67273f75d452b530b6fbfe17fb52d9269302fb3bcc68"
+  },
+  {
+    "selector": "game::world::tests::combat::r11_world_retreat_discards_channel_and_overlay_and_restores_after_outer_failure",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "d3d48ecc8d3127b28955cce359db391ade0111bb9c9fcc6e1503ed88d4acab26",
+    "current_sha256": "d3d48ecc8d3127b28955cce359db391ade0111bb9c9fcc6e1503ed88d4acab26"
+  },
+  {
+    "selector": "game::world::tests::combat::r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "19cf69a3f1657cd49d2bf939354580f7cdc412bc822c6e8ba0342198c39ca9bf",
+    "current_sha256": "6bc88decf16815e6e28b1ce9c79db8c00e7830abc36955b46fe4f621a891b01b"
+  },
+  {
+    "selector": "game::world::tests::combat::r12_world_passive_guard_actual_copy_withdraw_redeploy_and_retreat",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "d5e0175c02129a4cab38e96345d380c0e8ddcd22f70f9f981c92a27f0fc8e051",
+    "current_sha256": "d5e0175c02129a4cab38e96345d380c0e8ddcd22f70f9f981c92a27f0fc8e051"
+  },
+  {
+    "selector": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": false,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r09_combat.inc.rs"
+    ],
+    "old_sha256": "9a9dc1fa66e986b18377d4e9c4022643e99f3dfc7f3e4dd9b82a60f56dc00329",
+    "current_sha256": "d3f13d72257a17bf0a5b4a3f936de72c94787f24d783a95483a7e8a5797efc67"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f01_normal_grant_exact_receipts_and_failed_batch_retry_preserve_uuid",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "42b87f6c468a7ebedb69ab17591ce07357cc8e53015db0bfb99d899ec816ff05",
+    "current_sha256": "42b87f6c468a7ebedb69ab17591ce07357cc8e53015db0bfb99d899ec816ff05"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f02_f03_copy_independence_transfer_occupied_and_missing_rollback",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "ba7239adb27583c6a498210be93935944999a03f88e23ac70affc0584452e49d",
+    "current_sha256": "ba7239adb27583c6a498210be93935944999a03f88e23ac70affc0584452e49d"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f03_f08_form_compatibility_transfer_fingerprint_and_retained_source",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "97607d2e8d2dd069632d08cfa257934e409e74562b48fc56980a20c519294d03",
+    "current_sha256": "97607d2e8d2dd069632d08cfa257934e409e74562b48fc56980a20c519294d03"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f04_f11_form_queries_costs_locked_insufficient_noop_are_consistent",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "b291106bd3410db3bf20ea5885467a34745c1699f85502c4fdfb344c1c33d2b2",
+    "current_sha256": "b291106bd3410db3bf20ea5885467a34745c1699f85502c4fdfb344c1c33d2b2"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f05_confirmed_dismantle_removes_only_selected_copy_and_failed_yield_rolls_back",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "672ab3efcbfaeacf79647a2e2544a8baeaab9744355f1c96a2a9bd1664c0a1a2",
+    "current_sha256": "672ab3efcbfaeacf79647a2e2544a8baeaab9744355f1c96a2a9bd1664c0a1a2"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f06_death_releases_exact_copy_preserves_forms_and_repeat_is_idempotent",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "cd1110282ce9584a82ca0183931582625b6116f7274f157341753fe1cbc5c7d1",
+    "current_sha256": "cd1110282ce9584a82ca0183931582625b6116f7274f157341753fe1cbc5c7d1"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "016c7103e8dfb0cdf0df66305b83be642f9479565d5e523c566d4dfbbc9a95fe",
+    "current_sha256": "016c7103e8dfb0cdf0df66305b83be642f9479565d5e523c566d4dfbbc9a95fe"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f12_cardinality_duplicate_keys_and_uuid_exhaustion_fail_before_mutation",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "0d043744895c103155b1078636ce487e22fd7f78d78a9862782ac147eba23c54",
+    "current_sha256": "0d043744895c103155b1078636ce487e22fd7f78d78a9862782ac147eba23c54"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f12_owned_shape_budgets_cancel_retry_and_max_copy_form_limits",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "403405d1cf0c1221e9e7ed1ea0dd6e43d7dc7b1dd88784b8853da41358720656",
+    "current_sha256": "403405d1cf0c1221e9e7ed1ea0dd6e43d7dc7b1dd88784b8853da41358720656"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r07_f12_source_payload_native_retained_exact_short_and_retry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "909701546ca06d4f1f7d1f6ec0083a0a0b49f42d0421a07f0a7fa469b473364b",
+    "current_sha256": "909701546ca06d4f1f7d1f6ec0083a0a0b49f42d0421a07f0a7fa469b473364b"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "8e8de533e29d649d3dbc6600ca03f728ea98dbc1ed7f5b9178c5d3ecffd5f079",
+    "current_sha256": "8e8de533e29d649d3dbc6600ca03f728ea98dbc1ed7f5b9178c5d3ecffd5f079"
+  },
+  {
+    "selector": "game::world::tests::r07_copies::r09_savepoint_recovery_precedes_counter_expiry",
+    "old_matches": 1,
+    "current_matches": 1,
+    "body_unchanged": true,
+    "current_files": [
+      "core_enhanced/src/game/world/tests/r07_copies.rs"
+    ],
+    "old_sha256": "a679452af10d802a07bc0b2139241f67cd7723b4d44df9408eaa2b430a2ba1e6",
+    "current_sha256": "a679452af10d802a07bc0b2139241f67cd7723b4d44df9408eaa2b430a2ba1e6"
+  }
+]

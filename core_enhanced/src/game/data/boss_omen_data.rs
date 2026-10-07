@@ -5,9 +5,11 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::data::{build_string_index, event_data::EventId, once_lock_with};
+use crate::game::data::{
+    build_string_index, event_data::EventId, once_lock_with, skill_fragment_data::SkillFragmentId,
+};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct BossOmenChainId(pub String);
 
@@ -53,9 +55,19 @@ pub struct BossOmenChain {
     pub id: BossOmenChainId,
     pub boss_abnormality_id: String,
     pub min_floor: u32,
+    #[serde(deserialize_with = "crate::game::data::deserialize_required_option")]
+    pub required_fragment: Option<BossOmenRequiredFragment>,
+    pub dependencies: Vec<BossOmenChainId>,
     pub required_steps: u32,
     pub steps: Vec<BossOmenStep>,
     pub boss_encounter_id: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BossOmenRequiredFragment {
+    pub fragment_id: SkillFragmentId,
+    pub awakening_required: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -81,6 +93,14 @@ pub struct BossOmenChainDatabase {
 }
 
 impl BossOmenChainDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(chains: Vec<BossOmenChain>) -> Self {
+        Self {
+            chains,
+            by_id: OnceLock::new(),
+        }
+    }
+
     pub fn new(chains: Vec<BossOmenChain>) -> Self {
         let by_id = once_lock_with(build_string_index(&chains, "boss omen chain id", |chain| {
             chain.id.as_str()
@@ -99,6 +119,72 @@ impl BossOmenChainDatabase {
     pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
         for (index, chain) in self.chains.iter().enumerate() {
             validate_chain_authoring_contract(chain, index)?;
+        }
+        self.validate_dependency_dag()?;
+        Ok(())
+    }
+
+    fn validate_dependency_dag(&self) -> Result<(), crate::game::data::DataValidationError> {
+        let chain_ids = self
+            .chains
+            .iter()
+            .map(|chain| chain.id.as_str())
+            .collect::<HashSet<_>>();
+        for (chain_index, chain) in self.chains.iter().enumerate() {
+            let mut dependencies = HashSet::new();
+            for (dependency_index, dependency) in chain.dependencies.iter().enumerate() {
+                if !chain_ids.contains(dependency.as_str()) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        chain.id.as_str(),
+                        format!("chains[{chain_index}].dependencies[{dependency_index}]"),
+                        format!(
+                            "references missing BossOmen chain '{}'",
+                            dependency.as_str()
+                        ),
+                    ));
+                }
+                if dependency == &chain.id || !dependencies.insert(dependency.as_str()) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        chain.id.as_str(),
+                        format!("chains[{chain_index}].dependencies[{dependency_index}]"),
+                        "dependency must be unique and cannot reference its own chain",
+                    ));
+                }
+            }
+        }
+
+        fn visit(
+            database: &BossOmenChainDatabase,
+            chain_id: &str,
+            visiting: &mut HashSet<String>,
+            visited: &mut HashSet<String>,
+        ) -> Result<(), String> {
+            if visited.contains(chain_id) {
+                return Ok(());
+            }
+            if !visiting.insert(chain_id.to_string()) {
+                return Err(format!("dependency cycle reaches '{chain_id}'"));
+            }
+            let chain = database
+                .get_by_id(chain_id)
+                .ok_or_else(|| format!("missing dependency chain '{chain_id}'"))?;
+            for dependency in &chain.dependencies {
+                visit(database, dependency.as_str(), visiting, visited)?;
+            }
+            visiting.remove(chain_id);
+            visited.insert(chain_id.to_string());
+            Ok(())
+        }
+
+        let mut visited = HashSet::new();
+        for chain in &self.chains {
+            visit(self, chain.id.as_str(), &mut HashSet::new(), &mut visited).map_err(|cause| {
+                crate::game::data::DataValidationError::at(
+                    chain.id.as_str(),
+                    "chains.dependencies",
+                    cause,
+                )
+            })?;
         }
         Ok(())
     }
@@ -140,6 +226,16 @@ fn validate_chain_authoring_contract(
         return Err(error(
             format!("{chain_path}.min_floor"),
             "min_floor must be greater than zero",
+        ));
+    }
+    if chain
+        .required_fragment
+        .as_ref()
+        .is_some_and(|required| required.fragment_id.as_str().trim().is_empty())
+    {
+        return Err(error(
+            format!("{chain_path}.required_fragment.fragment_id"),
+            "required fragment id must not be empty",
         ));
     }
     if chain.required_steps == 0 || chain.required_steps as usize > chain.steps.len() {
@@ -225,4 +321,71 @@ fn validate_chain_authoring_contract(
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn chain(id: &str, dependencies: &[&str]) -> BossOmenChain {
+        BossOmenChain {
+            id: BossOmenChainId::new(id),
+            boss_abnormality_id: format!("abnormality_{id}"),
+            min_floor: 1,
+            required_fragment: None,
+            dependencies: dependencies
+                .iter()
+                .map(|dependency| BossOmenChainId::new(*dependency))
+                .collect(),
+            required_steps: 1,
+            steps: vec![BossOmenStep {
+                id: BossOmenStepId::new("step"),
+                source_kind: BossOmenSourceKind::Combat,
+                hint_id: "hint".to_string(),
+                title_id: "title".to_string(),
+                description_id: "description".to_string(),
+                event_id: None,
+                encounter_id: Some(format!("encounter_{id}")),
+            }],
+            boss_encounter_id: format!("boss_{id}"),
+        }
+    }
+
+    #[test]
+    fn dependency_dag_rejects_unknown_self_and_cycle_edges() {
+        let unknown = BossOmenChainDatabase::new(vec![chain("a", &["missing"])]);
+        assert!(unknown.validate_contract().is_err());
+
+        let self_edge = BossOmenChainDatabase::new(vec![chain("a", &["a"])]);
+        assert!(self_edge.validate_contract().is_err());
+
+        let cycle = BossOmenChainDatabase::new(vec![chain("a", &["b"]), chain("b", &["a"])]);
+        let error = cycle.validate_contract().unwrap_err();
+        assert!(error.cause.contains("cycle"));
+    }
+
+    #[test]
+    fn dependency_dag_accepts_reachable_acyclic_graph() {
+        let database = BossOmenChainDatabase::new(vec![
+            chain("root", &[]),
+            chain("middle", &["root"]),
+            chain("leaf", &["middle"]),
+        ]);
+        database.validate_contract().unwrap();
+    }
+
+    #[test]
+    fn ron_requires_explicit_fragment_condition_and_dependencies() {
+        let missing = r#"BossOmenChainDatabase(chains: [BossOmenChain(
+            id: "a",
+            boss_abnormality_id: "abnormality_a",
+            min_floor: 1,
+            required_steps: 1,
+            steps: [],
+            boss_encounter_id: "boss_a",
+        )])"#;
+        let error = ron::de::from_str::<BossOmenChainDatabase>(missing).unwrap_err();
+        let message = error.to_string();
+        assert!(message.contains("required_fragment") || message.contains("dependencies"));
+    }
 }

@@ -1,0 +1,25 @@
+{
+  "manifest": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/segments/wp02_d07_static_explain_001/target/d07_static_explain_001/MANIFEST.json",
+    "bytes": 160800,
+    "sha256": "ae6609c1e75b711a27cacf8467ac0c42eaa99635a0fc19c5ae486ecd949bb1ac"
+  },
+  "verification": {
+    "state": "CURRENTNESS_AND_ISOLATED_BIDIRECTIONAL_RESTORATION_VERIFIED",
+    "before_source_count": 337,
+    "after_source_count": 338,
+    "product_source_count": 334,
+    "modified_paths": [
+      "core_enhanced/src/authoring/mod.rs",
+      "core_enhanced/src/authoring/query.rs",
+      "core_enhanced/src/authoring/tests.rs",
+      "core_enhanced/src/authoring/trial.rs",
+      "core_enhanced/src/game/value_expr/catalog.rs",
+      "core_enhanced/src/game/value_expr/mod.rs"
+    ],
+    "added_paths": [
+      "core_enhanced/src/authoring/amount.rs"
+    ],
+    "record_count": 98
+  }
+}

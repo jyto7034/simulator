@@ -1,0 +1,35 @@
+SkillDatabase(skills: [SkillDef(
+ id: "r08_strike", name: "R12 public protection result and save", kind: Targeted, focus_time_ms: 100,
+ use_lifetime: ActionAndEffects(effects: [(step: "hit", effect: "heal"), (step: "hit", effect: "channel"), (step: "hit", effect: "personal"), (step: "hit", effect: "parry")]),
+ cast_targeting: Explicit(selection: self, target: SelfUnit, reach: pattern, air_capable: true),
+ flow: Some(Sequence(id: "root", children: [
+   Parallel(id: "protect_and_taunt", branches: [Action(id: "protection", step_id: "hit", wait: EffectsSettled), Action(id: "taunt", step_id: "taunt", wait: EffectsSettled)]),
+   Wait(id: "result_boundary", duration_ms: 200),
+   Action(id: "finish", step_id: "finish_enemies", wait: EffectsSettled),
+ ])),
+ steps: [SkillStepDef(id: "hit", delay_ms: 200, target: SelfUnit, delivery: Instant,
+   effects: [(id: "heal", op: ShieldExpr(amount: (moment: Snapshot, root: Const((value: 600, unit: Magnitude))), duration_ms: 6000, priority: 0, shared_radius_units: Some(30000000))),
+    (id: "channel", op: Sustained(definition: ChannelAura(duration_ms: 6000, aura: (family: "cross_wp", priority: 0, radius_units: 30000000, basic_damage_percent: 20, basic_speed_points: 15)))),
+    (id: "personal", op: Sustained(definition: Shield(duration_ms: 6000, amount: 100, priority: 0, shared_radius_units: None))),
+    (id: "cost", op: HealthCost(amount: 10, allow_lethal: false)),
+    (id: "parry", op: Sustained(definition: Parry(duration_ms: 4500, window_ms: 3200, invulnerable_ms: 1000, miss_recovery_ms: 20, reduction_percent: 0, counter_skill: "r12_counter")))]),
+   SkillStepDef(id: "taunt", delay_ms: 200, target: SelfUnit, delivery: TileArea(footprint: (include_anchor_tile: true, rows: ["XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXX@XXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"]), area: (anchor: Caster, tile_origin: Caster)),
+     effects: [(id: "taunt", op: Sustained(definition: Control(duration_ms: 5000, kind: Taunt(priority: 1))))]),
+   SkillStepDef(id: "finish_enemies", delay_ms: 0, target: SelfUnit,
+     delivery: TileArea(footprint: (include_anchor_tile: true, rows: ["XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXX@XXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"]), area: (anchor: Caster, tile_origin: Caster)),
+     effects: [(id: "damage", op: Damage(amount: 10000, damage_type: True))]),
+ ]
+), SkillDef(id: "r12_counter", name: "Public world counter", kind: Targeted, focus_time_ms: 0,
+ use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ steps: [SkillStepDef(id: "counter", delay_ms: 0, target: CastTarget, delivery: Instant,
+ effects: [(id: "hit", op: Damage(amount: 100, damage_type: True))])])
+, SkillDef(id: "r12_enemy_guard", name: "Boss live guard flow", kind: Targeted, focus_time_ms: 0,
+ use_lifetime: ActionAndEffects(effects: [(step: "guard", effect: "shield"), (step: "guard", effect: "floor"), (step: "guard", effect: "parry")]),
+ cast_targeting: Explicit(selection: self, target: SelfUnit, reach: pattern, air_capable: true),
+ flow: Some(Action(id: "guard_flow", step_id: "guard", wait: EffectsSettled)),
+ steps: [SkillStepDef(id: "guard", delay_ms: 0, target: SelfUnit, delivery: Instant, effects: [
+ (id: "shield", op: Sustained(definition: Shield(duration_ms: 6000, amount: 10000, priority: 0, shared_radius_units: None))),
+ (id: "floor", op: Sustained(definition: Survival(duration_ms: 6000, policy: FloorOne))),
+ (id: "parry", op: Sustained(definition: Parry(duration_ms: 6000, window_ms: 3200, invulnerable_ms: 1000, miss_recovery_ms: 20, reduction_percent: 0, counter_skill: "r12_counter")))])])
+])

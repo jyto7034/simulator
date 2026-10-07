@@ -1,0 +1,225 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CRAR-P2G40-002",
+  "evaluated_phase_plan": {
+    "ref": "PP-CRAR-P2G40-002",
+    "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/P2G_40_CORE_ONLY_PHASE_PLAN_002.ko.md",
+    "sha256": "6d2ffd859e833df39b74de4ac93df5d32e01425b3172ebee499fc1b54e83e25b"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CRAR-P2G30-002",
+    "path": "core_enhanced/docs/goals/current_runtime_architecture_remediation/P2G_30_CORE_ONLY_FREEZE_002.ko.md",
+    "sha256": "c55dbe40a2e5ec40fb3a62ff6d02dbff6d359395a048cb08e795f22e5d25452a"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.1.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CRAR-P2G20-COMPLETE-002",
+    "review_batch_ref": "RB-CRAR-P2G20-002",
+    "reviewed_source_basis_ref": "RSB-CRAR-P2G20-002",
+    "code_review_binding_count": 1,
+    "bound_final_policy_freeze_ref": "FPF-CRAR-P2G30-002",
+    "applicable_p2g40_obligation_key_count": 1,
+    "resolution_record_ref_count": 1,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 10,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CRAR-001",
+        "policy_element_revision_ref": "PER-CRAR-001-R3-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-002",
+        "policy_element_revision_ref": "PER-CRAR-002-R6-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-003",
+        "policy_element_revision_ref": "PER-CRAR-003-R3-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-004",
+        "policy_element_revision_ref": "PER-CRAR-004-R3-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-005",
+        "policy_element_revision_ref": "PER-CRAR-005-R6-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-006",
+        "policy_element_revision_ref": "PER-CRAR-006-R3-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-007",
+        "policy_element_revision_ref": "PER-CRAR-007-R6-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-008",
+        "policy_element_revision_ref": "PER-CRAR-008-R6-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-009",
+        "policy_element_revision_ref": "PER-CRAR-009-R6-CODE-REVIEWED"
+      },
+      {
+        "element_id": "PE-CRAR-010",
+        "policy_element_revision_ref": "PER-CRAR-010-R3-CODE-REVIEWED"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 10,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CRAR-001",
+        "phase_id": "PHASE-CRAR-C2-01-PRESERVATION-OBSERVABILITY"
+      },
+      {
+        "element_id": "PE-CRAR-005",
+        "phase_id": "PHASE-CRAR-C2-02-VALIDATED-DATA"
+      },
+      {
+        "element_id": "PE-CRAR-002",
+        "phase_id": "PHASE-CRAR-C2-03-APPLICATION-AUTHORITY"
+      },
+      {
+        "element_id": "PE-CRAR-003",
+        "phase_id": "PHASE-CRAR-C2-03-APPLICATION-AUTHORITY"
+      },
+      {
+        "element_id": "PE-CRAR-004",
+        "phase_id": "PHASE-CRAR-C2-03-APPLICATION-AUTHORITY"
+      },
+      {
+        "element_id": "PE-CRAR-006",
+        "phase_id": "PHASE-CRAR-C2-04-BATTLE-KERNEL"
+      },
+      {
+        "element_id": "PE-CRAR-009",
+        "phase_id": "PHASE-CRAR-C2-05-BOUNDED-HISTORY-RESULT"
+      },
+      {
+        "element_id": "PE-CRAR-010",
+        "phase_id": "PHASE-CRAR-C2-06-CHECKPOINT-MIGRATION"
+      },
+      {
+        "element_id": "PE-CRAR-007",
+        "phase_id": "PHASE-CRAR-C2-07-CORE-PUBLIC-PROJECTION"
+      },
+      {
+        "element_id": "PE-CRAR-008",
+        "phase_id": "PHASE-CRAR-C2-08-PERFORMANCE-FINAL-INTEGRATION"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 10,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 2,
+    "standalone_work_package_count": 8,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CRAR-C2-01-APPLICATION-AUTHORITY": [
+        "WP-CRAR-C2-02",
+        "WP-CRAR-C2-03"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CRAR-C2-01",
+      "WP-CRAR-C2-04",
+      "WP-CRAR-C2-05",
+      "WP-CRAR-C2-06",
+      "WP-CRAR-C2-07",
+      "WP-CRAR-C2-08",
+      "WP-CRAR-C2-09",
+      "WP-CRAR-C2-10"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 10,
+    "edge_count": 39,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CRAR-C2-02",
+        "WP-CRAR-C2-03"
+      ]
+    ],
+    "final_execution_node_count": 9,
+    "condensation_edge_count": 30,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 9,
+    "assigned_once_count": 9,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 8,
+    "assignment": {
+      "WP-CRAR-C2-01": "PHASE-CRAR-C2-01-PRESERVATION-OBSERVABILITY",
+      "WP-CRAR-C2-04": "PHASE-CRAR-C2-02-VALIDATED-DATA",
+      "AG-CRAR-C2-01-APPLICATION-AUTHORITY": "PHASE-CRAR-C2-03-APPLICATION-AUTHORITY",
+      "WP-CRAR-C2-05": "PHASE-CRAR-C2-04-BATTLE-KERNEL",
+      "WP-CRAR-C2-06": "PHASE-CRAR-C2-05-BOUNDED-HISTORY-RESULT",
+      "WP-CRAR-C2-07": "PHASE-CRAR-C2-06-CHECKPOINT-MIGRATION",
+      "WP-CRAR-C2-08": "PHASE-CRAR-C2-07-CORE-PUBLIC-PROJECTION",
+      "WP-CRAR-C2-09": "PHASE-CRAR-C2-08-PERFORMANCE-FINAL-INTEGRATION",
+      "WP-CRAR-C2-10": "PHASE-CRAR-C2-08-PERFORMANCE-FINAL-INTEGRATION"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 8,
+    "audit_row_count": 8,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 12,
+    "mapped_count": 12,
+    "assigned_execution_node_count": 10,
+    "existing_read_only_count": 1,
+    "audit_local_read_only_count": 1,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 8,
+    "expected": "multi_phase",
+    "actual": "multi_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed"
+}

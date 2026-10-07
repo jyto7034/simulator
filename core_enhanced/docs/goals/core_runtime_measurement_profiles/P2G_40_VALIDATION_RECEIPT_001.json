@@ -1,0 +1,247 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CMRP-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CMRP-001",
+    "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "9a8f4b38ed25db47ddcfef0b3a2dff41bcea2293635c960a414d78824d52f4ce"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CMRP-001",
+    "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_30_FREEZE_001.json",
+    "sha256": "cfc1a6c5e8f33f752a148d5c4eca0e91c8428f264b517ff6989aa7f586437ef4"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CMRP-003",
+    "review_batch_ref": "RB-CMRP-001",
+    "reviewed_source_basis_ref": "RSB-CMRP-001",
+    "code_review_binding_count": 10,
+    "bound_final_policy_freeze_ref": "FPF-CMRP-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 10,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CMRP-01",
+        "policy_element_revision_ref": "PER-CMRP-01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-02",
+        "policy_element_revision_ref": "PER-CMRP-02-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-03",
+        "policy_element_revision_ref": "PER-CMRP-03-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-04",
+        "policy_element_revision_ref": "PER-CMRP-04-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-05",
+        "policy_element_revision_ref": "PER-CMRP-05-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-06",
+        "policy_element_revision_ref": "PER-CMRP-06-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-07",
+        "policy_element_revision_ref": "PER-CMRP-07-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-08",
+        "policy_element_revision_ref": "PER-CMRP-08-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-09",
+        "policy_element_revision_ref": "PER-CMRP-09-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CMRP-10",
+        "policy_element_revision_ref": "PER-CMRP-10-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 10,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CMRP-01",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-02",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-03",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-04",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-05",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-06",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-07",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-08",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-09",
+        "phase_id": "PHASE-CMRP-01"
+      },
+      {
+        "element_id": "PE-CMRP-10",
+        "phase_id": "PHASE-CMRP-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 5,
+    "atomic_group_count": 0,
+    "atomic_group_member_count": 0,
+    "standalone_work_package_count": 5,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {},
+    "standalone_work_packages": [
+      "WP-CMRP-PROFILE",
+      "WP-CMRP-ACCOUNTING",
+      "WP-CMRP-COLLECTOR",
+      "WP-CMRP-PLAYBACK",
+      "WP-CMRP-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 5,
+    "edge_count": 7,
+    "cyclic_scc_count": 0,
+    "cyclic_scc_disposition_count": 0,
+    "cyclic_sccs": [],
+    "final_execution_node_count": 5,
+    "condensation_edge_count": 7,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 5,
+    "assigned_once_count": 5,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "WP-CMRP-PROFILE": "PHASE-CMRP-01",
+      "WP-CMRP-ACCOUNTING": "PHASE-CMRP-01",
+      "WP-CMRP-COLLECTOR": "PHASE-CMRP-01",
+      "WP-CMRP-PLAYBACK": "PHASE-CMRP-01",
+      "WP-CMRP-VERIFY": "PHASE-CMRP-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 10,
+    "mapped_count": 10,
+    "assigned_execution_node_count": 10,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CMRP-001",
+      "Content Digest": "sha256:a694e6a5980ba75bfb4d1777084f11dcb61eecf780ef686d1aa08390349f2932"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CMRP-001",
+      "Content Digest": "sha256:a9dc373cbd1ea21edf5c3ce13f81b0815488451327cad9fae1928476cc4654aa"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_00_INITIAL_001.json",
+        "sha256": "f6f7780fc0e099533896ea827595d9ab4cd74f70f3b854a7b850caa771046ba4"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_10_POLICY_001.json",
+        "sha256": "292a235d697b3aa2972fa180688d9fbe691ea44beb30741c208b0ba4eaad4d0d"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_REVIEW_001.json",
+        "sha256": "9c2e7c1801862ec95afbff622c33ee1ef31406381a5c97c569380825f8f83e38"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "6e2f64dfe66f4c7ce27cd235ed8cade4d6a2c370c4fddebaf98807644c9b2cee"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "9e51e9eb4db96aa6a89c682ec13bf09f728b9ecb8aac173e82582b1c10aed797"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_runtime_measurement_profiles/P2G_30_FREEZE_001.json",
+        "sha256": "cfc1a6c5e8f33f752a148d5c4eca0e91c8428f264b517ff6989aa7f586437ef4"
+      }
+    ]
+  }
+}

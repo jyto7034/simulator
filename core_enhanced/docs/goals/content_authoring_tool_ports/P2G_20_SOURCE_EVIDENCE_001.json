@@ -1,0 +1,697 @@
+{
+  "kind": "P2G-20 candidate raw source/review evidence; not a completion verdict or current binding",
+  "captured_at": "2026-09-09T20:22:09.165832+00:00",
+  "repository": "/mnt/f/work/simulator",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "input_working_revision": "WR-CATP-P2G10-001",
+  "source_plan": "RSP-CATP-P2G20-001",
+  "source_plan_sha256": "0aef3066029105968090bf1b9b6b6959486fb89954d2fd5bf374248c00a448ee",
+  "root_review_body_status": "scratch candidate; publication awaits separate design disposition and root semantic closure",
+  "sources": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "80eed115bdcf0aa881da5b6c1525e6f19a0d6d8e1101ee4b285840ab7b3a8f19",
+      "bytes": 74659,
+      "root_selected_inspection": "locked ron 0.5.1/rustix identity; unchanged predecessor input",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c",
+      "bytes": 266,
+      "root_selected_inspection": "manifest inspection at R03 intake; unchanged predecessor input",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/clean"
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "sha256": "f489f2392299ff61ecda75e5f2e2e83acb3e72419b4128cfd9cec064eb0d419d",
+      "bytes": 1655,
+      "root_selected_inspection": "full 1–65",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "sha256": "e1d5ded0fc01e6aa93c7c5ee0face75b89c518ca04eed1fbfd83d7f93dcb0d59",
+      "bytes": 115253,
+      "root_selected_inspection": "24–134; 446–498; 551–682; 1182–end selected source/transaction/privacy/performance boundaries",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "sha256": "b59c3cff9e8f6afac07d40df7600e026ab12a97be4e8cd0e5bc83a418a39b808",
+      "bytes": 47059,
+      "root_selected_inspection": "15–142 current publication/source/fingerprint/V6/fixture boundaries",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_10_POLICY_001.json",
+      "sha256": "eea71a35d9f66ddcf3c5fb60d395ca65dd9ee6117813869e57b7d32c12c83fa6",
+      "bytes": 80486,
+      "predecessor_kind": "outside prior target",
+      "helper_selected_inspection": [
+        "PER-CATP-E01..E06-DECIDED-001 policy/acceptance payloads"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/P2G_20_SOURCE_PLAN_001.json",
+      "sha256": "0aef3066029105968090bf1b9b6b6959486fb89954d2fd5bf374248c00a448ee",
+      "bytes": 16999,
+      "predecessor_kind": "outside prior target",
+      "helper_selected_inspection": [
+        "RQ03,RQ04,RQ05"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "sha256": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+      "bytes": 305702,
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "21–94",
+        "2159–2299",
+        "2927–2958",
+        "3261–3368"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252",
+      "bytes": 18499,
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "§§3,7,8,9"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+      "sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+      "bytes": 3771,
+      "predecessor_kind": "outside prior target",
+      "helper_selected_inspection": [
+        "§§1,3–7"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/architecture/06_PACKS_AND_TOOLS.ko.md",
+      "sha256": "6a359731e42fbc17016f4b7df0b3bc4e5028e2c758a44860fe6de47a7e6f7944",
+      "bytes": 6631,
+      "predecessor_kind": "outside prior target",
+      "helper_selected_inspection": [
+        "46,56–59,65+"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/roadmap/goals/CA03.md",
+      "sha256": "9d78cf901068a941a386a228decc1fc256541d5ee362f90b1455658ce7907929",
+      "bytes": 4968,
+      "predecessor_kind": "outside prior target",
+      "helper_selected_inspection": [
+        "15,33,41,45,55,65"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256": "636b3c9cc15ae2adfa39a15392e0dee22ee7c6683885087f9cc77cefda66081a",
+      "bytes": 44770,
+      "root_selected_inspection": "command registry/strict document; 563–650; 782–1020",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "142–218",
+        "220–240",
+        "780–1001"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/bin/consume_content_pack.rs",
+      "sha256": "e9aa82e8683537d3172a815b139c2ce8c7eedc527a0c815bc10ac7542f5ace53",
+      "bytes": 4339,
+      "root_selected_inspection": "full current public consumer; Map endpoint",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/src/game/ability/authoring.rs",
+      "sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+      "bytes": 6247,
+      "root_selected_inspection": "full typed sites/origins/descriptors/selection",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "10–55",
+        "157–180"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "sha256": "600fcbad2734539d90dfd55c780a5370d1b8e3109774bc6cc39846baafd29c00",
+      "bytes": 138433,
+      "root_selected_inspection": "1758–1815; microstep/loop searches",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "sha256": "1ccd3ca9b7c87339d32f0c7c047f1532c52a5be2eb7007079e0a90ca654440f6",
+      "bytes": 199314,
+      "root_selected_inspection": "110–195; 443–532",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "136–162",
+        "455–519",
+        "535–576"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+      "sha256": "c2faa80ae08c04c294defdc2474765128b4d336e0be51d3d57145ae591e43cbf",
+      "bytes": 21904,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "125–176",
+        "358–423",
+        "429–489"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "sha256": "e7abfa23ab3adba2c34dc6649830d8502614845603cac90399bada6e9b3910a0",
+      "bytes": 346102,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "81–129",
+        "132–168"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "sha256": "ee52fbcd1f92c5730be3fa4e0d2d4dabca782c41721d66553cb0b60fa2b0c314",
+      "bytes": 125886,
+      "root_selected_inspection": "1–125; 1800–1965; forward/reverse boundary search",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "60–89",
+        "300–361",
+        "383–495",
+        "1597–1665",
+        "1820–1948",
+        "1985–2145",
+        "2269–2340"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+      "sha256": "ebfa24d1ddf878b19bac1bce8843d1675d9af6f455bbbdc306e4d3750a9f4c32",
+      "bytes": 27665,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "475–489",
+        "658–689"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+      "sha256": "8c586e5a98252579eb1093c24ac85304d1b27fff7d83cafb1b9e54966081eef5",
+      "bytes": 17318,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "61–76"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "sha256": "214699763233c0bda691dbb3f3a46d7b64824b8ab315895cfc62f5d9e040ec77",
+      "bytes": 35589,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "730–733",
+        "867–905"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "sha256": "385402e5e49ead95a505f2345211875542ed370aa5558e73472c33de03e42a2d",
+      "bytes": 17929,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "78–147"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "sha256": "5bfa34c21ad87ad672a4c249b38641f620358a7f34d57f4aa59df47246b5e46a",
+      "bytes": 45184,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "38–138"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "sha256": "e20c7ff9ab45a4797c615b744dbfc15848267af40b040f04a192ba6362ad2c5a",
+      "bytes": 45597,
+      "root_selected_inspection": "source serde(skip)/caps/cursor/retention; read-ahead and helper comparison",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "41–44",
+        "76–102",
+        "378–521",
+        "596–651",
+        "751–769",
+        "1052–1095"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/recording.rs",
+      "sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+      "bytes": 3082,
+      "root_selected_inspection": "full current recording context/append",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "6–91"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/skill_source.rs",
+      "sha256": "4fff389728a0dcb34fa50b56108e8790a750205fa0d391c21e65fd4553ca50d1",
+      "bytes": 870,
+      "root_selected_inspection": "full actual source structs",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "1–29"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/behavior.rs",
+      "sha256": "c38657dd64aeae18fbb6a4998cfeb65cc45b015a897f379360236b2b4c3e2552",
+      "bytes": 232858,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "410–429",
+        "1536–1551",
+        "1670–1755",
+        "1839–1863",
+        "1903–1929",
+        "1980–2019",
+        "2964–3023"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "sha256": "e75f62fbe07326411ac2625f1285b2dd7551592f29850976616c48fed6ab1cdf",
+      "bytes": 159741,
+      "root_selected_inspection": "521–655; 714–865; compiled accessor and source inventory search",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+      "sha256": "84936b0a6844316678a029d648abefd30055e345ce13b4924dcdc4e56c9dd32e",
+      "bytes": 4947,
+      "root_selected_inspection": "full publication and fixture branches",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "23–68"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+      "sha256": "5493fbfdfbf2cb07a1ec68f249e37445c87e080e97d23096398170b8dac44133",
+      "bytes": 47137,
+      "root_selected_inspection": "52–236; 245–335; parse/assembly source selectors; 561–665",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+      "sha256": "697b219ec8f60c63052e451708dfd8bb31805be1367bd1aee5b41344399d0561",
+      "bytes": 15181,
+      "root_selected_inspection": "1–116; writer source/selection/semantic receipt symbol graph",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+      "sha256": "1b547511f1ef5842e6e524c948e56048b8780efd7e0dfc89b8a02f27114b45c5",
+      "bytes": 6224,
+      "root_selected_inspection": "current contract/capability; InputLimits defaults and validation",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "157–176"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+      "sha256": "e8416de11c5c0b7976e1355343f892b1951984d916ff714cc817d7e1b84037ef",
+      "bytes": 24495,
+      "root_selected_inspection": "12–109; 214–300; known/unknown manifest pack identity",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "69–74",
+        "221",
+        "336",
+        "363–397"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "sha256": "3e108ed0e0c6e0df0dfc69d5154db17e9f2f92f0e9f41c5145c1df171beff3c5",
+      "bytes": 206005,
+      "root_selected_inspection": "48–134; 306–510; 1416–1455",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "sha256": "b82bc924568b98acf5bc61620e3efc3f5b774303c91e2ee2f5127b5894f42e33",
+      "bytes": 52753,
+      "root_selected_inspection": "182–285; immutable generation/source accessor",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "224–285"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "sha256": "8a1cccf346cc3b45755a92a45e41be92deb5a0e641a0f519977dc6a2c7c62fb5",
+      "bytes": 65786,
+      "root_selected_inspection": "42–84; 140–240",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+      "sha256": "7454218b1fc382c52d61773ef8a75817b05aea1f506a4104a08795bb8043f0b0",
+      "bytes": 12464,
+      "root_selected_inspection": "public compile/definition accessor symbol search",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/src/game/data/validation.rs",
+      "sha256": "a8471db1aa6f08ff76f166afcb2ee1e2f944140d1af8f18f4884d7401ec5a8b4",
+      "bytes": 74786,
+      "root_selected_inspection": "GeneratedValidationContext primary/related source; R02 correction reviewed/read and rehashed",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/src/game/determinism.rs",
+      "sha256": "73fbb8c9c472f8caa741b6678a00decce5e244ed9beaaaeb55b7fa93c8ff1549",
+      "bytes": 3454,
+      "predecessor_kind": "tracked/clean",
+      "helper_selected_inspection": [
+        "27–48"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "sha256": "65677baa2deee83e1dcae974500d0da7ed61c633c8688fd8804ef60600261614",
+      "bytes": 83416,
+      "predecessor_kind": "tracked/dirty",
+      "helper_addendum_span": "129–205"
+    },
+    {
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "sha256": "b78fca9caefe3ebda1203686e3efc6f6dcb1f02e7b9cb2276280aea9532809a9",
+      "bytes": 4202,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "14–45",
+        "76–92"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "bytes": 34199,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "236–347",
+        "714–838"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes",
+      "helper_addendum_span": "50–55"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256": "c344f0fff0aa28e3f8afb9b5a48c2c706855dbca13c5c53342aa14d2b7d52b20",
+      "bytes": 10224,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "27–47",
+        "103–155",
+        "207–277"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "sha256": "9eec3c8c6904f3473acbcfd66747f3717fa56b86772966327f75d689c6ec0554",
+      "bytes": 9266,
+      "root_selected_inspection": "140–215",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "150–216"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "23d440b58516258e9e174d586c6d06a675f9ce8c9b21534cde102574b2feb35f",
+      "bytes": 129610,
+      "root_selected_inspection": "636–693; 1295–1420; 1454–1570",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "252–271",
+        "300–423",
+        "636–688",
+        "1347–1406",
+        "1420–1568",
+        "1585–1688"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat_trace.rs",
+      "sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092",
+      "bytes": 3153,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "1–93"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "0521f6860a8079ec8b6558dec2b46bacdaed410a079f91f609e05debb937d79b",
+      "bytes": 62192,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "364–391",
+        "604–702"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "129a4063f7e448b5795fd370a22a997f66eb09cd3029fb87d41fee892cf34bb0",
+      "bytes": 70625,
+      "predecessor_kind": "tracked/dirty",
+      "helper_selected_inspection": [
+        "145–190",
+        "381–437",
+        "507–545",
+        "816–829",
+        "1133–1233",
+        "1806–1845"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/src/lib.rs",
+      "sha256": "c5d2df11bca72fa8f1fb9b3f76d8369aa2b065cd2a9f8fe7d1461efa8807b1f5",
+      "bytes": 35,
+      "root_selected_inspection": "full 2 lines",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "tracked/dirty"
+    },
+    {
+      "path": "core_enhanced/tools/battle_kernel_api_audit/valid/src/main.rs",
+      "sha256": "029179ae0b7d715ae01001e377800ec128276616be1406204750be94915cd745",
+      "bytes": 4415,
+      "root_selected_inspection": "full 1–130 public dynamic preparation/reconnect, no nonzero clock",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "1–120"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/tools/public_api_external_probe.py",
+      "sha256": "07de52d4581e9fdcda26803fd0d9e78b48137424fa381cd04c24600bce6af7c6",
+      "bytes": 3831,
+      "root_selected_inspection": "full 5 runtime/6 compile-negative runner; no execution",
+      "root_method": "selected sed/rg source and call/owner flow; unchanged predecessor input comparison",
+      "predecessor_kind": "untracked"
+    },
+    {
+      "path": "core_enhanced/tools/runtime_architecture_final_validation/src/final_performance.rs",
+      "sha256": "8a6ca491b6a80b7df34c583e4a1a7879baef5281b4bedf611c9839b7a4025984",
+      "bytes": 38223,
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "228–238",
+        "255–267",
+        "572–700 symbol search"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    },
+    {
+      "path": "core_enhanced/tools/runtime_architecture_final_validation/src/public_guards.rs",
+      "sha256": "2ca56c80aa812beb7903b626a29be2f62a5cde98ba142dbfc4957a1930852263",
+      "bytes": 24806,
+      "predecessor_kind": "untracked",
+      "helper_selected_inspection": [
+        "1–55",
+        "124–167",
+        "280–298",
+        "388–442"
+      ],
+      "helper_method": "read-only nl -ba/sed or targeted rg; policy JSON parsed with Python; SHA-256 from final raw workspace bytes"
+    }
+  ],
+  "external_dependency_sources": [
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ron-0.5.1/src/de/error.rs",
+      "sha256": "f4581524eaa808ea1307a38cca2dfd0c268953d4c6ab296cd776de057f350345",
+      "bytes": 4690,
+      "root_selected_inspection": "1–165 typed Error/ParseError",
+      "role": "actual locally locked dependency read-only source; no network or version change"
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ron-0.5.1/src/parse.rs",
+      "sha256": "f35ef5b3328da6cb836fac6222046c865bc20a11a806944a61af1659b467af76",
+      "bytes": 19685,
+      "root_selected_inspection": "693–705 Position",
+      "role": "actual locally locked dependency read-only source; no network or version change"
+    },
+    {
+      "path": "/home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ron-0.5.1/src/de/mod.rs",
+      "sha256": "cb435e23590b7bba3394d7592dc8e3749297da64bec90f2cdaf6f6dadc2f0393",
+      "bytes": 16950,
+      "root_selected_inspection": "Deserializer declaration at21 symbol read",
+      "role": "actual locally locked dependency read-only source; no network or version change"
+    }
+  ],
+  "helper_outputs": [
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/review-evidence/runtime_trace_review_001.json",
+      "sha256": "578b4b19fbfce322821d21acca54131c75c702663a8afc80c63b154fd568e622"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/review-evidence/runtime_trace_review_001.md",
+      "sha256": "5f0a3ec32f9014ca73c8d5566024c85bd3485ad75d8a16c10c67f45fc9e89cdc"
+    }
+  ],
+  "helper_addendum": [
+    {
+      "path": "core_enhanced/src/game/events/combat.rs",
+      "sha256": "65677baa2deee83e1dcae974500d0da7ed61c633c8688fd8804ef60600261614",
+      "span": "129–205",
+      "observed_result": "CombatExecutor actual setup constructs BattleCore and calls start_battle_execution at 197–198 before world active install; work control must enter before startup."
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "sha256": "fc72d1029c33c560f918dc2487071c5720ad231d6983b9aa66dc15e4d5ee75ed",
+      "span": "50–55",
+      "observed_result": "GameCore owns state/game_data/run_seed only; any new control/observer fields require explicit successful commit and exit reset."
+    }
+  ],
+  "predecessor_currentness": [
+    {
+      "target": "ATR-CAMEC-R01-003",
+      "target_path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_003.json",
+      "sha256": "7800068bb87b0e3dd87d9ec99920600867714d35eef9dabb4f26a0bdf137e0e6",
+      "audit_path": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_003.md",
+      "audit_sha256": "726eddf9ac94ebb64b355a31a09bf6716b9f7fdd49dffa15b70fcd8dfda690d9",
+      "accepted_verdict": "Complete / High",
+      "direct_members": 756,
+      "external_files": 189,
+      "external_inventories": 7,
+      "binaries": 2,
+      "audit_outputs": 6,
+      "currentness": "current / unchanged",
+      "method": "root raw SHA256/exact inventory/required absence comparison; no audit overwrite or new gameplay test"
+    },
+    {
+      "target": "ATR-CAPG-R02-003",
+      "target_path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/AUDIT_TARGET_003.json",
+      "sha256": "01bdf3ee5f8a85ad5cf6713ecba032783ab56019b922d1eeca318ae6c9d04345",
+      "audit_path": "core_enhanced/docs/goals/content_authoring_pack_generation/execution/single_goal/COMPLETION_AUDIT_002.md",
+      "audit_sha256": "1d4af446e9dbc1ef96b35484d289d4fec31c5f4990f8f51c74447a9f6f60d598",
+      "accepted_verdict": "Complete / High",
+      "direct_members": 757,
+      "external_files": 189,
+      "external_inventories": 7,
+      "binaries": 2,
+      "audit_outputs": 6,
+      "currentness": "current / unchanged",
+      "method": "root raw SHA256/exact inventory/required absence comparison; no audit overwrite or new gameplay test"
+    }
+  ],
+  "production_mutations": 0,
+  "new_runtime_tests_or_builds": [],
+  "known_limits": [
+    "selected spans only; hash inventory is not whole-file semantic review",
+    "helper observations are source/design assistance, not completion audit",
+    "mutable WORKING_POLICY view is contextual only and excluded from continued source currentness requirements",
+    "shell discovery used several absent guessed paths, recovered via rg --files; no missing required source remains",
+    "zero new R03 execution; local historical release does not establish deployed compatibility"
+  ]
+}

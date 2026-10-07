@@ -1,0 +1,2569 @@
+{
+  "result": "passed",
+  "at": "2026-09-12T16:42:18.125662+00:00",
+  "user_requirement_audit": [
+    {
+      "requirement": "§1 대상·기준·범위",
+      "evidence": "REQUEST_ORIGINAL, initial scope, current AUTORUN/P2G hashes, same R06/27 acceptances, no game mutation",
+      "result": "proved by inspected current bytes and relations"
+    },
+    {
+      "requirement": "§2 별도 P2G-00/원본 보존",
+      "evidence": "new WPD-CAVER path, initial empty maps, intake398 actual originals, old WPD/formal unchanged",
+      "result": "proved by inspected current bytes and relations"
+    },
+    {
+      "requirement": "§3 각 단계 비교·취합",
+      "evidence": "P2G10 reassessment nine old/new rows; CRA003 C01 technical comparison; stage validations00–60; single current exact chain",
+      "result": "proved by inspected current bytes and relations"
+    },
+    {
+      "requirement": "§4 상세 구현 계획",
+      "evidence": "CRA003 D01–D10 algorithms/types/order/owner/state/save/cancel/error/consumers and V01–21; Goal prerequisites/10 dimensions",
+      "result": "proved by inspected current bytes and relations"
+    },
+    {
+      "requirement": "§5 기준선·인계",
+      "evidence": "exact four artifacts, branch/HEAD/status/file hashes, detached manifest hash, actual originals/patch, future owner/pre-mutation baseline",
+      "result": "proved by inspected current bytes and relations"
+    },
+    {
+      "requirement": "§6 종료·현재 기록",
+      "evidence": "old intake append-only and current roadmap/operating links; no GEX/activation/production mutation; implementation request example in PLAN_HANDOFF",
+      "result": "proved by inspected current bytes and relations"
+    }
+  ],
+  "standard_validation_rerun": [
+    {
+      "label": "P2G-40",
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--freeze",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_30_FREEZE_001.json",
+        "--plan",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_40_PHASE_PLAN_001.json",
+        "--receipt",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_001.json"
+      ],
+      "exit_code": 0,
+      "output": {
+        "validator": "p2g40-receipt-validator/1.2.0",
+        "result": "passed",
+        "counts": {
+          "freeze_members": 9,
+          "work_packages": 4,
+          "dependency_edges": 8,
+          "cyclic_sccs": 1,
+          "atomic_groups": 1,
+          "final_execution_nodes": 2,
+          "phases": 1,
+          "audit_rows": 1,
+          "integration_rows": 21
+        },
+        "failures": []
+      },
+      "stderr": ""
+    },
+    {
+      "label": "P2G-50",
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs",
+        "--freeze",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_30_FREEZE_001.json",
+        "--plan",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_40_PHASE_PLAN_001.json",
+        "--receipt",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_001.json",
+        "--quality-contract",
+        "2",
+        "--goal-set",
+        "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/P2G_50_GOAL_SET_001.ko.md"
+      ],
+      "exit_code": 0,
+      "output": {
+        "validator": "p2g50-goal-set-validator/1.3.0",
+        "quality_contract": 2,
+        "result": "passed",
+        "counts": {
+          "freeze_members": 9,
+          "phases": 1,
+          "final_execution_nodes": 2,
+          "goal_members": 1,
+          "executable_goal_members": 1,
+          "phase_to_goal_rows": 1,
+          "traceability_rows": 9,
+          "integration_rows": 21,
+          "validation_dimension_rows": 10
+        },
+        "failures": []
+      },
+      "stderr": ""
+    }
+  ],
+  "preservation": {
+    "original_intake_files": 398,
+    "unchanged": 395,
+    "authorized_mutable_records": [
+      "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "core_enhanced/docs/goals/content_authoring_value_expressions/REQUEST_INTAKE_002.ko.md"
+    ],
+    "old_R06_files": 13,
+    "old_R06_formal_and_working_unchanged": true,
+    "old_intake_original_prefix_preserved": true,
+    "current_source_and_original_hashes_checked": 469,
+    "planning_close_manifest_sha256": "e501c3ddd96139e48789be141a9eee1a8e1927018fd17bc8f6a2746f5165c1e5",
+    "checks": [
+      {
+        "path": "Cargo.lock",
+        "initial_sha256": "80eed115bdcf0aa881da5b6c1525e6f19a0d6d8e1101ee4b285840ab7b3a8f19",
+        "current_sha256": "80eed115bdcf0aa881da5b6c1525e6f19a0d6d8e1101ee4b285840ab7b3a8f19",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "Cargo.toml",
+        "initial_sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c",
+        "current_sha256": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/Cargo.toml",
+        "initial_sha256": "245591602bcb8164bb5ed3f00500f484ff8336fa31b2973512374932fac7d16b",
+        "current_sha256": "245591602bcb8164bb5ed3f00500f484ff8336fa31b2973512374932fac7d16b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/README.md",
+        "initial_sha256": "c1792b0fbc1ca2738e47d6c07598d94cc5bf4bb6f1184650281a0f1ea6c5ff4e",
+        "current_sha256": "c1792b0fbc1ca2738e47d6c07598d94cc5bf4bb6f1184650281a0f1ea6c5ff4e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/architecture/runtime_feature_manifest.v1.json",
+        "initial_sha256": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+        "current_sha256": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/core_runtime_contract.md",
+        "initial_sha256": "4fb814dc36cad892f3ab2e73f7c9232c0a16b883fca37a259c51172e2232d460",
+        "current_sha256": "4fb814dc36cad892f3ab2e73f7c9232c0a16b883fca37a259c51172e2232d460",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/data_loading_contract.md",
+        "initial_sha256": "6593a9979fc14e6bf62c5908cb49c5c8daf3aed7bd93ae352ef80943d803f751",
+        "current_sha256": "6593a9979fc14e6bf62c5908cb49c5c8daf3aed7bd93ae352ef80943d803f751",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/game_rulebook.md",
+        "initial_sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+        "current_sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/game_rulebook_next.md",
+        "initial_sha256": "bc8f4196624e9e67fb31eaff9265b0829c6a08ddeb86cc98097cd9b9548e9f75",
+        "current_sha256": "bc8f4196624e9e67fb31eaff9265b0829c6a08ddeb86cc98097cd9b9548e9f75",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+        "initial_sha256": "7b8bbcb9b57ea2d0cb4ed847bb69158fcad164764cfdb738417611392195702a",
+        "current_sha256": "7b8bbcb9b57ea2d0cb4ed847bb69158fcad164764cfdb738417611392195702a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/CODE_REVIEW_001.ko.md",
+        "initial_sha256": "016f1ad5b03aa118b06d249b23b7602e9a7e4b9cac6ec0e261c7270c94780e97",
+        "current_sha256": "016f1ad5b03aa118b06d249b23b7602e9a7e4b9cac6ec0e261c7270c94780e97",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_00_INITIAL_001.json",
+        "initial_sha256": "e483f25c7bd172027359618307701250c63991c473b50488d5b38e1d1e3974d2",
+        "current_sha256": "e483f25c7bd172027359618307701250c63991c473b50488d5b38e1d1e3974d2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_00_RESULT_001.json",
+        "initial_sha256": "b54301aba78a2593c050bd2eb83a8aa700702e169a4aab2a48487e155e1be5c6",
+        "current_sha256": "b54301aba78a2593c050bd2eb83a8aa700702e169a4aab2a48487e155e1be5c6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_10_FACTS_001.json",
+        "initial_sha256": "c4efe680a550e9588ca51a2ee7dc3b47415df56a587d378e7f5c3d1b9fa34bd0",
+        "current_sha256": "c4efe680a550e9588ca51a2ee7dc3b47415df56a587d378e7f5c3d1b9fa34bd0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_10_POLICY_001.json",
+        "initial_sha256": "0df41395951e92a5ca322c7cc44c0d22fab97e5ccd070a379f2d54940c7813dd",
+        "current_sha256": "0df41395951e92a5ca322c7cc44c0d22fab97e5ccd070a379f2d54940c7813dd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_10_TRIAGE_001.json",
+        "initial_sha256": "67548c98f82646ac3ed83076e7e4a4c03ff8ecfa0a5f79f6d4eaa908047e205c",
+        "current_sha256": "67548c98f82646ac3ed83076e7e4a4c03ff8ecfa0a5f79f6d4eaa908047e205c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_10_VALIDATION_001.json",
+        "initial_sha256": "4e3fccbfe8447cde2cdf0d93690830ff2cdd7157bcfc2ca93754dcbfd958f2c8",
+        "current_sha256": "4e3fccbfe8447cde2cdf0d93690830ff2cdd7157bcfc2ca93754dcbfd958f2c8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_20_REVIEW_001.json",
+        "initial_sha256": "017a3748156cde9554f52904499ab9a074fb62cf136c8619cbfa92864faaacea",
+        "current_sha256": "017a3748156cde9554f52904499ab9a074fb62cf136c8619cbfa92864faaacea",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_20_SOURCE_EVIDENCE_001.json",
+        "initial_sha256": "6af9f15f064f7a0f1bd98d6b1782b182a14297b27ab31a9110f60cd15dd29e74",
+        "current_sha256": "6af9f15f064f7a0f1bd98d6b1782b182a14297b27ab31a9110f60cd15dd29e74",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/P2G_20_SOURCE_PLAN_001.json",
+        "initial_sha256": "1da09aaa49d3fb2535fd2f1b9d2fd01dc4c7b51471bfa058dd8d0de2a7e187ef",
+        "current_sha256": "1da09aaa49d3fb2535fd2f1b9d2fd01dc4c7b51471bfa058dd8d0de2a7e187ef",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/REQUEST_INTAKE_001.ko.md",
+        "initial_sha256": "3592de7bff88a966d0a8e2b34cba91df61959960aafbe2c59399eafb3d3e0ea7",
+        "current_sha256": "3592de7bff88a966d0a8e2b34cba91df61959960aafbe2c59399eafb3d3e0ea7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/REQUEST_INTAKE_002.ko.md",
+        "initial_sha256": "561471ca5661b6e018ebe3138bdababf278abf1a19d1a2fffb278162075c284f",
+        "current_sha256": "b1045347596f2d807676a2fa38ae2af676644a6bbb97b5027ed4e0071f811ad7",
+        "disposition": "authorized current intake/status link"
+      },
+      {
+        "path": "core_enhanced/docs/goals/content_authoring_value_expressions/WORKING_POLICY.ko.md",
+        "initial_sha256": "9589cb57e2fb59c2e63365a215adf45bd899cde2b5499043db4f4da8ca524877",
+        "current_sha256": "9589cb57e2fb59c2e63365a215adf45bd899cde2b5499043db4f4da8ca524877",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+        "initial_sha256": "a1ec714c7bc300f1566352908ee4aaecf56f6ba36f6c95ac94c10a634dcfe735",
+        "current_sha256": "a1ec714c7bc300f1566352908ee4aaecf56f6ba36f6c95ac94c10a634dcfe735",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md",
+        "initial_sha256": "042002a10a4ffcd20f4e4b7fb2f96ec0038a253dc6f508771afa1437208a589e",
+        "current_sha256": "042002a10a4ffcd20f4e4b7fb2f96ec0038a253dc6f508771afa1437208a589e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/project_map.ko.md",
+        "initial_sha256": "17bb4ca1911e98dfc5c3f57fb6b214ff5a22bb8bf282522c86735248e1025d1f",
+        "current_sha256": "17bb4ca1911e98dfc5c3f57fb6b214ff5a22bb8bf282522c86735248e1025d1f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+        "initial_sha256": "51cada5fba4426af479ef271e7fbd4c0456f49157c3543b343c51c2b74112efd",
+        "current_sha256": "51cada5fba4426af479ef271e7fbd4c0456f49157c3543b343c51c2b74112efd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+        "initial_sha256": "030a9bd78fb22b4dc89aade262a9c5f528f4856a07219053c6dbf39313a37884",
+        "current_sha256": "d11364c0fef9ad49a8868be217e883534e266cd2e07d584ec8b13a38537a38a4",
+        "disposition": "authorized current intake/status link"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+        "initial_sha256": "982ebac99e3e3e0500b605cec5882f9b41fbbeff96cab4622071666fe36b3e65",
+        "current_sha256": "2dfa9a089a012f8220f6989219ff20d8d941065ab20e65739741dc491223c7dc",
+        "disposition": "authorized current intake/status link"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/APPLY.ko.md",
+        "initial_sha256": "f951e68d074eb6ae2af84c6879d65c6302e74391af196d35188d0b941736b32c",
+        "current_sha256": "f951e68d074eb6ae2af84c6879d65c6302e74391af196d35188d0b941736b32c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/CHANGELOG.ko.md",
+        "initial_sha256": "8dc439a4b0de4be1e26ca8203d9608c9db0a0d073351f2ad206213d8d5eb4c8f",
+        "current_sha256": "8dc439a4b0de4be1e26ca8203d9608c9db0a0d073351f2ad206213d8d5eb4c8f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/CREATE_ONLY.patch",
+        "initial_sha256": "103e87ae735dc406e024d7ec7cbc86522c081a827e1d93619fc5f3f514d5b780",
+        "current_sha256": "103e87ae735dc406e024d7ec7cbc86522c081a827e1d93619fc5f3f514d5b780",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/README.ko.md",
+        "initial_sha256": "eb7cc9d003383a91004ee7665be4bc6d747d46a1b64c9ace0e28e96bec5bc948",
+        "current_sha256": "eb7cc9d003383a91004ee7665be4bc6d747d46a1b64c9ace0e28e96bec5bc948",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/ROADMAP_STATUS_ADDENDUM.ko.md",
+        "initial_sha256": "7c9068650636ceede6ba0ee55418f7c6f64aa89f3e774494639d5eef6d9e0ce5",
+        "current_sha256": "7c9068650636ceede6ba0ee55418f7c6f64aa89f3e774494639d5eef6d9e0ce5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/SHA256SUMS.json",
+        "initial_sha256": "776f87897e9b29ab17fe56aa3f2370564ea9de3b4fdb9e2e3df1404d87490c95",
+        "current_sha256": "776f87897e9b29ab17fe56aa3f2370564ea9de3b4fdb9e2e3df1404d87490c95",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/DOCUMENT_VALIDATION.json",
+        "initial_sha256": "67ab5ecc3bcc2f2b37db876ede85d82502f37a1c9a1ce9b5125bc5d71d1bb3ad",
+        "current_sha256": "67ab5ecc3bcc2f2b37db876ede85d82502f37a1c9a1ce9b5125bc5d71d1bb3ad",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/DOCUMENT_VALIDATION.ko.md",
+        "initial_sha256": "06a504458ccc8071ba3ad001f811853f5545cc82ad75f2e2df26258d0061c6c7",
+        "current_sha256": "06a504458ccc8071ba3ad001f811853f5545cc82ad75f2e2df26258d0061c6c7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/RESEARCH_LOG.ko.md",
+        "initial_sha256": "7d852ec387f55ddbcad89380600817d2e7fc70c9c16f6486ea5959b60fb37611",
+        "current_sha256": "7d852ec387f55ddbcad89380600817d2e7fc70c9c16f6486ea5959b60fb37611",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/SOURCES.ko.md",
+        "initial_sha256": "bc28ceed61a30de021938905aaeb7a8252ac0795c98ec42643f0b5e2bae06704",
+        "current_sha256": "bc28ceed61a30de021938905aaeb7a8252ac0795c98ec42643f0b5e2bae06704",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/source_ledger.json",
+        "initial_sha256": "a312a9f6d0dc7b4dde9ec0e8251300b9a95ce1e636e4fb656c6dfda31970a25d",
+        "current_sha256": "a312a9f6d0dc7b4dde9ec0e8251300b9a95ce1e636e4fb656c6dfda31970a25d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/workspace_closing_observation.json",
+        "initial_sha256": "1e4d8cd731be860e391904ef9f76146d3e4efe5d11ef8a5730953cf646387b61",
+        "current_sha256": "1e4d8cd731be860e391904ef9f76146d3e4efe5d11ef8a5730953cf646387b61",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/evidence/workspace_observation.json",
+        "initial_sha256": "011c851f08370c2319efe1cc212946f9e759580d47ec3f40e2f8fa5a13e0f671",
+        "current_sha256": "011c851f08370c2319efe1cc212946f9e759580d47ec3f40e2f8fa5a13e0f671",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/input_package/HANDOFF_PROMPT.ko.md",
+        "initial_sha256": "46ced3d004b17118e87455737119691009ec0977a781996cc36efb8ba6df17e7",
+        "current_sha256": "46ced3d004b17118e87455737119691009ec0977a781996cc36efb8ba6df17e7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/input_package/README.ko.md",
+        "initial_sha256": "7d2b2f7debc0307ea177ec54075b7e2a85e567c9b7a6338bf4940f9dd180d151",
+        "current_sha256": "7d2b2f7debc0307ea177ec54075b7e2a85e567c9b7a6338bf4940f9dd180d151",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/input_package/RESUME_CHECKPOINT.ko.md",
+        "initial_sha256": "d929d3d7f9965f5260417067d1d4f1da859c8740e1267d04017f1c03f12760d2",
+        "current_sha256": "d929d3d7f9965f5260417067d1d4f1da859c8740e1267d04017f1c03f12760d2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/input_package/붙여넣은 텍스트 (1).txt",
+        "initial_sha256": "730ae637f08079352566e390a73f7a450b84501b4b27a9120e7c1147200003ce",
+        "current_sha256": "730ae637f08079352566e390a73f7a450b84501b4b27a9120e7c1147200003ce",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/report/FINDINGS.json",
+        "initial_sha256": "64a1b054ac12232cb82451fa7a2aa385bb3d3eb21ee44c78acebeaa025ddbf69",
+        "current_sha256": "64a1b054ac12232cb82451fa7a2aa385bb3d3eb21ee44c78acebeaa025ddbf69",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/report/GOAL_CAMEC_IMPACT.ko.md",
+        "initial_sha256": "743a3f0a8c25c6cc2f8b7be18c8c9d21b2d95ad41f64a1f81648c366935ae83a",
+        "current_sha256": "743a3f0a8c25c6cc2f8b7be18c8c9d21b2d95ad41f64a1f81648c366935ae83a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/report/LIMITATIONS.ko.md",
+        "initial_sha256": "91d4907641552bda827fbac6a89f4c6ee7f8b3e95c68e51f82c762f29e05c155",
+        "current_sha256": "91d4907641552bda827fbac6a89f4c6ee7f8b3e95c68e51f82c762f29e05c155",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/report/M_CA_MAPPING.ko.md",
+        "initial_sha256": "3ad7519bef7ed84bd6cee5f92819cc49365c4f88601787a9bca71866d112e06d",
+        "current_sha256": "3ad7519bef7ed84bd6cee5f92819cc49365c4f88601787a9bca71866d112e06d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/report/REVIEW.ko.md",
+        "initial_sha256": "36eb7fba3fc4f06d15829e38b3f3cf57f461fdea5f4683faa738ff3a03708bec",
+        "current_sha256": "36eb7fba3fc4f06d15829e38b3f3cf57f461fdea5f4683faa738ff3a03708bec",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/00_README.md",
+        "initial_sha256": "e71d10e88aa20d8745cd08460413c272850448836859a262968c63c2f25eb536",
+        "current_sha256": "e71d10e88aa20d8745cd08460413c272850448836859a262968c63c2f25eb536",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ACCEPTANCE.ko.md",
+        "initial_sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+        "current_sha256": "aa0442367012750ce59a62c600dc31d144e932d51dac42ee66861cb34c9f4f0c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/CONTRACTS.ko.md",
+        "initial_sha256": "b23fec04689e915df729460c6b373a25db433996921f4c9cf825a240afc6f0f1",
+        "current_sha256": "b23fec04689e915df729460c6b373a25db433996921f4c9cf825a240afc6f0f1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/COVERAGE.ko.md",
+        "initial_sha256": "815f2cd18ae8e08337d0eef9776edd559fd7ee3d329ec35e450b8467a5202aec",
+        "current_sha256": "815f2cd18ae8e08337d0eef9776edd559fd7ee3d329ec35e450b8467a5202aec",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/DEPENDENCIES.ko.md",
+        "initial_sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b",
+        "current_sha256": "817a7d3cf46593886a78a4c8fb04915345ba7365496ad216a53ba7c6893b1f8b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/GOALS.json",
+        "initial_sha256": "686ade004c7d75172a1bd51cebb4aa144f6a5b9ce7164bd7554ce3824774c9b7",
+        "current_sha256": "686ade004c7d75172a1bd51cebb4aa144f6a5b9ce7164bd7554ce3824774c9b7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/HANDOFF.ko.md",
+        "initial_sha256": "9f4e9211ad7cf20b2cb23dd1af78f5c63671db30e5c6762ba33431432b5f4a5c",
+        "current_sha256": "9f4e9211ad7cf20b2cb23dd1af78f5c63671db30e5c6762ba33431432b5f4a5c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/POLICY_GATES.ko.md",
+        "initial_sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+        "current_sha256": "6bd72ec29ead340e01a032beba33dfea341418cea2ed2fbba603aeab6cff7a34",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/ROADMAP.ko.md",
+        "initial_sha256": "d05414f76245342093df25d3e2b504068bdbc73af16feaf5e71ab899460bfb31",
+        "current_sha256": "d05414f76245342093df25d3e2b504068bdbc73af16feaf5e71ab899460bfb31",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/01_SYSTEM.ko.md",
+        "initial_sha256": "2d047ab1c8af807af7e41bad2b8ffe8307d2d254d7ff7b32e4fd279b1f44796f",
+        "current_sha256": "2d047ab1c8af807af7e41bad2b8ffe8307d2d254d7ff7b32e4fd279b1f44796f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/02_AUTHORING_AND_COMPILER.ko.md",
+        "initial_sha256": "b7919d5f046a6d682a1a317b517a22b95e89a4c3179e0e9df5497898e396c9a7",
+        "current_sha256": "b7919d5f046a6d682a1a317b517a22b95e89a4c3179e0e9df5497898e396c9a7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/03_RUNTIME.ko.md",
+        "initial_sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718",
+        "current_sha256": "cc41f3b6d9d37c528a51e9d066b415d2af46704b3a2b5edd3a34a7d76e52d718",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/04_COMPOSITION.ko.md",
+        "initial_sha256": "a51c249246bb0e37b0b9dbaab699b4769aaba3dc44e2b65703ba1a123bda508c",
+        "current_sha256": "a51c249246bb0e37b0b9dbaab699b4769aaba3dc44e2b65703ba1a123bda508c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/05_BOSS_AUTHORING.ko.md",
+        "initial_sha256": "6f874626fce616c15fc80c7793d363dbce64421ad3d92a2bc274c0670ca1110d",
+        "current_sha256": "6f874626fce616c15fc80c7793d363dbce64421ad3d92a2bc274c0670ca1110d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/06_PACKS_AND_TOOLS.ko.md",
+        "initial_sha256": "39599f9ded8602f2485eeee863180a72442f07854c2469749c3017d6ff1a5d90",
+        "current_sha256": "39599f9ded8602f2485eeee863180a72442f07854c2469749c3017d6ff1a5d90",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/07_CUTOVER_AND_REUSE.ko.md",
+        "initial_sha256": "9d946fc1fa4ccd04d59eb7430d4a73fc17090ebeea450e4731e847eff2082ce3",
+        "current_sha256": "9d946fc1fa4ccd04d59eb7430d4a73fc17090ebeea450e4731e847eff2082ce3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/architecture/08_WORKED_EXAMPLES.ko.md",
+        "initial_sha256": "843364622a89da59dea4214bf8aa15dbe8e1f01e64144783461110292753be07",
+        "current_sha256": "843364622a89da59dea4214bf8aa15dbe8e1f01e64144783461110292753be07",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R00.ko.md",
+        "initial_sha256": "18aaa4f54b1fcc4db7970d518e3556ccc0a3a0f600c11b9556a0832a5fe015e8",
+        "current_sha256": "18aaa4f54b1fcc4db7970d518e3556ccc0a3a0f600c11b9556a0832a5fe015e8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R01.ko.md",
+        "initial_sha256": "f7a77f68d20bd5590fdb456fbc5775cdc7044a16f19d84df2adfbbc59d768d07",
+        "current_sha256": "f7a77f68d20bd5590fdb456fbc5775cdc7044a16f19d84df2adfbbc59d768d07",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R02.ko.md",
+        "initial_sha256": "c5019282981c767dedba30857802572314fb3e250dda6c8af6444a90dee68670",
+        "current_sha256": "c5019282981c767dedba30857802572314fb3e250dda6c8af6444a90dee68670",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R03.ko.md",
+        "initial_sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+        "current_sha256": "7a94ac0009c5ac9d19eee9ba87c281cf4569502b0cd89aeab6a8e60a2941f09c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R04.ko.md",
+        "initial_sha256": "b0b42ac2a9171f4204bf759f2ba199756ead6b7c80b41e8b0412b96e3892ab59",
+        "current_sha256": "b0b42ac2a9171f4204bf759f2ba199756ead6b7c80b41e8b0412b96e3892ab59",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R05.ko.md",
+        "initial_sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+        "current_sha256": "c6f261b09789a3b59d93b59af0fac2dd622d202a31bc34515bad1765cefd184b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R06.ko.md",
+        "initial_sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+        "current_sha256": "5a6a22196aac234414eac6210541d17be97ffd8aae34cdd64cf5a2ecded45c6f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R07.ko.md",
+        "initial_sha256": "89b520baf060edd4b3fa9942749c9efe7e4d513a3ece741d5f284125d19fa7e3",
+        "current_sha256": "89b520baf060edd4b3fa9942749c9efe7e4d513a3ece741d5f284125d19fa7e3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R08.ko.md",
+        "initial_sha256": "f3f9f7175ada5957649e3ac77b63760b84f6d7d1972ca1505929b4e158ef8e4f",
+        "current_sha256": "f3f9f7175ada5957649e3ac77b63760b84f6d7d1972ca1505929b4e158ef8e4f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R09.ko.md",
+        "initial_sha256": "e647536a7b92e91c3491cde4bae7e754da73f5011a5fe51be85c79ea720e073b",
+        "current_sha256": "e647536a7b92e91c3491cde4bae7e754da73f5011a5fe51be85c79ea720e073b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R10.ko.md",
+        "initial_sha256": "28092194f4d6c11284da218520ff0e85123dfddea9e3d96379498cb9e376b598",
+        "current_sha256": "28092194f4d6c11284da218520ff0e85123dfddea9e3d96379498cb9e376b598",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R11.ko.md",
+        "initial_sha256": "d290a76a6b7992d2c1555cd0212ae4dff003834266123613d24de13801cf4bc6",
+        "current_sha256": "d290a76a6b7992d2c1555cd0212ae4dff003834266123613d24de13801cf4bc6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R12.ko.md",
+        "initial_sha256": "d300f377cd0f9588659d93bdec94cdbde4ac8a0eadc58e7a70dbc5b7c07805fe",
+        "current_sha256": "d300f377cd0f9588659d93bdec94cdbde4ac8a0eadc58e7a70dbc5b7c07805fe",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R13.ko.md",
+        "initial_sha256": "db42c3dd7852631e692e4df0ed39f769d716c88fb593f60cf26850539a1041fb",
+        "current_sha256": "db42c3dd7852631e692e4df0ed39f769d716c88fb593f60cf26850539a1041fb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R14.ko.md",
+        "initial_sha256": "2c22cf9fb997254ceb4caf03c8850074e5d9cf6a81af3d9877c6ae6c01801c5c",
+        "current_sha256": "2c22cf9fb997254ceb4caf03c8850074e5d9cf6a81af3d9877c6ae6c01801c5c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R15.ko.md",
+        "initial_sha256": "a8754399457f11ac21c468d884d0288851513cd932cd22a5347dea44c7b6f139",
+        "current_sha256": "a8754399457f11ac21c468d884d0288851513cd932cd22a5347dea44c7b6f139",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R16.ko.md",
+        "initial_sha256": "52d296972e3fd14247169664f660d484f02d7523d79aa19f9e31040112b6da87",
+        "current_sha256": "52d296972e3fd14247169664f660d484f02d7523d79aa19f9e31040112b6da87",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R17.ko.md",
+        "initial_sha256": "1dd2f71dee14698de5fef557ca887f4c1ca002400dad59a8f8e21de43f66504d",
+        "current_sha256": "1dd2f71dee14698de5fef557ca887f4c1ca002400dad59a8f8e21de43f66504d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R18.ko.md",
+        "initial_sha256": "18ca9e36db73b2acd9b9daf2212ee8d7fd5a529e79bfdb90b1eb98d55d550b32",
+        "current_sha256": "18ca9e36db73b2acd9b9daf2212ee8d7fd5a529e79bfdb90b1eb98d55d550b32",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R19.ko.md",
+        "initial_sha256": "f20589f345405bf227b65bdcbb5592c967a02a41fdd1ba5c6a87a8d123dc4fc6",
+        "current_sha256": "f20589f345405bf227b65bdcbb5592c967a02a41fdd1ba5c6a87a8d123dc4fc6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R20.ko.md",
+        "initial_sha256": "22e140e02f69b23cbdd1041d0f855af40696ae9a829cac3723b3c0e5101e35eb",
+        "current_sha256": "22e140e02f69b23cbdd1041d0f855af40696ae9a829cac3723b3c0e5101e35eb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R21.ko.md",
+        "initial_sha256": "a03bcca265d455df3ba710e17b5a7d0b75ef999518d8db930d6b6e84bb98188c",
+        "current_sha256": "a03bcca265d455df3ba710e17b5a7d0b75ef999518d8db930d6b6e84bb98188c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R22.ko.md",
+        "initial_sha256": "6643d047c40a6f8ebeae955dafdb04ccbe76f3d51d8d61b1bd738a1730871f2f",
+        "current_sha256": "6643d047c40a6f8ebeae955dafdb04ccbe76f3d51d8d61b1bd738a1730871f2f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R23.ko.md",
+        "initial_sha256": "9a8cf63ab4c2e1340d3b467a77297f20f1abec3fd3c2aa069d1056e459d31d67",
+        "current_sha256": "9a8cf63ab4c2e1340d3b467a77297f20f1abec3fd3c2aa069d1056e459d31d67",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R24.ko.md",
+        "initial_sha256": "1293935105483b55586f5a413df5f9129f441d48e98653d8a40fa3bff088eed0",
+        "current_sha256": "1293935105483b55586f5a413df5f9129f441d48e98653d8a40fa3bff088eed0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/add_group4.py",
+        "initial_sha256": "112a5d73009a16c0a74798094245a9a4101ec838bf5be72c214129db07921775",
+        "current_sha256": "112a5d73009a16c0a74798094245a9a4101ec838bf5be72c214129db07921775",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/add_group5.py",
+        "initial_sha256": "58414e4af451a5618312000251e82ec41af85c4fae4c2c582ab5aea2331e366e",
+        "current_sha256": "58414e4af451a5618312000251e82ec41af85c4fae4c2c582ab5aea2331e366e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/add_group6.py",
+        "initial_sha256": "f7e69c44a6b05889bdb9e5faf40729f1333d8a5d5a2f06b4474ea2ba4243f70a",
+        "current_sha256": "f7e69c44a6b05889bdb9e5faf40729f1333d8a5d5a2f06b4474ea2ba4243f70a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/add_group7.py",
+        "initial_sha256": "f5d036f13f3ed0d9ab92644d6d85291363a192b386ff5e7cc0dbbccd60297cbb",
+        "current_sha256": "f5d036f13f3ed0d9ab92644d6d85291363a192b386ff5e7cc0dbbccd60297cbb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/add_group8.py",
+        "initial_sha256": "c7e2d0d4f34bc646bd77add4abdd343905e451a4958f2c2197eda269a32f5bf5",
+        "current_sha256": "c7e2d0d4f34bc646bd77add4abdd343905e451a4958f2c2197eda269a32f5bf5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/add_review_content.py",
+        "initial_sha256": "73b6f6bdd3e1e111974c73362f1e167f392d3438510e92c69bcfaebc41f5c479",
+        "current_sha256": "73b6f6bdd3e1e111974c73362f1e167f392d3438510e92c69bcfaebc41f5c479",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/build_package.py",
+        "initial_sha256": "f355ab7a064aca1cc18135395bfedeed25fe61e551ed78426c7442769bb9cb92",
+        "current_sha256": "f355ab7a064aca1cc18135395bfedeed25fe61e551ed78426c7442769bb9cb92",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/enrich_model.py",
+        "initial_sha256": "008202ffb8228bc5946b5ec1f50fdd8d58f8dde0bd7178ddcce2967a818a7da4",
+        "current_sha256": "008202ffb8228bc5946b5ec1f50fdd8d58f8dde0bd7178ddcce2967a818a7da4",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/finalize_delivery.py",
+        "initial_sha256": "53150bd4c63e9f6ee368f06b6304c1132ff5da4862942384a568e3c4e9666696",
+        "current_sha256": "53150bd4c63e9f6ee368f06b6304c1132ff5da4862942384a568e3c4e9666696",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/finalize_model.py",
+        "initial_sha256": "96147fc33378e40d47aa20085d9e23fcda6ed8e2b62e0763c84708529d6d1dca",
+        "current_sha256": "96147fc33378e40d47aa20085d9e23fcda6ed8e2b62e0763c84708529d6d1dca",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/package_distribution.py",
+        "initial_sha256": "2c7fac2b9f23e2b77574232b61c2e9bd7a1f0738739a02662e715708276bb15d",
+        "current_sha256": "2c7fac2b9f23e2b77574232b61c2e9bd7a1f0738739a02662e715708276bb15d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/record_sources.py",
+        "initial_sha256": "c2b8ef3f29ace91992114d59b4218c4f8b7a3f27a543e460f863708517348980",
+        "current_sha256": "c2b8ef3f29ace91992114d59b4218c4f8b7a3f27a543e460f863708517348980",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/render_documents.py",
+        "initial_sha256": "42d50d6ba08024589965858032136ad1f451d7cb761db2bbd0792e97d202cf97",
+        "current_sha256": "42d50d6ba08024589965858032136ad1f451d7cb761db2bbd0792e97d202cf97",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/render_reports.py",
+        "initial_sha256": "e95c08f2ed2d3aaddcaefecb030161378def173b06e131e680fa9646bfafc985",
+        "current_sha256": "e95c08f2ed2d3aaddcaefecb030161378def173b06e131e680fa9646bfafc985",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/seed_sources.py",
+        "initial_sha256": "4dacdf103bf721e448bbcc13eda9c857d0a9c4cc0b865085023a015c56b0c75e",
+        "current_sha256": "4dacdf103bf721e448bbcc13eda9c857d0a9c4cc0b865085023a015c56b0c75e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/tools/validate_package.py",
+        "initial_sha256": "2504f2a3d9036bb067e2cb018444290bbab5a2f51fd8ea931f6d9d92810d38b7",
+        "current_sha256": "2504f2a3d9036bb067e2cb018444290bbab5a2f51fd8ea931f6d9d92810d38b7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/skill_target_contract.md",
+        "initial_sha256": "d9ee18a4b4743d07f26497eab32b6353815e27ba94dcf8d20f36797557272575",
+        "current_sha256": "d9ee18a4b4743d07f26497eab32b6353815e27ba94dcf8d20f36797557272575",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/tools/README.md",
+        "initial_sha256": "c92f6d69b1f173a3d2455c76a34c356e6b346c30e079bf5b1579659ef58bd8d9",
+        "current_sha256": "c92f6d69b1f173a3d2455c76a34c356e6b346c30e079bf5b1579659ef58bd8d9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+        "initial_sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f",
+        "current_sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/tools/p2g_validation.test.mjs",
+        "initial_sha256": "bcb30804ac9ecefe6d1b642a6d62f0e740e1e50927ac926844c2e2062d71e2fe",
+        "current_sha256": "bcb30804ac9ecefe6d1b642a6d62f0e740e1e50927ac926844c2e2062d71e2fe",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "initial_sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9",
+        "current_sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs",
+        "initial_sha256": "a072f17a59e16c0b999ecd4a0d74740e508efaa39b4bf0216ad7aed138e63897",
+        "current_sha256": "a072f17a59e16c0b999ecd4a0d74740e508efaa39b4bf0216ad7aed138e63897",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/application.rs",
+        "initial_sha256": "08bd4789478479b21b6e2bb9d700b206398991e606bfb13eb17fdb64688580f6",
+        "current_sha256": "08bd4789478479b21b6e2bb9d700b206398991e606bfb13eb17fdb64688580f6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/clone_shape.rs",
+        "initial_sha256": "79d6e9d627fd1389dc769f48b37447065bb36648a104a23203a150776be2ccd6",
+        "current_sha256": "79d6e9d627fd1389dc769f48b37447065bb36648a104a23203a150776be2ccd6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/compiled.rs",
+        "initial_sha256": "c72e2bc6f9fe59319270a929d3f2f41dd50f2416b26e8c2ed44afc9df89734d3",
+        "current_sha256": "c72e2bc6f9fe59319270a929d3f2f41dd50f2416b26e8c2ed44afc9df89734d3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/control.rs",
+        "initial_sha256": "5e8638daa77594ecac9bee432996dbeea0d32605e000c354d3a84dd16e7559e2",
+        "current_sha256": "5e8638daa77594ecac9bee432996dbeea0d32605e000c354d3a84dd16e7559e2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/definition.rs",
+        "initial_sha256": "4373477074e7eccbf0e7894de9757e43dd5864ca147ec69baddb23d0bf106ba5",
+        "current_sha256": "4373477074e7eccbf0e7894de9757e43dd5864ca147ec69baddb23d0bf106ba5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/diagnostic.rs",
+        "initial_sha256": "44195c2479151fdbcfbef02e1044fb5a2c740b5b07ce0cc8198a04832774d1a8",
+        "current_sha256": "44195c2479151fdbcfbef02e1044fb5a2c740b5b07ce0cc8198a04832774d1a8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/mod.rs",
+        "initial_sha256": "e2e16896c5ef9b070c3cb22a7795f0294df787bbadb969b993d2ab69003e589a",
+        "current_sha256": "e2e16896c5ef9b070c3cb22a7795f0294df787bbadb969b993d2ab69003e589a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/output.rs",
+        "initial_sha256": "2951433ffb08b52568028b70485cc12992c3c172a064e44df4795b1a22c71ddb",
+        "current_sha256": "2951433ffb08b52568028b70485cc12992c3c172a064e44df4795b1a22c71ddb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/preview.rs",
+        "initial_sha256": "20cd42642a547fa73918bf991758bbff48077b77ad388302021b708e5fd3d182",
+        "current_sha256": "20cd42642a547fa73918bf991758bbff48077b77ad388302021b708e5fd3d182",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/projection.rs",
+        "initial_sha256": "45c500a3f414a5fd141d5d22937e911478b7b84c9bc50650025f5c33af32f19b",
+        "current_sha256": "45c500a3f414a5fd141d5d22937e911478b7b84c9bc50650025f5c33af32f19b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/query.rs",
+        "initial_sha256": "2513b619ec99e4ddd05c5f1b1f23eae6e798b609205863a3c0ccc572475691e6",
+        "current_sha256": "2513b619ec99e4ddd05c5f1b1f23eae6e798b609205863a3c0ccc572475691e6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/resolve.rs",
+        "initial_sha256": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+        "current_sha256": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/scenario.rs",
+        "initial_sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+        "current_sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/tests.rs",
+        "initial_sha256": "1b443c2478f9c1d65d27f27d404d589dd8ac1a91dff1e3f879a52afccd1aab87",
+        "current_sha256": "1b443c2478f9c1d65d27f27d404d589dd8ac1a91dff1e3f879a52afccd1aab87",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/trace.rs",
+        "initial_sha256": "994ef989a8740921eb6787edacdcd54b2ccbab038c999af7e4245a78865c277e",
+        "current_sha256": "994ef989a8740921eb6787edacdcd54b2ccbab038c999af7e4245a78865c277e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/trial.rs",
+        "initial_sha256": "9f2281193e8913befde760bd8a3a946b52e09b156fa87784132934f467dc0ad4",
+        "current_sha256": "9f2281193e8913befde760bd8a3a946b52e09b156fa87784132934f467dc0ad4",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/authoring/view.rs",
+        "initial_sha256": "d5b5a96f2304e72bcd7c185f6b5f173151381d771f92de6b9b3911cda1aae2c9",
+        "current_sha256": "d5b5a96f2304e72bcd7c185f6b5f173151381d771f92de6b9b3911cda1aae2c9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/author_content.rs",
+        "initial_sha256": "1caa9bdf4aebda3e64ce3978ef16c373dc014d03030cb29a843bd76ea5241e79",
+        "current_sha256": "1caa9bdf4aebda3e64ce3978ef16c373dc014d03030cb29a843bd76ea5241e79",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/consume_content_pack.rs",
+        "initial_sha256": "e9aa82e8683537d3172a815b139c2ce8c7eedc527a0c815bc10ac7542f5ace53",
+        "current_sha256": "e9aa82e8683537d3172a815b139c2ce8c7eedc527a0c815bc10ac7542f5ace53",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/generate_encounter_compendium_contract_fixture.rs",
+        "initial_sha256": "a13c6bcaddb6121fa0c7d379744084a156527a1840d4778f054fc0e60164b9d3",
+        "current_sha256": "a13c6bcaddb6121fa0c7d379744084a156527a1840d4778f054fc0e60164b9d3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/generate_event_contract_fixture.rs",
+        "initial_sha256": "15cbc3c64d5331863c89c815d823f336bfc47816cf80c3432409c471d3355785",
+        "current_sha256": "15cbc3c64d5331863c89c815d823f336bfc47816cf80c3432409c471d3355785",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/generate_inventory_contract_fixture.rs",
+        "initial_sha256": "62cc9f67f355f71d8146f5149db21d84beb0806331d32aaa62ec32474316deb5",
+        "current_sha256": "62cc9f67f355f71d8146f5149db21d84beb0806331d32aaa62ec32474316deb5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/generate_shop_contract_fixture.rs",
+        "initial_sha256": "ab6021acc08fff20066924b6c305ada5922275f9da12223db4ddda37fdbc911e",
+        "current_sha256": "ab6021acc08fff20066924b6c305ada5922275f9da12223db4ddda37fdbc911e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/bin/package_official_content.rs",
+        "initial_sha256": "3897e39261e3a37fd4f0e5a22d54858f648bb630e592cc045d9713c787b73c7d",
+        "current_sha256": "3897e39261e3a37fd4f0e5a22d54858f648bb630e592cc045d9713c787b73c7d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/ability/authoring/tests.rs",
+        "initial_sha256": "ea4a0435c75ee8dc529b94c1e5670ae2aa4bac3cd4e199face4f44360620028f",
+        "current_sha256": "ea4a0435c75ee8dc529b94c1e5670ae2aa4bac3cd4e199face4f44360620028f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/ability/authoring.rs",
+        "initial_sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+        "current_sha256": "c4ca67ceac4502c2c31c8c91a584e09dff3c87fd8976269d436dbddbc2e08e1a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/ability.rs",
+        "initial_sha256": "06d3dc66290422f51de0308ad84ba7c440729dd4aac3c73f6d3fc25c1e6a36db",
+        "current_sha256": "06d3dc66290422f51de0308ad84ba7c440729dd4aac3c73f6d3fc25c1e6a36db",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/battlefield/field.rs",
+        "initial_sha256": "c186f21e96610bafb5268c660564af18bd22a77659888e886df5158a7d90df93",
+        "current_sha256": "c186f21e96610bafb5268c660564af18bd22a77659888e886df5158a7d90df93",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/battlefield/mod.rs",
+        "initial_sha256": "eee5ec8aab686590f58ad06eccfcfe23e43723de8405b925e5a87578947a77b6",
+        "current_sha256": "eee5ec8aab686590f58ad06eccfcfe23e43723de8405b925e5a87578947a77b6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/buffs.rs",
+        "initial_sha256": "742f04a540e0794e52479f2b34735ee72e9d5ca3fc4239a760af4482fd3aad19",
+        "current_sha256": "742f04a540e0794e52479f2b34735ee72e9d5ca3fc4239a760af4482fd3aad19",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/cooldown.rs",
+        "initial_sha256": "a7c73ddfd94abad16899aedff438424ccf9bff05cfbac139198f00ed657b871d",
+        "current_sha256": "a7c73ddfd94abad16899aedff438424ccf9bff05cfbac139198f00ed657b871d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/authoring_observation.rs",
+        "initial_sha256": "3fcffa741a39642cc947747537c3b7ef44f4b7deee3576230eb2f25d970d1e75",
+        "current_sha256": "3fcffa741a39642cc947747537c3b7ef44f4b7deee3576230eb2f25d970d1e75",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/basic_attack.rs",
+        "initial_sha256": "ea44eea8aeebf394569a45db561fa79393f25a6ce333f7d0b8a23bded28a7250",
+        "current_sha256": "ea44eea8aeebf394569a45db561fa79393f25a6ce333f7d0b8a23bded28a7250",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+        "initial_sha256": "7fc794c4edf703369e59a5d03a8f478ee0a45c28a5e67029d7019b925786fcaf",
+        "current_sha256": "7fc794c4edf703369e59a5d03a8f478ee0a45c28a5e67029d7019b925786fcaf",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+        "initial_sha256": "b68b5d893ad81bc61beaf4df4c02e192ba4bc0949355bee6844315b4596f59a0",
+        "current_sha256": "b68b5d893ad81bc61beaf4df4c02e192ba4bc0949355bee6844315b4596f59a0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/build.rs",
+        "initial_sha256": "89eaa2edafe9c9a3f93e777b29481b8efa6d236004c2409a905da945ed60956a",
+        "current_sha256": "89eaa2edafe9c9a3f93e777b29481b8efa6d236004c2409a905da945ed60956a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/commands.rs",
+        "initial_sha256": "186c0b7ccecba6750a89eb33359f809819ecb504879153a923521f9da35931d0",
+        "current_sha256": "186c0b7ccecba6750a89eb33359f809819ecb504879153a923521f9da35931d0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+        "initial_sha256": "055c2ecfac0de87cf9c078eec64bd00b9cb5bedc46abf79f8fe9a8c263e9210b",
+        "current_sha256": "055c2ecfac0de87cf9c078eec64bd00b9cb5bedc46abf79f8fe9a8c263e9210b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/death_runtime.rs",
+        "initial_sha256": "06f1ad0eb0865b17edf70a46875d490470acf84470311b4338c2acd13426b8ff",
+        "current_sha256": "06f1ad0eb0865b17edf70a46875d490470acf84470311b4338c2acd13426b8ff",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/field_work.rs",
+        "initial_sha256": "1f72ea633a224202144ffd2ef8e79b2d3e3a4140780c067a7f260e2a51a015d2",
+        "current_sha256": "1f72ea633a224202144ffd2ef8e79b2d3e3a4140780c067a7f260e2a51a015d2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/ids.rs",
+        "initial_sha256": "90ca5e04a490a29a0278400769e95a41387e8021a3b377f4745df5f3572dd824",
+        "current_sha256": "90ca5e04a490a29a0278400769e95a41387e8021a3b377f4745df5f3572dd824",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/mod.rs",
+        "initial_sha256": "75ef06ea9d01648baaad247c3bcd472af8f0dbe44a5e1f718ef345b638057a15",
+        "current_sha256": "75ef06ea9d01648baaad247c3bcd472af8f0dbe44a5e1f718ef345b638057a15",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/blocking.rs",
+        "initial_sha256": "3d31fc2bb6b9668c34f07ef2dec4628a9104d3bae46c4ff2b177e194468fe0b5",
+        "current_sha256": "3d31fc2bb6b9668c34f07ef2dec4628a9104d3bae46c4ff2b177e194468fe0b5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/engine.rs",
+        "initial_sha256": "e47038b74adb116244c9cc6abea4115a311159a8e021665729a74f331a9072b1",
+        "current_sha256": "e47038b74adb116244c9cc6abea4115a311159a8e021665729a74f331a9072b1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/lifecycle.rs",
+        "initial_sha256": "9e546c166984517d20956c69f70ef9666297dd6c51b0c29477e00bf1a7c7156e",
+        "current_sha256": "9e546c166984517d20956c69f70ef9666297dd6c51b0c29477e00bf1a7c7156e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/mod.rs",
+        "initial_sha256": "b6a72660867856f7bea947e9d340a46e0d2d39ed1bbb0f40bfdb26188f787026",
+        "current_sha256": "b6a72660867856f7bea947e9d340a46e0d2d39ed1bbb0f40bfdb26188f787026",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/path.rs",
+        "initial_sha256": "c75566b9973c279715e6135f61ae5ec8d006a0b501f46d8b069ac47c807d9d23",
+        "current_sha256": "c75566b9973c279715e6135f61ae5ec8d006a0b501f46d8b069ac47c807d9d23",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/planner.rs",
+        "initial_sha256": "58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b",
+        "current_sha256": "58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/rapier_backend.rs",
+        "initial_sha256": "34b701fe2c1676cb30fa3a085e9601f9fe3c187d6b692ca3a2b74d7e47c29fe8",
+        "current_sha256": "34b701fe2c1676cb30fa3a085e9601f9fe3c187d6b692ca3a2b74d7e47c29fe8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/steering.rs",
+        "initial_sha256": "30d0ffce0f3a15536bd666d6c66631f66cc1630de493631e9be9fe4134a8d9cd",
+        "current_sha256": "30d0ffce0f3a15536bd666d6c66631f66cc1630de493631e9be9fe4134a8d9cd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/movement/types.rs",
+        "initial_sha256": "2ad7e06157b4fbf5cb6ab1d0ee9ccde20d371bae79693057e85cfb87a5dbe5be",
+        "current_sha256": "2ad7e06157b4fbf5cb6ab1d0ee9ccde20d371bae79693057e85cfb87a5dbe5be",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/projectile_math.rs",
+        "initial_sha256": "94494dc82ccfbade743cd08eeb44ab446175346a921832c99db8eec1edd88c14",
+        "current_sha256": "94494dc82ccfbade743cd08eeb44ab446175346a921832c99db8eec1edd88c14",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/queue.rs",
+        "initial_sha256": "8ac6f9a50a6ddd54b3bc6bb936ee2da8b80aa1d585519d3582ecfad2808bb2f1",
+        "current_sha256": "8ac6f9a50a6ddd54b3bc6bb936ee2da8b80aa1d585519d3582ecfad2808bb2f1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/resonance_runtime.rs",
+        "initial_sha256": "2fb543328ed61d342945a18b44beaeedf147be6797ec56a630ee779e657090fb",
+        "current_sha256": "2fb543328ed61d342945a18b44beaeedf147be6797ec56a630ee779e657090fb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/resource_runtime.rs",
+        "initial_sha256": "e657614f2dc6abfae4f549c1ae6dd3c1df16cfa8b5d36870f6b985d11750144a",
+        "current_sha256": "e657614f2dc6abfae4f549c1ae6dd3c1df16cfa8b5d36870f6b985d11750144a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+        "initial_sha256": "2a66485ccbf2331f6999973441c29c78ef7f0761786a4b594fa9264d3a7fddf9",
+        "current_sha256": "2a66485ccbf2331f6999973441c29c78ef7f0761786a4b594fa9264d3a7fddf9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/sim.rs",
+        "initial_sha256": "a56f5259630b86e909028226c6f4d13f000a843416304d60da99cb95c7bb4043",
+        "current_sha256": "a56f5259630b86e909028226c6f4d13f000a843416304d60da99cb95c7bb4043",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/skill_runtime/area.rs",
+        "initial_sha256": "2e6d09d3b05c3876a7ebffabeef4b4cbdb97c4b4e4ee0de5cb4592807b7fc765",
+        "current_sha256": "2e6d09d3b05c3876a7ebffabeef4b4cbdb97c4b4e4ee0de5cb4592807b7fc765",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/skill_runtime/cast.rs",
+        "initial_sha256": "602b2e6e728811487f86f838d9c62b0f755c2cae265d3a69b66a7645700ceb30",
+        "current_sha256": "602b2e6e728811487f86f838d9c62b0f755c2cae265d3a69b66a7645700ceb30",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/skill_runtime/mod.rs",
+        "initial_sha256": "6bd8faff6ccd9447fdc925ff996b014d322a5a613eba772d7eea74069b6cdbea",
+        "current_sha256": "6bd8faff6ccd9447fdc925ff996b014d322a5a613eba772d7eea74069b6cdbea",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+        "initial_sha256": "5691ff7cc3a6eb46fbcec070dd3edab94f9a350068b308d7c68454b38f2945e6",
+        "current_sha256": "5691ff7cc3a6eb46fbcec070dd3edab94f9a350068b308d7c68454b38f2945e6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/spatial.rs",
+        "initial_sha256": "5304298d16cecf124ab17259ffd93d7e43a194d5908d4652e96e07e2e5227a62",
+        "current_sha256": "5304298d16cecf124ab17259ffd93d7e43a194d5908d4652e96e07e2e5227a62",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/spawn_kernel.rs",
+        "initial_sha256": "fab3d3c46f54e76281bf98f6e7430192a9599b5c6dd364190f6378b1ae2bd9a0",
+        "current_sha256": "fab3d3c46f54e76281bf98f6e7430192a9599b5c6dd364190f6378b1ae2bd9a0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/summon_runtime.rs",
+        "initial_sha256": "d045c86228b29964214d3c544af889aeb1983707ed4bd9cc354b1a5303320e0c",
+        "current_sha256": "d045c86228b29964214d3c544af889aeb1983707ed4bd9cc354b1a5303320e0c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/tactical_relocation.rs",
+        "initial_sha256": "4f5c5b6b19cfe41cb5608610c54d0136756a06dcc17b92b06244fa9560375f9d",
+        "current_sha256": "4f5c5b6b19cfe41cb5608610c54d0136756a06dcc17b92b06244fa9560375f9d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/tactical_stance.rs",
+        "initial_sha256": "735c3864ba362bfcef401c2fa9b20ac2bf51b58f9e555d452cd497ebabb4f402",
+        "current_sha256": "735c3864ba362bfcef401c2fa9b20ac2bf51b58f9e555d452cd497ebabb4f402",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/tactical_swap.rs",
+        "initial_sha256": "fa1e43989e9ebf4ddb667f4c373699ba56e2f806074be7be6f08c8bcffcfd646",
+        "current_sha256": "fa1e43989e9ebf4ddb667f4c373699ba56e2f806074be7be6f08c8bcffcfd646",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/target_usefulness.rs",
+        "initial_sha256": "b211d55c411bfef0ae5ede1183dcadee87723a736b5c17f9d461a5b99dd4e5d1",
+        "current_sha256": "b211d55c411bfef0ae5ede1183dcadee87723a736b5c17f9d461a5b99dd4e5d1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/targeting.rs",
+        "initial_sha256": "ed517c986d5b6ed3e14e48e46ade10a913730ba4d81d7c6f8b840eae4f528ebb",
+        "current_sha256": "ed517c986d5b6ed3e14e48e46ade10a913730ba4d81d7c6f8b840eae4f528ebb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/triggers.rs",
+        "initial_sha256": "3b1108fa0d9177d14928aba00e0a2a31f8018f0011cdf3fea83a117fa5186e62",
+        "current_sha256": "3b1108fa0d9177d14928aba00e0a2a31f8018f0011cdf3fea83a117fa5186e62",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/types.rs",
+        "initial_sha256": "08e4ae377160b7abe4b901dd6808901ce407633ee1d6e4d75a999d630f78d8f7",
+        "current_sha256": "08e4ae377160b7abe4b901dd6808901ce407633ee1d6e4d75a999d630f78d8f7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+        "initial_sha256": "ff9c5cb3c4b97ee0f519e61496495872da330510740d387c0d8f4fdc288fc615",
+        "current_sha256": "ff9c5cb3c4b97ee0f519e61496495872da330510740d387c0d8f4fdc288fc615",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/damage.rs",
+        "initial_sha256": "87f7596e29de5d0114f0a19637fb36b767d2cadf5a2f10c18bce55a4916f85f7",
+        "current_sha256": "87f7596e29de5d0114f0a19637fb36b767d2cadf5a2f10c18bce55a4916f85f7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/enums.rs",
+        "initial_sha256": "9606c8a3d3697ea94d0a4a4e10dfdd8c574bdd755a948343a6e69dbe3c79040b",
+        "current_sha256": "9606c8a3d3697ea94d0a4a4e10dfdd8c574bdd755a948343a6e69dbe3c79040b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/event_log.rs",
+        "initial_sha256": "ec987f639faa1847c4b139b499589a868158f476caa73f884524fa7e092b4bf0",
+        "current_sha256": "ec987f639faa1847c4b139b499589a868158f476caa73f884524fa7e092b4bf0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/ids.rs",
+        "initial_sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9",
+        "current_sha256": "063075a0f4ac754132949232bd9db555277b4828c43aaecc9a57fd7561069ac9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/mod.rs",
+        "initial_sha256": "c6aaa9bd2efe8f5c7e138afdd0084ec0e90b035609c00fb42a33985b1d6fd5a8",
+        "current_sha256": "c6aaa9bd2efe8f5c7e138afdd0084ec0e90b035609c00fb42a33985b1d6fd5a8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/recording.rs",
+        "initial_sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+        "current_sha256": "e3c1afedaf9b5ec61c76d415e2123dbea8a9c6d9213da5393dddfaf0e6beaf2d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/result_stats.rs",
+        "initial_sha256": "dab57d5d702c078ee000c7ac40933982471ce7e42001ec2d9cdc7c288732ceea",
+        "current_sha256": "dab57d5d702c078ee000c7ac40933982471ce7e42001ec2d9cdc7c288732ceea",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/runtime_control.rs",
+        "initial_sha256": "5a4039fc9f24738ae20f3c6c2b63ba473e561adabb5dfb2cc3a538a290c86d0f",
+        "current_sha256": "5a4039fc9f24738ae20f3c6c2b63ba473e561adabb5dfb2cc3a538a290c86d0f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+        "initial_sha256": "37a893b79102d23562300bfc500b439e7a831c80c329e968f8f750a13a5eb07e",
+        "current_sha256": "37a893b79102d23562300bfc500b439e7a831c80c329e968f8f750a13a5eb07e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/scenario.rs",
+        "initial_sha256": "376db1336ecfc11788f7f468f88310ee37896c219dcb5679fbfdfa6f681eca4d",
+        "current_sha256": "376db1336ecfc11788f7f468f88310ee37896c219dcb5679fbfdfa6f681eca4d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/skill_source.rs",
+        "initial_sha256": "238bbf51406727ca412c6e70c1ac98ec72adf9c031e593d8b79e041ceb60ba7f",
+        "current_sha256": "238bbf51406727ca412c6e70c1ac98ec72adf9c031e593d8b79e041ceb60ba7f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/stat_pipeline.rs",
+        "initial_sha256": "f878fe6a68a7b33daadb4f691f57bf689586c89dc56d6fad8b40fb0e9cf9bff2",
+        "current_sha256": "f878fe6a68a7b33daadb4f691f57bf689586c89dc56d6fad8b40fb0e9cf9bff2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/tile_range.rs",
+        "initial_sha256": "83c496e90928ee08881bc826d326f29bf58232cf4ea1d71beb9060831c6e4ab0",
+        "current_sha256": "83c496e90928ee08881bc826d326f29bf58232cf4ea1d71beb9060831c6e4ab0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/battle/types.rs",
+        "initial_sha256": "22ace9cb9cd31c41c426335191105ac109e4dd2700f400173f575f9ef74b26f9",
+        "current_sha256": "22ace9cb9cd31c41c426335191105ac109e4dd2700f400173f575f9ef74b26f9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/behavior.rs",
+        "initial_sha256": "ab1cd871eaa00a05ae96d430432de695b88031a37c195e4a8afd90ef52b131ed",
+        "current_sha256": "ab1cd871eaa00a05ae96d430432de695b88031a37c195e4a8afd90ef52b131ed",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/boss_omen.rs",
+        "initial_sha256": "639f1dc433bf98e2d0bedd8f1d844b4150b2bb5761e16d4728666b935b969ae3",
+        "current_sha256": "639f1dc433bf98e2d0bedd8f1d844b4150b2bb5761e16d4728666b935b969ae3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_power.rs",
+        "initial_sha256": "4815c9a1b4e1504495b8b334320092c05a13499896de8e94eb0120fb0f20015b",
+        "current_sha256": "4815c9a1b4e1504495b8b334320092c05a13499896de8e94eb0120fb0f20015b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_preview/mod.rs",
+        "initial_sha256": "9e184b5ca43efa0e46f669e4d46c47d898943454185033ec903f8851fba37dfc",
+        "current_sha256": "9e184b5ca43efa0e46f669e4d46c47d898943454185033ec903f8851fba37dfc",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_preview/template.rs",
+        "initial_sha256": "ec61b9349d93289c3fd5abaebadfcb98b56153e93e3f3f3e7b83fb8346004895",
+        "current_sha256": "ec61b9349d93289c3fd5abaebadfcb98b56153e93e3f3f3e7b83fb8346004895",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_preview/threat.rs",
+        "initial_sha256": "50413b8a3bd00bcd9389bac813f44016e1db9fb850dbc3bec19152c82be0c356",
+        "current_sha256": "50413b8a3bd00bcd9389bac813f44016e1db9fb850dbc3bec19152c82be0c356",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_preview/types.rs",
+        "initial_sha256": "565227050df1f8ab568366a8a463621bf759de9aab1746a9d0e4fea3d9659794",
+        "current_sha256": "565227050df1f8ab568366a8a463621bf759de9aab1746a9d0e4fea3d9659794",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_preview/validation.rs",
+        "initial_sha256": "4e8bcc294411f3e67c45050fe87b284076a3ab03cc93ee2ac8c06cef7ef63921",
+        "current_sha256": "4e8bcc294411f3e67c45050fe87b284076a3ab03cc93ee2ac8c06cef7ef63921",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/balance.rs",
+        "initial_sha256": "73ea3359b03b51bec6ee91035780759b7f095db7028a28152146e294d8753799",
+        "current_sha256": "73ea3359b03b51bec6ee91035780759b7f095db7028a28152146e294d8753799",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/battlefield_plan.rs",
+        "initial_sha256": "ae109e5d93e2f320d1efe4c1e6098504135d0c43eaee91b5539efc843e93c3a6",
+        "current_sha256": "ae109e5d93e2f320d1efe4c1e6098504135d0c43eaee91b5539efc843e93c3a6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/boss_runtime.rs",
+        "initial_sha256": "692b48d0cdf959508b3d9dc0ff17e27346fad4cc5a180383ab9a4d0683aae548",
+        "current_sha256": "692b48d0cdf959508b3d9dc0ff17e27346fad4cc5a180383ab9a4d0683aae548",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/defense_object.rs",
+        "initial_sha256": "44402a83b8899597e056f3431c0f98fcfef79176802e4e8446467825c03332a2",
+        "current_sha256": "44402a83b8899597e056f3431c0f98fcfef79176802e4e8446467825c03332a2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+        "initial_sha256": "df9859fdb444ac35c94a7136e59f4765c463e5f967cc5baeeba785b7f76b944f",
+        "current_sha256": "df9859fdb444ac35c94a7136e59f4765c463e5f967cc5baeeba785b7f76b944f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/mission_policy.rs",
+        "initial_sha256": "342d6ce5db5793f4d362cbbd66bcf9fb6f4166716f2f0ea9381f74d3e426c8c2",
+        "current_sha256": "342d6ce5db5793f4d362cbbd66bcf9fb6f4166716f2f0ea9381f74d3e426c8c2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/mod.rs",
+        "initial_sha256": "1d2471ba782f70fe8ee6810e3f5cf4ed0a0003deffe2fc3ef76da6b50a934346",
+        "current_sha256": "1d2471ba782f70fe8ee6810e3f5cf4ed0a0003deffe2fc3ef76da6b50a934346",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+        "initial_sha256": "5ece18f37c64c9aae29d3583f7b17274eec175cf25674f3b6cb1e99bb04dc55c",
+        "current_sha256": "5ece18f37c64c9aae29d3583f7b17274eec175cf25674f3b6cb1e99bb04dc55c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+        "initial_sha256": "c5e79462df7296cf467660b0b24ebeb4731af25e4243c22c5c8682484dcbae09",
+        "current_sha256": "c5e79462df7296cf467660b0b24ebeb4731af25e4243c22c5c8682484dcbae09",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/combat_setup/scenario_groups.rs",
+        "initial_sha256": "2033834050577ba3f20e4fb2d2fb6c5414ccbba96fc7b5ee8552f719f215cfe7",
+        "current_sha256": "2033834050577ba3f20e4fb2d2fb6c5414ccbba96fc7b5ee8552f719f215cfe7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/abnormality_data.rs",
+        "initial_sha256": "bbda968e58c0bcfdeae09f7796ae4ed1fa92893fd89f8c250e4014a6e3275828",
+        "current_sha256": "bbda968e58c0bcfdeae09f7796ae4ed1fa92893fd89f8c250e4014a6e3275828",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/boss_omen_data.rs",
+        "initial_sha256": "b1bf3d19ea2712c4028a5113eabd343066a4251cfc0de5ec37b585de37467412",
+        "current_sha256": "b1bf3d19ea2712c4028a5113eabd343066a4251cfc0de5ec37b585de37467412",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+        "initial_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+        "current_sha256": "3df26fd5e0950e4bb1fd76ae0ba766871717fe8adeb5c37466301a2aac88ef8d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/consumable_data.rs",
+        "initial_sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114",
+        "current_sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/canonical.rs",
+        "initial_sha256": "eec4faf979c2117146c55adae62cf17a2f1a83108bda22f99a9dc1aaed5aba0d",
+        "current_sha256": "eec4faf979c2117146c55adae62cf17a2f1a83108bda22f99a9dc1aaed5aba0d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/diagnostic_tests.rs",
+        "initial_sha256": "d9d4a3bd8a1069591253297d1501f6e54a808fa2d59034876849168fd8294e25",
+        "current_sha256": "d9d4a3bd8a1069591253297d1501f6e54a808fa2d59034876849168fd8294e25",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+        "initial_sha256": "a89e499a3f3310d848d25cb68aa5fa1a0fe2e98dbeea483f70d15086b93239c8",
+        "current_sha256": "a89e499a3f3310d848d25cb68aa5fa1a0fe2e98dbeea483f70d15086b93239c8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/packaging.rs",
+        "initial_sha256": "f959be690301d7bc0f2ccf9c1865d5bfb7979aa84cbbe7a6e09780d1a72f10fd",
+        "current_sha256": "f959be690301d7bc0f2ccf9c1865d5bfb7979aa84cbbe7a6e09780d1a72f10fd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/raw/tests.rs",
+        "initial_sha256": "b0977f3e9b112fbe9848fd3056a56eef9ee441bb8868f3b9cd7ace9bead66471",
+        "current_sha256": "b0977f3e9b112fbe9848fd3056a56eef9ee441bb8868f3b9cd7ace9bead66471",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/raw.rs",
+        "initial_sha256": "bc44c2121aa494661ab03b203cb34085f13ac02dd20d284e43d3648a29b7b0fb",
+        "current_sha256": "bc44c2121aa494661ab03b203cb34085f13ac02dd20d284e43d3648a29b7b0fb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/resolver/tests.rs",
+        "initial_sha256": "9287c4e3dd80faca7cb270ccdc30f84bbcee221f2243c6fb0f84c5849cb0bbf5",
+        "current_sha256": "9287c4e3dd80faca7cb270ccdc30f84bbcee221f2243c6fb0f84c5849cb0bbf5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/resolver.rs",
+        "initial_sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399",
+        "current_sha256": "984b7c782eafe3aadbc244b56570505386ffe0acb9b461f56102687682569399",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/schema.rs",
+        "initial_sha256": "ba7d5c35d303793e2e52a3cd593a2ba811105ee8ba3e053ad1c2724baf720f31",
+        "current_sha256": "ba7d5c35d303793e2e52a3cd593a2ba811105ee8ba3e053ad1c2724baf720f31",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+        "initial_sha256": "c16e174f0abcbc3346e92b731352feaeebe0cf308ae964b4b6deaf1af8fe862c",
+        "current_sha256": "c16e174f0abcbc3346e92b731352feaeebe0cf308ae964b4b6deaf1af8fe862c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+        "initial_sha256": "2cbcf06e0efebf64ad8ca58df22f2b38de078945954b5073d890d285c43f826b",
+        "current_sha256": "2cbcf06e0efebf64ad8ca58df22f2b38de078945954b5073d890d285c43f826b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/tests.rs",
+        "initial_sha256": "693eb9f9bdbad7fe29e86da063e8317f800c6889651dd1558ddb3873c293018a",
+        "current_sha256": "693eb9f9bdbad7fe29e86da063e8317f800c6889651dd1558ddb3873c293018a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/corroded_employee_data.rs",
+        "initial_sha256": "0027a9e242ce687d62ff61d5071fbab633576192c45fd42512f6faf952276d67",
+        "current_sha256": "0027a9e242ce687d62ff61d5071fbab633576192c45fd42512f6faf952276d67",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/corroded_wave_data.rs",
+        "initial_sha256": "d36af93ad12d0dc95e5d3d28fd692678ac29a13032eb88909d5a4df193cf3833",
+        "current_sha256": "d36af93ad12d0dc95e5d3d28fd692678ac29a13032eb88909d5a4df193cf3833",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/employee_data.rs",
+        "initial_sha256": "bed7d6f4bebf981a2bab274f323e6cd53d89feec39507fc95c4fcc939f3a25d4",
+        "current_sha256": "bed7d6f4bebf981a2bab274f323e6cd53d89feec39507fc95c4fcc939f3a25d4",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/equipment_data.rs",
+        "initial_sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+        "current_sha256": "a9a6b06fccd5c7bf78879b010531533a56f6c1264bd02989ae6d3d9de8173e1e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/event_data.rs",
+        "initial_sha256": "11ac2223f2587e5149a78ab14793e172e55b13cc97bdbecbbc6ad6007e4f8409",
+        "current_sha256": "11ac2223f2587e5149a78ab14793e172e55b13cc97bdbecbbc6ad6007e4f8409",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/live_ron.rs",
+        "initial_sha256": "39b0c45cc9efa11c0e803e25b2348439e2ab2fc00b2563880b7539a5bb5c7182",
+        "current_sha256": "39b0c45cc9efa11c0e803e25b2348439e2ab2fc00b2563880b7539a5bb5c7182",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/mod.rs",
+        "initial_sha256": "6d452e52e11f5c10a4aa633ba1d3e2881ea2dab0f0561565f3a366781d35e6c5",
+        "current_sha256": "6d452e52e11f5c10a4aa633ba1d3e2881ea2dab0f0561565f3a366781d35e6c5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/pve_data.rs",
+        "initial_sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19",
+        "current_sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/reward_data.rs",
+        "initial_sha256": "8c9c74caee02c1c3006ad41fb532b65db8f9666ec154cd0f19d60dbe96c00c49",
+        "current_sha256": "8c9c74caee02c1c3006ad41fb532b65db8f9666ec154cd0f19d60dbe96c00c49",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/run_policy_data.rs",
+        "initial_sha256": "c443a4cf199f4095e2762443268afaac8bdc8b080547f2ab2142ec13015b9403",
+        "current_sha256": "c443a4cf199f4095e2762443268afaac8bdc8b080547f2ab2142ec13015b9403",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/shop_data.rs",
+        "initial_sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001",
+        "current_sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/skill_data.rs",
+        "initial_sha256": "1af05397600e8463be20ced190c3f0ba03b527c6c7c148bfe5635038261ec7ec",
+        "current_sha256": "1af05397600e8463be20ced190c3f0ba03b527c6c7c148bfe5635038261ec7ec",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/skill_fragment_data.rs",
+        "initial_sha256": "5fd2772af7d0dc8ff5c0abee5cb7b05bdcb0996ce55a67e1a717d34dff5bc9ad",
+        "current_sha256": "5fd2772af7d0dc8ff5c0abee5cb7b05bdcb0996ce55a67e1a717d34dff5bc9ad",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/summoned_unit_data.rs",
+        "initial_sha256": "1a4426518545e9d85ca1d6c5bca0cc3fa832045dee17a94acd7bac8a8959e750",
+        "current_sha256": "1a4426518545e9d85ca1d6c5bca0cc3fa832045dee17a94acd7bac8a8959e750",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/validation.rs",
+        "initial_sha256": "656e46763c9f35a5e3201992866a928664c62467a0936439027ea8584517eb80",
+        "current_sha256": "656e46763c9f35a5e3201992866a928664c62467a0936439027ea8584517eb80",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/visual_novel_data.rs",
+        "initial_sha256": "93303a188777146bec027ce2c7c5d0a9d6499ea64858f1855dbb9f5f5aac4b37",
+        "current_sha256": "93303a188777146bec027ce2c7c5d0a9d6499ea64858f1855dbb9f5f5aac4b37",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/data/visual_novel_trigger_data.rs",
+        "initial_sha256": "4abe1bb5cfed1ead3d5fd528c8fe33e3470edae6b4cd0ceeab27694138c082fe",
+        "current_sha256": "4abe1bb5cfed1ead3d5fd528c8fe33e3470edae6b4cd0ceeab27694138c082fe",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/determinism.rs",
+        "initial_sha256": "73fbb8c9c472f8caa741b6678a00decce5e244ed9beaaaeb55b7fa93c8ff1549",
+        "current_sha256": "73fbb8c9c472f8caa741b6678a00decce5e244ed9beaaaeb55b7fa93c8ff1549",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/employee.rs",
+        "initial_sha256": "26ef7def8931e4490644c7ec1f681b7f819e6fd6afdd5da6a8ef86a445359379",
+        "current_sha256": "26ef7def8931e4490644c7ec1f681b7f819e6fd6afdd5da6a8ef86a445359379",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/employee_psychology.rs",
+        "initial_sha256": "fc130cf2cb5bb3182962f6feae485078b8d63cd7dbbb4c73971d364a01ef9f69",
+        "current_sha256": "fc130cf2cb5bb3182962f6feae485078b8d63cd7dbbb4c73971d364a01ef9f69",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/encounter_compendium.rs",
+        "initial_sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+        "current_sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/encounter_progression.rs",
+        "initial_sha256": "37b8a65cda651395f22097a70312a78561b91a1a3ca6faf9411ac35bab3f8ec2",
+        "current_sha256": "37b8a65cda651395f22097a70312a78561b91a1a3ca6faf9411ac35bab3f8ec2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/enums.rs",
+        "initial_sha256": "85255ba6c40ba34e3d8aa3c546d5d54e187d84146347f0de7db04c0bc0971b58",
+        "current_sha256": "85255ba6c40ba34e3d8aa3c546d5d54e187d84146347f0de7db04c0bc0971b58",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/events/combat.rs",
+        "initial_sha256": "995c4255be46c04cdde86c92407feda59db9d6ba999dc74244e7856073f390e9",
+        "current_sha256": "995c4255be46c04cdde86c92407feda59db9d6ba999dc74244e7856073f390e9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/events/mod.rs",
+        "initial_sha256": "4acac34f15c46b045f0851f9815e66e702c5204dabc6623958118a5e69248b13",
+        "current_sha256": "4acac34f15c46b045f0851f9815e66e702c5204dabc6623958118a5e69248b13",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/growth.rs",
+        "initial_sha256": "cc752dbc450f64735f6cb0bc6078a930cff934be86ca6e97f6776ac4a23f7694",
+        "current_sha256": "cc752dbc450f64735f6cb0bc6078a930cff934be86ca6e97f6776ac4a23f7694",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/managers/mod.rs",
+        "initial_sha256": "d9994fffb6da77a943c83d4e475d4888e4fd3fb631ae519dd28ef9d45ffbec91",
+        "current_sha256": "d9994fffb6da77a943c83d4e475d4888e4fd3fb631ae519dd28ef9d45ffbec91",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+        "initial_sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d",
+        "current_sha256": "de6c39ffbd6232ab223e21a782a2495e1775b85498a23a237b6781ac4807cc9d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/executor.rs",
+        "initial_sha256": "1651e86854cc5c8660e14c7553795312043d0a9a03c76b3796529feea7fc9b2c",
+        "current_sha256": "1651e86854cc5c8660e14c7553795312043d0a9a03c76b3796529feea7fc9b2c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/facility.rs",
+        "initial_sha256": "2762c1aa50a21c14ecd9b9f99bfc4409c863b40238a7a101c36d3cca560f949b",
+        "current_sha256": "2762c1aa50a21c14ecd9b9f99bfc4409c863b40238a7a101c36d3cca560f949b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/facility_generator.rs",
+        "initial_sha256": "65045baf30051e3a2bca8861b50907db959192864d973c660f4e3820219db5a4",
+        "current_sha256": "65045baf30051e3a2bca8861b50907db959192864d973c660f4e3820219db5a4",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/mod.rs",
+        "initial_sha256": "28f110766f5a2a6d3c3c241e02bde41ea66c86b58a268f1bd6b2bdfb9e673990",
+        "current_sha256": "28f110766f5a2a6d3c3c241e02bde41ea66c86b58a268f1bd6b2bdfb9e673990",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/progression.rs",
+        "initial_sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014",
+        "current_sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/session.rs",
+        "initial_sha256": "b826a9658993a7e26dc26c576b05b02415491f113bcd529c92d05e3baf654d05",
+        "current_sha256": "b826a9658993a7e26dc26c576b05b02415491f113bcd529c92d05e3baf654d05",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/map/types.rs",
+        "initial_sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f",
+        "current_sha256": "fd5d4a2900ccf5ed228d45ced89b9def0f0d60c6443e24e58ba9029fb686fc9f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/mod.rs",
+        "initial_sha256": "e8993662239d44d813544536e84d4d00bc6f0ca7d0a55ae328231883b70de1ea",
+        "current_sha256": "e8993662239d44d813544536e84d4d00bc6f0ca7d0a55ae328231883b70de1ea",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/monolith.rs",
+        "initial_sha256": "9b156c16daba1fe7f528f136a00a136c2e3ddbfd52adae4af0751942722e23db",
+        "current_sha256": "9b156c16daba1fe7f528f136a00a136c2e3ddbfd52adae4af0751942722e23db",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/range_preview.rs",
+        "initial_sha256": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338",
+        "current_sha256": "1a8fce573905e0676f6f428121f2a778512eb7e28f44341105528bde6c94e338",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/recruitment.rs",
+        "initial_sha256": "647beeb970d657d699247a0bdb5279d3d488f8d3bd936cca70ced305b18f6245",
+        "current_sha256": "647beeb970d657d699247a0bdb5279d3d488f8d3bd936cca70ced305b18f6245",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resource/durable.rs",
+        "initial_sha256": "33b2760755631cd4fd274f4a807007bd82db56272b3d235f533b65d26a1e2765",
+        "current_sha256": "33b2760755631cd4fd274f4a807007bd82db56272b3d235f533b65d26a1e2765",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resource/mod.rs",
+        "initial_sha256": "3839de15329daf55a40c63822787ea61ad38ce2413bdfa23e8983ed12697e019",
+        "current_sha256": "3839de15329daf55a40c63822787ea61ad38ce2413bdfa23e8983ed12697e019",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resource/runtime.rs",
+        "initial_sha256": "401cb130765652c95d6fdc7f499a967089e588affa500bc8384857fdc72951b0",
+        "current_sha256": "401cb130765652c95d6fdc7f499a967089e588affa500bc8384857fdc72951b0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resource/store/tests.rs",
+        "initial_sha256": "11fc6151645370aaba51e8a2c2af8d71a6ab832b69a04d318ed246abf0a849a6",
+        "current_sha256": "11fc6151645370aaba51e8a2c2af8d71a6ab832b69a04d318ed246abf0a849a6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resource/store.rs",
+        "initial_sha256": "236b5c03afcb6efaba90eff75c0a66b821c5cb873e8286bc9ffc64154074e64b",
+        "current_sha256": "236b5c03afcb6efaba90eff75c0a66b821c5cb873e8286bc9ffc64154074e64b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/board.rs",
+        "initial_sha256": "3318239bfa2142d812f561c7aff2010221767ebb36520b90b62a7e2f48ec213c",
+        "current_sha256": "3318239bfa2142d812f561c7aff2010221767ebb36520b90b62a7e2f48ec213c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/economy.rs",
+        "initial_sha256": "3b59a3cee8fe87573e709d30f5ab75fe1d9ac8c62e1a966151485c983995724d",
+        "current_sha256": "3b59a3cee8fe87573e709d30f5ab75fe1d9ac8c62e1a966151485c983995724d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/equipment_loadout.rs",
+        "initial_sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e",
+        "current_sha256": "e76eff46bdbddbfa4f6cc1d4dc686fba8f2d51cfbcba0e11a9575a9ff90ce51e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/inventory.rs",
+        "initial_sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09",
+        "current_sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/item_slot.rs",
+        "initial_sha256": "c20b7a68a8f5c88f2f506445a81989b8d27a764fd8890e97e15d45466294a381",
+        "current_sha256": "c20b7a68a8f5c88f2f506445a81989b8d27a764fd8890e97e15d45466294a381",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/mod.rs",
+        "initial_sha256": "846a2da2439c31442b60cabba61a8987bb9f151c91e99991e2e34f8287cf7053",
+        "current_sha256": "846a2da2439c31442b60cabba61a8987bb9f151c91e99991e2e34f8287cf7053",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/selection.rs",
+        "initial_sha256": "dc667fa10d398054bc175e95555e8db5fe8e0ce7fc206e0487c94e640d50e368",
+        "current_sha256": "dc667fa10d398054bc175e95555e8db5fe8e0ce7fc206e0487c94e640d50e368",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/resources/state.rs",
+        "initial_sha256": "d9f4733134d5e6fb1e371d08fd39de66bf6a987df80916a12a231f7896c1af8b",
+        "current_sha256": "d9f4733134d5e6fb1e371d08fd39de66bf6a987df80916a12a231f7896c1af8b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/reward.rs",
+        "initial_sha256": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f",
+        "current_sha256": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/reward_policy.rs",
+        "initial_sha256": "e16a04368d089f96e7b07b74cb566ba3b825a3126a1d56094f92f37248f8f5f3",
+        "current_sha256": "e16a04368d089f96e7b07b74cb566ba3b825a3126a1d56094f92f37248f8f5f3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/skill_fragment.rs",
+        "initial_sha256": "6b8f81c7a59fc522e22774b6c225d0ec3cd108633e48e1e98f741716e109e64d",
+        "current_sha256": "6b8f81c7a59fc522e22774b6c225d0ec3cd108633e48e1e98f741716e109e64d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/stats.rs",
+        "initial_sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+        "current_sha256": "9c3d49b44c773288da84e35bc0411292e423583a4b481a1e044622c138d10269",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/visual_novel.rs",
+        "initial_sha256": "922187580610f4db7f535b6958ac9ffa4c28a6cc4c03464cbf858542e1ababd6",
+        "current_sha256": "922187580610f4db7f535b6958ac9ffa4c28a6cc4c03464cbf858542e1ababd6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/wave_resolution.rs",
+        "initial_sha256": "10b1c6ab9daf107241a9245bccf13c1b5dc52baf25f90d47648fdd87ff15c343",
+        "current_sha256": "10b1c6ab9daf107241a9245bccf13c1b5dc52baf25f90d47648fdd87ff15c343",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/action_capability.rs",
+        "initial_sha256": "10dab9e64a4e5d93a0a0e7d79b9f5421678bdc1985df812ed3f6f8f6981bf2dd",
+        "current_sha256": "10dab9e64a4e5d93a0a0e7d79b9f5421678bdc1985df812ed3f6f8f6981bf2dd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/active_run.rs",
+        "initial_sha256": "51432cd9f466938b97074fee310c270ac032bc8866d21235173a4dd4c469e52f",
+        "current_sha256": "51432cd9f466938b97074fee310c270ac032bc8866d21235173a4dd4c469e52f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin/catalog.rs",
+        "initial_sha256": "d5d40a841eafebb551caeab7b6b2a19b87d96921a52b42c7855f40049e0976ad",
+        "current_sha256": "d5d40a841eafebb551caeab7b6b2a19b87d96921a52b42c7855f40049e0976ad",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin/commands.rs",
+        "initial_sha256": "567b5b573d33eea7d929930ee7eb5a75ca90004d69aec94f5d077d452dc19a5c",
+        "current_sha256": "567b5b573d33eea7d929930ee7eb5a75ca90004d69aec94f5d077d452dc19a5c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin/fixtures.rs",
+        "initial_sha256": "c319893cc907e4982d05f3a8880d269f987061d97e451ddac624e114acf25bfb",
+        "current_sha256": "c319893cc907e4982d05f3a8880d269f987061d97e451ddac624e114acf25bfb",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin/grants.rs",
+        "initial_sha256": "6ee7eaf80d41dda3080e6bbbc03794ba1dd1c098bf4d49fd402f2f8d24929ce6",
+        "current_sha256": "6ee7eaf80d41dda3080e6bbbc03794ba1dd1c098bf4d49fd402f2f8d24929ce6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin/tests.rs",
+        "initial_sha256": "90870149d9f23ecb49a19e5b57eecc0f9877bcc562a1e6d6af76b52c7c1a6594",
+        "current_sha256": "90870149d9f23ecb49a19e5b57eecc0f9877bcc562a1e6d6af76b52c7c1a6594",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/admin.rs",
+        "initial_sha256": "c80a2b14703539d9ca48a2422bc4135a83c94ed3414e98079cb791e17d5f1731",
+        "current_sha256": "c80a2b14703539d9ca48a2422bc4135a83c94ed3414e98079cb791e17d5f1731",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/application.rs",
+        "initial_sha256": "36ba3058aacfd27980ea3211e2c0fd6be088367139808487e018a9076965c057",
+        "current_sha256": "36ba3058aacfd27980ea3211e2c0fd6be088367139808487e018a9076965c057",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/authoring_lifecycle.rs",
+        "initial_sha256": "544ee93dc3417d18e1c0ccf608d5cb55461a1d1e245d694e43df05ef7d3989d7",
+        "current_sha256": "544ee93dc3417d18e1c0ccf608d5cb55461a1d1e245d694e43df05ef7d3989d7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/authoring_observation.rs",
+        "initial_sha256": "4245e2f35b91238f74fa771a12da6c55f31f8a7c740cb97ead67158a2ae82a1b",
+        "current_sha256": "4245e2f35b91238f74fa771a12da6c55f31f8a7c740cb97ead67158a2ae82a1b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/battle_capability.rs",
+        "initial_sha256": "fb924f16500316703eb2e07ff2c4d59dd5117f169ec0d1d3464d3fc1355af885",
+        "current_sha256": "fb924f16500316703eb2e07ff2c4d59dd5117f169ec0d1d3464d3fc1355af885",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/combat.rs",
+        "initial_sha256": "4c7c63e1f74292dcb00664b1666ff3f917b5dcc002ee80d0c2d48e62c760ea7f",
+        "current_sha256": "4c7c63e1f74292dcb00664b1666ff3f917b5dcc002ee80d0c2d48e62c760ea7f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/combat_trace.rs",
+        "initial_sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092",
+        "current_sha256": "ab8879db23ea68c343465da07765a5dc5e7f69da0867a2c4b7c057e72abab092",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/event_node.rs",
+        "initial_sha256": "9ad3df59233e9f30989a14c29ac6a42edc35d1a39024cdd4938475c148f03f7a",
+        "current_sha256": "9ad3df59233e9f30989a14c29ac6a42edc35d1a39024cdd4938475c148f03f7a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/facility.rs",
+        "initial_sha256": "35ce3dfe8e206ded40dd0ef6614fab0c41716ebafdadbadc808dc5819c14e4c6",
+        "current_sha256": "35ce3dfe8e206ded40dd0ef6614fab0c41716ebafdadbadc808dc5819c14e4c6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/grant_state.rs",
+        "initial_sha256": "04ed93844a3292e7b088b6db71d9d768ad5b097fd0193be65fbc34f08db65969",
+        "current_sha256": "04ed93844a3292e7b088b6db71d9d768ad5b097fd0193be65fbc34f08db65969",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/headquarters.rs",
+        "initial_sha256": "72306a6451e26ffda6068051e6616ce0576097e3cfdfce2596eeb9c0e0f23fd2",
+        "current_sha256": "72306a6451e26ffda6068051e6616ce0576097e3cfdfce2596eeb9c0e0f23fd2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/helpers.rs",
+        "initial_sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22",
+        "current_sha256": "ead4e7e10d7dbf4471d16d2bae5888d3004bfc4a28fc9d5eb6634db8efe4dc22",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/maintenance.rs",
+        "initial_sha256": "faa07e016b125dc1df2f8f2d2d11a8e048551a44f3a6e128d847cb3c86959744",
+        "current_sha256": "faa07e016b125dc1df2f8f2d2d11a8e048551a44f3a6e128d847cb3c86959744",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/map_content.rs",
+        "initial_sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26",
+        "current_sha256": "469cc1fe5462718aacb1cf876eef7514529ee5f2893172457c7b40359588cb26",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/map_encounters.rs",
+        "initial_sha256": "86d1a53cc437447538029b18b5af5c5feccb667db0486e94363d8caa80707d2d",
+        "current_sha256": "86d1a53cc437447538029b18b5af5c5feccb667db0486e94363d8caa80707d2d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/mastered_elite_sweep.rs",
+        "initial_sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6",
+        "current_sha256": "68b5c5417f68a93c3812b16525c9da7eb2ec6af8ab4f1055e14caa5ceefabed6",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/node_flow.rs",
+        "initial_sha256": "d1011b34d8de383f7e885faeb98c2b33e0446eb4fbf128160106fc13dd46290e",
+        "current_sha256": "d1011b34d8de383f7e885faeb98c2b33e0446eb4fbf128160106fc13dd46290e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/resource_runtime.rs",
+        "initial_sha256": "f33a68cd2354965883358b7447fc806b254537b813a8d4c69e899ca347f7d151",
+        "current_sha256": "f33a68cd2354965883358b7447fc806b254537b813a8d4c69e899ca347f7d151",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/reward.rs",
+        "initial_sha256": "fda449c9ed2d42f9ea93749fda6f996bb672d9687ec6b90ef86115cbb98dec2a",
+        "current_sha256": "fda449c9ed2d42f9ea93749fda6f996bb672d9687ec6b90ef86115cbb98dec2a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/shop.rs",
+        "initial_sha256": "50648b00e8ae3f7be61d525140334470b14747df526f9fa037f8a862af6a4982",
+        "current_sha256": "50648b00e8ae3f7be61d525140334470b14747df526f9fa037f8a862af6a4982",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/snapshot.rs",
+        "initial_sha256": "71af77395190d951b704239f71a5eee624cf1d5927792ca24e61399fe597ca9a",
+        "current_sha256": "71af77395190d951b704239f71a5eee624cf1d5927792ca24e61399fe597ca9a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/state.rs",
+        "initial_sha256": "e3a712be3d4ce5b132a06790aa2608e9c3ce7a9bfa1921c74c921e815bc703a3",
+        "current_sha256": "e3a712be3d4ce5b132a06790aa2608e9c3ce7a9bfa1921c74c921e815bc703a3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+        "initial_sha256": "fcadd623062eb4e3dccfc0162ebe6e72bc02d0aed890dda322e35cc9c2699eb5",
+        "current_sha256": "fcadd623062eb4e3dccfc0162ebe6e72bc02d0aed890dda322e35cc9c2699eb5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/combat.rs",
+        "initial_sha256": "610a2494c7ee6e98cf5828c7a5aa13b076ab4994f8606ae7c5ecb8b9771666ba",
+        "current_sha256": "610a2494c7ee6e98cf5828c7a5aa13b076ab4994f8606ae7c5ecb8b9771666ba",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/content_generation.rs",
+        "initial_sha256": "cf807a7ae60f80c0cb55fba76e9a0917625fbc8336de2472f4fc596642bdfeaf",
+        "current_sha256": "cf807a7ae60f80c0cb55fba76e9a0917625fbc8336de2472f4fc596642bdfeaf",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/equipment.rs",
+        "initial_sha256": "550706db6c5f89c81d1df6274d71d5466e3682963bc1d2a43d6b500bfe5b0567",
+        "current_sha256": "550706db6c5f89c81d1df6274d71d5466e3682963bc1d2a43d6b500bfe5b0567",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/facility.rs",
+        "initial_sha256": "ead1513c3607fbaae0718984ae366676e0d6ccae8b1c09796f5639a3d75c9b5b",
+        "current_sha256": "ead1513c3607fbaae0718984ae366676e0d6ccae8b1c09796f5639a3d75c9b5b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/map_flow.rs",
+        "initial_sha256": "de71a01b347041b177946cdb55b46e6eefa687b2e7d19adf130e4ecc77e6fe36",
+        "current_sha256": "de71a01b347041b177946cdb55b46e6eefa687b2e7d19adf130e4ecc77e6fe36",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/mastered_elite_sweep.rs",
+        "initial_sha256": "49f80f7db175905a89d6f851d202edfae373bbacdb16e555cf89d3066650edc1",
+        "current_sha256": "49f80f7db175905a89d6f851d202edfae373bbacdb16e555cf89d3066650edc1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/mod.rs",
+        "initial_sha256": "56febe6197d7dc960540ff3f0580a969874c7dc8918405de9165a50d80a83ca7",
+        "current_sha256": "56febe6197d7dc960540ff3f0580a969874c7dc8918405de9165a50d80a83ca7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/node_sessions.rs",
+        "initial_sha256": "5a8fcc43076d1924eb32cc9d258429ab3bf6629a2e265dfca7c0a92cb4d7e0a4",
+        "current_sha256": "5a8fcc43076d1924eb32cc9d258429ab3bf6629a2e265dfca7c0a92cb4d7e0a4",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+        "initial_sha256": "fdcb016a8b2fd9bdcab58c73d17d6af1657e9774a85ebb32457e3dd87605bf7d",
+        "current_sha256": "fdcb016a8b2fd9bdcab58c73d17d6af1657e9774a85ebb32457e3dd87605bf7d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+        "initial_sha256": "723c5b0342e0aab164d4f8bc0d3f69545c4394d014d6ca31f7fc1e7b518562fa",
+        "current_sha256": "723c5b0342e0aab164d4f8bc0d3f69545c4394d014d6ca31f7fc1e7b518562fa",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+        "initial_sha256": "c2a44c5a2def17c1a264c8746047c5bd6100735e876a51a318dc44193d7a19ac",
+        "current_sha256": "c2a44c5a2def17c1a264c8746047c5bd6100735e876a51a318dc44193d7a19ac",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world/visual_novel_triggers.rs",
+        "initial_sha256": "ae14bc093afa121cc2e6cfc09164e0f94e6572ace81d388387b1f5ea096a4e87",
+        "current_sha256": "ae14bc093afa121cc2e6cfc09164e0f94e6572ace81d388387b1f5ea096a4e87",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/game/world.rs",
+        "initial_sha256": "e9f51dfa5ac24f647044bd4492b61c7ea295494e08cb3dc6b712640173e2450b",
+        "current_sha256": "e9f51dfa5ac24f647044bd4492b61c7ea295494e08cb3dc6b712640173e2450b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/lib.rs",
+        "initial_sha256": "f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7",
+        "current_sha256": "f1f31fa710b8103123030294faf0d5c81c9400ff252e04ec5bcc6ba1caa0a4b7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/src/owned_collections.rs",
+        "initial_sha256": "f35849f86dfcf5ead2a44980db198defd32a39a0e7738a4a60b17a7e1160cc9b",
+        "current_sha256": "f35849f86dfcf5ead2a44980db198defd32a39a0e7738a4a60b17a7e1160cc9b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/common/mod.rs",
+        "initial_sha256": "784fd1ec86e604d55d6567a2d540d8f78095fa4319501a11b3199c33587f28c2",
+        "current_sha256": "784fd1ec86e604d55d6567a2d540d8f78095fa4319501a11b3199c33587f28c2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/fixtures/content_authoring/literal_effects.ron",
+        "initial_sha256": "1bd51a81d6b528ea4a80895bf95348c8417fd7113c77a73c6a2543d7821cf8c0",
+        "current_sha256": "1bd51a81d6b528ea4a80895bf95348c8417fd7113c77a73c6a2543d7821cf8c0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/live_item_skill_activation.rs",
+        "initial_sha256": "211ebf0025791d4ebfcddc73cfc1e9ddacbe67618379e78ea826f02d92ef6c68",
+        "current_sha256": "211ebf0025791d4ebfcddc73cfc1e9ddacbe67618379e78ea826f02d92ef6c68",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/live_skill_catalog_audit.rs",
+        "initial_sha256": "d07a40f566d9c598a4fecb285b107f923f256b25f2770e8c52b1f90cef278b7f",
+        "current_sha256": "d07a40f566d9c598a4fecb285b107f923f256b25f2770e8c52b1f90cef278b7f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/ron_loading.rs",
+        "initial_sha256": "749f9e718a2b85c7d20d770df0f960ac9b02cfff188901841428687d4b4846db",
+        "current_sha256": "749f9e718a2b85c7d20d770df0f960ac9b02cfff188901841428687d4b4846db",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_runtime_contract.rs",
+        "initial_sha256": "d93e878163e5e4cd0f8f2a2be68c2c914e0c219150c9a73961113bf9124db8e8",
+        "current_sha256": "d93e878163e5e4cd0f8f2a2be68c2c914e0c219150c9a73961113bf9124db8e8",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/common/board.rs",
+        "initial_sha256": "c5d1686db77b289f7411f2060ffb1851202213f7ed33bafabf1a3938d65477ab",
+        "current_sha256": "c5d1686db77b289f7411f2060ffb1851202213f7ed33bafabf1a3938d65477ab",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/common/mod.rs",
+        "initial_sha256": "d93d55868ba27e6ecc317c3894d8ebe9199f3c582cba4a14ee2b268314524ce5",
+        "current_sha256": "d93d55868ba27e6ecc317c3894d8ebe9199f3c582cba4a14ee2b268314524ce5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/common/query.rs",
+        "initial_sha256": "872adf364e3a7f2770f091ad70b461a0b605d4d778202655f6a63fbc14e72bdd",
+        "current_sha256": "872adf364e3a7f2770f091ad70b461a0b605d4d778202655f6a63fbc14e72bdd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/common/run.rs",
+        "initial_sha256": "b4163b7f1ed38c5b1714676a9db6903b42e02a4fa17fcc764151c254ca9f15b5",
+        "current_sha256": "b4163b7f1ed38c5b1714676a9db6903b42e02a4fa17fcc764151c254ca9f15b5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/common/scenario.rs",
+        "initial_sha256": "b0941bca2363249701d27aa5648ce13ddc73d534fc0027e7ae86336ec0c4057e",
+        "current_sha256": "b0941bca2363249701d27aa5648ce13ddc73d534fc0027e7ae86336ec0c4057e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/common/types.rs",
+        "initial_sha256": "e289a7f1ec4d141252de629826266ab58b12077d5efa212d6eb17a85f1a4131f",
+        "current_sha256": "e289a7f1ec4d141252de629826266ab58b12077d5efa212d6eb17a85f1a4131f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/little_red.rs",
+        "initial_sha256": "7c1d281d55f411bce31f24a0e70462414f755140542b203e8315fe4202da2fa3",
+        "current_sha256": "7c1d281d55f411bce31f24a0e70462414f755140542b203e8315fe4202da2fa3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/melting_love.rs",
+        "initial_sha256": "1f9ddd9db7597029cc8013fe14dc4b549da0b01c280765fcd33e2d3d63cfd8cd",
+        "current_sha256": "1f9ddd9db7597029cc8013fe14dc4b549da0b01c280765fcd33e2d3d63cfd8cd",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/mod.rs",
+        "initial_sha256": "893cc593da82bfb4235017d0ee02d690d11859a53edd5ad4500e36461b97679b",
+        "current_sha256": "893cc593da82bfb4235017d0ee02d690d11859a53edd5ad4500e36461b97679b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/nothing_there.rs",
+        "initial_sha256": "ddcd4c99169d177c280e846f3cfa19d30903d6cc9664594b68ae31d321866405",
+        "current_sha256": "ddcd4c99169d177c280e846f3cfa19d30903d6cc9664594b68ae31d321866405",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test/white_night.rs",
+        "initial_sha256": "70e8446270d84a2453a73d652f606807bef6264a35775599fcf05225097cae33",
+        "current_sha256": "70e8446270d84a2453a73d652f606807bef6264a35775599fcf05225097cae33",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "core_enhanced/tests/skill_test_suite.rs",
+        "initial_sha256": "4f2186b161f61c9192b6021895bbc3638e2444964ded36f9b9972dac82d835b2",
+        "current_sha256": "4f2186b161f61c9192b6021895bbc3638e2444964ded36f9b9972dac82d835b2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/abnormalities/base.ron",
+        "initial_sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474",
+        "current_sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/boss_omen/chains.ron",
+        "initial_sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0",
+        "current_sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/boss_runtime/base.ron",
+        "initial_sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04",
+        "current_sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/buffs/base.ron",
+        "initial_sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b",
+        "current_sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/bundle.ron",
+        "initial_sha256": "30cec6e092e71a4b92a499d00f9912deb00dce1f7947e4f7fdc8348036750cc2",
+        "current_sha256": "30cec6e092e71a4b92a499d00f9912deb00dce1f7947e4f7fdc8348036750cc2",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/consumables/base.ron",
+        "initial_sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a",
+        "current_sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/employees/definitions.ron",
+        "initial_sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01",
+        "current_sha256": "c9e1251a00bef306c31f16437e4f91060bef01177ac78bc7e46629a88c2e5b01",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/enemies/corroded_employees.ron",
+        "initial_sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154",
+        "current_sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/enemies/corroded_wave_presets.ron",
+        "initial_sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751",
+        "current_sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/equipments/base.ron",
+        "initial_sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088",
+        "current_sha256": "5f6862bfd2245dedb64e1958ac38019ad384d1cfbb642ff873848c3828055088",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/events/rewards/base.ron",
+        "initial_sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f",
+        "current_sha256": "1b87dd41b10ccc05ea49e9f6cc6874b0e4a3b1fa3361e02764be7c2768bdd15f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/events/shops/base.ron",
+        "initial_sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297",
+        "current_sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/events/story/base.ron",
+        "initial_sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242",
+        "current_sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/map/battlefield_archetypes.ron",
+        "initial_sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9",
+        "current_sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/map/battlefield_templates.ron",
+        "initial_sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f",
+        "current_sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/map/facility_templates.ron",
+        "initial_sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c",
+        "current_sha256": "6387e53807aec270e74c40cec9c3a47baf6a4eb7c7476c1b4a5070f373c37d3c",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/map/node_assignment_profiles.ron",
+        "initial_sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3",
+        "current_sha256": "9389e0644e4f4c4ca75a861c07f423cb484c6f11a5867cf24ee6e8b769f7d8d3",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/map/node_definitions.ron",
+        "initial_sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7",
+        "current_sha256": "64cc593e09712d6d619306679a97642635fad9deec6d9ad8108dcf4b0ebaa2e7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/pve/encounters.ron",
+        "initial_sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde",
+        "current_sha256": "8b2472db6750dcbf883bd0d826320e5a139b9a2ef47f3f460efae378c22fecde",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/resources/base.ron",
+        "initial_sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449",
+        "current_sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/run/policy.ron",
+        "initial_sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31",
+        "current_sha256": "3c45b88cf0c0801e90277ea68840d0a65df72c0ecccba46984520f9bbf97cb31",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/skill_fragments/base.ron",
+        "initial_sha256": "19d781da6675927931344c0bc5272ebd673cf59a3df94f5dbd577c1d667b3e74",
+        "current_sha256": "19d781da6675927931344c0bc5272ebd673cf59a3df94f5dbd577c1d667b3e74",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/skills/base.ron",
+        "initial_sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5",
+        "current_sha256": "f225d6d7ae3539c86a47ff9281b7e1b9371e485dd99815a5b8e16d565e66caf5",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/summoned_units/base.ron",
+        "initial_sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0",
+        "current_sha256": "2b5173ac02d88a05bdf4e54d722bf36757e36b9de5ee098da5e47937be56f1c0",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/visual_novel_triggers/base.ron",
+        "initial_sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875",
+        "current_sha256": "4216706ac783ee5d11662c616360cd0054564c3297db6953245d61ca2c038875",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_resources/data/visual_novels/base.ron",
+        "initial_sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f",
+        "current_sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/env.rs",
+        "initial_sha256": "a82706af4a38d8de25a6aefa293670f6ab9a7c4013e9b46af1b14992ef0eccaf",
+        "current_sha256": "a82706af4a38d8de25a6aefa293670f6ab9a7c4013e9b46af1b14992ef0eccaf",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/load_balance_actor/handlers.rs",
+        "initial_sha256": "e80e1da601155e1e1a850839f8077b7e0478162c143100324e435ff6a596ee5f",
+        "current_sha256": "e80e1da601155e1e1a850839f8077b7e0478162c143100324e435ff6a596ee5f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/load_balance_actor/messages.rs",
+        "initial_sha256": "6b283bc0f49827aceca332d05d1562ffc0eb5a8d110af359ca1907283fb15918",
+        "current_sha256": "6b283bc0f49827aceca332d05d1562ffc0eb5a8d110af359ca1907283fb15918",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/load_balance_actor/mod.rs",
+        "initial_sha256": "ffd39dc602783a77b3aa4c837fb55cc906592d8fbb94aa06b30e32b7427f072e",
+        "current_sha256": "ffd39dc602783a77b3aa4c837fb55cc906592d8fbb94aa06b30e32b7427f072e",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/mod.rs",
+        "initial_sha256": "61244dd263e0c0e33de99a491f518a34bdee1e57e5de252a57a7eee2889247b1",
+        "current_sha256": "61244dd263e0c0e33de99a491f518a34bdee1e57e5de252a57a7eee2889247b1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/player_game_actor/handlers.rs",
+        "initial_sha256": "c8ac53202e412cf34d341a350c977827bcf3ab3731b994b5fed7823c33bae750",
+        "current_sha256": "c8ac53202e412cf34d341a350c977827bcf3ab3731b994b5fed7823c33bae750",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/player_game_actor/messages.rs",
+        "initial_sha256": "28229b6b6d32bd8f95b7cd456ec06407ea99e322903a9e996c7beccca550d7f7",
+        "current_sha256": "28229b6b6d32bd8f95b7cd456ec06407ea99e322903a9e996c7beccca550d7f7",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/player_game_actor/mod.rs",
+        "initial_sha256": "b24dd94e20e4ac6cdcee168c2c4a891beb7d799a942a8d4784ff53b1a124b43f",
+        "current_sha256": "b24dd94e20e4ac6cdcee168c2c4a891beb7d799a942a8d4784ff53b1a124b43f",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/player_game_actor/session.rs",
+        "initial_sha256": "bde6f11f1fd299bff57da5916b255a3d10fb48f453a08216e1c1fa4f1fd5cee1",
+        "current_sha256": "bde6f11f1fd299bff57da5916b255a3d10fb48f453a08216e1c1fa4f1fd5cee1",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/game/player_game_actor/state.rs",
+        "initial_sha256": "c42c486de1ad194ed9360892167311d47bc07aedb95a39eae31f0ff5464d2e07",
+        "current_sha256": "c42c486de1ad194ed9360892167311d47bc07aedb95a39eae31f0ff5464d2e07",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/lib.rs",
+        "initial_sha256": "1c918b2dd6a84d718e408e4208ae189827c03bd8527fe869371c7d9246f06f19",
+        "current_sha256": "1c918b2dd6a84d718e408e4208ae189827c03bd8527fe869371c7d9246f06f19",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/main.rs",
+        "initial_sha256": "bc9cf2174e9cc189c2f8ef59698ec3d31838aba3057863f1c73627bf2021f661",
+        "current_sha256": "bc9cf2174e9cc189c2f8ef59698ec3d31838aba3057863f1c73627bf2021f661",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/persistence/active_run_store.rs",
+        "initial_sha256": "f43c3fc5caf1eaeaf64207f37c240289548149b31292a83385c89b3eaa74cd3d",
+        "current_sha256": "f43c3fc5caf1eaeaf64207f37c240289548149b31292a83385c89b3eaa74cd3d",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/persistence/mod.rs",
+        "initial_sha256": "9b599603d0af7f0139d622bbab397293e56505211ab86652e6f5e19992236e31",
+        "current_sha256": "9b599603d0af7f0139d622bbab397293e56505211ab86652e6f5e19992236e31",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/persistence/player_profile_store.rs",
+        "initial_sha256": "d093656e63e4c9442a5729dcfc6638bdf40d145ddd8e13e42eb97e0dc9f464de",
+        "current_sha256": "d093656e63e4c9442a5729dcfc6638bdf40d145ddd8e13e42eb97e0dc9f464de",
+        "disposition": "unchanged"
+      },
+      {
+        "path": "game_server/src/shared/mod.rs",
+        "initial_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "current_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "disposition": "unchanged"
+      }
+    ],
+    "planning_close_manifest_path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/baseline/close_002/MANIFEST.json"
+  },
+  "links": {
+    "checked": 187,
+    "new_missing": [],
+    "preexisting_missing_preserved": []
+  },
+  "exact_chain": {
+    "freeze": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CAVER-P2G30-001",
+      "Content Digest": null
+    },
+    "plan": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CAVER-P2G40-001",
+      "Content Digest": null
+    },
+    "goal_set": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CAVER-P2G50-001",
+      "Content Digest": null
+    },
+    "handoff": {
+      "Artifact Type": "Handoff Artifact",
+      "Artifact ID": "HA-CAVER-P2G60-001",
+      "Content Digest": null
+    }
+  },
+  "semantic_coverage": {
+    "old_and_new_policy_meanings_byte_equal": 9,
+    "exact_acceptances_in_goal": 27,
+    "integration_owner_rows": 21,
+    "validation_dimensions": 10,
+    "design_review": "P2G_40_RESULT_001.json, P2G_50_RESULT_001.json; CRA003 D01–D10",
+    "future_interface_or_measurement_gaps": "explicit D10 owner/precondition; not claimed implemented"
+  },
+  "git": {
+    "branch": "cleanup/simulator-dirty-worktree-20260803",
+    "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "status_stable": true
+  },
+  "runtime_tests_executed": 0,
+  "GEX_started": false,
+  "remaining": "Separate explicit implementation request, implementation baseline and D10 preparation; not required work for this plan-only objective",
+  "terminal": "R06 P2G 재검토·계획 인계 완료 / 구현 요청 대기",
+  "predecessor_verification": {
+    "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/FINAL_VERIFICATION_001.json",
+    "sha256": "b7567fc9c00b5875dd949b4bfbd6f1fb078bc8e02b735291283c80bec6da165e"
+  },
+  "post_interruption_audit": {
+    "previous_turn": "progress; source/plan/Handoff and final verifier process completed with exit0. Same session44258 resumed, no task restarted.",
+    "changed_documents": [
+      "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/PLAN_HANDOFF.ko.md",
+      "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/WORKING_POLICY.ko.md",
+      "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+    ],
+    "formal_artifact_and_source_bytes": "unchanged, checked all predecessor461 manifest members and actual original bytes",
+    "standard_validator_reuse": "all exact validator input/root artifact bytes unchanged; prior real40/50 passed outputs reused",
+    "current_summary": "ROADMAP top/current card/Working Policy/PLAN_HANDOFF now consistently select completed plan and implementation request wait"
+  }
+}

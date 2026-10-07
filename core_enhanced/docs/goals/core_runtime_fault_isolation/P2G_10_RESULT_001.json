@@ -1,0 +1,121 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-001",
+    "Content Digest": "sha256:4427038456cafaf37abde305efe5fa16c657e111703921b11840a0b1e384ae3c"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRFI-002",
+    "Content Digest": "sha256:16b5651d75e6c8a91def464d2a811ac11e4c12068c4256572f38c51e1f27c258"
+  },
+  "Produced Candidate Disposition Ref Set": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-01-001",
+      "Content Digest": "sha256:d99783f5026f0fcbf2077033afc2d6510d9ada0b86c108caab7107af05f4484d"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-02-001",
+      "Content Digest": "sha256:f070415b87dd6e86e32b4e2bd47157d44e4b688656344f938954df4f34fb7a2c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-03-001",
+      "Content Digest": "sha256:d54da5953155366720e8ddbbabcc1808c7c4c9dae46db24ef138c53cc178e69b"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-04-001",
+      "Content Digest": "sha256:d93cfc19a5a26a7be19c92c3b7c20493217e7798d61c0c19349c262247ebdbe9"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-05-001",
+      "Content Digest": "sha256:a489ba771dfdda6109dd10e0e48502910df5446e8e61fb48c2ece6abd5bb76a8"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-06-001",
+      "Content Digest": "sha256:7222d10c8d5cf353a7f55f16bcb5ba76eb0c2027c3cedfb654b287f38f3e6f89"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-07-001",
+      "Content Digest": "sha256:1cac91583a06f003b87dfdeeafe3915317c414c655df31a522ecd15b84603099"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-08-001",
+      "Content Digest": "sha256:d90719c83289ac95ef9b71e865fc428112643200adeca208b3918f97702b612e"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-09-001",
+      "Content Digest": "sha256:5240230f9d79dc7ad83d6b24ba24263bcc1b687cd1faf36a23725ae7fb2ff955"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-10-001",
+      "Content Digest": "sha256:b16e54b405ee33456f7ae1f77040803feeaae5ce0e131e84af453d8084a73f50"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-11-001",
+      "Content Digest": "sha256:d35c1793f14324e9d2ddded2c29fbf46d6bd427cebc298182b527e005973b633"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRFI-12-001",
+      "Content Digest": "sha256:9f08a5050798667af4b448d3cfc3eeb835548e1cad5529562fdccf1dace31c08"
+    }
+  ],
+  "is_p2g10_complete": true,
+  "checks": {
+    "all_in_scope_candidates_disposed": true,
+    "all_elements_decided": true,
+    "single_leaf_decisions": true,
+    "acceptances_present_consistent": true,
+    "delegation_five_criteria_per_decision": true,
+    "intake_unchanged": true,
+    "open_questions_empty": true,
+    "cross_references_valid": true
+  },
+  "Finding Triage": [
+    {
+      "classification": "material_policy",
+      "disposition": "explicit CF-D06 delegated decision",
+      "elements": [
+        "PE-CRFI-01",
+        "PE-CRFI-02",
+        "PE-CRFI-03",
+        "PE-CRFI-04",
+        "PE-CRFI-05",
+        "PE-CRFI-06",
+        "PE-CRFI-07",
+        "PE-CRFI-08",
+        "PE-CRFI-09",
+        "PE-CRFI-10",
+        "PE-CRFI-11",
+        "PE-CRFI-12"
+      ],
+      "evidence": "P2G_10_POLICY_001.json exact reason, impact and five criteria per decision"
+    },
+    {
+      "classification": "implementation_finding",
+      "disposition": "P2G-20 required",
+      "statement": "typed producer/route classification; Core rollback versus outer fault ownership; host early management handlers/stopped writer; postcommit projection; speculative authoring; observer lifecycle all need formal exact-source review"
+    },
+    {
+      "classification": "out_of_scope",
+      "disposition": "U04/U11/U26 owners retained",
+      "statement": "normal result/save policy changes, mod registration, visual error UI, new gameplay costs/caps, full Run rollback, skill auto-cancel,20min tests excluded"
+    }
+  ],
+  "new_user_request_required": false,
+  "next": "P2G-20",
+  "production_mutation": false
+}

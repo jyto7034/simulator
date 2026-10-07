@@ -1,0 +1,51 @@
+{
+  "event_heavy": {
+    "repeatable": true,
+    "nearest_rank_p95_ns": 13432873,
+    "absolute_cap_ns": 25000000,
+    "absolute_cap_pass": true,
+    "one_sided_exact_regression_p": 1.0,
+    "statistically_supported_regression": false,
+    "deterministic_baseline_parity": true,
+    "allocation_retained_peak_guard_pass": true,
+    "allocation_peak_samples": [
+      255558,
+      255558,
+      255558,
+      255558,
+      255558
+    ],
+    "retained_samples": [
+      255558,
+      255558,
+      255558,
+      255558,
+      255558
+    ]
+  },
+  "concurrent_sessions": {
+    "repeatable": true,
+    "nearest_rank_p95_ns": 7248197,
+    "absolute_cap_ns": 10000000,
+    "absolute_cap_pass": true,
+    "one_sided_exact_regression_p": 1.0,
+    "statistically_supported_regression": false,
+    "deterministic_baseline_parity": true,
+    "allocation_retained_peak_guard_pass": false,
+    "allocation_peak_samples": [
+      8990636,
+      9033904,
+      9022752,
+      9049432,
+      8956881
+    ],
+    "retained_samples": [
+      4196928,
+      4196928,
+      4196928,
+      4196928,
+      4196928
+    ]
+  },
+  "policy_warning_excess_bytes": 19244
+}

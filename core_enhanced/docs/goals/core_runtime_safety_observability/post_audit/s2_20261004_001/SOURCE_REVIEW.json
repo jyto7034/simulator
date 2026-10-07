@@ -1,0 +1,186 @@
+{
+  "changed_paths": [
+    {
+      "path": "Cargo.lock",
+      "independent_review": "Optional feature/dependency wiring; Core adds no exporter dependency. Exact three direct pins, standard graph and original311 version pairs preserved with32 additions. DEPENDENCY_VERIFICATION.json and final both-feature builds establish current compatibility.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "independent_review": "Optional feature/dependency wiring; Core adds no exporter dependency. Exact three direct pins, standard graph and original311 version pairs preserved with32 additions. DEPENDENCY_VERIFICATION.json and final both-feature builds establish current compatibility.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "independent_review": "Additive canonical optional-observation section; prior settings/profile/authority/prepared persistence contracts remain intact. Links point to current host launch and accounting contract. This union-only33rd path is explicitly reviewed here although implementer impact lists32 product paths.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "independent_review": "All public attempt wrappers preserve body/return conversion and transaction revision order. Pending preparation detaches TLS before return; failure completes once; commit publishes staged observation after real GameCore root replacement; discard reports once. Active-battle rollback guard remains before revision/private restore.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/application/runtime_observation_tests.rs",
+      "independent_review": "Test-only assertions directly cover attempts/public root commit/prepared discard/real battle failure/end, actual short-lived native delivery peak, lifecycle/dedup/selection/ring and allocator retirement. No fixture mutation is part of production behavior; final matrix includes the current tests.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/basic_attack_projectile.rs",
+      "independent_review": "Additive feature-gated peak samples after existing insert/admit and read-only sample at already-required extent reconciliation. Existing producer/consumer ordering, mutations and errors unchanged; fields use lengths/cached history rather than added owner walks. Real transient projectile/actions/events regression and current inherited suites execute these seams.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/mod.rs",
+      "independent_review": "Additive feature-gated peak samples after existing insert/admit and read-only sample at already-required extent reconciliation. Existing producer/consumer ordering, mutations and errors unchanged; fields use lengths/cached history rather than added owner walks. Real transient projectile/actions/events regression and current inherited suites execute these seams.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/queue.rs",
+      "independent_review": "Additive feature-gated peak samples after existing insert/admit and read-only sample at already-required extent reconciliation. Existing producer/consumer ordering, mutations and errors unchanged; fields use lengths/cached history rather than added owner walks. Real transient projectile/actions/events regression and current inherited suites execute these seams.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+      "independent_review": "Additive feature-gated peak samples after existing insert/admit and read-only sample at already-required extent reconciliation. Existing producer/consumer ordering, mutations and errors unchanged; fields use lengths/cached history rather than added owner walks. Real transient projectile/actions/events regression and current inherited suites execute these seams.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs",
+      "independent_review": "Additive feature-gated peak samples after existing insert/admit and read-only sample at already-required extent reconciliation. Existing producer/consumer ordering, mutations and errors unchanged; fields use lengths/cached history rather than added owner walks. Real transient projectile/actions/events regression and current inherited suites execute these seams.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/tests/amount_order.rs",
+      "independent_review": "Test-only assertions directly cover attempts/public root commit/prepared discard/real battle failure/end, actual short-lived native delivery peak, lifecycle/dedup/selection/ring and allocator retirement. No fixture mutation is part of production behavior; final matrix includes the current tests.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/event_log.rs",
+      "independent_review": "Additive feature-gated peak samples after existing insert/admit and read-only sample at already-required extent reconciliation. Existing producer/consumer ordering, mutations and errors unchanged; fields use lengths/cached history rather than added owner walks. Real transient projectile/actions/events regression and current inherited suites execute these seams.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/battle/runtime_control.rs",
+      "independent_review": "Scope/DeferredScope still take and drop the one native budget; optional callback copies its accepted work/clone/admission totals. It cannot admit/charge/latch/clear a safety fault or reset allowance.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "independent_review": "Read only constant-time usage/last event clock; stage after existing reconciliation and final polls; root-address check at unchanged sole root replacement rejects nested draft publication. No second gameplay operation, clone, admission or persistence policy.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/lib.rs",
+      "independent_review": "Non-default feature gates module only; no default raw authority export or mutable safety setting added. Both Core/host final feature combinations compiled and tested.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "core_enhanced/src/runtime_observation.rs",
+      "independent_review": "Closed enums/finite labels; fixed TLS accumulator outside rollback; single-use pending capture; actual root guard; bounded SyncSender try_send; atomically published counters/latest/peaks independent of queue delivery; weak lifecycle; bounded sequence-reader retries. No metrics feedback, RNG, settings or game fault path.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/Cargo.toml",
+      "independent_review": "Optional feature/dependency wiring; Core adds no exporter dependency. Exact three direct pins, standard graph and original311 version pairs preserved with32 additions. DEPENDENCY_VERIFICATION.json and final both-feature builds establish current compatibility.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability.ron",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/README.md",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/grafana/dashboards/core-runtime.json",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/grafana/grafana.ini",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/dashboards/core-runtime.yml",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/grafana/provisioning/datasources/core-runtime.yml",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/prometheus.yml",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/config/observability/run_local.py",
+      "independent_review": "Separate opt-in loopback configuration/provisioning. Standard Prometheus1s scrape/24h local retention and Grafana1s dashboard with manual XY frame/x/y matchers and version13.2.3. Finite fixed panels/labels; wall/simulation axes and boundary metadata explained. Actual service/browser artifacts verify consumer behavior.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/examples/observe_runtime.rs",
+      "independent_review": "Verification example uses the existing external production loader and public Core commands; real native/authority failures, actual pause/resume, concentrated/normal advance, retreat/drop. Observation mode changes no game input; no fixture-sensitive branch enters product Core.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/game/load_balance_actor/handlers.rs",
+      "independent_review": "Optional host handle attachment before the same initial profile merges; feature-off constructors/main preserve original behavior. Collector guard lives with host; invalid observability configuration is logged and disables collection without replacing safety/content generation. Actual malformed-observation websocket host and release failure modes verify this seam.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/game/load_balance_actor/mod.rs",
+      "independent_review": "Optional host handle attachment before the same initial profile merges; feature-off constructors/main preserve original behavior. Collector guard lives with host; invalid observability configuration is logged and disables collection without replacing safety/content generation. Actual malformed-observation websocket host and release failure modes verify this seam.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "independent_review": "Test-only assertions directly cover attempts/public root commit/prepared discard/real battle failure/end, actual short-lived native delivery peak, lifecycle/dedup/selection/ring and allocator retirement. No fixture mutation is part of production behavior; final matrix includes the current tests.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/lib.rs",
+      "independent_review": "Non-default feature gates module only; no default raw authority export or mutable safety setting added. Both Core/host final feature combinations compiled and tested.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/main.rs",
+      "independent_review": "Optional host handle attachment before the same initial profile merges; feature-off constructors/main preserve original behavior. Collector guard lives with host; invalid observability configuration is logged and disables collection without replacing safety/content generation. Actual malformed-observation websocket host and release failure modes verify this seam.",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/observability/mod.rs",
+      "independent_review": "Finite preregistered owned recorder, batch128/queue1024/ring300, synchronous upkeep and crossbeam retirement fence, actual weak lease cleanup independent of queue/gate, last committed snapshot preserved on reader contention. No game callback/wait. Missing owner increments expired; duplicate sequence ignores histogram without increment (N01 doc precision).",
+      "verdict": "PASS"
+    },
+    {
+      "path": "game_server/src/observability/tests.rs",
+      "independent_review": "Test-only assertions directly cover attempts/public root commit/prepared discard/real battle failure/end, actual short-lived native delivery peak, lifecycle/dedup/selection/ring and allocator retirement. No fixture mutation is part of production behavior; final matrix includes the current tests.",
+      "verdict": "PASS"
+    }
+  ],
+  "added": [
+    "core_enhanced/src/application/runtime_observation_tests.rs",
+    "core_enhanced/src/runtime_observation.rs",
+    "game_server/config/observability.ron",
+    "game_server/config/observability/README.md",
+    "game_server/config/observability/grafana/dashboards/core-runtime.json",
+    "game_server/config/observability/grafana/grafana.ini",
+    "game_server/config/observability/grafana/provisioning/dashboards/core-runtime.yml",
+    "game_server/config/observability/grafana/provisioning/datasources/core-runtime.yml",
+    "game_server/config/observability/prometheus.yml",
+    "game_server/config/observability/run_local.py",
+    "game_server/examples/observe_runtime.rs",
+    "game_server/src/observability/mod.rs",
+    "game_server/src/observability/tests.rs"
+  ],
+  "deleted": [],
+  "direct_source_guardrail_review": "No added game-specific hardcoding, silent normalization, broad catch-all gameplay recovery, consumer re-inference, duplicate authority, arbitrary sequence workaround or unapproved legacy path. Diagnostic failures remain outside gameplay. N01 is documentation precision only."
+}

@@ -9,6 +9,9 @@ pub struct Settings {
     pub session: SessionSettings,
     pub retry: RetrySettings,
     pub persistence: PersistenceSettings,
+    pub content: ContentSettings,
+    #[serde(default)]
+    pub runtime_safety_path: Option<PathBuf>,
 }
 
 impl Settings {
@@ -64,7 +67,7 @@ pub struct PersistenceSettings {
     pub active_run_directory: String,
     /// Separate local-install profile aggregate. It may share a parent root
     /// with active-run files but has its own envelope, lock and transaction.
-    pub encounter_compendium_directory: String,
+    pub player_profile_directory: String,
 }
 
 impl PersistenceSettings {
@@ -72,8 +75,8 @@ impl PersistenceSettings {
         resolve_application_persistent_data_directory(&self.active_run_directory)
     }
 
-    pub fn encounter_compendium_directory(&self) -> Result<PathBuf, String> {
-        resolve_application_persistent_data_directory(&self.encounter_compendium_directory)
+    pub fn player_profile_directory(&self) -> Result<PathBuf, String> {
+        resolve_application_persistent_data_directory(&self.player_profile_directory)
     }
 }
 
@@ -146,4 +149,12 @@ mod persistence_tests {
         assert!(resolved.ends_with(Path::new("persistent_data")));
         assert_ne!(resolved, Path::new("persistent_data"));
     }
+}
+
+#[derive(Debug, Deserialize, Clone)]
+#[serde(deny_unknown_fields)]
+pub struct ContentSettings {
+    /// Explicit production pack root; relative paths are resolved from host cwd.
+    pub trusted_root: PathBuf,
+    pub selection_path: PathBuf,
 }

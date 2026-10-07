@@ -1,0 +1,401 @@
+{
+  "request": "NEXT-0003",
+  "outcome": "P2G-20 exit reached; no next-card execution",
+  "checked_at": "2026-09-09T06:09:56.719578+00:00",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "checks": {
+    "json_and_typed_refs": "pass",
+    "acyclic_artifact_count": 73,
+    "elements_decisions_acceptance_preserved": 6,
+    "requirement_observations": 7,
+    "element_requirement_pairs": 29,
+    "current_result_bindings": 6,
+    "exact_source_hashes": 31,
+    "initial_artifacts_preserved": 2,
+    "existing_text_paths_compared": 1668,
+    "existing_text_changes": [
+      "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+    ],
+    "preexisting_git_entries_preserved": 16489,
+    "added_git_entries_in_topic": 11,
+    "local_links_checked": 62
+  },
+  "local_links": [
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "P2G_00_INITIAL_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "P2G_00_RESULT_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "../../policy_to_goal_pipeline_revised_v2.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "../../goal_execution_pipeline%281%29.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "../../archive/goal_execution_pipeline.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "P2G_10_POLICY_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "P2G_10_RESULT_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "CODE_REVIEW_001.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "P2G_20_REVIEW_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "P2G_20_RESULT_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "WORKSPACE_BASELINE_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "target": "NEXT_0003_VERIFICATION.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "target": "P2G_10_POLICY_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "target": "P2G_20_SOURCE_PLAN_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "OPERATING_RULES.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "roadmap/ROADMAP.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "roadmap/DEPENDENCIES.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../policy_to_goal_pipeline_revised_v2.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "guides/policy_to_goal_pipeline_revised_v2.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goal_execution_pipeline%281%29.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../archive/goal_execution_pipeline.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/P2G_20_RESULT_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/P2G_10_POLICY_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "OPERATING_RULES.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "roadmap/00_README.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "roadmap/DEPENDENCIES.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../policy_to_goal_pipeline_revised_v2.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../archive/policy_to_goal_pipeline.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goal_execution_pipeline%281%29.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../archive/goal_execution_pipeline.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/P2G_20_REVIEW_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0001_INTAKE.ko.md#3-기존-topicgoal실행감사-인수",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/conditional_wave_and_boss_summon_policy/execution/master/COMPLETION_AUDIT.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/project_architecture_map/COMPLETION_AUDIT.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/P2G_20_RESULT_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/NEXT_0003_VERIFICATION.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/WORKSPACE_BASELINE_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_REQUIREMENTS.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_COVERAGE.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_REQUIREMENTS.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_COVERAGE.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/P2G_20_RESULT_001.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "../../goals/content_authoring_minimal_effect_contract/NEXT_0003_VERIFICATION.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_REQUIREMENTS.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_COVERAGE.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0002_EVIDENCE.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0001_INTAKE.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "records/CA00_NEXT-0001_EVIDENCE.json",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "CHANGES.ko.md",
+      "result": "pass"
+    },
+    {
+      "file": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "target": "DOCUMENT_CHECKS.json",
+      "result": "pass"
+    }
+  ],
+  "topic_file_hashes": {
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/CODE_REVIEW_001.ko.md": "d14d661c81eb5a85fc09ced3a71997b5462f79ec86fa0f861f0db6430bcfa352",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_00_INITIAL_001.json": "4b2ee63a061b1ebc7dcbe1a5dece8bcbad5e80dd88353974b7717740bd6e5e42",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_00_RESULT_001.json": "e489140bd63db7691c5b0d5fc0486ab30972af3e667f72cf56fcff67ad6b23e2",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_10_POLICY_001.json": "81cd5fc3c5bc25087da73abb356f85aaf3ad693fa832079722463825a1c61170",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_10_RESULT_001.json": "f2e6b6bb5df9ba1a628662d0f9e88cffd1242441ba802490f68a3cc3031f366f",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_RESULT_001.json": "46a4d83ed8bda10ff83c3c8a022fcd75764e11e0f4bef740f44f3076b4784692",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_REVIEW_001.json": "cd3e8e41941c7acbbd63cdfff5a1bfdd2520beea7da3cd2b7bb0ebaf56b093b0",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/P2G_20_SOURCE_PLAN_001.json": "6b24ccab63784c7ccd1c8c2f17ece40d482c52bc3dc5977c6252de1deed06891",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKING_POLICY.ko.md": "015e0ba4a5607900b7c55fef1c86efa82f302be2271b30aad3fcf87722696e48",
+    "core_enhanced/docs/goals/content_authoring_minimal_effect_contract/WORKSPACE_BASELINE_001.json": "f83d0ed52080601261744d26e08eac7bbc8f22a9f2d48ecb2106400179c189f0"
+  },
+  "status_sha256": "db7fc8c32f93b67dd31ff265161090f280780097e640d295d168cbd8f8cf232e",
+  "pipeline_files": {
+    "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+    "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+    "core_enhanced/docs/goal_execution_pipeline(1).md": "0ec53e9f68a82790c33a61c3b87d326d0af545c8fdbb47a6e97986c65b6a75c6",
+    "core_enhanced/docs/archive/goal_execution_pipeline.md": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72"
+  },
+  "review_source_dirty_at_request": {
+    "core_enhanced/src/game/data/live_ron.rs": " M",
+    "core_enhanced/src/game/data/mod.rs": " M",
+    "core_enhanced/src/application.rs": "??",
+    "core_enhanced/src/game/data/skill_data.rs": " M",
+    "core_enhanced/src/game/ability.rs": " M",
+    "core_enhanced/Cargo.toml": " M",
+    "core_enhanced/src/game/battle/core/sim.rs": " M",
+    "core_enhanced/src/game/battle/core/commands.rs": " M",
+    "core_enhanced/src/game/battle/core/skill_runtime/cast.rs": " M",
+    "core_enhanced/src/game/battle/core/types.rs": " M",
+    "core_enhanced/src/game/battle/damage.rs": " M",
+    "core_enhanced/src/game/battle/core/damage_runtime.rs": " M",
+    "core_enhanced/src/game/battle/core/build.rs": " M",
+    "core_enhanced/src/game/battle/core/skill_runtime/projectile.rs": " M",
+    "core_enhanced/src/game/battle/core/skill_runtime/area.rs": " M",
+    "core_enhanced/src/game/stats.rs": " M",
+    "core_enhanced/src/game/battle/core/triggers.rs": " M",
+    "core_enhanced/src/game/skill_fragment.rs": " M",
+    "core_enhanced/src/game/employee.rs": " M",
+    "core_enhanced/src/game/battle/stat_pipeline.rs": " M",
+    "core_enhanced/src/game/data/equipment_data.rs": " M",
+    "core_enhanced/src/game/data/validation.rs": " M",
+    "core_enhanced/src/game/range_preview.rs": " M",
+    "core_enhanced/src/game/data/boss_runtime_data.rs": "??",
+    "core_enhanced/docs/goals/current_runtime_architecture_remediation/execution/master_goal_set/COMPLETION_AUDIT.md": "??",
+    "core_enhanced/src/game/world/state.rs": " M",
+    "core_enhanced/src/game/world/active_run.rs": " M",
+    "core_enhanced/tests/skill_runtime_contract.rs": " M",
+    "core_enhanced/tests/live_skill_catalog_audit.rs": " M",
+    "core_enhanced/tests/live_item_skill_activation.rs": " M",
+    "game_resources/data/skills/base.ron": " M"
+  },
+  "not_executed": [
+    "production/code/RON/store/validator/rule mutation",
+    "game tests/build/new parser run",
+    "P2G-30 Freeze / Phase / Goal / Handoff",
+    "GEX execution or independent completion audit",
+    "release/deploy/runner application verification"
+  ],
+  "checker_method": "one-off Python read-only graph/reference/source/working-tree/link checks; repository validators unchanged",
+  "limitations": [
+    "selected text baseline; not hashes of every asset/ignored/private store",
+    "existing policy approval is referenced local user-decision record, not independently captured historical chat",
+    "CODE_REVIEW proposals are not frozen gameplay or implemented support"
+  ]
+}

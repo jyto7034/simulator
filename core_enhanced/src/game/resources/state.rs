@@ -44,6 +44,9 @@ pub enum GameState {
     CombatResult {
         battle_uuid: Uuid,
     },
+    MasteredEliteSweepResult {
+        sweep_uuid: Uuid,
+    },
     InBattle {
         battle_uuid: Uuid,
     },

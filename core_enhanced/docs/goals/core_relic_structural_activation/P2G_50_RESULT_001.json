@@ -1,0 +1,55 @@
+{
+  "stage": "P2G-50",
+  "status": "complete",
+  "Goal Set Ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CRSA-001",
+    "Content Digest": "sha256:737ee86dbba08490929b013b6623fbb934ef21ecd48ec0ecd45d17aa5cf60034"
+  },
+  "member_ids": [
+    "GOAL-CRSA-01"
+  ],
+  "validator": "P2G_50_VALIDATION_001.json",
+  "raw_exit": 0,
+  "digest_method": "sha256 UTF-8 Markdown excluding envelope Goal Set Ref line; LF with terminal newline",
+  "current_basis": {
+    "Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRSA-003",
+      "Content Digest": "sha256:9f81d4ac1874e7c273f4addaafd87664f5d62de4ab997dfd1ab1b5a6b4a2421e"
+    },
+    "Final Policy Freeze Ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CRSA-001",
+      "Content Digest": "sha256:980473d0b54898d9117cc6ba1aa5b64ae634d94ea154cb034c4858074c734a8f"
+    },
+    "Phase Plan Ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CRSA-001",
+      "Content Digest": "sha256:2eafa0278ec9eab0dbb7e8a4175eacdea1957d4d53f55355a338fc4d324fe7d0"
+    },
+    "Goal Set Ref": {
+      "Artifact Type": "Goal Set",
+      "Artifact ID": "GS-CRSA-001",
+      "Content Digest": "sha256:737ee86dbba08490929b013b6623fbb934ef21ecd48ec0ecd45d17aa5cf60034"
+    },
+    "Handoff Artifact Ref": null,
+    "Post-Freeze Change Record Ref Set": [],
+    "Authoritative Change Obligation Declaration Ref Set": []
+  },
+  "semantic_review": {
+    "all17_frozen_acceptance_pairs": true,
+    "atomic_core_and_public_verify_onephase": true,
+    "all17_integration_seams_owned": true,
+    "all10_dimensions_required": true,
+    "223_predecessors_plus31_R06": true,
+    "TD01_to06_shared_contracts_and_remaining_choices_preserved": true,
+    "fixed_recipient_shared2S_regular_occurrence_and_settled_heal": true,
+    "source_lifetime_transaction_restore_admission_preserved": true,
+    "normal_public_path_and_legacy_numeric_aura_scope": true,
+    "no_implementation_or_independent_completion_claim": true
+  },
+  "P2G-50 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "next": "P2G-60"
+}

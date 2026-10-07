@@ -1,0 +1,128 @@
+[
+  {
+    "receipt": "changed_region_format_final_002.json",
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "cargo_check_all_targets_final.json",
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "correction_equipment_focused_final.json",
+    "exit_code": 0,
+    "passed": 43,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "value_expr_focused_final.json",
+    "exit_code": 0,
+    "passed": 88,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "id_bytes_c09_final_002.json",
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "inventory_draft_runtime_c06_final.json",
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "d04_f01_regression_final.json",
+    "exit_code": 0,
+    "passed": 9,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "cargo_test_all_targets_final.json",
+    "exit_code": 0,
+    "passed": 1526,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "cargo_clippy_all_targets_final.json",
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "direct_lookup_code_scan_final.json",
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "equipment_layout_size_final.json",
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "pc_36_final.json",
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "pc_compare_final.json",
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  },
+  {
+    "receipt": "r05_guard_final.json",
+    "exit_code": 101,
+    "passed": 0,
+    "failed": 0,
+    "log_sha_verified": true,
+    "source_digest_matches_target": true,
+    "source_before_after_equal": true
+  }
+]

@@ -1,0 +1,586 @@
+{
+  "at_utc": "2026-09-10T18:37:32.457113+00:00",
+  "stage": "closure",
+  "target_sha256": "5d4a4771cac412e41c6bdaf29d8b0e10240735bab68cca7a19dc2a4936715029",
+  "expected_target_sha256": "5d4a4771cac412e41c6bdaf29d8b0e10240735bab68cca7a19dc2a4936715029",
+  "identities": {
+    "head": {
+      "actual": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+      "expected": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+      "equal": true
+    },
+    "branch": {
+      "actual": "cleanup/simulator-dirty-worktree-20260803",
+      "expected": "cleanup/simulator-dirty-worktree-20260803",
+      "equal": true
+    },
+    "rustc": {
+      "actual": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+      "expected": "rustc 1.91.1 (ed61e7d7e 2025-11-07)",
+      "equal": true
+    },
+    "cargo": {
+      "actual": "cargo 1.91.1 (ea2d97820 2025-10-10)",
+      "expected": "cargo 1.91.1 (ea2d97820 2025-10-10)",
+      "equal": true
+    },
+    "environment": {
+      "actual": "Linux Acr0tic 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux",
+      "expected": "Linux Acr0tic 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux",
+      "equal": true
+    }
+  },
+  "manifest": {
+    "count": 3682,
+    "absences": 2,
+    "differences": []
+  },
+  "external_actual": [
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+      "count": 25,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+      "count": 28,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+      "count": 30,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+      "count": 25,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+      "count": 54,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+      "count": 14,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+      "count": 105,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+      "count": 448,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+      "count": 68,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+      "count": 65,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+      "count": 102,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+      "count": 5,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+      "count": 9,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+      "count": 5,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_EXTERNAL_001",
+      "count": 72,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/SOURCE_RECEIPT_CLI_001",
+      "count": 16,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_004",
+      "count": 102,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_003",
+      "count": 54,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_005",
+      "count": 14,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_003",
+      "count": 5,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/API_EXTERNAL_002",
+      "count": 13,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    },
+    {
+      "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CORRECTION_001_CONSUMER_BINARIES",
+      "count": 4,
+      "absences": 0,
+      "differences": [],
+      "extra": [],
+      "missing": []
+    }
+  ],
+  "default_release_binaries": {
+    "count": 3,
+    "absences": 0,
+    "differences": []
+  },
+  "validation_inputs": {
+    "count": 318,
+    "absences": 0,
+    "differences": []
+  },
+  "predecessors": [
+    {
+      "goal_set_ref": "GS-CAMEC-P2G50-001",
+      "target_sha256": "965e2accba9aeaca67d9aedae39a94f15438b865aa05d4e6f01575a1cfab4f13",
+      "target_expected": "965e2accba9aeaca67d9aedae39a94f15438b865aa05d4e6f01575a1cfab4f13",
+      "report_sha256": "750168985ace4b476954a494b983748514f4f4bf56e45b7c5592bad5a30dbfcd",
+      "report_expected": "750168985ace4b476954a494b983748514f4f4bf56e45b7c5592bad5a30dbfcd",
+      "manifest": {
+        "count": 3278,
+        "absences": 2,
+        "differences": [
+          {
+            "path": "core_enhanced/docs/core_runtime_contract.md",
+            "expected": "373175eec695cb9199b33f7ea86ce980742158f921da6b0d5642eba8f24d092e",
+            "actual": "bec452968a0bb025af76d6022c8288013b99e7cbe14b66757d2c7077a04af679"
+          },
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/EXPERIMENTS.md",
+            "expected": "4fdc18ab05ba2ca3d14f267f0cbd8cf7aca0b1c097543371c7a5f37da62ac7d7",
+            "actual": "84cd3ba8edcefd4bed2977bf89201bd6ded72c7c75a545bf9159567af59acd3b"
+          },
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/EXPERIMENT_NOTES.md",
+            "expected": "bfcc3cd6b7f5b3e64ec495271b01c56fa6df612f65d6ec4bca2e22410ceb9ed4",
+            "actual": "f1e11ed5ca8af7bda64f8c7f723dada8f8ca8bdc020260cffd0b3e7d20af33d1"
+          },
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+            "expected": "999ebb11586dc0ed9e8011b2f5c60f8ee2c5f431f95b897b13c06a8cdbc3c61c",
+            "actual": "b7d424fb10082f8cef4bc26a5ccd241b7e14432448dfcc367f71640aa909b4c7"
+          },
+          {
+            "path": "core_enhanced/src/authoring/trial.rs",
+            "expected": "f675314554f0e0a33eb79543022b5793bff660c99bccdea985ba55d650babde2",
+            "actual": "9f2281193e8913befde760bd8a3a946b52e09b156fa87784132934f467dc0ad4"
+          }
+        ]
+      },
+      "external_actual": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "count": 25,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "count": 28,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "count": 30,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "count": 25,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "count": 54,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "count": 14,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "count": 105,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "count": 448,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "count": 68,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "count": 65,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "count": 102,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "count": 5,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "count": 9,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "count": 5,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        }
+      ],
+      "binaries": {
+        "count": 3,
+        "absences": 0,
+        "differences": [
+          {
+            "path": "target/release/package_official_content",
+            "expected": "75b81ad69e125413076d1fea7581239119902b8555223f1102ad1283fa2f6c82",
+            "actual": "46697d0e68919c2cf5e4b60a8d206c89b6fba5532580fcc67c4db46377c68781"
+          },
+          {
+            "path": "target/release/consume_content_pack",
+            "expected": "4a68d37524297e7bc50ed29038c3a83d66d9b0f1a5d4a9cf3b0fa96e26cad155",
+            "actual": "92bcd980035c4450bbd8c45bd07a688c4108483a5c74b1c6085fee64bf73eaf3"
+          },
+          {
+            "path": "target/release/author_content",
+            "expected": "8db8b1a1b39d7b01dcb87dca5d8007521a9d86dd95180cf1ca138f4d3b34e70c",
+            "actual": "136de40795ea707e25729a066fdc254c7b84f2cdd6aba20ea2d319001d2ab335"
+          }
+        ]
+      },
+      "registry_sha256": "24943fc9fda4b663e1c5811047f4a148c6312fb59b898f8c55ca33b7969f7ed6",
+      "actual_outputs": {
+        "count": 9,
+        "absences": 0,
+        "differences": []
+      }
+    },
+    {
+      "goal_set_ref": "GS-CAPG-P2G50-001",
+      "target_sha256": "ccfbd726948fb4ceb2a7de99016b4526fa2972fe481ac5c3d95c25ee77724cae",
+      "target_expected": "ccfbd726948fb4ceb2a7de99016b4526fa2972fe481ac5c3d95c25ee77724cae",
+      "report_sha256": "d0536bad7ced70f778967bd6be36abb7258da448184d34bc4a546fe2a65f4583",
+      "report_expected": "d0536bad7ced70f778967bd6be36abb7258da448184d34bc4a546fe2a65f4583",
+      "manifest": {
+        "count": 3279,
+        "absences": 2,
+        "differences": [
+          {
+            "path": "core_enhanced/docs/core_runtime_contract.md",
+            "expected": "373175eec695cb9199b33f7ea86ce980742158f921da6b0d5642eba8f24d092e",
+            "actual": "bec452968a0bb025af76d6022c8288013b99e7cbe14b66757d2c7077a04af679"
+          },
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/EXPERIMENTS.md",
+            "expected": "4fdc18ab05ba2ca3d14f267f0cbd8cf7aca0b1c097543371c7a5f37da62ac7d7",
+            "actual": "84cd3ba8edcefd4bed2977bf89201bd6ded72c7c75a545bf9159567af59acd3b"
+          },
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/EXPERIMENT_NOTES.md",
+            "expected": "bfcc3cd6b7f5b3e64ec495271b01c56fa6df612f65d6ec4bca2e22410ceb9ed4",
+            "actual": "f1e11ed5ca8af7bda64f8c7f723dada8f8ca8bdc020260cffd0b3e7d20af33d1"
+          },
+          {
+            "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/PLAN.md",
+            "expected": "999ebb11586dc0ed9e8011b2f5c60f8ee2c5f431f95b897b13c06a8cdbc3c61c",
+            "actual": "b7d424fb10082f8cef4bc26a5ccd241b7e14432448dfcc367f71640aa909b4c7"
+          },
+          {
+            "path": "core_enhanced/src/authoring/trial.rs",
+            "expected": "f675314554f0e0a33eb79543022b5793bff660c99bccdea985ba55d650babde2",
+            "actual": "9f2281193e8913befde760bd8a3a946b52e09b156fa87784132934f467dc0ad4"
+          }
+        ]
+      },
+      "external_actual": [
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/source",
+          "count": 25,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_AB_001/live_data",
+          "count": 28,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREDECESSOR_DIAGNOSTIC_FIXTURE_001/live_data",
+          "count": 30,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/FINAL_EXTERNAL_001/packs",
+          "count": 25,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COMBAT_EXTERNAL_002",
+          "count": 54,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/REPLACEMENT_EXTERNAL_004",
+          "count": 14,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/BUFF_EXTERNAL_001",
+          "count": 105,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INVALID_EXTERNAL_002",
+          "count": 448,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/DELIVERY_EXTERNAL_001",
+          "count": 68,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/PREVIEW_EXTERNAL_004",
+          "count": 65,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/CLI_EXTERNAL_003",
+          "count": 102,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/COST_EXTERNAL_002",
+          "count": 5,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/RUNTIME_GUARDS_001",
+          "count": 9,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        },
+        {
+          "directory": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/KERNEL_GUARDS_002",
+          "count": 5,
+          "absences": 0,
+          "differences": [],
+          "extra": [],
+          "missing": []
+        }
+      ],
+      "binaries": {
+        "count": 3,
+        "absences": 0,
+        "differences": [
+          {
+            "path": "target/release/package_official_content",
+            "expected": "75b81ad69e125413076d1fea7581239119902b8555223f1102ad1283fa2f6c82",
+            "actual": "46697d0e68919c2cf5e4b60a8d206c89b6fba5532580fcc67c4db46377c68781"
+          },
+          {
+            "path": "target/release/consume_content_pack",
+            "expected": "4a68d37524297e7bc50ed29038c3a83d66d9b0f1a5d4a9cf3b0fa96e26cad155",
+            "actual": "92bcd980035c4450bbd8c45bd07a688c4108483a5c74b1c6085fee64bf73eaf3"
+          },
+          {
+            "path": "target/release/author_content",
+            "expected": "8db8b1a1b39d7b01dcb87dca5d8007521a9d86dd95180cf1ca138f4d3b34e70c",
+            "actual": "136de40795ea707e25729a066fdc254c7b84f2cdd6aba20ea2d319001d2ab335"
+          }
+        ]
+      },
+      "registry_sha256": "08f4e68e7f2271ea718474a95c3b33dcaabb5c24e2f704edfbe8ecb612f2178a",
+      "actual_outputs": {
+        "count": 9,
+        "absences": 0,
+        "differences": []
+      }
+    }
+  ]
+}

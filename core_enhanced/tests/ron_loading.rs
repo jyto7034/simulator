@@ -1,32 +1,64 @@
 mod common;
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use game_core::game::ability::{
-    DeliveryDef, SkillAreaAnchorSource, SkillCastTargetingDef, SkillTarget, UnitTargetRule,
+    DeliveryDef, SkillAreaAnchorSource, SkillCastSelection, SkillCastTargetingDef, SkillTarget,
+    UnitTargetRule,
 };
 use game_core::game::battle::buffs::{BuffId, BuffKind};
+use game_core::game::battle::damage::DamageType;
+use game_core::game::battle::types::{BattleVerdict, DeploymentAffinity};
 use game_core::game::combat_preview::{
     required_briefing_warning_tags_for_spawn_waves, BattlefieldArchetype, CombatNodeType,
     CombatPreview, EnemyKind, ThreatWarningSource,
 };
 use game_core::game::data::{
     abnormality_data::AbnormalityDatabase,
+    boss_runtime_data::{
+        BossConditionData, BossControlNodeData, BossPatternSelectorData,
+        BossPatternTransitionTargetData, BossRuntimeCatalogData, BossTaskData, BossTaskResultData,
+    },
     consumable_data::{ConsumableEffect, ConsumableTier},
-    equipment_data::{EquipmentType, WeaponArchetype},
+    equipment_data::{EquipmentType, TargetingProfile, WeaponArchetype},
     event_data::{EventSceneNext, EventSuccessAction},
-    pve_data::{PveEncounterClass, PveWaveEnemyData, PveWaveSource},
+    pve_data::{
+        PveEncounter, PveEncounterClass, PveOutcomePolicyData, PveTerminalConditionData,
+        PveWaveEnemyData, PveWaveSource,
+    },
     reward_data::RewardGrantKind,
     skill_fragment_data::{SkillFragmentEffectDef, SkillFragmentOrigin},
 };
 use game_core::game::employee::EventAptitude;
-use game_core::game::enums::RewardMode;
+use game_core::game::enums::{RewardMode, RiskLevel};
 use game_core::game::map::{MapNodeCategory, MapNodeId, MapNodePayload};
 use game_core::game::reward::{ExperienceTargetPolicy, RewardEffect};
 use uuid::Uuid;
 
+fn victory_policy(encounter: &PveEncounter) -> &PveOutcomePolicyData {
+    encounter
+        .terminal_outcomes
+        .iter()
+        .find(|outcome| outcome.verdict == BattleVerdict::Victory)
+        .and_then(|outcome| {
+            encounter
+                .outcome_policies
+                .iter()
+                .find(|policy| policy.outcome_id == outcome.id)
+        })
+        .expect("validated live encounter Victory policy")
+}
+
 #[test]
 fn live_abnormality_ron_only_contains_catalog_roster() {
+    let game_data = common::load_game_data_from_ron();
+    let reference_abnormality_ids = game_data
+        .pve_data
+        .encounters
+        .iter()
+        .filter(|encounter| encounter.is_reference_only())
+        .filter_map(|encounter| encounter.primary_abnormality_id())
+        .collect::<BTreeSet<_>>();
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../game_resources/data/abnormalities/base.ron");
     let contents = std::fs::read_to_string(&path).expect("abnormalities/base.ron should load");
@@ -65,7 +97,12 @@ fn live_abnormality_ron_only_contains_catalog_roster() {
         "t-06-27_moonlit_wail",
         "o-01-67_laetitia",
     ]);
-    let actual: BTreeSet<&str> = database.items.iter().map(|abno| abno.id.as_str()).collect();
+    let actual: BTreeSet<&str> = database
+        .items
+        .iter()
+        .map(|abno| abno.id.as_str())
+        .filter(|id| !reference_abnormality_ids.contains(id))
+        .collect();
 
     assert_eq!(
         actual, expected,
@@ -74,9 +111,232 @@ fn live_abnormality_ron_only_contains_catalog_roster() {
 }
 
 #[test]
-fn live_weapon_block_capacity_is_explicit_and_matches_approved_guideline() {
+fn live_little_red_boss_runtime_preserves_existing_production_content() {
+    let boss_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../game_resources/data/boss_runtime/base.ron");
+    let boss_contents =
+        std::fs::read_to_string(&boss_path).expect("boss_runtime/base.ron should load");
+    let catalog: BossRuntimeCatalogData =
+        ron::de::from_str(&boss_contents).expect("boss_runtime/base.ron should deserialize");
+
+    let pattern = catalog
+        .patterns
+        .iter()
+        .find(|pattern| pattern.id.as_str() == "little_red_pursuit")
+        .expect("live Little Red pattern should remain authored");
+    assert_eq!(
+        pattern
+            .outcomes
+            .iter()
+            .map(|outcome| outcome.as_str())
+            .collect::<Vec<_>>(),
+        ["complete", "target_missing", "route_unavailable"]
+    );
+    assert_eq!(pattern.entry_state_id.as_str(), "acquire_target");
+    assert_eq!(pattern.states.len(), 3);
+
+    let state = |id: &str| {
+        pattern
+            .states
+            .iter()
+            .find(|state| state.id.as_str() == id)
+            .unwrap_or_else(|| panic!("live Little Red pattern should contain state '{id}'"))
+    };
+    let transition_results = |id: &str| {
+        state(id)
+            .transitions
+            .iter()
+            .map(|transition| match &transition.condition {
+                BossConditionData::TaskResult { result, .. } => *result,
+                condition => panic!("state '{id}' has unexpected condition {condition:?}"),
+            })
+            .collect::<BTreeSet<_>>()
+    };
+    assert!(matches!(
+        state("acquire_target").tasks.as_slice(),
+        [BossTaskData::AcquireTarget { .. }]
+    ));
+    assert_eq!(
+        transition_results("acquire_target"),
+        BTreeSet::from([
+            BossTaskResultData::Acquired,
+            BossTaskResultData::NoEligibleTarget,
+        ])
+    );
+    assert!(matches!(
+        state("move_to_target").tasks.as_slice(),
+        [BossTaskData::MoveToTarget { .. }]
+    ));
+    assert_eq!(
+        transition_results("move_to_target"),
+        BTreeSet::from([
+            BossTaskResultData::Reached,
+            BossTaskResultData::PathUnavailable,
+            BossTaskResultData::TargetInvalidated,
+            BossTaskResultData::TimedOut,
+        ])
+    );
+    assert!(state("move_to_target")
+        .transitions
+        .iter()
+        .all(|transition| {
+            matches!(
+                &transition.target,
+                BossPatternTransitionTargetData::State(target)
+                    if target.as_str() == "rejoin_forward_route"
+            )
+        }));
+    assert!(matches!(
+        state("rejoin_forward_route").tasks.as_slice(),
+        [BossTaskData::RejoinForwardRoute { .. }]
+    ));
+    assert_eq!(
+        transition_results("rejoin_forward_route"),
+        BTreeSet::from([
+            BossTaskResultData::Reached,
+            BossTaskResultData::PathUnavailable,
+            BossTaskResultData::TimedOut,
+        ])
+    );
+
+    let behavior = catalog
+        .actor_behaviors
+        .iter()
+        .find(|behavior| behavior.id.as_str() == "little_red_reference_behavior")
+        .expect("live Little Red behavior should remain authored");
+    assert_eq!(behavior.entry_node_id.as_str(), "pursuit_once");
+    assert_eq!(behavior.nodes.len(), 2);
+    let BossControlNodeData::PatternCall {
+        selector,
+        outcome_routes,
+        no_eligible_node_id,
+        ..
+    } = &behavior.nodes[0]
+    else {
+        panic!("live Little Red behavior should start with one PatternCall");
+    };
+    let BossPatternSelectorData::FixedSequence { candidates, repeat } = selector else {
+        panic!("live Little Red behavior should use FixedSequence");
+    };
+    assert!(!repeat);
+    assert_eq!(candidates.len(), 1);
+    assert_eq!(candidates[0].pattern_id.as_str(), "little_red_pursuit");
+    assert_eq!(outcome_routes.len(), 3);
+    assert!(outcome_routes
+        .iter()
+        .all(|route| route.target_node_id.as_str() == "route_combat"));
+    assert_eq!(no_eligible_node_id.as_str(), "route_combat");
+    assert!(matches!(
+        &behavior.nodes[1],
+        BossControlNodeData::State { id, tasks, transitions }
+            if id.as_str() == "route_combat"
+                && matches!(tasks.as_slice(), [BossTaskData::RouteCombat { .. }])
+                && transitions.is_empty()
+    ));
+
+    let runtime_encounter = catalog
+        .encounters
+        .iter()
+        .find(|encounter| encounter.id.as_str() == "little_red_reference_encounter")
+        .expect("live Little Red runtime encounter should remain authored");
+    assert_eq!(
+        runtime_encounter
+            .actor_slots
+            .iter()
+            .map(|slot| slot.as_str())
+            .collect::<Vec<_>>(),
+        ["primary_abnormality"]
+    );
+
+    let game_data = common::load_game_data_from_ron();
+    let opted_in = game_data
+        .pve_data
+        .encounters
+        .iter()
+        .filter(|encounter| !encounter.is_reference_only() && encounter.boss_runtime.is_some())
+        .collect::<Vec<_>>();
+    assert_eq!(opted_in.len(), 1);
+    let encounter = opted_in[0];
+    assert_eq!(encounter.id, "suppress_little_red");
+    assert_eq!(
+        encounter.primary_abnormality_id(),
+        Some("f-01-57_little_red")
+    );
+    assert_eq!(
+        victory_policy(encounter)
+            .reward_uuids
+            .iter()
+            .map(Uuid::to_string)
+            .collect::<Vec<_>>(),
+        [
+            "650e8400-e29b-41d4-a716-446655440105",
+            "650e8400-e29b-41d4-a716-446655440116",
+        ]
+    );
+    let binding = encounter.boss_runtime.as_ref().unwrap();
+    assert_eq!(
+        binding.encounter_id.as_str(),
+        "little_red_reference_encounter"
+    );
+    assert_eq!(binding.actors.len(), 1);
+    assert_eq!(
+        binding.actors[0].actor_slot_id.as_str(),
+        "primary_abnormality"
+    );
+    assert_eq!(binding.actors[0].wave_id, "primary_abnormality");
+    assert_eq!(binding.actors[0].spawn_index, 0);
+    assert_eq!(encounter.waves.len(), 2);
+    assert_eq!(encounter.waves[0].id, "wave_0");
+    assert_eq!(encounter.waves[0].authored_time_ms(), Some(5_000));
+    assert!(encounter.waves[0].route_id.is_none());
+    assert_eq!(
+        encounter.waves[0].source,
+        PveWaveSource::Manual(vec![
+            PveWaveEnemyData::CorrodedEmployee {
+                profile_id: "corroded_marksman".to_string(),
+                tier: game_core::game::enums::Tier::II,
+                count: 1,
+            },
+            PveWaveEnemyData::CorrodedEmployee {
+                profile_id: "corroded_rusher".to_string(),
+                tier: game_core::game::enums::Tier::I,
+                count: 2,
+            },
+        ])
+    );
+    assert_eq!(encounter.waves[1].id, "primary_abnormality");
+    assert_eq!(encounter.waves[1].authored_time_ms(), Some(5_000));
+    assert_eq!(encounter.waves[1].route_id.as_deref(), Some("defense_main"));
+    assert_eq!(
+        encounter.waves[1].source,
+        PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
+            abnormality_id: "f-01-57_little_red".to_string(),
+            tier: game_core::game::enums::Tier::I,
+            count: 1,
+        }])
+    );
+
+    let little_red = game_data
+        .abnormality_data
+        .get_by_id("f-01-57_little_red")
+        .expect("live Little Red metadata should exist");
+    assert_eq!(little_red.max_health, 800);
+    assert_eq!(little_red.attack, 70);
+    assert_eq!(little_red.defense, 35);
+    assert_eq!(little_red.magic_resist, 35);
+    assert_eq!(little_red.movement.speed_units_per_ms, 1_500);
+    assert_eq!(
+        little_red.skill_id.as_ref().map(|skill| skill.as_str()),
+        Some("little_red_hunt_the_prey")
+    );
+}
+
+#[test]
+fn live_weapon_catalog_is_exact_and_every_tactical_profile_matches_approved_values() {
     let game_data = common::load_game_data_from_ron();
     let mut represented_archetypes = BTreeSet::new();
+    let mut archetype_counts = BTreeMap::<String, usize>::new();
+    let mut weapon_count = 0;
 
     for item in &game_data.equipment_data.items {
         if item.equipment_type != EquipmentType::Weapon {
@@ -86,6 +346,10 @@ fn live_weapon_block_capacity_is_explicit_and_matches_approved_guideline() {
             .weapon_profile
             .as_ref()
             .expect("validated live weapon must have a profile");
+        weapon_count += 1;
+        *archetype_counts
+            .entry(format!("{:?}", profile.weapon_archetype))
+            .or_default() += 1;
         let expected = match profile.weapon_archetype {
             WeaponArchetype::Shield => 3,
             WeaponArchetype::Sword | WeaponArchetype::Spear => 1,
@@ -96,8 +360,70 @@ fn live_weapon_block_capacity_is_explicit_and_matches_approved_guideline() {
             "live weapon '{}' must explicitly use its approved authoring guideline",
             item.id
         );
+        match profile.weapon_archetype {
+            WeaponArchetype::Staff => {
+                assert_eq!(
+                    profile.deployment_affinity,
+                    DeploymentAffinity::PlatformOnly
+                );
+                assert!(profile.ground_defense_focus.is_none());
+                let rest = profile
+                    .platform_rest
+                    .expect("Staff must author Platform Rest");
+                assert_eq!(rest.hp_recovery_per_tick, 3);
+            }
+            WeaponArchetype::Bow | WeaponArchetype::Gun => {
+                assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
+                let focus = profile
+                    .ground_defense_focus
+                    .expect("Bow/Gun must author Ground DefenseFocus");
+                assert_eq!(focus.block_capacity_bonus, 0);
+                assert_eq!(focus.incoming_damage_reduction_percent, 10);
+                assert!(profile.platform_rest.is_none());
+            }
+            WeaponArchetype::Sword | WeaponArchetype::Spear | WeaponArchetype::Shield => {
+                assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
+                let focus = profile
+                    .ground_defense_focus
+                    .expect("melee Ground weapon must author DefenseFocus");
+                assert_eq!(focus.block_capacity_bonus, 1);
+                assert_eq!(focus.incoming_damage_reduction_percent, 10);
+                assert!(profile.platform_rest.is_none());
+            }
+        }
         represented_archetypes.insert(format!("{:?}", profile.weapon_archetype));
     }
+
+    assert_eq!(weapon_count, 35);
+    assert_eq!(
+        archetype_counts,
+        BTreeMap::from([
+            ("Bow".to_string(), 1),
+            ("Gun".to_string(), 2),
+            ("Shield".to_string(), 2),
+            ("Spear".to_string(), 1),
+            ("Staff".to_string(), 18),
+            ("Sword".to_string(), 11),
+        ])
+    );
+
+    let training = game_data
+        .equipment_data
+        .get_by_id("standard_training_sword")
+        .expect("training sword must be live");
+    let training_profile = training.weapon_profile.as_ref().unwrap();
+    assert_eq!(training.rarity, RiskLevel::ZAYIN);
+    assert_eq!(training_profile.weapon_archetype, WeaponArchetype::Sword);
+    assert_eq!(training_profile.damage_type, DamageType::Physical);
+    assert_eq!(
+        training_profile.targeting_profile,
+        TargetingProfile::DefaultForward
+    );
+    assert_eq!(training_profile.interval_ms, 1_500);
+    assert_eq!(training_profile.windup_ms, 200);
+    assert!(matches!(training_profile.delivery, DeliveryDef::Instant));
+    assert!(training.triggered_effects.is_empty());
+    assert!(training.ability_activations.is_empty());
 
     assert_eq!(
         represented_archetypes,
@@ -110,6 +436,53 @@ fn live_weapon_block_capacity_is_explicit_and_matches_approved_guideline() {
             "Sword".to_string(),
         ])
     );
+}
+
+#[test]
+fn every_live_starter_and_recruit_has_its_active_training_set() {
+    let game_data = common::load_game_data_from_ron();
+    let expected = [
+        ("field_medic", "healing_staff", "single_heal"),
+        ("breach_guard", "shield", "last_line"),
+        ("records_clerk", "sword", "berserker"),
+        ("scout_runner", "gun", "adrenaline"),
+        ("containment_trainee", "greatsword", "breakthrough"),
+        ("maintenance_tech", "area_healing_staff", "area_heal"),
+        ("hq_field_medic", "healing_staff", "single_heal"),
+        ("hq_security_guard", "shield", "last_line"),
+        ("hq_records_observer", "sword", "berserker"),
+        ("hq_recovery_runner", "gun", "adrenaline"),
+        ("hq_containment_aide", "greatsword", "breakthrough"),
+        ("hq_maintenance_aide", "area_healing_staff", "area_heal"),
+    ];
+    assert_eq!(
+        game_data.employee_definition_data.definitions.len(),
+        expected.len()
+    );
+    for (id, weapon, fragment) in expected {
+        let loadout = &game_data
+            .employee_definition_data
+            .get_by_id(id)
+            .unwrap()
+            .initial_loadout;
+        assert_eq!(
+            loadout.equipment_ids[0],
+            format!("standard_training_{weapon}")
+        );
+        assert_eq!(
+            loadout.active_skill_fragment_id.as_ref().unwrap().as_str(),
+            format!("training_{fragment}")
+        );
+        assert!(loadout.baseline_skill_fragment_ids.is_empty());
+    }
+    let general_pool = game_data
+        .reward_data
+        .equipment_pool_by_id("ego_gift_reward_pool")
+        .unwrap();
+    assert!(general_pool
+        .candidates(&game_data.equipment_data)
+        .iter()
+        .all(|(equipment, _)| !equipment.id.starts_with("standard_training_")));
 }
 
 #[test]
@@ -257,6 +630,7 @@ fn live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles() {
             let SkillCastTargetingDef::Explicit { target, .. } = &skill.cast_targeting;
             let selection = match target {
                 SkillTarget::SelfUnit => "self",
+                SkillTarget::AllySingle => "ally_single",
                 SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 } => "nearest",
@@ -272,6 +646,35 @@ fn live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles() {
         })
         .collect::<BTreeSet<_>>();
     let expected = BTreeSet::from([
+        (
+            "laetitia_place_friend".to_string(),
+            "cast_target".to_string(),
+        ),
+        (
+            "laetitia_place_great_friend".to_string(),
+            "cast_target".to_string(),
+        ),
+        (
+            "common_place_ice_wall".to_string(),
+            "cast_target".to_string(),
+        ),
+        (
+            "melting_love_place_meat_wall".to_string(),
+            "cast_target".to_string(),
+        ),
+        ("training_adrenaline".to_string(), "self".to_string()),
+        ("training_berserker".to_string(), "self".to_string()),
+        ("training_last_line".to_string(), "self".to_string()),
+        ("training_breakthrough".to_string(), "self".to_string()),
+        (
+            "training_single_heal".to_string(),
+            "ally_single".to_string(),
+        ),
+        ("training_area_heal".to_string(), "cast_target".to_string()),
+        (
+            "fragment_funeral_awakened_eulogy".to_string(),
+            "current_target".to_string(),
+        ),
         (
             "unknown_distortion_strike".to_string(),
             "nearest".to_string(),
@@ -357,6 +760,64 @@ fn live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles() {
     ]);
 
     assert_eq!(actual, expected);
+
+    let selections = game_data
+        .skill_data
+        .skills
+        .iter()
+        .map(|skill| (skill.id.to_string(), skill.cast_selection()))
+        .collect::<BTreeMap<_, _>>();
+    assert_eq!(selections.len(), 36);
+    assert_eq!(
+        selections
+            .iter()
+            .filter(|(_, selection)| **selection == SkillCastSelection::PlayerUnit)
+            .map(|(skill_id, _)| skill_id.as_str())
+            .collect::<BTreeSet<_>>(),
+        BTreeSet::from([
+            "fragment_freischutz_black_round",
+            "freischutz_magic_bullet",
+            "training_single_heal"
+        ])
+    );
+    assert_eq!(
+        selections
+            .iter()
+            .filter(|(_, selection)| **selection == SkillCastSelection::SelfUnit)
+            .map(|(skill_id, _)| skill_id.as_str())
+            .collect::<BTreeSet<_>>(),
+        BTreeSet::from([
+            "parasite_tree_root_blessing",
+            "resonance_pendant_opening_focus",
+            "white_night_pale_benediction",
+            "yang_white_resonance",
+            "training_adrenaline",
+            "training_berserker",
+            "training_last_line",
+            "training_breakthrough",
+        ])
+    );
+    assert_eq!(
+        selections
+            .values()
+            .filter(|selection| **selection == SkillCastSelection::AutomaticUnit)
+            .count(),
+        20
+    );
+    assert_eq!(
+        selections
+            .iter()
+            .filter(|(_, selection)| **selection == SkillCastSelection::PlayerTile)
+            .map(|(id, _)| id.as_str())
+            .collect::<BTreeSet<_>>(),
+        BTreeSet::from([
+            "training_area_heal",
+            "laetitia_place_friend",
+            "laetitia_place_great_friend",
+            "common_place_ice_wall",
+            "melting_love_place_meat_wall",
+        ])
+    );
 }
 
 #[test]
@@ -439,9 +900,9 @@ fn load_game_data_from_ron_reads_skill_fragment_schema() {
     assert!(matches!(
         &fragment.effect,
         SkillFragmentEffectDef::ActiveSkill {
-            imitation_skill_id, ..
+            forms, ..
         }
-            if imitation_skill_id.as_str() == "fragment_freischutz_black_round"
+            if forms["base"].skill_id.as_str() == "fragment_freischutz_black_round"
     ));
     assert!(
         game_data
@@ -546,8 +1007,9 @@ fn load_game_data_from_ron_reads_run_policy() {
     assert_eq!(game_data.run_policy.setup.standard_floor_count, 3);
     assert_eq!(game_data.run_policy.setup.starter_employee_count, 3);
     assert_eq!(game_data.run_policy.setup.starter_enkephalin, 500);
-    assert_eq!(game_data.run_policy.live_deployment.initial_cost, 20);
-    assert_eq!(game_data.run_policy.live_deployment.base_deploy_cost, 10);
+    assert_eq!(game_data.run_policy.tactical_resource.initial, 20);
+    assert_eq!(game_data.run_policy.tactical_resource.maximum, 99);
+    assert_eq!(game_data.run_policy.tactical_resource.base_deploy_cost, 10);
     assert_eq!(game_data.run_policy.growth.post_battle_survival_xp, 10);
 }
 
@@ -566,6 +1028,7 @@ fn live_experience_rewards_declare_target_policy() {
             target: ExperienceTargetPolicy::AliveRoster,
         }
     )));
+    assert!(reward.description.contains("각 대상 직원에게 전액"));
 }
 
 #[test]
@@ -574,17 +1037,20 @@ fn live_pve_rewards_use_fixed_current_grant_set() {
     let mut observed_effects = BTreeSet::new();
 
     for encounter in &game_data.pve_data.encounters {
+        if encounter.is_reference_only() {
+            continue;
+        }
         assert_eq!(
-            encounter.reward_mode,
+            victory_policy(encounter).reward_mode,
             RewardMode::ClaimAll,
             "live combat rewards must be automatically granted"
         );
         assert!(
-            !encounter.reward_uuids.is_empty(),
+            !victory_policy(encounter).reward_uuids.is_empty(),
             "live encounter '{}' must author fixed rewards",
             encounter.id
         );
-        for reward_uuid in &encounter.reward_uuids {
+        for reward_uuid in &victory_policy(encounter).reward_uuids {
             let reward = game_data
                 .reward_data
                 .get_by_uuid(reward_uuid)
@@ -593,8 +1059,6 @@ fn live_pve_rewards_use_fixed_current_grant_set() {
                 let kind = match effect {
                     RewardEffect::GrantEnkephalin { .. } => "enkephalin",
                     RewardEffect::GrantEquipmentMaterial { .. } => "equipment_material",
-                    RewardEffect::GrantSkillFragment { .. } => "skill_fragment",
-                    RewardEffect::GrantSkillFragmentResearch { .. } => "research_progress",
                     other => panic!(
                         "live PVE reward '{}' uses unsupported current effect: {:?}",
                         reward.id, other
@@ -607,12 +1071,7 @@ fn live_pve_rewards_use_fixed_current_grant_set() {
 
     assert_eq!(
         observed_effects,
-        BTreeSet::from([
-            "enkephalin",
-            "equipment_material",
-            "research_progress",
-            "skill_fragment",
-        ])
+        BTreeSet::from(["enkephalin", "equipment_material"])
     );
 }
 
@@ -636,61 +1095,30 @@ fn load_game_data_from_ron_filters_recruitment_definitions() {
 }
 
 #[test]
-fn live_rewards_can_grant_skill_fragments_from_ron() {
+fn live_encounter_sources_resolve_fragments_without_ordinary_reward_bypass() {
     let game_data = common::load_game_data_from_ron();
 
-    for (reward_id, fragment_id) in [
-        (
-            "freischutz_black_round_fragment_reward",
-            "fragment_freischutz_black_round",
-        ),
-        (
-            "funeral_butterfly_eulogy_fragment_reward",
-            "fragment_funeral_butterfly_eulogy",
-        ),
-    ] {
-        let reward = game_data
-            .reward_data
-            .get_by_id(reward_id)
-            .expect("skill fragment reward should exist in RON data");
-
-        assert!(reward.effects.iter().any(|effect| matches!(
-            effect,
-            RewardEffect::GrantSkillFragment { fragment_id: granted_fragment_id }
-                if granted_fragment_id.as_str() == fragment_id
-        )));
-        assert!(
-            reward
-                .grant_kinds()
-                .contains(&RewardGrantKind::SkillFragment),
-            "reward `{reward_id}` should resolve as a skill fragment reward"
-        );
+    assert_eq!(game_data.pve_data.reward_sources.len(), 29);
+    for source in &game_data.pve_data.reward_sources {
         assert!(
             game_data
                 .skill_fragment_data
-                .get_by_id_str(fragment_id)
+                .get_by_id(&source.fragment_id)
                 .is_some(),
-            "reward `{reward_id}` grants missing skill fragment `{fragment_id}`"
+            "encounter source '{}' grants missing fragment '{}'",
+            source.reward_source_id,
+            source.fragment_id.as_str()
         );
+        assert!(game_data
+            .reward_data
+            .rewards
+            .iter()
+            .all(|reward| reward.effects.iter().all(|effect| !matches!(
+                effect,
+                RewardEffect::GrantSkillFragment { fragment_id }
+                    if fragment_id == &source.fragment_id
+            ))));
     }
-
-    let research_reward = game_data
-        .reward_data
-        .get_by_id("early_abnormality_research_reward")
-        .expect("skill fragment research reward should exist in RON data");
-    assert!(
-        research_reward
-            .grant_kinds()
-            .contains(&RewardGrantKind::ResearchProgress),
-        "skill fragment research reward should resolve ResearchProgress"
-    );
-    assert!(research_reward.effects.iter().any(|effect| matches!(
-        effect,
-        RewardEffect::GrantSkillFragmentResearch {
-            fragment_id,
-            amount: 1,
-        } if fragment_id.as_str() == "fragment_freischutz_black_round"
-    )));
 
     let equipment_material_reward = game_data
         .reward_data
@@ -734,24 +1162,6 @@ fn live_rewards_can_grant_skill_fragments_from_ron() {
             amount: 4,
         } if material_id == "equipment_dust"
     )));
-
-    let high_risk_research_reward = game_data
-        .reward_data
-        .get_by_id("high_risk_abnormality_research_reward")
-        .expect("high-risk research reward should exist in RON data");
-    assert!(high_risk_research_reward
-        .grant_kinds()
-        .contains(&RewardGrantKind::ResearchProgress));
-    assert!(high_risk_research_reward
-        .effects
-        .iter()
-        .any(|effect| matches!(
-            effect,
-            RewardEffect::GrantSkillFragmentResearch {
-                fragment_id,
-                amount: 2,
-            } if fragment_id.as_str() == "fragment_melting_love_trace"
-        )));
 
     let dismantle_recipe = game_data
         .equipment_data
@@ -866,7 +1276,8 @@ fn live_pve_references_resolve() {
             }
             game_core::game::data::pve_data::PveEncounterClass::Elite
             | game_core::game::data::pve_data::PveEncounterClass::NormalBoss
-            | game_core::game::data::pve_data::PveEncounterClass::FinalBoss => {
+            | game_core::game::data::pve_data::PveEncounterClass::FinalBoss
+            | game_core::game::data::pve_data::PveEncounterClass::ReferenceFinalBoss => {
                 let primary = encounter
                     .primary_abnormality_id
                     .as_deref()
@@ -942,7 +1353,7 @@ fn live_pve_references_resolve() {
                 }
             }
         }
-        for reward_uuid in &encounter.reward_uuids {
+        for reward_uuid in &victory_policy(encounter).reward_uuids {
             assert!(
                 game_data.reward_data.get_by_uuid(reward_uuid).is_some(),
                 "pve encounter `{}` references missing reward uuid {}",
@@ -1162,7 +1573,7 @@ fn live_pve_reward_contracts_do_not_offer_forbidden_abnormality_materialization(
     let game_data = common::load_game_data_from_ron();
 
     for encounter in &game_data.pve_data.encounters {
-        for reward_uuid in &encounter.reward_uuids {
+        for reward_uuid in &victory_policy(encounter).reward_uuids {
             let reward = game_data
                 .reward_data
                 .get_by_uuid(reward_uuid)
@@ -1213,10 +1624,14 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
             .and_then(|battlefield| battlefield.archetype),
         Some(BattlefieldArchetype::OpenHall)
     ));
-    assert!(matches!(
-        nameless_fetus.authored_win_condition(),
-        Some(game_core::game::battle::scenario::WinCondition::ProtectUnit { .. })
-    ));
+    assert!(nameless_fetus
+        .terminal_outcomes
+        .iter()
+        .any(|outcome| matches!(
+            &outcome.condition,
+            PveTerminalConditionData::UnitDefeated { unit_ref }
+                if unit_ref == "black_box_device"
+        )));
     let nameless_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xAC1D)),
         MapNodeCategory::Combat,
@@ -1236,18 +1651,21 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
             .all(|zone_id| nameless_spawn_zone_ids.contains(zone_id.as_str())),
         "nameless fetus preview should resolve authored waves to existing spawn zones"
     );
-    assert!(nameless_fetus.reward_uuids.iter().any(|uuid| {
-        game_data
-            .reward_data
-            .get_by_uuid(uuid)
-            .is_some_and(|reward| reward.id == "early_abnormality_research_reward")
-    }));
+    assert!(victory_policy(nameless_fetus)
+        .reward_uuids
+        .iter()
+        .any(|uuid| {
+            game_data
+                .reward_data
+                .get_by_uuid(uuid)
+                .is_some_and(|reward| reward.id == "enkephalin_reward")
+        }));
 
     let scarecrow = game_data
         .pve_data
         .get_by_id("suppress_scarecrow")
         .expect("scarecrow scenario should exist");
-    assert!(scarecrow.reward_uuids.iter().any(|uuid| {
+    assert!(victory_policy(scarecrow).reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
             .get_by_uuid(uuid)
@@ -1272,7 +1690,10 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         Some(BattlefieldArchetype::Ambush)
     ));
     assert_eq!(freischutz.waves.len(), 3);
-    assert!(freischutz.waves.iter().all(|wave| wave.time_ms == 5_000));
+    assert!(freischutz
+        .waves
+        .iter()
+        .all(|wave| wave.authored_time_ms() == Some(5_000)));
     let freischutz_ambush = freischutz.waves[1].manual_enemies();
     assert!(matches!(
         freischutz_ambush[0],
@@ -1282,12 +1703,18 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         panic!("freischutz ambush should use a corroded employee");
     };
     assert_eq!(profile_id, "corroded_marksman");
-    assert!(freischutz.reward_uuids.iter().any(|uuid| {
-        game_data
-            .reward_data
-            .get_by_uuid(uuid)
-            .is_some_and(|reward| reward.id == "freischutz_black_round_fragment_reward")
-    }));
+    let freischutz_source = game_data
+        .pve_data
+        .get_reward_source_by_encounter_id("suppress_freischutz")
+        .expect("freischutz should have an encounter reward source");
+    assert_eq!(
+        freischutz_source.fragment_id.as_str(),
+        "fragment_freischutz_black_round"
+    );
+    assert!(matches!(
+        freischutz_source.repeat_reward,
+        RewardEffect::GrantFragmentDust { amount: 10 }
+    ));
 
     let freischutz_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xF43)),
@@ -1302,7 +1729,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
     assert!(freischutz_preview
         .spawn_waves
         .iter()
-        .all(|wave| wave.time_ms == 5_000));
+        .all(|wave| wave.activation.at_time_ms() == Some(5_000)));
     assert!(matches!(
         freischutz_preview.spawn_waves[1].enemy_entries[0].kind,
         EnemyKind::CorrodedEmployee
@@ -1324,6 +1751,37 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .iter()
         .any(|zone| zone.id == "side_ambush"));
 
+    let repair_position = game_core::game::resources::Position::new(2, 6);
+    let mut selected_templates = BTreeSet::new();
+    for seed in 0..256 {
+        let preview = CombatPreview::generate_for_node(
+            MapNodeId::new(Uuid::from_u128(0xF43_0000 + u128::from(seed))),
+            MapNodeCategory::Boss,
+            Some("suppress_freischutz"),
+            game_data.as_ref(),
+            seed,
+        );
+        selected_templates.insert(preview.battlefield_template_id.clone());
+        assert!(preview.valid_tiles.contains(&repair_position));
+        assert!(preview.tiles.iter().any(|tile| {
+            tile.position == repair_position
+                && tile.kind == game_core::game::combat_preview::BattlefieldTileKind::Ground
+        }));
+        assert!(preview.deployment_zones.iter().any(|zone| {
+            zone.kind == game_core::game::combat_preview::DeploymentZoneKind::Ground
+                && zone.cells.contains(&repair_position)
+        }));
+    }
+    assert_eq!(
+        selected_templates,
+        BTreeSet::from([
+            "ambush_crossfire_01".to_string(),
+            "ambush_rear_pressure_01".to_string(),
+            "ambush_side_entry_01".to_string(),
+        ]),
+        "every eligible Ambush/Medium template must keep the authored repair cell Ground-deployable"
+    );
+
     let defense_archive = game_data
         .pve_data
         .get_by_id("suppress_warm_hearted_woodsman")
@@ -1335,7 +1793,13 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
     );
     assert_eq!(defense_archive.node_type, Some(CombatNodeType::Defense));
     assert!(defense_archive.tactical_plan.is_none());
-    assert!(defense_archive.authored_win_condition().is_none());
+    assert!(defense_archive
+        .terminal_outcomes
+        .iter()
+        .all(|outcome| !matches!(
+            &outcome.condition,
+            PveTerminalConditionData::UnitDefeated { .. }
+        )));
     assert!(matches!(
         defense_archive
             .battlefield
@@ -1355,18 +1819,24 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .waves
         .iter()
         .any(|wave| matches!(wave.manual_enemies().first(), Some(PveWaveEnemyData::Abnormality { abnormality_id, .. }) if abnormality_id == "f-05-32_warm_hearted_woodsman")));
-    assert!(defense_archive.reward_uuids.iter().any(|uuid| {
-        game_data
-            .reward_data
-            .get_by_uuid(uuid)
-            .is_some_and(|reward| reward.id == "field_equipment_salvage_reward")
-    }));
-    assert!(defense_archive.reward_uuids.iter().any(|uuid| {
-        game_data
-            .reward_data
-            .get_by_uuid(uuid)
-            .is_some_and(|reward| reward.id == "early_abnormality_research_reward")
-    }));
+    assert!(victory_policy(defense_archive)
+        .reward_uuids
+        .iter()
+        .any(|uuid| {
+            game_data
+                .reward_data
+                .get_by_uuid(uuid)
+                .is_some_and(|reward| reward.id == "field_equipment_salvage_reward")
+        }));
+    assert!(victory_policy(defense_archive)
+        .reward_uuids
+        .iter()
+        .any(|uuid| {
+            game_data
+                .reward_data
+                .get_by_uuid(uuid)
+                .is_some_and(|reward| reward.id == "enkephalin_reward")
+        }));
 
     let defense_archive_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xB10C)),
@@ -1408,7 +1878,10 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
     );
     assert_eq!(defense.node_type, Some(CombatNodeType::Boss));
     assert!(defense.tactical_plan.is_none());
-    assert!(defense.authored_win_condition().is_none());
+    assert!(defense.terminal_outcomes.iter().all(|outcome| !matches!(
+        &outcome.condition,
+        PveTerminalConditionData::UnitDefeated { .. }
+    )));
     assert!(matches!(
         defense
             .battlefield
@@ -1428,17 +1901,17 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .waves
         .iter()
         .any(|wave| matches!(wave.manual_enemies().first(), Some(PveWaveEnemyData::Abnormality { abnormality_id, .. }) if abnormality_id == "o-04-72_burrowing_heaven")));
-    assert!(defense.reward_uuids.iter().any(|uuid| {
+    assert!(victory_policy(defense).reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
             .get_by_uuid(uuid)
             .is_some_and(|reward| reward.id == "field_equipment_salvage_reward")
     }));
-    assert!(defense.reward_uuids.iter().any(|uuid| {
+    assert!(victory_policy(defense).reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
             .get_by_uuid(uuid)
-            .is_some_and(|reward| reward.id == "high_risk_abnormality_research_reward")
+            .is_some_and(|reward| reward.id == "large_enkephalin_reward")
     }));
 
     let defense_preview = CombatPreview::generate_for_node(
@@ -1491,6 +1964,46 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         game_core::game::battle::scenario::BattleObjective::ProtectUnit { ref unit_ref }
             if unit_ref.0 == "black_box_device"
     ));
+    assert_eq!(tactical_plan.field_work_objects.len(), 1);
+    let repair = &tactical_plan.field_work_objects[0];
+    assert_eq!(repair.id.0, "black_box_emergency_repair");
+    assert!(matches!(
+        repair.presentation_kind,
+        game_core::game::battle::scenario::FieldWorkPresentationKind::EmergencyRepairTerminal
+    ));
+    assert_eq!(
+        repair.position,
+        game_core::game::resources::Position::new(2, 6)
+    );
+    assert_eq!(repair.required_work_ms, 10_000);
+    assert_eq!(repair.work_cells.len(), 1);
+    assert_eq!(repair.work_cells[0].id.0, "repair_cell");
+    assert_eq!(
+        repair.work_cells[0].position,
+        game_core::game::resources::Position::new(2, 6)
+    );
+    assert_eq!(
+        repair.work_cells[0].tile_kind,
+        game_core::game::battle::types::TacticalTileKind::Ground
+    );
+    assert!(matches!(
+        repair.completion_effect,
+        game_core::game::battle::scenario::FieldWorkCompletionEffect::RepairProtectedUnit {
+            ref unit_ref,
+            flat_hp: 100,
+        } if unit_ref.0 == "black_box_device"
+    ));
+    assert_eq!(
+        game_data
+            .pve_data
+            .encounters
+            .iter()
+            .filter_map(|encounter| encounter.tactical_plan.as_ref())
+            .map(|plan| plan.field_work_objects.len())
+            .sum::<usize>(),
+        1,
+        "the first slice must publish exactly one live field work object"
+    );
 }
 
 #[test]

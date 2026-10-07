@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-09-09T18:24:07.737193+00:00",
+  "begin_records": 16888,
+  "end_records": 16899,
+  "baseline_records": 16687,
+  "baseline_disappeared_records": [],
+  "audit_disappeared_records": [],
+  "audit_new_records": [
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/AUDIT_TARGET_002.json",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/COMPLETION_AUDIT_002.md",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/currentness_begin.json",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/currentness_end.json",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe.log",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe.rs",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe_compile.log",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/external_authoring_probe_result.json",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/git_status_begin.txt",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/independent_preservation.json",
+    "?? core_enhanced/docs/goals/content_authoring_minimal_effect_contract/execution/single_goal/audit-evidence/successor_002/validation_review.json"
+  ],
+  "scope": "Git status supports scoped content checks; no byte identity claim for every unrelated file."
+}

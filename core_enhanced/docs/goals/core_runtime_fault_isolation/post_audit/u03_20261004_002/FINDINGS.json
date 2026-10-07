@@ -1,0 +1,67 @@
+{
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "closed_predecessor_findings": [
+    "F01 specific employee reconciliation and lifecycle paths corrected with typed invariant and current tests."
+  ],
+  "findings": [
+    {
+      "id": "F02",
+      "severity": "blocking",
+      "status": "open",
+      "title": "Residual trusted reinput lookup and admitted cast arithmetic escape as ordinary InvalidAction",
+      "owner": "GOAL-CRFI-01 / TD02, sustained reinput and admitted cast runtime producers",
+      "requirements": [
+        "PER-CRFI-01-REVIEWED-003 / V02 trusted internal and checked failure distinction",
+        "PER-CRFI-02-REVIEWED-003 terminal first cause and no repeat",
+        "GOAL-CRFI-01 source-level typed-origin structural completion"
+      ],
+      "confirmed": [
+        {
+          "source": "core_enhanced/src/game/battle/core/sustained.rs:1123-1125",
+          "boundary": "record.goodbye_skill is trusted runtime state, then cloned_skill_definition(goodbye).ok_or(InvalidAction) conflates absent trusted child with caller refusal",
+          "evidence": [
+            "GOODBYE_PROBE.json",
+            "goodbye_probe.log"
+          ],
+          "observed": "two valid-identity public reinput commands return invalid_action; neither sets battle_fault. Stale activation and supplied invalid target controls remain benign, and their subsequent advance succeeds."
+        },
+        {
+          "source": "core_enhanced/src/game/battle/core/sim.rs:948-953",
+          "boundary": "start_admitted_skill_cast performs checked time_ms+1 or time_ms+focus_time_ms after accepted action admission, but maps overflow to InvalidAction; direct manual command has no trusted event/boss wrapper",
+          "evidence": [
+            "TIME_PROBE.json",
+            "time_probe.log"
+          ],
+          "observed": "both focus0 and focus100 at maximum internal clock return invalid_action twice with battle_fault absent."
+        }
+      ],
+      "impact": "Original GameCore candidate rollback still applies, but CoreApplication fails to retain the first terminal cause and allows repeated execution. Actor timer/writer/observer terminal consumers cannot enforce the approved lifetime without the capsule.",
+      "correction": "Use typed error origin at actual trusted producer boundaries. Preserve stale activation, invalid target, valid unsupported reinput/Hello-active controls and caller skill-not-found wire. Do not globally mark InvalidAction terminal. Review the trusted sustained-record and admitted live-command producer family.",
+      "related_source_review": [
+        {
+          "source": "sustained.rs:1115-1118 goodbye_skill=None",
+          "disposition": "May be valid unsupported reinput of an overlay without Goodbye; do not automatically promote. Distinguish a present trusted reference whose definition is absent."
+        },
+        {
+          "source": "sim.rs:707-727 reinput_cast_target",
+          "disposition": "Supplied invalid or unavailable target is ordinary refusal, independently exercised by the probe. No blanket wrapping of this boundary."
+        },
+        {
+          "source": "sustained.rs:814-829 validate_sustained_start",
+          "disposition": "Existing active Hello duplicate is ordinary refusal; retain semantics."
+        },
+        {
+          "source": "combat.rs:2563-2567 tactical swap deployment-to-native position lookup",
+          "disposition": "Related source-level candidate: IDs already resolved from trusted deployment map and unit_projected_tile returns None only for absent native unit; payload capability disabled still routes to domain preflight. No isolated execution was performed, so not asserted as a separately proven finding. Correction owner should adjudicate equivalent trusted lookup origin while preserving ordinary missing employee/undeployed input."
+        }
+      ],
+      "required_revalidation": [
+        "Durable actual public tests for missing present Goodbye definition and both admitted deadline overflow branches; same first cause, root rollback and repeated gates.",
+        "Ordinary stale activation/invalid target/Hello-active/unsupported reinput/missing client skill controls stay benign and can continue; native and expression first causes stay intact.",
+        "Private GameCore/Trial retry and unpublished candidate semantics remain unchanged; actor/observer/writer consumers respond to corrected Core capsule.",
+        "Refresh affected full feature/public evidence and freeze successor target; independent full completion audit must close all12 acceptances/V01-V12/10 dimensions/100 inherited conditions/31R06 maps."
+      ]
+    }
+  ]
+}

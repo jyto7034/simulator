@@ -2,7 +2,10 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
 use serde::{Deserialize, Serialize};
 
-use super::{GameMode, MapEdgeDirection, MapNodeCategory, MapNodeKindId, MapSlotId, MapTemplateId};
+use super::{
+    AuthoredCombatNodePolicy, GameMode, MapEdgeDirection, MapNodeCategory, MapNodeKindId,
+    MapNodePayload, MapSlotId, MapTemplateId,
+};
 
 pub const FACILITY_TEMPLATE_VERSION: u32 = 1;
 
@@ -58,6 +61,7 @@ pub enum FacilitySlotRole {
 pub enum FacilityTerminalResolution {
     FloorGate,
     RunFinalBoss,
+    StandardCompletion,
     BossOmenExitGate,
     SpecialRunCompletion,
 }
@@ -66,7 +70,9 @@ impl FacilityTerminalResolution {
     pub fn required_category(self) -> MapNodeCategory {
         match self {
             Self::FloorGate | Self::BossOmenExitGate => MapNodeCategory::Gate,
-            Self::RunFinalBoss | Self::SpecialRunCompletion => MapNodeCategory::Boss,
+            Self::RunFinalBoss | Self::StandardCompletion | Self::SpecialRunCompletion => {
+                MapNodeCategory::Boss
+            }
         }
     }
 }
@@ -113,6 +119,18 @@ pub struct NodeAssignmentProfile {
     pub remaining_category_weights: Vec<FacilityCategoryWeight>,
     #[serde(default)]
     pub tagged_slot_assignments: Vec<TaggedSlotAssignment>,
+    #[serde(default)]
+    pub fixed_slot_assignments: Vec<FixedSlotAssignment>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct FixedSlotAssignment {
+    pub slot_id: MapSlotId,
+    pub kind_id: MapNodeKindId,
+    pub payload: MapNodePayload,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub authored_combat: Option<AuthoredCombatNodePolicy>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -813,6 +831,75 @@ fn validate_assignment_profile(profile: &NodeAssignmentProfile) -> Result<(), St
             profile.id
         ));
     }
+    if !profile.fixed_slot_assignments.is_empty()
+        && (!profile.category_constraints.is_empty()
+            || !profile.remaining_category_weights.is_empty()
+            || !profile.tagged_slot_assignments.is_empty())
+    {
+        return Err(format!(
+            "fixed node assignment profile '{}' cannot mix adaptive constraints, weights, or tagged assignments",
+            profile.id
+        ));
+    }
+    let mut fixed_slots = HashSet::new();
+    for assignment in &profile.fixed_slot_assignments {
+        if assignment.slot_id.as_str().trim().is_empty()
+            || !fixed_slots.insert(assignment.slot_id.as_str())
+            || assignment.kind_id.as_str().trim().is_empty()
+        {
+            return Err(format!(
+                "node assignment profile '{}' has an invalid or duplicate fixed slot assignment '{}'",
+                profile.id,
+                assignment.slot_id.as_str()
+            ));
+        }
+        if let Some(combat) = &assignment.authored_combat {
+            if combat.outcome_policies.is_empty() {
+                return Err(format!(
+                    "fixed combat slot '{}' must author at least one outcome policy",
+                    assignment.slot_id.as_str()
+                ));
+            }
+            let mut outcomes = HashSet::new();
+            for policy in &combat.outcome_policies {
+                if policy.outcome_id.trim().is_empty()
+                    || !outcomes.insert(policy.outcome_id.as_str())
+                {
+                    return Err(format!(
+                        "fixed combat slot '{}' contains an empty or duplicate outcome id",
+                        assignment.slot_id.as_str()
+                    ));
+                }
+                let mut rewards = HashSet::new();
+                if policy
+                    .reward_ids
+                    .iter()
+                    .any(|id| id.trim().is_empty() || !rewards.insert(id.as_str()))
+                {
+                    return Err(format!(
+                        "fixed combat slot '{}' outcome '{}' contains empty or duplicate reward ids",
+                        assignment.slot_id.as_str(),
+                        policy.outcome_id
+                    ));
+                }
+            }
+            let mut abnormalities = HashSet::new();
+            for stat_override in &combat.actor_stat_overrides {
+                if stat_override.abnormality_id.trim().is_empty()
+                    || !abnormalities.insert(stat_override.abnormality_id.as_str())
+                    || stat_override.max_health == 0
+                    || stat_override.attack == 0
+                    || stat_override.defense < 0
+                    || stat_override.magic_resistance < 0
+                {
+                    return Err(format!(
+                        "fixed combat slot '{}' contains an invalid actor stat override",
+                        assignment.slot_id.as_str()
+                    ));
+                }
+            }
+        }
+    }
     let mut constrained = HashSet::new();
     for constraint in &profile.category_constraints {
         constraint.bounds()?;
@@ -1001,3 +1088,11 @@ mod tests {
         assert!(error.contains("mandatory category"));
     }
 }
+
+crate::authoring::clone_shape::struct_shape!(FacilityRunState { pools });
+
+crate::authoring::clone_shape::struct_shape!(FacilityPoolRunState {
+    cycle,
+    remaining_template_ids,
+    used_template_ids
+});

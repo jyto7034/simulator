@@ -1,0 +1,568 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CRSA-002",
+        "Content Digest": "sha256:3d6ba6def98f56785182f1e169a0b5ce8c66d4ca595fcad890429f69026e7d60"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRSA-002",
+          "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-01-DECIDED-001",
+                "Content Digest": "sha256:db0f8438376ca3136198d335e9e5205f26bce931ae0f5202a37af033f0a357bb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-02-DECIDED-001",
+                "Content Digest": "sha256:78c069c6bcd5f2e31da2cb2c76f770b41bdb09eeb253958aec596c3145e4964d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-03-DECIDED-001",
+                "Content Digest": "sha256:568679e2bdc4be8c113b08cafd6bffd8e5d342843073a8a59b106a7ada155444"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-04-DECIDED-001",
+                "Content Digest": "sha256:6a286758c18faad1ae41b28f0a14cfbc5ad60d740330ba054b51740176354e12"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-05-DECIDED-001",
+                "Content Digest": "sha256:5a241fbbf70d1bc77e4dfffb4a641061d952fd29a8f2cdcbd92beaaa6027bb78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-07-DECIDED-001",
+                "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-12-DECIDED-001",
+                "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-13-DECIDED-001",
+                "Content Digest": "sha256:6e7dc0cce79449e3a6bfdcf98ab7637fa87214d3b332f4e741b86d41b077bcb2"
+              }
+            ],
+            "Required claim/boundary": "Authored schema,compiler,selector/property/grant finite closure and real descriptor publication",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/data/relic_data.rs",
+                "core_enhanced/src/game/data/validation.rs",
+                "core_enhanced/src/game/data/content_pack",
+                "core_enhanced/src/game/ability",
+                "core_enhanced/src/game/relic",
+                "core_enhanced/src/authoring",
+                "core_enhanced/src/game/value_expr"
+              ],
+              "dirty_basis": "Actual exact current bytes;preserve all existing source/evidence"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSA-002",
+                "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Trace input→validation→typedcompiled→plan. Bound supported property semantics and final graph revalidation without treating types as execution.",
+            "Investigation owner": "Root"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-06-DECIDED-001",
+                "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-07-DECIDED-001",
+                "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-08-DECIDED-001",
+                "Content Digest": "sha256:dfafb9c4844ff0062349b8d2148b5e8ad81e67ffd4aa802fb8c8c93e774371e3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-09-DECIDED-001",
+                "Content Digest": "sha256:063e99ff62df429e817c18f7eb9ea865293dacde62aeddab56b04015d07f9591"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-10-DECIDED-001",
+                "Content Digest": "sha256:04456b1876468aea254c4d0a0ea173328d4b95d2ff0eac490cd596e77bd5852c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-11-DECIDED-001",
+                "Content Digest": "sha256:580376ff9e1315f5802806dab3ef33b8726de7f18a09b5c58b55cf03d57bd345"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-12-DECIDED-001",
+                "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-14-DECIDED-001",
+                "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-15-DECIDED-001",
+                "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+              }
+            ],
+            "Required claim/boundary": "Actual structural consumers,primary target,channel/aura,shared shield,damage footprints and released owner lifecycle",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core",
+                "core_enhanced/src/game/battle/skill_source.rs",
+                "core_enhanced/src/game/battle/runtime_facts.rs",
+                "core_enhanced/src/game/combat_setup",
+                "core_enhanced/src/game/events/combat.rs"
+              ],
+              "dirty_basis": "Actual exact current bytes;preserve all existing source/evidence"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSA-002",
+                "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Read actual symbols/callers and identify minimum simultaneous change for three required structures. No product mutation or experiment.",
+            "Investigation owner": "Sol read-only assistance;Root design owner"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-06-DECIDED-001",
+                "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-08-DECIDED-001",
+                "Content Digest": "sha256:dfafb9c4844ff0062349b8d2148b5e8ad81e67ffd4aa802fb8c8c93e774371e3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-12-DECIDED-001",
+                "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-13-DECIDED-001",
+                "Content Digest": "sha256:6e7dc0cce79449e3a6bfdcf98ab7637fa87214d3b332f4e741b86d41b077bcb2"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-14-DECIDED-001",
+                "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-15-DECIDED-001",
+                "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+              }
+            ],
+            "Required claim/boundary": "Public command/query/readiness/cache,copy/variant ownership and save/Continue/entry generation",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/world/relic_runtime.rs",
+                "core_enhanced/src/game/world/tactical_preview.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/game/world/active_run",
+                "core_enhanced/src/game/world/snapshot.rs",
+                "core_enhanced/src/game/world/application.rs",
+                "core_enhanced/src/application.rs",
+                "game_server/src/game/player_game_actor"
+              ],
+              "dirty_basis": "Actual exact current bytes;preserve all existing source/evidence"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSA-002",
+                "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Check owning roots and real normal adapters,save schema/checks and copy/form/generation cache invalidation;no silent source fallback.",
+            "Investigation owner": "Root"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-01-DECIDED-001",
+                "Content Digest": "sha256:db0f8438376ca3136198d335e9e5205f26bce931ae0f5202a37af033f0a357bb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-02-DECIDED-001",
+                "Content Digest": "sha256:78c069c6bcd5f2e31da2cb2c76f770b41bdb09eeb253958aec596c3145e4964d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-03-DECIDED-001",
+                "Content Digest": "sha256:568679e2bdc4be8c113b08cafd6bffd8e5d342843073a8a59b106a7ada155444"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-04-DECIDED-001",
+                "Content Digest": "sha256:6a286758c18faad1ae41b28f0a14cfbc5ad60d740330ba054b51740176354e12"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-05-DECIDED-001",
+                "Content Digest": "sha256:5a241fbbf70d1bc77e4dfffb4a641061d952fd29a8f2cdcbd92beaaa6027bb78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-06-DECIDED-001",
+                "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-07-DECIDED-001",
+                "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-08-DECIDED-001",
+                "Content Digest": "sha256:dfafb9c4844ff0062349b8d2148b5e8ad81e67ffd4aa802fb8c8c93e774371e3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-09-DECIDED-001",
+                "Content Digest": "sha256:063e99ff62df429e817c18f7eb9ea865293dacde62aeddab56b04015d07f9591"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-10-DECIDED-001",
+                "Content Digest": "sha256:04456b1876468aea254c4d0a0ea173328d4b95d2ff0eac490cd596e77bd5852c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-11-DECIDED-001",
+                "Content Digest": "sha256:580376ff9e1315f5802806dab3ef33b8726de7f18a09b5c58b55cf03d57bd345"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-12-DECIDED-001",
+                "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-13-DECIDED-001",
+                "Content Digest": "sha256:6e7dc0cce79449e3a6bfdcf98ab7637fa87214d3b332f4e741b86d41b077bcb2"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-14-DECIDED-001",
+                "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-15-DECIDED-001",
+                "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-16-DECIDED-001",
+                "Content Digest": "sha256:7a1c0650a19811a22789561d2588c1c784336cc624d10619efc6b4ba92c2e939"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-17-DECIDED-001",
+                "Content Digest": "sha256:297fdd1f193921132ac36e9a4388cf4c184fd1683a39da321b6970fcf2d7e1a2"
+              }
+            ],
+            "Required claim/boundary": "Independent observable acceptance/test seams and exact prior regression evidence",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/relic/tests.rs",
+                "core_enhanced/src/game/world/tests",
+                "core_enhanced/src/authoring/trial/tests",
+                "core_enhanced/tests/u08_relic_public",
+                "core_enhanced/docs/goals/core_relic_numeric_variants/post_audit/u08_current_013_pass002",
+                "core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/COVERAGE_013.json"
+              ],
+              "dirty_basis": "Actual exact current bytes;preserve all existing source/evidence"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSA-002",
+                "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Map required acceptance to actual reusable public/helper paths and independent oracle;find impossible/missing observations,scope conflicts and smallest new tests. Do not execute or write tests.",
+            "Investigation owner": "Astra test author read-only assistance"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-03-DECIDED-001",
+                "Content Digest": "sha256:568679e2bdc4be8c113b08cafd6bffd8e5d342843073a8a59b106a7ada155444"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-06-DECIDED-001",
+                "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-07-DECIDED-001",
+                "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-12-DECIDED-001",
+                "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-14-DECIDED-001",
+                "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-15-DECIDED-001",
+                "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-16-DECIDED-001",
+                "Content Digest": "sha256:7a1c0650a19811a22789561d2588c1c784336cc624d10619efc6b4ba92c2e939"
+              }
+            ],
+            "Required claim/boundary": "Admission/retained/clone/rollback and predecessor performance/host boundary",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring/control.rs",
+                "core_enhanced/src/authoring/clone_shape.rs",
+                "core_enhanced/src/runtime_safety.rs",
+                "core_enhanced/src/game/battle/core/mod.rs",
+                "core_enhanced/src/game/battle/core/resource_runtime.rs",
+                "core_enhanced/src/game/relic/allocation.rs",
+                "core_enhanced/src/game/world/resource_runtime.rs",
+                "core_enhanced/docs/goals/core_relic_numeric_variants/evidence/finalizer_ready013/CONFIG_READY_013.json"
+              ],
+              "dirty_basis": "Actual exact current bytes;preserve all existing source/evidence"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSA-002",
+                "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Bound allocation-producing state and measured consumers,old warning vs newcost. Reuse exact old evidence only with actual impact rationale.",
+            "Investigation owner": "Root plus Sol runtime subset"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-01-DECIDED-001",
+                "Content Digest": "sha256:db0f8438376ca3136198d335e9e5205f26bce931ae0f5202a37af033f0a357bb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-02-DECIDED-001",
+                "Content Digest": "sha256:78c069c6bcd5f2e31da2cb2c76f770b41bdb09eeb253958aec596c3145e4964d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-03-DECIDED-001",
+                "Content Digest": "sha256:568679e2bdc4be8c113b08cafd6bffd8e5d342843073a8a59b106a7ada155444"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-04-DECIDED-001",
+                "Content Digest": "sha256:6a286758c18faad1ae41b28f0a14cfbc5ad60d740330ba054b51740176354e12"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-05-DECIDED-001",
+                "Content Digest": "sha256:5a241fbbf70d1bc77e4dfffb4a641061d952fd29a8f2cdcbd92beaaa6027bb78"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-06-DECIDED-001",
+                "Content Digest": "sha256:0a2fe16397c15f57eb7c55bea0545c9092d8b8a9d60e79b2cfef7561174607e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-07-DECIDED-001",
+                "Content Digest": "sha256:aff423851610d25fe8238430b91ca384d1e4d7e90735a4f1128ae47d283ebb02"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-08-DECIDED-001",
+                "Content Digest": "sha256:dfafb9c4844ff0062349b8d2148b5e8ad81e67ffd4aa802fb8c8c93e774371e3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-09-DECIDED-001",
+                "Content Digest": "sha256:063e99ff62df429e817c18f7eb9ea865293dacde62aeddab56b04015d07f9591"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-10-DECIDED-001",
+                "Content Digest": "sha256:04456b1876468aea254c4d0a0ea173328d4b95d2ff0eac490cd596e77bd5852c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-11-DECIDED-001",
+                "Content Digest": "sha256:580376ff9e1315f5802806dab3ef33b8726de7f18a09b5c58b55cf03d57bd345"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-12-DECIDED-001",
+                "Content Digest": "sha256:0d6014331d7027bd4ed555c237e427dcf07aa194dcd57a5ced97a63b66d40bff"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-13-DECIDED-001",
+                "Content Digest": "sha256:6e7dc0cce79449e3a6bfdcf98ab7637fa87214d3b332f4e741b86d41b077bcb2"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-14-DECIDED-001",
+                "Content Digest": "sha256:d6645cff8effa642d8041195403e3d0ce6003d47faa366a9f2da4061e6b7c59c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-15-DECIDED-001",
+                "Content Digest": "sha256:ad2423a7c1035cd3e989f490b7e17bbe999d4f991c46bb67669f8e4e58784fac"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-16-DECIDED-001",
+                "Content Digest": "sha256:7a1c0650a19811a22789561d2588c1c784336cc624d10619efc6b4ba92c2e939"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRSA-17-DECIDED-001",
+                "Content Digest": "sha256:297fdd1f193921132ac36e9a4388cf4c184fd1683a39da321b6970fcf2d7e1a2"
+              }
+            ],
+            "Required claim/boundary": "Current policy and predecessor whole completion,explicit scope and acceptance meaning",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/docs/game_rules/relics.md",
+                "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+                "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+                "core_enhanced/docs/roadmaps/core_first/execution/u08_closure_20261007_001/PUBLICATION_RECORD.json",
+                "core_enhanced/docs/goals/core_relic_structural_activation/P2G_10_POLICY_001.json"
+              ],
+              "dirty_basis": "Actual exact current bytes;preserve all existing source/evidence"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRSA-002",
+                "Content Digest": "sha256:433bcee97fab11bf953123db9fe0fe57140d9bb10f88b414ef56b058c444bd16"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Use original policy decisions and source spans,do not reinterpret prototype behavior as agreed policy. Any necessary acceptance change returns to P2G-10.",
+            "Investigation owner": "Root"
+          }
+        ],
+        "Review status": "candidate plan;not complete Code Review Batch",
+        "Prior source identity": "Product438/4c7bbd317a9a12045267bd306057e771133096ccbccace6a51f484d23a46e2ac from completedU08;reviewed exact paths will be observed independently",
+        "Coverage completion rule": "All17 current policies and allrequired locations/boundaries must have actual evidence or explicit justified nonapplicability. Missing material policy means abort current batch,not soften acceptance.",
+        "Predecessor candidate plan": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CRSA-001",
+          "Content Digest": "sha256:ef2962e279cf3a2c75db74d4c74a4199f8a8c924ef30249d2dc2e587c80e110f"
+        },
+        "Locator correction": "Initial allocation.rs guesses did not exist. Actual admission owners resolve to authoring/control.rs,runtime_safety.rs,core/mod.rs/resource_runtime.rs. No evidence or policy changed;plan001 preserved."
+      }
+    }
+  ]
+}

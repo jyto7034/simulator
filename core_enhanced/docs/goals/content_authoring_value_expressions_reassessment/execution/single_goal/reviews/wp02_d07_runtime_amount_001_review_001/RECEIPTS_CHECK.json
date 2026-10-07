@@ -1,0 +1,141 @@
+{
+  "source": {
+    "file_count": 340,
+    "digest": "ad8021359785e365c3f9560268bcef2a95205495f9e33a22314c3f97743480c4",
+    "product_file_count": 336,
+    "product_digest": "6b5e0291b1b6f936c277e2138bc2c2adbbeaaa2b3df5c1b4d5bf31b5acff6807"
+  },
+  "rows": [
+    {
+      "name": "format",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_cargo_fmt_check_002.log"
+    },
+    {
+      "name": "check_all_targets",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_cargo_check_002.log"
+    },
+    {
+      "name": "authoring",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        112,
+        0
+      ],
+      "log": "logs/final_authoring_002.log"
+    },
+    {
+      "name": "value_expr",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        91,
+        0
+      ],
+      "log": "logs/final_value_expr_002.log"
+    },
+    {
+      "name": "all_targets_parallel",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        1538,
+        0
+      ],
+      "log": "logs/final_all_targets_parallel_002.log"
+    },
+    {
+      "name": "clippy",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_clippy_002.log"
+    },
+    {
+      "name": "focused_d07_b",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        5,
+        0
+      ],
+      "log": "logs/d07_b_focused_006.log"
+    },
+    {
+      "name": "pc36",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        1,
+        0
+      ],
+      "log": "logs/final_pc36_003.log"
+    },
+    {
+      "name": "r05",
+      "log_sha256_verified": true,
+      "reported_exit": 101,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_r05_003.log"
+    },
+    {
+      "name": "r05_dependency_fetch",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/r05_dependency_fetch_001.log"
+    },
+    {
+      "name": "r05_attempt_001",
+      "log_sha256_verified": true,
+      "reported_exit": 101,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_r05_001.log"
+    },
+    {
+      "name": "r05_pre_final_source",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_r05_002.log"
+    },
+    {
+      "name": "pc36_attempt_001",
+      "log_sha256_verified": true,
+      "reported_exit": 0,
+      "test_totals_from_log": [
+        0,
+        0
+      ],
+      "log": "logs/final_pc36_001.log"
+    }
+  ],
+  "note": "Exit status is implementer-reported; log hashes and test summaries independently checked."
+}

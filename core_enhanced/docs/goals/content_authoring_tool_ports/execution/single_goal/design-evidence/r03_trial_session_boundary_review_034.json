@@ -1,0 +1,147 @@
+{
+  "captured_at_utc": "2026-09-10T13:09:14.187982+00:00",
+  "sources": [
+    {
+      "path": "core_enhanced/src/authoring/trial.rs",
+      "sha256": "42673d9752e31ff225cc6a99afd35f7de3a815dac296c0b6efdd4510ef7adaa2",
+      "bytes": 65972,
+      "read_spans": [
+        "1-450",
+        "461-534",
+        "615-695",
+        "790-846",
+        "996-1164",
+        "rg public surface / impl / test selectors"
+      ],
+      "close_sha256": "a60801ce00f1a6781d73be22b767282fe9a668717714384e77547f705cc1622c",
+      "close_bytes": 66729,
+      "drift": true,
+      "input080_sha256": "42673d9752e31ff225cc6a99afd35f7de3a815dac296c0b6efdd4510ef7adaa2",
+      "matches_input080": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/mod.rs",
+      "sha256": "cbcd1a2de60693d01b2d49da5bf2af239d3c6bbfbc016399bd66c6d4e933073f",
+      "bytes": 4893,
+      "read_spans": [
+        "1-41"
+      ],
+      "close_sha256": "c2bd2050ce8660c6fcc534c4391850dba6b3f11289a4ca919be7d09a9654b6c0",
+      "close_bytes": 5164,
+      "drift": true,
+      "input080_sha256": "cbcd1a2de60693d01b2d49da5bf2af239d3c6bbfbc016399bd66c6d4e933073f",
+      "matches_input080": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/trace.rs",
+      "sha256": "994ef989a8740921eb6787edacdcd54b2ccbab038c999af7e4245a78865c277e",
+      "bytes": 19064,
+      "read_spans": [
+        "1-84",
+        "109-128"
+      ],
+      "close_sha256": "994ef989a8740921eb6787edacdcd54b2ccbab038c999af7e4245a78865c277e",
+      "close_bytes": 19064,
+      "drift": false,
+      "input080_sha256": "994ef989a8740921eb6787edacdcd54b2ccbab038c999af7e4245a78865c277e",
+      "matches_input080": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/query.rs",
+      "sha256": "60521fc51d4953462206bd301e66169f85fc6c157539ccec0781eb4a43e8a8f1",
+      "bytes": 11282,
+      "read_spans": [
+        "17-33",
+        "57-87",
+        "106-115",
+        "258-268"
+      ],
+      "close_sha256": "60521fc51d4953462206bd301e66169f85fc6c157539ccec0781eb4a43e8a8f1",
+      "close_bytes": 11282,
+      "drift": false,
+      "input080_sha256": "60521fc51d4953462206bd301e66169f85fc6c157539ccec0781eb4a43e8a8f1",
+      "matches_input080": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/control.rs",
+      "sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+      "bytes": 22728,
+      "read_spans": [
+        "215-253"
+      ],
+      "close_sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+      "close_bytes": 22728,
+      "drift": false,
+      "input080_sha256": "5361b2eac90d518d17bedbc856b1b974489af9db839d7cb5bb59c677d7b263e9",
+      "matches_input080": true
+    },
+    {
+      "path": "core_enhanced/src/authoring/scenario.rs",
+      "sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "bytes": 29210,
+      "read_spans": [
+        "178-265",
+        "437-456"
+      ],
+      "close_sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "close_bytes": 29210,
+      "drift": false,
+      "input080_sha256": "0152fd9a1f33ad5d061102da34b5bfc13f8e282b697f4e0030dcb741320da859",
+      "matches_input080": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_tool_ports/execution/single_goal/evidence/INPUTS_080.json",
+      "sha256": "915b7fb5fef4e357a371e1b0b8a31f8bed91646cef41e8d96dc1e1138f70bea5",
+      "bytes": 40164,
+      "read_spans": [
+        "full JSON parsed for input hashes; no focused116 outcome read"
+      ],
+      "close_sha256": "915b7fb5fef4e357a371e1b0b8a31f8bed91646cef41e8d96dc1e1138f70bea5",
+      "close_bytes": 40164,
+      "drift": false,
+      "input080_sha256": null,
+      "matches_input080": null
+    }
+  ],
+  "schema_version": 1,
+  "review_id": "R03-TS034",
+  "review_scope": "Bounded source review of initial public TrialSession/TrialFailure/SimulationFailure/ReceiptView/StepView/simulate and prepare_positioned; not a completion audit.",
+  "findings": [],
+  "conclusion": "No concrete defect established in the inspected public boundary slice.",
+  "source_mutations": false,
+  "tests_executed": false,
+  "test_outcomes_read": false,
+  "oracle_limits": [
+    {
+      "id": "TS034-L01",
+      "source": "core_enhanced/src/authoring/trial.rs:1057-1164",
+      "detail": "Initial cancellation, prefix application decode error, readiness rejection and repeated execution decode error are tested. No new public-wrapper test forces receipt-phase fuel/byte failure or final-acceptance cancellation and verifies both operation phase and preserved native diagnostic phase/site/position.",
+      "minimal_followup": "Use controlled low-limit or cancellation injection at a reached prefix/ready/final-acceptance boundary, asserting cursor and original diagnostic; do not infer the boundary from a generic error code alone."
+    },
+    {
+      "id": "TS034-L02",
+      "source": "core_enhanced/src/authoring/trial.rs:1106-1164",
+      "detail": "Partial simulation accepts a Run snapshot then fails unknown command decode. Preservation comparisons cover receipt strings, accepted work and input hash; they do not independently compare native provenance, mutable gameplay/RNG/continuation, copy quota, old trace owner, or exact A/B generation identity.",
+      "minimal_followup": "Extend an existing real gameplay failure fixture through the public wrapper, using postfailure replay/current state and owned-prefix equivalence; no need to duplicate all private runtime tests."
+    },
+    {
+      "id": "TS034-L03",
+      "source": "core_enhanced/src/authoring/trial.rs:996-1164",
+      "detail": "The tests call public methods from an internal cfg-test module with embedded fixtures. They are not standalone default-release privacy/borrow or external-pack consumer evidence, and do not exercise new session describe/explain delegates.",
+      "minimal_followup": "Use targeted standalone positive and forbidden API/borrow consumers when the staged public view surface stabilizes."
+    }
+  ],
+  "excluded_known_staged_features": [
+    "public mandatory observation/live inspection/preview",
+    "bounded failure renderer and CLI",
+    "whole-goal source/trace/native storage completeness"
+  ],
+  "closed_at_utc": "2026-09-10T13:12:45.591219+00:00",
+  "drift_count": 2,
+  "matched_input080_sources": 6,
+  "drift_sources": [
+    "core_enhanced/src/authoring/trial.rs",
+    "core_enhanced/src/authoring/mod.rs"
+  ],
+  "report_sha256": "2f505d27d0261225e10936569fac22a5d2c53e31385d2db7879b9bfcd61f3cf9"
+}

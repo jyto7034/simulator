@@ -1,0 +1,47 @@
+{
+  "kind": "external stage report",
+  "Selected Stage": "P2G-20",
+  "Execution Status": "completed",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CAPG-P2G10-001",
+    "Content Digest": null
+  },
+  "Current Working Checkpoint Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CAPG-P2G20-001",
+    "Content Digest": null
+  },
+  "Complete Review Batch Result Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CAPG-P2G20-002",
+    "Content Digest": null
+  },
+  "is_p2g20_complete": true,
+  "Validation": {
+    "result": "passed",
+    "elements": 6,
+    "acceptance_members": 14,
+    "bindings": 6,
+    "required_sources_confirmed": 5,
+    "excluded_source_disposition": 1,
+    "missing_or_cyclic_ref": 0,
+    "meaning_or_acceptance_delta": 0,
+    "R01_target_members_current": 291,
+    "required_source_gaps": []
+  },
+  "Next Stage": "P2G-30",
+  "New User Request Required": false,
+  "recorded_at_utc": "2026-09-09T14:58:37.015007+00:00",
+  "supersedes_stage_selection": "P2G_20_RESULT_001.json",
+  "repair": {
+    "finding": "producer used noncanonical Artifact Type Review Batch Result for original RB record; canonical type is Review Batch",
+    "original_record_preserved": {
+      "Artifact Type": "Review Batch Result",
+      "Artifact ID": "RB-CAPG-P2G20-001",
+      "Content Digest": null
+    },
+    "replacement": "identical reviewed payload, new producer Ref with canonical type; existing exact WR/PER/CRB/source evidence unchanged",
+    "validation": "checked canonical type against P2G manual and reference-closed same payload; no policy/source/acceptance changes"
+  }
+}

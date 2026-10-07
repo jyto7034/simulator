@@ -1,0 +1,746 @@
+[
+  {
+    "case": "cancel",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_cancelled",
+          "limit": null,
+          "phase": "trial_preparation",
+          "requested": null,
+          "site": "attempt_entry"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 0
+  },
+  {
+    "case": "initial_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 1,
+          "phase": "trial_preparation",
+          "requested": 4,
+          "site": "trial_initial_owners"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 0
+  },
+  {
+    "case": "initial_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 0
+  },
+  {
+    "case": "initial_result",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_result_limit",
+          "limit": 5533,
+          "phase": "receipt",
+          "requested": 5534,
+          "site": "mandatory_result"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 0
+  },
+  {
+    "case": "ready_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 564122,
+          "phase": "receipt",
+          "requested": 564123,
+          "site": "receipt_usage_fill"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "off",
+    "repeat": 0
+  },
+  {
+    "case": "ready_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "off",
+    "repeat": 0
+  },
+  {
+    "case": "cancel",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_cancelled",
+          "limit": null,
+          "phase": "trial_preparation",
+          "requested": null,
+          "site": "attempt_entry"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 1
+  },
+  {
+    "case": "initial_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 1,
+          "phase": "trial_preparation",
+          "requested": 4,
+          "site": "trial_initial_owners"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 1
+  },
+  {
+    "case": "initial_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 1
+  },
+  {
+    "case": "initial_result",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_result_limit",
+          "limit": 5533,
+          "phase": "receipt",
+          "requested": 5534,
+          "site": "mandatory_result"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "off",
+    "repeat": 1
+  },
+  {
+    "case": "ready_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 564122,
+          "phase": "receipt",
+          "requested": 564123,
+          "site": "receipt_usage_fill"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "off",
+    "repeat": 1
+  },
+  {
+    "case": "ready_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "off",
+    "repeat": 1
+  },
+  {
+    "case": "cancel",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_cancelled",
+          "limit": null,
+          "phase": "trial_preparation",
+          "requested": null,
+          "site": "attempt_entry"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 0
+  },
+  {
+    "case": "initial_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 1,
+          "phase": "trial_preparation",
+          "requested": 4,
+          "site": "trial_initial_owners"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 0
+  },
+  {
+    "case": "initial_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 0
+  },
+  {
+    "case": "initial_result",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_result_limit",
+          "limit": 5533,
+          "phase": "receipt",
+          "requested": 5534,
+          "site": "mandatory_result"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 0
+  },
+  {
+    "case": "ready_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 564122,
+          "phase": "receipt",
+          "requested": 564123,
+          "site": "receipt_usage_fill"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "on",
+    "repeat": 0
+  },
+  {
+    "case": "ready_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "on",
+    "repeat": 0
+  },
+  {
+    "case": "cancel",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_cancelled",
+          "limit": null,
+          "phase": "trial_preparation",
+          "requested": null,
+          "site": "attempt_entry"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 1
+  },
+  {
+    "case": "initial_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 1,
+          "phase": "trial_preparation",
+          "requested": 4,
+          "site": "trial_initial_owners"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 1
+  },
+  {
+    "case": "initial_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 1
+  },
+  {
+    "case": "initial_result",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_result_limit",
+          "limit": 5533,
+          "phase": "receipt",
+          "requested": 5534,
+          "site": "mandatory_result"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "on",
+    "repeat": 1
+  },
+  {
+    "case": "ready_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 564122,
+          "phase": "receipt",
+          "requested": 564123,
+          "site": "receipt_usage_fill"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "on",
+    "repeat": 1
+  },
+  {
+    "case": "ready_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "on",
+    "repeat": 1
+  },
+  {
+    "case": "cancel",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_cancelled",
+          "limit": null,
+          "phase": "trial_preparation",
+          "requested": null,
+          "site": "attempt_entry"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 0
+  },
+  {
+    "case": "initial_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 1,
+          "phase": "trial_preparation",
+          "requested": 4,
+          "site": "trial_initial_owners"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 0
+  },
+  {
+    "case": "initial_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 0
+  },
+  {
+    "case": "initial_result",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_result_limit",
+          "limit": 5533,
+          "phase": "receipt",
+          "requested": 5534,
+          "site": "mandatory_result"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 0
+  },
+  {
+    "case": "ready_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 564122,
+          "phase": "receipt",
+          "requested": 564123,
+          "site": "receipt_usage_fill"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "gap",
+    "repeat": 0
+  },
+  {
+    "case": "ready_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "gap",
+    "repeat": 0
+  },
+  {
+    "case": "cancel",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_cancelled",
+          "limit": null,
+          "phase": "trial_preparation",
+          "requested": null,
+          "site": "attempt_entry"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 1
+  },
+  {
+    "case": "initial_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 1,
+          "phase": "trial_preparation",
+          "requested": 4,
+          "site": "trial_initial_owners"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 1
+  },
+  {
+    "case": "initial_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 1
+  },
+  {
+    "case": "initial_result",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_result_limit",
+          "limit": 5533,
+          "phase": "receipt",
+          "requested": 5534,
+          "site": "mandatory_result"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "initial"
+      }
+    },
+    "mode": "gap",
+    "repeat": 1
+  },
+  {
+    "case": "ready_work",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_work_limit",
+          "limit": 564122,
+          "phase": "receipt",
+          "requested": 564123,
+          "site": "receipt_usage_fill"
+        },
+        "kind": "execution"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "gap",
+    "repeat": 1
+  },
+  {
+    "case": "ready_receipt",
+    "diagnostic": {
+      "error": {
+        "diagnostic": {
+          "code": "authoring_receipt_limit",
+          "field_path": "receipt",
+          "phase": "receipt",
+          "reason": "Mandatory receipt bytes exceed the session ceiling."
+        },
+        "kind": "request"
+      },
+      "operation_phase": "trial_preparation",
+      "position": {
+        "position": "preparation_ready"
+      }
+    },
+    "mode": "gap",
+    "repeat": 1
+  }
+]

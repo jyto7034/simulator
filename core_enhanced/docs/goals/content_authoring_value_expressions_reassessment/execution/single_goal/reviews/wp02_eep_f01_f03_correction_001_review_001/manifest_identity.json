@@ -1,0 +1,14 @@
+[
+  {
+    "path": "target/correction_001/MANIFEST.json",
+    "expected": "abe5a96830d8090f77e63fde7c6d7ff79675f701a382437d2492e0c66e9aa60a",
+    "actual": "abe5a96830d8090f77e63fde7c6d7ff79675f701a382437d2492e0c66e9aa60a",
+    "match": true
+  },
+  {
+    "path": "baseline/entry_001/MANIFEST.json",
+    "expected": "3f981d8cdc662e264248899682631cb719e515726308d38b4777e8f127514706",
+    "actual": "3f981d8cdc662e264248899682631cb719e515726308d38b4777e8f127514706",
+    "match": true
+  }
+]
